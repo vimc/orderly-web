@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd">
+    <jdbc>
+        <driver>org.sqlite.JDBC</driver>
+        <url>jdbc:sqlite://${db_location}</url>
+    </jdbc>
+
+    <generator>
+        <name>org.jooq.util.JavaGenerator</name>
+
+        <database>
+            <name>org.jooq.util.sqlite.SQLiteDatabase</name>
+            <includes>.*</includes>
+            <excludes/>
+        </database>
+
+        <target>
+            <packageName>org.vaccineimpact.reporting-api.db</packageName>
+            <directory>../databaseInterface/src/main/java</directory>
+        </target>
+    </generator>
+</configuration>

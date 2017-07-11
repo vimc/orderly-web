@@ -1,0 +1,66 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        // This is needed for gradle-docker
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+def api_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+    api_docker_version = docker_version
+}
+def api_docker_name = 'montagu-reporting_api'
+if (hasProperty('docker_name')) {
+    api_docker_name = docker_name
+}
+
+apply plugin: 'application'
+apply plugin: 'docker'
+
+mainClassName = "org.vaccineimpact.reporting_api.SparkAppKt"
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+
+    compile "com.sparkjava:spark-core:2.5.4"
+    compile "org.slf4j:slf4j-simple:1.7.21"
+
+    compile "com.google.code.gson:gson:2.2.4"
+    compile "com.github.salomonbrys.kotson:kotson:2.5.0"
+    compile "com.opencsv:opencsv:3.9"
+
+    compile "org.postgresql:postgresql:9.4.1212.jre7"
+    compile "org.jooq:jooq:3.9.1"
+    compile "org.jooq:jooq-meta:3.9.1"
+
+    compile "org.pac4j:spark-pac4j:2.0.0"
+    compile "org.pac4j:pac4j-http:2.0.0"
+
+    compile project(":databaseInterface")
+    compile project(":models")
+    compile project(":security")
+
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "com.nhaarman:mockito-kotlin:1.3.0"
+    testCompile "org.assertj:assertj-core:3.6.2"
+    testCompile "com.beust:klaxon:0.31"
+    testCompile project(":testHelpers")
+}
+
+docker {
+    baseImage = "openjdk:8u121-jre"
+}
+
+distDocker {
+    dependsOn = [build]
+    push = true
+    tag = api_docker_name
+    tagVersion = api_docker_version
+}
+
+copyConfig.finalizedBy 'showConfig'

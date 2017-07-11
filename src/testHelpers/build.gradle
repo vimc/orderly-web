@@ -1,0 +1,9 @@
+dependencies {
+    compile "junit:junit:4.12"
+    compile "org.jooq:jooq:3.9.1"
+    compile "org.jooq:jooq-meta:3.9.1"
+
+    compile project(':databaseInterface')
+    compile project(':models')
+    compile project(':security')
+}

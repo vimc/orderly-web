@@ -1,0 +1,6 @@
+dependencies {
+    compile "org.xerial:sqlite-jdbc:3.19.3"
+    compile "org.jooq:jooq:3.9.1"
+    compile "org.jooq:jooq-meta:3.9.1"
+    compile "org.apache.commons:commons-lang3:3.5"
+}

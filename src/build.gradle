@@ -1,0 +1,114 @@
+group 'org.vaccineimpact'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.1.3'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
+task run(dependsOn: ':app:run')
+task generateDatabaseInterface(dependsOn: ':generateDatabaseInterface:run')
+
+// 'testLibrary' runs things that can be tested without a running API.
+// i.e. everything other than blackboxTests.
+task testLibrary(dependsOn: [':app:test'])
+
+def loadPropertiesFile(path) {
+    def props = new Properties()
+    def f = file(path)
+    if (f.exists()) {
+        f.withReader {
+            props.load(it)
+        }
+    }
+    return props
+}
+
+def loadProperties() {
+    println("Loading base configuration from config/default.properties.")
+    def properties = loadPropertiesFile("config/default.properties")
+    def userFile = file("config/current_user")
+    if (userFile.exists()) {
+        def user = userFile.text.trim()
+        println("Using configuration for user $user")
+        def userPropertiesFile = file("config/users/${user}.properties")
+        if (userPropertiesFile.exists()) {
+            println("Found extra configuration in config/users/${user}.properties")
+            def userProperties = loadPropertiesFile(userPropertiesFile.path)
+            properties.putAll(userProperties)
+        } else {
+            throw new Exception("You defined a user file, with user '$user', " +
+                    "but no corresponding properties file exists at $userPropertiesFile.absolutePath")
+        }
+    }
+    return properties
+}
+
+task loadPropertiesTask() {
+    rootProject.ext.props = loadProperties()
+    doLast {
+        println("(Properties were loaded during configuration)")
+    }
+}
+
+subprojects {
+    apply plugin: 'kotlin'
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven { url 'https://jitpack.io' }
+    }
+
+    dependencies {
+        compile "org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlin_version"
+    }
+
+    task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
+        from 'src/main/resources'
+        include '*'
+        into 'build/classes/main/'
+        expand(rootProject.ext.props)
+        outputs.upToDateWhen { false }
+    }
+    //There are two different places the JVM might look for these, and it depends
+    //on whether we're running in development, or from a proper JAR distribution
+    //which one we need. So let's just do both
+    task copyConfigToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
+        from 'src/main/resources'
+        include '*'
+        into 'build/resources/main/'
+        expand(rootProject.ext.props)
+        outputs.upToDateWhen { false }
+    }
+    task copyTestConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
+        from 'src/test/resources'
+        include '*'
+        into 'build/classes/test/'
+        expand(rootProject.ext.props)
+    }
+
+    processResources.finalizedBy 'copyConfig', 'copyConfigToResources'
+    processTestResources.finalizedBy 'copyTestConfig'
+
+    task showConfig(dependsOn: 'copyConfig') {
+        doLast {
+            println("This is the config being used:")
+            println(file("build/classes/main/config.properties").text)
+        }
+    }
+    task showTestConfig(dependsOn: 'copyTestConfig') {
+        doLast {
+            println("This is the config being used:")
+            println(file("build/classes/test/config.properties").text)
+        }
+    }
+}
