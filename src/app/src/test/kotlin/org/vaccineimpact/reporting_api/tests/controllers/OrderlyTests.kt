@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.tests.controllers
 
 import org.assertj.core.api.Assertions.assertThat
+import org.json.JSONObject
 import org.junit.Test
 import org.vaccineimpact.reporting_api.Orderly
 import org.vaccineimpact.reporting_api.db.Config
@@ -57,6 +58,19 @@ class OrderlyTests : DatabaseTest() {
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0]).isEqualTo("version1")
         assertThat(results[1]).isEqualTo("version2")
+    }
+
+    @Test
+    fun `can get artefacts for report`() {
+
+        val artefactString = "{\"mygraph.png\":{\"format\":\"staticgraph\",\"description\":\"A plot of coverage over time\"}}"
+        insertReport("test", "version1", artefacts = artefactString)
+
+        val sut = createSut()
+
+        val result = sut.getArtefacts("test", "version1")
+
+        assertThat(result.toString()).isEqualTo(artefactString)
     }
 
 }

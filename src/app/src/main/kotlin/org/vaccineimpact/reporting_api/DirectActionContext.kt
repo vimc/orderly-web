@@ -29,4 +29,8 @@ open class DirectActionContext(private val context: SparkWebContext): ActionCont
         val manager = ProfileManager<CommonProfile>(context)
         manager.getAll(false).single()
     }
+
+    override fun getSparkResponse(): Response {
+        return response
+    }
 }

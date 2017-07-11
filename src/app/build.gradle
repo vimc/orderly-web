@@ -21,7 +21,7 @@ if (hasProperty('docker_name')) {
 apply plugin: 'application'
 apply plugin: 'docker'
 
-mainClassName = "org.vaccineimpact.reporting_api.SparkAppKt"
+mainClassName = "org.vaccineimpact.reporting_api.app_start.SparkAppKt"
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"

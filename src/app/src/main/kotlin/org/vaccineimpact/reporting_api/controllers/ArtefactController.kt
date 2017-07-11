@@ -9,7 +9,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null)  : Controller
 {
     val orderly = orderlyClient?: Orderly()
 
-    fun getAll(context: ActionContext): JSONObject {
+    fun get(context: ActionContext): JSONObject {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 

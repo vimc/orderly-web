@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api
 
 import org.pac4j.core.profile.CommonProfile
+import spark.Response
 
 interface ActionContext
 {
@@ -12,4 +13,5 @@ interface ActionContext
     fun params(key: String): String
     fun addResponseHeader(key: String, value: String): Unit
 
+    fun getSparkResponse(): Response
 }

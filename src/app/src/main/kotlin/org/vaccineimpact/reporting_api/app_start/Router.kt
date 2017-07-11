@@ -1,12 +1,11 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.reporting_api.DirectActionContext
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.EndpointDefinition
-import org.vaccineimpact.reporting_api.JsonEndpoint
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.*
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
+import spark.Request
+import spark.Response
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
@@ -20,13 +19,13 @@ class Router(val config: RouteConfig) {
     fun mapEndpoints(urlBase: String): List<String> {
         return config.endpoints.map {
             when (it){
-                is JsonEndpoint -> mapJsonEndpoint(it, urlBase)
+                is JsonEndpoint -> mapTransformedEndpoint(it, urlBase)
                 else -> mapEndpoint(it, urlBase)
             }
         }
     }
 
-    private fun mapJsonEndpoint(
+    private fun mapTransformedEndpoint(
             endpoint: JsonEndpoint,
             urlBase: String): String {
 
@@ -82,4 +81,5 @@ class Router(val config: RouteConfig) {
 
         return Route({ req, res -> action.invoke(controllers[controllerName], DirectActionContext(req, res)) })
     }
+
 }

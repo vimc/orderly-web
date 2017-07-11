@@ -8,8 +8,7 @@ data class JsonEndpoint (
         override val urlFragment: String,
         override val controllerName: String,
         override val actionName: String,
-        override val method: HttpMethod = HttpMethod.get,
-        override val contentType: String = ContentTypes.json
+        override val method: HttpMethod = HttpMethod.get
 ) : EndpointDefinition
 {
     init
@@ -19,6 +18,8 @@ data class JsonEndpoint (
             throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
         }
     }
+
+    override val contentType: String = ContentTypes.json
 
     override fun additionalSetup(url: String)
     {

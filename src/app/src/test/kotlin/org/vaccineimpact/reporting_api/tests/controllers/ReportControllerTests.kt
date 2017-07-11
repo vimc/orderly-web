@@ -4,10 +4,16 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.OrderlyClient
+import com.nhaarman.mockito_kotlin.times
+import com.nhaarman.mockito_kotlin.verify
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.ReportController
-import org.vaccineimpact.reporting_api.OrderlyReport
+import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.test_helpers.mockReport
+import spark.Response
+import java.io.OutputStream
+import javax.servlet.ServletOutputStream
+import javax.servlet.http.HttpServletResponse
 
 class ReportControllerTests{
 
@@ -20,7 +26,7 @@ class ReportControllerTests{
         }
         val sut = ReportController(orderly)
 
-        assertThat(sut.getAll(mock<ActionContext>())).isEqualTo(reportNames)
+        assertThat(sut.getAllNames(mock<ActionContext>())).isEqualTo(reportNames)
     }
 
     @Test
@@ -39,7 +45,7 @@ class ReportControllerTests{
 
         val sut = ReportController(orderly)
 
-        assertThat(sut.getByName(actionContext)).isEqualTo(reportVersions)
+        assertThat(sut.getVersionsByName(actionContext)).isEqualTo(reportVersions)
     }
 
     @Test
@@ -48,9 +54,7 @@ class ReportControllerTests{
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = OrderlyReport(reportVersion,
-                reportName, "views", "data",
-                "artefacts", "date")
+        val report = mockReport(reportVersion, reportName)
 
         val orderly = mock<OrderlyClient> {
             on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report
@@ -64,6 +68,37 @@ class ReportControllerTests{
         val sut = ReportController(orderly)
 
         assertThat(sut.getByNameAndVersion(actionContext)).isEqualTo(report)
+    }
+
+    @Test
+    fun `getZippedByNameAndVersion returns zip file`() {
+
+        val reportName = "reportName"
+        val reportVersion = "reportVersion"
+
+        val outputStream = mock<ServletOutputStream>()
+
+        val servletResponse = mock<HttpServletResponse>(){
+            on {this.outputStream} doReturn outputStream
+        }
+
+        val response = mock<Response>(){
+            on {this.raw()} doReturn servletResponse
+        }
+
+        val actionContext = mock<ActionContext> {
+            on {this.params(":version")} doReturn reportVersion
+            on {this.params(":name")} doReturn reportName
+            on {this.getSparkResponse()} doReturn response
+        }
+
+        val mockZipClient = mock<ZipClient>()
+
+        val sut = ReportController(mock<OrderlyClient>(), mockZipClient)
+
+        sut.getZippedByNameAndVersion(actionContext)
+
+        verify(mockZipClient, times(1)).zipIt("${Config["orderly.root"]}archive/$reportName/$reportVersion/", outputStream)
     }
 
 }
