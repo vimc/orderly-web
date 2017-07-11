@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.Orderly
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.test_helpers.DatabaseTest
+import org.vaccineimpact.reporting_api.test_helpers.insertReport
 import java.io.File
 
 class OrderlyTests : DatabaseTest() {

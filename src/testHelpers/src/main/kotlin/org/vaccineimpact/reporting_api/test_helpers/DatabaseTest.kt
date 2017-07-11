@@ -1,98 +1,42 @@
 package org.vaccineimpact.reporting_api.test_helpers
 
-import org.junit.After
+import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.UnableToConnectToDatabase
+import org.vaccineimpact.reporting_api.db.Tables.*
+import java.io.File
 
-abstract class DatabaseTest : MontaguTests()
+abstract class DatabaseTest
 {
-
-    @Before
-    fun createDatabase()
-    {
-        JooqContext().use {
-            it.dsl.query("CREATE DATABASE $dbName TEMPLATE $templateDbName;").execute()
-        }
-        DatabaseChecker.checkDatabaseExists(dbName)
-    }
-
-    @After
-    fun dropDatabase()
-    {
-        org.vaccineimpact.reporting_api.db.JooqContext().use {
-            it.dsl.query("DROP DATABASE $dbName").execute()
-        }
-    }
-
     companion object
     {
-        private val templateDbName = Config["testdb.template_name"]
-        private val dbName = Config["db.name"]
 
         @BeforeClass @JvmStatic
-        fun setupTestEnvironment()
+        fun createDatabase()
         {
-            if (!DatabaseChecker.check(templateDbName))
-            {
-                println("Template database does not exist, will rename from '${dbName}'")
-                DatabaseChecker.checkDatabaseExists(dbName)
-                JooqContext().use {
-                    it.dsl.query("ALTER DATABASE ${dbName} RENAME TO ${templateDbName}").execute()
-                }
-                println("Created template database by renaming ${dbName} to ${templateDbName}")
-                DatabaseChecker.checkDatabaseExists(templateDbName)
+            val newDbFile = File(Config["dbTest.location"])
+            val source = File("/${Config["db.location"]}")
 
-            }
+            source.copyTo(newDbFile, true)
+        }
+
+        @AfterClass @JvmStatic
+        fun dropDatabase()
+        {
+            File(Config["dbTest.location"]).delete()
         }
     }
-}
 
-object DatabaseChecker
-{
-    private var error: Exception? = null
-
-    fun checkDatabaseExists(dbName: String): Unit
+    @Before
+    fun clearDatabase()
     {
-        if (!databaseExists(dbName))
-        {
-            throw error!!
+        JooqContext(File(Config["dbTest.location"]).absolutePath).use{
+            it.dsl.deleteFrom(ORDERLY)
+                    .execute()
         }
+
     }
 
-    fun databaseExists(dbName: String): Boolean
-    {
-        println("Checking that database '$dbName' exists...")
-        var attemptsRemaining = 10
-        while (attemptsRemaining > 0)
-        {
-            if (check(dbName))
-            {
-                return true
-            }
-            else
-            {
-                println("Unable to connect. I will wait and then retry $attemptsRemaining more times")
-                attemptsRemaining--
-                Thread.sleep(2000)
-            }
-        }
-        return false
-    }
-
-    fun check(dbName: String): Boolean
-    {
-        try
-        {
-            JooqContext().close()
-            return true
-        }
-        catch (e: UnableToConnectToDatabase)
-        {
-            error = e
-            return false
-        }
-    }
 }
