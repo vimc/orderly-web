@@ -5,7 +5,7 @@ import org.vaccineimpact.reporting_api.Orderly
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.models.OrderlyReport
 
-class ReportController(orderlyClient: OrderlyClient? = null)
+class ReportController(orderlyClient: OrderlyClient? = null) : Controller
 {
     val orderly = orderlyClient?: Orderly()
 

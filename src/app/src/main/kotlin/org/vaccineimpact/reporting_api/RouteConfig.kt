@@ -1,23 +1,26 @@
 package org.vaccineimpact.reporting_api
 
 import org.slf4j.LoggerFactory
+import org.vaccineimpact.api.app.DirectActionContext
 import org.vaccineimpact.reporting_api.controllers.*
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
+import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
+import java.util.*
 
 object RouteConfig {
 
     val logger = LoggerFactory.getLogger(RouteConfig::class.java)
 
-    val reportController = ReportController()
-
     val endpoints = listOf(
 
-            Endpoint("/reports/", reportController::getAll),
-            Endpoint("/reports/:name/", reportController::getByName),
-            Endpoint("/reports/:name/:version/", reportController::getByNameAndVersion)
+            Endpoint("/reports/", "Report", "getAll"),
+            Endpoint("/reports/:name/", "Report", "getByName"),
+            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
     )
+
+    private var controllers: MutableMap<String, Controller> = mutableMapOf()
 
     fun mapEndpoints(urlBase: String): List<String> {
         return endpoints.map { mapEndpoint(it, urlBase) }
@@ -26,9 +29,10 @@ object RouteConfig {
     private fun mapEndpoint(
             endpoint: EndpointDefinition,
             urlBase: String): String {
+
         val transformer = endpoint::transform
         val fullUrl = urlBase + endpoint.urlFragment
-        val route = endpoint.getWrappedRoute()::handle
+        val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
 
         logger.info("Mapping $fullUrl")
@@ -41,5 +45,21 @@ object RouteConfig {
             else -> throw UnsupportedValueException(endpoint.method)
         }
         return fullUrl
+    }
+
+    private fun getWrappedRoute(endpoint: EndpointDefinition): Route {
+
+        val controllerName = endpoint.controllerName
+        val actionName = endpoint.actionName
+
+        val controllerType = Class.forName("org.vaccineimpact.reporting_api.controllers.${controllerName}Controller")
+
+        if (!controllers.containsKey(controllerName)) {
+            controllers[controllerName] = controllerType.getConstructor().newInstance() as Controller
+        }
+
+        val action = controllerType.getMethod(actionName, ActionContext::class.java)
+
+        return Route({ req, res -> action.invoke(controllers[controllerName], DirectActionContext(req, res)) })
     }
 }

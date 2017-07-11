@@ -9,12 +9,12 @@ import spark.route.HttpMethod
 
 data class Endpoint (
         override val urlFragment: String,
-        override val route: (ActionContext) -> Any,
+        override val controllerName: String,
+        override val actionName: String,
         override val method: HttpMethod = HttpMethod.get,
         override val contentType: String = ContentTypes.json
 ) : EndpointDefinition
 {
-
     init
     {
         if (!urlFragment.endsWith("/"))
