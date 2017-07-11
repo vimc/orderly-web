@@ -5,8 +5,8 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonPrimitive
-import org.vaccineimpact.reporting_api.models.*
-import org.vaccineimpact.reporting_api.models.ResultStatus
+import org.vaccineimpact.api.models.*
+import org.vaccineimpact.api.models.ResultStatus
 
 open class Serializer
 {
@@ -31,8 +31,8 @@ open class Serializer
             .create()
     }
 
-    open fun toResult(data: Any?): String = toJson(Result(ResultStatus.SUCCESS, data, emptyList()))
-    open fun toJson(result: Result): String = gson.toJson(result)
+    open fun toResult(data: Any?): String = toJson(org.vaccineimpact.api.models.Result(org.vaccineimpact.api.models.ResultStatus.SUCCESS, data, emptyList()))
+    open fun toJson(result: org.vaccineimpact.api.models.Result): String = gson.toJson(result)
 
     fun convertFieldName(name: String): String
     {

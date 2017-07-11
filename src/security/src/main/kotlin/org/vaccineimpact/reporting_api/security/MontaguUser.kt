@@ -1,7 +1,7 @@
 package org.vaccineimpact.reporting_api.security
 
-import org.vaccineimpact.reporting_api.models.permissions.ReifiedPermission
-import org.vaccineimpact.reporting_api.models.permissions.ReifiedRole
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.api.models.permissions.ReifiedRole
 import java.beans.ConstructorProperties
 import java.sql.Timestamp
 
