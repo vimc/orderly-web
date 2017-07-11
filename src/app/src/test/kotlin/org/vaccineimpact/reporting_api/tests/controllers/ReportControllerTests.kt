@@ -9,12 +9,14 @@ import com.nhaarman.mockito_kotlin.verify
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import org.vaccineimpact.reporting_api.test_helpers.mockReport
 import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-class ReportControllerTests{
+class ReportControllerTests: MontaguTests()
+{
 
     @Test
     fun `getReports returns all report names`() {

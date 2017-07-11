@@ -11,8 +11,10 @@ import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class ArtefactControllerTests{
+class ArtefactControllerTests : MontaguTests()
+{
 
     @Test
     fun `gets artefacts for report`() {
