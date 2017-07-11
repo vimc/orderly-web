@@ -15,7 +15,6 @@ interface ZipClient
 
 class Zip : ZipClient
 {
-
     val logger = LoggerFactory.getLogger(Zip::class.java)
 
     override fun zipIt(sourceAbsolutePath: String, output: OutputStream) {

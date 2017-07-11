@@ -22,6 +22,7 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
     }
 
     fun getZippedByNameAndVersion(context: ActionContext): HttpServletResponse {
+
         val name = context.params(":name")
         val version = context.params(":version")
         val response = context.getSparkResponse()

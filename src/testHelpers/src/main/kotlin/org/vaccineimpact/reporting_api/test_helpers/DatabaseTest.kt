@@ -12,7 +12,6 @@ abstract class DatabaseTest
 {
     companion object
     {
-
         @BeforeClass @JvmStatic
         fun createDatabase()
         {

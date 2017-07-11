@@ -11,7 +11,6 @@ import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.mockReport
 import spark.Response
-import java.io.OutputStream
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 

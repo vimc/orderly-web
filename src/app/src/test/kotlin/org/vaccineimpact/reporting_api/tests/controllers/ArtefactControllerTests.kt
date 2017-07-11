@@ -4,10 +4,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.json.JSONObject
 import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
+import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class ArtefactControllerTests{
 
@@ -27,9 +30,31 @@ class ArtefactControllerTests{
             on {this.params(":version")} doReturn version
         }
 
-        val sut = ArtefactController(orderly)
+        val sut = ArtefactController(orderly, mock<FileSystem>())
 
         assertThat(sut.get(actionContext)).isEqualTo(artefacts)
+    }
+
+    @Test
+    fun `throws unknown object error if artefact does not exist for report`() {
+        val name = "testname"
+        val version = "testversion"
+        val artefact = "test.png"
+
+        val orderly = mock<OrderlyClient> {
+            on { this.hasArtefact(name, version, artefact) } doReturn false
+        }
+
+        val actionContext = mock<ActionContext> {
+            on {this.params(":name")} doReturn name
+            on {this.params(":version")} doReturn version
+            on {this.params(":artefact")} doReturn artefact
+        }
+
+        val sut = ArtefactController(orderly, mock<FileSystem>())
+
+        assertThatThrownBy { sut.download(actionContext) }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 
 }

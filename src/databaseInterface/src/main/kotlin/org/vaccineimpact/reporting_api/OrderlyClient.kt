@@ -8,5 +8,6 @@ interface OrderlyClient
     fun getReportsByName(name: String): List<String>
     fun getReportsByNameAndVersion(name: String, version: String): OrderlyReport
     fun getArtefacts(name: String, version: String) : JSONObject
+    fun hasArtefact(name: String, version: String, artefact: String) : Boolean
 
 }

@@ -59,4 +59,17 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
 
     }
 
+    override fun hasArtefact(name: String, version: String, artefact: String): Boolean
+    {
+        JooqContext(dbLocation).use {
+
+           return JSONObject(it.dsl.select(ORDERLY.ARTEFACTS)
+                    .from(ORDERLY)
+                    .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
+                    .fetchAnyInto(String::class.java)).has(artefact)
+
+        }
+
+    }
+
 }

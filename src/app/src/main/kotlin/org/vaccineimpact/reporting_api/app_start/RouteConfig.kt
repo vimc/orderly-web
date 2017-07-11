@@ -13,6 +13,7 @@ object RouteConfig {
             JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion"),
             StaticEndpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", "application/zip"),
 
-            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get"),
+            StaticEndpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download", "application/octet-stream")
     )
 }
