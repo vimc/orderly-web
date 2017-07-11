@@ -1,7 +1,8 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.app_start
 
 import com.google.gson.JsonSyntaxException
 import org.slf4j.LoggerFactory
+import org.vaccineimpact.reporting_api.Serializer
 import org.vaccineimpact.reporting_api.errors.MontaguError
 import org.vaccineimpact.reporting_api.errors.UnableToParseJsonError
 import org.vaccineimpact.reporting_api.errors.UnexpectedError

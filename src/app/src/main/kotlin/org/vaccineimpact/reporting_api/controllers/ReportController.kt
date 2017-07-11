@@ -3,7 +3,7 @@ package org.vaccineimpact.reporting_api.controllers
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.Orderly
 import org.vaccineimpact.reporting_api.OrderlyClient
-import org.vaccineimpact.reporting_api.models.OrderlyReport
+import org.vaccineimpact.reporting_api.OrderlyReport
 
 class ReportController(orderlyClient: OrderlyClient? = null) : Controller
 {

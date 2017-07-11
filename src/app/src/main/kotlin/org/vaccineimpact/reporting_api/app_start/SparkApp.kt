@@ -1,13 +1,11 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
 import spark.Spark as spk
-import org.vaccineimpact.reporting_api.security.WebTokenHelper
 
 fun main(args: Array<String>)
 {
@@ -18,7 +16,6 @@ fun main(args: Array<String>)
 class MontaguReportingApi
 {
     private val urlBase = "/v1"
-    private val tokenHelper = WebTokenHelper()
 
     private val logger = LoggerFactory.getLogger(MontaguReportingApi::class.java)
 
@@ -29,7 +26,7 @@ class MontaguReportingApi
         spk.before("*", ::addTrailingSlashes)
 
         ErrorHandler.setup()
-        RouteConfig.mapEndpoints(urlBase)
+        Router(RouteConfig).mapEndpoints(urlBase)
     }
 
     private fun setupPort()

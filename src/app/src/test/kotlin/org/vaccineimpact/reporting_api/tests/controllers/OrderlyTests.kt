@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests
+package org.vaccineimpact.reporting_api.tests.controllers
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -10,7 +10,7 @@ import java.io.File
 
 class OrderlyTests : DatabaseTest() {
 
-    private fun createSut(): Orderly{
+    private fun createSut(): Orderly {
         return Orderly(File(Config["dbTest.location"]).absolutePath)
     }
 

@@ -1,9 +1,9 @@
 package org.vaccineimpact.reporting_api
 
+import org.json.JSONObject
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*
-import org.vaccineimpact.reporting_api.models.OrderlyReport
 
 class Orderly(dbLocation: String? = null) : OrderlyClient
 {
@@ -42,6 +42,19 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
                     .fetchAnyInto(OrderlyReport::class.java)
+        }
+
+    }
+
+    override fun getArtefacts(name: String, version: String): JSONObject
+    {
+        JooqContext(dbLocation).use {
+
+            return JSONObject(it.dsl.select(ORDERLY.ARTEFACTS)
+                    .from(ORDERLY)
+                    .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
+                    .fetchAnyInto(String::class.java))
+
         }
 
     }

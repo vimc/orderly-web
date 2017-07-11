@@ -1,33 +1,33 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.api.app.DirectActionContext
+import org.vaccineimpact.reporting_api.DirectActionContext
+import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.EndpointDefinition
+import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.controllers.*
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
-import java.util.*
 
-object RouteConfig {
+class Router(val config: RouteConfig) {
 
-    val logger = LoggerFactory.getLogger(RouteConfig::class.java)
-
-    val endpoints = listOf(
-
-            Endpoint("/reports/", "Report", "getAll"),
-            Endpoint("/reports/:name/", "Report", "getByName"),
-            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
-    )
+    val logger = LoggerFactory.getLogger(Router::class.java)
 
     private var controllers: MutableMap<String, Controller> = mutableMapOf()
 
     fun mapEndpoints(urlBase: String): List<String> {
-        return endpoints.map { mapEndpoint(it, urlBase) }
+        return config.endpoints.map {
+            when (it){
+                is JsonEndpoint -> mapJsonEndpoint(it, urlBase)
+                else -> mapEndpoint(it, urlBase)
+            }
+        }
     }
 
-    private fun mapEndpoint(
-            endpoint: EndpointDefinition,
+    private fun mapJsonEndpoint(
+            endpoint: JsonEndpoint,
             urlBase: String): String {
 
         val transformer = endpoint::transform
@@ -42,6 +42,26 @@ object RouteConfig {
             HttpMethod.put -> Spark.put(fullUrl, contentType, route, transformer)
             HttpMethod.patch -> Spark.patch(fullUrl, contentType, route, transformer)
             HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, transformer)
+            else -> throw UnsupportedValueException(endpoint.method)
+        }
+        return fullUrl
+    }
+
+    private fun mapEndpoint(
+            endpoint: EndpointDefinition,
+            urlBase: String): String {
+
+        val fullUrl = urlBase + endpoint.urlFragment
+        val route = getWrappedRoute(endpoint)::handle
+        val contentType = endpoint.contentType
+
+        logger.info("Mapping $fullUrl")
+        when (endpoint.method) {
+            HttpMethod.get -> Spark.get(fullUrl, contentType, route)
+            HttpMethod.post -> Spark.post(fullUrl, contentType, route)
+            HttpMethod.put -> Spark.put(fullUrl, contentType, route)
+            HttpMethod.patch -> Spark.patch(fullUrl, contentType, route)
+            HttpMethod.delete -> Spark.delete(fullUrl, contentType, route)
             else -> throw UnsupportedValueException(endpoint.method)
         }
         return fullUrl

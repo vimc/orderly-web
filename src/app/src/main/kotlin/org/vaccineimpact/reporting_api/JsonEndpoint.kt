@@ -1,13 +1,10 @@
-package org.vaccineimpact.reporting_api.controllers
+package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.DefaultHeadersFilter
-import org.vaccineimpact.reporting_api.Serializer
+import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
 import spark.Spark
 import spark.route.HttpMethod
 
-data class Endpoint (
+data class JsonEndpoint (
         override val urlFragment: String,
         override val controllerName: String,
         override val actionName: String,
@@ -28,6 +25,6 @@ data class Endpoint (
         Spark.after(url, contentType, DefaultHeadersFilter(contentType))
     }
 
-    override fun transform(x: Any) = Serializer.instance.toResult(x)
+    fun transform(x: Any) = Serializer.instance.toResult(x)
 
 }

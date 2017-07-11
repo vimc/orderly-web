@@ -1,9 +1,8 @@
-package org.vaccineimpact.api.app
+package org.vaccineimpact.reporting_api
 
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.reporting_api.ActionContext
 import spark.Request
 import spark.Response
 

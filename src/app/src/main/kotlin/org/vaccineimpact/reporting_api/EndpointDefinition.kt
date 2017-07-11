@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.controllers
+package org.vaccineimpact.reporting_api
 
 import spark.route.HttpMethod
 
@@ -11,5 +11,4 @@ interface EndpointDefinition
     val contentType: String
 
     fun additionalSetup(url: String)
-    fun transform(x: Any): String
 }

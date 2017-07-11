@@ -1,5 +1,6 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.app_start
 
+import org.vaccineimpact.reporting_api.ContentTypes
 import spark.Filter
 import spark.Request
 import spark.Response

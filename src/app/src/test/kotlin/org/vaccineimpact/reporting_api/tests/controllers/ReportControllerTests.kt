@@ -7,7 +7,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
-import org.vaccineimpact.reporting_api.models.OrderlyReport
+import org.vaccineimpact.reporting_api.OrderlyReport
 
 class ReportControllerTests{
 
