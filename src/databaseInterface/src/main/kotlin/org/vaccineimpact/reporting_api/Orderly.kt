@@ -1,17 +1,15 @@
 package org.vaccineimpact.reporting_api
 
 import org.json.JSONObject
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*
 
-class Orderly(dbLocation: String? = null) : OrderlyClient
+class Orderly : OrderlyClient
 {
-    val dbLocation = dbLocation ?: Config["db.location"]
 
     override fun getAllReports(): List<String>
     {
-        JooqContext(dbLocation).use {
+        JooqContext().use {
 
             return it.dsl.select(ORDERLY.NAME)
                     .from(ORDERLY)
@@ -23,7 +21,7 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
 
     override fun getReportsByName(name: String): List<String>
     {
-        JooqContext(dbLocation).use {
+        JooqContext().use {
 
             return it.dsl.select(ORDERLY.ID)
                     .from(ORDERLY)
@@ -36,7 +34,7 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
 
     override fun getReportsByNameAndVersion(name: String, version: String): OrderlyReport
     {
-        JooqContext(dbLocation).use {
+        JooqContext().use {
 
             return it.dsl.select()
                     .from(ORDERLY)
@@ -48,7 +46,7 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
 
     override fun getArtefacts(name: String, version: String): JSONObject
     {
-        JooqContext(dbLocation).use {
+        JooqContext().use {
 
             return JSONObject(it.dsl.select(ORDERLY.ARTEFACTS)
                     .from(ORDERLY)
@@ -61,7 +59,7 @@ class Orderly(dbLocation: String? = null) : OrderlyClient
 
     override fun hasArtefact(name: String, version: String, artefact: String): Boolean
     {
-        JooqContext(dbLocation).use {
+        JooqContext().use {
 
            return JSONObject(it.dsl.select(ORDERLY.ARTEFACTS)
                     .from(ORDERLY)

@@ -1,0 +1,13 @@
+id: 20170708-182529-2a24c954
+name: minimal
+parameters: ~
+date: 2017-07-08 18:25:29
+hash_orderly: b23f2f74f2318ac10f58c22a6be1351e
+hash_input: 084699fcdd91e14ee691653388ebbc45
+hash_script: b483640f63fbd45f509b98d6ee8a6852
+hash_resources: ~
+hash_data:
+  dat: 70dba85c34a29be80c5fbfdf96e5e5d0
+hash_artefacts:
+  mygraph.png: 4383a2c4fd3129797458afcdaad88723
+

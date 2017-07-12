@@ -3,17 +3,18 @@ package org.vaccineimpact.reporting_api.db
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
+import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
-open class JooqContext(val dbLocation: String? = null) : AutoCloseable
+open class JooqContext() : AutoCloseable
 {
     private val conn = getConnection()
     val dsl = createDSL(conn)
 
     private fun getConnection(): Connection
     {
-        val dbLocation = dbLocation ?:Config["db.location"]
+        val dbLocation = File(Config["db.location"]).absolutePath
         val url = "jdbc:sqlite://$dbLocation"
         try
         {

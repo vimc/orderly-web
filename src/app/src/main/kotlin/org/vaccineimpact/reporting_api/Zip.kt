@@ -70,7 +70,7 @@ class Zip : ZipClient
     private fun populateFileList(node: File, fileList: ArrayList<String>) {
 
         if (node.isFile) {
-            fileList.add(node.toString())
+            fileList.add(node.absolutePath.toString())
         }
 
         if (node.isDirectory) {
