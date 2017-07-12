@@ -44,7 +44,7 @@ class Zip : ZipClient
         val qualifiedFileName = source.name +
                 absoluteFilePath.substring(source.absolutePath.length, absoluteFilePath.length)
 
-        logger.info("Creating zip entry from path $absoluteFilePath with name $qualifiedFileName")
+        logger.debug("Creating zip entry from path $absoluteFilePath with name $qualifiedFileName")
 
         return ZipEntry(qualifiedFileName)
     }
@@ -57,7 +57,7 @@ class Zip : ZipClient
 
             bufferedInputStream ->
 
-            logger.info("Writing zip entry from $absoluteFilePath")
+            logger.debug("Writing zip entry from $absoluteFilePath")
 
             var len = bufferedInputStream.read(buffer)
                 while (len > 0) {
