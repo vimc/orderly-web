@@ -21,7 +21,8 @@ class ArtefactControllerTests : MontaguTests()
         val name = "testname"
         val version = "testversion"
 
-        val artefacts = arrayListOf<Artefact>()
+        val artefacts = mutableMapOf<String, String>()
+        artefacts.put("test.png", "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
             on { this.getArtefacts(name, version) } doReturn artefacts

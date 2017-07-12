@@ -4,7 +4,7 @@ import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
 import spark.Spark
 import spark.route.HttpMethod
 
-data class StaticEndpoint (
+data class Endpoint(
         override val urlFragment: String,
         override val controllerName: String,
         override val actionName: String,

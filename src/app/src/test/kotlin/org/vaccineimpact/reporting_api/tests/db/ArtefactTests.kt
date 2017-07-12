@@ -3,43 +3,62 @@ package org.vaccineimpact.reporting_api.tests.db
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ArtefactType
+import org.vaccineimpact.reporting_api.Orderly
 import org.vaccineimpact.reporting_api.parseArtefacts
+import org.vaccineimpact.reporting_api.test_helpers.DatabaseTests
+import org.vaccineimpact.reporting_api.test_helpers.insertReport
 
-class ArtefactTests
+class ArtefactTests: DatabaseTests()
 {
-    @Test
-    fun `can parse Artefacts`()
-    {
-        val input = "[{\"data\":{\"description\":\"A summary table\"," +
-                "\"filename\":[\"summary.csv\"]}},{\"staticgraph\"" +
-                ":{\"description\":\"A summary graph\",\"filename\":[\"graph.png\"]}}]"
 
-        val result = parseArtefacts(input)
-
-        assertThat(result.count()).isEqualTo(2)
-
-        val data = result[0]
-
-        assertThat(data.type).isEqualTo(ArtefactType.DATA)
-        assertThat(data.files.count()).isEqualTo(1)
-        assertThat(data.files[0]).isEqualTo("summary.csv")
-        assertThat(data.description).isEqualTo("A summary table")
+    private fun createSut(): Orderly {
+        return Orderly()
     }
 
     @Test
-    fun `can parse Artefacts with single filename`()
-    {
-        val input = "[{\"data\":{\"description\":\"A summary table\"," +
-                "\"filename\":\"summary.csv\"}}]"
+    fun `returns true if report has artefact`() {
 
-        val result = parseArtefacts(input)
+        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
+                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
 
-        val data = result[0]
+        insertReport("test", "version1", hashArtefacts = artefactHashString)
 
-        assertThat(data.type).isEqualTo(ArtefactType.DATA)
-        assertThat(data.files.count()).isEqualTo(1)
-        assertThat(data.files[0]).isEqualTo("summary.csv")
-        assertThat(data.description).isEqualTo("A summary table")
+        val sut = createSut()
+
+        val result = sut.hasArtefact("test", "version1", "summary.csv")
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `returns false if report does not have artefact`() {
+
+        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
+                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
+
+        insertReport("test", "version1", hashArtefacts = artefactHashString)
+
+        val sut = createSut()
+
+        val result = sut.hasArtefact("test", "version1", "details.csv")
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `can get artefacts hash for report`() {
+
+        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
+                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
+
+        insertReport("test", "version1", hashArtefacts = artefactHashString)
+
+        val sut = createSut()
+
+        val result = sut.getArtefacts("test", "version1")
+
+        assertThat(result["summary.csv"]).isEqualTo("07dffb00305279935544238b39d7b14b")
+        assertThat(result["graph.png"]).isEqualTo("4b89e0b767cee1c30f2e910684189680")
     }
 
 }

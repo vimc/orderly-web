@@ -11,11 +11,6 @@ enum class ArtefactType
     INTERACTIVEGRAPH
 }
 
-fun Artefact.hasFile(filename: String) : Boolean
-{
-    return this.files.contains(filename)
-}
-
 fun parseArtefacts(artefactString: String): ArrayList<Artefact>
 {
     val array = arrayListOf<Artefact>()

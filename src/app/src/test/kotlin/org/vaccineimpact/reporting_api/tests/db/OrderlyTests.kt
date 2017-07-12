@@ -58,22 +58,6 @@ class OrderlyTests : DatabaseTests() {
         assertThat(results[1]).isEqualTo("version2")
     }
 
-    @Test
-    fun `can get artefacts for report`() {
 
-        val artefactString = "[{\"data\":{\"description\":\"A summary table\"," +
-                "\"filename\":[\"summary.csv\"]}},{\"staticgraph\"" +
-                ":{\"description\":\"A summary graph\",\"filename\":[\"graph.png\"]}}]"
-
-        insertReport("test", "version1", artefacts = artefactString)
-
-        val sut = createSut()
-
-        val result = sut.getArtefacts("test", "version1")
-
-        assertThat(result.count()).isEqualTo(2)
-        assertThat(result[0].type).isEqualTo(ArtefactType.DATA)
-        assertThat(result[1].type).isEqualTo(ArtefactType.STATICGRAPH)
-    }
 
 }
