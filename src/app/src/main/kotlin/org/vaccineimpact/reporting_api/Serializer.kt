@@ -5,8 +5,6 @@ import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonPrimitive
-import org.vaccineimpact.api.models.*
-import org.vaccineimpact.api.models.ResultStatus
 
 open class Serializer
 {

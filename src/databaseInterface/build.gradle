@@ -1,5 +1,6 @@
 dependencies {
-    compile "org.json:json:20170516"
+
+    compile "com.google.code.gson:gson:2.2.4"
 
     compile "org.xerial:sqlite-jdbc:3.19.3"
     compile "org.jooq:jooq:3.9.1"

@@ -5,8 +5,8 @@ import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.json.JSONObject
 import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.Artefact
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
@@ -21,7 +21,7 @@ class ArtefactControllerTests : MontaguTests()
         val name = "testname"
         val version = "testversion"
 
-        val artefacts = JSONObject("{\"test.png\":{\"format\":\"staticgraph\",\"description\":\"A plot of coverage over time\"}}")
+        val artefacts = arrayListOf<Artefact>()
 
         val orderly = mock<OrderlyClient> {
             on { this.getArtefacts(name, version) } doReturn artefacts

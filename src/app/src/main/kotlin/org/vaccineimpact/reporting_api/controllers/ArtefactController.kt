@@ -1,21 +1,19 @@
 package org.vaccineimpact.reporting_api.controllers
 
-import org.json.JSONObject
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
-import javax.servlet.http.HttpServletResponse
 
 class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null)  : Controller
 {
     val orderly = orderlyClient?: Orderly()
     val files = fileServer?: Files()
 
-    fun get(context: ActionContext): JSONObject {
+    fun get(context: ActionContext): ArrayList<Artefact> {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext): HttpServletResponse {
+    fun download(context: ActionContext) {
 
         val name = context.params(":name")
         val version = context.params(":version")
@@ -33,7 +31,6 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
-        return response
     }
 
 }

@@ -1,13 +1,11 @@
 package org.vaccineimpact.reporting_api
 
-import org.json.JSONObject
-
 interface OrderlyClient
 {
     fun getAllReports(): List<String>
     fun getReportsByName(name: String): List<String>
     fun getReportsByNameAndVersion(name: String, version: String): OrderlyReport
-    fun getArtefacts(name: String, version: String) : JSONObject
-    fun hasArtefact(name: String, version: String, artefact: String) : Boolean
+    fun getArtefacts(name: String, version: String) : ArrayList<Artefact>
+    fun hasArtefact(name: String, version: String, filename: String) : Boolean
 
 }
