@@ -4,8 +4,6 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.*
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
-import spark.Request
-import spark.Response
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod

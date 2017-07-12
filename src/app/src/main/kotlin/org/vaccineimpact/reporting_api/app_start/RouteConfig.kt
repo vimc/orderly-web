@@ -4,9 +4,14 @@ import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.StaticEndpoint
 
-object RouteConfig {
+interface RouteConfig
+{
+    val endpoints: List<EndpointDefinition>
+}
 
-    val endpoints: List<EndpointDefinition> = listOf(
+object MontaguRouteConfig: RouteConfig {
+
+    override val endpoints: List<EndpointDefinition> = listOf(
 
             JsonEndpoint("/reports/", "Report", "getAllNames"),
             JsonEndpoint("/reports/:name/", "Report", "getVersionsByName"),

@@ -26,7 +26,7 @@ class MontaguReportingApi
         spk.before("*", ::addTrailingSlashes)
 
         ErrorHandler.setup()
-        Router(RouteConfig).mapEndpoints(urlBase)
+        Router(MontaguRouteConfig).mapEndpoints(urlBase)
     }
 
     private fun setupPort()

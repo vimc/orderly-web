@@ -34,6 +34,7 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
 
         zip.zipIt(folderName, response.raw().outputStream)
 
+        // TODO is this needed?
         return response.raw()
     }
 
