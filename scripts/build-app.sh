@@ -2,6 +2,16 @@ set -e
 git_id=$(git rev-parse --short HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
 
+# Run orderly to create demo data
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
+
+docker run --rm --entrypoint create_orderly_demo.sh \
+    -u ${UID} \
+    -v ${PWD}:/orderly \
+    -w /orderly \
+    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
+    "./src/app/demo"
+
 # Make the build environment image that is shared between multiple build targets
 ./scripts/make-build-env.sh
 

@@ -30,3 +30,4 @@ RUN ./gradlew
 
 # Copy source
 COPY . /api
+

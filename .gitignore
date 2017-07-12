@@ -11,6 +11,7 @@ demo/.idea/workspace.xml
 demo/app/src/main/java/uk/ac/imperial/vimc/demo/app/models/jooq/**
 demo/build/*
 demo/out
+src/app/demo/*
 src/*/build/*
 src/.gradle
 src/.idea/.name
