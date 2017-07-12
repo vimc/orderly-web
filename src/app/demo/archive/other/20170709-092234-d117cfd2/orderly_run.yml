@@ -1,0 +1,15 @@
+id: 20170709-092234-d117cfd2
+name: other
+parameters:
+  nmin: 0.5
+date: 2017-07-09 09:22:34
+hash_orderly: 88e8d2fdbc86d515372edcacab91e659
+hash_input: deed65064a6088320c11ccce72ba86f3
+hash_script: 21743c84abf5bdf647b832e765deede8
+hash_resources: ~
+hash_data:
+  extract: 1bfb1e89be2cea8d53e280b3cf49b5d7
+hash_artefacts:
+  summary.csv: 33b1a9a78747f27c8f8bf810d2a64b0c
+  graph.png: 3f76d5fa03448e4dcd4c52cc8d924abe
+

@@ -1,0 +1,15 @@
+id: 20170709-022029-c45d46c9
+name: other
+parameters:
+  nmin: 0.0e+00
+date: 2017-07-09 02:20:29
+hash_orderly: 88e8d2fdbc86d515372edcacab91e659
+hash_input: deed65064a6088320c11ccce72ba86f3
+hash_script: 21743c84abf5bdf647b832e765deede8
+hash_resources: ~
+hash_data:
+  extract: 70dba85c34a29be80c5fbfdf96e5e5d0
+hash_artefacts:
+  summary.csv: 07dffb00305279935544238b39d7b14b
+  graph.png: 4b89e0b767cee1c30f2e910684189680
+
