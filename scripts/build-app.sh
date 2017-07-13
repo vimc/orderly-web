@@ -16,6 +16,6 @@ docker build --tag montagu-reporting-api-app-build \
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /demo:/api/src/app/demo \
+    -v demo:/api/src/app/demo \
     --network=host \
     montagu-reporting-api-app-build
