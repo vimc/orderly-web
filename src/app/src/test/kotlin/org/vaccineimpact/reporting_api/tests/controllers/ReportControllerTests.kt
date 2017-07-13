@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.tests.controllers
 
+import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
@@ -10,7 +11,6 @@ import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
-import org.vaccineimpact.reporting_api.test_helpers.mockReport
 import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
@@ -55,10 +55,10 @@ class ReportControllerTests: MontaguTests()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = mockReport(reportVersion, reportName)
+        val report = JsonParser().parse("{\"key\":\"value\"}")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report
+            on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report.asJsonObject
         }
 
         val actionContext = mock<ActionContext> {

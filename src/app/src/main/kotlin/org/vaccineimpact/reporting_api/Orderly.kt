@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api
 
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import org.jooq.TableField
 import org.vaccineimpact.reporting_api.db.JooqContext
@@ -32,17 +33,32 @@ class Orderly : OrderlyClient {
 
     }
 
-    override fun getReportsByNameAndVersion(name: String, version: String): OrderlyReport {
+    override fun getReportsByNameAndVersion(name: String, version: String): JsonObject {
         JooqContext().use {
 
-            return it.dsl.select()
+            var test = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
-                    .fetchAnyInto(OrderlyReport::class.java)
+                    .fetchAny()
+
+            var obj = JsonObject()
+
+            for (field in test.fields()){
+
+                var value = test.get(field.name)
+                var valAsJson =
+                        Serializer.instance.gson.toJson(value)
+                var key = field.name
+
+                obj.add(key, JsonParser().parse(valAsJson))
+            }
+
+            return obj
         }
+
     }
 
-    override fun getArtefacts(name: String, version: String): Map<String, String> {
+    override fun getArtefacts(name: String, version: String): JsonObject {
         return getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)
     }
 
@@ -50,7 +66,7 @@ class Orderly : OrderlyClient {
         return hasKey(name, version, filename, ORDERLY.HASH_ARTEFACTS)
     }
 
-    override fun getData(name: String, version: String): Map<String, String> {
+    override fun getData(name: String, version: String): JsonObject {
         return getSimpleMap(name, version, ORDERLY.HASH_DATA)
     }
 
@@ -58,26 +74,26 @@ class Orderly : OrderlyClient {
         return hasKey(name, version, dataname, ORDERLY.HASH_DATA)
     }
 
-    private fun hasKey(name: String, version: String, key: String, column: TableField<OrderlyRecord, String>): Boolean
-    {
-        JooqContext().use {
+    override fun getResources(name: String, version: String): JsonObject {
+        return getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)
+    }
 
+    override fun hasResource(name: String, version: String, resourcename: String): Boolean {
+        return hasKey(name, version, resourcename, ORDERLY.HASH_RESOURCES)
+    }
+
+    private fun hasKey(name: String, version: String, key: String, column: TableField<OrderlyRecord, String>): Boolean {
+        return getSimpleMap(name, version, column)
+                .has(key)
+    }
+
+    private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject {
+        JooqContext().use {
             return gsonParser.parse(it.dsl.select(column)
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
                     .fetchAnyInto(String::class.java))
                     .asJsonObject
-                    .has(key)
-        }
-    }
-
-    private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): Map<String, String>
-    {
-        JooqContext().use {
-            return Json.parseSimpleMap(it.dsl.select(column)
-                    .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
-                    .fetchAnyInto(String::class.java))
         }
     }
 

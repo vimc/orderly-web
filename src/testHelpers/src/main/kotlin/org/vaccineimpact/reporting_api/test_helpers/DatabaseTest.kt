@@ -3,9 +3,9 @@ package org.vaccineimpact.reporting_api.test_helpers
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
+import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.Tables.*
 import java.io.File
 
 abstract class DatabaseTests: MontaguTests()

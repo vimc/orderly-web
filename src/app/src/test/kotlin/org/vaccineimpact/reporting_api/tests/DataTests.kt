@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests.db
+package org.vaccineimpact.reporting_api.tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -51,7 +51,7 @@ class DataTests: DatabaseTests()
 
         val result = sut.getData("test", "version1")
 
-        assertThat(result["dat"]).isEqualTo("07dffb00305279935544238b39d7b14b")
+        assertThat(result["dat"].asString).isEqualTo("07dffb00305279935544238b39d7b14b")
     }
 
 }

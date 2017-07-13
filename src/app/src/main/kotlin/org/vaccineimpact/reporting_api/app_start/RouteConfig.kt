@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.app_start
 
+import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.Endpoint
@@ -16,12 +17,12 @@ object MontaguRouteConfig: RouteConfig {
             JsonEndpoint("/reports/", "Report", "getAllNames"),
             JsonEndpoint("/reports/:name/", "Report", "getVersionsByName"),
             JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion"),
-            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", "application/zip"),
+            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", ContentTypes.zip),
 
             JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get"),
-            Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download", "application/octet-stream"),
+            Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download"),
 
-            Endpoint("/data/csv/:id/", "Source", "downloadCSV", "text/csv"),
-            Endpoint("/data/rds/:id/", "Source", "downloadRDS", "application/octet-stream")
+            Endpoint("/data/csv/:id/", "Source", "downloadCSV", ContentTypes.csv),
+            Endpoint("/data/rds/:id/", "Source", "downloadRDS")
     )
 }

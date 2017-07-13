@@ -1,12 +1,12 @@
 package org.vaccineimpact.reporting_api.tests.controllers
 
+import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.Artefact
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
@@ -21,11 +21,10 @@ class ArtefactControllerTests : MontaguTests()
         val name = "testname"
         val version = "testversion"
 
-        val artefacts = mutableMapOf<String, String>()
-        artefacts.put("test.png", "hjkdasjkldas6762i1j")
+        val artefacts = JsonParser().parse("{ \"test.png\" : \"hjkdasjkldas6762i1j\"}")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefacts(name, version) } doReturn artefacts
+            on { this.getArtefacts(name, version) } doReturn artefacts.asJsonObject
         }
 
         val actionContext = mock<ActionContext> {

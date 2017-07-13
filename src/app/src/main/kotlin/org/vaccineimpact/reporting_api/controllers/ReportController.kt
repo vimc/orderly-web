@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.controllers
 
+import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import javax.servlet.http.HttpServletResponse
@@ -17,7 +18,7 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
         return orderly.getReportsByName(context.params(":name"))
     }
 
-    fun getByNameAndVersion(context: ActionContext): OrderlyReport {
+    fun getByNameAndVersion(context: ActionContext): JsonObject {
         return orderly.getReportsByNameAndVersion(context.params(":name"), context.params(":version"))
     }
 
@@ -34,7 +35,6 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
 
         zip.zipIt(folderName, response.raw().outputStream)
 
-        // TODO is this needed?
         return response.raw()
     }
 

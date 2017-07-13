@@ -22,7 +22,6 @@ class SourceController(files: FileSystem? = null): Controller
             throw UnknownObjectError(id, "data source")
 
         val response = context.getSparkResponse().raw()
-        response.contentType = "text/csv"
         response.setHeader("Content-Disposition", "attachment; filename=$id")
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
@@ -40,7 +39,6 @@ class SourceController(files: FileSystem? = null): Controller
             throw UnknownObjectError(id, "data source")
 
         val response = context.getSparkResponse().raw()
-        response.contentType = "application/octet-stream"
         response.setHeader("Content-Disposition", "attachment; filename=$id")
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)

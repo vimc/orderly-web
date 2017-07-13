@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.controllers
 
+import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -10,7 +11,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
     val orderly = orderlyClient?: Orderly()
     val files = fileServer?: Files()
 
-    fun get(context: ActionContext): Map<String, String> {
+    fun get(context: ActionContext): JsonObject {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 

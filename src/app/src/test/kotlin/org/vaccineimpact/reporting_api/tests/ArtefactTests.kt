@@ -1,10 +1,8 @@
-package org.vaccineimpact.reporting_api.tests.db
+package org.vaccineimpact.reporting_api.tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.reporting_api.ArtefactType
 import org.vaccineimpact.reporting_api.Orderly
-import org.vaccineimpact.reporting_api.parseArtefacts
 import org.vaccineimpact.reporting_api.test_helpers.DatabaseTests
 import org.vaccineimpact.reporting_api.test_helpers.insertReport
 
@@ -57,8 +55,8 @@ class ArtefactTests: DatabaseTests()
 
         val result = sut.getArtefacts("test", "version1")
 
-        assertThat(result["summary.csv"]).isEqualTo("07dffb00305279935544238b39d7b14b")
-        assertThat(result["graph.png"]).isEqualTo("4b89e0b767cee1c30f2e910684189680")
+        assertThat(result["summary.csv"].asString).isEqualTo("07dffb00305279935544238b39d7b14b")
+        assertThat(result["graph.png"].asString).isEqualTo("4b89e0b767cee1c30f2e910684189680")
     }
 
 }

@@ -8,7 +8,7 @@ data class Endpoint(
         override val urlFragment: String,
         override val controllerName: String,
         override val actionName: String,
-        override val contentType: String,
+        override val contentType: String = ContentTypes.any,
         override val method: HttpMethod = HttpMethod.get
 ) : EndpointDefinition
 {
