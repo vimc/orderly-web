@@ -1,15 +1,16 @@
 package org.vaccineimpact.reporting_api
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
+import com.google.gson.*
+import com.google.gson.stream.JsonReader
 import org.jooq.TableField
+import org.jooq.impl.SQLDataType
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 
 class Orderly : OrderlyClient {
 
-    val gsonParser = JsonParser()
+    private val gsonParser = JsonParser()
 
     override fun getAllReports(): List<String> {
         JooqContext().use {
@@ -36,21 +37,33 @@ class Orderly : OrderlyClient {
     override fun getReportsByNameAndVersion(name: String, version: String): JsonObject {
         JooqContext().use {
 
-            var test = it.dsl.select()
+            val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
                     .fetchAny()
 
-            var obj = JsonObject()
+            val obj = JsonObject()
 
-            for (field in test.fields()){
+            for (field in result.fields()) {
 
-                var value = test.get(field.name)
-                var valAsJson =
-                        Serializer.instance.gson.toJson(value)
-                var key = field.name
+                val value = result.get(field)
 
-                obj.add(key, JsonParser().parse(valAsJson))
+                val valAsJson = if (value != null) {
+                    val valueString = value.toString()
+
+                    try{
+                        gsonParser.parse(valueString)
+                    }
+                    catch(e: JsonParseException) {
+                        JsonPrimitive(valueString)
+                    }
+                }
+                else {
+                    JsonNull.INSTANCE
+                }
+
+                obj.add(field.name, valAsJson)
+
             }
 
             return obj

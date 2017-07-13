@@ -36,12 +36,18 @@ class OrderlyTests : DatabaseTests() {
     @Test
     fun `can get report metadata`() {
 
-        insertReport("test", "version1")
+        insertReport("test", "version1",
+                hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
 
         val sut = createSut()
 
         val result = sut.getReportsByNameAndVersion("test", "version1")
 
+        assertThat(result.has("name")).isTrue()
+        assertThat(result.has("id")).isTrue()
+
+        assertThat(result.has("hash_artefacts")).isTrue()
+        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
 
@@ -51,36 +57,14 @@ class OrderlyTests : DatabaseTests() {
         insertReport("test", "version1")
         insertReport("test", "version2")
 
-//        val sut = createSut()
-//
-//        val results = sut.getReportsByName("test")
-//
-//        assertThat(results.count()).isEqualTo(2)
-//        assertThat(results[0]).isEqualTo("version1")
-//        assertThat(results[1]).isEqualTo("version2")
+        val sut = createSut()
 
-        JooqContext().use {
+        val results = sut.getReportsByName("test")
 
-            var test = it.dsl.select()
-                    .from(Tables.ORDERLY)
-                    .where(Tables.ORDERLY.NAME.eq("test").and((Tables.ORDERLY.ID).eq("version1")))
-                    .fetchAny()
+        assertThat(results.count()).isEqualTo(2)
+        assertThat(results[0]).isEqualTo("version1")
+        assertThat(results[1]).isEqualTo("version2")
 
-            var obj = JsonObject()
-
-
-            for (field in test.fields()){
-
-                var value = test.get(field.name)
-                var valAsJson =
-                        Serializer.instance.gson.toJson(value)
-                var key = field.name
-
-                obj.add(key, JsonParser().parse(valAsJson))
-            }
-
-            var hello = 2
-        }
     }
 
 
