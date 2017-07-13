@@ -64,7 +64,7 @@ distDocker {
 }
 
 copyConfig.finalizedBy 'showConfig'
-
+copyTestConfig.finalizedBy 'showTestConfig'
 
 task generateTestData() {
     doLast {
