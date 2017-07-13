@@ -17,6 +17,9 @@ abstract class DatabaseTests: MontaguTests()
         @BeforeClass @JvmStatic
         fun createDatabase()
         {
+            println("Looking for sqlite database at path: ${Config["db.template"]}")
+            println("Working directory: ${System.getProperty("user.dir")}")
+
             val newDbFile = File(Config["db.location"])
             val source = File(Config["db.template"])
 
