@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.test_helpers
+package org.vaccineimpact.reporting_api.tests
 
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*

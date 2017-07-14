@@ -4,9 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
-import org.vaccineimpact.reporting_api.test_helpers.DatabaseTests
-import org.vaccineimpact.reporting_api.test_helpers.insertReport
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.vaccineimpact.reporting_api.tests.insertReport
 
 class OrderlyTests : DatabaseTests() {
 

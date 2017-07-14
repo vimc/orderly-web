@@ -16,6 +16,7 @@ open class Serializer
     }
 
     private val toStringSerializer = jsonSerializer<Any> { JsonPrimitive(it.src.toString()) }
+    private val enumSerializer = jsonSerializer<Any> { JsonPrimitive(serializeEnum(it.src)) }
 
     val gson: Gson
 
@@ -28,6 +29,7 @@ open class Serializer
             .serializeNulls()
             .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
             .registerTypeAdapter<java.time.Instant>(toStringSerializer)
+                .registerTypeAdapter<ResultStatus>(enumSerializer)
             .create()
     }
 
@@ -51,5 +53,8 @@ open class Serializer
         }
         return builder.toString().trim('_')
     }
+
+
+    fun serializeEnum(value: Any) = value.toString().toLowerCase().replace('_', '-')
 
 }

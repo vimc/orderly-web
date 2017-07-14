@@ -1,16 +1,16 @@
-package org.vaccineimpact.reporting_api.test_helpers
+package org.vaccineimpact.reporting_api.tests.database_tests
 
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
-import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.JooqContext
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
 abstract class DatabaseTests: MontaguTests()
 {
-
     companion object
     {
 
@@ -33,7 +33,7 @@ abstract class DatabaseTests: MontaguTests()
         }
 
     }
-    
+
     @Before
     fun clearDatabase()
     {

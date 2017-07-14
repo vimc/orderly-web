@@ -22,7 +22,7 @@ object MontaguRouteConfig: RouteConfig {
             JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get"),
             Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download"),
 
-            Endpoint("/data/csv/:id/", "Source", "downloadCSV", ContentTypes.csv),
-            Endpoint("/data/rds/:id/", "Source", "downloadRDS")
+            Endpoint("/data/csv/:id/", "Data", "downloadCSV", ContentTypes.csv),
+            Endpoint("/data/rds/:id/", "Data", "downloadRDS")
     )
 }

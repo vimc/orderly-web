@@ -25,6 +25,8 @@ class MontaguReportingApi
         spk.redirect.get("/", urlBase)
         spk.before("*", ::addTrailingSlashes)
 
+        logger.info("Expecting orderly database at ${Config["db.location"]}")
+
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
     }

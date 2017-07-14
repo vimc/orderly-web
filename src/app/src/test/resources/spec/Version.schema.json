@@ -1,0 +1,10 @@
+{
+	"id": "Version",
+	"type": "object",
+	"properties": {
+		"name": {"type" :"string"},
+		"id": {"type" :"string"}
+	},
+	"additionalProperties": true,
+	"required": ["name", "id" ]
+}

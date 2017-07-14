@@ -1,27 +1,37 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests
 
-import org.junit.AfterClass
-import org.junit.BeforeClass
-import org.vaccineimpact.reporting_api.app_start.main
-import spark.Spark
+import org.junit.Test
+import org.vaccineimpact.reporting_api.tests.insertReport
 
-class ReportTests
+import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONValidator
+
+class ReportTests: IntegrationTest()
 {
-    companion object {
+    val requestHelper = RequestHelper()
+    val JSONValidator = JSONValidator()
 
-        @BeforeClass @JvmStatic
-        fun StartApp() {
-            main(emptyArray())
-        }
-
-        @AfterClass @JvmStatic
-        fun StopApp(){
-            Spark.stop()
-        }
-
-    }
-
+    @Test
     fun `can get reports`()
     {
+        val response = requestHelper.get("/reports")
+        JSONValidator.validateAgainstSchema(response.text, "Reports")
     }
+
+    @Test
+    fun `can get report versions by name`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname")
+        JSONValidator.validateAgainstSchema(response.text, "Report")
+    }
+
+    @Test
+    fun `can get report by name and version`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/testversion")
+        JSONValidator.validateAgainstSchema(response.text, "Version")
+    }
+
 }

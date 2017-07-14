@@ -40,6 +40,13 @@ dependencies {
     compile "org.pac4j:spark-pac4j:2.0.0"
     compile "org.pac4j:pac4j-http:2.0.0"
 
+    testCompile "org.slf4j:slf4j-simple:1.7.21"
+    testCompile "khttp:khttp:0.1.0"
+    testCompile "com.beust:klaxon:0.31"
+    testCompile "com.opencsv:opencsv:3.9"
+
+    testCompile "com.github.fge:json-schema-validator:2.2.6"
+
     compile project(":databaseInterface")
     compile project(":models")
     compile project(":security")
@@ -89,6 +96,15 @@ task cleanUpTestData() {
         }
     }
 }
+
+task copySpec(type: Copy) {
+    from 'src/test/resources/spec'
+    include '*.schema.json'
+    into 'build/classes/test/spec'
+    outputs.upToDateWhen { false }
+}
+
+test.dependsOn 'copySpec'
 
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'
