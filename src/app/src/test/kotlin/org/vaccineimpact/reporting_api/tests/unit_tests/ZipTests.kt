@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests
+package org.vaccineimpact.reporting_api.tests.unit_tests
 
 import org.junit.Test
 import org.vaccineimpact.reporting_api.Zip

@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests.controllers
+package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat

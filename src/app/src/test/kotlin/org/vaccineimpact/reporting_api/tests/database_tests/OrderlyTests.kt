@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests
+package org.vaccineimpact.reporting_api.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -82,7 +82,7 @@ class OrderlyTests : DatabaseTests() {
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByName("dsahdh") }
+        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
 
     }
