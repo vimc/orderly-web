@@ -31,6 +31,8 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
         val filename =  "$name/$version/$artefactname"
 
         val response = context.getSparkResponse().raw()
+
+        response.contentType = ContentTypes.any
         response.setHeader("Content-Disposition", "attachment; filename=$filename")
 
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"

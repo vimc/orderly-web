@@ -23,7 +23,7 @@ data class JsonEndpoint (
 
     override fun additionalSetup(url: String)
     {
-        Spark.after(url, contentType, DefaultHeadersFilter(contentType))
+        Spark.after(url, contentType, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
     }
 
     fun transform(x: Any) = Serializer.instance.toResult(x)

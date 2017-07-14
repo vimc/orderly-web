@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api.app_start
 
-import org.vaccineimpact.reporting_api.ContentTypes
 import spark.Filter
 import spark.Request
 import spark.Response
@@ -22,10 +21,10 @@ fun addTrailingSlashes(req: Request, res: Response)
     }
 }
 
-fun addDefaultResponseHeaders(res: Response, contentType: String = "${ContentTypes.json}; charset=utf-8")
+fun addDefaultResponseHeaders(res: Response, contentType: String)
     = addDefaultResponseHeaders(res.raw(), contentType = contentType)
 
-fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String = "${ContentTypes.json}; charset=utf-8")
+fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String)
 {
     res.contentType = contentType
     res.addHeader("Content-Encoding", "gzip")

@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.app_start
 
 import com.google.gson.JsonSyntaxException
 import org.slf4j.LoggerFactory
+import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.Serializer
 import org.vaccineimpact.reporting_api.errors.MontaguError
 import org.vaccineimpact.reporting_api.errors.UnableToParseJsonError
@@ -46,7 +47,7 @@ class ErrorHandler {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
         res.body(Serializer.instance.toJson(error.asResult()))
         res.status(error.httpStatus)
-        addDefaultResponseHeaders(res)
+        addDefaultResponseHeaders(res, "${ ContentTypes.json}; charset=utf-8")
     }
 
     // Just a helper to let us call Spark.exception using generic type parameters

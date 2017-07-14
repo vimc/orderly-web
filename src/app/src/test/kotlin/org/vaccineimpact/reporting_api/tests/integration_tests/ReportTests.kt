@@ -1,21 +1,24 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests
 
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 import org.assertj.core.api.Assertions.assertThat
-import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
-import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONValidator
+import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.db.Config
+import java.io.File
 
 class ReportTests: IntegrationTest()
 {
-    val requestHelper = RequestHelper()
-    val JSONValidator = JSONValidator()
 
     @Test
     fun `can get reports`()
     {
         val response = requestHelper.get("/reports")
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Reports")
     }
 
@@ -24,6 +27,9 @@ class ReportTests: IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname")
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Report")
     }
 
@@ -33,6 +39,7 @@ class ReportTests: IntegrationTest()
         val fakeName = "hjagyugs"
         val response = requestHelper.get("/reports/$fakeName")
 
+        assertJsonContentType(response)
         assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report", "Unknown report : '$fakeName'")
     }
@@ -42,6 +49,9 @@ class ReportTests: IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion")
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")
     }
 
@@ -52,8 +62,43 @@ class ReportTests: IntegrationTest()
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/$fakeVersion")
 
+        assertJsonContentType(response)
         assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version", "Unknown report-version : 'testname-$fakeVersion'")
+    }
+
+
+    @Test
+    fun `gets zip file`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+
+        assertSuccessful(response)
+        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+    }
+
+
+    @Test
+    fun `gets dict of artefact names to hashes`(){
+
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/testversion/artefacts")
+
+        assertSuccessful(response)
+        JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+    }
+
+    @Test
+    fun `gets artefact file`(){
+
+        val demoVersion = File("${Config["orderly.root"]}/archive/other/").list()[0]
+        val response = requestHelper.get("/reports/other/$demoVersion/artefacts/graph.png", ContentTypes.any)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$demoVersion/graph.png")
     }
 
 }

@@ -28,16 +28,16 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
 
         val name = context.params(":name")
         val version = context.params(":version")
-        val response = context.getSparkResponse()
+        val response = context.getSparkResponse().raw()
 
-        response.raw().contentType = "application/zip"
-        response.raw().setHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
+        response.contentType = ContentTypes.zip
+        response.setHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
         val folderName = "${Config["orderly.root"]}archive/$name/$version/"
 
-        zip.zipIt(folderName, response.raw().outputStream)
+        zip.zipIt(folderName, response.outputStream)
 
-        return response.raw()
+        return response
     }
 
 }

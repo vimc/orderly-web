@@ -102,10 +102,13 @@ class Orderly : OrderlyClient {
 
     private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject {
         JooqContext().use {
-            return gsonParser.parse(it.dsl.select(column)
+            val result = it.dsl.select(column)
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
-                    .fetchAnyInto(String::class.java))
+                    .fetchAny()?: throw UnknownObjectError("$name-$version", "reportVersion")
+
+            return gsonParser.parse(result
+                    .into(String::class.java))
                     .asJsonObject
         }
     }

@@ -41,6 +41,7 @@ class Router(val config: RouteConfig) {
             HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, transformer)
             else -> throw UnsupportedValueException(endpoint.method)
         }
+        endpoint.additionalSetup(fullUrl)
         return fullUrl
     }
 
@@ -61,6 +62,7 @@ class Router(val config: RouteConfig) {
             HttpMethod.delete -> Spark.delete(fullUrl, contentType, route)
             else -> throw UnsupportedValueException(endpoint.method)
         }
+        endpoint.additionalSetup(fullUrl)
         return fullUrl
     }
 
