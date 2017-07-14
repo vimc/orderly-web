@@ -63,5 +63,32 @@ distDocker {
     tagVersion = api_docker_version
 }
 
+// creates folder at app/demo with up to date orderly test data
+task generateTestData() {
+    doLast {
+        String image = "docker.montagu.dide.ic.ac.uk:5000/orderly:master"
+
+        def username = System.properties['user.name']
+        def uid = ["id", "-u", username].execute().text.trim()
+
+        exec {
+            commandLine 'docker', 'pull', image
+        }
+        exec {
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "demo"
+        }
+    }
+}
+
+// removes the app/demo folder
+task cleanUpTestData() {
+    doLast {
+
+        exec {
+            commandLine "rm", "$projectDir/demo", "--recursive"
+        }
+    }
+}
+
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'

@@ -59,6 +59,11 @@ task loadPropertiesTask() {
     }
 }
 
+// local task to run all tests with up to date generated demo data from orderly
+task runLocalTests(dependsOn: [":app:generateTestData", ":app:test"]) {
+    finalizedBy ":app:cleanUpTestData"
+}
+
 subprojects {
     apply plugin: 'kotlin'
 
