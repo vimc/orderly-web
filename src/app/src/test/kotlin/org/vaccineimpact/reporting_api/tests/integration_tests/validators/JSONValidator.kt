@@ -8,7 +8,7 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.assertj.core.api.Assertions
 
-class JSONValidator : Validator
+class JSONValidator
 {
     private val schemaFactory = makeSchemaFactory()
     private val responseSchema = readSchema("Response")
@@ -24,10 +24,9 @@ class JSONValidator : Validator
         assertValidates(schema, data)
     }
 
-    override fun validateError(response: String,
+    fun validateError(response: String,
                                expectedErrorCode: String?,
-                               expectedErrorText: String?,
-                               assertionText: String?)
+                               expectedErrorText: String?)
     {
         val json = parseJson(response)
         checkResultSchema(json, response, "failure")
@@ -42,11 +41,6 @@ class JSONValidator : Validator
         {
             Assertions.assertThat(error["message"].asText()).contains(expectedErrorText)
         }
-    }
-    override fun validateSuccess(response: String)
-    {
-        val json = parseJson(response)
-        checkResultSchema(json, response, "success")
     }
 
     private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)

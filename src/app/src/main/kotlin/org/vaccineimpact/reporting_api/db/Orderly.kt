@@ -42,7 +42,7 @@ class Orderly : OrderlyClient {
             val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
-                    .fetchAny() ?: throw UnknownObjectError("$name:$version", "report")
+                    .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
             val obj = JsonObject()
 
