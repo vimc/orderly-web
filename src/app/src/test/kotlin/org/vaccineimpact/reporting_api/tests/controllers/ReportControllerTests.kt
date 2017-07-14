@@ -10,6 +10,7 @@ import com.nhaarman.mockito_kotlin.verify
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import spark.Response
 import javax.servlet.ServletOutputStream

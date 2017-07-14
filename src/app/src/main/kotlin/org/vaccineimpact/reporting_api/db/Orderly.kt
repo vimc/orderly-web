@@ -1,12 +1,10 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
-import com.google.gson.stream.JsonReader
 import org.jooq.TableField
-import org.jooq.impl.SQLDataType
-import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
+import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class Orderly : OrderlyClient {
 
@@ -26,12 +24,16 @@ class Orderly : OrderlyClient {
     override fun getReportsByName(name: String): List<String> {
         JooqContext().use {
 
-            return it.dsl.select(ORDERLY.ID)
+            val result = it.dsl.select(ORDERLY.ID)
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name))
-                    .fetchInto(String::class.java)
-        }
 
+            if (result.count() == 0) {
+                throw UnknownObjectError(name, "report")
+            } else {
+                return result.fetchInto(String::class.java)
+            }
+        }
     }
 
     override fun getReportsByNameAndVersion(name: String, version: String): JsonObject {
@@ -40,7 +42,7 @@ class Orderly : OrderlyClient {
             val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
-                    .fetchAny()
+                    .fetchAny() ?: throw UnknownObjectError("$name:$version", "report")
 
             val obj = JsonObject()
 
@@ -51,14 +53,12 @@ class Orderly : OrderlyClient {
                 val valAsJson = if (value != null) {
                     val valueString = value.toString()
 
-                    try{
+                    try {
                         gsonParser.parse(valueString)
-                    }
-                    catch(e: JsonParseException) {
+                    } catch(e: JsonParseException) {
                         JsonPrimitive(valueString)
                     }
-                }
-                else {
+                } else {
                     JsonNull.INSTANCE
                 }
 

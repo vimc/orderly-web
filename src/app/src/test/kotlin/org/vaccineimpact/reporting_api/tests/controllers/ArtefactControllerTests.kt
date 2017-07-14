@@ -8,7 +8,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.FileSystem
-import org.vaccineimpact.reporting_api.OrderlyClient
+import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests

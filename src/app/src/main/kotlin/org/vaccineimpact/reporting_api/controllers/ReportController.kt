@@ -3,6 +3,8 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.db.OrderlyClient
 import javax.servlet.http.HttpServletResponse
 
 class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClient? = null) : Controller {

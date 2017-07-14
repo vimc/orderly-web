@@ -3,6 +3,8 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import javax.servlet.http.HttpServletResponse
 

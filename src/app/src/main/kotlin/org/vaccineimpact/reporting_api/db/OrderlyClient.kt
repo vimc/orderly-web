@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api
+package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.JsonObject
 interface OrderlyClient

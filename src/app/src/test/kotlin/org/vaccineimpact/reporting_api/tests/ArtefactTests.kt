@@ -2,7 +2,7 @@ package org.vaccineimpact.reporting_api.tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.reporting_api.Orderly
+import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.test_helpers.DatabaseTests
 import org.vaccineimpact.reporting_api.test_helpers.insertReport
 

@@ -1,15 +1,12 @@
 package org.vaccineimpact.reporting_api.tests
 
-import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.reporting_api.Orderly
-import org.vaccineimpact.reporting_api.Serializer
+import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.test_helpers.DatabaseTests
 import org.vaccineimpact.reporting_api.test_helpers.insertReport
-import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.Tables
+import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class OrderlyTests : DatabaseTests() {
 
@@ -50,6 +47,17 @@ class OrderlyTests : DatabaseTests() {
         assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
+    @Test
+    fun `throws unknown object error if report version doesnt exist`() {
+
+        insertReport("test", "version1",
+                hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "dsajkdsj") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
 
     @Test
     fun `can get all reports versions`() {
@@ -64,6 +72,18 @@ class OrderlyTests : DatabaseTests() {
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0]).isEqualTo("version1")
         assertThat(results[1]).isEqualTo("version2")
+
+    }
+
+    @Test
+    fun `throws unknown object error if report name not found`() {
+
+        insertReport("test", "version1")
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getReportsByName("dsahdh") }
+                .isInstanceOf(UnknownObjectError::class.java)
 
     }
 
