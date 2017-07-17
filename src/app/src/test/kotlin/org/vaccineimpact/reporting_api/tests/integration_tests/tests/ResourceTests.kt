@@ -3,9 +3,7 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
-import java.io.File
 
 class ResourceTests: IntegrationTest()
 {
@@ -26,7 +24,7 @@ class ResourceTests: IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource", ContentTypes.any)
+        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

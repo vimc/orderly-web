@@ -25,7 +25,7 @@ class ArtefactTests: IntegrationTest()
     fun `gets artefact file`(){
 
         val demoVersion = File("${Config["orderly.root"]}/archive/other/").list()[0]
-        val response = requestHelper.get("/reports/other/$demoVersion/artefacts/graph.png", ContentTypes.any)
+        val response = requestHelper.get("/reports/other/$demoVersion/artefacts/graph.png", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -37,7 +37,7 @@ class ArtefactTests: IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.any)
+        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -49,7 +49,7 @@ class ArtefactTests: IntegrationTest()
     {
         val fakeartefact = "64328fyhdkjs.csv"
         insertReport("testname", "testversion", hashArtefacts = "{\"$fakeartefact\":\"07dffb00305279935544238b39d7b14b\"}")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.any)
+        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

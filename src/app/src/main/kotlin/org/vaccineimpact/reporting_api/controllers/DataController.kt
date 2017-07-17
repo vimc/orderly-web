@@ -9,10 +9,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import org.vaccineimpact.reporting_api.errors.UnknownObjectError
-import spark.Response
 import java.io.File
-import javax.net.ssl.HttpsURLConnection
 import javax.servlet.http.HttpServletResponse
 
 class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null): Controller
@@ -29,6 +26,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
+        context.getSparkResponse().raw().contentType = ContentTypes.csv
         return downloadFile(absoluteFilePath, "$id.csv", context)
     }
 
@@ -37,7 +35,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
-        context.getSparkResponse().raw().contentType = ContentTypes.csv
+        context.getSparkResponse().raw().contentType = ContentTypes.binarydata
         return downloadFile(absoluteFilePath, "$id.rds", context)
     }
 
@@ -60,7 +58,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         if (type == "csv")
             response.contentType = ContentTypes.csv
         else
-            response.contentType = ContentTypes.any
+            response.contentType = ContentTypes.binarydata
 
         return downloadFile(absoluteFilePath, "$hash.$type", context)
     }
