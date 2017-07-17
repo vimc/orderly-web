@@ -7,10 +7,11 @@ import org.junit.runners.Suite
 import org.vaccineimpact.reporting_api.app_start.main
 import org.vaccineimpact.reporting_api.tests.integration_tests.tests.ArtefactTests
 import org.vaccineimpact.reporting_api.tests.integration_tests.tests.ReportTests
+import org.vaccineimpact.reporting_api.tests.integration_tests.tests.ResourceTests
 import spark.Spark
 
 @RunWith(Suite::class)
-@Suite.SuiteClasses(ArtefactTests::class, ReportTests::class)
+@Suite.SuiteClasses(ArtefactTests::class, ReportTests::class, ResourceTests::class)
 class APITests
 {
     companion object {

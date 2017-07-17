@@ -108,6 +108,5 @@ test.dependsOn 'copySpec'
 
 test.exclude "**/integration_tests/tests/**"
 
-
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'

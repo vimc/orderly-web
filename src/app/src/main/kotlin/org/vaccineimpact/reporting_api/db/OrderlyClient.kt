@@ -11,7 +11,7 @@ interface OrderlyClient
     fun hasArtefact(name: String, version: String, filename: String) : Boolean
 
     fun getData(name: String, version: String): JsonObject
-    fun hasData(name: String, version: String, dataname: String) : Boolean
+    fun getDatum(name: String, version: String, datumname: String) : String
 
     fun getResources(name: String, version: String): JsonObject
     fun hasResource(name: String, version: String, resourcename: String) : Boolean

@@ -79,26 +79,4 @@ class ReportTests: IntegrationTest()
         assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
     }
 
-
-    @Test
-    fun `gets dict of artefact names to hashes`(){
-
-        insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts")
-
-        assertSuccessful(response)
-        JSONValidator.validateAgainstSchema(response.text, "Dictionary")
-    }
-
-    @Test
-    fun `gets artefact file`(){
-
-        val demoVersion = File("${Config["orderly.root"]}/archive/other/").list()[0]
-        val response = requestHelper.get("/reports/other/$demoVersion/artefacts/graph.png", ContentTypes.any)
-
-        assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$demoVersion/graph.png")
-    }
-
 }

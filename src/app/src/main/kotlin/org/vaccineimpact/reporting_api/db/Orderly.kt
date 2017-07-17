@@ -83,8 +83,11 @@ class Orderly : OrderlyClient {
         return getSimpleMap(name, version, ORDERLY.HASH_DATA)
     }
 
-    override fun hasData(name: String, version: String, dataname: String): Boolean {
-        return hasKey(name, version, dataname, ORDERLY.HASH_DATA)
+    override fun getDatum(name: String, version: String, datumname: String): String {
+        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname]?:
+                throw UnknownObjectError(datumname, "Data")
+
+        return result.asString
     }
 
     override fun getResources(name: String, version: String): JsonObject {
@@ -106,6 +109,9 @@ class Orderly : OrderlyClient {
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version)))
                     .fetchAny()?: throw UnknownObjectError("$name-$version", "reportVersion")
+
+            if (result.value1() == null)
+                return JsonObject()
 
             return gsonParser.parse(result
                     .into(String::class.java))
