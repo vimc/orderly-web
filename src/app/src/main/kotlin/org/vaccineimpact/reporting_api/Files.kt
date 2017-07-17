@@ -1,13 +1,11 @@
 package org.vaccineimpact.reporting_api
 
-import java.io.BufferedInputStream
-import java.io.BufferedOutputStream
-import java.io.FileInputStream
-import java.io.OutputStream
+import java.io.*
 
 interface FileSystem
 {
     fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
+    fun fileExists(absoluteFilePath: String): Boolean
 }
 
 class Files: FileSystem {
@@ -29,5 +27,9 @@ class Files: FileSystem {
                 }
             }
         }
+    }
+
+    override fun fileExists(absoluteFilePath: String): Boolean {
+        return File(absoluteFilePath).exists()
     }
 }

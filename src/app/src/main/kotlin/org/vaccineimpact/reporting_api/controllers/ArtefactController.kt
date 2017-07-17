@@ -37,7 +37,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
 
-        if (!File(absoluteFilePath).exists())
+        if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(artefactname)
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)

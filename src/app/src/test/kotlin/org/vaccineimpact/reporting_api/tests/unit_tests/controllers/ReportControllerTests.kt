@@ -16,7 +16,7 @@ import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-class ReportControllerTests: MontaguTests()
+class ReportControllerTests: ControllerTest()
 {
 
     @Test
@@ -78,20 +78,10 @@ class ReportControllerTests: MontaguTests()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val outputStream = mock<ServletOutputStream>()
-
-        val servletResponse = mock<HttpServletResponse>(){
-            on {this.outputStream} doReturn outputStream
-        }
-
-        val response = mock<Response>(){
-            on {this.raw()} doReturn servletResponse
-        }
-
         val actionContext = mock<ActionContext> {
             on {this.params(":version")} doReturn reportVersion
             on {this.params(":name")} doReturn reportName
-            on {this.getSparkResponse()} doReturn response
+            on {this.getSparkResponse()} doReturn mockSparkResponse
         }
 
         val mockZipClient = mock<ZipClient>()
@@ -100,7 +90,8 @@ class ReportControllerTests: MontaguTests()
 
         sut.getZippedByNameAndVersion(actionContext)
 
-        verify(mockZipClient, times(1)).zipIt("${Config["orderly.root"]}archive/$reportName/$reportVersion/", outputStream)
+        verify(mockZipClient, times(1)).zipIt("${Config["orderly.root"]}archive/$reportName/$reportVersion/"
+                , mockOutputStream)
     }
 
 }

@@ -10,10 +10,11 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class ArtefactControllerTests : MontaguTests()
+class ArtefactControllerTests : ControllerTest()
 {
 
     @Test
@@ -35,6 +36,32 @@ class ArtefactControllerTests : MontaguTests()
         val sut = ArtefactController(orderly, mock<FileSystem>())
 
         assertThat(sut.get(actionContext)).isEqualTo(artefacts)
+    }
+
+    @Test
+    fun `downloads artefact for report`() {
+        val name = "testname"
+        val version = "testversion"
+        val artefact = "testartefact"
+
+        val orderly = mock<OrderlyClient> {
+            on { this.hasArtefact(name, version, artefact) } doReturn true
+        }
+
+        val actionContext = mock<ActionContext> {
+            on {this.params(":name")} doReturn name
+            on {this.params(":version")} doReturn version
+            on {this.params(":artefact")} doReturn artefact
+            on {this.getSparkResponse()} doReturn mockSparkResponse
+        }
+
+        val fileSystem = mock<FileSystem>() {
+            on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$artefact") } doReturn true
+        }
+
+        val sut = ArtefactController(orderly, fileSystem)
+
+        sut.download(actionContext)
     }
 
     @Test

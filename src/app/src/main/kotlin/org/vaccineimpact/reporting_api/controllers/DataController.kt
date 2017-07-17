@@ -65,7 +65,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
 
     private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): HttpServletResponse
     {
-        if (!File(absoluteFilePath).exists())
+        if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(filename)
 
         val response = context.getSparkResponse().raw()
