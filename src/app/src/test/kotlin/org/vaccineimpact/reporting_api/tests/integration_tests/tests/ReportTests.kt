@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests.integration_tests
+package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test

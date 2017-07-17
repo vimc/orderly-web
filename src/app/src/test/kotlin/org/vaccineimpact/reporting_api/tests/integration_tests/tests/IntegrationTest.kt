@@ -1,38 +1,19 @@
-package org.vaccineimpact.reporting_api.tests.integration_tests
+package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Before
-import org.junit.BeforeClass
-import org.vaccineimpact.reporting_api.app_start.main
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONValidator
-import spark.Spark
 import java.io.File
 
 abstract class IntegrationTest: MontaguTests()
 {
     val requestHelper = RequestHelper()
     val JSONValidator = JSONValidator()
-
-    companion object {
-
-        @BeforeClass @JvmStatic
-        fun startApp() {
-
-            main(emptyArray())
-        }
-
-        @AfterClass @JvmStatic
-        fun stopApp(){
-
-            Spark.stop()
-        }
-    }
 
     @Before
     fun createDatabase(){
