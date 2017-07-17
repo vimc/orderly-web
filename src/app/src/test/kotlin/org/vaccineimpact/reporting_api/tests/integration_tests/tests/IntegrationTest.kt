@@ -9,6 +9,7 @@ import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.app_start.main
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
+import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONValidator
 import spark.Spark
@@ -19,20 +20,24 @@ abstract class IntegrationTest: MontaguTests()
     val requestHelper = RequestHelper()
     val JSONValidator = JSONValidator()
 
-//    companion object {
-//
-//        @BeforeClass @JvmStatic
-//        fun startApp() {
-//
-//            main(emptyArray())
-//        }
-//
-//        @AfterClass @JvmStatic
-//        fun stopApp(){
-//
-//            Spark.stop()
-//        }
-//    }
+    companion object {
+
+        @BeforeClass @JvmStatic
+        fun startApp() {
+
+            if (!APITests.appStarted) {
+                main(emptyArray())
+            }
+        }
+
+        @AfterClass @JvmStatic
+        fun stopApp(){
+
+            if (!APITests.appStarted) {
+                Spark.stop()
+            }
+        }
+    }
 
     @Before
     fun createDatabase(){
