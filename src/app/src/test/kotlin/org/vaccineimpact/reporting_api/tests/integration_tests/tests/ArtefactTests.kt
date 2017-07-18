@@ -18,7 +18,6 @@ class ArtefactTests: IntegrationTest()
         assertJsonContentType(response)
         assertSuccessful(response)
         JSONValidator.validateAgainstSchema(response.text, "Dictionary")
-
     }
 
     @Test

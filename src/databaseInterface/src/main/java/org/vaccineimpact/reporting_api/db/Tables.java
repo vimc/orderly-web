@@ -25,5 +25,5 @@ public class Tables {
     /**
      * The table <code>orderly</code>.
      */
-    public static final Orderly ORDERLY = Orderly.ORDERLY;
+    public static final Orderly ORDERLY = org.vaccineimpact.reporting_api.db.tables.Orderly.ORDERLY;
 }

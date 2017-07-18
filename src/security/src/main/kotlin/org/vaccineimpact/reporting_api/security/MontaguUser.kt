@@ -16,17 +16,15 @@ interface UserPropertiesInterface {
     val name: String
     val email: String
     val passwordHash: String
-    val salt: String
     val lastLoggedIn: Timestamp?
 }
 
 data class UserProperties
-@ConstructorProperties("username", "name", "email", "passwordHash", "salt", "lastLoggedIn")
+@ConstructorProperties("username", "name", "email", "passwordHash", "lastLoggedIn")
 constructor(
         override val username: String,
         override val name: String,
         override val email: String,
         override val passwordHash: String,
-        override val salt: String,
         override val lastLoggedIn: Timestamp?
 ): UserPropertiesInterface

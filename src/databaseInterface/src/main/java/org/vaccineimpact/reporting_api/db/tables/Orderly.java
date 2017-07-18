@@ -34,7 +34,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Orderly extends TableImpl<OrderlyRecord> {
 
-    private static final long serialVersionUID = -1578766553;
+    private static final long serialVersionUID = -1166598884;
 
     /**
      * The reference instance of <code>orderly</code>
@@ -128,6 +128,26 @@ public class Orderly extends TableImpl<OrderlyRecord> {
      * The column <code>orderly.hash_artefacts</code>.
      */
     public final TableField<OrderlyRecord, String> HASH_ARTEFACTS = createField("hash_artefacts", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.published</code>.
+     */
+    public final TableField<OrderlyRecord, Boolean> PUBLISHED = createField("published", org.jooq.impl.SQLDataType.BOOLEAN, this, "");
+
+    /**
+     * The column <code>orderly.requester</code>.
+     */
+    public final TableField<OrderlyRecord, String> REQUESTER = createField("requester", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.author</code>.
+     */
+    public final TableField<OrderlyRecord, String> AUTHOR = createField("author", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.comment</code>.
+     */
+    public final TableField<OrderlyRecord, String> COMMENT = createField("comment", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>orderly</code> table reference

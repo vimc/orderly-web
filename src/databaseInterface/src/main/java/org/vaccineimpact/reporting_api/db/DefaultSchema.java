@@ -39,7 +39,7 @@ public class DefaultSchema extends SchemaImpl {
     /**
      * The table <code>orderly</code>.
      */
-    public final Orderly ORDERLY = Orderly.ORDERLY;
+    public final Orderly ORDERLY = org.vaccineimpact.reporting_api.db.tables.Orderly.ORDERLY;
 
     /**
      * No further instances allowed

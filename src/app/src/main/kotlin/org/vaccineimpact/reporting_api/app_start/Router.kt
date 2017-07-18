@@ -4,13 +4,16 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.controllers.*
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
+import org.vaccineimpact.reporting_api.security.*
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
 
 class Router(val config: RouteConfig) {
 
-    val logger = LoggerFactory.getLogger(Router::class.java)
+    private val logger = LoggerFactory.getLogger(Router::class.java)
+
+    private val tokenHelper = WebTokenHelper(KeyHelper.keyPair)
 
     private var controllers: MutableMap<String, Controller> = mutableMapOf()
 
@@ -42,6 +45,17 @@ class Router(val config: RouteConfig) {
             else -> throw UnsupportedValueException(endpoint.method)
         }
         endpoint.additionalSetup(fullUrl)
+        val allPermissions = setOf("*/can-login").map {
+            PermissionRequirement.parse(it)
+        }
+        val configFactory = TokenVerifyingConfigFactory(tokenHelper, allPermissions.toSet())
+        val tokenVerifier = configFactory.build()
+        spark.Spark.before(fullUrl, org.pac4j.sparkjava.SecurityFilter(
+                tokenVerifier,
+                configFactory.allClients(),
+                MontaguAuthorizer::class.java.simpleName,
+                "SkipOptions"
+        ))
         return fullUrl
     }
 

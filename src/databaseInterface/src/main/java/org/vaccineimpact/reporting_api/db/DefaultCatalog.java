@@ -37,7 +37,7 @@ public class DefaultCatalog extends CatalogImpl {
     /**
      * The schema <code></code>.
      */
-    public final DefaultSchema DEFAULT_SCHEMA = DefaultSchema.DEFAULT_SCHEMA;
+    public final DefaultSchema DEFAULT_SCHEMA = org.vaccineimpact.reporting_api.db.DefaultSchema.DEFAULT_SCHEMA;
 
     /**
      * No further instances allowed
