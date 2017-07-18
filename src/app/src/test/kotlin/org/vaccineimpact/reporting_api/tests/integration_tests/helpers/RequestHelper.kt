@@ -24,9 +24,31 @@ class RequestHelper {
         )
 
         val token = WebTokenHelper(KeyHelper.keyPair).generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
+                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-read-reports", Scope.Global()))))
+        headers += mapOf("Authorization" to "Bearer $token")
+
+        return get("http://localhost:8080/v1" + url, headers)
+    }
+
+    fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response {
+        var headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
+
+        val token = WebTokenHelper(KeyHelper.keyPair).generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
+                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("fake-perm", Scope.Global()))))
 
         headers += mapOf("Authorization" to "Bearer $token")
+
+        return get("http://localhost:8080/v1" + url, headers)
+    }
+
+    fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response {
+        val headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
 
         return get("http://localhost:8080/v1" + url, headers)
     }

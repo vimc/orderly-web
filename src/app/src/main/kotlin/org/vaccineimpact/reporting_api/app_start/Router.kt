@@ -45,17 +45,8 @@ class Router(val config: RouteConfig) {
             else -> throw UnsupportedValueException(endpoint.method)
         }
         endpoint.additionalSetup(fullUrl)
-        val allPermissions = setOf("*/can-login").map {
-            PermissionRequirement.parse(it)
-        }
-        val configFactory = TokenVerifyingConfigFactory(tokenHelper, allPermissions.toSet())
-        val tokenVerifier = configFactory.build()
-        spark.Spark.before(fullUrl, org.pac4j.sparkjava.SecurityFilter(
-                tokenVerifier,
-                configFactory.allClients(),
-                MontaguAuthorizer::class.java.simpleName,
-                "SkipOptions"
-        ))
+        addSecurityFilter(fullUrl)
+
         return fullUrl
     }
 
@@ -77,7 +68,23 @@ class Router(val config: RouteConfig) {
             else -> throw UnsupportedValueException(endpoint.method)
         }
         endpoint.additionalSetup(fullUrl)
+        addSecurityFilter(fullUrl)
         return fullUrl
+    }
+
+    private fun addSecurityFilter(url: String)
+    {
+        val allPermissions = setOf("*/can-read-reports").map {
+            PermissionRequirement.parse(it)
+        }
+        val configFactory = TokenVerifyingConfigFactory(tokenHelper, allPermissions.toSet())
+        val tokenVerifier = configFactory.build()
+        spark.Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                tokenVerifier,
+                configFactory.allClients(),
+                MontaguAuthorizer::class.java.simpleName,
+                "SkipOptions"
+        ))
     }
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route {
