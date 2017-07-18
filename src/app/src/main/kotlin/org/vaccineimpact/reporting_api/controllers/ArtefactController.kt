@@ -25,8 +25,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
         val version = context.params(":version")
         val artefactname = context.params(":artefact")
 
-        if (!orderly.hasArtefact(name, version, artefactname))
-            throw UnknownObjectError(artefactname, "Artefact")
+        orderly.getArtefact(name, version, artefactname)
 
         val filename =  "$name/$version/$artefactname"
 

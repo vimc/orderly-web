@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.junit.Test
@@ -45,7 +46,7 @@ class ResourceControllerTests: ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.hasResource(name, version, resource) } doReturn true
+            on { this.getResource(name, version, resource) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
@@ -71,7 +72,7 @@ class ResourceControllerTests: ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.hasResource(name, version, resource) } doReturn false
+            on { this.getResource(name, version, resource) } doThrow UnknownObjectError("","")
         }
 
         val actionContext = mock<ActionContext> {
@@ -93,7 +94,7 @@ class ResourceControllerTests: ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.hasResource(name, version, resource) } doReturn true
+            on { this.getResource(name, version, resource) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {

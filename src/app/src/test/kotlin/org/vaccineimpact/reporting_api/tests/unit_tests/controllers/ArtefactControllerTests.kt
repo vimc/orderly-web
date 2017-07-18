@@ -4,6 +4,7 @@ import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.vaccineimpact.reporting_api.ActionContext
@@ -45,7 +46,7 @@ class ArtefactControllerTests : ControllerTest()
         val artefact = "testartefact"
 
         val orderly = mock<OrderlyClient> {
-            on { this.hasArtefact(name, version, artefact) } doReturn true
+            on { this.getArtefact(name, version, artefact) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
@@ -71,7 +72,7 @@ class ArtefactControllerTests : ControllerTest()
         val artefact = "test.png"
 
         val orderly = mock<OrderlyClient> {
-            on { this.hasArtefact(name, version, artefact) } doReturn false
+            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("","")
         }
 
         val actionContext = mock<ActionContext> {

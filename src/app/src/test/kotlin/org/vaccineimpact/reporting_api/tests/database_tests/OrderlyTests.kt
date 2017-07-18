@@ -14,11 +14,12 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `can get all report names`() {
+    fun `can get all published report names`() {
 
         insertReport("test", "version1")
         insertReport("test", "version2")
         insertReport("test2", "test2version1")
+        insertReport("test3", "test3version", published = false)
 
         val sut = createSut()
 
@@ -47,6 +48,17 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
+    fun `throws unknown object error if report version not published`() {
+
+        insertReport("test", "version1", published = false)
+
+        val sut = createSut()
+
+        assertThatThrownBy {sut.getReportsByNameAndVersion("test", "version1") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
     fun `throws unknown object error if report version doesnt exist`() {
 
         insertReport("test", "version1",
@@ -59,10 +71,23 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `can get all reports versions`() {
+    fun `throws unknown object error if report name not found`() {
+
+        insertReport("test", "version1")
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getReportsByNameAndVersion("dsajkdsj", "version") }
+                .isInstanceOf(UnknownObjectError::class.java)
+
+    }
+
+    @Test
+    fun `can get all published report versions`() {
 
         insertReport("test", "version1")
         insertReport("test", "version2")
+        insertReport("test", "version3", published = false)
 
         val sut = createSut()
 
@@ -73,19 +98,6 @@ class OrderlyTests : DatabaseTests() {
         assertThat(results[1]).isEqualTo("version2")
 
     }
-
-    @Test
-    fun `throws unknown object error if report name not found`() {
-
-        insertReport("test", "version1")
-
-        val sut = createSut()
-
-        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "dsajkdsj") }
-                .isInstanceOf(UnknownObjectError::class.java)
-
-    }
-
 
 
 }

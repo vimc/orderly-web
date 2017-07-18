@@ -14,7 +14,7 @@ interface OrderlyClient
     @Throws(UnknownObjectError::class)
     fun getArtefacts(name: String, version: String): JsonObject
     @Throws(UnknownObjectError::class)
-    fun hasArtefact(name: String, version: String, filename: String) : Boolean
+    fun getArtefact(name: String, version: String, filename: String) : String
 
     @Throws(UnknownObjectError::class)
     fun getData(name: String, version: String): JsonObject
@@ -24,5 +24,5 @@ interface OrderlyClient
     @Throws(UnknownObjectError::class)
     fun getResources(name: String, version: String): JsonObject
     @Throws(UnknownObjectError::class)
-    fun hasResource(name: String, version: String, resourcename: String) : Boolean
+    fun getResource(name: String, version: String, resourcename: String) : String
 }

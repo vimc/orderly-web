@@ -34,7 +34,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Orderly extends TableImpl<OrderlyRecord> {
 
-    private static final long serialVersionUID = -1166598884;
+    private static final long serialVersionUID = -544025945;
 
     /**
      * The reference instance of <code>orderly</code>
@@ -58,6 +58,16 @@ public class Orderly extends TableImpl<OrderlyRecord> {
      * The column <code>orderly.name</code>.
      */
     public final TableField<OrderlyRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.displayname</code>.
+     */
+    public final TableField<OrderlyRecord, String> DISPLAYNAME = createField("displayname", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.description</code>.
+     */
+    public final TableField<OrderlyRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>orderly.views</code>.

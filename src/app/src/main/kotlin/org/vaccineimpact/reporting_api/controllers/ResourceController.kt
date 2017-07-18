@@ -24,8 +24,7 @@ class ResourceController(orderlyClient: OrderlyClient? = null, fileServer: FileS
         val version = context.params(":version")
         val resourcename = context.params(":resource")
 
-        if (!orderly.hasResource(name, version, resourcename))
-            throw UnknownObjectError(resourcename, "Resource")
+        orderly.getResource(name, version, resourcename)
 
         val filename =  "$name/$version/$resourcename"
 
