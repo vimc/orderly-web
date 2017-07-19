@@ -24,6 +24,9 @@ class MontaguReportingApi
         setupPort()
         spk.redirect.get("/", urlBase)
         spk.before("*", ::addTrailingSlashes)
+        spk.options("*", { _, res ->
+            res.header("Access-Control-Allow-Headers", "Authorization")
+        })
 
         logger.info("Expecting orderly database at ${Config["db.location"]}")
 
