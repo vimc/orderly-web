@@ -1,3 +1,5 @@
+rm /etc/montagu/api/token_key -r
+
 mkdir /etc/montagu/api/token_key
 
 openssl genrsa -out /etc/montagu/api/token_key/mykey.pem 512

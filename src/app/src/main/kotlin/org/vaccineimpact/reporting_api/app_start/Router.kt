@@ -74,7 +74,7 @@ class Router(val config: RouteConfig) {
 
     private fun addSecurityFilter(url: String)
     {
-        val allPermissions = setOf("*/can-read-reports").map {
+        val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)
         }
         val configFactory = TokenVerifyingConfigFactory(tokenHelper, allPermissions.toSet())
