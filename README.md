@@ -15,6 +15,12 @@ To generate a test Orderly directory to develop against, run the `:generateTestD
 
 The above task will generate an Orderly directory at `./src/app/demo`, which the app is configured to point to locally, and all tests to run against.
 
+### Tasks
+* To run, use `./gradlew :app:run`, having first set up a the test data using
+  `./gradlew :generateTestData`
+* To run the tests, use `./gradlew test`, making sure that the app is not 
+  currently running and you have already generated the test data.
+
 ## Docker build
 The Teamcity build
 1. Pulls in artifact `demo` from the Orderly container build
