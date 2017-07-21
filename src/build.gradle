@@ -16,6 +16,7 @@ buildscript {
 
 task run(dependsOn: ':app:run')
 task generateDatabaseInterface(dependsOn: ':generateDatabaseInterface:run')
+task generateTestData(dependsOn: ':app:generateTestData')
 
 def loadPropertiesFile(path) {
     def props = new Properties()
