@@ -12,6 +12,7 @@ then
    rm /etc/montagu/reports_api/token_key -r
 fi
 
+# copy key from api directory
 mkdir -p /etc/montagu/reports_api/token_key
 cp -R /etc/montagu/api/token_key /etc/montagu/reports_api
 
