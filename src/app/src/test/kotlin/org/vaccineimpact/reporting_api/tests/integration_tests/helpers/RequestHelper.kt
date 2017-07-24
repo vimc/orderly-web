@@ -8,18 +8,14 @@ import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.api.models.permissions.ReifiedRole
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
-import org.vaccineimpact.reporting_api.security.KeyHelper
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.UserProperties
-import org.vaccineimpact.reporting_api.security.WebTokenHelper
+import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
 class RequestHelper {
     init {
         CertificateHelper.disableCertificateValidation()
-
     }
-
-    private val tokenHelper = WebTokenHelper(KeyHelper.keyPair)
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
     fun get(url: String, contentType: String = ContentTypes.json): Response {
@@ -28,7 +24,7 @@ class RequestHelper {
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = tokenHelper
+        val token = APITests.tokenHelper
                 .generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
                 listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
 
@@ -55,7 +51,7 @@ class RequestHelper {
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = tokenHelper.generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
+        val token = APITests.tokenHelper.generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
                 listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("fake-perm", Scope.Global()))))
 
         headers += mapOf("Authorization" to "Bearer $token")
