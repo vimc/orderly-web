@@ -103,9 +103,22 @@ task copySpec(type: Copy) {
     into 'build/classes/test/spec'
     outputs.upToDateWhen { false }
 }
-
 test.dependsOn 'copySpec'
 
+task checkConfigDirExists() {
+    doLast {
+        def dir = file("/etc/montagu/reports_api/token_key")
+        if (!dir.exists() || !dir.canWrite()) {
+            throw new Exception("Cannot write to ${dir.path}. " +
+                    "Please create it and make sure the user running the tests has write permissions. " +
+                    "e.g. sudo mkdir -m 777 -p /etc/montagu/reports_api/token_key")
+        }
+    }
+}
+test.dependsOn 'checkConfigDirExists'
+
+// We run the integration test as a suite (see APITests); this line prevents
+// them being run individually as well
 test.exclude "**/integration_tests/tests/**"
 
 copyConfig.finalizedBy 'showConfig'

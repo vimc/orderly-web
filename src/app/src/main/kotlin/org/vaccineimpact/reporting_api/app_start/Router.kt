@@ -1,8 +1,12 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.reporting_api.*
-import org.vaccineimpact.reporting_api.controllers.*
+import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.DirectActionContext
+import org.vaccineimpact.reporting_api.EndpointDefinition
+import org.vaccineimpact.reporting_api.JsonEndpoint
+import org.vaccineimpact.reporting_api.controllers.Controller
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import org.vaccineimpact.reporting_api.security.*
 import spark.Route
@@ -13,7 +17,8 @@ class Router(val config: RouteConfig) {
 
     private val logger = LoggerFactory.getLogger(Router::class.java)
 
-    private val tokenHelper = WebTokenHelper(KeyHelper.keyPair)
+    private val oneTimeTokenHelper = WebTokenHelper(KeyHelper.generateKeyPair(), Config["onetime_token.issuer"])
+    private val authTokenVerifier = TokenVerifier(KeyHelper.authPublicKey, Config["token.issuer"])
 
     private var controllers: MutableMap<String, Controller> = mutableMapOf()
 
@@ -77,7 +82,7 @@ class Router(val config: RouteConfig) {
         val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)
         }
-        val configFactory = TokenVerifyingConfigFactory(tokenHelper, allPermissions.toSet())
+        val configFactory = TokenVerifyingConfigFactory(authTokenVerifier, allPermissions.toSet())
         val tokenVerifier = configFactory.build()
         spark.Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 tokenVerifier,

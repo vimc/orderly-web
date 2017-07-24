@@ -18,7 +18,7 @@ import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class TokenVerifyingConfigFactory(
-        tokenHelper: WebTokenHelper,
+        tokenHelper: TokenVerifier,
         val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
