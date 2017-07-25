@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.jooq.impl.DSL.*
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Config
@@ -23,6 +24,13 @@ class TokenStoreTests : MontaguTests() {
         println("Creating sqlite database at path: ${Config["onetime_token.db.location"]}")
 
         source.copyTo(newDbFile, true)
+    }
+
+    @After
+    fun deleteDatabase(){
+
+        println("Removing database at path: ${Config["onetime_token.db.location"]}")
+        File(Config["onetime_token.db.location"]).delete()
     }
 
     private fun getJooqContext() = JooqContext(Config["onetime_token.db.location"])
