@@ -14,6 +14,5 @@ class OnetimeTokenController : Controller
                 .generateOneTimeActionToken(context.userProfile.getAttribute(USER_OBJECT) as MontaguUser)
         // repo.storeToken(token)
         return token
-
     }
 }
