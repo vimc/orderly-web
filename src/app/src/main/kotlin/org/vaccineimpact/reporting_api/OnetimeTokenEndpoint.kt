@@ -37,6 +37,7 @@ class OneTimeTokenFilter(val tokenVerifier: TokenVerifier, val tokenStore: Token
         val token = request.queryParams("access_token")
                 ?: throw InvalidOneTimeLinkToken("verification", "Access token is missing")
 
+        // TODO at some point may need to pass the roles/permissions through
         val claims = verifyToken(token)
     }
 

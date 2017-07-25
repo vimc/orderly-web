@@ -18,7 +18,7 @@ class ResourceController(orderlyClient: OrderlyClient? = null, fileServer: FileS
         return orderly.getResources(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext) : HttpServletResponse {
+    fun download(context: ActionContext) : Boolean {
 
         val name = context.params(":name")
         val version = context.params(":version")
@@ -28,17 +28,17 @@ class ResourceController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         val filename =  "$name/$version/$resourcename"
 
-        val response = context.getSparkResponse().raw()
-        response.setHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
 
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(resourcename)
 
+        val response = context.getSparkResponse().raw()
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
-        return response
+        return true
     }
 
 }
