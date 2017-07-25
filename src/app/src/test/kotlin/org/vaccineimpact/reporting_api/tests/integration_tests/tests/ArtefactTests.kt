@@ -65,7 +65,7 @@ class ArtefactTests: IntegrationTest()
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(400)
-        JSONValidator.validateError(response.text, "invalid-token-verification", "Unable to verify token; it may be badly formatted or signed with the wrong key")
+        JSONValidator.validateError(response.text, "invalid-token-used", "Token has already been used (or never existed)")
     }
 
     @Test

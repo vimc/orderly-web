@@ -36,6 +36,8 @@ class TokenStore
 
             }
 
+            createTable()
+
         } catch (e: SQLException) {
             logger.error(e.message)
         }
@@ -59,7 +61,7 @@ class TokenStore
         }
     }
 
-    fun verifyToken(token: String): Boolean
+    fun validateOneTimeToken(token: String): Boolean
     {
         getJooqContext().use {
             val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)

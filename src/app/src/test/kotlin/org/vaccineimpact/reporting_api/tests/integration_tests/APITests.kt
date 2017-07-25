@@ -5,9 +5,11 @@ import org.junit.BeforeClass
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.vaccineimpact.reporting_api.app_start.main
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.TestTokenGenerator
 import org.vaccineimpact.reporting_api.tests.integration_tests.tests.*
 import spark.Spark
+import java.io.File
 
 @RunWith(Suite::class)
 @Suite.SuiteClasses(ArtefactTests::class,
@@ -33,8 +35,8 @@ class APITests
         @AfterClass @JvmStatic
         fun stopApp()
         {
-
             Spark.stop()
+            File(Config["onetime_token.db.location"]).delete()
         }
 
         @JvmStatic

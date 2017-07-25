@@ -36,6 +36,7 @@ abstract class IntegrationTest: MontaguTests()
 
             if (!APITests.appStarted) {
                 Spark.stop()
+                File(Config["onetime_token.db.location"]).delete()
             }
         }
     }
@@ -52,7 +53,7 @@ abstract class IntegrationTest: MontaguTests()
     }
 
     @After
-    fun deleteDatabase(){
+    fun deleteDatabases(){
         File(Config["db.location"]).delete()
     }
 

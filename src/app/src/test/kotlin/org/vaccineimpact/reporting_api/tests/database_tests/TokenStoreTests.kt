@@ -86,7 +86,7 @@ class TokenStoreTests : MontaguTests() {
                     .execute()
         }
 
-        val result = sut.verifyToken(token)
+        val result = sut.validateOneTimeToken(token)
 
         assertThat(result).isTrue()
     }
@@ -105,7 +105,7 @@ class TokenStoreTests : MontaguTests() {
                     .execute()
         }
 
-        sut.verifyToken(token)
+        sut.validateOneTimeToken(token)
 
         getJooqContext().use {
             val result = it.dsl.selectFrom(table(name("ONETIME_TOKEN")))
@@ -124,7 +124,7 @@ class TokenStoreTests : MontaguTests() {
         val token = "testtoken"
         val sut = TokenStore()
 
-        val result = sut.verifyToken(token)
+        val result = sut.validateOneTimeToken(token)
 
         assertThat(result).isFalse()
     }

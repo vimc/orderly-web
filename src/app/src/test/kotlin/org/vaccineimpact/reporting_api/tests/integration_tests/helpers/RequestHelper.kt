@@ -3,11 +3,13 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import khttp.responses.Response
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.api.models.permissions.ReifiedRole
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.UserProperties
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
@@ -37,10 +39,17 @@ class RequestHelper {
     }
 
     fun generateOnetimeToken(): String {
-       return WebTokenHelper.oneTimeTokenHelper.issuer
+       val token = WebTokenHelper.oneTimeTokenHelper.issuer
                .generateOneTimeActionToken(fakeUser)
 
- //       return ""
+        JooqContext(Config["onetime_token.db.location"]).use {
+
+            it.dsl.insertInto(table(name("ONETIME_TOKEN")))
+                    .set(field(name("ONETIME_TOKEN.TOKEN")), token)
+                    .execute()
+        }
+
+        return token
     }
 
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response {
@@ -81,5 +90,3 @@ class RequestHelper {
     private fun get(url: String, headers: Map<String, String>)
             = khttp.get(url, headers)
 }
-
-fun Response.json() = Parser().parse(StringBuilder(text)) as JsonObject
