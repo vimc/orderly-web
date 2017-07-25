@@ -1,6 +1,10 @@
 package org.vaccineimpact.reporting_api
 
 import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
+import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
+import org.vaccineimpact.reporting_api.security.PermissionRequirement
+import org.vaccineimpact.reporting_api.security.TokenVerifier
+import org.vaccineimpact.reporting_api.security.TokenVerifyingConfigFactory
 import spark.Spark
 import spark.route.HttpMethod
 
@@ -23,8 +27,21 @@ data class JsonEndpoint (
 
     override fun additionalSetup(url: String)
     {
+        val allPermissions = setOf("*/can-login").map {
+            PermissionRequirement.parse(it)
+        }
+        val configFactory = TokenVerifyingConfigFactory(TokenVerifier.authTokenVerifier, allPermissions.toSet())
+        val tokenVerifier = configFactory.build()
+        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                tokenVerifier,
+                configFactory.allClients(),
+                MontaguAuthorizer::class.java.simpleName,
+                "SkipOptions"
+        ))
+
         Spark.after(url, contentType, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
     }
+
 
     fun transform(x: Any) = Serializer.instance.toResult(x)
 

@@ -27,6 +27,11 @@ class TestTokenGenerator
         return helper.issuer.generator.generate(claims(user))
     }
 
+    fun generateOneTimeToken(user: MontaguUser): String
+    {
+        return helper.issuer.generateOneTimeActionToken(user)
+    }
+
     fun claims(user: MontaguUser): Map<String, Any>
     {
         return mapOf(

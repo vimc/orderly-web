@@ -14,21 +14,21 @@ import java.util.*
  * However, we still need to be able to generate tokens for other things:
  * In this case, one time action tokens.
  */
-open class TokenIssuer(keyPair: KeyPair, val issuer: String)
+open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
 {
     val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(10)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
 
-    open fun generateOneTimeActionToken(action: String, params: Map<String, String>): String
+    open fun generateOneTimeActionToken(user: MontaguUser): String
     {
         return generator.generate(mapOf(
                 "iss" to issuer,
                 "sub" to oneTimeActionSubject,
                 "exp" to Date.from(Instant.now().plus(oneTimeLinkLifeSpan)),
-                "action" to action,
-                "payload" to params.map { "${it.key}=${it.value}" }.joinToString("&"),
+                "permissions" to user.permissions.joinToString(","),
+                "roles" to user.roles.joinToString(","),
                 "nonce" to getNonce()
         ))
     }

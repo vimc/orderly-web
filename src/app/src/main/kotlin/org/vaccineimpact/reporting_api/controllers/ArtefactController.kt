@@ -5,21 +5,23 @@ import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
+import org.vaccineimpact.reporting_api.errors.InvalidOneTimeLinkToken
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.vaccineimpact.reporting_api.security.TokenIssuer
+import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import java.io.File
 import javax.servlet.http.HttpServletResponse
 
-class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null)  : Controller
-{
-    val orderly = orderlyClient?: Orderly()
-    val files = fileServer?: Files()
+class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller {
+    val orderly = orderlyClient ?: Orderly()
+    val files = fileServer ?: Files()
 
     fun get(context: ActionContext): JsonObject {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext) : HttpServletResponse {
+    fun download(context: ActionContext): HttpServletResponse {
 
         val name = context.params(":name")
         val version = context.params(":version")
@@ -27,7 +29,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         orderly.getArtefact(name, version, artefactname)
 
-        val filename =  "$name/$version/$artefactname"
+        val filename = "$name/$version/$artefactname"
 
         val response = context.getSparkResponse().raw()
 

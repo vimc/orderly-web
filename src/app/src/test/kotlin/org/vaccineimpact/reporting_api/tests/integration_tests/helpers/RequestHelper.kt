@@ -10,6 +10,7 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.UserProperties
+import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
 class RequestHelper {
@@ -18,6 +19,9 @@ class RequestHelper {
     }
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
+    private val fakeUser = MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
+    listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global())))
+
     fun get(url: String, contentType: String = ContentTypes.json): Response {
         var headers = mapOf(
                 "Accept" to contentType,
@@ -25,12 +29,16 @@ class RequestHelper {
         )
 
         val token = APITests.tokenHelper
-                .generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
+                .generateToken(fakeUser)
 
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
+    }
+
+    fun generateOnetimeToken(): String {
+       return WebTokenHelper.oneTimeTokenIssuer
+               .generateOneTimeActionToken(fakeUser)
     }
 
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response {
@@ -70,16 +78,6 @@ class RequestHelper {
 
     private fun get(url: String, headers: Map<String, String>)
             = khttp.get(url, headers)
-}
-
-fun <T> Response.montaguData(): T? {
-    val data = this.json()["data"]
-    if (data != "") {
-        @Suppress("UNCHECKED_CAST")
-        return data as T
-    } else {
-        return null
-    }
 }
 
 fun Response.json() = Parser().parse(StringBuilder(text)) as JsonObject

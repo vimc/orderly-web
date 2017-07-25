@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.security
 
+import org.vaccineimpact.reporting_api.db.Config
 import java.security.interfaces.RSAPublicKey
 
 class TokenVerifier(publicKey: RSAPublicKey, val expectedIssuer: String)
@@ -8,4 +9,9 @@ class TokenVerifier(publicKey: RSAPublicKey, val expectedIssuer: String)
 
     fun verify(token: String): Map<String, Any>
             = MontaguTokenAuthenticator(signatureConfiguration, expectedIssuer).validateTokenAndGetClaims(token)
+
+    companion object{
+        val authTokenVerifier = TokenVerifier(KeyHelper.authPublicKey, Config["token.issuer"])
+    }
+
 }
