@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.TokenStore
 import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
@@ -30,6 +31,7 @@ class MontaguReportingApi
 
         logger.info("Expecting orderly database at ${Config["db.location"]}")
 
+        TokenStore().createStore()
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
     }
