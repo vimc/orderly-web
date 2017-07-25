@@ -39,21 +39,7 @@ class TokenStoreTests : MontaguTests() {
     fun `can create store`() {
 
         val sut = TokenStore()
-        sut.createStore()
-    }
-
-    @Test
-    fun `can create table`() {
-
-        val sut = TokenStore()
-
-        // first drop table so can create it fresh
-        getJooqContext().use {
-            it.dsl.dropTable(sut.ONETIME_TOKEN)
-                    .execute()
-        }
-
-        sut.createTable()
+        sut.setup()
     }
 
     @Test

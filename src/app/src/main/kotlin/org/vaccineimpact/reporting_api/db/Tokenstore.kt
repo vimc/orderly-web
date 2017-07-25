@@ -17,11 +17,12 @@ class TokenStore
 
     private fun getJooqContext() = JooqContext(Config["onetime_token.db.location"])
 
-    fun createStore() {
+    fun setup() {
 
         val dbLocation = Config["onetime_token.db.location"]
         val file = File(dbLocation)
-        if (file.exists()){
+
+        if (file.exists()) {
             file.delete()
         }
 
@@ -33,7 +34,6 @@ class TokenStore
                 if (conn != null) {
                     logger.info("A new database has been created at ${Config["onetime_token.db.location"]}.")
                 }
-
             }
 
             createTable()
@@ -43,26 +43,23 @@ class TokenStore
         }
     }
 
-    fun createTable()
-    {
+    private fun createTable() {
         getJooqContext().use {
-             it.dsl.createTable(tableName)
+            it.dsl.createTable(tableName)
                     .column("$tableName.TOKEN", SQLDataType.VARCHAR)
                     .execute()
         }
     }
 
-    fun storeToken(token: String)
-    {
+    fun storeToken(token: String) {
         getJooqContext().use {
             it.dsl.insertInto(ONETIME_TOKEN)
-                    .set(TOKEN,token)
+                    .set(TOKEN, token)
                     .execute()
         }
     }
 
-    fun validateOneTimeToken(token: String): Boolean
-    {
+    fun validateOneTimeToken(token: String): Boolean {
         getJooqContext().use {
             val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)
                     .where(TOKEN.eq(token))

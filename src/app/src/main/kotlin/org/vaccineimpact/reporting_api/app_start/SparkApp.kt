@@ -31,7 +31,7 @@ class MontaguReportingApi
 
         logger.info("Expecting orderly database at ${Config["db.location"]}")
 
-        TokenStore().createStore()
+        TokenStore().setup()
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
     }
