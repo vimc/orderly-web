@@ -6,10 +6,11 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class ArtefactTests: IntegrationTest()
+class ArtefactTests : IntegrationTest()
 {
     @Test
-    fun `gets dict of artefact names to hashes`(){
+    fun `gets dict of artefact names to hashes`()
+    {
 
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/artefacts/")

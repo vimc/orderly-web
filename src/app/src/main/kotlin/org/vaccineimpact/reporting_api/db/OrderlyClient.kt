@@ -8,21 +8,25 @@ interface OrderlyClient
     fun getAllReports(): List<String>
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
+
     @Throws(UnknownObjectError::class)
     fun getReportsByNameAndVersion(name: String, version: String): JsonObject
 
     @Throws(UnknownObjectError::class)
     fun getArtefacts(name: String, version: String): JsonObject
+
     @Throws(UnknownObjectError::class)
-    fun getArtefact(name: String, version: String, filename: String) : String
+    fun getArtefact(name: String, version: String, filename: String): String
 
     @Throws(UnknownObjectError::class)
     fun getData(name: String, version: String): JsonObject
+
     @Throws(UnknownObjectError::class)
-    fun getDatum(name: String, version: String, datumname: String) : String
+    fun getDatum(name: String, version: String, datumname: String): String
 
     @Throws(UnknownObjectError::class)
     fun getResources(name: String, version: String): JsonObject
+
     @Throws(UnknownObjectError::class)
-    fun getResource(name: String, version: String, resourcename: String) : String
+    fun getResource(name: String, version: String, resourcename: String): String
 }

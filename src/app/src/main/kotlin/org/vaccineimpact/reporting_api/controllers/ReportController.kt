@@ -2,29 +2,35 @@ package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
+import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import javax.servlet.http.HttpServletResponse
 
-class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClient? = null) : Controller {
+class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClient? = null) : Controller
+{
 
     val orderly = orderlyClient ?: Orderly()
-    val zip = zipClient?: Zip()
+    val zip = zipClient ?: Zip()
 
-    fun getAllNames(context: ActionContext): List<String> {
+    fun getAllNames(context: ActionContext): List<String>
+    {
         return orderly.getAllReports()
     }
 
-    fun getVersionsByName(context: ActionContext): List<String> {
+    fun getVersionsByName(context: ActionContext): List<String>
+    {
         return orderly.getReportsByName(context.params(":name"))
     }
 
-    fun getByNameAndVersion(context: ActionContext): JsonObject {
+    fun getByNameAndVersion(context: ActionContext): JsonObject
+    {
         return orderly.getReportsByNameAndVersion(context.params(":name"), context.params(":version"))
     }
 
-    fun getZippedByNameAndVersion(context: ActionContext): Boolean {
+    fun getZippedByNameAndVersion(context: ActionContext): Boolean
+    {
 
         val name = context.params(":name")
         val version = context.params(":version")

@@ -23,14 +23,14 @@ open class Serializer
     init
     {
         gson = GsonBuilder()
-            .setPrettyPrinting()
-            .disableHtmlEscaping()
-            .setFieldNamingStrategy { convertFieldName(it.name) }
-            .serializeNulls()
-            .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
-            .registerTypeAdapter<java.time.Instant>(toStringSerializer)
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .setFieldNamingStrategy { convertFieldName(it.name) }
+                .serializeNulls()
+                .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
+                .registerTypeAdapter<java.time.Instant>(toStringSerializer)
                 .registerTypeAdapter<ResultStatus>(enumSerializer)
-            .create()
+                .create()
     }
 
     open fun toResult(data: Any?): String = toJson(Result(ResultStatus.SUCCESS, data, emptyList()))

@@ -12,16 +12,20 @@ data class JsonEndpoint(
         override val controllerName: String,
         override val actionName: String,
         override val method: HttpMethod = HttpMethod.get
-) : EndpointDefinition {
-    init {
-        if (!urlFragment.endsWith("/")) {
+) : EndpointDefinition
+{
+    init
+    {
+        if (!urlFragment.endsWith("/"))
+        {
             throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
         }
     }
 
     override val contentType: String = ContentTypes.json
 
-    override fun additionalSetup(url: String) {
+    override fun additionalSetup(url: String)
+    {
 
         val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)

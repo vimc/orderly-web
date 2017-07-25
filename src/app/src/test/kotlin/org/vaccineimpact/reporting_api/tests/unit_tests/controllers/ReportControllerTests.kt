@@ -16,11 +16,12 @@ import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-class ReportControllerTests: ControllerTest()
+class ReportControllerTests : ControllerTest()
 {
 
     @Test
-    fun `getReports returns all report names`() {
+    fun `getReports returns all report names`()
+    {
         val reportNames = listOf("testname1", "testname2")
 
         val orderly = mock<OrderlyClient> {
@@ -32,7 +33,8 @@ class ReportControllerTests: ControllerTest()
     }
 
     @Test
-    fun `getByName returns all reports versions by name`() {
+    fun `getByName returns all reports versions by name`()
+    {
 
         val reportName = "reportName"
         val reportVersions = listOf("version1", "version2")
@@ -42,7 +44,7 @@ class ReportControllerTests: ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn reportName
+            on { this.params(":name") } doReturn reportName
         }
 
         val sut = ReportController(orderly)
@@ -51,7 +53,8 @@ class ReportControllerTests: ControllerTest()
     }
 
     @Test
-    fun `getByNameAndVersion returns report metadata`() {
+    fun `getByNameAndVersion returns report metadata`()
+    {
 
         val reportName = "reportName"
         val reportVersion = "reportVersion"
@@ -63,8 +66,8 @@ class ReportControllerTests: ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":version")} doReturn reportVersion
-            on {this.params(":name")} doReturn reportName
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
         }
 
         val sut = ReportController(orderly)
@@ -73,15 +76,16 @@ class ReportControllerTests: ControllerTest()
     }
 
     @Test
-    fun `getZippedByNameAndVersion returns zip file`() {
+    fun `getZippedByNameAndVersion returns zip file`()
+    {
 
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":version")} doReturn reportVersion
-            on {this.params(":name")} doReturn reportName
-            on {this.getSparkResponse()} doReturn mockSparkResponse
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
+            on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
         val mockZipClient = mock<ZipClient>()

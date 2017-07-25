@@ -6,7 +6,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.ByteArrayOutputStream
 
-class ZipTests: MontaguTests()
+class ZipTests : MontaguTests()
 {
 
     @Test

@@ -5,6 +5,7 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.Files
+import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
@@ -12,31 +13,36 @@ import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 import java.io.File
 import javax.servlet.http.HttpServletResponse
 
-class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller {
+class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller
+{
     val files = files ?: Files()
     val orderly = orderly ?: Orderly()
 
-    fun get(context: ActionContext): JsonObject {
+    fun get(context: ActionContext): JsonObject
+    {
         return orderly.getData(context.params(":name"), context.params(":version"))
     }
 
-    fun downloadCSV(context: ActionContext): Boolean {
+    fun downloadCSV(context: ActionContext): Boolean
+    {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
-        context.getSparkResponse().raw().contentType = ContentTypes.csv
+        context.addResponseHeader("Content-Type", ContentTypes.csv)
         return downloadFile(absoluteFilePath, "$id.csv", context)
     }
 
-    fun downloadRDS(context: ActionContext): Boolean {
+    fun downloadRDS(context: ActionContext): Boolean
+    {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
-        context.getSparkResponse().raw().contentType = ContentTypes.binarydata
+        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
         return downloadFile(absoluteFilePath, "$id.rds", context)
     }
 
-    fun downloadData(context: ActionContext): Boolean {
+    fun downloadData(context: ActionContext): Boolean
+    {
         val name = context.params(":name")
         val version = context.params(":version")
         val id = context.params(":data")
@@ -49,17 +55,20 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
 
         val absoluteFilePath = "${Config["orderly.root"]}data/$type/$hash.$type"
 
-        if (type == "csv") {
+        if (type == "csv")
+        {
             context.addResponseHeader("Content-Type", ContentTypes.csv)
         }
-        else {
+        else
+        {
             context.addResponseHeader("Content-Type", ContentTypes.binarydata)
         }
 
         return downloadFile(absoluteFilePath, "$hash.$type", context)
     }
 
-    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): Boolean {
+    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): Boolean
+    {
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(filename)
 

@@ -7,14 +7,17 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class OrderlyTests : DatabaseTests() {
+class OrderlyTests : DatabaseTests()
+{
 
-    private fun createSut(): Orderly {
+    private fun createSut(): Orderly
+    {
         return Orderly()
     }
 
     @Test
-    fun `can get all published report names`() {
+    fun `can get all published report names`()
+    {
 
         insertReport("test", "version1")
         insertReport("test", "version2")
@@ -31,7 +34,8 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `can get report metadata`() {
+    fun `can get report metadata`()
+    {
 
         insertReport("test", "version1",
                 hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
@@ -48,18 +52,20 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `throws unknown object error if report version not published`() {
+    fun `throws unknown object error if report version not published`()
+    {
 
         insertReport("test", "version1", published = false)
 
         val sut = createSut()
 
-        assertThatThrownBy {sut.getReportsByNameAndVersion("test", "version1") }
+        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
     @Test
-    fun `throws unknown object error if report version doesnt exist`() {
+    fun `throws unknown object error if report version doesnt exist`()
+    {
 
         insertReport("test", "version1",
                 hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
@@ -71,7 +77,8 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `throws unknown object error if report name not found`() {
+    fun `throws unknown object error if report name not found`()
+    {
 
         insertReport("test", "version1")
 
@@ -83,7 +90,8 @@ class OrderlyTests : DatabaseTests() {
     }
 
     @Test
-    fun `can get all published report versions`() {
+    fun `can get all published report versions`()
+    {
 
         insertReport("test", "version1")
         insertReport("test", "version2")

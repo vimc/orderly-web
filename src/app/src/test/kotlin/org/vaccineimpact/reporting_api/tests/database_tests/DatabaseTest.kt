@@ -9,7 +9,7 @@ import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
-abstract class DatabaseTests: MontaguTests()
+abstract class DatabaseTests : MontaguTests()
 {
     companion object
     {

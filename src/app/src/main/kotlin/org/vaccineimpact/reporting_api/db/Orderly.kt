@@ -6,11 +6,13 @@ import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class Orderly : OrderlyClient {
+class Orderly : OrderlyClient
+{
 
     private val gsonParser = JsonParser()
 
-    override fun getAllReports(): List<String> {
+    override fun getAllReports(): List<String>
+    {
         JooqContext().use {
 
             return it.dsl.select(ORDERLY.NAME)
@@ -22,16 +24,20 @@ class Orderly : OrderlyClient {
 
     }
 
-    override fun getReportsByName(name: String): List<String> {
+    override fun getReportsByName(name: String): List<String>
+    {
         JooqContext().use {
 
             val result = it.dsl.select(ORDERLY.ID)
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and(ORDERLY.PUBLISHED))
 
-            if (result.count() == 0) {
+            if (result.count() == 0)
+            {
                 throw UnknownObjectError(name, "report")
-            } else {
+            }
+            else
+            {
                 return result.fetchInto(String::class.java)
             }
         }
@@ -50,19 +56,26 @@ class Orderly : OrderlyClient {
 
             val obj = JsonObject()
 
-            for (field in result.fields()) {
+            for (field in result.fields())
+            {
 
                 val value = result.get(field)
 
-                val valAsJson = if (value != null) {
+                val valAsJson = if (value != null)
+                {
                     val valueString = value.toString()
 
-                    try {
+                    try
+                    {
                         gsonParser.parse(valueString)
-                    } catch(e: JsonParseException) {
+                    }
+                    catch(e: JsonParseException)
+                    {
                         JsonPrimitive(valueString)
                     }
-                } else {
+                }
+                else
+                {
                     JsonNull.INSTANCE
                 }
 
@@ -82,7 +95,7 @@ class Orderly : OrderlyClient {
 
     override fun getArtefact(name: String, version: String, filename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename]?:
+        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename] ?:
                 throw UnknownObjectError(filename, "Artefact")
 
         return result.asString
@@ -95,7 +108,7 @@ class Orderly : OrderlyClient {
 
     override fun getDatum(name: String, version: String, datumname: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname]?:
+        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname] ?:
                 throw UnknownObjectError(datumname, "Data")
 
         return result.asString
@@ -108,7 +121,7 @@ class Orderly : OrderlyClient {
 
     override fun getResource(name: String, version: String, resourcename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename]?:
+        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename] ?:
                 throw UnknownObjectError(resourcename, "Resource")
 
         return result.asString
@@ -122,7 +135,7 @@ class Orderly : OrderlyClient {
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version))
                             .and(ORDERLY.PUBLISHED))
-                    .fetchAny()?: throw UnknownObjectError("$name-$version", "reportVersion")
+                    .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
             if (result.value1() == null)
                 return JsonObject()

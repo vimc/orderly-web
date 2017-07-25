@@ -19,7 +19,8 @@ class ArtefactControllerTests : ControllerTest()
 {
 
     @Test
-    fun `gets artefacts for report`() {
+    fun `gets artefacts for report`()
+    {
         val name = "testname"
         val version = "testversion"
 
@@ -30,8 +31,8 @@ class ArtefactControllerTests : ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
         }
 
         val sut = ArtefactController(orderly, mock<FileSystem>())
@@ -40,7 +41,8 @@ class ArtefactControllerTests : ControllerTest()
     }
 
     @Test
-    fun `downloads artefact for report`() {
+    fun `downloads artefact for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val artefact = "testartefact"
@@ -50,10 +52,10 @@ class ArtefactControllerTests : ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":artefact")} doReturn artefact
-            on {this.getSparkResponse()} doReturn mockSparkResponse
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
+            on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
         val fileSystem = mock<FileSystem>() {
@@ -66,19 +68,20 @@ class ArtefactControllerTests : ControllerTest()
     }
 
     @Test
-    fun `throws unknown object error if artefact does not exist for report`() {
+    fun `throws unknown object error if artefact does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val artefact = "test.png"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("","")
+            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("", "")
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":artefact")} doReturn artefact
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
         }
 
         val sut = ArtefactController(orderly, mock<FileSystem>())

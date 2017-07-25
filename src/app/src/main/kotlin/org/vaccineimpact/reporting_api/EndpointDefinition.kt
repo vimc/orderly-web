@@ -1,9 +1,9 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.security.TokenVerifier
 import spark.route.HttpMethod
 
-interface EndpointDefinition {
+interface EndpointDefinition
+{
     val urlFragment: String
     val controllerName: String
     val actionName: String

@@ -25,8 +25,8 @@ class JSONValidator
     }
 
     fun validateError(response: String,
-                               expectedErrorCode: String?,
-                               expectedErrorText: String?)
+                      expectedErrorCode: String?,
+                      expectedErrorText: String?)
     {
         val json = parseJson(response)
         checkResultSchema(json, response, "failure")

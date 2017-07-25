@@ -22,7 +22,7 @@ fun addTrailingSlashes(req: Request, res: Response)
 }
 
 fun addDefaultResponseHeaders(res: Response, contentType: String)
-    = addDefaultResponseHeaders(res.raw(), contentType = contentType)
+        = addDefaultResponseHeaders(res.raw(), contentType = contentType)
 
 fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String)
 {

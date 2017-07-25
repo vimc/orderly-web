@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.*
+import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
@@ -13,15 +14,18 @@ import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import java.io.File
 import javax.servlet.http.HttpServletResponse
 
-class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller {
+class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller
+{
     val orderly = orderlyClient ?: Orderly()
     val files = fileServer ?: Files()
 
-    fun get(context: ActionContext): JsonObject {
+    fun get(context: ActionContext): JsonObject
+    {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext): Boolean {
+    fun download(context: ActionContext): Boolean
+    {
 
         val name = context.params(":name")
         val version = context.params(":version")

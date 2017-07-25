@@ -9,7 +9,7 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import java.io.File
 
-class ReportTests: IntegrationTest()
+class ReportTests : IntegrationTest()
 {
 
     @Test

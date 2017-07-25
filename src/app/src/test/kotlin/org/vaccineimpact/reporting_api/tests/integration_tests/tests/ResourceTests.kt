@@ -5,10 +5,11 @@ import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class ResourceTests: IntegrationTest()
+class ResourceTests : IntegrationTest()
 {
     @Test
-    fun `gets dict of resource names to hashes`(){
+    fun `gets dict of resource names to hashes`()
+    {
 
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/resources")
@@ -48,7 +49,7 @@ class ResourceTests: IntegrationTest()
     @Test
     fun `gets 404 if resource file doesnt exist`()
     {
-        insertReport("testname", "testversion", hashResources ="{\"resource.csv\": \"gfe7064mvdfjieync\"}")
+        insertReport("testname", "testversion", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
         val token = requestHelper.generateOnetimeToken()
         val response = requestHelper.get("/reports/testname/testversion/resources/resource.csv/?access_token=$token", ContentTypes.binarydata)
 

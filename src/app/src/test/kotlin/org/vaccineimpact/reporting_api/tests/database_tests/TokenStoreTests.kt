@@ -11,10 +11,12 @@ import org.vaccineimpact.reporting_api.db.TokenStore
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
-class TokenStoreTests : MontaguTests() {
+class TokenStoreTests : MontaguTests()
+{
 
     @Before
-    fun createDatabase() {
+    fun createDatabase()
+    {
         println("Looking for sqlite database at path: ${Config["onetime_token.db.template"]}")
         println("Working directory: ${System.getProperty("user.dir")}")
 
@@ -27,7 +29,8 @@ class TokenStoreTests : MontaguTests() {
     }
 
     @After
-    fun deleteDatabase(){
+    fun deleteDatabase()
+    {
 
         println("Removing database at path: ${Config["onetime_token.db.location"]}")
         File(Config["onetime_token.db.location"]).delete()
@@ -36,14 +39,16 @@ class TokenStoreTests : MontaguTests() {
     private fun getJooqContext() = JooqContext(Config["onetime_token.db.location"])
 
     @Test
-    fun `can create store`() {
+    fun `can create store`()
+    {
 
         val sut = TokenStore()
         sut.setup()
     }
 
     @Test
-    fun `can insert new token`() {
+    fun `can insert new token`()
+    {
 
         val sut = TokenStore()
         sut.storeToken("testtoken")
@@ -60,7 +65,8 @@ class TokenStoreTests : MontaguTests() {
     }
 
     @Test
-    fun `verifyToken returns true if token exists`() {
+    fun `verifyToken returns true if token exists`()
+    {
 
 
         val token = "testtoken"
@@ -79,7 +85,8 @@ class TokenStoreTests : MontaguTests() {
 
 
     @Test
-    fun `verifyToken deletes token after retrieval`() {
+    fun `verifyToken deletes token after retrieval`()
+    {
 
 
         val token = "testtoken"
@@ -104,7 +111,8 @@ class TokenStoreTests : MontaguTests() {
 
 
     @Test
-    fun `verifyToken returns false if token does not exist`() {
+    fun `verifyToken returns false if token does not exist`()
+    {
 
 
         val token = "testtoken"

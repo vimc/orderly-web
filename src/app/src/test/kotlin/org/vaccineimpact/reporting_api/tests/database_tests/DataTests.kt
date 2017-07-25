@@ -7,15 +7,17 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class DataTests: DatabaseTests()
+class DataTests : DatabaseTests()
 {
 
-    private fun createSut(): Orderly {
+    private fun createSut(): Orderly
+    {
         return Orderly()
     }
 
     @Test
-    fun `return datum hash name if report has data`() {
+    fun `return datum hash name if report has data`()
+    {
 
         val hash = "07dffb00305279935544238b39d7b14b"
         val dataHashString = "{\"data.csv\":\"$hash\"}"
@@ -29,7 +31,8 @@ class DataTests: DatabaseTests()
     }
 
     @Test
-    fun `throw unknown object error if report does not have data`() {
+    fun `throw unknown object error if report does not have data`()
+    {
 
         val dataHashString = "{\"data2.rds\":\"07dffb00305279935544238b39d7b14b\"}"
 
@@ -42,7 +45,8 @@ class DataTests: DatabaseTests()
     }
 
     @Test
-    fun `can get data hash for report`() {
+    fun `can get data hash for report`()
+    {
 
         val dataHashString = "{\"data.csv\":\"07dffb00305279935544238b39d7b14b\"}"
 

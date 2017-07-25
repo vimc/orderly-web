@@ -7,17 +7,17 @@ import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-abstract class ControllerTest: MontaguTests()
+abstract class ControllerTest : MontaguTests()
 {
-     protected val mockOutputStream = mock<ServletOutputStream>()
+    protected val mockOutputStream = mock<ServletOutputStream>()
 
-     protected val servletResponse = mock<HttpServletResponse>(){
-         on {this.outputStream} doReturn mockOutputStream
-         on {this.contentType} doReturn ""
-     }
+    protected val servletResponse = mock<HttpServletResponse>() {
+        on { this.outputStream } doReturn mockOutputStream
+        on { this.contentType } doReturn ""
+    }
 
-     protected val mockSparkResponse = mock<Response>(){
-         on {this.raw()} doReturn servletResponse
-     }
+    protected val mockSparkResponse = mock<Response>() {
+        on { this.raw() } doReturn servletResponse
+    }
 
 }
