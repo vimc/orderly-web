@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api
 
 import org.vaccineimpact.reporting_api.errors.InvalidOneTimeLinkToken
 import org.vaccineimpact.reporting_api.security.TokenIssuer
+import org.vaccineimpact.reporting_api.security.TokenVerifier
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import spark.Filter
 import spark.Request
@@ -27,12 +28,12 @@ data class OnetimeTokenEndpoint(
 
     override fun additionalSetup(url: String)
     {
-        Spark.before(url, OneTimeTokenFilter())
+        Spark.before(url, OneTimeTokenFilter(WebTokenHelper.oneTimeTokenHelper.verifier))
     }
 
 }
 
-class OneTimeTokenFilter : Filter{
+class OneTimeTokenFilter(val tokenVerifier: TokenVerifier) : Filter {
     override fun handle(request: Request, response: Response) {
         val token = request.queryParams("access_token")
                 ?: throw InvalidOneTimeLinkToken("verification", "Access token is missing")
@@ -49,7 +50,7 @@ class OneTimeTokenFilter : Filter{
 //        }
 
         val claims = try {
-            WebTokenHelper.oneTimeTokenVerifier.verify(token)
+            tokenVerifier.verify(token)
         } catch (e: Exception) {
             // logger.warn("An error occurred validating the onetime link token: $e")
             throw InvalidOneTimeLinkToken("verification", "Unable to verify token; it may be badly formatted or signed with the wrong key")

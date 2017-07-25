@@ -25,7 +25,7 @@ class ArtefactTests: IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val token = requestHelper.generateOnetimeToken()
-        val response = requestHelper.get("/reports/other/$publishedVersion/artefacts/graph.png/?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/other/$publishedVersion/artefacts/graph.png/?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -38,7 +38,7 @@ class ArtefactTests: IntegrationTest()
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
         val token = requestHelper.generateOnetimeToken()
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact/?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/$fakeartefact/?access_token=$token", ContentTypes.binarydata)
         assertJsonContentType(response)
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -50,7 +50,7 @@ class ArtefactTests: IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact/", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/$fakeartefact/", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(400)
@@ -61,7 +61,7 @@ class ArtefactTests: IntegrationTest()
     fun `gets 400 if invalid access token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/artefact/?access_token=42678iwek", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/artefact/?access_token=42678iwek", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(400)
@@ -74,7 +74,7 @@ class ArtefactTests: IntegrationTest()
         val fakeartefact = "64328fyhdkjs.csv"
         val token = requestHelper.generateOnetimeToken()
         insertReport("testname", "testversion", hashArtefacts = "{\"$fakeartefact\":\"07dffb00305279935544238b39d7b14b\"}")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact/?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/$fakeartefact/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

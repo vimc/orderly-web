@@ -37,8 +37,10 @@ class RequestHelper {
     }
 
     fun generateOnetimeToken(): String {
-       return WebTokenHelper.oneTimeTokenIssuer
+       return WebTokenHelper.oneTimeTokenHelper.issuer
                .generateOneTimeActionToken(fakeUser)
+
+ //       return ""
     }
 
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response {

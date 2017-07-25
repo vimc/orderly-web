@@ -13,7 +13,7 @@ class DataTests : IntegrationTest() {
     fun `gets dict of data names to hashes`() {
 
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/data")
+        val response = requestHelper.get("/reports/testname/testversion/data/")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -30,7 +30,9 @@ class DataTests : IntegrationTest() {
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
-        val response = requestHelper.get("/reports/testname/testversion/data/testdata", ContentTypes.binarydata)
+
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/data/testdata/?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -42,7 +44,8 @@ class DataTests : IntegrationTest() {
 
         insertReport("testname", "testversion")
         val fakedata = "hf647sa674yh3basrhj"
-        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata", ContentTypes.binarydata)
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -55,11 +58,26 @@ class DataTests : IntegrationTest() {
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
         insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
-        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata", ContentTypes.binarydata)
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakehash.csv' does not exist")
+    }
+
+    @Test
+    fun `gets 400 if no access token`() {
+
+        val fakedata = "64328fyhdkjs"
+        val fakehash = "07dffb003   05279935544238b39d7b14b"
+        insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
+
+        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata/", ContentTypes.binarydata)
+
+        assertJsonContentType(response)
+        Assertions.assertThat(response.statusCode).isEqualTo(400)
+        JSONValidator.validateError(response.text, "invalid-token-verification", "Access token is missing")
     }
 
 
@@ -71,8 +89,9 @@ class DataTests : IntegrationTest() {
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
+        val token = requestHelper.generateOnetimeToken()
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoRDS\"}")
-        val response = requestHelper.get("/reports/testname/testversion/data/testdata?type=rds", ContentTypes.binarydata)
+        val response = requestHelper.get("/reports/testname/testversion/data/testdata?type=rds&access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -88,7 +107,8 @@ class DataTests : IntegrationTest() {
         // remove file extension
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
-        val response = requestHelper.get("/data/csv/$demoCSV", ContentTypes.csv)
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/data/csv/$demoCSV/?access_token=$token", ContentTypes.csv)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -103,7 +123,8 @@ class DataTests : IntegrationTest() {
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
-        val response = requestHelper.get("/data/rds/$demoRDS", ContentTypes.binarydata)
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/data/rds/$demoRDS/?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")

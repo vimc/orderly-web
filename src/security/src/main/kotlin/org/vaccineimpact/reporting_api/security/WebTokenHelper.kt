@@ -10,8 +10,6 @@ class WebTokenHelper(keyPair: KeyPair, val issuerName: String)
     val verifier = TokenVerifier(keyPair.public as RSAPublicKey, issuerName)
 
     companion object{
-        private val oneTimeTokenHelper = WebTokenHelper(KeyHelper.generateKeyPair(), Config["onetime_token.issuer"])
-        val oneTimeTokenIssuer = oneTimeTokenHelper.issuer
-        val oneTimeTokenVerifier = oneTimeTokenHelper.verifier
+         val oneTimeTokenHelper = WebTokenHelper(KeyHelper.generateKeyPair(), Config["onetime_token.issuer"])
     }
 }

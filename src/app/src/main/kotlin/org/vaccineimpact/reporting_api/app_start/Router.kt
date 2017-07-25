@@ -6,11 +6,9 @@ import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.controllers.Controller
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
-import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
-import org.vaccineimpact.reporting_api.security.PermissionRequirement
-import org.vaccineimpact.reporting_api.security.TokenVerifier
-import org.vaccineimpact.reporting_api.security.TokenVerifyingConfigFactory
+import org.vaccineimpact.reporting_api.security.*
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
@@ -46,6 +44,7 @@ class Router(val config: RouteConfig) {
             HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, transformer)
             else -> throw UnsupportedValueException(endpoint.method)
         }
+
         endpoint.additionalSetup(fullUrl)
         return fullUrl
     }
@@ -67,6 +66,7 @@ class Router(val config: RouteConfig) {
             HttpMethod.delete -> Spark.delete(fullUrl, contentType, route)
             else -> throw UnsupportedValueException(endpoint.method)
         }
+
         endpoint.additionalSetup(fullUrl)
         return fullUrl
     }

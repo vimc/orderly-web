@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api
 
+import org.vaccineimpact.reporting_api.security.TokenVerifier
 import spark.route.HttpMethod
 
 interface EndpointDefinition {

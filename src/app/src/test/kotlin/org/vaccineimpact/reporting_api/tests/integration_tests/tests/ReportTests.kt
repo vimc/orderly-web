@@ -72,11 +72,24 @@ class ReportTests: IntegrationTest()
     fun `gets zip file`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/reports/testname/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
 
         assertSuccessful(response)
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
         assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+    }
+
+    @Test
+    fun `returns 400 if access token is missing`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+
+        assertJsonContentType(response)
+        Assertions.assertThat(response.statusCode).isEqualTo(400)
+        JSONValidator.validateError(response.text, "invalid-token-verification", "Access token is missing")
     }
 
 }

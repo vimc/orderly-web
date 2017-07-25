@@ -10,9 +10,10 @@ class OnetimeTokenController : Controller
 {
     fun get(context: ActionContext): String
     {
-        val token = WebTokenHelper.oneTimeTokenIssuer
+        val token = WebTokenHelper.oneTimeTokenHelper.issuer
                 .generateOneTimeActionToken(context.userProfile.getAttribute(USER_OBJECT) as MontaguUser)
         // repo.storeToken(token)
         return token
+
     }
 }
