@@ -43,6 +43,29 @@ class JSONValidator
         }
     }
 
+    fun validateMultipleAuthErrors(response: String)
+    {
+        val json = parseJson(response)
+        checkResultSchema(json, response, "failure")
+        var error = json["errors"].first()
+
+        Assertions.assertThat(error["code"].asText())
+                .withFailMessage("Expected error code to be 'bearer-token-invalid' in $response")
+                .isEqualTo("bearer-token-invalid")
+
+        Assertions.assertThat(error["message"].asText())
+                .contains("Bearer token not supplied in Authorization header, or bearer token was invalid")
+
+        error = json["errors"][1]
+
+        Assertions.assertThat(error["code"].asText())
+                .withFailMessage("Expected error code to be 'access-token-invalid' in $response")
+                .isEqualTo("access-token-invalid")
+
+        Assertions.assertThat(error["message"].asText())
+                .contains("Access token not supplied, or access token was invalid")
+    }
+
     private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)
     {
         assertValidates(responseSchema, json)

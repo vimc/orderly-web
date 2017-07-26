@@ -72,18 +72,17 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 400 if no access token`()
+    fun `gets 401 if no access token`()
     {
 
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb003   05279935544238b39d7b14b"
         insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
 
-        val response = requestHelper.get("/reports/testname/testversion/data/$fakedata/", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/data/$fakedata/", ContentTypes.binarydata)
 
-        assertJsonContentType(response)
-        Assertions.assertThat(response.statusCode).isEqualTo(400)
-        JSONValidator.validateError(response.text, "invalid-token-verification", "Access token is missing")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
     }
 
 

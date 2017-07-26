@@ -25,13 +25,12 @@ data class JsonEndpoint(
 
     override fun additionalSetup(url: String)
     {
-
         val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)
         }
 
         val verifier = TokenVerifier(KeyHelper.authPublicKey, Config["token.issuer"])
-        val configFactory = TokenVerifyingConfigFactory(verifier, allPermissions.toSet())
+        val configFactory = TokenVerifyingConfigFactory(listOf(JWTHeaderClientWrapper(verifier)), allPermissions.toSet())
         val config = configFactory.build()
         Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,

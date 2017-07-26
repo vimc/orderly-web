@@ -34,15 +34,14 @@ class ResourceTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 400 if missing access token`()
+    fun `gets 401 if missing access token`()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource/", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/resources/$fakeresource/", ContentTypes.binarydata)
 
-        assertJsonContentType(response)
-        Assertions.assertThat(response.statusCode).isEqualTo(400)
-        JSONValidator.validateError(response.text, "invalid-token-verification", "Access token is missing")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
 
     }
 

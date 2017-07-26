@@ -21,12 +21,25 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets artefact file`()
+    fun `gets artefact file with access token`()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val token = requestHelper.generateOnetimeToken()
         val response = requestHelper.getNoAuth("/reports/other/$publishedVersion/artefacts/graph.png/?access_token=$token", ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+    }
+
+    @Test
+    fun `gets artefact file with bearer token`()
+    {
+        val publishedVersion = Orderly().getReportsByName("other")[0]
+
+        val token = requestHelper.generateOnetimeToken()
+        val response = requestHelper.get("/reports/other/$publishedVersion/artefacts/graph.png/?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -47,26 +60,26 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 400 if missing access token`()
+    fun `gets 401 if missing access token and no auth`()
     {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
         val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/$fakeartefact/", ContentTypes.binarydata)
 
-        assertJsonContentType(response)
-        Assertions.assertThat(response.statusCode).isEqualTo(400)
-        JSONValidator.validateError(response.text, "invalid-token-verification", "Access token is missing")
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
     }
 
     @Test
-    fun `gets 400 if invalid access token`()
+    fun `gets 401 if invalid access token`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/artefact/?access_token=42678iwek", ContentTypes.binarydata)
 
-        assertJsonContentType(response)
-        Assertions.assertThat(response.statusCode).isEqualTo(400)
-        JSONValidator.validateError(response.text, "invalid-token-used", "Token has already been used (or never existed)")
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
     }
 
     @Test

@@ -7,7 +7,6 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtProfile
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.api.models.ErrorInfo
 import org.vaccineimpact.api.models.Result
 import org.vaccineimpact.api.models.ResultStatus
 import org.vaccineimpact.api.models.permissions.PermissionSet
@@ -18,27 +17,24 @@ import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class TokenVerifyingConfigFactory(
-        tokenHelper: TokenVerifier,
+        private val actionClients: List<MontaguDirectClient>,
         val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
-    private val clients = listOf(
-            JWTHeaderClient(tokenHelper)
-    )
-
     override fun build(vararg parameters: Any?): Config
     {
-        clients.forEach {
-            it.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
+        actionClients.forEach {
+            it.client.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
         }
-        return Config(clients).apply {
+
+        return Config(actionClients.map{ it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter()
+            httpActionAdapter = TokenActionAdapter(actionClients)
         }
     }
 
-    fun allClients() = clients.map { it::class.java.simpleName }.joinToString()
+    fun allClients() = actionClients.map { it.client::class.java.simpleName }.joinToString()
 
     private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile
     {
@@ -52,15 +48,14 @@ class TokenVerifyingConfigFactory(
     }
 }
 
-class TokenActionAdapter : DefaultHttpActionAdapter()
+class TokenActionAdapter(clients: List<MontaguDirectClient>) : DefaultHttpActionAdapter()
 {
     val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
-            listOf(ErrorInfo(
-                    "bearer-token-invalid",
-                    "Bearer token not supplied in Authorization header, or bearer token was invalid"
-            ))
+            clients.map {
+               it.errorInfo
+           }
     ))
 
     fun forbiddenResponse(missingPermissions: Set<String>): String = Serializer.instance.toJson(Result(
