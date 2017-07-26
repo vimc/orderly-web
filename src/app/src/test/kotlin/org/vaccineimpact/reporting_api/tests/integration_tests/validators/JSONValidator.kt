@@ -8,13 +8,11 @@ import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.assertj.core.api.Assertions
 
-class JSONValidator
-{
+class JSONValidator {
     private val schemaFactory = makeSchemaFactory()
     private val responseSchema = readSchema("Response")
 
-    fun validateAgainstSchema(response: String, schemaName: String)
-    {
+    fun validateAgainstSchema(response: String, schemaName: String) {
         val json = parseJson(response)
         // Everything must meet the basic response schema
         checkResultSchema(json, response, "success")
@@ -31,20 +29,17 @@ class JSONValidator
         val json = parseJson(response)
         checkResultSchema(json, response, "failure")
         val error = json["errors"].first()
-        if (expectedErrorCode != null)
-        {
+        if (expectedErrorCode != null) {
             Assertions.assertThat(error["code"].asText())
                     .withFailMessage("Expected error code to be '$expectedErrorCode' in $response")
                     .isEqualTo(expectedErrorCode)
         }
-        if (expectedErrorText != null)
-        {
+        if (expectedErrorText != null) {
             Assertions.assertThat(error["message"].asText()).contains(expectedErrorText)
         }
     }
 
-    private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)
-    {
+    private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String) {
         assertValidates(responseSchema, json)
         val status = json["status"].textValue()
         Assertions.assertThat(status)
@@ -53,17 +48,14 @@ class JSONValidator
 
     private fun readSchema(name: String): JsonNode = JsonLoader.fromResource("/spec/$name.schema.json")
 
-    private fun assertValidates(schema: JsonNode, json: JsonNode)
-    {
+    private fun assertValidates(schema: JsonNode, json: JsonNode) {
         val report = schemaFactory.getJsonSchema(schema).validate(json)
-        if (!report.isSuccess)
-        {
+        if (!report.isSuccess) {
             Assertions.fail("JSON failed schema validation. Attempted to validate: $json against $schema. Report follows: $report")
         }
     }
 
-    private fun makeSchemaFactory(): JsonSchemaFactory
-    {
+    private fun makeSchemaFactory(): JsonSchemaFactory {
         val namespace = "resource:/spec/"
         val uriTranslatorConfig = URITranslatorConfiguration
                 .newBuilder()
@@ -77,14 +69,10 @@ class JSONValidator
                 .freeze()
     }
 
-    private fun parseJson(jsonAsString: String): JsonNode
-    {
-        return try
-        {
+    private fun parseJson(jsonAsString: String): JsonNode {
+        return try {
             JsonLoader.fromString(jsonAsString)
-        }
-        catch (e: JsonParseException)
-        {
+        } catch (e: JsonParseException) {
             throw Exception("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e")
         }
     }

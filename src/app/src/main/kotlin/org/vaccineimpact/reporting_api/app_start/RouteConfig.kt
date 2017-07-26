@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.Endpoint
 import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.OnetimeTokenEndpoint

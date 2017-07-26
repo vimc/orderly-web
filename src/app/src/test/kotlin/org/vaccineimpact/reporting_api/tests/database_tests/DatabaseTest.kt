@@ -15,8 +15,7 @@ abstract class DatabaseTests : MontaguTests()
     {
 
         @BeforeClass @JvmStatic
-        fun createDatabase()
-        {
+        fun createDatabase() {
             println("Looking for sqlite database at path: ${Config["db.template"]}")
             println("Working directory: ${System.getProperty("user.dir")}")
 
@@ -27,16 +26,14 @@ abstract class DatabaseTests : MontaguTests()
         }
 
         @AfterClass @JvmStatic
-        fun dropDatabase()
-        {
+        fun dropDatabase() {
             File(Config["db.location"]).delete()
         }
 
     }
 
     @Before
-    fun clearDatabase()
-    {
+    fun clearDatabase() {
         JooqContext().use {
             it.dsl.deleteFrom(ORDERLY)
                     .execute()

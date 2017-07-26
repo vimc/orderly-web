@@ -19,20 +19,16 @@ open class JooqContext(private val dbLocation: String = Config["db.location"]) :
         try
         {
             return DriverManager.getConnection(url)
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             throw UnableToConnectToDatabase(url)
         }
     }
 
-    private fun createDSL(conn: Connection): DSLContext
-    {
+    private fun createDSL(conn: Connection): DSLContext {
         return DSL.using(conn, SQLDialect.SQLITE)
     }
 
-    override fun close()
-    {
+    override fun close() {
         conn.close()
     }
 }

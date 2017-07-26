@@ -10,8 +10,7 @@ class ZipTests : MontaguTests()
 {
 
     @Test
-    fun `can zip up folder`()
-    {
+    fun `can zip up folder`() {
         ByteArrayOutputStream().use {
             Zip().zipIt("${Config["orderly.root"]}archive", it)
         }

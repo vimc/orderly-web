@@ -14,8 +14,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class ArtefactControllerTests : ControllerTest()
-{
+class ArtefactControllerTests : ControllerTest() {
 
     @Test
     fun `gets artefacts for report`()

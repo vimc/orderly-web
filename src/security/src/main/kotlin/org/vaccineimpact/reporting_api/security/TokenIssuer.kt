@@ -33,15 +33,13 @@ open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
         ))
     }
 
-    private fun getNonce(): String
-    {
+    private fun getNonce(): String {
         val bytes = ByteArray(32)
         random.nextBytes(bytes)
         return Base64.getEncoder().encodeToString(bytes)
     }
 
-    companion object
-    {
+    companion object {
         val oneTimeActionSubject = "onetime_link"
     }
 }

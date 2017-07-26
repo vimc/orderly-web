@@ -10,8 +10,7 @@ class ReportTests : IntegrationTest()
 {
 
     @Test
-    fun `can get reports`()
-    {
+    fun `can get reports`() {
         val response = requestHelper.get("/reports")
 
         assertSuccessful(response)
@@ -20,8 +19,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `can get report versions by name`()
-    {
+    fun `can get report versions by name`() {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname")
 
@@ -31,8 +29,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if report name doesnt exist`()
-    {
+    fun `gets 404 if report name doesnt exist`() {
         val fakeName = "hjagyugs"
         val response = requestHelper.get("/reports/$fakeName")
 
@@ -42,8 +39,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `can get report by name and version`()
-    {
+    fun `can get report by name and version`() {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion")
 
@@ -53,8 +49,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if report version doesnt exist`()
-    {
+    fun `gets 404 if report version doesnt exist`() {
         val fakeVersion = "hf647rhj"
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/$fakeVersion")
@@ -66,8 +61,7 @@ class ReportTests : IntegrationTest()
 
 
     @Test
-    fun `gets zip file`()
-    {
+    fun `gets zip file`() {
         insertReport("testname", "testversion")
 
         val token = requestHelper.generateOnetimeToken()

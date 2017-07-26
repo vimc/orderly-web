@@ -6,10 +6,10 @@ System requirements:
 * Docker
 
 1. Make sure you check out recursively, using `git clone --recursive URL`.
-1. Install Docker and add your user to the Docker group 
+2. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
    You may need to restart your machine for changes to take effect.
-1. Configure your Docker client to use our registry by following instructions 
+3. Configure your Docker client to use our registry by following instructions 
    here: https://github.com/vimc/montagu-ci#configuring-docker-clients-to-use-the-registry
 
 ### Tasks
@@ -40,3 +40,6 @@ To make use of a build image, run:
         docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
 
 replacing `{PATH_TO_OPRDERLY}` with an absolute path to an Orderly directory.
+
+## Dependency on Montagu API
+This API makes use of tokens from the Montagu API so can only be run in tandem with the latter with a shared public key for verifying tokens. For instructions on how to do this locally see steps 3 - 4 here: https://github.com/vimc/montagu-webapps/tree/master/app/src/main/report#development

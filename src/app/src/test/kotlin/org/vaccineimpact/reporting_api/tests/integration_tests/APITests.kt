@@ -17,17 +17,14 @@ import java.io.File
         ResourceTests::class,
         DataTests::class,
         SecurityTests::class)
-class APITests
-{
-    companion object
-    {
+class APITests {
+    companion object {
         // Use a single TestTokenGenerator for the whole suite. This
         // ensures that the same keypair is used throughout.
         val tokenHelper = TestTokenGenerator()
 
         @BeforeClass @JvmStatic
-        fun startApp()
-        {
+        fun startApp() {
             appStarted = true
             main(emptyArray())
         }
