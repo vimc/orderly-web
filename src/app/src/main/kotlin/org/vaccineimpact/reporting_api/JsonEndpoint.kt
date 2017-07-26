@@ -25,7 +25,7 @@ data class JsonEndpoint(
 
     override fun additionalSetup(url: String)
     {
-        val allPermissions = setOf("*/can-login").map {
+        val allPermissions = setOf("*/reports.read").map {
             PermissionRequirement.parse(it)
         }
 

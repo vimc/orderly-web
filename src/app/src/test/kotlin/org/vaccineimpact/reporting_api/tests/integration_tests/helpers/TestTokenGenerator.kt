@@ -33,8 +33,8 @@ class TestTokenGenerator
                 "iss" to helper.issuerName,
                 "sub" to user.username,
                 "exp" to Date.from(Instant.now().plus(Duration.ofMinutes(1))),
-                "permissions" to user.permissions.joinToString(","),
-                "roles" to user.roles.joinToString(",")
+                "permissions" to user.permissions,
+                "roles" to user.roles
         )
     }
 

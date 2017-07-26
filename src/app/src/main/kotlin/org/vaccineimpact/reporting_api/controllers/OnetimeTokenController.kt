@@ -4,7 +4,6 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.db.TokenStore
 import org.vaccineimpact.reporting_api.errors.MissingParameterError
 import org.vaccineimpact.reporting_api.security.MontaguUser
-import org.vaccineimpact.reporting_api.security.USER_OBJECT
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 
 class OnetimeTokenController(val tokenStore: TokenStore = TokenStore()) : Controller
@@ -14,10 +13,18 @@ class OnetimeTokenController(val tokenStore: TokenStore = TokenStore()) : Contro
         val url = context.queryParams("url")
                 ?: throw MissingParameterError("url")
 
+        val profile = context.userProfile
+
+        val username = profile.id
+        val permissions = profile.getAttribute("permissions").toString()
+        val roles = profile.getAttribute("roles").toString()
+
         val token = WebTokenHelper.oneTimeTokenHelper.issuer
-                .generateOneTimeActionToken(context.userProfile.getAttribute(USER_OBJECT) as MontaguUser,
+                .generateOneTimeActionToken(MontaguUser(username, roles, permissions),
                         url)
+
         tokenStore.storeToken(token)
+
         return token
     }
 }

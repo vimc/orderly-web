@@ -18,21 +18,7 @@ import java.util.*
 class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
 {
     lateinit var helper: WebTokenHelper
-    val properties = UserProperties(
-            username = "test.user",
-            name = "Test User",
-            email = "test@example.com",
-            passwordHash = "",
-            lastLoggedIn = null
-    )
-    val roles = listOf(
-            ReifiedRole("roleA", Scope.Global()),
-            ReifiedRole("roleB", Scope.Specific("prefix", "id"))
-    )
-    val permissions = listOf(
-            ReifiedPermission("p1", Scope.Global()),
-            ReifiedPermission("p2", Scope.Specific("prefix", "id"))
-    )
+    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
 
     val onetimeTokenIssuer = "onetimetokenissuer"
 
@@ -46,7 +32,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `can generate onetime token`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOneTimeActionToken(MontaguUser(properties, roles, permissions), url)
+        val token = helper.issuer.generateOneTimeActionToken(fakeUser, url)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(token)) doReturn true
@@ -63,7 +49,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `token fails validation when issuer is wrong`()
     {
         val url = "testurl"
-        val claims = helper.issuer.claims(MontaguUser(properties, roles, permissions), url)
+        val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
 
 
@@ -81,7 +67,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `token fails validation when token is old`()
     {
         val url = "testurl"
-        val claims = helper.issuer.claims(MontaguUser(properties, roles, permissions), url)
+        val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -99,7 +85,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
-        val evilToken = sauron.issuer.generateOneTimeActionToken(MontaguUser(properties, roles, permissions), url)
+        val evilToken = sauron.issuer.generateOneTimeActionToken(fakeUser, url)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(evilToken)) doReturn true
@@ -119,7 +105,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val badUrl = "badurl"
         val badToken = helper.issuer
-                .generateOneTimeActionToken(MontaguUser(properties, roles, permissions), url)
+                .generateOneTimeActionToken(fakeUser, url)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn false
@@ -136,7 +122,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val notInDbToken = helper.issuer
-                .generateOneTimeActionToken(MontaguUser(properties, roles, permissions), url)
+                .generateOneTimeActionToken(fakeUser, url)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(notInDbToken)) doReturn false

@@ -9,7 +9,6 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.security.MontaguUser
-import org.vaccineimpact.reporting_api.security.UserProperties
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
@@ -22,8 +21,7 @@ class RequestHelper
 
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
-    val fakeUser = MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-            listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global())))
+    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
 
     fun get(url: String, contentType: String = ContentTypes.json): Response
     {
@@ -75,8 +73,7 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper.generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("fake-perm", Scope.Global()))))
+        val token = APITests.tokenHelper.generateToken(MontaguUser("tettusername", "user", "*/fake-perm"))
 
         headers += mapOf("Authorization" to "Bearer $token")
 

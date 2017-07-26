@@ -16,7 +16,8 @@ import java.io.File
         ReportTests::class,
         ResourceTests::class,
         DataTests::class,
-        SecurityTests::class)
+        SecurityTests::class,
+        OnetimeTokenTests::class)
 class APITests
 {
     companion object

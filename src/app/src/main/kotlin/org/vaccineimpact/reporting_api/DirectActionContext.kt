@@ -3,6 +3,9 @@ package org.vaccineimpact.reporting_api
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
+import org.vaccineimpact.reporting_api.security.montaguPermissions
 import spark.Request
 import spark.Response
 

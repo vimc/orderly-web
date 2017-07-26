@@ -42,7 +42,7 @@ class SecurityTests : IntegrationTest()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: */can-login")
+                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.read")
 
     }
 

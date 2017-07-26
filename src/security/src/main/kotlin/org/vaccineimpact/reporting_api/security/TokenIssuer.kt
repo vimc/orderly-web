@@ -32,8 +32,8 @@ open class TokenIssuer (keyPair: KeyPair, val issuer: String)
                 "iss" to issuer,
                 "sub" to oneTimeActionSubject,
                 "exp" to Date.from(Instant.now().plus(oneTimeLinkLifeSpan)),
-                "permissions" to user.permissions.joinToString(","),
-                "roles" to user.roles.joinToString(","),
+                "permissions" to user.permissions,
+                "roles" to user.roles,
                 "url" to url,
                 "nonce" to getNonce()
         )
