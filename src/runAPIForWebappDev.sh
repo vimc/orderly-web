@@ -14,7 +14,7 @@ fi
 
 # copy key from api directory
 mkdir -p /etc/montagu/reports_api/token_key
-cp -R /etc/montagu/api/token_key /etc/montagu/reports_api
+cp -R /etc/montagu/api/token_key/public_key.der /etc/montagu/reports_api/token_key/
 
 ls /etc/montagu/reports_api/token_key
 ./gradlew :run
