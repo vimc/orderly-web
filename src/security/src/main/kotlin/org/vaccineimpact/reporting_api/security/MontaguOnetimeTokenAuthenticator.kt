@@ -10,7 +10,7 @@ import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 class MontaguOnetimeTokenAuthenticator(signatureConfiguration: SignatureConfiguration,
                                        val expectedIssuer: String,
                                        private val tokenStore: OnetimeTokenStore,
-                                       private val url: String)
+                                       url: String)
     : JwtAuthenticator(signatureConfiguration)
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)

@@ -14,7 +14,7 @@ import java.util.*
  * However, we still need to be able to generate tokens for other things:
  * In this case, one time action tokens.
  */
-open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
+open class TokenIssuer (keyPair: KeyPair, val issuer: String)
 {
     val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(10)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)

@@ -17,24 +17,24 @@ import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class TokenVerifyingConfigFactory(
-        private val actionClients: List<MontaguDirectClient>,
+        private val clientWrappers: List<MontaguCredentialClientWrapper>,
         val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
     override fun build(vararg parameters: Any?): Config
     {
-        actionClients.forEach {
+        clientWrappers.forEach {
             it.client.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
         }
 
-        return Config(actionClients.map{ it.client }).apply {
+        return Config(clientWrappers.map{ it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter(actionClients)
+            httpActionAdapter = TokenActionAdapter(clientWrappers)
         }
     }
 
-    fun allClients() = actionClients.map { it.client::class.java.simpleName }.joinToString()
+    fun allClients() = clientWrappers.map { it.client::class.java.simpleName }.joinToString()
 
     private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile
     {
@@ -48,7 +48,7 @@ class TokenVerifyingConfigFactory(
     }
 }
 
-class TokenActionAdapter(clients: List<MontaguDirectClient>) : DefaultHttpActionAdapter()
+class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()
 {
     val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,

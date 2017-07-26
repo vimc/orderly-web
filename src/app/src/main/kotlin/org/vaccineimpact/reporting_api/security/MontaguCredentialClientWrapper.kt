@@ -4,7 +4,7 @@ import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.api.models.ErrorInfo
 
-interface MontaguDirectClient
+interface MontaguCredentialClientWrapper
 {
     val errorInfo: ErrorInfo
     val client : DirectClient<TokenCredentials, CommonProfile>

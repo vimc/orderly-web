@@ -7,7 +7,7 @@ import org.vaccineimpact.api.models.ErrorInfo
 class JWTParameterClientWrapper(helper: TokenVerifier,
                                 tokenStore: OnetimeTokenStore,
                                 url: String)
-    : MontaguDirectClient
+    : MontaguCredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("access-token-invalid", "Access token not supplied, or access token was invalid")
     override val client = JWTParameterClient(helper, tokenStore, url)
