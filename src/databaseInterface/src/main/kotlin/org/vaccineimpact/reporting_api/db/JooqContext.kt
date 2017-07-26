@@ -7,25 +7,32 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
-open class JooqContext() : AutoCloseable {
+open class JooqContext() : AutoCloseable
+{
     private val conn = getConnection()
     val dsl = createDSL(conn)
 
-    private fun getConnection(): Connection {
+    private fun getConnection(): Connection
+    {
         val dbLocation = File(Config["db.location"]).absolutePath
         val url = "jdbc:sqlite://$dbLocation"
-        try {
+        try
+        {
             return DriverManager.getConnection(url)
-        } catch (e: Exception) {
+        }
+        catch (e: Exception)
+        {
             throw UnableToConnectToDatabase(url)
         }
     }
 
-    private fun createDSL(conn: Connection): DSLContext {
+    private fun createDSL(conn: Connection): DSLContext
+    {
         return DSL.using(conn, SQLDialect.SQLITE)
     }
 
-    override fun close() {
+    override fun close()
+    {
         conn.close()
     }
 }

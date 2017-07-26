@@ -13,10 +13,12 @@ import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
-class ReportControllerTests : ControllerTest() {
+class ReportControllerTests : ControllerTest()
+{
 
     @Test
-    fun `getReports returns all report names`() {
+    fun `getReports returns all report names`()
+    {
         val reportNames = listOf("testname1", "testname2")
 
         val orderly = mock<OrderlyClient> {
@@ -28,7 +30,8 @@ class ReportControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `getByName returns all reports versions by name`() {
+    fun `getByName returns all reports versions by name`()
+    {
 
         val reportName = "reportName"
         val reportVersions = listOf("version1", "version2")
@@ -47,7 +50,8 @@ class ReportControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `getByNameAndVersion returns report metadata`() {
+    fun `getByNameAndVersion returns report metadata`()
+    {
 
         val reportName = "reportName"
         val reportVersion = "reportVersion"
@@ -69,7 +73,8 @@ class ReportControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `getZippedByNameAndVersion returns zip file`() {
+    fun `getZippedByNameAndVersion returns zip file`()
+    {
 
         val reportName = "reportName"
         val reportVersion = "reportVersion"

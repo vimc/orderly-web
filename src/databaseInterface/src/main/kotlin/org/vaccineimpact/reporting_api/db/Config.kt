@@ -3,24 +3,31 @@ package org.vaccineimpact.reporting_api.db
 import java.io.File
 import java.util.*
 
-object Config {
+object Config
+{
     private val properties = Properties().apply {
         load(getResource("config.properties").openStream())
         val global = File("/etc/montagu/reporting-reporting_api/config.properties")
-        if (global.exists()) {
+        if (global.exists())
+        {
             global.inputStream().use { load(it) }
         }
     }
 
-    operator fun get(key: String): String {
+    operator fun get(key: String): String
+    {
         val x = properties[key]
-        if (x != null) {
+        if (x != null)
+        {
             val value = x as String
-            if (value.startsWith("\${")) {
+            if (value.startsWith("\${"))
+            {
                 throw MissingConfiguration(key)
             }
             return value
-        } else {
+        }
+        else
+        {
             throw MissingConfigurationKey(key)
         }
     }

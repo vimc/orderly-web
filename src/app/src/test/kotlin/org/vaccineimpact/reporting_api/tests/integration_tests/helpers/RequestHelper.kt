@@ -12,14 +12,17 @@ import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.UserProperties
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
-class RequestHelper {
-    init {
+class RequestHelper
+{
+    init
+    {
         CertificateHelper.disableCertificateValidation()
     }
 
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
-    fun get(url: String, contentType: String = ContentTypes.json): Response {
+    fun get(url: String, contentType: String = ContentTypes.json): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -34,7 +37,8 @@ class RequestHelper {
         return get(baseUrl + url, headers)
     }
 
-    fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response {
+    fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -46,7 +50,8 @@ class RequestHelper {
         return get(baseUrl + url, headers)
     }
 
-    fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response {
+    fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -60,7 +65,8 @@ class RequestHelper {
         return get(baseUrl + url, headers)
     }
 
-    fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response {
+    fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
+    {
         val headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -73,12 +79,16 @@ class RequestHelper {
             = khttp.get(url, headers)
 }
 
-fun <T> Response.montaguData(): T? {
+fun <T> Response.montaguData(): T?
+{
     val data = this.json()["data"]
-    if (data != "") {
+    if (data != "")
+    {
         @Suppress("UNCHECKED_CAST")
         return data as T
-    } else {
+    }
+    else
+    {
         return null
     }
 }

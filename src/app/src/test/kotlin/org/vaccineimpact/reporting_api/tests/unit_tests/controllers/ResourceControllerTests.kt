@@ -14,10 +14,12 @@ import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class ResourceControllerTests : ControllerTest() {
+class ResourceControllerTests : ControllerTest()
+{
 
     @Test
-    fun `gets resources for report`() {
+    fun `gets resources for report`()
+    {
         val name = "testname"
         val version = "testversion"
 
@@ -38,7 +40,8 @@ class ResourceControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `downloads resource for report`() {
+    fun `downloads resource for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val resource = "testresource"
@@ -64,7 +67,8 @@ class ResourceControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `throws unknown object error if artefact does not exist for report`() {
+    fun `throws unknown object error if artefact does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val resource = "testresource"
@@ -86,7 +90,8 @@ class ResourceControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `throws file not found error if file does not exist for report`() {
+    fun `throws file not found error if file does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val resource = "testresource"

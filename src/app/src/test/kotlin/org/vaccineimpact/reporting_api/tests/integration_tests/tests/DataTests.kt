@@ -7,10 +7,12 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
 
-class DataTests : IntegrationTest() {
+class DataTests : IntegrationTest()
+{
 
     @Test
-    fun `gets dict of data names to hashes`() {
+    fun `gets dict of data names to hashes`()
+    {
 
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/data")
@@ -22,7 +24,8 @@ class DataTests : IntegrationTest() {
     }
 
     @Test
-    fun `gets csv data file`() {
+    fun `gets csv data file`()
+    {
 
         var demoCSV = File("${Config["orderly.root"]}/data/csv/").list()[0]
 
@@ -38,7 +41,8 @@ class DataTests : IntegrationTest() {
     }
 
     @Test
-    fun `gets 404 if data doesnt exist in db`() {
+    fun `gets 404 if data doesnt exist in db`()
+    {
 
         insertReport("testname", "testversion")
         val fakedata = "hf647sa674yh3basrhj"
@@ -50,7 +54,8 @@ class DataTests : IntegrationTest() {
     }
 
     @Test
-    fun `gets 404 if data file doesnt exist`() {
+    fun `gets 404 if data file doesnt exist`()
+    {
 
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
@@ -64,7 +69,8 @@ class DataTests : IntegrationTest() {
 
 
     @Test
-    fun `gets rds data file`() {
+    fun `gets rds data file`()
+    {
 
         var demoRDS = File("${Config["orderly.root"]}/data/rds/").list()[0]
 
@@ -81,7 +87,8 @@ class DataTests : IntegrationTest() {
 
 
     @Test
-    fun `gets csv data file by hash`() {
+    fun `gets csv data file by hash`()
+    {
 
         var demoCSV = File("${Config["orderly.root"]}/data/csv/").list()[0]
 
@@ -96,7 +103,8 @@ class DataTests : IntegrationTest() {
     }
 
     @Test
-    fun `gets rds data file by hash`() {
+    fun `gets rds data file by hash`()
+    {
 
         var demoRDS = File("${Config["orderly.root"]}/data/rds/").list()[0]
 

@@ -14,10 +14,12 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class ArtefactControllerTests : ControllerTest() {
+class ArtefactControllerTests : ControllerTest()
+{
 
     @Test
-    fun `gets artefacts for report`() {
+    fun `gets artefacts for report`()
+    {
         val name = "testname"
         val version = "testversion"
 
@@ -38,7 +40,8 @@ class ArtefactControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `downloads artefact for report`() {
+    fun `downloads artefact for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val artefact = "testartefact"
@@ -64,7 +67,8 @@ class ArtefactControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `throws unknown object error if artefact does not exist for report`() {
+    fun `throws unknown object error if artefact does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val artefact = "test.png"

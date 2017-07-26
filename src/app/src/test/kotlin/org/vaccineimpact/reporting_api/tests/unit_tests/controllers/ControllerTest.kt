@@ -7,7 +7,8 @@ import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-abstract class ControllerTest : MontaguTests() {
+abstract class ControllerTest : MontaguTests()
+{
     protected val mockOutputStream = mock<ServletOutputStream>()
 
     protected val servletResponse = mock<HttpServletResponse>() {

@@ -15,10 +15,12 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
-class DataControllerTests : ControllerTest() {
+class DataControllerTests : ControllerTest()
+{
 
     @Test
-    fun `gets data for report`() {
+    fun `gets data for report`()
+    {
         val name = "testname"
         val version = "testversion"
 
@@ -39,7 +41,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `gets csv file for report by name if type not specified`() {
+    fun `gets csv file for report by name if type not specified`()
+    {
 
         val name = "testname"
         val version = "testversion"
@@ -68,7 +71,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `gets rds data file for report by name`() {
+    fun `gets rds data file for report by name`()
+    {
 
         val name = "testname"
         val version = "testversion"
@@ -98,7 +102,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `gets csv file by id`() {
+    fun `gets csv file by id`()
+    {
 
         val hash = "hjkdasjkldas6762i1j"
 
@@ -118,7 +123,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `gets rds file by id`() {
+    fun `gets rds file by id`()
+    {
 
         val hash = "hjkdasjkldas6762i1j"
 
@@ -138,7 +144,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `throws unknown object error if data does not exist for report`() {
+    fun `throws unknown object error if data does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
 
@@ -159,7 +166,8 @@ class DataControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `throws file not found error if file does not exist for report`() {
+    fun `throws file not found error if file does not exist for report`()
+    {
         val name = "testname"
         val version = "testversion"
         val data = "testdata"
