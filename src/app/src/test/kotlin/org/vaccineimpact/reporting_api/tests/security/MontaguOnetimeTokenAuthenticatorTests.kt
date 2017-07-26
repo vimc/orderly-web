@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.tests.security
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nimbusds.jwt.JWTParser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
@@ -46,14 +47,16 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOneTimeActionToken(MontaguUser(properties, roles, permissions), url)
-  //      val claims = helper.verifier.verify(token)
 
-//        assertThat(claims["iss"]).isEqualTo(onetimeTokenIssuer)
-//        assertThat(claims["sub"]).isEqualTo(TokenIssuer.oneTimeActionSubject)
-//        assertThat(claims["exp"]).isInstanceOf(Date::class.java)
-//        assertThat(claims["roles"]).isEqualTo("*/roleA,prefix:id/roleB")
-//        assertThat(claims["permissions"]).isEqualTo("*/p1,prefix:id/p2")
-//        assertThat(claims["url"]).isEqualTo(url)
+        val fakeStore = mock<OnetimeTokenStore>() {
+            on(it.validateOneTimeToken(token)) doReturn true
+        }
+
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore, url)
+
+        assertThat(sut.validateToken(token)).isNotNull()
+
     }
 
     @Test
@@ -72,7 +75,6 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
                 fakeStore, url)
 
         assertThat(sut.validateToken(badToken)).isNull()
- //       assertThatThrownBy { helper.verifier.verify(badToken) }
     }
 
     @Test
@@ -90,7 +92,6 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
                 helper.issuerName, fakeStore, url)
 
         assertThat(sut.validateToken(badToken)).isNull()
-  //      assertThatThrownBy { helper.verifier.verify(badToken) }
     }
 
     @Test
@@ -110,7 +111,6 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
                 url)
 
         assertThat(sut.validateToken(evilToken)).isNull()
-   //     assertThatThrownBy { helper.verifier.verify(evilToken) }
     }
 
     @Test
@@ -129,7 +129,6 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
                 fakeStore, badUrl)
 
         assertThat(sut.validateToken(badToken)).isNull()
-     //   assertThatThrownBy { helper.verifier.verify(badToken) }
     }
 
     @Test
