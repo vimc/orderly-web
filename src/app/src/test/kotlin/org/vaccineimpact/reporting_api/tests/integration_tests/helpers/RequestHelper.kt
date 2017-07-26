@@ -16,6 +16,7 @@ class RequestHelper {
     init {
         CertificateHelper.disableCertificateValidation()
     }
+
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
     fun get(url: String, contentType: String = ContentTypes.json): Response {
@@ -26,7 +27,7 @@ class RequestHelper {
 
         val token = APITests.tokenHelper
                 .generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
+                        listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
 
         headers += mapOf("Authorization" to "Bearer $token")
 

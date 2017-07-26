@@ -9,8 +9,7 @@ import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
 import java.util.*
 
-object KeyHelper
-{
+object KeyHelper {
     private val keyFactory = KeyFactory.getInstance("RSA")
     val keyDir = "/etc/montagu/reports_api/token_key"
     val keyFile = File(keyDir, "public_key.der")
@@ -18,8 +17,7 @@ object KeyHelper
 
     val authPublicKey by lazy { loadPublicKey() }
 
-    private fun loadPublicKey(): RSAPublicKey
-    {
+    private fun loadPublicKey(): RSAPublicKey {
         val keyBytes = keyFile.readBytes()
         val spec = X509EncodedKeySpec(keyBytes)
         val publicKey = keyFactory.generatePublic(spec) as RSAPublicKey
@@ -27,8 +25,7 @@ object KeyHelper
         return publicKey
     }
 
-    fun generateKeyPair(): KeyPair
-    {
+    fun generateKeyPair(): KeyPair {
         val generator = KeyPairGenerator.getInstance("RSA").apply {
             initialize(1024)
         }

@@ -24,7 +24,7 @@ class Router(val config: RouteConfig) {
 
     fun mapEndpoints(urlBase: String): List<String> {
         return config.endpoints.map {
-            when (it){
+            when (it) {
                 is JsonEndpoint -> mapTransformedEndpoint(it, urlBase)
                 else -> mapEndpoint(it, urlBase)
             }
@@ -77,8 +77,7 @@ class Router(val config: RouteConfig) {
         return fullUrl
     }
 
-    private fun addSecurityFilter(url: String)
-    {
+    private fun addSecurityFilter(url: String) {
         val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)
         }

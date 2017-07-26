@@ -15,8 +15,7 @@ import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONVa
 import spark.Spark
 import java.io.File
 
-abstract class IntegrationTest: MontaguTests()
-{
+abstract class IntegrationTest : MontaguTests() {
     val requestHelper = RequestHelper()
     val JSONValidator = JSONValidator()
 
@@ -31,7 +30,7 @@ abstract class IntegrationTest: MontaguTests()
         }
 
         @AfterClass @JvmStatic
-        fun stopApp(){
+        fun stopApp() {
 
             if (!APITests.appStarted) {
                 Spark.stop()
@@ -40,7 +39,7 @@ abstract class IntegrationTest: MontaguTests()
     }
 
     @Before
-    fun createDatabase(){
+    fun createDatabase() {
 
         println("Copying database from: ${Config["db.template"]}")
 
@@ -51,15 +50,15 @@ abstract class IntegrationTest: MontaguTests()
     }
 
     @After
-    fun deleteDatabase(){
+    fun deleteDatabase() {
         File(Config["db.location"]).delete()
     }
 
-    protected fun assertSuccessful(response: Response){
+    protected fun assertSuccessful(response: Response) {
         Assertions.assertThat(response.statusCode).isEqualTo(200)
     }
 
-    protected fun assertJsonContentType(response: Response){
+    protected fun assertJsonContentType(response: Response) {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json; charset=utf-8")
     }
 

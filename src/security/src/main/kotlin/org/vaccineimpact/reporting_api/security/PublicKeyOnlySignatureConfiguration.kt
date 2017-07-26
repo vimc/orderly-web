@@ -17,10 +17,8 @@ import java.util.*
  * 3. Does not implement `sign`
  */
 class PublicKeyOnlySignatureConfiguration(val publicKey: RSAPublicKey)
-    : AbstractSignatureConfiguration()
-{
-    init
-    {
+    : AbstractSignatureConfiguration() {
+    init {
         algorithm = JWSAlgorithm.RS256;
     }
 
@@ -28,8 +26,7 @@ class PublicKeyOnlySignatureConfiguration(val publicKey: RSAPublicKey)
         Base64.getEncoder().encodeToString(publicKey.encoded)
     }
 
-    override fun internalInit()
-    {
+    override fun internalInit() {
         CommonHelper.assertNotNull("algorithm", algorithm)
         if (!supports(this.algorithm)) {
             throw TechnicalException("Only the RS256, RS384, RS512, PS256, PS384 and PS512 algorithms are supported for RSA signature")
@@ -39,20 +36,17 @@ class PublicKeyOnlySignatureConfiguration(val publicKey: RSAPublicKey)
     override fun supports(algorithm: JWSAlgorithm?)
             = algorithm != null && RSASSAVerifier.SUPPORTED_ALGORITHMS.contains(algorithm)
 
-    override fun sign(claims: JWTClaimsSet?): SignedJWT
-    {
+    override fun sign(claims: JWTClaimsSet?): SignedJWT {
         throw NotImplementedError("This configuration can only verify tokens; it cannot sign them")
     }
 
-    override fun verify(jwt: SignedJWT): Boolean
-    {
+    override fun verify(jwt: SignedJWT): Boolean {
         init()
         val verifier = RSASSAVerifier(publicKey)
         return jwt.verify(verifier)
     }
 
-    override fun toString(): String
-    {
+    override fun toString(): String {
         return CommonHelper.toString(this::class.java, "keys", "[protected]", "algorithm", algorithm)
     }
 }

@@ -9,20 +9,17 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import java.io.File
 import javax.servlet.http.HttpServletResponse
 
-class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null): Controller
-{
-    val files = files?: Files()
-    val orderly = orderly?: Orderly()
+class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller {
+    val files = files ?: Files()
+    val orderly = orderly ?: Orderly()
 
     fun get(context: ActionContext): JsonObject {
         return orderly.getData(context.params(":name"), context.params(":version"))
     }
 
-    fun downloadCSV(context:ActionContext): HttpServletResponse
-    {
+    fun downloadCSV(context: ActionContext): HttpServletResponse {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
@@ -30,8 +27,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         return downloadFile(absoluteFilePath, "$id.csv", context)
     }
 
-    fun downloadRDS(context:ActionContext): HttpServletResponse
-    {
+    fun downloadRDS(context: ActionContext): HttpServletResponse {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
@@ -39,8 +35,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         return downloadFile(absoluteFilePath, "$id.rds", context)
     }
 
-    fun downloadData(context:ActionContext): HttpServletResponse
-    {
+    fun downloadData(context: ActionContext): HttpServletResponse {
         val name = context.params(":name")
         val version = context.params(":version")
         val id = context.params(":data")
@@ -63,8 +58,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null):
         return downloadFile(absoluteFilePath, "$hash.$type", context)
     }
 
-    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): HttpServletResponse
-    {
+    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): HttpServletResponse {
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(filename)
 

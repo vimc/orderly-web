@@ -54,7 +54,7 @@ class OrderlyTests : DatabaseTests() {
 
         val sut = createSut()
 
-        assertThatThrownBy {sut.getReportsByNameAndVersion("test", "version1") }
+        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 

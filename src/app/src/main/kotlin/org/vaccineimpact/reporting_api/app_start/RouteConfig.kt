@@ -1,16 +1,15 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.Endpoint
 import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
-import org.vaccineimpact.reporting_api.Endpoint
 
-interface RouteConfig
-{
+interface RouteConfig {
     val endpoints: List<EndpointDefinition>
 }
 
-object MontaguRouteConfig: RouteConfig {
+object MontaguRouteConfig : RouteConfig {
 
     override val endpoints: List<EndpointDefinition> = listOf(
 

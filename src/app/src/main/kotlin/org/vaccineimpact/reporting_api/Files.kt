@@ -2,13 +2,12 @@ package org.vaccineimpact.reporting_api
 
 import java.io.*
 
-interface FileSystem
-{
+interface FileSystem {
     fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     fun fileExists(absoluteFilePath: String): Boolean
 }
 
-class Files: FileSystem {
+class Files : FileSystem {
 
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream) {
         val buffer = ByteArray(1024)

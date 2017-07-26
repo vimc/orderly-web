@@ -1,22 +1,20 @@
 package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.junit.Test
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.FileSystem
-import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.controllers.ArtefactController
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
-import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class ArtefactControllerTests : ControllerTest()
-{
+class ArtefactControllerTests : ControllerTest() {
 
     @Test
     fun `gets artefacts for report`() {
@@ -30,8 +28,8 @@ class ArtefactControllerTests : ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
         }
 
         val sut = ArtefactController(orderly, mock<FileSystem>())
@@ -50,10 +48,10 @@ class ArtefactControllerTests : ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":artefact")} doReturn artefact
-            on {this.getSparkResponse()} doReturn mockSparkResponse
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
+            on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
         val fileSystem = mock<FileSystem>() {
@@ -72,13 +70,13 @@ class ArtefactControllerTests : ControllerTest()
         val artefact = "test.png"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("","")
+            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("", "")
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":artefact")} doReturn artefact
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
         }
 
         val sut = ArtefactController(orderly, mock<FileSystem>())

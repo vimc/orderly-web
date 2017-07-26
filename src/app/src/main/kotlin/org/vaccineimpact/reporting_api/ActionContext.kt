@@ -3,8 +3,7 @@ package org.vaccineimpact.reporting_api
 import org.pac4j.core.profile.CommonProfile
 import spark.Response
 
-interface ActionContext
-{
+interface ActionContext {
     val userProfile: CommonProfile
 
     fun contentType(): String

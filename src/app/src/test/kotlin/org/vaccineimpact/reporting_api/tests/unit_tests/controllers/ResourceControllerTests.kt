@@ -8,15 +8,13 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.FileSystem
-import org.vaccineimpact.reporting_api.controllers.ArtefactController
 import org.vaccineimpact.reporting_api.controllers.ResourceController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class ResourceControllerTests: ControllerTest()
-{
+class ResourceControllerTests : ControllerTest() {
 
     @Test
     fun `gets resources for report`() {
@@ -30,8 +28,8 @@ class ResourceControllerTests: ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
         }
 
         val sut = ResourceController(orderly, mock<FileSystem>())
@@ -50,10 +48,10 @@ class ResourceControllerTests: ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":resource")} doReturn resource
-            on {this.getSparkResponse()} doReturn mockSparkResponse
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":resource") } doReturn resource
+            on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
         val fileSystem = mock<FileSystem>() {
@@ -72,13 +70,13 @@ class ResourceControllerTests: ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getResource(name, version, resource) } doThrow UnknownObjectError("","")
+            on { this.getResource(name, version, resource) } doThrow UnknownObjectError("", "")
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":resource")} doReturn resource
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":resource") } doReturn resource
         }
 
         val sut = ResourceController(orderly, mock<FileSystem>())
@@ -98,14 +96,14 @@ class ResourceControllerTests: ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
-            on {this.params(":name")} doReturn name
-            on {this.params(":version")} doReturn version
-            on {this.params(":resource")} doReturn resource
-            on {this.getSparkResponse()} doReturn mockSparkResponse
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":resource") } doReturn resource
+            on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val fileSystem = mock<FileSystem>(){
-            on {this.fileExists("${Config["orderly.root"]}archive/$name/$version/$resource")} doReturn false
+        val fileSystem = mock<FileSystem>() {
+            on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$resource") } doReturn false
         }
 
         val sut = ResourceController(orderly, fileSystem)

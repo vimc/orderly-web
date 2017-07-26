@@ -17,7 +17,7 @@ class ErrorHandler {
 
     init {
         @Suppress("RemoveExplicitTypeArguments")
-        sparkException<InvocationTargetException> (this::handleInvocationError)
+        sparkException<InvocationTargetException>(this::handleInvocationError)
         sparkException<MontaguError>(this::handleError)
         sparkException<JsonSyntaxException> { e, req, res -> handleError(UnableToParseJsonError(e), req, res) }
         sparkException<Exception> {
@@ -29,7 +29,7 @@ class ErrorHandler {
 
     // because routes are configured using reflection,
     // all controller errors appear as InvocationTargetExceptions
-    fun handleInvocationError(error: InvocationTargetException, req: Request, res: Response){
+    fun handleInvocationError(error: InvocationTargetException, req: Request, res: Response) {
 
         val cause = error.cause!!
 
@@ -47,7 +47,7 @@ class ErrorHandler {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
         res.body(Serializer.instance.toJson(error.asResult()))
         res.status(error.httpStatus)
-        addDefaultResponseHeaders(res, "${ ContentTypes.json}; charset=utf-8")
+        addDefaultResponseHeaders(res, "${ContentTypes.json}; charset=utf-8")
     }
 
     // Just a helper to let us call Spark.exception using generic type parameters

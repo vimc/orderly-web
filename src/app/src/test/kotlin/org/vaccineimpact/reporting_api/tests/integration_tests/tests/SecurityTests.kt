@@ -4,11 +4,10 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 
-class SecurityTests: IntegrationTest()
-{
+class SecurityTests : IntegrationTest() {
 
     @Test
-    fun `returns 401 if token missing`(){
+    fun `returns 401 if token missing`() {
 
         val response = RequestHelper().getNoAuth("/reports")
 
@@ -20,7 +19,7 @@ class SecurityTests: IntegrationTest()
     }
 
     @Test
-    fun `returns 401 if token not valid`(){
+    fun `returns 401 if token not valid`() {
 
         val response = RequestHelper().getWrongAuth("/reports")
 
@@ -32,7 +31,7 @@ class SecurityTests: IntegrationTest()
     }
 
     @Test
-    fun `returns 403 if missing permissions`(){
+    fun `returns 403 if missing permissions`() {
 
         val response = RequestHelper().getWrongPermissions("/reports")
 

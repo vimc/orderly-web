@@ -9,7 +9,7 @@ data class MontaguUser(
         val properties: UserProperties,
         val roles: List<ReifiedRole>,
         val permissions: List<ReifiedPermission>
-): UserPropertiesInterface by properties
+) : UserPropertiesInterface by properties
 
 interface UserPropertiesInterface {
     val username: String
@@ -27,4 +27,4 @@ constructor(
         override val email: String,
         override val passwordHash: String,
         override val lastLoggedIn: Timestamp?
-): UserPropertiesInterface
+) : UserPropertiesInterface

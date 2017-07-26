@@ -1,20 +1,14 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-import org.assertj.core.api.Assertions.assertThat
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
-import java.io.File
-
-class ReportTests: IntegrationTest()
-{
+class ReportTests : IntegrationTest() {
 
     @Test
-    fun `can get reports`()
-    {
+    fun `can get reports`() {
         val response = requestHelper.get("/reports")
 
         assertSuccessful(response)
@@ -23,8 +17,7 @@ class ReportTests: IntegrationTest()
     }
 
     @Test
-    fun `can get report versions by name`()
-    {
+    fun `can get report versions by name`() {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname")
 
@@ -34,8 +27,7 @@ class ReportTests: IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if report name doesnt exist`()
-    {
+    fun `gets 404 if report name doesnt exist`() {
         val fakeName = "hjagyugs"
         val response = requestHelper.get("/reports/$fakeName")
 
@@ -45,8 +37,7 @@ class ReportTests: IntegrationTest()
     }
 
     @Test
-    fun `can get report by name and version`()
-    {
+    fun `can get report by name and version`() {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion")
 
@@ -56,8 +47,7 @@ class ReportTests: IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if report version doesnt exist`()
-    {
+    fun `gets 404 if report version doesnt exist`() {
         val fakeVersion = "hf647rhj"
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/$fakeVersion")
@@ -69,8 +59,7 @@ class ReportTests: IntegrationTest()
 
 
     @Test
-    fun `gets zip file`()
-    {
+    fun `gets zip file`() {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/all", contentType = ContentTypes.zip)
 

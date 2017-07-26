@@ -8,10 +8,8 @@ import com.google.gson.JsonPrimitive
 import org.vaccineimpact.api.models.Result
 import org.vaccineimpact.api.models.ResultStatus
 
-open class Serializer
-{
-    companion object
-    {
+open class Serializer {
+    companion object {
         val instance = Serializer()
     }
 
@@ -20,34 +18,28 @@ open class Serializer
 
     val gson: Gson
 
-    init
-    {
+    init {
         gson = GsonBuilder()
-            .setPrettyPrinting()
-            .disableHtmlEscaping()
-            .setFieldNamingStrategy { convertFieldName(it.name) }
-            .serializeNulls()
-            .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
-            .registerTypeAdapter<java.time.Instant>(toStringSerializer)
+                .setPrettyPrinting()
+                .disableHtmlEscaping()
+                .setFieldNamingStrategy { convertFieldName(it.name) }
+                .serializeNulls()
+                .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
+                .registerTypeAdapter<java.time.Instant>(toStringSerializer)
                 .registerTypeAdapter<ResultStatus>(enumSerializer)
-            .create()
+                .create()
     }
 
     open fun toResult(data: Any?): String = toJson(Result(ResultStatus.SUCCESS, data, emptyList()))
 
     open fun toJson(result: org.vaccineimpact.api.models.Result): String = gson.toJson(result)
 
-    fun convertFieldName(name: String): String
-    {
+    fun convertFieldName(name: String): String {
         val builder = StringBuilder()
-        for (char in name)
-        {
-            if (char.isUpperCase())
-            {
+        for (char in name) {
+            if (char.isUpperCase()) {
                 builder.append("_" + char.toLowerCase())
-            }
-            else
-            {
+            } else {
                 builder.append(char)
             }
         }

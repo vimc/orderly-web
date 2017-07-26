@@ -10,18 +10,14 @@ data class Endpoint(
         override val actionName: String,
         override val contentType: String = ContentTypes.binarydata,
         override val method: HttpMethod = HttpMethod.get
-) : EndpointDefinition
-{
-    init
-    {
-        if (!urlFragment.endsWith("/"))
-        {
+) : EndpointDefinition {
+    init {
+        if (!urlFragment.endsWith("/")) {
             throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
         }
     }
 
-    override fun additionalSetup(url: String)
-    {
+    override fun additionalSetup(url: String) {
         Spark.after(url, contentType, DefaultHeadersFilter(contentType))
     }
 
