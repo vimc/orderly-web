@@ -21,7 +21,8 @@ class ResourceTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if resource doesnt exist in db`() {
+    fun `gets 404 if resource doesnt exist in db`()
+    {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
         val token = requestHelper.generateOnetimeToken()

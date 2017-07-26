@@ -21,7 +21,8 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets artefact file`() {
+    fun `gets artefact file`()
+    {
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val token = requestHelper.generateOnetimeToken()
@@ -33,7 +34,8 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets 404 if artefact doesnt exist in db`() {
+    fun `gets 404 if artefact doesnt exist in db`()
+    {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
         val token = requestHelper.generateOnetimeToken()
