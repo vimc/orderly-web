@@ -21,6 +21,7 @@ class MontaguReportingApi
 
     fun run()
     {
+        waitForGoSignal()
         setupPort()
         spk.redirect.get("/", urlBase)
         spk.before("*", ::addTrailingSlashes)
