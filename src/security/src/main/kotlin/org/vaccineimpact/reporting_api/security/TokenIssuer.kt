@@ -23,14 +23,19 @@ open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
 
     open fun generateOneTimeActionToken(user: MontaguUser): String
     {
-        return generator.generate(mapOf(
+        return generator.generate(claims(user))
+    }
+
+    fun claims(user: MontaguUser): Map<String, Any>
+    {
+        return mapOf(
                 "iss" to issuer,
                 "sub" to oneTimeActionSubject,
                 "exp" to Date.from(Instant.now().plus(oneTimeLinkLifeSpan)),
                 "permissions" to user.permissions.joinToString(","),
                 "roles" to user.roles.joinToString(","),
                 "nonce" to getNonce()
-        ))
+        )
     }
 
     private fun getNonce(): String {
