@@ -4,7 +4,9 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.insertReport
+import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 
 class ArtefactTests : IntegrationTest()
 {
@@ -81,6 +83,21 @@ class ArtefactTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
     }
+
+    @Test
+    fun `gets 401 if access token not in db`()
+    {
+        insertReport("testname", "testversion")
+        val token = WebTokenHelper.oneTimeTokenHelper.issuer
+                .generateOneTimeActionToken(requestHelper.fakeUser)
+        val response = requestHelper
+                .getNoAuth("/reports/testname/testversion/artefacts/artefact/?access_token=$token", ContentTypes.binarydata)
+
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
+    }
+
 
     @Test
     fun `gets 404 if artefact file doesnt exist`()

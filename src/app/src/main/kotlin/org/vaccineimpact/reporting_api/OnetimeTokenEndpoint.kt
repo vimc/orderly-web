@@ -39,7 +39,7 @@ data class OnetimeTokenEndpoint(
         val onetimeTokenVerifier = WebTokenHelper.oneTimeTokenHelper.verifier
 
         val configFactory = TokenVerifyingConfigFactory(listOf(JWTHeaderClientWrapper(bearerTokenVerifier),
-                JWTParameterClientWrapper(onetimeTokenVerifier)), allPermissions.toSet())
+                JWTParameterClientWrapper(onetimeTokenVerifier, TokenStore())), allPermissions.toSet())
 
         val config = configFactory.build()
         Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
@@ -51,44 +51,4 @@ data class OnetimeTokenEndpoint(
 
     }
 
-}
-
-class OneTimeTokenFilter(val tokenVerifier: TokenVerifier, val tokenStore: TokenStore = TokenStore()) : Filter
-{
-
-    override fun handle(request: Request, response: Response)
-    {
-        val token = request.queryParams("access_token")
-                ?: throw InvalidOneTimeLinkToken("verification", "Access token is missing")
-
-        // TODO at some point may need to pass the roles/permissions through
-        val claims = verifyToken(token)
-    }
-
-    private val logger = LoggerFactory.getLogger(OneTimeTokenFilter::class.java)
-
-    private fun verifyToken(token: String): Map<String, Any>
-    {
-        // By checking the database first, we ensure the token is
-        // removed from the database, even if it fails some later check
-        if (!tokenStore.validateOneTimeToken(token))
-        {
-            throw InvalidOneTimeLinkToken("used", "Token has already been used (or never existed)")
-        }
-
-        val claims = try
-        {
-            tokenVerifier.verify(token)
-        }
-        catch (e: Exception)
-        {
-            logger.warn("An error occurred validating the onetime link token: $e")
-            throw InvalidOneTimeLinkToken("verification", "Unable to verify token; it may be badly formatted or signed with the wrong key")
-        }
-        if (claims["sub"] != TokenIssuer.oneTimeActionSubject)
-        {
-            throw InvalidOneTimeLinkToken("subject", "Expected 'sub' claim to be ${TokenIssuer.oneTimeActionSubject}")
-        }
-        return claims
-    }
 }
