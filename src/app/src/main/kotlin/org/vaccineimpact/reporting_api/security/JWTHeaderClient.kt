@@ -7,7 +7,6 @@ import org.vaccineimpact.api.models.ErrorInfo
 class JWTHeaderClientWrapper(helper: TokenVerifier) : MontaguDirectClient
 {
     override val errorInfo = ErrorInfo("bearer-token-invalid", "Bearer token not supplied in Authorization header, or bearer token was invalid")
-
     override val client = JWTHeaderClient(helper)
 }
 

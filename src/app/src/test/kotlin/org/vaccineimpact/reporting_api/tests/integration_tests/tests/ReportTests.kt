@@ -70,8 +70,9 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
 
-        val token = requestHelper.generateOnetimeToken()
-        val response = requestHelper.getNoAuth("/reports/testname/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+        val url = "/reports/testname/testversion/all/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
 
         assertSuccessful(response)
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -83,7 +84,7 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
 
-        val token = requestHelper.generateOnetimeToken()
+        val token = requestHelper.generateOnetimeToken("")
         val response = requestHelper.get("/reports/testname/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
 
         assertSuccessful(response)

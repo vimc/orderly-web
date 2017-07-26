@@ -25,7 +25,8 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val token = requestHelper.generateOnetimeToken()
+        val url = "/reports/testname/testversion/resources/$fakeresource/"
+        val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
@@ -49,8 +50,10 @@ class ResourceTests : IntegrationTest()
     fun `gets 404 if resource file doesnt exist`()
     {
         insertReport("testname", "testversion", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
-        val token = requestHelper.generateOnetimeToken()
-        val response = requestHelper.get("/reports/testname/testversion/resources/resource.csv/?access_token=$token", ContentTypes.binarydata)
+
+        val url = "/reports/testname/testversion/resources/resource.csv/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

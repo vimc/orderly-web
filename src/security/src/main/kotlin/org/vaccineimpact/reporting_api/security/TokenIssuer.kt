@@ -21,12 +21,12 @@ open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
 
-    open fun generateOneTimeActionToken(user: MontaguUser): String
+    open fun generateOneTimeActionToken(user: MontaguUser, url: String): String
     {
-        return generator.generate(claims(user))
+        return generator.generate(claims(user, url))
     }
 
-    fun claims(user: MontaguUser): Map<String, Any>
+    fun claims(user: MontaguUser, url: String): Map<String, Any>
     {
         return mapOf(
                 "iss" to issuer,
@@ -34,6 +34,7 @@ open class TokenIssuer  (keyPair: KeyPair, val issuer: String)
                 "exp" to Date.from(Instant.now().plus(oneTimeLinkLifeSpan)),
                 "permissions" to user.permissions.joinToString(","),
                 "roles" to user.roles.joinToString(","),
+                "url" to url,
                 "nonce" to getNonce()
         )
     }

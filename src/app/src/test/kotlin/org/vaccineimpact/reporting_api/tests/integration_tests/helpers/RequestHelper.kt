@@ -40,10 +40,10 @@ class RequestHelper
         return get(baseUrl + url, headers)
     }
 
-    fun generateOnetimeToken(): String
+    fun generateOnetimeToken(url: String): String
     {
         val token = WebTokenHelper.oneTimeTokenHelper.issuer
-                .generateOneTimeActionToken(fakeUser)
+                .generateOneTimeActionToken(fakeUser, "/v1$url")
 
         JooqContext(Config["onetime_token.db.location"]).use {
 

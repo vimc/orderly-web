@@ -11,7 +11,7 @@ class OnetimeTokenTests : IntegrationTest()
     {
 
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/access_token/")
+        val response = requestHelper.get("/access_token/?url=test")
 
         assertJsonContentType(response)
         assertSuccessful(response)
