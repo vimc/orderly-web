@@ -20,12 +20,14 @@ import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 class TokenVerifyingConfigFactory(
         tokenHelper: TokenVerifier,
         val requiredPermissions: Set<PermissionRequirement>
-) : ConfigFactory {
+) : ConfigFactory
+{
     private val clients = listOf(
             JWTHeaderClient(tokenHelper)
     )
 
-    override fun build(vararg parameters: Any?): Config {
+    override fun build(vararg parameters: Any?): Config
+    {
         clients.forEach {
             it.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
         }
@@ -38,7 +40,8 @@ class TokenVerifyingConfigFactory(
 
     fun allClients() = clients.map { it::class.java.simpleName }.joinToString()
 
-    private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile {
+    private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile
+    {
         val profile = commonProfile as JwtProfile
         val permissions = PermissionSet((profile.getAttribute("permissions") as String)
                 .split(',')
@@ -49,7 +52,8 @@ class TokenVerifyingConfigFactory(
     }
 }
 
-class TokenActionAdapter : DefaultHttpActionAdapter() {
+class TokenActionAdapter : DefaultHttpActionAdapter()
+{
     val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
@@ -65,12 +69,15 @@ class TokenActionAdapter : DefaultHttpActionAdapter() {
             MissingRequiredPermissionError(missingPermissions).problems
     ))
 
-    override fun adapt(code: Int, context: SparkWebContext): Any? = when (code) {
-        HttpConstants.UNAUTHORIZED -> {
+    override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
+    {
+        HttpConstants.UNAUTHORIZED ->
+        {
             addDefaultResponseHeaders(context.response, ContentTypes.json)
             spark.Spark.halt(code, unauthorizedResponse)
         }
-        HttpConstants.FORBIDDEN -> {
+        HttpConstants.FORBIDDEN ->
+        {
             addDefaultResponseHeaders(context.response, ContentTypes.json)
             val profile = DirectActionContext(context).userProfile
             val missingPermissions = profile.getAttributeOrDefault(MISSING_PERMISSIONS, mutableSetOf<String>())

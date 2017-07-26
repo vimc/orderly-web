@@ -3,7 +3,8 @@ package org.vaccineimpact.reporting_api.db
 import com.google.gson.JsonObject
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-interface OrderlyClient {
+interface OrderlyClient
+{
     fun getAllReports(): List<String>
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>

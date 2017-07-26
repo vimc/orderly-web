@@ -2,7 +2,8 @@ package org.vaccineimpact.reporting_api
 
 import spark.route.HttpMethod
 
-interface EndpointDefinition {
+interface EndpointDefinition
+{
     val urlFragment: String
     val controllerName: String
     val actionName: String

@@ -13,7 +13,8 @@ import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
 
-class Router(val config: RouteConfig) {
+class Router(val config: RouteConfig)
+{
 
     private val logger = LoggerFactory.getLogger(Router::class.java)
 
@@ -22,9 +23,11 @@ class Router(val config: RouteConfig) {
 
     private var controllers: MutableMap<String, Controller> = mutableMapOf()
 
-    fun mapEndpoints(urlBase: String): List<String> {
+    fun mapEndpoints(urlBase: String): List<String>
+    {
         return config.endpoints.map {
-            when (it) {
+            when (it)
+            {
                 is JsonEndpoint -> mapTransformedEndpoint(it, urlBase)
                 else -> mapEndpoint(it, urlBase)
             }
@@ -33,7 +36,8 @@ class Router(val config: RouteConfig) {
 
     private fun mapTransformedEndpoint(
             endpoint: JsonEndpoint,
-            urlBase: String): String {
+            urlBase: String): String
+    {
 
         val transformer = endpoint::transform
         val fullUrl = urlBase + endpoint.urlFragment
@@ -41,7 +45,8 @@ class Router(val config: RouteConfig) {
         val contentType = endpoint.contentType
 
         logger.info("Mapping $fullUrl")
-        when (endpoint.method) {
+        when (endpoint.method)
+        {
             HttpMethod.get -> Spark.get(fullUrl, contentType, route, transformer)
             HttpMethod.post -> Spark.post(fullUrl, contentType, route, transformer)
             HttpMethod.put -> Spark.put(fullUrl, contentType, route, transformer)
@@ -57,14 +62,16 @@ class Router(val config: RouteConfig) {
 
     private fun mapEndpoint(
             endpoint: EndpointDefinition,
-            urlBase: String): String {
+            urlBase: String): String
+    {
 
         val fullUrl = urlBase + endpoint.urlFragment
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
 
         logger.info("Mapping $fullUrl")
-        when (endpoint.method) {
+        when (endpoint.method)
+        {
             HttpMethod.get -> Spark.get(fullUrl, contentType, route)
             HttpMethod.post -> Spark.post(fullUrl, contentType, route)
             HttpMethod.put -> Spark.put(fullUrl, contentType, route)
@@ -77,7 +84,8 @@ class Router(val config: RouteConfig) {
         return fullUrl
     }
 
-    private fun addSecurityFilter(url: String) {
+    private fun addSecurityFilter(url: String)
+    {
         val allPermissions = setOf("*/can-login").map {
             PermissionRequirement.parse(it)
         }
@@ -91,14 +99,16 @@ class Router(val config: RouteConfig) {
         ))
     }
 
-    private fun getWrappedRoute(endpoint: EndpointDefinition): Route {
+    private fun getWrappedRoute(endpoint: EndpointDefinition): Route
+    {
 
         val controllerName = endpoint.controllerName
         val actionName = endpoint.actionName
 
         val controllerType = Class.forName("org.vaccineimpact.reporting_api.controllers.${controllerName}Controller")
 
-        if (!controllers.containsKey(controllerName)) {
+        if (!controllers.containsKey(controllerName))
+        {
             controllers[controllerName] = controllerType.getConstructor().newInstance() as Controller
         }
 

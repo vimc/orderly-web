@@ -8,8 +8,10 @@ import com.google.gson.JsonPrimitive
 import org.vaccineimpact.api.models.Result
 import org.vaccineimpact.api.models.ResultStatus
 
-open class Serializer {
-    companion object {
+open class Serializer
+{
+    companion object
+    {
         val instance = Serializer()
     }
 
@@ -18,7 +20,8 @@ open class Serializer {
 
     val gson: Gson
 
-    init {
+    init
+    {
         gson = GsonBuilder()
                 .setPrettyPrinting()
                 .disableHtmlEscaping()
@@ -34,12 +37,17 @@ open class Serializer {
 
     open fun toJson(result: org.vaccineimpact.api.models.Result): String = gson.toJson(result)
 
-    fun convertFieldName(name: String): String {
+    fun convertFieldName(name: String): String
+    {
         val builder = StringBuilder()
-        for (char in name) {
-            if (char.isUpperCase()) {
+        for (char in name)
+        {
+            if (char.isUpperCase())
+            {
                 builder.append("_" + char.toLowerCase())
-            } else {
+            }
+            else
+            {
                 builder.append(char)
             }
         }
