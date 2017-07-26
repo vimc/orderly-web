@@ -6,15 +6,15 @@ import org.pac4j.sparkjava.SparkWebContext
 import spark.Request
 import spark.Response
 
-open class DirectActionContext(private val context: SparkWebContext): ActionContext
+open class DirectActionContext(private val context: SparkWebContext) : ActionContext
 {
     private val request
-            get() = context.sparkRequest
+        get() = context.sparkRequest
     private val response
-            get() = context.sparkResponse
+        get() = context.sparkResponse
 
     constructor(request: Request, response: Response)
-        : this(SparkWebContext(request, response))
+            : this(SparkWebContext(request, response))
 
     override fun contentType(): String = request.contentType()
     override fun queryParams(key: String): String? = request.queryParams(key)
@@ -30,7 +30,8 @@ open class DirectActionContext(private val context: SparkWebContext): ActionCont
         manager.getAll(false).single()
     }
 
-    override fun getSparkResponse(): Response {
+    override fun getSparkResponse(): Response
+    {
         return response
     }
 }

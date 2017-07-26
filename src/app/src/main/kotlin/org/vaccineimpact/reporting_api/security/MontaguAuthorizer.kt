@@ -6,13 +6,12 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.DirectActionContext
-import org.vaccineimpact.reporting_api.security.MISSING_PERMISSIONS
-import org.vaccineimpact.reporting_api.security.PermissionRequirement
 
 class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
     : AbstractRequireAllAuthorizer<PermissionRequirement, CommonProfile>()
 {
-    init {
+    init
+    {
         elements = requiredPermissions
     }
 

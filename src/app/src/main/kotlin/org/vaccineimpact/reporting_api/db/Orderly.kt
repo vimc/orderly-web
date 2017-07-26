@@ -2,7 +2,7 @@ package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
 import org.jooq.TableField
-import org.vaccineimpact.reporting_api.db.Tables.*
+import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 

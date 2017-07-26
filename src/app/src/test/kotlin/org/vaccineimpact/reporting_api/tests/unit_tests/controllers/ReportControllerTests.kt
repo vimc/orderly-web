@@ -1,20 +1,17 @@
 package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.Test
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
-import org.vaccineimpact.reporting_api.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
+import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
-import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
-import spark.Response
-import javax.servlet.ServletOutputStream
-import javax.servlet.http.HttpServletResponse
 
 class ReportControllerTests : ControllerTest()
 {

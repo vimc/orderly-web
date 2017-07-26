@@ -1,18 +1,14 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
-import org.vaccineimpact.reporting_api.*
-import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
+import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.FileSystem
+import org.vaccineimpact.reporting_api.Files
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
-import org.vaccineimpact.reporting_api.errors.InvalidOneTimeLinkToken
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import org.vaccineimpact.reporting_api.errors.UnknownObjectError
-import org.vaccineimpact.reporting_api.security.TokenIssuer
-import org.vaccineimpact.reporting_api.security.WebTokenHelper
-import java.io.File
-import javax.servlet.http.HttpServletResponse
 
 class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller
 {

@@ -2,7 +2,9 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.net.ssl.*
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.X509TrustManager
 
 object CertificateHelper
 {

@@ -5,13 +5,10 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.Files
-import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import java.io.File
-import javax.servlet.http.HttpServletResponse
 
 class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller
 {

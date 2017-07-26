@@ -1,13 +1,10 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
-import org.vaccineimpact.reporting_api.tests.insertReport
-
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
-import java.io.File
+import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ReportTests : IntegrationTest()
 {

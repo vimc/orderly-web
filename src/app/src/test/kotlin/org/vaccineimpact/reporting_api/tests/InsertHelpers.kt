@@ -1,7 +1,7 @@
 package org.vaccineimpact.reporting_api.tests
 
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.Tables.*
+import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import java.sql.Timestamp
 
 fun insertReport(name: String,

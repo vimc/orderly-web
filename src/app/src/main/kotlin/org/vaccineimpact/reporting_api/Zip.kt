@@ -2,11 +2,9 @@ package org.vaccineimpact.reporting_api
 
 import org.slf4j.LoggerFactory
 import java.io.*
-import java.util.ArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
-import java.io.File
-import java.io.FileInputStream
+import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipOutputStream
 
 interface ZipClient
 {

@@ -6,9 +6,7 @@ import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.controllers.Controller
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
-import org.vaccineimpact.reporting_api.security.*
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod

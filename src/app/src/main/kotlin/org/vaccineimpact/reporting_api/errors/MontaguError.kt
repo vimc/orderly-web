@@ -1,9 +1,5 @@
 package org.vaccineimpact.reporting_api.errors
 
-import org.vaccineimpact.api.models.ErrorInfo
-import org.vaccineimpact.api.models.Result
-import org.vaccineimpact.api.models.ResultStatus
-
 abstract class MontaguError(
         open val httpStatus: Int,
         val problems: Iterable<org.vaccineimpact.api.models.ErrorInfo>

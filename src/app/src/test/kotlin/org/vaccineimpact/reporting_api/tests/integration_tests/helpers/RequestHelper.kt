@@ -1,7 +1,5 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import khttp.responses.Response
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Scope

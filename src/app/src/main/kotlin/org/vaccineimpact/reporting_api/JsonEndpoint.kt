@@ -1,7 +1,6 @@
 package org.vaccineimpact.reporting_api
 
 import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
-import org.vaccineimpact.reporting_api.app_start.Router
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.security.*
 import spark.Spark

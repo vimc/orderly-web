@@ -32,8 +32,8 @@ data class PermissionRequirement(val name: String, val scopeRequirement: ScopeRe
 
 sealed class ScopeRequirement(val value: String)
 {
-    class Global: ScopeRequirement("*")
-    class Specific(val prefix: String, val scopeIdUrlKey: String): ScopeRequirement("$prefix:<$scopeIdUrlKey>")
+    class Global : ScopeRequirement("*")
+    class Specific(val prefix: String, val scopeIdUrlKey: String) : ScopeRequirement("$prefix:<$scopeIdUrlKey>")
 
     fun reify(context: ActionContext) = when (this)
     {
@@ -42,10 +42,12 @@ sealed class ScopeRequirement(val value: String)
     }
 
     override fun toString() = value
-    override fun equals(other: Any?) = when(other) {
+    override fun equals(other: Any?) = when (other)
+    {
         is ScopeRequirement -> other.toString() == toString()
         else -> false
     }
+
     override fun hashCode() = toString().hashCode()
 
     companion object
