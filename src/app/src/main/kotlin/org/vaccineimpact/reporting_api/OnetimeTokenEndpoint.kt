@@ -1,7 +1,5 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.db.Config
-import org.vaccineimpact.reporting_api.db.TokenStore
 import org.vaccineimpact.reporting_api.security.*
 import spark.Spark
 import spark.route.HttpMethod
@@ -28,14 +26,9 @@ data class OnetimeTokenEndpoint(
             PermissionRequirement.parse(it)
         }
 
-        val bearerTokenVerifier = TokenVerifier(KeyHelper.authPublicKey, Config["token.issuer"])
-        val onetimeTokenVerifier = WebTokenHelper.oneTimeTokenHelper.verifier
-
         val configFactory = TokenVerifyingConfigFactory(
-                listOf(JWTHeaderClientWrapper(bearerTokenVerifier),
-                        JWTParameterClientWrapper(onetimeTokenVerifier,
-                                TokenStore())),
                 allPermissions.toSet())
+                .allowParameterAuthentication()
 
         val config = configFactory.build()
 

@@ -7,6 +7,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtProfile
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.api.models.ErrorInfo
 import org.vaccineimpact.api.models.Result
 import org.vaccineimpact.api.models.ResultStatus
@@ -15,13 +16,24 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.Serializer
 import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
+import org.vaccineimpact.reporting_api.db.TokenStore
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class TokenVerifyingConfigFactory(
-        private val clientWrappers: List<MontaguCredentialClientWrapper>,
         val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
+    companion object
+    {
+        val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
+                org.vaccineimpact.reporting_api.db.Config["token.issuer"]))
+
+        val parameterClientWrapper = JWTParameterClientWrapper(WebTokenHelper.oneTimeTokenHelper.verifier,
+                TokenStore())
+    }
+
+    val clientWrappers = mutableListOf<MontaguCredentialClientWrapper>(headerClientWrapper)
+
     override fun build(vararg parameters: Any?): Config
     {
         clientWrappers.forEach {
@@ -48,6 +60,12 @@ class TokenVerifyingConfigFactory(
         return commonProfile
     }
 
+}
+
+fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingConfigFactory
+{
+    this.clientWrappers.add(TokenVerifyingConfigFactory.parameterClientWrapper)
+    return this
 }
 
 class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()
@@ -77,11 +95,15 @@ class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : Defaul
         HttpConstants.FORBIDDEN ->
         {
             addDefaultResponseHeaders(context.response, ContentTypes.json)
+
             val profile = DirectActionContext(context).userProfile
+
             val missingUrl = profile.getAttributeOrDefault(MISSING_URL, "")
 
             val authenticationErrors = mutableListOf<ErrorInfo>()
-            if (!missingUrl.isEmpty()){
+
+            if (!missingUrl.isEmpty())
+            {
                 authenticationErrors.add(ErrorInfo("forbidden", missingUrl))
             }
             val missingPermissions = profile.getAttributeOrDefault(MISSING_PERMISSIONS, mutableSetOf<String>())
