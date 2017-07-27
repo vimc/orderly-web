@@ -29,7 +29,8 @@ class MontaguOnetimeTokenAuthenticator(signatureConfiguration: SignatureConfigur
         }
         if (url.toString().isNullOrEmpty())
         {
-            throw CredentialsException("No 'url' claim provided. Token is invalid")
+            credentials.userProfile.addAttribute(MISSING_URL, "No 'url' claim provided.")
+       //     throw CredentialsException("No 'url' claim provided. Token is invalid")
         }
 
     }

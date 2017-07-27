@@ -24,8 +24,6 @@ open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
         val requestedUrl = context.path
         if (claimedUrl != null && requestedUrl != claimedUrl)
         {
-            // onetime tokens fail authentication if no url claim
-            // so this property will always exist for onetime token generated profiles
             logger.warn("This token is issued for $claimedUrl but the current request is for $requestedUrl")
             profile.addAttribute(MISSING_URL, "This token is issued for $claimedUrl but the current request is for $requestedUrl")
             return false
