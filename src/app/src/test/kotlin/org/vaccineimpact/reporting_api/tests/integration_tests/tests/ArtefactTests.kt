@@ -6,7 +6,6 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.insertReport
-import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 
 class ArtefactTests : IntegrationTest()
 {
@@ -94,7 +93,7 @@ class ArtefactTests : IntegrationTest()
         insertReport("testname", "testversion")
         val url = "/reports/testname/testversion/artefacts/6943yhks/"
         val token = WebTokenHelper.oneTimeTokenHelper.issuer
-                .generateOneTimeActionToken(requestHelper.fakeUser, url)
+                .generateOnetimeActionToken(requestHelper.fakeUser, url)
         val response = requestHelper
                 .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 

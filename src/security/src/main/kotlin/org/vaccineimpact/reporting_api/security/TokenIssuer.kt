@@ -21,7 +21,7 @@ open class TokenIssuer (keyPair: KeyPair, val issuer: String)
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
 
-    open fun generateOneTimeActionToken(user: MontaguUser, url: String): String
+    open fun generateOnetimeActionToken(user: MontaguUser, url: String): String
     {
         return generator.generate(claims(user, url))
     }

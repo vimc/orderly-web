@@ -1,7 +1,9 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
+import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.security.KeyHelper
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper

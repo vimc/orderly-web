@@ -39,7 +39,7 @@ class MontaguOnetimeTokenAuthenticator(signatureConfiguration: SignatureConfigur
         }
         if (url != context.path)
         {
-            throw CredentialsException("Expected 'url' claim to be of ${context.path}.")
+            throw CredentialsException("Expected 'url' claim to be ${context.path} but was $url")
         }
 
     }

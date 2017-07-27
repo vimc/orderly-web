@@ -31,7 +31,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `can generate onetime token`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOneTimeActionToken(fakeUser, url)
+        val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
         val credentials = TokenCredentials(token, "(validateToken)Method")
 
                 val fakeStore = mock<OnetimeTokenStore>() {
@@ -101,7 +101,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
-        val evilToken = sauron.issuer.generateOneTimeActionToken(fakeUser, url)
+        val evilToken = sauron.issuer.generateOnetimeActionToken(fakeUser, url)
         val credentials = TokenCredentials(evilToken, "(validateToken)Method")
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -125,7 +125,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val badUrl = "badurl"
         val badToken = helper.issuer
-                .generateOneTimeActionToken(fakeUser, url)
+                .generateOnetimeActionToken(fakeUser, url)
 
         val credentials = TokenCredentials(badToken, "(validateToken)Method")
 
@@ -148,7 +148,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val notInDbToken = helper.issuer
-                .generateOneTimeActionToken(fakeUser, url)
+                .generateOnetimeActionToken(fakeUser, url)
 
         val credentials = TokenCredentials(notInDbToken, "(validateToken)Method")
 

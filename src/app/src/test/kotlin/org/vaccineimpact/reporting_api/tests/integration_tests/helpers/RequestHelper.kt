@@ -2,9 +2,6 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
 import khttp.responses.Response
 import org.jooq.impl.DSL.*
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.api.models.permissions.ReifiedRole
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
@@ -41,7 +38,7 @@ class RequestHelper
     fun generateOnetimeToken(url: String): String
     {
         val token = WebTokenHelper.oneTimeTokenHelper.issuer
-                .generateOneTimeActionToken(fakeUser, "/v1$url")
+                .generateOnetimeActionToken(fakeUser, "/v1$url")
 
         JooqContext(Config["onetime_token.db.location"]).use {
 
@@ -78,6 +75,26 @@ class RequestHelper
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
+    }
+
+    fun getWrongPermissionsWithAccessToken(url: String, contentType: String = ContentTypes.json): Response
+    {
+        val headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
+
+        val token = WebTokenHelper.oneTimeTokenHelper
+                .issuer.generateOnetimeActionToken(MontaguUser("testusername", "user", "*/fake-perm"), "/v1$url")
+
+        JooqContext(Config["onetime_token.db.location"]).use {
+
+            it.dsl.insertInto(table(name("ONETIME_TOKEN")))
+                    .set(field(name("ONETIME_TOKEN.TOKEN")), token)
+                    .execute()
+        }
+
+        return get(baseUrl + url + "?access_token=$token", headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
