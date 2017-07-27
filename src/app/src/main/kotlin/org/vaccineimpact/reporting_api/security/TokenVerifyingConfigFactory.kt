@@ -3,11 +3,11 @@ package org.vaccineimpact.reporting_api.security
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.context.HttpConstants
-import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtProfile
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
+import org.vaccineimpact.api.models.ErrorInfo
 import org.vaccineimpact.api.models.Result
 import org.vaccineimpact.api.models.ResultStatus
 import org.vaccineimpact.api.models.permissions.PermissionSet
@@ -60,11 +60,12 @@ class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : Defaul
             }
     ))
 
-    fun forbiddenResponse(missingPermissions: Set<String>): String = Serializer.instance.toJson(Result(
+    fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
-            MissingRequiredPermissionError(missingPermissions).problems
+            authenticationErrors
     ))
+
 
     override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
     {
@@ -77,8 +78,20 @@ class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : Defaul
         {
             addDefaultResponseHeaders(context.response, ContentTypes.json)
             val profile = DirectActionContext(context).userProfile
+            val missingUrl = profile.getAttributeOrDefault(MISSING_URL, "")
+
+            val authenticationErrors = mutableListOf<ErrorInfo>()
+            if (!missingUrl.isEmpty()){
+                authenticationErrors.add(ErrorInfo("forbidden", missingUrl))
+            }
             val missingPermissions = profile.getAttributeOrDefault(MISSING_PERMISSIONS, mutableSetOf<String>())
-            spark.Spark.halt(code, forbiddenResponse(missingPermissions))
+
+            if (missingPermissions.any())
+            {
+                authenticationErrors.addAll(MissingRequiredPermissionError(missingPermissions).problems)
+            }
+
+            spark.Spark.halt(code, forbiddenResponse(authenticationErrors))
         }
         else -> super.adapt(code, context)
     }

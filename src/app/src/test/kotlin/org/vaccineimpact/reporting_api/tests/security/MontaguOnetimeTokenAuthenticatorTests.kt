@@ -120,21 +120,19 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     }
 
     @Test
-    fun `token fails validation when url is wrong`()
+    fun `token fails validation when url is missing`()
     {
-        val url = "testurl"
-        val badUrl = "badurl"
         val badToken = helper.issuer
-                .generateOnetimeActionToken(fakeUser, url)
+                .generateOnetimeActionToken(fakeUser, "")
 
         val credentials = TokenCredentials(badToken, "(validateToken)Method")
 
         val fakeStore = mock<OnetimeTokenStore>() {
-            on(it.validateOneTimeToken(badToken)) doReturn false
+            on(it.validateOneTimeToken(badToken)) doReturn true
         }
 
         val fakeContext = mock<WebContext>(){
-            on (it.path) doReturn badUrl
+            on (it.path) doReturn "url"
         }
 
         val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,

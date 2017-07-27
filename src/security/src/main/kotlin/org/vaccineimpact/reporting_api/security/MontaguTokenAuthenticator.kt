@@ -6,7 +6,7 @@ import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 
-class MontaguTokenAuthenticator(signatureConfiguration: SignatureConfiguration, val expectedIssuer: String)
+open class MontaguTokenAuthenticator(signatureConfiguration: SignatureConfiguration, val expectedIssuer: String)
     : JwtAuthenticator(signatureConfiguration) {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT) {
         super.createJwtProfile(credentials, jwt)

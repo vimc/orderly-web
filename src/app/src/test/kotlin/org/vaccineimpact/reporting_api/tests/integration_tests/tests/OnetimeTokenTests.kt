@@ -15,7 +15,7 @@ class OnetimeTokenTests : IntegrationTest()
     fun `gets one time token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/access_token/?url=test")
+        val response = requestHelper.get("/onetime_token/?url=test")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -30,7 +30,7 @@ class OnetimeTokenTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
 
-        val tokenReponse = requestHelper.get("/access_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
+        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
 
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
