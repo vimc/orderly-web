@@ -2,14 +2,13 @@ package org.vaccineimpact.reporting_api.tests.security
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import com.nimbusds.jwt.JWTParser
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Before
 import org.junit.Test
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.api.models.permissions.ReifiedRole
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.credentials.TokenCredentials
+import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.reporting_api.security.*
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.time.Instant
@@ -33,15 +32,21 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOneTimeActionToken(fakeUser, url)
+        val credentials = TokenCredentials(token, "(validateToken)Method")
 
-        val fakeStore = mock<OnetimeTokenStore>() {
+                val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(token)) doReturn true
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-                fakeStore, url)
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn url
+        }
 
-        assertThat(sut.validateToken(token)).isNotNull()
+
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore)
+
+        sut.validate(credentials, fakeContext)
 
     }
 
@@ -51,16 +56,21 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
+        val credentials = TokenCredentials(badToken, "(validateToken)Method")
 
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-                fakeStore, url)
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn url
+        }
 
-        assertThat(sut.validateToken(badToken)).isNull()
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore)
+
+        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -69,15 +79,21 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
+        val credentials = TokenCredentials(badToken, "(validateToken)Method")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
-                helper.issuerName, fakeStore, url)
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn url
+        }
 
-        assertThat(sut.validateToken(badToken)).isNull()
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
+                helper.issuerName, fakeStore)
+
+        sut.validate(credentials, fakeContext)
+        assertThat(credentials.userProfile).isNull()
     }
 
     @Test
@@ -86,17 +102,21 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
         val evilToken = sauron.issuer.generateOneTimeActionToken(fakeUser, url)
+        val credentials = TokenCredentials(evilToken, "(validateToken)Method")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(evilToken)) doReturn true
         }
 
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn url
+        }
+
         val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
                 helper.issuerName,
-                fakeStore,
-                url)
+                fakeStore)
 
-        assertThat(sut.validateToken(evilToken)).isNull()
+        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -107,14 +127,20 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val badToken = helper.issuer
                 .generateOneTimeActionToken(fakeUser, url)
 
+        val credentials = TokenCredentials(badToken, "(validateToken)Method")
+
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn false
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-                fakeStore, badUrl)
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn badUrl
+        }
 
-        assertThat(sut.validateToken(badToken)).isNull()
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore)
+
+        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 
     @Test
@@ -124,13 +150,19 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val notInDbToken = helper.issuer
                 .generateOneTimeActionToken(fakeUser, url)
 
+        val credentials = TokenCredentials(notInDbToken, "(validateToken)Method")
+
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(notInDbToken)) doReturn false
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-                fakeStore, url)
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn url
+        }
 
-        assertThat(sut.validateToken(notInDbToken)).isNull()
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore)
+
+        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 }

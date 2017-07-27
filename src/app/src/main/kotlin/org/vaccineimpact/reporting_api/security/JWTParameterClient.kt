@@ -5,20 +5,18 @@ import org.vaccineimpact.api.models.ErrorInfo
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
 class JWTParameterClientWrapper(helper: TokenVerifier,
-                                tokenStore: OnetimeTokenStore,
-                                url: String)
+                                tokenStore: OnetimeTokenStore)
     : MontaguCredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("access-token-invalid", "Access token not supplied, or access token was invalid")
-    override val client = JWTParameterClient(helper, tokenStore, url)
+    override val client = JWTParameterClient(helper, tokenStore)
 }
 
-class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore, url: String) : ParameterClient(
+class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : ParameterClient(
         "access_token",
         MontaguOnetimeTokenAuthenticator(helper.signatureConfiguration,
                 helper.expectedIssuer,
-                tokenStore,
-                url))
+                tokenStore))
 {
     init
     {

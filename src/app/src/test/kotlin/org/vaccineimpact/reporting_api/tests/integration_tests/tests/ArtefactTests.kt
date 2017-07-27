@@ -42,8 +42,7 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")

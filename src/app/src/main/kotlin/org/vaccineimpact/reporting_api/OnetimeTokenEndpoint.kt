@@ -34,8 +34,7 @@ data class OnetimeTokenEndpoint(
         val configFactory = TokenVerifyingConfigFactory(
                 listOf(JWTHeaderClientWrapper(bearerTokenVerifier),
                         JWTParameterClientWrapper(onetimeTokenVerifier,
-                                TokenStore(),
-                                url)),
+                                TokenStore())),
                 allPermissions.toSet())
 
         val config = configFactory.build()

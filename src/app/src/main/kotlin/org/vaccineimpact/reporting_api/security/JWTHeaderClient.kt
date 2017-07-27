@@ -1,5 +1,7 @@
 package org.vaccineimpact.reporting_api.security
 
+import org.pac4j.core.authorization.authorizer.Authorizer
+import org.pac4j.core.profile.CommonProfile
 import org.pac4j.http.client.direct.HeaderClient
 import org.vaccineimpact.api.models.ErrorInfo
 

@@ -3,6 +3,7 @@ package org.vaccineimpact.reporting_api.security
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.context.HttpConstants
+import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtProfile
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
@@ -27,7 +28,7 @@ class TokenVerifyingConfigFactory(
             it.client.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
         }
 
-        return Config(clientWrappers.map{ it.client }).apply {
+        return Config(clientWrappers.map { it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = TokenActionAdapter(clientWrappers)
@@ -46,6 +47,7 @@ class TokenVerifyingConfigFactory(
         commonProfile.addAttribute(PERMISSIONS, permissions)
         return commonProfile
     }
+
 }
 
 class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()
@@ -54,8 +56,8 @@ class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : Defaul
             ResultStatus.FAILURE,
             null,
             clients.map {
-               it.errorInfo
-           }
+                it.errorInfo
+            }
     ))
 
     fun forbiddenResponse(missingPermissions: Set<String>): String = Serializer.instance.toJson(Result(
