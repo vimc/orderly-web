@@ -12,32 +12,12 @@ import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
 class MontaguAuthorizerTests: MontaguTests()
 {
-
     @Test
-    fun `is not authorized if needs url and url claim does not exist`()
+    fun `is not authorized if url claim does not match request`()
     {
         val sut = MontaguAuthorizer(setOf())
 
         val profile = CommonProfile()
-        profile.addAttribute(NEEDS_URL, true)
-
-        val fakeContext = mock<SparkWebContext>(){
-            on (it.path) doReturn "some url"
-        }
-
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
-
-        assertThat(result).isFalse()
-
-    }
-
-    @Test
-    fun `is not authorized if needs url and url claim does not match request`()
-    {
-        val sut = MontaguAuthorizer(setOf())
-
-        val profile = CommonProfile()
-        profile.addAttribute(NEEDS_URL, true)
         profile.addAttribute("url", "some/url")
 
         val fakeContext = mock<SparkWebContext>(){
@@ -51,26 +31,7 @@ class MontaguAuthorizerTests: MontaguTests()
     }
 
     @Test
-    fun `is authorized if needs url and url matches request`()
-    {
-        val sut = MontaguAuthorizer(setOf())
-
-        val profile = CommonProfile()
-        profile.addAttribute(NEEDS_URL, true)
-        profile.addAttribute("url", "/fake/url/")
-
-        val fakeContext = mock<SparkWebContext>(){
-            on (it.path) doReturn "/fake/url/"
-        }
-
-        val result = sut.isAuthorized(fakeContext, listOf(profile))
-
-        assertThat(result).isTrue()
-
-    }
-
-    @Test
-    fun `is authorized if doesnt need url`()
+    fun `is authorized if doesnt have url claim`()
     {
         val sut = MontaguAuthorizer(setOf())
 

@@ -119,31 +119,8 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 
-    @Test
-    fun `user profile gets missing url attribute when url is missing`()
-    {
-        val badToken = helper.issuer
-                .generateOnetimeActionToken(fakeUser, "")
-
-        val credentials = TokenCredentials(badToken, "(validateToken)Method")
-
-        val fakeStore = mock<OnetimeTokenStore>() {
-            on(it.validateOneTimeToken(badToken)) doReturn true
-        }
-
-        val fakeContext = mock<WebContext>(){
-            on (it.path) doReturn "url"
-        }
-
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-                fakeStore)
-
-        sut.validate(credentials, fakeContext)
-        assertThat(credentials.userProfile.getAttribute(MISSING_URL)).isEqualTo("No 'url' claim provided.")
-    }
-
 //    @Test
-//    fun `token fails validation when url is missing`()
+//    fun `user profile gets needs url attribute`()
 //    {
 //        val badToken = helper.issuer
 //                .generateOnetimeActionToken(fakeUser, "")
@@ -161,8 +138,31 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
 //        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
 //                fakeStore)
 //
-//        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
+//        sut.validate(credentials, fakeContext)
+//        assertThat(credentials.userProfile.getAttribute(NEEDS_URL)).isNotNull()
 //    }
+
+    @Test
+    fun `token fails validation when url is missing`()
+    {
+        val badToken = helper.issuer
+                .generateOnetimeActionToken(fakeUser, "")
+
+        val credentials = TokenCredentials(badToken, "(validateToken)Method")
+
+        val fakeStore = mock<OnetimeTokenStore>() {
+            on(it.validateOneTimeToken(badToken)) doReturn true
+        }
+
+        val fakeContext = mock<WebContext>(){
+            on (it.path) doReturn "url"
+        }
+
+        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+                fakeStore)
+
+        assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
+    }
 
     @Test
     fun `token fails validation when not in the token store`()
