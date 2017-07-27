@@ -48,7 +48,17 @@ class SecurityTests : IntegrationTest()
 
     }
 
+    @Test
+    fun `returns 403 if missing permissions with access token`()
+    {
+        val response = RequestHelper().getWrongPermissionsWithAccessToken("/reports/testname/testversion/artefacts/someartefact/", ContentTypes.binarydata)
 
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        JSONValidator.validateError(response.text, "forbidden",
+                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.read")
+
+    }
 
     @Test
     fun `returns 403 if access token url is wrong`()

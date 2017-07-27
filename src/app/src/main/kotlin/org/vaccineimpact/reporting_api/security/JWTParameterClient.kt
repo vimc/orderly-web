@@ -7,7 +7,7 @@ class JWTParameterClientWrapper(helper: TokenVerifier,
                                 tokenStore: OnetimeTokenStore)
     : MontaguCredentialClientWrapper
 {
-    override val errorInfo = ErrorInfo("access-token-invalid", "Access token not supplied, or access token was invalid")
+    override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
     override val client = JWTParameterClient(helper, tokenStore)
 }
 

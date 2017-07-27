@@ -59,11 +59,11 @@ class JSONValidator
         error = json["errors"][1]
 
         Assertions.assertThat(error["code"].asText())
-                .withFailMessage("Expected error code to be 'access-token-invalid' in $response")
-                .isEqualTo("access-token-invalid")
+                .withFailMessage("Expected error code to be 'onetime-token-invalid' in $response")
+                .isEqualTo("onetime-token-invalid")
 
         Assertions.assertThat(error["message"].asText())
-                .contains("Access token not supplied, or access token was invalid")
+                .contains("Onetime token not supplied, or onetime token was invalid")
     }
 
     private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)
