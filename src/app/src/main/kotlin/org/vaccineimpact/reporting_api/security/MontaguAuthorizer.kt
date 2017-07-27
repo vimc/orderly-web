@@ -20,9 +20,12 @@ open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
 
     override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
     {
+        val needsUrl = profile.getAttribute(NEEDS_URL) != null
         val claimedUrl = profile.getAttribute("url")
         val requestedUrl = context.path
-        if (claimedUrl != null && requestedUrl != claimedUrl)
+
+        if (needsUrl &&
+                (claimedUrl == null || requestedUrl != claimedUrl))
         {
             logger.warn("This token is issued for $claimedUrl but the current request is for $requestedUrl")
             profile.addAttribute(MISSING_URL, "This token is issued for $claimedUrl but the current request is for $requestedUrl")

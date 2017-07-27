@@ -27,11 +27,11 @@ class MontaguOnetimeTokenAuthenticator(signatureConfiguration: SignatureConfigur
         {
             throw CredentialsException("Expected 'sub' claim to be ${TokenIssuer.oneTimeActionSubject}")
         }
-        if (url.toString().isNullOrEmpty())
-        {
-            credentials.userProfile.addAttribute(MISSING_URL, "No 'url' claim provided.")
-       //     throw CredentialsException("No 'url' claim provided. Token is invalid")
-        }
+//        if (url.toString().isNullOrEmpty())
+//        {
+//                 throw CredentialsException("No 'url' claim provided. Token is invalid")
+//        }
+        credentials.userProfile.addAttribute(NEEDS_URL, true)
 
     }
 
