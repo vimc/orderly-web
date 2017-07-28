@@ -19,9 +19,9 @@ class OnetimeTokenController(val tokenStore: TokenStore = TokenStore()) : Contro
         val permissions = profile.getAttribute("permissions").toString()
         val roles = profile.getAttribute("roles").toString()
 
-        val token = WebTokenHelper.oneTimeTokenHelper.issuer
-                .generateOnetimeActionToken(MontaguUser(username, roles, permissions),
-                        url)
+        val user = MontaguUser(username, roles, permissions)
+        val issuer =  WebTokenHelper.oneTimeTokenHelper.issuer
+        val token = issuer.generateOnetimeActionToken(user, url)
 
         tokenStore.storeToken(token)
 
