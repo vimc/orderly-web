@@ -4,5 +4,5 @@ import org.vaccineimpact.reporting_api.security.OnetimeTokenStore
 
 object TokenStore
 {
-    val instance: OnetimeTokenStore = SQLiteTokenStore()
+    val instance: OnetimeTokenStore = InMemoryTokenStore() //SQLiteTokenStore()
 }

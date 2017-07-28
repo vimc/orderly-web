@@ -3,8 +3,9 @@ package org.vaccineimpact.reporting_api.tests.unit_tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.InMemoryTokenStore
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class InMemoryTokenStoreTests
+class InMemoryTokenStoreTests : MontaguTests()
 {
     val token = "Cupcakes"
     val badToken = "Biscuits"
