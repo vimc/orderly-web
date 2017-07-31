@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory
 import java.io.File
 import java.sql.DriverManager
 import java.sql.SQLException
+import org.vaccineimpact.reporting_api.security.OnetimeTokenStore
 
-class TokenStore
+class TokenStore: OnetimeTokenStore
 {
     val tableName = "ONETIME_TOKEN"
     val ONETIME_TOKEN = table(name(tableName))
@@ -67,7 +68,7 @@ class TokenStore
         }
     }
 
-    fun validateOneTimeToken(token: String): Boolean
+    override fun validateOneTimeToken(token: String): Boolean
     {
         getJooqContext().use {
             val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)

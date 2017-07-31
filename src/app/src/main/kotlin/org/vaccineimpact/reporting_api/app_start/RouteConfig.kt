@@ -32,6 +32,6 @@ object MontaguRouteConfig : RouteConfig
             OnetimeTokenEndpoint("/data/csv/:id/", "Data", "downloadCSV", ContentTypes.csv),
             OnetimeTokenEndpoint("/data/rds/:id/", "Data", "downloadRDS"),
 
-            JsonEndpoint("/access_token/", "OnetimeToken", "get")
+            JsonEndpoint("/onetime_token/", "OnetimeToken", "get")
     )
 }
