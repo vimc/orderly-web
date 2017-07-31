@@ -7,15 +7,15 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
-open class JooqContext() : AutoCloseable
+open class JooqContext(private val dbLocation: String = Config["db.location"]) : AutoCloseable
 {
     private val conn = getConnection()
     val dsl = createDSL(conn)
 
     private fun getConnection(): Connection
     {
-        val dbLocation = File(Config["db.location"]).absolutePath
-        val url = "jdbc:sqlite://$dbLocation"
+        val fullLocation = File(dbLocation).absolutePath
+        val url = "jdbc:sqlite://$fullLocation"
         try
         {
             return DriverManager.getConnection(url)

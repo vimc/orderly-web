@@ -9,7 +9,6 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import javax.servlet.http.HttpServletResponse
 
 class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller
 {
@@ -21,7 +20,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext): HttpServletResponse
+    fun download(context: ActionContext): Boolean
     {
 
         val name = context.params(":name")
@@ -34,8 +33,8 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         val response = context.getSparkResponse().raw()
 
-        response.contentType = ContentTypes.binarydata
-        response.setHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
 
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
 
@@ -44,7 +43,7 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
-        return response
+        return true
     }
 
 }

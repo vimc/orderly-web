@@ -8,7 +8,6 @@ import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
-import javax.servlet.http.HttpServletResponse
 
 class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClient? = null) : Controller
 {
@@ -31,21 +30,21 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
         return orderly.getReportsByNameAndVersion(context.params(":name"), context.params(":version"))
     }
 
-    fun getZippedByNameAndVersion(context: ActionContext): HttpServletResponse
+    fun getZippedByNameAndVersion(context: ActionContext): Boolean
     {
 
         val name = context.params(":name")
         val version = context.params(":version")
         val response = context.getSparkResponse().raw()
 
-        response.contentType = ContentTypes.zip
-        response.setHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
+        context.addResponseHeader("Content-Type", ContentTypes.zip)
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
         val folderName = "${Config["orderly.root"]}archive/$name/$version/"
 
         zip.zipIt(folderName, response.outputStream)
 
-        return response
+        return true
     }
 
 }

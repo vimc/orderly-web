@@ -25,11 +25,39 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource", ContentTypes.binarydata)
+        val url = "/reports/testname/testversion/resources/$fakeresource/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-resource", "Unknown resource : '$fakeresource'")
+    }
+
+    @Test
+    fun `gets 401 if missing access token`()
+    {
+        insertReport("testname", "testversion")
+        val fakeresource = "hf647rhj"
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/resources/$fakeresource/", ContentTypes.binarydata)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
+
+    }
+
+    @Test
+    fun `gets 404 if resource file doesnt exist`()
+    {
+        insertReport("testname", "testversion", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
+
+        val url = "/reports/testname/testversion/resources/resource.csv/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+
+        assertJsonContentType(response)
+        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        JSONValidator.validateError(response.text, "file-not-found", "File with name 'resource.csv' does not exist")
     }
 
 }

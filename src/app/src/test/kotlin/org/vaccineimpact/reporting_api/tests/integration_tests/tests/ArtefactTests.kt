@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ArtefactTests : IntegrationTest()
@@ -13,7 +14,7 @@ class ArtefactTests : IntegrationTest()
     {
 
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts")
+        val response = requestHelper.get("/reports/testname/testversion/artefacts/")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -21,11 +22,26 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets artefact file`()
+    fun `gets artefact file with access token`()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
-        val response = requestHelper.get("/reports/other/$publishedVersion/artefacts/graph.png", ContentTypes.binarydata)
+        val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+    }
+
+    @Test
+    fun `gets artefact file with bearer token`()
+    {
+        val publishedVersion = Orderly().getReportsByName("other")[0]
+
+        val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
+        val response = requestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -37,7 +53,9 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.binarydata)
+        val url = "/reports/testname/testversion/artefacts/$fakeartefact/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -45,11 +63,55 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
+    fun `gets 401 if missing access token and no auth`()
+    {
+        insertReport("testname", "testversion")
+        val fakeartefact = "hf647rhj"
+
+        val url = "/reports/testname/testversion/artefacts/$fakeartefact"
+        val response = requestHelper.getNoAuth("$url/", ContentTypes.binarydata)
+
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
+    }
+
+    @Test
+    fun `gets 401 if invalid access token`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/fakeartefact/?access_token=42678iwek", ContentTypes.binarydata)
+
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
+    }
+
+    @Test
+    fun `gets 401 if access token not in db`()
+    {
+        insertReport("testname", "testversion")
+        val url = "/reports/testname/testversion/artefacts/6943yhks/"
+        val token = WebTokenHelper.oneTimeTokenHelper.issuer
+                .generateOnetimeActionToken(requestHelper.fakeUser, url)
+        val response = requestHelper
+                .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
+    }
+
+
+    @Test
     fun `gets 404 if artefact file doesnt exist`()
     {
         val fakeartefact = "64328fyhdkjs.csv"
+        val url = "/reports/testname/testversion/artefacts/$fakeartefact/"
+        val token = requestHelper.generateOnetimeToken(url)
+
         insertReport("testname", "testversion", hashArtefacts = "{\"$fakeartefact\":\"07dffb00305279935544238b39d7b14b\"}")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/$fakeartefact", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

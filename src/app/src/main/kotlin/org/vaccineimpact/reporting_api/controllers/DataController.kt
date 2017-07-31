@@ -9,7 +9,6 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
-import javax.servlet.http.HttpServletResponse
 
 class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller
 {
@@ -21,25 +20,25 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
         return orderly.getData(context.params(":name"), context.params(":version"))
     }
 
-    fun downloadCSV(context: ActionContext): HttpServletResponse
+    fun downloadCSV(context: ActionContext): Boolean
     {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
-        context.getSparkResponse().raw().contentType = ContentTypes.csv
+        context.addResponseHeader("Content-Type", ContentTypes.csv)
         return downloadFile(absoluteFilePath, "$id.csv", context)
     }
 
-    fun downloadRDS(context: ActionContext): HttpServletResponse
+    fun downloadRDS(context: ActionContext): Boolean
     {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
-        context.getSparkResponse().raw().contentType = ContentTypes.binarydata
+        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
         return downloadFile(absoluteFilePath, "$id.rds", context)
     }
 
-    fun downloadData(context: ActionContext): HttpServletResponse
+    fun downloadData(context: ActionContext): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")
@@ -53,26 +52,29 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
 
         val absoluteFilePath = "${Config["orderly.root"]}data/$type/$hash.$type"
 
-        val response = context.getSparkResponse().raw()
-
         if (type == "csv")
-            response.contentType = ContentTypes.csv
+        {
+            context.addResponseHeader("Content-Type", ContentTypes.csv)
+        }
         else
-            response.contentType = ContentTypes.binarydata
+        {
+            context.addResponseHeader("Content-Type", ContentTypes.binarydata)
+        }
 
         return downloadFile(absoluteFilePath, "$hash.$type", context)
     }
 
-    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): HttpServletResponse
+    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): Boolean
     {
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(filename)
 
         val response = context.getSparkResponse().raw()
-        response.setHeader("Content-Disposition", "attachment; filename=$filename")
+
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
-        return response
+        return true
     }
 }

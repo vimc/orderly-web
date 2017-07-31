@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
@@ -65,14 +66,40 @@ class ReportTests : IntegrationTest()
 
 
     @Test
-    fun `gets zip file`()
+    fun `gets zip file with access token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+
+        val url = "/reports/testname/testversion/all/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
 
         assertSuccessful(response)
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
         assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+    }
+
+    @Test
+    fun `gets zip file with bearer token`()
+    {
+        insertReport("testname", "testversion")
+
+        val token = requestHelper.generateOnetimeToken("")
+        val response = requestHelper.get("/reports/testname/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+
+        assertSuccessful(response)
+        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+    }
+
+    @Test
+    fun `returns 401 if access token is missing`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.getNoAuth("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateMultipleAuthErrors(response.text)
     }
 
 }

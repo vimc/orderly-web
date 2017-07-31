@@ -1,15 +1,12 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import khttp.responses.Response
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.api.models.permissions.ReifiedRole
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.security.MontaguUser
-import org.vaccineimpact.reporting_api.security.UserProperties
+import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
 class RequestHelper
@@ -21,6 +18,8 @@ class RequestHelper
 
     private val baseUrl: String = "http://localhost:${Config["app.port"]}/v1"
 
+    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
+
     fun get(url: String, contentType: String = ContentTypes.json): Response
     {
         var headers = mapOf(
@@ -29,12 +28,26 @@ class RequestHelper
         )
 
         val token = APITests.tokenHelper
-                .generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                        listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("can-login", Scope.Global()))))
+                .generateToken(fakeUser)
 
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
+    }
+
+    fun generateOnetimeToken(url: String): String
+    {
+        val token = WebTokenHelper.oneTimeTokenHelper.issuer
+                .generateOnetimeActionToken(fakeUser, "/v1$url")
+
+        JooqContext(Config["onetime_token.db.location"]).use {
+
+            it.dsl.insertInto(table(name("ONETIME_TOKEN")))
+                    .set(field(name("ONETIME_TOKEN.TOKEN")), token)
+                    .execute()
+        }
+
+        return token
     }
 
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response
@@ -57,12 +70,31 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper.generateToken(MontaguUser(UserProperties("tettusername", "Test User", "testemail", "testUserPassword", null),
-                listOf(ReifiedRole("rolename", Scope.Global())), listOf(ReifiedPermission("fake-perm", Scope.Global()))))
+        val token = APITests.tokenHelper.generateToken(MontaguUser("tettusername", "user", "*/fake-perm"))
 
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
+    }
+
+    fun getWrongPermissionsWithAccessToken(url: String, contentType: String = ContentTypes.json): Response
+    {
+        val headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
+
+        val token = WebTokenHelper.oneTimeTokenHelper
+                .issuer.generateOnetimeActionToken(MontaguUser("testusername", "user", "*/fake-perm"), "/v1$url")
+
+        JooqContext(Config["onetime_token.db.location"]).use {
+
+            it.dsl.insertInto(table(name("ONETIME_TOKEN")))
+                    .set(field(name("ONETIME_TOKEN.TOKEN")), token)
+                    .execute()
+        }
+
+        return get(baseUrl + url + "?access_token=$token", headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
@@ -78,19 +110,3 @@ class RequestHelper
     private fun get(url: String, headers: Map<String, String>)
             = khttp.get(url, headers)
 }
-
-fun <T> Response.montaguData(): T?
-{
-    val data = this.json()["data"]
-    if (data != "")
-    {
-        @Suppress("UNCHECKED_CAST")
-        return data as T
-    }
-    else
-    {
-        return null
-    }
-}
-
-fun Response.json() = Parser().parse(StringBuilder(text)) as JsonObject

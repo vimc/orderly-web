@@ -2,43 +2,40 @@ package org.vaccineimpact.reporting_api.security
 
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
-import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.profile.JwtProfile
-import org.pac4j.sparkjava.DefaultHttpActionAdapter
-import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.api.models.ErrorInfo
-import org.vaccineimpact.api.models.Result
-import org.vaccineimpact.api.models.ResultStatus
 import org.vaccineimpact.api.models.permissions.PermissionSet
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.DirectActionContext
-import org.vaccineimpact.reporting_api.Serializer
-import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
-import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
+import org.vaccineimpact.reporting_api.db.TokenStore
 
 class TokenVerifyingConfigFactory(
-        tokenHelper: TokenVerifier,
         val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
-    private val clients = listOf(
-            JWTHeaderClient(tokenHelper)
-    )
+    companion object
+    {
+        val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
+                org.vaccineimpact.reporting_api.db.Config["token.issuer"]))
+
+        val parameterClientWrapper = JWTParameterClientWrapper(WebTokenHelper.oneTimeTokenHelper.verifier,
+                TokenStore())
+    }
+
+    val clientWrappers = mutableListOf<MontaguCredentialClientWrapper>(headerClientWrapper)
 
     override fun build(vararg parameters: Any?): Config
     {
-        clients.forEach {
-            it.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
+        clientWrappers.forEach {
+            it.client.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
         }
-        return Config(clients).apply {
+
+        return Config(clientWrappers.map { it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter()
+            httpActionAdapter = TokenActionAdapter(clientWrappers)
         }
     }
 
-    fun allClients() = clients.map { it::class.java.simpleName }.joinToString()
+    fun allClients() = clientWrappers.map { it.client::class.java.simpleName }.joinToString()
 
     private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile
     {
@@ -50,39 +47,11 @@ class TokenVerifyingConfigFactory(
         commonProfile.addAttribute(PERMISSIONS, permissions)
         return commonProfile
     }
+
 }
 
-class TokenActionAdapter : DefaultHttpActionAdapter()
+fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingConfigFactory
 {
-    val unauthorizedResponse: String = Serializer.instance.toJson(Result(
-            ResultStatus.FAILURE,
-            null,
-            listOf(ErrorInfo(
-                    "bearer-token-invalid",
-                    "Bearer token not supplied in Authorization header, or bearer token was invalid"
-            ))
-    ))
-
-    fun forbiddenResponse(missingPermissions: Set<String>): String = Serializer.instance.toJson(Result(
-            ResultStatus.FAILURE,
-            null,
-            MissingRequiredPermissionError(missingPermissions).problems
-    ))
-
-    override fun adapt(code: Int, context: SparkWebContext): Any? = when (code)
-    {
-        HttpConstants.UNAUTHORIZED ->
-        {
-            addDefaultResponseHeaders(context.response, ContentTypes.json)
-            spark.Spark.halt(code, unauthorizedResponse)
-        }
-        HttpConstants.FORBIDDEN ->
-        {
-            addDefaultResponseHeaders(context.response, ContentTypes.json)
-            val profile = DirectActionContext(context).userProfile
-            val missingPermissions = profile.getAttributeOrDefault(MISSING_PERMISSIONS, mutableSetOf<String>())
-            spark.Spark.halt(code, forbiddenResponse(missingPermissions))
-        }
-        else -> super.adapt(code, context)
-    }
+    this.clientWrappers.add(TokenVerifyingConfigFactory.parameterClientWrapper)
+    return this
 }

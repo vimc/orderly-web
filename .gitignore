@@ -18,6 +18,7 @@ src/.idea/compiler.xml
 src/.idea/dictionaries/*
 src/.idea/gradle.xml
 src/.idea/InspectionProfiles/*
+src/.idea/inspectionProfiles/*
 src/.idea/kotlinc.xml
 src/.idea/libraries/*
 src/.idea/misc.xml
