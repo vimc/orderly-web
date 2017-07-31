@@ -16,8 +16,10 @@ class TokenVerifyingConfigFactory(
         val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
                 org.vaccineimpact.reporting_api.db.Config["token.issuer"]))
 
-        val parameterClientWrapper = JWTParameterClientWrapper(WebTokenHelper.oneTimeTokenHelper.verifier,
-                TokenStore())
+        val parameterClientWrapper = JWTParameterClientWrapper(
+                WebTokenHelper.oneTimeTokenHelper.verifier,
+                TokenStore.instance
+        )
     }
 
     val clientWrappers = mutableListOf<MontaguCredentialClientWrapper>(headerClientWrapper)

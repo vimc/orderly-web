@@ -7,11 +7,11 @@ import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.TokenStore
+import org.vaccineimpact.reporting_api.db.SQLiteTokenStore
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
-class TokenStoreTests : MontaguTests()
+class SQLiteTokenStoreTests : MontaguTests()
 {
 
     @Before
@@ -42,7 +42,7 @@ class TokenStoreTests : MontaguTests()
     fun `can create store`()
     {
 
-        val sut = TokenStore()
+        val sut = SQLiteTokenStore()
         sut.setup()
     }
 
@@ -50,7 +50,7 @@ class TokenStoreTests : MontaguTests()
     fun `can insert new token`()
     {
 
-        val sut = TokenStore()
+        val sut = SQLiteTokenStore()
         sut.storeToken("testtoken")
 
         getJooqContext().use {
@@ -70,7 +70,7 @@ class TokenStoreTests : MontaguTests()
 
 
         val token = "testtoken"
-        val sut = TokenStore()
+        val sut = SQLiteTokenStore()
 
         getJooqContext().use {
             it.dsl.insertInto(sut.ONETIME_TOKEN)
@@ -90,7 +90,7 @@ class TokenStoreTests : MontaguTests()
 
 
         val token = "testtoken"
-        val sut = TokenStore()
+        val sut = SQLiteTokenStore()
 
         getJooqContext().use {
             it.dsl.insertInto(table(name("ONETIME_TOKEN")))
@@ -116,7 +116,7 @@ class TokenStoreTests : MontaguTests()
 
 
         val token = "testtoken"
-        val sut = TokenStore()
+        val sut = SQLiteTokenStore()
 
         val result = sut.validateOneTimeToken(token)
 

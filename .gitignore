@@ -1,16 +1,6 @@
 *.pyc
 */config/current_user
 .~lock*
-demo/*/build/*
-demo/.gradle
-demo/.idea/dictionaries/*
-demo/.idea/gradle.xml
-demo/.idea/libraries/*
-demo/.idea/tasks.xml
-demo/.idea/workspace.xml
-demo/app/src/main/java/uk/ac/imperial/vimc/demo/app/models/jooq/**
-demo/build/*
-demo/out
 src/*/build/*
 src/.gradle
 src/.idea/.name
@@ -34,3 +24,4 @@ src/classes/
 src/config/users/current_user
 src/out
 test-data\.sql
+src/*/out/*
