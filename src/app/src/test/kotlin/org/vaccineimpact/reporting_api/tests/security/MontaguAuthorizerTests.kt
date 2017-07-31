@@ -31,11 +31,12 @@ class MontaguAuthorizerTests: MontaguTests()
     }
 
     @Test
-    fun `is authorized if doesnt have url claim`()
+    fun `is authorized if claim is global *`()
     {
         val sut = MontaguAuthorizer(setOf())
 
         val profile = CommonProfile()
+        profile.addAttribute("url", "*")
 
         val fakeContext = mock<SparkWebContext>(){
             on (it.path) doReturn "/fake/url/"

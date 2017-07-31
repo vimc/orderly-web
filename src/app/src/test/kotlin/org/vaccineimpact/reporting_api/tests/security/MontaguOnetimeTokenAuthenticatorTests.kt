@@ -28,11 +28,11 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     }
 
     @Test
-    fun `can generate onetime token`()
+    fun `can validate onetime token`()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
-        val credentials = TokenCredentials(token, "(validateToken)Method")
+        val credentials = TokenCredentials(token, "MontaguTests")
 
                 val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(token)) doReturn true
@@ -56,7 +56,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
-        val credentials = TokenCredentials(badToken, "(validateToken)Method")
+        val credentials = TokenCredentials(badToken, "MontaguTests")
 
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -79,7 +79,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.claims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
-        val credentials = TokenCredentials(badToken, "(validateToken)Method")
+        val credentials = TokenCredentials(badToken, "MontaguTests")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
@@ -102,7 +102,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
         val evilToken = sauron.issuer.generateOnetimeActionToken(fakeUser, url)
-        val credentials = TokenCredentials(evilToken, "(validateToken)Method")
+        val credentials = TokenCredentials(evilToken, "MontaguTests")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(evilToken)) doReturn true
@@ -119,36 +119,13 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         assertThatThrownBy {  sut.validate(credentials, fakeContext)}.isInstanceOf(CredentialsException::class.java)
     }
 
-//    @Test
-//    fun `user profile gets needs url attribute`()
-//    {
-//        val badToken = helper.issuer
-//                .generateOnetimeActionToken(fakeUser, "")
-//
-//        val credentials = TokenCredentials(badToken, "(validateToken)Method")
-//
-//        val fakeStore = mock<OnetimeTokenStore>() {
-//            on(it.validateOneTimeToken(badToken)) doReturn true
-//        }
-//
-//        val fakeContext = mock<WebContext>(){
-//            on (it.path) doReturn "url"
-//        }
-//
-//        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
-//                fakeStore)
-//
-//        sut.validate(credentials, fakeContext)
-//        assertThat(credentials.userProfile.getAttribute(NEEDS_URL)).isNotNull()
-//    }
-
     @Test
-    fun `token fails validation when url is missing`()
+    fun `token fails validation when url is not request path`()
     {
         val badToken = helper.issuer
                 .generateOnetimeActionToken(fakeUser, "")
 
-        val credentials = TokenCredentials(badToken, "(validateToken)Method")
+        val credentials = TokenCredentials(badToken, "MontaguTests")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
@@ -171,7 +148,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         val notInDbToken = helper.issuer
                 .generateOnetimeActionToken(fakeUser, url)
 
-        val credentials = TokenCredentials(notInDbToken, "(validateToken)Method")
+        val credentials = TokenCredentials(notInDbToken, "MontaguTests")
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(notInDbToken)) doReturn false
