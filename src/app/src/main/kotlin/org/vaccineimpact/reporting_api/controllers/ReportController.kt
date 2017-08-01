@@ -37,7 +37,7 @@ class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClien
         val version = context.params(":version")
         val response = context.getSparkResponse().raw()
 
-        context.addResponseHeader("Content-Type", ContentTypes.zip)
+        context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
         val folderName = "${Config["orderly.root"]}archive/$name/$version/"

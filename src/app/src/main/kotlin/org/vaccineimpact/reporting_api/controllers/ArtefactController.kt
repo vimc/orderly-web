@@ -5,6 +5,7 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.Files
+import org.vaccineimpact.reporting_api.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
@@ -22,7 +23,6 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
     fun download(context: ActionContext): Boolean
     {
-
         val name = context.params(":name")
         val version = context.params(":version")
         val artefactname = context.params(":artefact")
@@ -31,15 +31,15 @@ class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         val filename = "$name/$version/$artefactname"
 
-        val response = context.getSparkResponse().raw()
-
-        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
-
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(artefactname)
+
+        val response = context.getSparkResponse().raw()
+
+        context.addDefaultResponseHeaders(ContentTypes.binarydata)
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 

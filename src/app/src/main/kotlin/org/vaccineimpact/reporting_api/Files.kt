@@ -1,6 +1,8 @@
 package org.vaccineimpact.reporting_api
 
 import java.io.*
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
 
 interface FileSystem
 {
@@ -18,14 +20,14 @@ class Files : FileSystem
         BufferedInputStream(FileInputStream(absoluteFilePath)).use {
             inputStream ->
 
-            BufferedOutputStream(outputStream).use {
+            GZIPOutputStream(outputStream, 8000).use {
 
-                bufferedOutputStream ->
+                gzipOutputStream ->
 
                 var len = inputStream.read(buffer)
                 while (len >= 0)
                 {
-                    bufferedOutputStream.write(buffer, 0, len)
+                    gzipOutputStream.write(buffer, 0, len)
                     len = inputStream.read(buffer)
                 }
             }

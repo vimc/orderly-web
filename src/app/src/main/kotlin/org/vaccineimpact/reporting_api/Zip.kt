@@ -3,6 +3,7 @@ package org.vaccineimpact.reporting_api
 import org.slf4j.LoggerFactory
 import java.io.*
 import java.util.*
+import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
@@ -17,13 +18,12 @@ class Zip : ZipClient
 
     override fun zipIt(sourceAbsolutePath: String, output: OutputStream)
     {
-
         val source = File(sourceAbsolutePath)
         val fileList: ArrayList<String> = ArrayList<String>()
 
         populateFileList(source, fileList)
 
-        ZipOutputStream(BufferedOutputStream(output)).use {
+        ZipOutputStream(GZIPOutputStream(output, 8000)).use {
 
             zipOutputStream ->
             for (file in fileList)

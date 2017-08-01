@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
 import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
 import org.vaccineimpact.reporting_api.security.PermissionRequirement
 import org.vaccineimpact.reporting_api.security.TokenVerifyingConfigFactory
