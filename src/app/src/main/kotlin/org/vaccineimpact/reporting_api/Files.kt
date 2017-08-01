@@ -1,7 +1,6 @@
 package org.vaccineimpact.reporting_api
 
 import java.io.*
-import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 
 interface FileSystem
