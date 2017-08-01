@@ -4,8 +4,8 @@ import org.vaccineimpact.reporting_api.security.*
 import spark.Spark
 import spark.route.HttpMethod
 
-data class OnetimeTokenEndpoint(
-        override val urlFragment: String,
+open class Endpoint(
+        override final val urlFragment: String,
         override val controllerName: String,
         override val actionName: String,
         override val contentType: String = ContentTypes.binarydata,
@@ -20,15 +20,30 @@ data class OnetimeTokenEndpoint(
         }
     }
 
+    var allowParameterAuthentication = false
+    var requireAuthentication = false
+
     override fun additionalSetup(url: String)
+    {
+        if (requireAuthentication)
+        {
+            addSecurityFilter(url)
+        }
+    }
+
+    private fun addSecurityFilter(url: String)
     {
         val allPermissions = setOf("*/reports.read").map {
             PermissionRequirement.parse(it)
         }
 
-        val configFactory = TokenVerifyingConfigFactory(
+        var configFactory = TokenVerifyingConfigFactory(
                 allPermissions.toSet())
-                .allowParameterAuthentication()
+
+        if (allowParameterAuthentication)
+        {
+            configFactory = configFactory.allowParameterAuthentication()
+        }
 
         val config = configFactory.build()
 
@@ -40,4 +55,16 @@ data class OnetimeTokenEndpoint(
         ))
     }
 
+}
+
+fun Endpoint.allowParameterAuthentication(): Endpoint
+{
+    this.allowParameterAuthentication = true
+    return this
+}
+
+fun Endpoint.secure(): Endpoint
+{
+    this.requireAuthentication = true
+    return this
 }

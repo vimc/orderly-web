@@ -1,9 +1,6 @@
 package org.vaccineimpact.reporting_api.app_start
 
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.EndpointDefinition
-import org.vaccineimpact.reporting_api.JsonEndpoint
-import org.vaccineimpact.reporting_api.OnetimeTokenEndpoint
+import org.vaccineimpact.reporting_api.*
 
 interface RouteConfig
 {
@@ -15,23 +12,51 @@ object MontaguRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            JsonEndpoint("/reports/", "Report", "getAllNames"),
-            JsonEndpoint("/reports/:name/", "Report", "getVersionsByName"),
-            JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion"),
-            OnetimeTokenEndpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", ContentTypes.zip),
+            JsonEndpoint("/reports/", "Report", "getAllNames")
+                    .secure(),
 
-            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get"),
-            OnetimeTokenEndpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download"),
+            JsonEndpoint("/reports/:name/", "Report", "getVersionsByName")
+                    .secure(),
 
-            JsonEndpoint("/reports/:name/:version/resources/", "Resource", "get"),
-            OnetimeTokenEndpoint("/reports/:name/:version/resources/:resource/", "Resource", "download"),
+            JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
+                    .secure(),
 
-            JsonEndpoint("/reports/:name/:version/data/", "Data", "get"),
-            OnetimeTokenEndpoint("/reports/:name/:version/data/:data/", "Data", "downloadData"),
+            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", ContentTypes.zip)
+                    .secure()
+                    .allowParameterAuthentication(),
 
-            OnetimeTokenEndpoint("/data/csv/:id/", "Data", "downloadCSV", ContentTypes.csv),
-            OnetimeTokenEndpoint("/data/rds/:id/", "Data", "downloadRDS"),
+            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+                    .secure(),
+
+            Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download")
+                    .secure()
+                    .allowParameterAuthentication(),
+
+            JsonEndpoint("/reports/:name/:version/resources/", "Resource", "get")
+                    .secure(),
+
+            Endpoint("/reports/:name/:version/resources/:resource/", "Resource", "download")
+                    .secure()
+                    .allowParameterAuthentication(),
+
+            JsonEndpoint("/reports/:name/:version/data/", "Data", "get")
+                    .secure(),
+
+            Endpoint("/reports/:name/:version/data/:data/", "Data", "downloadData")
+                    .secure()
+                    .allowParameterAuthentication(),
+
+            Endpoint("/data/csv/:id/", "Data", "downloadCSV", ContentTypes.csv)
+                    .secure()
+                    .allowParameterAuthentication(),
+
+            Endpoint("/data/rds/:id/", "Data", "downloadRDS")
+                    .secure()
+                    .allowParameterAuthentication(),
 
             JsonEndpoint("/onetime_token/", "OnetimeToken", "get")
+                    .secure(),
+
+            JsonEndpoint("/", "Home", "index")
     )
 }
