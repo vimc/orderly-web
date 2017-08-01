@@ -6,10 +6,10 @@ import spark.route.HttpMethod
 
 open class Endpoint(
         override final val urlFragment: String,
-        override val controllerName: String,
-        override val actionName: String,
-        override val contentType: String = ContentTypes.binarydata,
-        override val method: HttpMethod = HttpMethod.get
+        override final val controllerName: String,
+        override final val actionName: String,
+        override final val contentType: String = ContentTypes.binarydata,
+        override final val method: HttpMethod = HttpMethod.get
 ) : EndpointDefinition
 {
     init
