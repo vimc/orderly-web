@@ -5,7 +5,6 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.Files
-import org.vaccineimpact.reporting_api.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
