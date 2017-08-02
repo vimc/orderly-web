@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
+import org.vaccineimpact.reporting_api.addTrailingSlashes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.TokenStore
 import java.net.BindException

@@ -66,6 +66,7 @@ abstract class IntegrationTest : MontaguTests()
     protected fun assertSuccessful(response: Response)
     {
         Assertions.assertThat(response.statusCode).isEqualTo(200)
+        Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
     protected fun assertJsonContentType(response: Response)

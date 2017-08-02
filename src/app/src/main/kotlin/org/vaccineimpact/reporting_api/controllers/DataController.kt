@@ -25,8 +25,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
-        context.addResponseHeader("Content-Type", ContentTypes.csv)
-        return downloadFile(absoluteFilePath, "$id.csv", context)
+        return downloadFile(absoluteFilePath, "$id.csv", context, ContentTypes.csv)
     }
 
     fun downloadRDS(context: ActionContext): Boolean
@@ -34,8 +33,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
-        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
-        return downloadFile(absoluteFilePath, "$id.rds", context)
+        return downloadFile(absoluteFilePath, "$id.rds", context, ContentTypes.binarydata)
     }
 
     fun downloadData(context: ActionContext): Boolean
@@ -52,19 +50,22 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
 
         val absoluteFilePath = "${Config["orderly.root"]}data/$type/$hash.$type"
 
+        val contentType =
         if (type == "csv")
         {
-            context.addResponseHeader("Content-Type", ContentTypes.csv)
+            ContentTypes.csv
         }
         else
         {
-            context.addResponseHeader("Content-Type", ContentTypes.binarydata)
+           ContentTypes.binarydata
         }
 
-        return downloadFile(absoluteFilePath, "$hash.$type", context)
+        return downloadFile(absoluteFilePath, "$hash.$type", context, contentType)
     }
 
-    private fun downloadFile(absoluteFilePath: String, filename: String, context: ActionContext): Boolean
+    private fun downloadFile(absoluteFilePath: String, filename: String,
+                             context: ActionContext,
+                             contentType: String): Boolean
     {
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(filename)
@@ -72,6 +73,7 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
         val response = context.getSparkResponse().raw()
 
         context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addDefaultResponseHeaders(contentType)
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 

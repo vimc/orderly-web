@@ -9,7 +9,7 @@ import org.vaccineimpact.api.models.ResultStatus
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.Serializer
-import org.vaccineimpact.reporting_api.app_start.addDefaultResponseHeaders
+import org.vaccineimpact.reporting_api.addDefaultResponseHeaders
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()
