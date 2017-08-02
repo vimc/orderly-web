@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.app_start
+package org.vaccineimpact.reporting_api
 
 import spark.Filter
 import spark.Request
@@ -21,9 +21,6 @@ fun addTrailingSlashes(req: Request, res: Response)
     }
 }
 
-fun addDefaultResponseHeaders(res: Response, contentType: String)
-        = addDefaultResponseHeaders(res.raw(), contentType = contentType)
-
 fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String)
 {
     res.contentType = contentType
@@ -35,6 +32,6 @@ class DefaultHeadersFilter(val contentType: String) : Filter
 {
     override fun handle(request: Request, response: Response)
     {
-        addDefaultResponseHeaders(response, contentType)
+        addDefaultResponseHeaders(response.raw(), contentType)
     }
 }

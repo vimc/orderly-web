@@ -30,13 +30,13 @@ class ResourceController(orderlyClient: OrderlyClient? = null, fileServer: FileS
 
         val filename = "$name/$version/$resourcename"
 
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
-        context.addResponseHeader("Content-Type", ContentTypes.binarydata)
-
         val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(resourcename)
+
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addDefaultResponseHeaders(ContentTypes.binarydata)
 
         val response = context.getSparkResponse().raw()
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)

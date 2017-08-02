@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.app_start.DefaultHeadersFilter
 import spark.Spark
 import spark.route.HttpMethod
 

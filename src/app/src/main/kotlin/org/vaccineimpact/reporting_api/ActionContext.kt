@@ -12,6 +12,7 @@ interface ActionContext
     fun params(): Map<String, String>
     fun params(key: String): String
     fun addResponseHeader(key: String, value: String): Unit
+    fun addDefaultResponseHeaders(contentType: String)
 
     fun getSparkResponse(): Response
 }
