@@ -23,12 +23,12 @@ class Zip : ZipClient
 
         populateFileList(source, fileList)
 
-        ZipOutputStream(GZIPOutputStream(output, 8000)).use {
+        val bufferSize = 8000
+        ZipOutputStream(GZIPOutputStream(output, bufferSize)).use {
 
             zipOutputStream ->
             for (file in fileList)
             {
-
                 val zipEntry = createNextZipEntry(file, source)
                 zipOutputStream.putNextEntry(zipEntry)
 

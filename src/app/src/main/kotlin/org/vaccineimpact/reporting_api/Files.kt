@@ -15,11 +15,12 @@ class Files : FileSystem
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     {
         val buffer = ByteArray(1024)
+        val bufferSize = 8000
 
         BufferedInputStream(FileInputStream(absoluteFilePath)).use {
             inputStream ->
 
-            GZIPOutputStream(outputStream, 8000).use {
+            GZIPOutputStream(outputStream, bufferSize).use {
 
                 gzipOutputStream ->
 
