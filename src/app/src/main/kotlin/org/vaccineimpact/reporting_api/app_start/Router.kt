@@ -13,18 +13,22 @@ import spark.route.HttpMethod
 
 class Router(val config: RouteConfig)
 {
-
     private val logger = LoggerFactory.getLogger(Router::class.java)
 
-    fun mapEndpoints(urlBase: String): List<String>
+    companion object
     {
-        return config.endpoints.map {
+        val urls: MutableList<String> = mutableListOf()
+    }
+
+    fun mapEndpoints(urlBase: String)
+    {
+        urls.addAll(config.endpoints.map {
             when (it)
             {
                 is JsonEndpoint -> mapTransformedEndpoint(it, urlBase)
                 else -> mapEndpoint(it, urlBase)
             }
-        }
+        })
     }
 
     private fun mapTransformedEndpoint(
@@ -90,6 +94,5 @@ class Router(val config: RouteConfig)
 
         return Route({ req, res -> action.invoke(controller, DirectActionContext(req, res)) })
     }
-
 
 }
