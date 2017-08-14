@@ -3,20 +3,44 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
+import org.vaccineimpact.reporting_api.tests.updateReport
+import java.io.File
+import java.net.URLEncoder
 
 class ResourceTests : IntegrationTest()
 {
     @Test
     fun `gets dict of resource names to hashes`()
     {
-
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/resources")
 
         assertJsonContentType(response)
         assertSuccessful(response)
         JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+
+    }
+
+    @Test
+    fun `gets resource file`()
+    {
+        val version = File("${Config["orderly.root"]}/archive/other/").list()[0]
+
+        File("${Config["orderly.root"]}/archive/other/$version/R").mkdir()
+        File("${Config["orderly.root"]}/archive/other/$version/R/resource.csv").createNewFile()
+
+        updateReport("other", version, hashResources = "{\"R/resource.csv\": \"gfe7064mvdfjieync\"}")
+
+        val resourceEncoded = URLEncoder.encode("R/resource.csv", "UTF-8")
+        val url = "/reports/other/$version/resources/$resourceEncoded/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$version/R/resource.csv")
 
     }
 

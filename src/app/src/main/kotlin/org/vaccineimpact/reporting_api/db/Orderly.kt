@@ -121,6 +121,7 @@ class Orderly : OrderlyClient
 
     override fun getResource(name: String, version: String, resourcename: String): String
     {
+        val results = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)
         val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename] ?:
                 throw UnknownObjectError(resourcename, "Resource")
 

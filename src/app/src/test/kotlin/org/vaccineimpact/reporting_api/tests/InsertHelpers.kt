@@ -34,3 +34,17 @@ fun insertReport(name: String,
         record.store()
     }
 }
+
+fun updateReport(name: String,
+                 version: String,
+                 hashResources: String = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
+{
+    JooqContext().use {
+
+        it.dsl.update(ORDERLY)
+                .set(ORDERLY.HASH_RESOURCES, hashResources)
+                .where(ORDERLY.NAME.eq(name))
+                .and(ORDERLY.ID.eq(version))
+                .execute()
+    }
+}
