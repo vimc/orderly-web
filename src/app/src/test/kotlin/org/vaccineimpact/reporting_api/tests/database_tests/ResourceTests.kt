@@ -22,7 +22,7 @@ class ResourceTests : DatabaseTests()
 
         val sut = createSut()
 
-        val result = sut.getResource("test", "version1", "[resource.csv]")
+        val result = sut.getResource("test", "version1", "resource.csv")
 
         assertThat(result).isNotNull()
     }
