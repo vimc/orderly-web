@@ -5,7 +5,6 @@ import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
-import org.vaccineimpact.reporting_api.tests.updateReport
 import java.io.File
 import java.net.URLEncoder
 
