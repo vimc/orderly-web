@@ -1,5 +1,7 @@
 package org.vaccineimpact.reporting_api
 
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import spark.Filter
 import spark.Request
 import spark.Response
@@ -34,4 +36,9 @@ class DefaultHeadersFilter(val contentType: String) : Filter
     {
         addDefaultResponseHeaders(response.raw(), contentType)
     }
+}
+
+fun isReviewer(context: ActionContext): Boolean
+{
+    return context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
 }

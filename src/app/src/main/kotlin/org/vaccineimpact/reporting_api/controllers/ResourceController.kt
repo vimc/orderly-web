@@ -10,17 +10,19 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
-class ResourceController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller
+class ResourceController(context: ActionContext,
+                         val orderly: OrderlyClient,
+                         val files: FileSystem) : Controller(context)
 {
-    val orderly = orderlyClient ?: Orderly()
-    val files = fileServer ?: Files()
+    constructor(context: ActionContext) :
+            this(context, Orderly(context), Files())
 
-    fun get(context: ActionContext): JsonObject
+    fun get(): JsonObject
     {
         return orderly.getResources(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext): Boolean
+    fun download(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")

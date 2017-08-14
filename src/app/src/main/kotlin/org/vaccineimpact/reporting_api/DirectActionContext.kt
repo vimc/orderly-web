@@ -3,8 +3,11 @@ package org.vaccineimpact.reporting_api
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.reporting_api.security.montaguPermissions
 import spark.Request
 import spark.Response
+import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 open class DirectActionContext(private val context: SparkWebContext) : ActionContext
 {
@@ -33,6 +36,21 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     override val userProfile: CommonProfile by lazy {
         val manager = ProfileManager<CommonProfile>(context)
         manager.getAll(false).single()
+    }
+
+    override val permissions by lazy {
+        userProfile.montaguPermissions()
+    }
+
+    override fun hasPermission(requirement: ReifiedPermission)
+            = permissions.any { requirement.satisfiedBy(it) }
+
+    override fun requirePermission(requirement: ReifiedPermission)
+    {
+        if (!hasPermission(requirement))
+        {
+            throw MissingRequiredPermissionError(setOf(requirement.toString()))
+        }
     }
 
     override fun getSparkResponse(): Response

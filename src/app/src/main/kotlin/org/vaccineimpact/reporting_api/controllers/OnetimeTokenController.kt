@@ -7,11 +7,12 @@ import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.OnetimeTokenStore
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 
-class OnetimeTokenController(tokenStore: OnetimeTokenStore? = null) : Controller
+class OnetimeTokenController(context: ActionContext,
+                             val tokenStore: OnetimeTokenStore) : Controller(context)
 {
-    val tokenStore = tokenStore ?: TokenStore.instance
+    constructor(context: ActionContext): this(context, TokenStore.instance)
 
-    fun get(context: ActionContext): String
+    fun get(): String
     {
         val url = context.queryParams("url")
                 ?: throw MissingParameterError("url")

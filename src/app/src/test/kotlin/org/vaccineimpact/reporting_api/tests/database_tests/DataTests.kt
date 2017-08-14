@@ -1,8 +1,11 @@
 package org.vaccineimpact.reporting_api.tests.database_tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
@@ -12,7 +15,11 @@ class DataTests : DatabaseTests()
 
     private fun createSut(): Orderly
     {
-        return Orderly()
+        val actionContext = mock<ActionContext> {
+            on { this.hasPermission(org.vaccineimpact.api.models.permissions.ReifiedPermission("reports.read", org.vaccineimpact.api.models.Scope.Global())) } doReturn false
+        }
+
+        return Orderly(actionContext)
     }
 
     @Test

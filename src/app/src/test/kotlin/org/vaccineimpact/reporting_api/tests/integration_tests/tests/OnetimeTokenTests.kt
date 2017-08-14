@@ -1,8 +1,11 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import com.github.fge.jackson.JsonLoader
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
@@ -10,6 +13,9 @@ import java.net.URLEncoder
 
 class OnetimeTokenTests : IntegrationTest()
 {
+    private val actionContext = mock<ActionContext> {
+        on { this.hasPermission(org.vaccineimpact.api.models.permissions.ReifiedPermission("reports.read", org.vaccineimpact.api.models.Scope.Global())) } doReturn false
+    }
 
     @Test
     fun `gets one time token`()
@@ -27,7 +33,7 @@ class OnetimeTokenTests : IntegrationTest()
     @Test
     fun `can use one time token to authenticate`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(actionContext).getReportsByName("other")[0]
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
 
         val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))

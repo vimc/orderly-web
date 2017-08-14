@@ -34,9 +34,9 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = ArtefactController(orderly, mock<FileSystem>())
+        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>())
 
-        assertThat(sut.get(actionContext)).isEqualTo(artefacts)
+        assertThat(sut.get()).isEqualTo(artefacts)
     }
 
     @Test
@@ -61,9 +61,9 @@ class ArtefactControllerTests : ControllerTest()
             on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$artefact") } doReturn true
         }
 
-        val sut = ArtefactController(orderly, fileSystem)
+        val sut = ArtefactController(actionContext, orderly, fileSystem)
 
-        sut.download(actionContext)
+        sut.download()
     }
 
     @Test
@@ -83,9 +83,9 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":artefact") } doReturn artefact
         }
 
-        val sut = ArtefactController(orderly, mock<FileSystem>())
+        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>())
 
-        assertThatThrownBy { sut.download(actionContext) }
+        assertThatThrownBy { sut.download() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 

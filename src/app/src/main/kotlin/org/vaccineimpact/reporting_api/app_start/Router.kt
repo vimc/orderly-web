@@ -10,6 +10,7 @@ import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
+import javax.swing.Action
 
 class Router(val config: RouteConfig)
 {
@@ -83,16 +84,21 @@ class Router(val config: RouteConfig)
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route
     {
+        return Route({ req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) })
+    }
 
+    private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any?
+    {
         val controllerName = endpoint.controllerName
         val actionName = endpoint.actionName
 
         val controllerType = Class.forName("org.vaccineimpact.reporting_api.controllers.${controllerName}Controller")
 
-        val controller = controllerType.getConstructor().newInstance() as Controller
-        val action = controllerType.getMethod(actionName, ActionContext::class.java)
+        val controller = controllerType.getConstructor(ActionContext::class.java)
+                .newInstance(context) as Controller
+        val action = controllerType.getMethod(actionName)
 
-        return Route({ req, res -> action.invoke(controller, DirectActionContext(req, res)) })
+        return action.invoke(controller)
     }
 
 }
