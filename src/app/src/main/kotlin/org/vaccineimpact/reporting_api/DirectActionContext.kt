@@ -45,14 +45,6 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     override fun hasPermission(requirement: ReifiedPermission)
             = permissions.any { requirement.satisfiedBy(it) }
 
-    override fun requirePermission(requirement: ReifiedPermission)
-    {
-        if (!hasPermission(requirement))
-        {
-            throw MissingRequiredPermissionError(setOf(requirement.toString()))
-        }
-    }
-
     override fun getSparkResponse(): Response
     {
         return response

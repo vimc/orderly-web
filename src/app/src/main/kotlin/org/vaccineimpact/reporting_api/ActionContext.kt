@@ -18,7 +18,6 @@ interface ActionContext
     fun addDefaultResponseHeaders(contentType: String)
 
     fun hasPermission(requirement: ReifiedPermission): Boolean
-    fun requirePermission(requirement: ReifiedPermission): Unit
 
     fun getSparkResponse(): Response
 }
