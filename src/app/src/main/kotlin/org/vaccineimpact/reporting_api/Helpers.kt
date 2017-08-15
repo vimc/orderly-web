@@ -1,7 +1,5 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import spark.Filter
 import spark.Request
 import spark.Response
