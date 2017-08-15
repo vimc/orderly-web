@@ -37,8 +37,3 @@ class DefaultHeadersFilter(val contentType: String) : Filter
         addDefaultResponseHeaders(response.raw(), contentType)
     }
 }
-
-fun isReviewer(context: ActionContext): Boolean
-{
-    return context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
-}
