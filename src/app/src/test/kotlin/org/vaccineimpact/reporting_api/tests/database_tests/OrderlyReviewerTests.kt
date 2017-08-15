@@ -10,7 +10,7 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class OrderlyAdminTests : DatabaseTests()
+class OrderlyReviewerTests : DatabaseTests()
 {
 
     private fun createSut(): Orderly

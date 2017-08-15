@@ -12,10 +12,10 @@ import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 class Orderly(context: ActionContext) : OrderlyClient
 {
 
-    private val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+    private val isReviewer = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
     private val gsonParser = JsonParser()
 
-    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isAdmin)
+    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
 
     override fun getAllReports(): List<String>
     {
