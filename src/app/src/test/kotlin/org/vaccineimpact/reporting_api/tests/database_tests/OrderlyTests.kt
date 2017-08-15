@@ -18,7 +18,7 @@ class OrderlyTests : DatabaseTests()
     private fun createSut(): Orderly
     {
         val actionContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.read", Scope.Global())) } doReturn false
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
         }
 
         return Orderly(actionContext)
