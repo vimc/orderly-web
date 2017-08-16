@@ -9,8 +9,10 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
-class RequestHelper {
-    init {
+class RequestHelper
+{
+    init
+    {
         CertificateHelper.disableCertificateValidation()
     }
 
@@ -20,16 +22,20 @@ class RequestHelper {
     val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
     val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review")
 
-    fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response {
+    fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = if (!reviewer) {
+        val token = if (!reviewer)
+        {
             APITests.tokenHelper
                     .generateToken(fakeUser)
-        } else {
+        }
+        else
+        {
             APITests.tokenHelper
                     .generateToken(fakeReviewer)
         }
@@ -39,16 +45,19 @@ class RequestHelper {
         return get(baseUrl + url, headers)
     }
 
-    fun generateOnetimeToken(url: String): String {
+    fun generateOnetimeToken(url: String): String
+    {
         val response = get("/onetime_token/?url=/v1$url")
         val json = parser.parse(response.text)
-        if (json["status"].asString != "success") {
+        if (json["status"].asString != "success")
+        {
             Assertions.fail("Failed to get onetime token. Result from API was:" + response.text)
         }
         return json["data"].asString
     }
 
-    fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response {
+    fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -60,7 +69,8 @@ class RequestHelper {
         return get(baseUrl + url, headers)
     }
 
-    fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response {
+    fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
+    {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
@@ -93,7 +103,8 @@ class RequestHelper {
 //        return get(baseUrl + url + "?access_token=$token", headers)
 //    }
 
-    fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response {
+    fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
+    {
         val headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"

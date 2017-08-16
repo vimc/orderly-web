@@ -1,6 +1,8 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
@@ -14,7 +16,7 @@ class ArtefactController(context: ActionContext,
     : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context), Files())
+            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Files())
 
     fun get(): JsonObject
     {

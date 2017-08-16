@@ -12,10 +12,6 @@ import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ArtefactTests : IntegrationTest()
 {
-    private val actionContext = mock<ActionContext> {
-        on { this.hasPermission(org.vaccineimpact.api.models.permissions.ReifiedPermission("reports.read", org.vaccineimpact.api.models.Scope.Global())) } doReturn false
-    }
-
     @Test
     fun `gets dict of artefact names to hashes`()
     {
@@ -31,7 +27,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with access token`()
     {
-        val publishedVersion = Orderly(actionContext).getReportsByName("other")[0]
+        val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
         val token = requestHelper.generateOnetimeToken(url)
@@ -45,7 +41,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with bearer token`()
     {
-        val publishedVersion = Orderly(actionContext).getReportsByName("other")[0]
+        val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata)

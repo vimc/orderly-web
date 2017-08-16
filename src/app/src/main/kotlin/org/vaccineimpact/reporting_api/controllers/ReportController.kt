@@ -1,6 +1,8 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.Zip
@@ -14,7 +16,7 @@ class ReportController(context: ActionContext,
                        val zip: ZipClient) : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context), Zip())
+            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Zip())
 
     fun getAllNames(): List<String>
     {

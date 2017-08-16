@@ -2,17 +2,12 @@ package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
 import org.jooq.TableField
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class Orderly(context: ActionContext) : OrderlyClient
+class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
-
-    private val isReviewer = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
     private val gsonParser = JsonParser()
 
     private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)

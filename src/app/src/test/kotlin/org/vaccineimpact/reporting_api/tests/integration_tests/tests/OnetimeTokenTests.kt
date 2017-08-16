@@ -13,9 +13,6 @@ import java.net.URLEncoder
 
 class OnetimeTokenTests : IntegrationTest()
 {
-    private val actionContext = mock<ActionContext> {
-        on { this.hasPermission(org.vaccineimpact.api.models.permissions.ReifiedPermission("reports.read", org.vaccineimpact.api.models.Scope.Global())) } doReturn false
-    }
 
     @Test
     fun `gets one time token`()
@@ -33,7 +30,7 @@ class OnetimeTokenTests : IntegrationTest()
     @Test
     fun `can use one time token to authenticate`()
     {
-        val publishedVersion = Orderly(actionContext).getReportsByName("other")[0]
+        val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
 
         val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
