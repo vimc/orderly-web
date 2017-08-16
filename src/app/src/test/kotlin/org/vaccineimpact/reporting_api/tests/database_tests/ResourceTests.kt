@@ -18,13 +18,14 @@ class ResourceTests : DatabaseTests()
     @Test
     fun `returns resourcename if report has resource`()
     {
-        insertReport("test", "version1", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
+        val hash = "gfe7064mvdfjieync"
+        val name = "resource.csv"
+        insertReport("test", "version1", hashResources = "{\"$name\": \"$hash\"}")
 
         val sut = createSut()
 
-        val result = sut.getResource("test", "version1", "resource.csv")
-
-        assertThat(result).isNotNull()
+        val result = sut.getResource("test", "version1", name)
+        assertThat(result).isEqualTo(hash)
     }
 
     @Test
