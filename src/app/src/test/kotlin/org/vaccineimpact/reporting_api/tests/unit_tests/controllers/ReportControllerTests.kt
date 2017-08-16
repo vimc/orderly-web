@@ -24,9 +24,9 @@ class ReportControllerTests : ControllerTest()
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reportNames
         }
-        val sut = ReportController(orderly)
+        val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>())
 
-        assertThat(sut.getAllNames(mock<ActionContext>())).isEqualTo(reportNames)
+        assertThat(sut.getAllNames()).isEqualTo(reportNames)
     }
 
     @Test
@@ -44,9 +44,9 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(orderly)
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>())
 
-        assertThat(sut.getVersionsByName(actionContext)).isEqualTo(reportVersions)
+        assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
 
     @Test
@@ -67,9 +67,9 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(orderly)
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>())
 
-        assertThat(sut.getByNameAndVersion(actionContext)).isEqualTo(report)
+        assertThat(sut.getByNameAndVersion()).isEqualTo(report)
     }
 
     @Test
@@ -87,9 +87,9 @@ class ReportControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
 
-        val sut = ReportController(mock<OrderlyClient>(), mockZipClient)
+        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient)
 
-        sut.getZippedByNameAndVersion(actionContext)
+        sut.getZippedByNameAndVersion()
 
         verify(mockZipClient, times(1)).zipIt("${Config["orderly.root"]}archive/$reportName/$reportVersion/"
                 , mockOutputStream)

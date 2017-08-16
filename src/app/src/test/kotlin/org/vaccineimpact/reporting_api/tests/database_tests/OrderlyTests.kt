@@ -12,7 +12,7 @@ class OrderlyTests : DatabaseTests()
 
     private fun createSut(): Orderly
     {
-        return Orderly()
+        return Orderly(false)
     }
 
     @Test

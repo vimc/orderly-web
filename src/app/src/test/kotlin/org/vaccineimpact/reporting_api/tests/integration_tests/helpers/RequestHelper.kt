@@ -20,16 +20,25 @@ class RequestHelper
     private val parser = JsonParser()
 
     val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
+    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review")
 
-    fun get(url: String, contentType: String = ContentTypes.json): Response
+    fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper
-                .generateToken(fakeUser)
+        val token = if (!reviewer)
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeUser)
+        }
+        else
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeReviewer)
+        }
 
         headers += mapOf("Authorization" to "Bearer $token")
 

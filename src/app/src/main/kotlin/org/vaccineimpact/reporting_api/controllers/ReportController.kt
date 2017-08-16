@@ -1,6 +1,8 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.Zip
@@ -9,28 +11,29 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
-class ReportController(orderlyClient: OrderlyClient? = null, zipClient: ZipClient? = null) : Controller
+class ReportController(context: ActionContext,
+                       val orderly: OrderlyClient,
+                       val zip: ZipClient) : Controller(context)
 {
+    constructor(context: ActionContext) :
+            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Zip())
 
-    val orderly = orderlyClient ?: Orderly()
-    val zip = zipClient ?: Zip()
-
-    fun getAllNames(context: ActionContext): List<String>
+    fun getAllNames(): List<String>
     {
         return orderly.getAllReports()
     }
 
-    fun getVersionsByName(context: ActionContext): List<String>
+    fun getVersionsByName(): List<String>
     {
         return orderly.getReportsByName(context.params(":name"))
     }
 
-    fun getByNameAndVersion(context: ActionContext): JsonObject
+    fun getByNameAndVersion(): JsonObject
     {
         return orderly.getReportsByNameAndVersion(context.params(":name"), context.params(":version"))
     }
 
-    fun getZippedByNameAndVersion(context: ActionContext): Boolean
+    fun getZippedByNameAndVersion(): Boolean
     {
 
         val name = context.params(":name")

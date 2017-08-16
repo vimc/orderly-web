@@ -35,9 +35,9 @@ class DataControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = DataController(orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>())
 
-        assertThat(sut.get(actionContext)).isEqualTo(data)
+        assertThat(sut.get()).isEqualTo(data)
     }
 
     @Test
@@ -64,8 +64,8 @@ class DataControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DataController(orderly, fileSystem)
-        sut.downloadData(actionContext)
+        val sut = DataController(actionContext, orderly, fileSystem)
+        sut.downloadData()
 
         verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/csv/$hash.csv", mockOutputStream)
     }
@@ -95,8 +95,8 @@ class DataControllerTests : ControllerTest()
             on { this.queryParams("type") } doReturn "rds"
         }
 
-        val sut = DataController(orderly, fileSystem)
-        sut.downloadData(actionContext)
+        val sut = DataController(actionContext, orderly, fileSystem)
+        sut.downloadData()
 
         verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/rds/$hash.rds", mockOutputStream)
     }
@@ -116,8 +116,8 @@ class DataControllerTests : ControllerTest()
             on { this.params(":id") } doReturn hash
         }
 
-        val sut = DataController(mock<OrderlyClient>(), fileSystem)
-        sut.downloadCSV(actionContext)
+        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem)
+        sut.downloadCSV()
 
         verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/csv/$hash.csv", mockOutputStream)
     }
@@ -137,8 +137,8 @@ class DataControllerTests : ControllerTest()
             on { this.params(":id") } doReturn hash
         }
 
-        val sut = DataController(mock<OrderlyClient>(), fileSystem)
-        sut.downloadRDS(actionContext)
+        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem)
+        sut.downloadRDS()
 
         verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/rds/$hash.rds", mockOutputStream)
     }
@@ -160,9 +160,9 @@ class DataControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = DataController(orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>())
 
-        assertThat(sut.get(actionContext)).isEqualTo(data)
+        assertThat(sut.get()).isEqualTo(data)
     }
 
     @Test
@@ -184,9 +184,9 @@ class DataControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DataController(orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>())
 
-        assertThatThrownBy { sut.downloadData(actionContext) }
+        assertThatThrownBy { sut.downloadData() }
                 .isInstanceOf(OrderlyFileNotFoundError::class.java)
     }
 

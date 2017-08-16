@@ -6,6 +6,7 @@ import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 interface OrderlyClient
 {
     fun getAllReports(): List<String>
+
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
 

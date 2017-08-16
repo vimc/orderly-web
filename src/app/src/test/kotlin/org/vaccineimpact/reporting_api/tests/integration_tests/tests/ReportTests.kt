@@ -52,6 +52,18 @@ class ReportTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Version")
     }
 
+
+    @Test
+    fun `reviewer can get unpublished report by name and version`()
+    {
+        insertReport("testname", "testversion", published = false)
+        val response = requestHelper.get("/reports/testname/testversion", reviewer = true)
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Version")
+    }
+
     @Test
     fun `gets 404 if report version doesnt exist`()
     {

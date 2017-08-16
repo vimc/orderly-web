@@ -1,6 +1,8 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
@@ -10,33 +12,35 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
-class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) : Controller
+class DataController(context: ActionContext,
+                     val orderly: OrderlyClient,
+                     val files: FileSystem) : Controller(context)
 {
-    val files = files ?: Files()
-    val orderly = orderly ?: Orderly()
+    constructor(context: ActionContext) :
+            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Files())
 
-    fun get(context: ActionContext): JsonObject
+    fun get(): JsonObject
     {
         return orderly.getData(context.params(":name"), context.params(":version"))
     }
 
-    fun downloadCSV(context: ActionContext): Boolean
+    fun downloadCSV(): Boolean
     {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
 
-        return downloadFile(absoluteFilePath, "$id.csv", context, ContentTypes.csv)
+        return downloadFile(absoluteFilePath, "$id.csv", ContentTypes.csv)
     }
 
-    fun downloadRDS(context: ActionContext): Boolean
+    fun downloadRDS(): Boolean
     {
         val id = context.params(":id")
         val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
 
-        return downloadFile(absoluteFilePath, "$id.rds", context, ContentTypes.binarydata)
+        return downloadFile(absoluteFilePath, "$id.rds", ContentTypes.binarydata)
     }
 
-    fun downloadData(context: ActionContext): Boolean
+    fun downloadData(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")
@@ -60,11 +64,10 @@ class DataController(orderly: OrderlyClient? = null, files: FileSystem? = null) 
            ContentTypes.binarydata
         }
 
-        return downloadFile(absoluteFilePath, "$hash.$type", context, contentType)
+        return downloadFile(absoluteFilePath, "$hash.$type", contentType)
     }
 
     private fun downloadFile(absoluteFilePath: String, filename: String,
-                             context: ActionContext,
                              contentType: String): Boolean
     {
         if (!files.fileExists(absoluteFilePath))

@@ -1,26 +1,29 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.FileSystem
-import org.vaccineimpact.reporting_api.Files
+import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
-class ArtefactController(orderlyClient: OrderlyClient? = null, fileServer: FileSystem? = null) : Controller
-{
-    val orderly = orderlyClient ?: Orderly()
-    val files = fileServer ?: Files()
+class ArtefactController(context: ActionContext,
+                         val orderly: OrderlyClient,
+                         val files: FileSystem)
 
-    fun get(context: ActionContext): JsonObject
+    : Controller(context)
+{
+    constructor(context: ActionContext) :
+            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Files())
+
+    fun get(): JsonObject
     {
         return orderly.getArtefacts(context.params(":name"), context.params(":version"))
     }
 
-    fun download(context: ActionContext): Boolean
+    fun download(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")

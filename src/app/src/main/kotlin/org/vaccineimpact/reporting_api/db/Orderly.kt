@@ -6,10 +6,11 @@ import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
-class Orderly : OrderlyClient
+class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
-
     private val gsonParser = JsonParser()
+
+    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
 
     override fun getAllReports(): List<String>
     {
@@ -17,7 +18,7 @@ class Orderly : OrderlyClient
 
             return it.dsl.select(ORDERLY.NAME)
                     .from(ORDERLY)
-                    .where(ORDERLY.PUBLISHED)
+                    .where(shouldInclude)
                     .fetchInto(String::class.java)
                     .distinct()
         }
@@ -30,7 +31,8 @@ class Orderly : OrderlyClient
 
             val result = it.dsl.select(ORDERLY.ID)
                     .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name).and(ORDERLY.PUBLISHED))
+                    .where(ORDERLY.NAME.eq(name)
+                            .and(shouldInclude))
 
             if (result.count() == 0)
             {
@@ -51,7 +53,7 @@ class Orderly : OrderlyClient
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name)
                             .and((ORDERLY.ID).eq(version))
-                            .and(ORDERLY.PUBLISHED))
+                            .and(shouldInclude))
                     .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
             val obj = JsonObject()
@@ -134,7 +136,7 @@ class Orderly : OrderlyClient
             val result = it.dsl.select(column)
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version))
-                            .and(ORDERLY.PUBLISHED))
+                            .and(shouldInclude))
                     .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
             if (result.value1() == null)
