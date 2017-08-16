@@ -16,7 +16,7 @@ class ArtefactTests : DatabaseTests()
     }
 
     @Test
-    fun `returns true if report has artefact`()
+    fun `returns artefact if report has artefact`()
     {
 
         val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +

@@ -12,6 +12,7 @@ fun insertReport(name: String,
                  hashArtefacts: String = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\",\"mygraph.png\":\"4b89e0b767cee1c30f2e910684189680\"}",
                  hashData: String = "{\"dat\": \"62781hjwkjkeq\"}",
                  hashResources: String = "{\"resource.csv\": \"gfe7064mvdfjieync\"}",
+                 resources: String = "[\"resource.csv\"]",
                  published: Boolean = true)
 {
     JooqContext().use {
@@ -28,6 +29,7 @@ fun insertReport(name: String,
                     this.hashData = hashData
                     this.hashResources = hashResources
                     this.published = published
+                    this.resources = resources
                 }
         record.store()
     }

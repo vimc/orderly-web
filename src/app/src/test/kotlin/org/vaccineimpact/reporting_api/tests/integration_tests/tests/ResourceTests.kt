@@ -3,20 +3,38 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
+import java.io.File
+import java.net.URLEncoder
 
 class ResourceTests : IntegrationTest()
 {
     @Test
     fun `gets dict of resource names to hashes`()
     {
-
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/resources")
 
         assertJsonContentType(response)
         assertSuccessful(response)
         JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+
+    }
+
+    @Test
+    fun `gets resource file`()
+    {
+        val version = File("${Config["orderly.root"]}/archive/use_resource/").list()[0]
+
+        val resourceEncoded = URLEncoder.encode("meta/data.csv", "UTF-8")
+        val url = "/reports/use_resource/$version/resources/$resourceEncoded/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=use_resource/$version/meta/data.csv")
 
     }
 

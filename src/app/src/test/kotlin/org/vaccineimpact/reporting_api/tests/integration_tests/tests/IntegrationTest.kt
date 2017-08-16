@@ -26,7 +26,6 @@ abstract class IntegrationTest : MontaguTests()
         @BeforeClass @JvmStatic
         fun startApp()
         {
-
             if (!APITests.appStarted)
             {
                 main(emptyArray())
