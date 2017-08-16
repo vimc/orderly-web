@@ -10,7 +10,6 @@ import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
-import javax.swing.Action
 
 class Router(val config: RouteConfig)
 {
