@@ -27,7 +27,7 @@ class ArtefactController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        val artefactname = context.params(":artefact")
+        val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
 
         orderly.getArtefact(name, version, artefactname)
 

@@ -6,7 +6,6 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
-import java.net.URLEncoder
 
 class ResourceTests : IntegrationTest()
 {
@@ -27,7 +26,7 @@ class ResourceTests : IntegrationTest()
     {
         val version = File("${Config["orderly.root"]}/archive/use_resource/").list()[0]
 
-        val resourceEncoded = URLEncoder.encode("meta/data.csv", "UTF-8")
+        val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/$version/resources/$resourceEncoded/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)

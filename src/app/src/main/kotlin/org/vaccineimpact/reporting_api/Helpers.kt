@@ -35,3 +35,8 @@ class DefaultHeadersFilter(val contentType: String) : Filter
         addDefaultResponseHeaders(response.raw(), contentType)
     }
 }
+
+fun parseRouteParamToFilepath(routeParam: String): String
+{
+    return routeParam.replace(":", "/")
+}

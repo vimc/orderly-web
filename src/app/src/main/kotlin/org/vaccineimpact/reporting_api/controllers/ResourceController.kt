@@ -3,10 +3,7 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.FileSystem
-import org.vaccineimpact.reporting_api.Files
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
@@ -28,7 +25,7 @@ class ResourceController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        val resourcename = context.params(":resource")
+        val resourcename = parseRouteParamToFilepath(context.params(":resource"))
 
         orderly.getResource(name, version, resourcename)
 
