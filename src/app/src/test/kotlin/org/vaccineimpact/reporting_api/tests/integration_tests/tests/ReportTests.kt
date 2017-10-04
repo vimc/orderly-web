@@ -4,7 +4,9 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.JooqContext
+import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ReportTests : IntegrationTest()
@@ -24,7 +26,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/example/run/", mapOf())
+        val response = requestHelper.post("/reports/minimal/run/", mapOf())
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -34,6 +36,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
+        requestHelper.post("/reports/minimal/run/", mapOf())
+
         val response = requestHelper.get("/reports/slow_dogwoodtwigborer/status/")
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -43,10 +47,34 @@ class ReportTests : IntegrationTest()
     @Test
     fun `publishes report`()
     {
-        val response = requestHelper.post("/reports/example/47389473892fhshask/publish/", mapOf())
+        val unpublishedVersion = JooqContext().use {
+
+            it.dsl.select(Tables.ORDERLY.ID)
+                    .from(Tables.ORDERLY)
+                    .where(Tables.ORDERLY.NAME.eq("other"))
+                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
+                    .fetchInto(String::class.java)
+                    .first()
+        }
+
+        val response = requestHelper.post("/reports/other/$unpublishedVersion/publish/", mapOf())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")
+        val data = JSONValidator.getData(response.text).asBoolean()
+        assertThat(data).isEqualTo(true)
+    }
+
+    @Test
+    fun `unpublishes report`()
+    {
+        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val response = requestHelper.post("/reports/other/$publishedVersion/publish/?value=false", mapOf())
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Publish")
+        val data = JSONValidator.getData(response.text).asBoolean()
+        assertThat(data).isEqualTo(false)
     }
 
     @Test
@@ -76,7 +104,6 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion")
-
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")

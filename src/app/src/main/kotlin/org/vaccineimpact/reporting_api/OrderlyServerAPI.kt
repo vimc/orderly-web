@@ -38,8 +38,8 @@ class OrderlyServer(val config: Config) : OrderlyServerAPI
     private fun buildFullUrl(url: String, queryString: String?): String
     {
         if (queryString == null)
-            return "$urlBase/$url"
+            return "$urlBase$url"
 
-        return "$urlBase/$url?$queryString"
+        return "$urlBase$url?$queryString"
     }
 }

@@ -21,8 +21,6 @@ class ReportControllerTests : ControllerTest()
         val reportName = "report1"
         val actionContext = mock<ActionContext> {
             on { this.params(":name") } doReturn reportName
-            on { this.queryString() } doReturn "somekey=value1"
-            on { this.postData() } doReturn mapOf("somepostkey" to "somepostvalue")
         }
 
         val mockAPIResponse = mock<Response>(){
@@ -39,8 +37,6 @@ class ReportControllerTests : ControllerTest()
         val result = sut.run()
 
         assertThat(result).isEqualTo("okayresponse")
-
-        verify(apiClient).post("/reports/report1/run/?somekey=value1",actionContext)
     }
 
     @Test
