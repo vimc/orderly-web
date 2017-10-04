@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.vaccineimpact.reporting_api.*
+import spark.route.HttpMethod
 
 interface RouteConfig
 {
@@ -13,6 +14,9 @@ object MontaguRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
 
             JsonEndpoint("/reports/", "Report", "getAllNames")
+                    .secure(),
+
+            JsonEndpoint("/reports/:name/run/", "Report", "run", method = HttpMethod.post)
                     .secure(),
 
             JsonEndpoint("/reports/:name/", "Report", "getVersionsByName")

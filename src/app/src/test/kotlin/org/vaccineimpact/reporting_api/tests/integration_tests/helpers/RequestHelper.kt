@@ -45,6 +45,29 @@ class RequestHelper
         return get(baseUrl + url, headers)
     }
 
+    fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
+    {
+        var headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
+
+        val token = if (!reviewer)
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeUser)
+        }
+        else
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeReviewer)
+        }
+
+        headers += mapOf("Authorization" to "Bearer $token")
+
+        return khttp.post(baseUrl + url, headers, json = body)
+    }
+
     fun generateOnetimeToken(url: String): String
     {
         val response = get("/onetime_token/?url=/v1$url")
@@ -82,26 +105,6 @@ class RequestHelper
 
         return get(baseUrl + url, headers)
     }
-
-//    fun getWrongPermissionsWithAccessToken(url: String, contentType: String = ContentTypes.json): Response
-//    {
-//        val headers = mapOf(
-//                "Accept" to contentType,
-//                "Accept-Encoding" to "gzip"
-//        )
-//
-//        val token = WebTokenHelper.oneTimeTokenHelper
-//                .issuer.generateOnetimeActionToken(MontaguUser("testusername", "user", "*/fake-perm"), "/v1$url")
-//
-//        JooqContext(Config["onetime_token.db.location"]).use {
-//
-//            it.dsl.insertInto(table(name("ONETIME_TOKEN")))
-//                    .set(field(name("ONETIME_TOKEN.TOKEN")), token)
-//                    .execute()
-//        }
-//
-//        return get(baseUrl + url + "?access_token=$token", headers)
-//    }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
     {

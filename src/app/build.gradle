@@ -40,6 +40,8 @@ dependencies {
     compile "org.pac4j:spark-pac4j:2.0.0"
     compile "org.pac4j:pac4j-http:2.0.0"
 
+    compile "khttp:khttp:0.1.0"
+
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "khttp:khttp:0.1.0"
     testCompile "com.beust:klaxon:0.31"

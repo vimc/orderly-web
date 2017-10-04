@@ -11,6 +11,8 @@ interface ActionContext
     val permissions: PermissionSet
 
     fun contentType(): String
+
+    fun queryString(): String?
     fun queryParams(key: String): String?
     fun params(): Map<String, String>
     fun params(key: String): String
@@ -20,4 +22,5 @@ interface ActionContext
     fun hasPermission(requirement: ReifiedPermission): Boolean
 
     fun getSparkResponse(): Response
+    fun postData(): Map<String, String>
 }

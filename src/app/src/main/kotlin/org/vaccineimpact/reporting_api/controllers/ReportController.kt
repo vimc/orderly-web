@@ -3,20 +3,29 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.reporting_api.ActionContext
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.Zip
-import org.vaccineimpact.reporting_api.ZipClient
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
-                       val zip: ZipClient) : Controller(context)
+                       val zip: ZipClient,
+                       val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Zip())
+            this(context,
+                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Zip(),
+                    OrderlyServer(Config))
+
+    fun run(): Any
+    {
+        val name = context.params(":name")
+        val postData = context.postData()
+        val queryString = context.queryString()
+        return orderlyServerAPI.post("/reports/$name/run/?$queryString", postData)
+    }
 
     fun getAllNames(): List<String>
     {

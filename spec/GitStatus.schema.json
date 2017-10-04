@@ -1,0 +1,17 @@
+{
+    "id": "GitStatus",
+    "type": "object",
+    "properties": {
+        "branch": { "type": "string" },
+        "hash": { "hash": "string" },
+        "clean": { "type": "boolean" },
+        "output": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "required": ["branch", "hash", "clean", "output"],
+    "additionalProperties": false
+}

@@ -114,4 +114,15 @@ class ReportTests : IntegrationTest()
         JSONValidator.validateMultipleAuthErrors(response.text)
     }
 
+
+    @Test
+    fun `runs report`()
+    {
+        val response = requestHelper.post("/reports/example/run/", mapOf("name" to "example",
+                "key" to "fast_armadillo"))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(200)
+        JSONValidator.validateAgainstSchema(response.text, "Run")
+    }
+
 }
