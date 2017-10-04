@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ReportTests : IntegrationTest()
@@ -17,6 +18,35 @@ class ReportTests : IntegrationTest()
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Reports")
+    }
+
+
+    @Test
+    fun `runs report`()
+    {
+        val response = requestHelper.post("/reports/example/run/", mapOf())
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Run")
+    }
+
+    @Test
+    fun `gets report status`()
+    {
+        val response = requestHelper.get("/reports/slow_dogwoodtwigborer/status/")
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Status")
+    }
+
+    @Test
+    fun `publishes report`()
+    {
+        val response = requestHelper.post("/reports/example/47389473892fhshask/publish/", mapOf())
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Publish")
     }
 
     @Test
@@ -112,17 +142,6 @@ class ReportTests : IntegrationTest()
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
-    }
-
-
-    @Test
-    fun `runs report`()
-    {
-        val response = requestHelper.post("/reports/example/run/", mapOf("name" to "example",
-                "key" to "fast_armadillo"))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(200)
-        JSONValidator.validateAgainstSchema(response.text, "Run")
     }
 
 }

@@ -19,12 +19,28 @@ class ReportController(context: ActionContext,
                     Zip(),
                     OrderlyServer(Config))
 
-    fun run(): Any
+    fun run(): String
+    {
+
+        val name = context.params(":name")
+        val response = orderlyServerAPI.post("/reports/$name/run/", context)
+        return returnFromResponse(response)
+    }
+
+    fun publish(): String
     {
         val name = context.params(":name")
-        val postData = context.postData()
-        val queryString = context.queryString()
-        return orderlyServerAPI.post("/reports/$name/run/?$queryString", postData)
+        val version = context.params(":version")
+        val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
+        return returnFromResponse(response)
+    }
+
+
+    fun status(): String
+    {
+        val key = context.params(":key")
+        val response = orderlyServerAPI.get("/reports/$key/status/", context)
+        return returnFromResponse(response)
     }
 
     fun getAllNames(): List<String>

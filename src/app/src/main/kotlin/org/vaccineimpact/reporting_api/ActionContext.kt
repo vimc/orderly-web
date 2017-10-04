@@ -22,5 +22,6 @@ interface ActionContext
     fun hasPermission(requirement: ReifiedPermission): Boolean
 
     fun getSparkResponse(): Response
+    fun setStatusCode(statusCode: Int)
     fun postData(): Map<String, String>
 }

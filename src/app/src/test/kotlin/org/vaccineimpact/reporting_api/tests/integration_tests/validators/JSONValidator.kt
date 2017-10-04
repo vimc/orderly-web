@@ -13,6 +13,12 @@ class JSONValidator
     private val schemaFactory = makeSchemaFactory()
     private val responseSchema = readSchema("Response")
 
+    fun getData(response: String): JsonNode
+    {
+        val json = parseJson(response)
+        return json["data"]
+    }
+
     fun validateAgainstSchema(response: String, schemaName: String)
     {
         val json = parseJson(response)

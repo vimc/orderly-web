@@ -22,6 +22,7 @@ open class Endpoint(
 
     var allowParameterAuthentication = false
     var requireAuthentication = false
+    override var transform = false
 
     override fun additionalSetup(url: String)
     {
@@ -29,7 +30,13 @@ open class Endpoint(
         {
             addSecurityFilter(url)
         }
+        if (this.contentType == ContentTypes.json)
+        {
+            Spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
+        }
     }
+
+    override fun transformer(x: Any) = Serializer.instance.toResult(x)
 
     private fun addSecurityFilter(url: String)
     {
@@ -66,5 +73,11 @@ fun Endpoint.allowParameterAuthentication(): Endpoint
 fun Endpoint.secure(): Endpoint
 {
     this.requireAuthentication = true
+    return this
+}
+
+fun Endpoint.transform(): Endpoint
+{
+    this.transform = true
     return this
 }

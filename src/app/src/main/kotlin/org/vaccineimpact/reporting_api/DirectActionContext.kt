@@ -55,6 +55,10 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
         return response
     }
 
+    override fun setStatusCode(statusCode: Int)
+    {
+        response.status(statusCode)
+    }
     override fun postData(): Map<String, String>
     {
         val body = request.body()

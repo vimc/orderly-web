@@ -13,37 +13,52 @@ object MontaguRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            JsonEndpoint("/reports/", "Report", "getAllNames")
+            Endpoint("/reports/", "Report", "getAllNames", ContentTypes.json)
+                    .transform()
                     .secure(),
 
-            JsonEndpoint("/reports/:name/run/", "Report", "run", method = HttpMethod.post)
+            Endpoint("/reports/:name/run/", "Report", "run", ContentTypes.json,
+                    method = HttpMethod.post)
                     .secure(),
 
-            JsonEndpoint("/reports/:name/", "Report", "getVersionsByName")
+            Endpoint("/reports/:key/status/", "Report", "status", ContentTypes.json)
                     .secure(),
 
-            JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
+            Endpoint("/reports/:name/", "Report", "getVersionsByName",ContentTypes.json)
+                    .transform()
                     .secure(),
 
-            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", ContentTypes.zip)
+            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion", ContentTypes.json)
+                    .transform()
+                    .secure(),
+
+            Endpoint("/reports/:name/:version/publish/", "Report", "publish", ContentTypes.json,
+                    method = HttpMethod.post)
+                    .secure(),
+
+            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion",
+                    ContentTypes.zip)
                     .secure()
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+            Endpoint("/reports/:name/:version/artefacts/", "Artefact", "get", ContentTypes.json)
+                    .transform()
                     .secure(),
 
             Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download")
                     .secure()
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/resources/", "Resource", "get")
+            Endpoint("/reports/:name/:version/resources/", "Resource", "get", ContentTypes.json)
+                    .transform()
                     .secure(),
 
             Endpoint("/reports/:name/:version/resources/:resource/", "Resource", "download")
                     .secure()
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/data/", "Data", "get")
+            Endpoint("/reports/:name/:version/data/", "Data", "get", ContentTypes.json)
+                    .transform()
                     .secure(),
 
             Endpoint("/reports/:name/:version/data/:data/", "Data", "downloadData")
@@ -58,9 +73,11 @@ object MontaguRouteConfig : RouteConfig
                     .secure()
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/onetime_token/", "OnetimeToken", "get")
+            Endpoint("/onetime_token/", "OnetimeToken", "get", ContentTypes.json)
+                    .transform()
                     .secure(),
 
-            JsonEndpoint("/", "Home", "index")
+            Endpoint("/", "Home", "index", ContentTypes.json)
+                    .transform()
     )
 }

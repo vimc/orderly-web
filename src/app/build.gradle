@@ -89,6 +89,30 @@ task generateTestData() {
     }
 }
 
+// run orderly server
+task startOrderlyServer(){
+    doLast {
+        String image = "docker.montagu.dide.ic.ac.uk:5000/orderly.server:80c4b79"
+
+//        exec {
+//            commandLine 'docker', 'pull', image
+//        }
+//        exec{
+//            commandLine 'mkdir', 'demo'
+//        }
+        exec {
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'Rscript', '-v', "$projectDir/demo:/orderly", "--user", "docker", image, "-e", "'orderly:::prepare_orderly_example(\"interactive\", \"/orderly\")'"
+
+        }
+        exec{
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'Rscript', '-v', "$projectDir/demo:/orderly", '--user', 'docker', image, "-e", "'orderly::orderly_rebuild(\"/orderly\")'"
+        }
+        exec{
+            commandLine 'docker', 'run', '--rm', '-p', '8123:8123', '-v', "$projectDir/demo:/orderly", '--user', 'docker', image, "/orderly"
+        }
+    }
+}
+
 // removes the app/demo folder
 task cleanUpTestData() {
     doLast {

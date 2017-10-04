@@ -1,10 +1,8 @@
 package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
+import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ActionContext
@@ -27,15 +25,22 @@ class ReportControllerTests : ControllerTest()
             on { this.postData() } doReturn mapOf("somepostkey" to "somepostvalue")
         }
 
-        val apiClient = mock<OrderlyServerAPI>()
+        val mockAPIResponse = mock<Response>(){
+            on { this.text } doReturn "okayresponse"
+        }
+
+        val apiClient = mock<OrderlyServerAPI>(){
+            on { this.post(any(), any())} doReturn mockAPIResponse
+        }
 
         val sut = ReportController(actionContext, mock<OrderlyClient>(),
                 mock<ZipClient>(), apiClient)
 
-        sut.run()
+        val result = sut.run()
 
-        verify(apiClient).post("/reports/report1/run/?somekey=value1",
-                mapOf("somepostkey" to "somepostvalue"))
+        assertThat(result).isEqualTo("okayresponse")
+
+        verify(apiClient).post("/reports/report1/run/?somekey=value1",actionContext)
     }
 
     @Test

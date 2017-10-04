@@ -23,20 +23,20 @@ class Router(val config: RouteConfig)
     fun mapEndpoints(urlBase: String)
     {
         urls.addAll(config.endpoints.map {
-            when (it)
+            when (it.transform)
             {
-                is JsonEndpoint -> mapTransformedEndpoint(it, urlBase)
-                else -> mapEndpoint(it, urlBase)
+                true -> mapTransformedEndpoint(it, urlBase)
+                false -> mapEndpoint(it, urlBase)
             }
         })
     }
 
     private fun mapTransformedEndpoint(
-            endpoint: JsonEndpoint,
+            endpoint: EndpointDefinition,
             urlBase: String): String
     {
 
-        val transformer = endpoint::transform
+        val transformer = endpoint::transformer
         val fullUrl = urlBase + endpoint.urlFragment
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
