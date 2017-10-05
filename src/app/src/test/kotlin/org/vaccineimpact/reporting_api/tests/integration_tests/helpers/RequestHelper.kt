@@ -20,7 +20,7 @@ class RequestHelper
     private val parser = JsonParser()
 
     val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
-    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review")
+    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review, */reports.run")
 
     fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {

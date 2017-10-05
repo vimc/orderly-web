@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api
 
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.security.*
 import spark.Spark
 import spark.route.HttpMethod
@@ -20,13 +21,14 @@ open class Endpoint(
         }
     }
 
+    val requiredPermissions = mutableSetOf<String>()
+
     var allowParameterAuthentication = false
-    var requireAuthentication = false
     override var transform = false
 
     override fun additionalSetup(url: String)
     {
-        if (requireAuthentication)
+        if (requiredPermissions.any())
         {
             addSecurityFilter(url)
         }
@@ -40,7 +42,7 @@ open class Endpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        val allPermissions = setOf("*/reports.read").map {
+        val allPermissions = this.requiredPermissions.map {
             PermissionRequirement.parse(it)
         }
 
@@ -70,9 +72,9 @@ fun Endpoint.allowParameterAuthentication(): Endpoint
     return this
 }
 
-fun Endpoint.secure(): Endpoint
+fun Endpoint.secure(requiredPermissions: Set<String>): Endpoint
 {
-    this.requireAuthentication = true
+    this.requiredPermissions.addAll(requiredPermissions)
     return this
 }
 

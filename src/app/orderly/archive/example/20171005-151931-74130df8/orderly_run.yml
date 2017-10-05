@@ -1,0 +1,14 @@
+id: 20171005-151931-74130df8
+name: example
+parameters: ~
+date: 2017-10-05 15:19:31
+hash_orderly: 40dc3af2d5d55e438966829086cabdcd
+hash_input: 1ceb11f70ab953cdeccfe42fc2c6af6e
+hash_script: b483640f63fbd45f509b98d6ee8a6852
+hash_resources: []
+hash_data:
+  dat: 386f507375907a60176b717016f0a648
+hash_artefacts:
+  mygraph.png: 7360cb2eed3327ff8a677b3598ed7343
+depends: ~
+

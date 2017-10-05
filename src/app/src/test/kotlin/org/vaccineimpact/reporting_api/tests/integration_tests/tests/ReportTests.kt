@@ -26,8 +26,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/minimal/run/", mapOf())
-
+        val response = requestHelper.post("/reports/minimal/run/", mapOf(), reviewer = true)
+        val test = response.text
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Run")
@@ -57,7 +57,7 @@ class ReportTests : IntegrationTest()
                     .first()
         }
 
-        val response = requestHelper.post("/reports/other/$unpublishedVersion/publish/", mapOf())
+        val response = requestHelper.post("/reports/other/$unpublishedVersion/publish/", mapOf(), reviewer = true)
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")
@@ -69,7 +69,7 @@ class ReportTests : IntegrationTest()
     fun `unpublishes report`()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
-        val response = requestHelper.post("/reports/other/$publishedVersion/publish/?value=false", mapOf())
+        val response = requestHelper.post("/reports/other/$publishedVersion/publish/?value=false", mapOf(), reviewer = true)
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")

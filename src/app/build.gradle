@@ -80,9 +80,9 @@ task generateTestData() {
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
-//        exec {
-//            commandLine 'docker', 'pull', image
-//        }
+        exec {
+            commandLine 'docker', 'pull', image
+        }
         exec {
             commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "demo"
         }
