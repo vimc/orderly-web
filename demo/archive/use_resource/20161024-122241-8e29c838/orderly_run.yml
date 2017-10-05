@@ -1,0 +1,15 @@
+id: 20161024-122241-8e29c838
+name: use_resource
+parameters: ~
+date: 2016-10-24 12:22:41
+hash_orderly: e090c2e3554e4f7fd00a939d5aeac906
+hash_input: bf9ffb3568b8336e46866310dfcbdfd2
+hash_script: ff674380d1953bc5b6822ec956714182
+hash_resources:
+  meta/data.csv: 0bec5bf6f93c547bc9c6774acaf85e1a
+hash_data:
+  dat: 386f507375907a60176b717016f0a648
+hash_artefacts:
+  mygraph.png: 7360cb2eed3327ff8a677b3598ed7343
+depends: ~
+

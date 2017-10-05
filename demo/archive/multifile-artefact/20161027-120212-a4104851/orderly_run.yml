@@ -1,0 +1,15 @@
+id: 20161027-120212-a4104851
+name: multifile-artefact
+parameters: ~
+date: 2016-10-27 12:02:12
+hash_orderly: bb4856348001c1b39b90c46d006643b4
+hash_input: 8d434ed341d9fbbe227d18f58b632dca
+hash_script: eda0ed142005488307e065831ad66f72
+hash_resources: []
+hash_data:
+  dat: 386f507375907a60176b717016f0a648
+hash_artefacts:
+  mygraph.png: 7360cb2eed3327ff8a677b3598ed7343
+  mygraph.pdf: 618ca3f6552f6c9ab99fb378c9a0128d
+depends: ~
+

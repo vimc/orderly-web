@@ -13,6 +13,8 @@ docker build --tag montagu-reporting-api-app-build \
     -f app.Dockerfile \
 	.
 
+docker run --rm -p 8123:8123 -v ${PWD}/demo:/orderly --user docker docker.montagu.dide.ic.ac.uk:5000/orderly.server:i648 /orderly &
+
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
