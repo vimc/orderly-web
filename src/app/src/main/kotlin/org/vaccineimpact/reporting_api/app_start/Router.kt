@@ -4,7 +4,6 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.EndpointDefinition
-import org.vaccineimpact.reporting_api.JsonEndpoint
 import org.vaccineimpact.reporting_api.controllers.Controller
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
