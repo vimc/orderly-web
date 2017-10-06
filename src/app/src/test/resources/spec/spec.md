@@ -158,3 +158,58 @@ Pull from remote git.  This updates the working tree
   " create mode 100644 new"
 ]
 ```
+## GET /reports/:name/:version/data/
+
+Gets a dict of data names to hashes
+
+```json
+{
+  
+}
+```
+
+## GET /reports/:name/:version/data/:data/?type=:type
+
+Downloads a data file. Accepts an optional query parameter `type` which can be either `csv` or `rds`.
+
+
+## GET /reports/:name/:version/artefacts/
+
+Gets a dict of artefact names to hashes
+
+```json
+{
+  
+}
+```
+
+## GET /reports/:name/:version/artefacts/:artefact/
+
+Downloads an artefact. 
+
+
+## GET /reports/:name/:version/resources/
+
+Gets a dict of resource names to hashes
+
+```json
+{
+  
+}
+```
+
+## GET /reports/:name/:version/resources/:resource/
+
+Downloads a resource. 
+
+## GET /reports/:name/:version/all/
+
+Downloads a zip file of everything (including data)
+
+## GET /data/csv/:id/
+
+Downloads a data set in csv format.
+
+## GET /data/rds/:id/
+
+Download a data set in rds format. 
