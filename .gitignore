@@ -19,6 +19,7 @@ src/.idea/uiDesigner.xml
 src/.idea/vcs.xml
 src/.idea/workspace.xml
 src/app/demo
+src/app/git
 src/build/*
 src/classes/
 src/config/users/current_user

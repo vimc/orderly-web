@@ -76,7 +76,6 @@ distDocker {
 task generateTestData() {
     doLast {
         String image = "docker.montagu.dide.ic.ac.uk:5000/orderly:master"
-
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
@@ -84,7 +83,7 @@ task generateTestData() {
             commandLine 'docker', 'pull', image
         }
         exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "demo"
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
     }
 }
@@ -92,9 +91,23 @@ task generateTestData() {
 // removes the app/demo folder
 task cleanUpTestData() {
     doLast {
-
         exec {
             commandLine "rm", "$projectDir/demo", "--recursive"
+        }
+        exec {
+            commandLine "rm", "$projectDir/git", "--recursive"
+        }
+    }
+}
+
+task startOrderlyServer() {
+    String image = "docker.montagu.dide.ic.ac.uk:5000/orderly.server:i648"
+    def username = System.properties['user.name']
+    def uid = ["id", "-u", username].execute().text.trim()
+
+    doLast {
+        exec {
+            commandLine "docker", "run", "--rm", "-p", "8123:8123", "-v", "$projectDir/git:/orderly", "--user", uid, image, "/orderly"
         }
     }
 }
