@@ -73,7 +73,7 @@ abstract class IntegrationTest : MontaguTests()
     {
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
-                .overridingErrorMessage(response.text)
+                .withFailMessage(response.text)
 
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
