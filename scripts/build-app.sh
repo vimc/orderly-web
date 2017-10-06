@@ -18,7 +18,6 @@ docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:master
 docker run --rm \
     -p 8123:8123 \
     -v $PWD/git:/orderly \
-    --user docker \
     --network=host \
     docker.montagu.dide.ic.ac.uk:5000/orderly.server:master "orderly" &
 
