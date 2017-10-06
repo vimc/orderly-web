@@ -14,6 +14,7 @@ docker build --tag montagu-reporting-api-app-build \
 	.
 
 docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:master
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
 
 docker run --rm \
     -p 8123:8123 \
