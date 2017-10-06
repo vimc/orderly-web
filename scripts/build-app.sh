@@ -15,9 +15,9 @@ docker build --tag montagu-reporting-api-app-build \
 
 docker run --rm \
     -p 8123:8123 \
-    -v ${PWD}/git:/orderly \
-    --user ${UID} \
-    docker.montagu.dide.ic.ac.uk:5000/orderly.server:master /orderly &
+    -v $PWD/git:/orderly \
+    --user $UID \
+    docker.montagu.dide.ic.ac.uk:5000/orderly.server:master "/orderly" &
 
 # Run the created image
 docker run --rm \
