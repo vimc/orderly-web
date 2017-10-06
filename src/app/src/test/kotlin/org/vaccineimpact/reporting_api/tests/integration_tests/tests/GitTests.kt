@@ -27,7 +27,7 @@ class GitTests: IntegrationTest() {
     @Test
     fun `fetches`()
     {
-        val response = requestHelper.post("/reports/git/fetch/", mapOf()    )
+        val response = requestHelper.post("/reports/git/fetch/", mapOf())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)

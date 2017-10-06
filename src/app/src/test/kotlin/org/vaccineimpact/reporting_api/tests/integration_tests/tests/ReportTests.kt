@@ -67,19 +67,21 @@ class ReportTests : IntegrationTest()
     @Test
     fun `unpublishes report`()
     {
-        val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
+        val version = JooqContext("git/orderly.sqlite").use {
 
             it.dsl.select(Tables.ORDERLY.ID)
                     .from(Tables.ORDERLY)
                     .where(Tables.ORDERLY.NAME.eq("minimal"))
-                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
                     .fetchInto(String::class.java)
                     .first()
         }
 
-        requestHelper.post("/reports/minimal/$unpublishedVersion/publish/", mapOf(), reviewer = true)
+        // first lets make sure its published
+        requestHelper.post("/reports/minimal/$version/publish/", mapOf(), reviewer = true)
 
-        val response = requestHelper.post("/reports/minimal/$unpublishedVersion/publish/?value=false", mapOf(), reviewer = true)
+        // now unpublish
+        val response = requestHelper.post("/reports/minimal/$version/publish/?value=false", mapOf(), reviewer = true)
+
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")
