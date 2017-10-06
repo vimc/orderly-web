@@ -1,0 +1,16 @@
+id: 20161016-015013-335c06bd
+name: other
+parameters:
+  nmin: 0
+date: 2016-10-16 01:50:13
+hash_orderly: db9517d7d99c8014ee52ca214f47449b
+hash_input: aa7e4f82b369dc1cdabcaa01a674de77
+hash_script: 21743c84abf5bdf647b832e765deede8
+hash_resources: []
+hash_data:
+  extract: 386f507375907a60176b717016f0a648
+hash_artefacts:
+  summary.csv: 23877598325ab7d45999349ef868a7f5
+  graph.png: 7360cb2eed3327ff8a677b3598ed7343
+depends: ~
+
