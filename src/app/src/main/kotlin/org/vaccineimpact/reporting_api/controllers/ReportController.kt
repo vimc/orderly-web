@@ -9,9 +9,9 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
 class ReportController(context: ActionContext,
-                       val orderly: OrderlyClient,
-                       val zip: ZipClient,
-                       val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
+                       private val orderly: OrderlyClient,
+                       private val zip: ZipClient,
+                       private val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
 {
     constructor(context: ActionContext) :
             this(context,
@@ -24,7 +24,7 @@ class ReportController(context: ActionContext,
 
         val name = context.params(":name")
         val response = orderlyServerAPI.post("/reports/$name/run/", context)
-        return returnFromResponse(response)
+        return returnResponse(response)
     }
 
     fun publish(): String
@@ -32,7 +32,7 @@ class ReportController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
-        return returnFromResponse(response)
+        return returnResponse(response)
     }
 
 
@@ -40,7 +40,7 @@ class ReportController(context: ActionContext,
     {
         val key = context.params(":key")
         val response = orderlyServerAPI.get("/reports/$key/status/", context)
-        return returnFromResponse(response)
+        return returnResponse(response)
     }
 
     fun getAllNames(): List<String>
