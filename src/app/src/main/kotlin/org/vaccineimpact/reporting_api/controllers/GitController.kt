@@ -8,7 +8,7 @@ class GitController(context: ActionContext,
 {
 
     constructor(context: ActionContext) :
-            this(context, OrderlyServer(Config))
+            this(context, OrderlyServer(Config, KHttpClient()))
 
     fun status(): String
     {

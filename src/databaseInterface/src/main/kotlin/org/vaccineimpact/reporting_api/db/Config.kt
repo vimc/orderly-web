@@ -3,7 +3,12 @@ package org.vaccineimpact.reporting_api.db
 import java.io.File
 import java.util.*
 
-object Config
+interface ConfigWrapper
+{
+    operator fun get(key: String): String
+}
+
+object Config: ConfigWrapper
 {
     private val properties = Properties().apply {
         load(getResource("config.properties").openStream())
@@ -14,7 +19,7 @@ object Config
         }
     }
 
-    operator fun get(key: String): String
+    operator override fun get(key: String): String
     {
         val x = properties[key]
         if (x != null)

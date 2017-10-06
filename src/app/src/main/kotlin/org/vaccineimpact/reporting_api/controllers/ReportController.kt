@@ -17,7 +17,7 @@ class ReportController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Zip(),
-                    OrderlyServer(Config))
+                    OrderlyServer(Config, KHttpClient()))
 
     fun run(): String
     {
