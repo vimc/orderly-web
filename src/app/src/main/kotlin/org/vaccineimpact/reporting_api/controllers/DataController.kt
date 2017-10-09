@@ -14,7 +14,7 @@ import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
 class DataController(context: ActionContext,
-                     val orderly: OrderlyClient,
+                     private val orderly: OrderlyClient,
                      private val files: FileSystem,
                      private val config: Config) : Controller(context)
 {
@@ -22,7 +22,7 @@ class DataController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Files(),
-                    AppConfig)
+                    AppConfig())
 
     fun get(): JsonObject
     {

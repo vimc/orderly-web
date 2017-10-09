@@ -19,7 +19,7 @@ class ResourceController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Files(),
-                    AppConfig)
+                    AppConfig())
 
     fun get(): JsonObject
     {
@@ -36,7 +36,7 @@ class ResourceController(context: ActionContext,
 
         val filename = "$name/$version/$resourcename"
 
-        val absoluteFilePath = "${config["orderly.root"]}archive/$filename"
+        val absoluteFilePath = "${this.config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(resourcename)

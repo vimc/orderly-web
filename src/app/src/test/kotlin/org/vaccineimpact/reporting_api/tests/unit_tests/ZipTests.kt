@@ -3,7 +3,6 @@ package org.vaccineimpact.reporting_api.tests.unit_tests
 import org.junit.Test
 import org.vaccineimpact.reporting_api.Zip
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.ByteArrayOutputStream
 
@@ -14,7 +13,7 @@ class ZipTests : MontaguTests()
     fun `can zip up folder`()
     {
         ByteArrayOutputStream().use {
-            Zip().zipIt("${AppConfig["orderly.root"]}archive", it)
+            Zip().zipIt("${AppConfig()["orderly.root"]}archive", it)
         }
     }
 

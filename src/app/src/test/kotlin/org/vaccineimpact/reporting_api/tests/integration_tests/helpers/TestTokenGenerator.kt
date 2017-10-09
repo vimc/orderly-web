@@ -1,10 +1,8 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.helpers
 
-import org.jooq.impl.DSL
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
-import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.security.KeyHelper
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
@@ -14,10 +12,10 @@ import java.time.Duration
 import java.time.Instant
 import java.util.*
 
-class TestTokenGenerator
+class TestTokenGenerator(config: Config = AppConfig())
 {
     private val keyPair = KeyHelper.generateKeyPair()
-    private val helper = WebTokenHelper(keyPair, AppConfig["token.issuer"])
+    private val helper = WebTokenHelper(keyPair, config["token.issuer"])
     private val logger = LoggerFactory.getLogger(TestTokenGenerator::class.java)
 
     init

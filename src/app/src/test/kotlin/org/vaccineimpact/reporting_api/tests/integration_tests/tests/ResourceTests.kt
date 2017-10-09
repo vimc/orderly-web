@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
 
@@ -25,7 +24,7 @@ class ResourceTests : IntegrationTest()
     @Test
     fun `gets resource file`()
     {
-        val version = File("${AppConfig["orderly.root"]}/archive/use_resource/").list()[0]
+        val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
 
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/$version/resources/$resourceEncoded/"

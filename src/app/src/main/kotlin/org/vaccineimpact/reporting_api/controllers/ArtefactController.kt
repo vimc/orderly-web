@@ -11,9 +11,9 @@ import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
 class ArtefactController(context: ActionContext,
-                         val orderly: OrderlyClient,
-                         val files: FileSystem,
-                         val config: Config)
+                         private val orderly: OrderlyClient,
+                         private val files: FileSystem,
+                         private val config: Config)
 
     : Controller(context)
 {
@@ -21,7 +21,7 @@ class ArtefactController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Files(),
-                    AppConfig)
+                    AppConfig())
 
     fun get(): JsonObject
     {
@@ -38,7 +38,7 @@ class ArtefactController(context: ActionContext,
 
         val filename = "$name/$version/$artefactname"
 
-        val absoluteFilePath = "${config["orderly.root"]}archive/$filename"
+        val absoluteFilePath = "${this.config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(artefactname)

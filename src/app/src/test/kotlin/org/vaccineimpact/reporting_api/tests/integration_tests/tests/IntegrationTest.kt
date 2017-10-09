@@ -8,7 +8,6 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.app_start.main
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
@@ -40,7 +39,7 @@ abstract class IntegrationTest : MontaguTests()
             if (!APITests.appStarted)
             {
                 Spark.stop()
-                File(AppConfig["onetime_token.db.location"]).delete()
+                File(AppConfig()["onetime_token.db.location"]).delete()
             }
         }
     }
@@ -49,10 +48,10 @@ abstract class IntegrationTest : MontaguTests()
     fun createDatabase()
     {
 
-        println("Copying database from: ${AppConfig["db.template"]}")
+        println("Copying database from: ${AppConfig()["db.template"]}")
 
-        val newDbFile = File(AppConfig["db.location"])
-        val source = File(AppConfig["db.template"])
+        val newDbFile = File(AppConfig()["db.location"])
+        val source = File(AppConfig()["db.template"])
 
         source.copyTo(newDbFile, true)
     }
@@ -60,7 +59,7 @@ abstract class IntegrationTest : MontaguTests()
     @After
     fun deleteDatabases()
     {
-        File(AppConfig["db.location"]).delete()
+        File(AppConfig()["db.location"]).delete()
     }
 
     protected fun assertSuccessful(response: Response)

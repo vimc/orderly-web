@@ -8,13 +8,13 @@ import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.reporting_api.db.TokenStore
 
 class TokenVerifyingConfigFactory(
-        val requiredPermissions: Set<PermissionRequirement>
+        private val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
     companion object
     {
         val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
-                org.vaccineimpact.reporting_api.db.AppConfig["token.issuer"]))
+                org.vaccineimpact.reporting_api.db.AppConfig()["token.issuer"]))
 
         val parameterClientWrapper = JWTParameterClientWrapper(
                 WebTokenHelper.oneTimeTokenHelper.verifier,

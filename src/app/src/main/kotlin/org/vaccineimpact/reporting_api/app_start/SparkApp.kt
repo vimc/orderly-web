@@ -31,7 +31,7 @@ class MontaguReportingApi
             res.header("Access-Control-Allow-Headers", "Authorization")
         })
 
-        logger.info("Expecting orderly database at ${AppConfig["db.location"]}")
+        logger.info("Expecting orderly database at ${AppConfig()["db.location"]}")
 
         TokenStore.instance.setup()
         ErrorHandler.setup()
@@ -40,7 +40,7 @@ class MontaguReportingApi
 
     private fun setupPort()
     {
-        val port = AppConfig.getInt("app.port")
+        val port = AppConfig().getInt("app.port")
         var attempts = 5
         spk.port(port)
 

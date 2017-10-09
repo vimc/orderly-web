@@ -6,7 +6,6 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.security.MontaguUser
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
@@ -17,7 +16,7 @@ class RequestHelper
         CertificateHelper.disableCertificateValidation()
     }
 
-    private val baseUrl: String = "http://localhost:${AppConfig["app.port"]}/v1"
+    private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
     val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")

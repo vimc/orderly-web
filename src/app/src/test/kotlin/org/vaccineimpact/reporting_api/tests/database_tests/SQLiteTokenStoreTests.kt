@@ -6,7 +6,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.SQLiteTokenStore
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
@@ -18,13 +17,13 @@ class SQLiteTokenStoreTests : MontaguTests()
     @Before
     fun createDatabase()
     {
-        println("Looking for sqlite database at path: ${AppConfig["onetime_token.db.template"]}")
+        println("Looking for sqlite database at path: ${AppConfig()["onetime_token.db.template"]}")
         println("Working directory: ${System.getProperty("user.dir")}")
 
-        val newDbFile = File(AppConfig["onetime_token.db.location"])
-        val source = File(AppConfig["onetime_token.db.template"])
+        val newDbFile = File(AppConfig()["onetime_token.db.location"])
+        val source = File(AppConfig()["onetime_token.db.template"])
 
-        println("Creating sqlite database at path: ${AppConfig["onetime_token.db.location"]}")
+        println("Creating sqlite database at path: ${AppConfig()["onetime_token.db.location"]}")
 
         source.copyTo(newDbFile, true)
     }
@@ -33,11 +32,11 @@ class SQLiteTokenStoreTests : MontaguTests()
     fun deleteDatabase()
     {
 
-        println("Removing database at path: ${AppConfig["onetime_token.db.location"]}")
-        File(AppConfig["onetime_token.db.location"]).delete()
+        println("Removing database at path: ${AppConfig()["onetime_token.db.location"]}")
+        File(AppConfig()["onetime_token.db.location"]).delete()
     }
 
-    private fun getJooqContext() = JooqContext(AppConfig["onetime_token.db.location"])
+    private fun getJooqContext() = JooqContext(AppConfig()["onetime_token.db.location"])
 
     @Test
     fun `can create store`()
