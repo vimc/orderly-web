@@ -24,17 +24,85 @@ Return a list of all report names
 
 Schema: [`Report.schema.json`](Reports.schema.json)
 
+### Example
+
+```json
+
+  [
+    "minimal",
+    "other",
+    "use_resource",
+    "multi-artefact",
+    "multifile-artefact"
+  ]
+
+```
+
 ## GET /reports/:name/
 
 Returns a list of version names for the named report
 
 Schema: [`Report.schema.json`](Report.schema.json)
 
+### Example
+
+```json
+[
+    "20161006-142357-e80edf58",
+    "20161008-123121-59891d61",
+    "20161012-220715-756d55c8"
+  ]
+```
+
 ## GET /reports/:name/:version/
 
 Returns metadata about a single report version
 
 Schema: [`Report.schema.json`](Version.schema.json)
+
+### Example
+
+```json
+{
+    "id": "20161006-142357-e80edf58",
+    "name": "minimal",
+    "displayname": null,
+    "description": null,
+    "views": {},
+    "data": {
+      "dat": "SELECT name, number FROM thing"
+    },
+    "packages": null,
+    "script": "script.R",
+    "artefacts": [
+      {
+        "staticgraph": {
+          "description": "A graph of things",
+          "filenames": [
+            "mygraph.png"
+          ]
+        }
+      }
+    ],
+    "resources": [],
+    "hash_script": "b483640f63fbd45f509b98d6ee8a6852",
+    "parameters": {},
+    "date": "2016-10-06 14:23:57.0",
+    "hash_orderly": "3ef8378b2d322b4849e112811f44114b",
+    "hash_input": "4985c6c6d4004e9c8bfd1bcd5b6d0ce7",
+    "hash_resources": [],
+    "hash_data": {
+      "dat": "386f507375907a60176b717016f0a648"
+    },
+    "hash_artefacts": {
+      "mygraph.png": "7360cb2eed3327ff8a677b3598ed7343"
+    },
+    "published": false,
+    "requester": "Funder McFunderface",
+    "author": "Researcher McResearcherface",
+    "comment": "This is a comment"
+  }
+```
 
 ## POST /reports/:name/run/
 
@@ -163,8 +231,8 @@ Pull from remote git.  This updates the working tree
 Gets a dict of data names to hashes
 
 ```json
-{
-  
+{  
+   "dat": "386f507375907a60176b717016f0a648"
 }
 ```
 
@@ -179,7 +247,7 @@ Gets a dict of artefact names to hashes
 
 ```json
 {
-  
+  "mygraph.png": "7360cb2eed3327ff8a677b3598ed7343"
 }
 ```
 
@@ -194,7 +262,7 @@ Gets a dict of resource names to hashes
 
 ```json
 {
-  
+  "meta/data.csv": "0bec5bf6f93c547bc9c6774acaf85e1a"
 }
 ```
 
