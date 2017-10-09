@@ -8,12 +8,12 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.HttpClient
 import org.vaccineimpact.reporting_api.OrderlyServer
-import org.vaccineimpact.reporting_api.db.ConfigWrapper
+import org.vaccineimpact.reporting_api.db.Config
 
 class OrderlyServerTests
 {
     private val mockHttpclient = mock<HttpClient>()
-    private val mockConfig = mock<ConfigWrapper>(){
+    private val mockConfig = mock<Config>(){
         on {this.get("orderly.server")} doReturn "http://orderly"
     }
 

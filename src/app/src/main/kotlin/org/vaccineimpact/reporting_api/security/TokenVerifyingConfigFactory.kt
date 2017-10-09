@@ -14,7 +14,7 @@ class TokenVerifyingConfigFactory(
     companion object
     {
         val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
-                org.vaccineimpact.reporting_api.db.Config["token.issuer"]))
+                org.vaccineimpact.reporting_api.db.AppConfig["token.issuer"]))
 
         val parameterClientWrapper = JWTParameterClientWrapper(
                 WebTokenHelper.oneTimeTokenHelper.verifier,

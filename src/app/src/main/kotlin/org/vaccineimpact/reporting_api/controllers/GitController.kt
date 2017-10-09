@@ -1,14 +1,14 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import org.vaccineimpact.reporting_api.*
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 
 class GitController(context: ActionContext,
                     private val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
 {
 
     constructor(context: ActionContext) :
-            this(context, OrderlyServer(Config, KHttpClient()))
+            this(context, OrderlyServer(AppConfig, KHttpClient()))
 
     fun status(): String
     {

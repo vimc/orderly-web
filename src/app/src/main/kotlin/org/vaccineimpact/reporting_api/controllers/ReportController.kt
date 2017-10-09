@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
@@ -17,7 +17,7 @@ class ReportController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Zip(),
-                    OrderlyServer(Config, KHttpClient()))
+                    OrderlyServer(AppConfig, KHttpClient()))
 
     fun run(): String
     {
@@ -68,7 +68,7 @@ class ReportController(context: ActionContext,
         context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
-        val folderName = "${Config["orderly.root"]}archive/$name/$version/"
+        val folderName = "${AppConfig["orderly.root"]}archive/$name/$version/"
 
         zip.zipIt(folderName, response.outputStream)
 

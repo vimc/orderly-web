@@ -7,7 +7,7 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
-open class JooqContext(private val dbLocation: String = Config["db.location"]) : AutoCloseable
+open class JooqContext(private val dbLocation: String = AppConfig["db.location"]) : AutoCloseable
 {
     private val conn = getConnection()
     val dsl = createDSL(conn)

@@ -2,7 +2,7 @@ package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.addTrailingSlashes
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.TokenStore
 import java.net.BindException
 import java.net.ServerSocket
@@ -31,7 +31,7 @@ class MontaguReportingApi
             res.header("Access-Control-Allow-Headers", "Authorization")
         })
 
-        logger.info("Expecting orderly database at ${Config["db.location"]}")
+        logger.info("Expecting orderly database at ${AppConfig["db.location"]}")
 
         TokenStore.instance.setup()
         ErrorHandler.setup()
@@ -40,7 +40,7 @@ class MontaguReportingApi
 
     private fun setupPort()
     {
-        val port = Config.getInt("app.port")
+        val port = AppConfig.getInt("app.port")
         var attempts = 5
         spk.port(port)
 

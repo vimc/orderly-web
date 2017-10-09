@@ -4,7 +4,7 @@ import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
@@ -33,7 +33,7 @@ class ArtefactController(context: ActionContext,
 
         val filename = "$name/$version/$artefactname"
 
-        val absoluteFilePath = "${Config["orderly.root"]}archive/$filename"
+        val absoluteFilePath = "${AppConfig["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(artefactname)

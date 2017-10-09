@@ -1,7 +1,7 @@
 package org.vaccineimpact.reporting_api
 
 import khttp.responses.Response
-import org.vaccineimpact.reporting_api.db.ConfigWrapper
+import org.vaccineimpact.reporting_api.db.Config
 
 interface OrderlyServerAPI
 {
@@ -9,7 +9,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): Response
 }
 
-class OrderlyServer(val config: ConfigWrapper, val httpClient: HttpClient) : OrderlyServerAPI
+class OrderlyServer(val config: Config, val httpClient: HttpClient) : OrderlyServerAPI
 {
     private val urlBase: String = "${config["orderly.server"]}/v1"
 
