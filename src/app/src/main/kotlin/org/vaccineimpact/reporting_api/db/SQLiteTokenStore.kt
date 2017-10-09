@@ -8,7 +8,7 @@ import java.io.File
 import java.sql.DriverManager
 import java.sql.SQLException
 
-class SQLiteTokenStore : OnetimeTokenStore
+class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenStore
 {
     val tableName = "ONETIME_TOKEN"
     val ONETIME_TOKEN = table(name(tableName))
@@ -16,12 +16,12 @@ class SQLiteTokenStore : OnetimeTokenStore
 
     private val logger = LoggerFactory.getLogger(SQLiteTokenStore::class.java)
 
-    private fun getJooqContext() = JooqContext(Config["onetime_token.db.location"])
+    private fun getJooqContext() = JooqContext(this.config["onetime_token.db.location"])
 
     override fun setup()
     {
 
-        val dbLocation = Config["onetime_token.db.location"]
+        val dbLocation = this.config["onetime_token.db.location"]
         val file = File(dbLocation)
 
         if (file.exists())
@@ -29,7 +29,7 @@ class SQLiteTokenStore : OnetimeTokenStore
             file.delete()
         }
 
-        val url = "jdbc:sqlite:${Config["onetime_token.db.location"]}"
+        val url = "jdbc:sqlite:${this.config["onetime_token.db.location"]}"
 
         try
         {
@@ -37,7 +37,7 @@ class SQLiteTokenStore : OnetimeTokenStore
             DriverManager.getConnection(url).use { conn ->
                 if (conn != null)
                 {
-                    logger.info("A new database has been created at ${Config["onetime_token.db.location"]}.")
+                    logger.info("A new database has been created at ${this.config["onetime_token.db.location"]}.")
                 }
             }
 

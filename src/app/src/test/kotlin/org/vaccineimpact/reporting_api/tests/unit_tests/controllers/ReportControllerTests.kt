@@ -10,11 +10,15 @@ import org.junit.Test
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
 class ReportControllerTests : ControllerTest()
 {
+    private val mockConfig = mock<Config> {
+        on { this.get("orderly.root") } doReturn "root/"
+    }
 
     @Test
     fun `getReports returns all report names`()
@@ -24,7 +28,7 @@ class ReportControllerTests : ControllerTest()
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reportNames
         }
-        val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>())
+        val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>(), mockConfig)
 
         assertThat(sut.getAllNames()).isEqualTo(reportNames)
     }
@@ -44,7 +48,7 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>())
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>(), mockConfig)
 
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
@@ -67,7 +71,7 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>())
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>(), mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
     }
@@ -87,11 +91,11 @@ class ReportControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
 
-        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient)
+        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient, mockConfig)
 
         sut.getZippedByNameAndVersion()
 
-        verify(mockZipClient, times(1)).zipIt("${Config["orderly.root"]}archive/$reportName/$reportVersion/"
+        verify(mockZipClient, times(1)).zipIt("root/archive/$reportName/$reportVersion/"
                 , mockOutputStream)
     }
 

@@ -7,16 +7,21 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.Zip
 import org.vaccineimpact.reporting_api.ZipClient
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
 class ReportController(context: ActionContext,
-                       val orderly: OrderlyClient,
-                       val zip: ZipClient) : Controller(context)
+                       private val orderly: OrderlyClient,
+                       private val zip: ZipClient,
+                       private val config: Config) : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Zip())
+            this(context,
+                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Zip(),
+                    AppConfig())
 
     fun getAllNames(): List<String>
     {
@@ -43,7 +48,7 @@ class ReportController(context: ActionContext,
         context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
-        val folderName = "${Config["orderly.root"]}archive/$name/$version/"
+        val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
 
         zip.zipIt(folderName, response.outputStream)
 

@@ -5,7 +5,7 @@ import java.net.URL
 
 fun getResource(path: String): URL
 {
-    val url: URL? = Config::class.java.classLoader.getResource(path)
+    val url: URL? = AppConfig::class.java.classLoader.getResource(path)
     if (url != null)
     {
         return url
