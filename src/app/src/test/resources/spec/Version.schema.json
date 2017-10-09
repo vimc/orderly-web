@@ -3,7 +3,28 @@
 	"type": "object",
 	"properties": {
 		"name": {"type" :"string"},
-		"id": {"type" :"string"}
+		"id": {"type" :"string"},
+		"displayname": {"type": [ "string", "null"] },
+		"description": {"type": [ "string", "null"] },
+        "views": {"type": "object"},
+        "data": {"type": "object"},
+        "packages": {"type" : ["array", "null"]},
+        "script": {"type" :"string"},
+        "artefacts": { "type": "array", "items": { "$ref": "Artefact.schema.json"}},
+        "resources": {"type": "array", "items": {"type": "string"}},
+        "hash_script": {"type": [ "string", "null"] },
+        "parameters": {"type" : ["object", "null"]},
+        "date": {"type" :"string"},
+        "hash_orderly": {"type": [ "string", "null"] },
+        "hash_input": {"type": [ "string", "null"] },
+        "hash_resources": {"anyOf" : [{"$ref" :"Dictionary.schema.json"}, {"type": "string"}]},
+        "hash_data": {"$ref" :"Dictionary.schema.json"},
+        "hash_artefacts": {"$ref" :"Dictionary.schema.json"},
+        "published":  {"type" :"boolean"},
+        "requester":  {"type" :"string"},
+        "author":  {"type" :"string"},
+        "comment":  {"type": [ "string", "null"] }
+
 	},
 	"additionalProperties": true,
 	"required": ["name", "id" ]

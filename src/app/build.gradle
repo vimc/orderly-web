@@ -79,6 +79,8 @@ task generateTestData() {
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
+        println("Pulling " + image)
+        
         exec {
             commandLine 'docker', 'pull', image
         }

@@ -1,4 +1,7 @@
 {
   "id": "GitPull",
-  "type": ["string", "array", "object"]
+  "type": "array",
+  "items": {
+    "type": "string"
+  }
 }
