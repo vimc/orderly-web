@@ -1,0 +1,11 @@
+{
+    "id": "Run",
+    "type": "object",
+    "properties": {
+        "name": { "type": "string" },
+        "key": { "type": "string" },
+        "path": { "type": "string" }
+    },
+    "additionalProperties": false,
+    "required": ["name", "key", "path" ]
+}
