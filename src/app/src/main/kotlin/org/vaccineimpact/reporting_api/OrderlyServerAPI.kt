@@ -9,7 +9,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): Response
 }
 
-class OrderlyServer(val config: Config, val httpClient: HttpClient) : OrderlyServerAPI
+class OrderlyServer(config: Config, private val httpClient: HttpClient) : OrderlyServerAPI
 {
     private val urlBase: String = "${config["orderly.server"]}/v1"
 
