@@ -17,6 +17,9 @@ import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
 class DataControllerTests : ControllerTest()
 {
+    private val mockConfig = mock<Config> {
+        on { this.get("orderly.root") } doReturn "root/"
+    }
 
     @Test
     fun `gets data for report`()
@@ -35,7 +38,7 @@ class DataControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = DataController(actionContext, orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         assertThat(sut.get()).isEqualTo(data)
     }
@@ -54,7 +57,7 @@ class DataControllerTests : ControllerTest()
         }
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}data/csv/$hash.csv") } doReturn true
+            on { this.fileExists("root/data/csv/$hash.csv") } doReturn true
         }
 
         val actionContext = mock<ActionContext> {
@@ -64,10 +67,10 @@ class DataControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DataController(actionContext, orderly, fileSystem)
+        val sut = DataController(actionContext, orderly, fileSystem, mockConfig)
         sut.downloadData()
 
-        verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/csv/$hash.csv", mockOutputStream)
+        verify(fileSystem, times(1)).writeFileToOutputStream("root/data/csv/$hash.csv", mockOutputStream)
     }
 
     @Test
@@ -84,7 +87,7 @@ class DataControllerTests : ControllerTest()
         }
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}data/rds/$hash.rds") } doReturn true
+            on { this.fileExists("root/data/rds/$hash.rds") } doReturn true
         }
 
         val actionContext = mock<ActionContext> {
@@ -95,10 +98,10 @@ class DataControllerTests : ControllerTest()
             on { this.queryParams("type") } doReturn "rds"
         }
 
-        val sut = DataController(actionContext, orderly, fileSystem)
+        val sut = DataController(actionContext, orderly, fileSystem, mockConfig)
         sut.downloadData()
 
-        verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/rds/$hash.rds", mockOutputStream)
+        verify(fileSystem, times(1)).writeFileToOutputStream("root/data/rds/$hash.rds", mockOutputStream)
     }
 
     @Test
@@ -108,7 +111,7 @@ class DataControllerTests : ControllerTest()
         val hash = "hjkdasjkldas6762i1j"
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}data/csv/$hash.csv") } doReturn true
+            on { this.fileExists("root/data/csv/$hash.csv") } doReturn true
         }
 
         val actionContext = mock<ActionContext> {
@@ -116,10 +119,10 @@ class DataControllerTests : ControllerTest()
             on { this.params(":id") } doReturn hash
         }
 
-        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem)
+        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem, mockConfig)
         sut.downloadCSV()
 
-        verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/csv/$hash.csv", mockOutputStream)
+        verify(fileSystem, times(1)).writeFileToOutputStream("root/data/csv/$hash.csv", mockOutputStream)
     }
 
     @Test
@@ -129,7 +132,7 @@ class DataControllerTests : ControllerTest()
         val hash = "hjkdasjkldas6762i1j"
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}data/rds/$hash.rds") } doReturn true
+            on { this.fileExists("root/data/rds/$hash.rds") } doReturn true
         }
 
         val actionContext = mock<ActionContext> {
@@ -137,10 +140,10 @@ class DataControllerTests : ControllerTest()
             on { this.params(":id") } doReturn hash
         }
 
-        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem)
+        val sut = DataController(actionContext, mock<OrderlyClient>(), fileSystem, mockConfig)
         sut.downloadRDS()
 
-        verify(fileSystem, times(1)).writeFileToOutputStream("${Config["orderly.root"]}data/rds/$hash.rds", mockOutputStream)
+        verify(fileSystem, times(1)).writeFileToOutputStream("root/data/rds/$hash.rds", mockOutputStream)
     }
 
     @Test
@@ -160,7 +163,7 @@ class DataControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = DataController(actionContext, orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         assertThat(sut.get()).isEqualTo(data)
     }
@@ -184,7 +187,7 @@ class DataControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DataController(actionContext, orderly, mock<FileSystem>())
+        val sut = DataController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         assertThatThrownBy { sut.downloadData() }
                 .isInstanceOf(OrderlyFileNotFoundError::class.java)

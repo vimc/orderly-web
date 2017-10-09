@@ -3,6 +3,7 @@ package org.vaccineimpact.reporting_api.tests.database_tests
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
@@ -17,11 +18,11 @@ abstract class DatabaseTests : MontaguTests()
         @BeforeClass @JvmStatic
         fun createDatabase()
         {
-            println("Looking for sqlite database at path: ${Config["db.template"]}")
+            println("Looking for sqlite database at path: ${AppConfig["db.template"]}")
             println("Working directory: ${System.getProperty("user.dir")}")
 
-            val newDbFile = File(Config["db.location"])
-            val source = File(Config["db.template"])
+            val newDbFile = File(AppConfig["db.location"])
+            val source = File(AppConfig["db.template"])
 
             source.copyTo(newDbFile, true)
         }
@@ -29,7 +30,7 @@ abstract class DatabaseTests : MontaguTests()
         @AfterClass @JvmStatic
         fun dropDatabase()
         {
-            File(Config["db.location"]).delete()
+            File(AppConfig["db.location"]).delete()
         }
 
     }

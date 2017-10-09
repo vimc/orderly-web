@@ -5,16 +5,21 @@ import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
 class ResourceController(context: ActionContext,
-                         val orderly: OrderlyClient,
-                         val files: FileSystem) : Controller(context)
+                         private val orderly: OrderlyClient,
+                         private val files: FileSystem,
+                         private val config: Config) : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Files())
+            this(context,
+                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Files(),
+                    AppConfig)
 
     fun get(): JsonObject
     {
@@ -31,7 +36,7 @@ class ResourceController(context: ActionContext,
 
         val filename = "$name/$version/$resourcename"
 
-        val absoluteFilePath = "${AppConfig["orderly.root"]}archive/$filename"
+        val absoluteFilePath = "${config["orderly.root"]}archive/$filename"
 
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(resourcename)

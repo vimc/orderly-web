@@ -16,6 +16,9 @@ import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class ResourceControllerTests : ControllerTest()
 {
+    private val mockConfig = mock<Config> {
+        on { this.get("orderly.root") } doReturn "root/"
+    }
 
     @Test
     fun `gets resources for report`()
@@ -34,7 +37,9 @@ class ResourceControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = ResourceController(actionContext, orderly, mock<FileSystem>())
+        val sut = ResourceController(actionContext,
+                orderly, mock<FileSystem>(),
+                mockConfig)
 
         Assertions.assertThat(sut.get()).isEqualTo(resources)
     }
@@ -58,10 +63,10 @@ class ResourceControllerTests : ControllerTest()
         }
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$resource") } doReturn true
+            on { this.fileExists("root/archive/$name/$version/$resource") } doReturn true
         }
 
-        val sut = ResourceController(actionContext, orderly, fileSystem)
+        val sut = ResourceController(actionContext, orderly, fileSystem, mockConfig)
 
         sut.download()
     }
@@ -83,7 +88,7 @@ class ResourceControllerTests : ControllerTest()
             on { this.params(":resource") } doReturn resource
         }
 
-        val sut = ResourceController(actionContext, orderly, mock<FileSystem>())
+        val sut = ResourceController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         Assertions.assertThatThrownBy { sut.download() }
                 .isInstanceOf(UnknownObjectError::class.java)
@@ -108,10 +113,10 @@ class ResourceControllerTests : ControllerTest()
         }
 
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$resource") } doReturn false
+            on { this.fileExists("root/archive/$name/$version/$resource") } doReturn false
         }
 
-        val sut = ResourceController(actionContext, orderly, fileSystem)
+        val sut = ResourceController(actionContext, orderly, fileSystem, mockConfig)
 
         Assertions.assertThatThrownBy { sut.download() }
                 .isInstanceOf(OrderlyFileNotFoundError::class.java)

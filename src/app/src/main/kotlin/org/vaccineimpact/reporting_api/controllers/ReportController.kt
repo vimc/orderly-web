@@ -5,19 +5,22 @@ import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
 class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
                        private val zip: ZipClient,
-                       private val orderlyServerAPI: OrderlyServerAPI) : Controller(context)
+                       private val orderlyServerAPI: OrderlyServerAPI,
+                       private val config: Config) : Controller(context)
 {
     constructor(context: ActionContext) :
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Zip(),
-                    OrderlyServer(AppConfig, KHttpClient()))
+                    OrderlyServer(AppConfig, KHttpClient()),
+                    AppConfig)
 
     fun run(): String
     {
@@ -68,7 +71,7 @@ class ReportController(context: ActionContext,
         context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
-        val folderName = "${AppConfig["orderly.root"]}archive/$name/$version/"
+        val folderName = "${config["orderly.root"]}archive/$name/$version/"
 
         zip.zipIt(folderName, response.outputStream)
 
