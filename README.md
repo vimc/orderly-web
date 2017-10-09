@@ -1,6 +1,6 @@
 # Montagu Reporting API
 
-See [/src/app/src/test/rsources/spec/spec.md](spec.md) for the full API specification.
+See [spec.md](/src/app/src/test/rsources/spec/spec.md) for the full API specification.
 
 ## Developing
 System requirements:
