@@ -13,6 +13,5 @@ interface EndpointDefinition
     val requiredPermissions : Set<String>
     val allowParameterAuthentication: Boolean
 
-    fun transformer(x: Any): String
     fun additionalSetup(url: String)
 }

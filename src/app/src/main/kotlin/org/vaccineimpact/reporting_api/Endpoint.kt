@@ -36,8 +36,6 @@ data class Endpoint(
         }
     }
 
-    override fun transformer(x: Any) = Serializer.instance.toResult(x)
-
     private fun addSecurityFilter(url: String)
     {
         val allPermissions = this.requiredPermissions.map {
