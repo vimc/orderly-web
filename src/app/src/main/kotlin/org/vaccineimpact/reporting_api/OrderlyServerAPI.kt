@@ -34,9 +34,14 @@ class OrderlyServer(config: Config, private val httpClient: HttpClient) : Orderl
 
     private fun buildFullUrl(url: String, queryString: String?): String
     {
-        if (queryString == null)
-            return "$urlBase$url"
-
-        return "$urlBase$url?$queryString"
+        val queryPart = if (queryString != null)
+        {
+            "?" + queryString
+        }
+        else
+        {
+            ""
+        }
+        return urlBase + url + queryPart
     }
 }

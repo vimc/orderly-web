@@ -63,10 +63,13 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     {
         val body = request.body()
 
-        if (body.isNullOrEmpty())
-            return emptyMap()
-
-        return GsonBuilder().create()
-                .fromJson<Map<String, String>>(request.body())
+        return if (body.isNullOrEmpty())
+        {
+            emptyMap()
+        }
+        else
+        {
+            GsonBuilder().create().fromJson<Map<String, String>>(request.body())
+        }
     }
 }
