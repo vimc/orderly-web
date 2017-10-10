@@ -9,19 +9,20 @@ import spark.route.HttpMethod
 
 object GitRouteConfig : RouteConfig
 {
+    private val runReports = setOf("*/reports.run")
 
     override val endpoints: List<EndpointDefinition> = listOf(
             Endpoint("/reports/git/status/", "Git", "status")
                     .json()
-                    .secure(setOf("*/reports.run")),
+                    .secure(runReports),
 
             Endpoint("/reports/git/pull/", "Git", "pull", method = HttpMethod.post)
                     .json()
-                    .secure(setOf("*/reports.run")),
+                    .secure(runReports),
 
             Endpoint("/reports/git/fetch/", "Git", "fetch", method = HttpMethod.post)
                     .json()
-                    .secure(setOf("*/reports.run"))
+                    .secure(runReports)
     )
 
 }
