@@ -2,7 +2,7 @@
 
 Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/spec/spec.md)
 
-* all data is returned in JSON format
+* all data is returned in JSON format following the standard response schema defined above
 * `POST` data must be sent in JSON format
 * The canonical form for all URLs (not including query string) ends in a slash: `/`
 * The API will be versioned via URL. So for version 1, all URLs will begin /v1/. e.g. http://.../v1/reports/
@@ -10,6 +10,7 @@ Follows the general points in the [montagu api](https://github.com/vimc/montagu-
 In addition
 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
+* Authentication is via tokens issues by the Montagu API
 
 Some files are directly copied over (with only whitespace changes) from `montagu-api`:
 
@@ -20,7 +21,9 @@ Some files are directly copied over (with only whitespace changes) from `montagu
 
 ## GET /reports/
 
-Return a list of all report names
+Return a list of all report names.
+
+Required permissions: `reports.read`.
 
 Schema: [`Report.schema.json`](Reports.schema.json)
 
@@ -40,7 +43,9 @@ Schema: [`Report.schema.json`](Reports.schema.json)
 
 ## GET /reports/:name/
 
-Returns a list of version names for the named report
+Returns a list of version names for the named report.
+
+Required permissions: `reports.read`.
 
 Schema: [`Report.schema.json`](Report.schema.json)
 
@@ -56,7 +61,9 @@ Schema: [`Report.schema.json`](Report.schema.json)
 
 ## GET /reports/:name/:version/
 
-Returns metadata about a single report version
+Returns metadata about a single report version.
+
+Required permissions: `reports.read`.
 
 Schema: [`Report.schema.json`](Version.schema.json)
 
@@ -106,7 +113,9 @@ Schema: [`Report.schema.json`](Version.schema.json)
 
 ## POST /reports/:name/run/
 
-Try and run a report `:name`
+Try and run a report `:name`.
+
+Required permissions: `reports.run`.
 
 Accepts as `POST` body json that will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
 
@@ -129,6 +138,8 @@ Schema: [`Run.schema.json`](Run.schema.json)
 ## GET /reports/:key/status/
 
 Get the status of a report.
+
+Required permissions: `reports.run`.
 
 This works only for reports that were queued by the runner itself/
 
@@ -174,6 +185,8 @@ Schema: [`Status.schema.json`](Status.schema.json)
 
 Publish a report.  Sets the status of the "published" flag.  With no parameters sets the flag to `true` but reports can be unpublished by passing the query parameter `?value=false`.
 
+Required permissions: `reports.review`.
+
 Schema: [`Publish.schema.json`](Publish.schema.json)
 
 ### Example
@@ -185,6 +198,8 @@ true
 ## GET /reports/git/status/
 
 Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash informationl.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
+
+Required permissions: `reports.run`.
 
 ## Example
 
@@ -201,6 +216,8 @@ Get git status.  This does not quite map onto `git status` but includes output f
 
 Fetch from remote git.  This is required before accessing an updated reference (e.g. a remote branch) or a hash not present in the local git tree.  It's always safe because it does not change the working tree
 
+Required permissions: `reports.run`.
+
 ## Example
 
 ```json
@@ -213,7 +230,9 @@ Fetch from remote git.  This is required before accessing an updated reference (
 
 ## POST /reports/git/pull/
 
-Pull from remote git.  This updates the working tree
+Pull from remote git.  This updates the working tree.
+
+Required permissions: `reports.run`.
 
 ## Example
 
@@ -228,7 +247,10 @@ Pull from remote git.  This updates the working tree
 ```
 ## GET /reports/:name/:version/data/
 
-Gets a dict of data names to hashes
+Gets a dict of data names to hashes.
+
+Required permissions: `reports.read`.
+
 
 ```json
 {  
@@ -240,10 +262,13 @@ Gets a dict of data names to hashes
 
 Downloads a data file. Accepts an optional query parameter `type` which can be either `csv` or `rds`.
 
+Required permissions: `reports.read`.
 
 ## GET /reports/:name/:version/artefacts/
 
-Gets a dict of artefact names to hashes
+Gets a dict of artefact names to hashes.
+
+Required permissions: `reports.read`.
 
 ```json
 {
@@ -255,10 +280,13 @@ Gets a dict of artefact names to hashes
 
 Downloads an artefact. 
 
+Required permissions: `reports.read`.
 
 ## GET /reports/:name/:version/resources/
 
-Gets a dict of resource names to hashes
+Gets a dict of resource names to hashes.
+
+Required permissions: `reports.read`.
 
 ```json
 {
@@ -270,14 +298,22 @@ Gets a dict of resource names to hashes
 
 Downloads a resource. 
 
+Required permissions: `reports.read`.
+
 ## GET /reports/:name/:version/all/
 
-Downloads a zip file of everything (including data)
+Downloads a zip file of everything (including data).
+
+Required permissions: `reports.read`.
 
 ## GET /data/csv/:id/
 
 Downloads a data set in csv format.
 
+Required permissions: `reports.read`.
+
 ## GET /data/rds/:id/
 
 Download a data set in rds format. 
+
+Required permissions: `reports.read`.
