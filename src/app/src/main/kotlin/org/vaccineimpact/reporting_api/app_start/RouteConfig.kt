@@ -12,51 +12,67 @@ object MontaguRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            JsonEndpoint("/reports/", "Report", "getAllNames")
-                    .secure(),
+            Endpoint("/reports/", "Report", "getAllNames")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
-            JsonEndpoint("/reports/:name/", "Report", "getVersionsByName")
-                    .secure(),
+            Endpoint("/reports/:name/", "Report", "getVersionsByName")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
-            JsonEndpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
-                    .secure(),
+            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
             Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion", ContentTypes.zip)
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
-                    .secure(),
+            Endpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
             Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download")
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/resources/", "Resource", "get")
-                    .secure(),
+            Endpoint("/reports/:name/:version/resources/", "Resource", "get")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
             Endpoint("/reports/:name/:version/resources/:resource/", "Resource", "download")
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/reports/:name/:version/data/", "Data", "get")
-                    .secure(),
+            Endpoint("/reports/:name/:version/data/", "Data", "get")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
             Endpoint("/reports/:name/:version/data/:data/", "Data", "downloadData")
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
             Endpoint("/data/csv/:id/", "Data", "downloadCSV", ContentTypes.csv)
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
             Endpoint("/data/rds/:id/", "Data", "downloadRDS")
-                    .secure()
+                    .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            JsonEndpoint("/onetime_token/", "OnetimeToken", "get")
-                    .secure(),
+            Endpoint("/onetime_token/", "OnetimeToken", "get")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
 
-            JsonEndpoint("/", "Home", "index")
+            Endpoint("/", "Home", "index")
+                    .json()
+                    .transform()
     )
 }
