@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.security.*
 import spark.Spark
 import spark.route.HttpMethod

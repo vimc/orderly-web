@@ -8,6 +8,7 @@ object HomeRouteConfig: RouteConfig{
 
             Endpoint("/onetime_token/", "OnetimeToken", "get")
                     .json()
+                    .secure(setOf("*/reports.read"))
                     .transform(),
 
             Endpoint("/", "Home", "index")
