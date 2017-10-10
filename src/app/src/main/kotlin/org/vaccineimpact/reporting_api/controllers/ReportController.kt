@@ -27,7 +27,7 @@ class ReportController(context: ActionContext,
 
         val name = context.params(":name")
         val response = orderlyServerAPI.post("/reports/$name/run/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 
     fun publish(): String
@@ -35,7 +35,7 @@ class ReportController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 
 
@@ -43,7 +43,7 @@ class ReportController(context: ActionContext,
     {
         val key = context.params(":key")
         val response = orderlyServerAPI.get("/reports/$key/status/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 
     fun getAllNames(): List<String>

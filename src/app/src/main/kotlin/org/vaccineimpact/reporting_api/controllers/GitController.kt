@@ -13,18 +13,18 @@ class GitController(context: ActionContext,
     fun status(): String
     {
         val response = orderlyServerAPI.get("/reports/git/status/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 
     fun fetch(): String
     {
         val response = orderlyServerAPI.post("/reports/git/fetch/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 
     fun pull(): String
     {
         val response = orderlyServerAPI.post("/reports/git/pull/", context)
-        return returnResponse(response)
+        return passThroughResponse(response)
     }
 }

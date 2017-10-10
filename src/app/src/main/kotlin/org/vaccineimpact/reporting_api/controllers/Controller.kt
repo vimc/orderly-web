@@ -6,7 +6,7 @@ import org.vaccineimpact.reporting_api.ActionContext
 
 abstract class Controller(val context: ActionContext)
 {
-    protected fun returnResponse(response: Response): String
+    protected fun passThroughResponse(response: Response): String
     {
         context.setStatusCode(response.statusCode)
         return response.text
