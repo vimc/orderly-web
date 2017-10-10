@@ -5,7 +5,7 @@ import org.junit.BeforeClass
 import org.junit.runner.RunWith
 import org.junit.runners.Suite
 import org.vaccineimpact.reporting_api.app_start.main
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.TestTokenGenerator
 import org.vaccineimpact.reporting_api.tests.integration_tests.tests.*
 import spark.Spark
@@ -17,7 +17,8 @@ import java.io.File
         ResourceTests::class,
         DataTests::class,
         SecurityTests::class,
-        OnetimeTokenTests::class)
+        OnetimeTokenTests::class,
+        HomeTests::class)
 class APITests
 {
     companion object
@@ -37,7 +38,7 @@ class APITests
         fun stopApp()
         {
             Spark.stop()
-            File(Config["onetime_token.db.location"]).delete()
+            File(AppConfig()["onetime_token.db.location"]).delete()
         }
 
         @JvmStatic
