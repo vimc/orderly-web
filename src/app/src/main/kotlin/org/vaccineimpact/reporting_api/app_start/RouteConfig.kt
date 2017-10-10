@@ -14,13 +14,13 @@ object MontaguRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
 
             Endpoint("/reports/git/status/", "Git", "status", ContentTypes.json)
-                    .secure(setOf("*/reports.read")),
+                    .secure(setOf("*/reports.read", "*/reports.run")),
 
             Endpoint("/reports/git/pull/", "Git", "pull", ContentTypes.json, method = HttpMethod.post)
-                    .secure(setOf("*/reports.read")),
+                    .secure(setOf("*/reports.read", "*/reports.run")),
 
             Endpoint("/reports/git/fetch/", "Git", "fetch", ContentTypes.json, method = HttpMethod.post)
-                    .secure(setOf("*/reports.read")),
+                    .secure(setOf("*/reports.read", "*/reports.run")),
 
             Endpoint("/reports/", "Report", "getAllNames", ContentTypes.json)
                     .transform()
@@ -28,10 +28,10 @@ object MontaguRouteConfig : RouteConfig
 
             Endpoint("/reports/:name/run/", "Report", "run", ContentTypes.json,
                     method = HttpMethod.post)
-                    .secure(setOf("*/reports.read")),
+                    .secure(setOf("*/reports.read", "*/reports.run")),
 
             Endpoint("/reports/:key/status/", "Report", "status", ContentTypes.json)
-                    .secure(setOf("*/reports.read")),
+                    .secure(setOf("*/reports.read", "*/reports.run")),
 
             Endpoint("/reports/:name/", "Report", "getVersionsByName",ContentTypes.json)
                     .transform()
@@ -43,7 +43,7 @@ object MontaguRouteConfig : RouteConfig
 
             Endpoint("/reports/:name/:version/publish/", "Report", "publish", ContentTypes.json,
                     method = HttpMethod.post)
-                    .secure(setOf("*/reports.read", "*/reports.review"  )),
+                    .secure(setOf("*/reports.read", "*/reports.review")),
 
             Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion",
                     ContentTypes.zip)
