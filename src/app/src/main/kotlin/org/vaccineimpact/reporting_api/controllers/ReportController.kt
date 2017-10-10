@@ -71,7 +71,7 @@ class ReportController(context: ActionContext,
         context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
-        val folderName = "${config["orderly.root"]}archive/$name/$version/"
+        val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
 
         zip.zipIt(folderName, response.outputStream)
 
