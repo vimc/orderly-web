@@ -2,8 +2,8 @@
     "id": "Response",
     "type": "object",
     "properties": {
-        "status": { 
-            "enum": [ "success", "failure" ] 
+        "status": {
+            "enum": [ "success", "failure" ]
         },
         "data": {},
         "errors": {

@@ -1,0 +1,42 @@
+{
+    "id": "Status",
+    "type": "object",
+    "properties": {
+        "key": {"type": "string"},
+        "status": {
+            "enum": ["queued", "running", "success", "error", "unknown"]
+        },
+        "version": {
+            "oneOf": [
+                {"type": "null"},
+                {"$ref": "OrderlyId.schema.json"}
+            ]
+        },
+        "output": {
+            "oneOf": [
+                {"type": "null"},
+                {
+                    "type": "object",
+                    "properties": {
+                        "stdout": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "stderr": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": ["stdout", "stderr"],
+                    "additionalProperties": false
+                }
+            ]
+        }
+    },
+    "required": ["key", "status", "version", "output"],
+    "additionalProperties": false
+}
