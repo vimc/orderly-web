@@ -3,7 +3,7 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
 
@@ -27,7 +27,7 @@ class DataTests : IntegrationTest()
     fun `gets csv data file`()
     {
 
-        var demoCSV = File("${Config["orderly.root"]}/data/csv/").list()[0]
+        var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
 
         // remove file extension
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
@@ -93,7 +93,7 @@ class DataTests : IntegrationTest()
     fun `gets rds data file`()
     {
 
-        var demoRDS = File("${Config["orderly.root"]}/data/rds/").list()[0]
+        var demoRDS = File("${AppConfig()["orderly.root"]}/data/rds/").list()[0]
 
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
@@ -114,7 +114,7 @@ class DataTests : IntegrationTest()
     fun `gets csv data file by hash`()
     {
 
-        var demoCSV = File("${Config["orderly.root"]}/data/csv/").list()[0]
+        var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
 
         // remove file extension
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
@@ -132,7 +132,7 @@ class DataTests : IntegrationTest()
     fun `gets rds data file by hash`()
     {
 
-        var demoRDS = File("${Config["orderly.root"]}/data/rds/").list()[0]
+        var demoRDS = File("${AppConfig()["orderly.root"]}/data/rds/").list()[0]
 
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)

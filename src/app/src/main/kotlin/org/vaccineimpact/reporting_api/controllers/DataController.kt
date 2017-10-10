@@ -7,17 +7,22 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.Files
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
 
 class DataController(context: ActionContext,
-                     val orderly: OrderlyClient,
-                     val files: FileSystem) : Controller(context)
+                     private val orderly: OrderlyClient,
+                     private val files: FileSystem,
+                     private val config: Config) : Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), Files())
+            this(context,
+                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Files(),
+                    AppConfig())
 
     fun get(): JsonObject
     {
@@ -27,7 +32,7 @@ class DataController(context: ActionContext,
     fun downloadCSV(): Boolean
     {
         val id = context.params(":id")
-        val absoluteFilePath = "${Config["orderly.root"]}data/csv/$id.csv"
+        val absoluteFilePath = "${this.config["orderly.root"]}data/csv/$id.csv"
 
         return downloadFile(absoluteFilePath, "$id.csv", ContentTypes.csv)
     }
@@ -35,7 +40,7 @@ class DataController(context: ActionContext,
     fun downloadRDS(): Boolean
     {
         val id = context.params(":id")
-        val absoluteFilePath = "${Config["orderly.root"]}data/rds/$id.rds"
+        val absoluteFilePath = "${this.config["orderly.root"]}data/rds/$id.rds"
 
         return downloadFile(absoluteFilePath, "$id.rds", ContentTypes.binarydata)
     }
@@ -52,7 +57,7 @@ class DataController(context: ActionContext,
 
         val hash = orderly.getDatum(name, version, id)
 
-        val absoluteFilePath = "${Config["orderly.root"]}data/$type/$hash.$type"
+        val absoluteFilePath = "${this.config["orderly.root"]}data/$type/$hash.$type"
 
         val contentType =
         if (type == "csv")

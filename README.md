@@ -1,5 +1,7 @@
 # Montagu Reporting API
 
+See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
+
 ## Developing
 System requirements:
 * openjdk 8

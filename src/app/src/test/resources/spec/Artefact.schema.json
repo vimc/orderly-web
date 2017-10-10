@@ -1,0 +1,5 @@
+{
+  "id": "Artefact",
+  "type": "object",
+  "additionalProperties": { "$ref": "ArtefactDetail.schema.json"}
+}

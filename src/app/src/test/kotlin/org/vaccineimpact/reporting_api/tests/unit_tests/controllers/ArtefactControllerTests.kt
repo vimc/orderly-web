@@ -16,6 +16,9 @@ import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class ArtefactControllerTests : ControllerTest()
 {
+    private val mockConfig = mock<Config> {
+        on { this.get("orderly.root") } doReturn "root/"
+    }
 
     @Test
     fun `gets artefacts for report`()
@@ -34,7 +37,7 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>())
+        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         assertThat(sut.get()).isEqualTo(artefacts)
     }
@@ -57,11 +60,12 @@ class ArtefactControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
+
         val fileSystem = mock<FileSystem>() {
-            on { this.fileExists("${Config["orderly.root"]}archive/$name/$version/$artefact") } doReturn true
+            on { this.fileExists("root/archive/$name/$version/$artefact") } doReturn true
         }
 
-        val sut = ArtefactController(actionContext, orderly, fileSystem)
+        val sut = ArtefactController(actionContext, orderly, fileSystem, mockConfig)
 
         sut.download()
     }
@@ -83,7 +87,7 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":artefact") } doReturn artefact
         }
 
-        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>())
+        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
         assertThatThrownBy { sut.download() }
                 .isInstanceOf(UnknownObjectError::class.java)

@@ -1,0 +1,9 @@
+{
+  "id": "Artefact",
+  "type": "object",
+  "properties": {
+    "description": {"type": "string"},
+    "filenames": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

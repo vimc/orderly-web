@@ -9,7 +9,7 @@ class GitTests: IntegrationTest() {
     {
         val response = requestHelper.get("/reports/git/status/")
 
-        assertSuccessful(response)
+        assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "GitStatus")
     }
@@ -19,7 +19,7 @@ class GitTests: IntegrationTest() {
     {
         val response = requestHelper.post("/reports/git/pull/", mapOf())
 
-        assertSuccessful(response)
+        assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "GitPull")
     }
@@ -27,9 +27,9 @@ class GitTests: IntegrationTest() {
     @Test
     fun `fetches`()
     {
-        val response = requestHelper.post("/reports/git/fetch/", mapOf()    )
+        val response = requestHelper.post("/reports/git/fetch/", mapOf())
 
-        assertSuccessful(response)
+        assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "GitFetch")
     }

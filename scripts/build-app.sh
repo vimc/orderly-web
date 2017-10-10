@@ -13,11 +13,18 @@ docker build --tag montagu-reporting-api-app-build \
     -f app.Dockerfile \
 	.
 
-docker run --rm -p 8123:8123 -v ${PWD}/demo:/orderly --user docker docker.montagu.dide.ic.ac.uk:5000/orderly.server:i648 /orderly &
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:master
+
+docker run --rm \
+    -p 8123:8123 \
+    -v $PWD/git:/orderly \
+    --network=host \
+    docker.montagu.dide.ic.ac.uk:5000/orderly.server:master "orderly" &
 
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $PWD/demo:/api/src/app/demo \
+    -v $PWD/git:/api/src/app/git \
     --network=host \
     montagu-reporting-api-app-build

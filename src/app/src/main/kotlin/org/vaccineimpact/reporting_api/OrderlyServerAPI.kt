@@ -1,8 +1,7 @@
 package org.vaccineimpact.reporting_api
 
 import khttp.responses.Response
-import org.json.HTTP
-import org.vaccineimpact.reporting_api.db.ConfigWrapper
+import org.vaccineimpact.reporting_api.db.Config
 
 interface OrderlyServerAPI
 {
@@ -10,7 +9,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): Response
 }
 
-class OrderlyServer(val config: ConfigWrapper, val httpClient: HttpClient) : OrderlyServerAPI
+class OrderlyServer(config: Config, private val httpClient: HttpClient) : OrderlyServerAPI
 {
     private val urlBase: String = "${config["orderly.server"]}/v1"
 
@@ -24,10 +23,7 @@ class OrderlyServer(val config: ConfigWrapper, val httpClient: HttpClient) : Ord
         val fullUrl = buildFullUrl(url, context.queryString())
         val postData = context.postData()
 
-        if (context.postData().any())
-            return httpClient.post(fullUrl, standardHeaders, json = postData)
-
-        return httpClient.post(fullUrl, standardHeaders)
+        return httpClient.post(fullUrl, standardHeaders, postData)
     }
 
     override fun get(url: String, context: ActionContext): Response
@@ -55,7 +51,14 @@ class KHttpClient : HttpClient
 {
     override fun post(url: String, headers: Map<String, String>, json: Map<String, String>): Response
     {
-        return khttp.post(url, headers, json = json)
+        return if (json.any())
+        {
+            khttp.post(url, headers, json = json)
+        }
+        else
+        {
+            khttp.post(url, headers)
+        }
     }
 
     override fun get(url: String, headers: Map<String, String>): Response
