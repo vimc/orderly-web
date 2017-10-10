@@ -13,44 +13,54 @@ object MontaguRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            Endpoint("/reports/git/status/", "Git", "status", ContentTypes.json)
-                    .secure(setOf("*/reports.read", "*/reports.run")),
+            Endpoint("/reports/git/status/", "Git", "status")
+                    .json()
+                    .secure(setOf("*/reports.run")),
 
-            Endpoint("/reports/git/pull/", "Git", "pull", ContentTypes.json, method = HttpMethod.post)
-                    .secure(setOf("*/reports.read", "*/reports.run")),
+            Endpoint("/reports/git/pull/", "Git", "pull", method = HttpMethod.post)
+                    .json()
+                    .secure(setOf("*/reports.run")),
 
-            Endpoint("/reports/git/fetch/", "Git", "fetch", ContentTypes.json, method = HttpMethod.post)
-                    .secure(setOf("*/reports.read", "*/reports.run")),
+            Endpoint("/reports/git/fetch/", "Git", "fetch", method = HttpMethod.post)
+                    .json()
+                    .secure(setOf("*/reports.run")),
 
-            Endpoint("/reports/", "Report", "getAllNames", ContentTypes.json)
+            Endpoint("/reports/", "Report", "getAllNames")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
 
-            Endpoint("/reports/:name/run/", "Report", "run", ContentTypes.json,
+            Endpoint("/reports/:name/", "Report", "getVersionsByName")
+                    .json()
+                    .transform()
+                    .secure(setOf("*/reports.read")),
+
+            Endpoint("/reports/:name/run/", "Report", "run",
                     method = HttpMethod.post)
-                    .secure(setOf("*/reports.read", "*/reports.run")),
+                    .json()
+                    .secure(setOf("*/reports.run")),
 
-            Endpoint("/reports/:key/status/", "Report", "status", ContentTypes.json)
-                    .secure(setOf("*/reports.read", "*/reports.run")),
+            Endpoint("/reports/:key/status/", "Report", "status")
+                    .json()
+                    .secure(setOf("*/reports.run")),
 
-            Endpoint("/reports/:name/", "Report", "getVersionsByName",ContentTypes.json)
+            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
-
-            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion", ContentTypes.json)
-                    .transform()
-                    .secure(setOf("*/reports.read")),
-
-            Endpoint("/reports/:name/:version/publish/", "Report", "publish", ContentTypes.json,
-                    method = HttpMethod.post)
-                    .secure(setOf("*/reports.read", "*/reports.review")),
 
             Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion",
                     ContentTypes.zip)
-                    .secure(setOf("*/reports.read"))
-                    .allowParameterAuthentication(),
+                    .allowParameterAuthentication()
+                    .secure(setOf("*/reports.read")),
 
-            Endpoint("/reports/:name/:version/artefacts/", "Artefact", "get", ContentTypes.json)
+            Endpoint("/reports/:name/:version/publish/", "Report", "publish",
+                    method = HttpMethod.post)
+                    .json()
+                    .secure(setOf("*/reports.review")),
+
+            Endpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
 
@@ -58,7 +68,8 @@ object MontaguRouteConfig : RouteConfig
                     .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/:version/resources/", "Resource", "get", ContentTypes.json)
+            Endpoint("/reports/:name/:version/resources/", "Resource", "get")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
 
@@ -66,7 +77,8 @@ object MontaguRouteConfig : RouteConfig
                     .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/:version/data/", "Data", "get", ContentTypes.json)
+            Endpoint("/reports/:name/:version/data/", "Data", "get")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
 
@@ -82,11 +94,13 @@ object MontaguRouteConfig : RouteConfig
                     .secure(setOf("*/reports.read"))
                     .allowParameterAuthentication(),
 
-            Endpoint("/onetime_token/", "OnetimeToken", "get", ContentTypes.json)
+            Endpoint("/onetime_token/", "OnetimeToken", "get")
+                    .json()
                     .transform()
                     .secure(setOf("*/reports.read")),
 
-            Endpoint("/", "Home", "index", ContentTypes.json)
+            Endpoint("/", "Home", "index")
+                    .json()
                     .transform()
     )
 }

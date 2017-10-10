@@ -9,7 +9,9 @@ interface EndpointDefinition
     val actionName: String
     val method: HttpMethod
     val contentType: String
-    var transform: Boolean
+    val transform: Boolean
+    val requiredPermissions : Set<String>
+    val allowParameterAuthentication: Boolean
 
     fun transformer(x: Any): String
     fun additionalSetup(url: String)

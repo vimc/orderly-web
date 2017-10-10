@@ -4,6 +4,7 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.DirectActionContext
 import org.vaccineimpact.reporting_api.EndpointDefinition
+import org.vaccineimpact.reporting_api.Serializer
 import org.vaccineimpact.reporting_api.controllers.Controller
 import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
@@ -18,6 +19,8 @@ class Router(val config: RouteConfig)
     {
         val urls: MutableList<String> = mutableListOf()
     }
+
+    fun transform(x: Any) = Serializer.instance.toResult(x)
 
     fun mapEndpoints(urlBase: String)
     {
@@ -34,8 +37,6 @@ class Router(val config: RouteConfig)
             endpoint: EndpointDefinition,
             urlBase: String): String
     {
-
-        val transformer = endpoint::transformer
         val fullUrl = urlBase + endpoint.urlFragment
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
@@ -43,11 +44,11 @@ class Router(val config: RouteConfig)
         logger.info("Mapping $fullUrl to ${endpoint.actionName} on Controller ${endpoint.controllerName}")
         when (endpoint.method)
         {
-            HttpMethod.get -> Spark.get(fullUrl, contentType, route, transformer)
-            HttpMethod.post -> Spark.post(fullUrl, contentType, route, transformer)
-            HttpMethod.put -> Spark.put(fullUrl, contentType, route, transformer)
-            HttpMethod.patch -> Spark.patch(fullUrl, contentType, route, transformer)
-            HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, transformer)
+            HttpMethod.get -> Spark.get(fullUrl, contentType, route, this::transform)
+            HttpMethod.post -> Spark.post(fullUrl, contentType, route, this::transform)
+            HttpMethod.put -> Spark.put(fullUrl, contentType, route, this::transform)
+            HttpMethod.patch -> Spark.patch(fullUrl, contentType, route, this::transform)
+            HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, this::transform)
             else -> throw UnsupportedValueException(endpoint.method)
         }
 

@@ -5,12 +5,16 @@ import org.vaccineimpact.reporting_api.security.*
 import spark.Spark
 import spark.route.HttpMethod
 
-open class Endpoint(
-        override final val urlFragment: String,
-        override final val controllerName: String,
-        override final val actionName: String,
-        override final val contentType: String = ContentTypes.binarydata,
-        override final val method: HttpMethod = HttpMethod.get
+data class Endpoint(
+        override val urlFragment: String,
+        override val controllerName: String,
+        override val actionName: String,
+        override val contentType: String = ContentTypes.binarydata,
+        override val method: HttpMethod = HttpMethod.get,
+        override val transform: Boolean = false,
+        override val requiredPermissions: Set<String> = emptySet(),
+        override val allowParameterAuthentication: Boolean = false
+
 ) : EndpointDefinition
 {
     init
@@ -20,11 +24,6 @@ open class Endpoint(
             throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
         }
     }
-
-    val requiredPermissions = mutableSetOf<String>()
-
-    var allowParameterAuthentication = false
-    override var transform = false
 
     override fun additionalSetup(url: String)
     {
@@ -68,18 +67,20 @@ open class Endpoint(
 
 fun Endpoint.allowParameterAuthentication(): Endpoint
 {
-    this.allowParameterAuthentication = true
-    return this
+    return this.copy(allowParameterAuthentication = true)
 }
 
-fun Endpoint.secure(requiredPermissions: Set<String>): Endpoint
+fun Endpoint.secure(permissions: Set<String>): Endpoint
 {
-    this.requiredPermissions.addAll(requiredPermissions)
-    return this
+    return this.copy(requiredPermissions = permissions)
 }
 
 fun Endpoint.transform(): Endpoint
 {
-    this.transform = true
-    return this
+    return this.copy(transform = true)
+}
+
+fun Endpoint.json(): Endpoint
+{
+    return this.copy(contentType = ContentTypes.json)
 }
