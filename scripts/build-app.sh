@@ -1,4 +1,4 @@
-set -e
+set -ex
 git_id=$(git rev-parse --short HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
 export ORDERLY_SERVER_VERSION=$(<./src/config/orderly_server_version)
