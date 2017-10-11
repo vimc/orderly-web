@@ -124,16 +124,28 @@ test.dependsOn 'checkConfigDirExists'
 
 task startOrderlyServer() {
 
-    String dbVersion = file("../config/orderly_server_version").text
-    String name = rootProject.ext.props.get('orderly_test_container')
-
-    String image = "docker.montagu.dide.ic.ac.uk:5000/orderly.server:" + dbVersion
-    def username = System.properties['user.name']
-    def uid = ["id", "-u", username].execute().text.trim()
-
     doLast {
+
+        String dbVersion = file("../config/orderly_server_version").text
+        String name = rootProject.ext.props.get('orderly_test_container')
+
+        String image = "docker.montagu.dide.ic.ac.uk:5000/orderly.server:" + dbVersion
+
+        def username = System.properties['user.name']
+        def uid = ["id", "-u", username].execute().text.trim()
+
+        println("Pulling " + image)
+
         exec {
-            commandLine "docker", "run", "--rm", "-p", "8123:8123", "-d", "--name", name, "-v", "$projectDir/git:/orderly", "--user", uid, image, "/orderly"
+            commandLine 'docker', 'pull', image
+        }
+
+        exec {
+            commandLine "ls", "$projectDir/git"
+        }
+
+        exec {
+            commandLine "docker", "run", "--rm", "-p", "8123:8123",  "-u", uid, "--name", name, "--network", "host", "-v", "$projectDir/git:/orderly", image, "/orderly"
         }
     }
 }
@@ -148,8 +160,6 @@ task stopOrderlyServer() {
         }
     }
 }
-
-test.dependsOn 'startOrderlyServer'
 
 // We run the integration test as a suite (see APITests); this line prevents
 // them being run individually as well
