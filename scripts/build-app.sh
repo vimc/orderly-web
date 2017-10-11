@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -ex
 git_id=$(git rev-parse --short HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
