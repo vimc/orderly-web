@@ -1,7 +1,7 @@
 set -e
 git_id=$(git rev-parse --short HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
-export ORDERLY_SERVER_VERSION=$(<src/config/orderly_server_version)
+export ORDERLY_SERVER_VERSION=$(<./src/config/orderly_server_version)
 
 # Make the build environment image that is shared between multiple build targets
 ./scripts/make-build-env.sh
