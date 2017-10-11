@@ -16,27 +16,27 @@ System requirements:
 
 ### Tasks
 * Generate test data. To generate a test Orderly directory to develop against, 
-  run the `:generateTestData` gradle task (either from within your IDE or on the
+  run the `:app:generateTestData` gradle task (either from within your IDE or on the
   command line from within the project root directory with 
-  `./gradlew :generateTestData`)
-  The above task will generate an Orderly directory at `./src/app/demo`, which 
-  the app is configured to point to locally, and all tests to run against.
-* To run, use `./gradlew :app:run`, having first set up a the test data using
-  `./gradlew :generateTestData`
+  `./gradlew :app:generateTestData`)
+  The above task will generate two Orderly directorys; one at `./src/app/demo` and one at `./src/app/git`. The latter contains an Orderly directory which is also a git repo, the former contains several different types of report. These are used for integration tests and for running locally.
+* Run the Orderly server (responsible for running reports) using the `:app:startOrderlyServer` task.
+* To run, use `:app:run`, having first set up a the test data using
+  `:app:generateTestData` and started the orderly server using `:app:startOrderlyServer` 
 * To run the tests, use `./gradlew test`, making sure that the app is not 
-  currently running and you have already generated the test data.
+  currently running and you have already generated the test data and started the Orderly server.
+  
 
 ## Docker build
 The Teamcity build
-1. Pulls in artifact `demo` from the Orderly container build
+1. Pulls in artifacts `demo` and `git` from the Orderly container build.
 2. Runs `./scripts/make-build-env.sh` which builds a Docker image containing the source code and dependencies.
-3. Runs `./scripts/build-app.sh` which uses the above image, mounting the `demo` folder as a volume, to compile code, run tests and build a Docker image
-containing the compiled app code.
+3. Runs `./scripts/build-app.sh` which uses the above image, mounting the `demo` folder as a volume, to compile code, run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and build a Docker image containing the compiled app code.
 
 To build the image locally you will have to replace step one with generating the `demo` folder in your project directory following instructions here: https://github.com/vimc/orderly/tree/master/docker
 
 ## Docker run
-To make use of a build image, run:
+To make use of a built image, run:
 
         docker pull docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
         docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
