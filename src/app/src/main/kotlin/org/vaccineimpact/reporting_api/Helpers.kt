@@ -23,9 +23,12 @@ fun addTrailingSlashes(req: Request, res: Response)
 
 fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String)
 {
-    res.contentType = contentType
-    res.addHeader("Content-Encoding", "gzip")
-    res.addHeader("Access-Control-Allow-Origin", "*")
+    if (!res.containsHeader("Content-Encoding"))
+    {
+        res.contentType = contentType
+        res.addHeader("Content-Encoding", "gzip")
+        res.addHeader("Access-Control-Allow-Origin", "*")
+    }
 }
 
 class DefaultHeadersFilter(val contentType: String) : Filter

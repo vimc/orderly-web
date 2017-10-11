@@ -18,6 +18,7 @@ import java.io.File
         DataTests::class,
         SecurityTests::class,
         OnetimeTokenTests::class,
+        GitTests:: class,
         HomeTests::class)
 class APITests
 {

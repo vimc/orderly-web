@@ -4,6 +4,10 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
+import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.db.JooqContext
+import org.vaccineimpact.reporting_api.db.Orderly
+import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ReportTests : IntegrationTest()
@@ -17,6 +21,72 @@ class ReportTests : IntegrationTest()
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Reports")
+    }
+
+
+    @Test
+    fun `runs report`()
+    {
+        val response = requestHelper.post("/reports/minimal/run/", mapOf(), reviewer = true)
+
+        assertSuccessfulWithResponseText(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Run")
+    }
+
+    @Test
+    fun `gets report status`()
+    {
+        val response = requestHelper.get("/reports/agronomic_seahorse/status/", reviewer = true)
+        assertSuccessfulWithResponseText(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Status")
+    }
+
+    @Test
+    fun `publishes report`()
+    {
+        val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.ORDERLY.ID)
+                    .from(Tables.ORDERLY)
+                    .where(Tables.ORDERLY.NAME.eq("minimal"))
+                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
+                    .fetchInto(String::class.java)
+                    .first()
+        }
+
+        val response = requestHelper.post("/reports/minimal/$unpublishedVersion/publish/", mapOf(), reviewer = true)
+        assertSuccessfulWithResponseText(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Publish")
+        val data = JSONValidator.getData(response.text).asBoolean()
+        assertThat(data).isEqualTo(true)
+    }
+
+    @Test
+    fun `unpublishes report`()
+    {
+        val version = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.ORDERLY.ID)
+                    .from(Tables.ORDERLY)
+                    .where(Tables.ORDERLY.NAME.eq("minimal"))
+                    .fetchInto(String::class.java)
+                    .first()
+        }
+
+        // first lets make sure its published
+        requestHelper.post("/reports/minimal/$version/publish/", mapOf(), reviewer = true)
+
+        // now unpublish
+        val response = requestHelper.post("/reports/minimal/$version/publish/?value=false", mapOf(), reviewer = true)
+
+        assertSuccessfulWithResponseText(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Publish")
+        val data = JSONValidator.getData(response.text).asBoolean()
+        assertThat(data).isEqualTo(false)
     }
 
     @Test
@@ -46,7 +116,6 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion")
-
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")

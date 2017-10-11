@@ -20,7 +20,7 @@ class RequestHelper
     private val parser = JsonParser()
 
     val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
-    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review")
+    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review,*/reports.run")
 
     fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {
@@ -43,6 +43,29 @@ class RequestHelper
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
+    }
+
+    fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
+    {
+        var headers = mapOf(
+                "Accept" to contentType,
+                "Accept-Encoding" to "gzip"
+        )
+
+        val token = if (!reviewer)
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeUser)
+        }
+        else
+        {
+            APITests.tokenHelper
+                    .generateToken(fakeReviewer)
+        }
+
+        headers += mapOf("Authorization" to "Bearer $token")
+
+        return khttp.post(baseUrl + url, headers, json = body)
     }
 
     fun generateOnetimeToken(url: String): String

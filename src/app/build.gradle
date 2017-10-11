@@ -40,6 +40,8 @@ dependencies {
     compile "org.pac4j:spark-pac4j:2.0.0"
     compile "org.pac4j:pac4j-http:2.0.0"
 
+    compile "khttp:khttp:0.1.0"
+
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "khttp:khttp:0.1.0"
     testCompile "com.beust:klaxon:0.31"
@@ -74,17 +76,16 @@ distDocker {
 task generateTestData() {
     doLast {
         String image = "docker.montagu.dide.ic.ac.uk:5000/orderly:master"
-
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
         println("Pulling " + image)
-        
+
         exec {
             commandLine 'docker', 'pull', image
         }
         exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "demo"
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
     }
 }
@@ -92,9 +93,11 @@ task generateTestData() {
 // removes the app/demo folder
 task cleanUpTestData() {
     doLast {
-
         exec {
             commandLine "rm", "$projectDir/demo", "--recursive"
+        }
+        exec {
+            commandLine "rm", "$projectDir/git", "--recursive"
         }
     }
 }
@@ -118,6 +121,45 @@ task checkConfigDirExists() {
     }
 }
 test.dependsOn 'checkConfigDirExists'
+
+task startOrderlyServer() {
+
+    doLast {
+
+        String dbVersion = file("../config/orderly_server_version").text
+        String name = rootProject.ext.props.get('orderly_test_container')
+
+        String image = "docker.montagu.dide.ic.ac.uk:5000/orderly.server:" + dbVersion
+
+        def username = System.properties['user.name']
+        def uid = ["id", "-u", username].execute().text.trim()
+
+        println("Pulling " + image)
+
+        exec {
+            commandLine 'docker', 'pull', image
+        }
+
+        exec {
+            commandLine "ls", "$projectDir/git"
+        }
+
+        exec {
+            commandLine "docker", "run", "--rm", "-p", "8123:8123",  "-u", uid, "--name", name, "--network", "host", "-v", "$projectDir/git:/orderly", image, "/orderly"
+        }
+    }
+}
+
+task stopOrderlyServer() {
+
+    String name = rootProject.ext.props.get('orderly_test_container')
+
+    doLast {
+        exec {
+            commandLine "docker", "stop", name
+        }
+    }
+}
 
 // We run the integration test as a suite (see APITests); this line prevents
 // them being run individually as well

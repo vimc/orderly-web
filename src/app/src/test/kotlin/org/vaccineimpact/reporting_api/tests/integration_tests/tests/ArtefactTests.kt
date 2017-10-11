@@ -1,10 +1,7 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
@@ -15,7 +12,6 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets dict of artefact names to hashes`()
     {
-
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/testversion/artefacts/")
 

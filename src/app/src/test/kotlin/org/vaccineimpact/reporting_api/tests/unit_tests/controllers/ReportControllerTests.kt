@@ -1,13 +1,12 @@
 package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
 import com.google.gson.JsonParser
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.times
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
+import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.OrderlyServerAPI
 import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.AppConfig
@@ -21,6 +20,30 @@ class ReportControllerTests : ControllerTest()
     }
 
     @Test
+    fun `runs a report`()
+    {
+        val reportName = "report1"
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val mockAPIResponse = mock<Response>(){
+            on { this.text } doReturn "okayresponse"
+        }
+
+        val apiClient = mock<OrderlyServerAPI>(){
+            on { this.post(any(), any())} doReturn mockAPIResponse
+        }
+
+        val sut = ReportController(actionContext, mock<OrderlyClient>(),
+                mock<ZipClient>(), apiClient, mockConfig)
+
+        val result = sut.run()
+
+        assertThat(result).isEqualTo("okayresponse")
+    }
+
+    @Test
     fun `getReports returns all report names`()
     {
         val reportNames = listOf("testname1", "testname2")
@@ -28,7 +51,9 @@ class ReportControllerTests : ControllerTest()
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reportNames
         }
-        val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>(), mockConfig)
+        val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
 
         assertThat(sut.getAllNames()).isEqualTo(reportNames)
     }
@@ -48,7 +73,9 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>(), mockConfig)
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
 
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
@@ -71,7 +98,9 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>(), mockConfig)
+        val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
     }
@@ -91,7 +120,8 @@ class ReportControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
 
-        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient, mockConfig)
+        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient, mock<OrderlyServerAPI>(),
+                mockConfig)
 
         sut.getZippedByNameAndVersion()
 
