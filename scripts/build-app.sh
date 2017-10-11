@@ -1,6 +1,7 @@
 set -e
 git_id=$(git rev-parse --short HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
+export ORDERLY_SERVER_VERSION=$(<src/config/orderly_server_version)
 
 # Make the build environment image that is shared between multiple build targets
 ./scripts/make-build-env.sh
@@ -14,14 +15,14 @@ docker build --tag montagu-reporting-api-app-build \
 	.
 
 # Run the orderly server
-docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:master
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION
 
 docker run --rm \
     -p 8123:8123 \
     -d \
     -v $PWD/git:/orderly \
     --network=host \
-    docker.montagu.dide.ic.ac.uk:5000/orderly.server:master "orderly"
+    docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION "orderly"
 
 # Run the created image
 docker run --rm \
