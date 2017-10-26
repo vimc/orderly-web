@@ -13,7 +13,7 @@ class ResourceTests : IntegrationTest()
     fun `gets dict of resource names to hashes`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/resources")
+        val response = requestHelper.get("/reports/testname/versions/testversion/resources")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -27,7 +27,7 @@ class ResourceTests : IntegrationTest()
         val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
 
         val resourceEncoded = "meta:data.csv"
-        val url = "/reports/use_resource/$version/resources/$resourceEncoded/"
+        val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -42,9 +42,9 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val url = "/reports/testname/testversion/resources/$fakeresource/"
+        val url = "/reports/testname/versions/testversion/resources/$fakeresource/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("/reports/testname/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.get("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -56,7 +56,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val response = requestHelper.getNoAuth("/reports/testname/testversion/resources/$fakeresource/", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/", ContentTypes.binarydata)
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
@@ -68,7 +68,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
 
-        val url = "/reports/testname/testversion/resources/resource.csv/"
+        val url = "/reports/testname/versions/testversion/resources/resource.csv/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
 

@@ -56,7 +56,7 @@ class ReportTests : IntegrationTest()
                     .first()
         }
 
-        val response = requestHelper.post("/reports/minimal/$unpublishedVersion/publish/", mapOf(), reviewer = true)
+        val response = requestHelper.post("/reports/minimal/versions/$unpublishedVersion/publish/", mapOf(), reviewer = true)
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")
@@ -77,10 +77,10 @@ class ReportTests : IntegrationTest()
         }
 
         // first lets make sure its published
-        requestHelper.post("/reports/minimal/$version/publish/", mapOf(), reviewer = true)
+        requestHelper.post("/reports/minimal/versions/$version/publish/", mapOf(), reviewer = true)
 
         // now unpublish
-        val response = requestHelper.post("/reports/minimal/$version/publish/?value=false", mapOf(), reviewer = true)
+        val response = requestHelper.post("/reports/minimal/versions/$version/publish/?value=false", mapOf(), reviewer = true)
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -115,7 +115,7 @@ class ReportTests : IntegrationTest()
     fun `can get report by name and version`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion")
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")
@@ -126,7 +126,7 @@ class ReportTests : IntegrationTest()
     fun `reviewer can get unpublished report by name and version`()
     {
         insertReport("testname", "testversion", published = false)
-        val response = requestHelper.get("/reports/testname/testversion", reviewer = true)
+        val response = requestHelper.get("/reports/testname/versions/testversion", reviewer = true)
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -138,7 +138,7 @@ class ReportTests : IntegrationTest()
     {
         val fakeVersion = "hf647rhj"
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/$fakeVersion")
+        val response = requestHelper.get("/reports/testname/versions/$fakeVersion")
 
         assertJsonContentType(response)
         assertThat(response.statusCode).isEqualTo(404)
@@ -151,7 +151,7 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
 
-        val url = "/reports/testname/testversion/all/"
+        val url = "/reports/testname/versions/testversion/all/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
 
@@ -166,7 +166,7 @@ class ReportTests : IntegrationTest()
         insertReport("testname", "testversion")
 
         val token = requestHelper.generateOnetimeToken("")
-        val response = requestHelper.get("/reports/testname/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+        val response = requestHelper.get("/reports/testname/versions/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
 
         assertSuccessful(response)
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -177,7 +177,7 @@ class ReportTests : IntegrationTest()
     fun `returns 401 if access token is missing`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.getNoAuth("/reports/testname/testversion/all", contentType = ContentTypes.zip)
+        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)

@@ -15,7 +15,7 @@ class DataTests : IntegrationTest()
     {
 
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/data/")
+        val response = requestHelper.get("/reports/testname/versions/testversion/data/")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -34,7 +34,7 @@ class DataTests : IntegrationTest()
 
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
 
-        val url = "/reports/testname/testversion/data/testdata/"
+        val url = "/reports/testname/versions/testversion/data/testdata/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -49,7 +49,7 @@ class DataTests : IntegrationTest()
 
         insertReport("testname", "testversion")
         val fakedata = "hf647sa674yh3basrhj"
-        val url = "/reports/testname/testversion/data/$fakedata/"
+        val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -65,7 +65,7 @@ class DataTests : IntegrationTest()
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
         insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
-        val url = "/reports/testname/testversion/data/$fakedata/"
+        val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
 
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
@@ -82,7 +82,7 @@ class DataTests : IntegrationTest()
         val fakehash = "07dffb003   05279935544238b39d7b14b"
         insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
 
-        val response = requestHelper.getNoAuth("/reports/testname/testversion/data/$fakedata/", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/data/$fakedata/", ContentTypes.binarydata)
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
@@ -98,11 +98,11 @@ class DataTests : IntegrationTest()
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
-        val url = "/reports/testname/testversion/data/testdata?type=rds"
+        val url = "/reports/testname/versions/testversion/data/testdata?type=rds"
         val token = requestHelper.generateOnetimeToken(url)
 
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoRDS\"}")
-        val response = requestHelper.get("/reports/testname/testversion/data/testdata?type=rds&access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.get("/reports/testname/versions/testversion/data/testdata?type=rds&access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")

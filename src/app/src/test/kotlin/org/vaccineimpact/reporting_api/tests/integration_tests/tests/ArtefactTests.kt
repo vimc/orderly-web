@@ -13,7 +13,7 @@ class ArtefactTests : IntegrationTest()
     fun `gets dict of artefact names to hashes`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/testversion/artefacts/")
+        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -25,7 +25,7 @@ class ArtefactTests : IntegrationTest()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
-        val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
+        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -39,7 +39,7 @@ class ArtefactTests : IntegrationTest()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
-        val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
+        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
@@ -52,7 +52,7 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
-        val url = "/reports/testname/testversion/artefacts/$fakeartefact/"
+        val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
@@ -67,7 +67,7 @@ class ArtefactTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
 
-        val url = "/reports/testname/testversion/artefacts/$fakeartefact"
+        val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact"
         val response = requestHelper.getNoAuth("$url/", ContentTypes.binarydata)
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
@@ -79,7 +79,7 @@ class ArtefactTests : IntegrationTest()
     fun `gets 401 if invalid access token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.getNoAuth("/reports/testname/testversion/artefacts/fakeartefact/?access_token=42678iwek", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/artefacts/fakeartefact/?access_token=42678iwek", ContentTypes.binarydata)
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -90,7 +90,7 @@ class ArtefactTests : IntegrationTest()
     fun `gets 401 if access token not in db`()
     {
         insertReport("testname", "testversion")
-        val url = "/reports/testname/testversion/artefacts/6943yhks/"
+        val url = "/reports/testname/versions/testversion/artefacts/6943yhks/"
         val token = WebTokenHelper.oneTimeTokenHelper.issuer
                 .generateOnetimeActionToken(requestHelper.fakeUser, url)
         val response = requestHelper
@@ -106,7 +106,7 @@ class ArtefactTests : IntegrationTest()
     fun `gets 404 if artefact file doesnt exist`()
     {
         val fakeartefact = "64328fyhdkjs.csv"
-        val url = "/reports/testname/testversion/artefacts/$fakeartefact/"
+        val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
         val token = requestHelper.generateOnetimeToken(url)
 
         insertReport("testname", "testversion", hashArtefacts = "{\"$fakeartefact\":\"07dffb00305279935544238b39d7b14b\"}")
