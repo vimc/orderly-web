@@ -16,7 +16,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get reports`()
     {
-        val response = requestHelper.get("/reports")
+        val response = requestHelper.get("/reports/")
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -97,7 +97,7 @@ class ReportTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Report")
+        JSONValidator.validateAgainstSchema(response.text, "Versions")
     }
 
     @Test

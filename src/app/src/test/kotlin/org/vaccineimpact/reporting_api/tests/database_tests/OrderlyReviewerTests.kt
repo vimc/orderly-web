@@ -27,9 +27,9 @@ class OrderlyReviewerTests : DatabaseTests()
         val results = sut.getAllReports()
 
         assertThat(results.count()).isEqualTo(3)
-        assertThat(results[0]).isEqualTo("test")
-        assertThat(results[1]).isEqualTo("test2")
-        assertThat(results[2]).isEqualTo("test3")
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[1].name).isEqualTo("test2")
+        assertThat(results[2].name).isEqualTo("test3")
     }
 
     @Test
