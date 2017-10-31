@@ -20,6 +20,7 @@ fun insertReport(name: String,
         val record = it.dsl.newRecord(ORDERLY)
                 .apply {
                     this.name = name
+                    this.displayname = "display name $name"
                     this.id = version
                     this.views = views
                     this.data = data

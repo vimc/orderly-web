@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.*
 import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.OrderlyServerAPI
 import org.vaccineimpact.reporting_api.ZipClient
@@ -46,7 +47,8 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns all report names`()
     {
-        val reportNames = listOf("testname1", "testname2")
+        val reportNames = listOf(Report("testname1", "test full name 1", "v1"),
+                Report("testname2", "test full name 2", "v1"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reportNames

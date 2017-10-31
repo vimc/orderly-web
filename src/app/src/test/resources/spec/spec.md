@@ -21,22 +21,19 @@ Some files are directly copied over (with only whitespace changes) from `montagu
 
 ## GET /reports/
 
-Return a list of all report names.
+Return a list of all reports with minimal metadata - the id, human readable name, and latest version of each.
 
 Required permissions: `reports.read`.
 
-Schema: [`Report.schema.json`](Reports.schema.json)
+Schema: [`Reports.schema.json`](Reports.schema.json)
 
 ### Example
 
 ```json
 
   [
-    "minimal",
-    "other",
-    "use_resource",
-    "multi-artefact",
-    "multifile-artefact"
+    {"id": "minimal", "name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
+    {"id": "use_resource", "name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
   ]
 
 ```
@@ -47,7 +44,7 @@ Returns a list of version names for the named report.
 
 Required permissions: `reports.read`.
 
-Schema: [`Report.schema.json`](Report.schema.json)
+Schema: [`Versions.schema.json`](Version.schema.json)
 
 ### Example
 

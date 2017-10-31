@@ -1,5 +1,10 @@
 {
 	"id": "Report",
-	"type": "array",
-	"items": { "type": "string" }
+	"type": "object",
+	"properties": {
+		"name": {"type" :"string"},
+		"id": {"type" :"string"},
+		"displayname": {"type": [ "string", "null"] },
+		"latest_version": { "type": "string" }
+	}
 }

@@ -19,9 +19,10 @@ class OrderlyTests : DatabaseTests()
     fun `can get all published report names`()
     {
 
-        insertReport("test", "version1")
-        insertReport("test", "version2")
-        insertReport("test2", "test2version1")
+        insertReport("test", "va")
+        insertReport("test", "vz")
+        insertReport("test2", "vc")
+        insertReport("test2", "vb")
         insertReport("test3", "test3version", published = false)
 
         val sut = createSut()
@@ -29,8 +30,14 @@ class OrderlyTests : DatabaseTests()
         val results = sut.getAllReports()
 
         assertThat(results.count()).isEqualTo(2)
-        assertThat(results[0]).isEqualTo("test")
-        assertThat(results[1]).isEqualTo("test2")
+
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].latestVersion).isEqualTo("vz")
+
+        assertThat(results[1].name).isEqualTo("test2")
+        assertThat(results[1].displayName).isEqualTo("display name test2")
+        assertThat(results[1].latestVersion).isEqualTo("vb")
     }
 
     @Test
