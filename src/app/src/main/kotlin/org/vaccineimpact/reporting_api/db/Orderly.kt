@@ -21,19 +21,19 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-            val cte = "all"
+            val tempTable = "all"
 
             val allReports = it.dsl.select(ORDERLY.NAME,
                     ORDERLY.DATE.max().`as`("maxDate"))
                     .from(ORDERLY)
                     .groupBy(ORDERLY.NAME)
 
-            return it.dsl.with(cte).`as`(allReports)
+            return it.dsl.with(tempTable).`as`(allReports)
                     .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME, ORDERLY.ID.`as`("latestVersion"))
                     .from(ORDERLY)
-                    .join(table(name(cte)))
-                    .on(ORDERLY.NAME.eq(field(name(cte, "name"), String::class.java))
-                            .and(ORDERLY.DATE.eq(field(name(cte, "maxDate"), Timestamp::class.java))))
+                    .join(table(name(tempTable)))
+                    .on(ORDERLY.NAME.eq(field(name(tempTable, "name"), String::class.java))
+                            .and(ORDERLY.DATE.eq(field(name(tempTable, "maxDate"), Timestamp::class.java))))
                     .where(shouldInclude)
                     .fetchInto(Report::class.java)
         }

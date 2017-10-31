@@ -32,8 +32,8 @@ Schema: [`Reports.schema.json`](Reports.schema.json)
 ```json
 
   [
-    {"id": "minimal", "name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
-    {"id": "use_resource", "name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
+    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
+    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
   ]
 
 ```
