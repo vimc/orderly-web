@@ -1,10 +1,15 @@
 package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
+import org.bouncycastle.util.Times
+import org.jooq.RowN
 import org.jooq.TableField
+import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.jooq.impl.DSL.*
+import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
@@ -12,15 +17,25 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
 
-    override fun getAllReports(): List<String>
+    override fun getAllReports(): List<Report>
     {
         JooqContext().use {
 
-            return it.dsl.select(ORDERLY.NAME)
+            val tempTable = "all"
+
+            val allReports = it.dsl.select(ORDERLY.NAME,
+                    ORDERLY.DATE.max().`as`("maxDate"))
                     .from(ORDERLY)
+                    .groupBy(ORDERLY.NAME)
+
+            return it.dsl.with(tempTable).`as`(allReports)
+                    .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME, ORDERLY.ID.`as`("latestVersion"))
+                    .from(ORDERLY)
+                    .join(table(name(tempTable)))
+                    .on(ORDERLY.NAME.eq(field(name(tempTable, "name"), String::class.java))
+                            .and(ORDERLY.DATE.eq(field(name(tempTable, "maxDate"), Timestamp::class.java))))
                     .where(shouldInclude)
-                    .fetchInto(String::class.java)
-                    .distinct()
+                    .fetchInto(Report::class.java)
         }
 
     }
@@ -71,7 +86,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     {
                         gsonParser.parse(valueString)
                     }
-                    catch(e: JsonParseException)
+                    catch (e: JsonParseException)
                     {
                         JsonPrimitive(valueString)
                     }
