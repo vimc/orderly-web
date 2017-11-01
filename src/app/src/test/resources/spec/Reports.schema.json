@@ -1,5 +1,5 @@
 {
 	"id": "Reports",
-	"type": "array",
+    "type": "array",
 	"items": { "$ref": "Report.schema.json" }
 }
