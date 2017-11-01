@@ -1,5 +1,7 @@
 {
-	"id": "Versions",
-    "type": "array",
-	"items": { "type": "string" }
+  "id": "Versions",
+  "type": "array",
+  "items": {
+    "type": "string"
+  }
 }
