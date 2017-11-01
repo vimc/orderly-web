@@ -1,5 +1,5 @@
 {
-	"id": "Report",
+    "id": "Report",
 	"type": "object",
 	"properties": {
 		"name": {"type" :"string"},

@@ -47,17 +47,17 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns all report names`()
     {
-        val reportNames = listOf(Report("testname1", "test full name 1", "v1"),
+        val reports = listOf(Report("testname1", "test full name 1", "v1"),
                 Report("testname2", "test full name 2", "v1"))
 
         val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reportNames
+            on { this.getAllReports() } doReturn reports
         }
         val sut = ReportController(mock<ActionContext>(), orderly, mock<ZipClient>(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
-        assertThat(sut.getAllNames()).isEqualTo(reportNames)
+        assertThat(sut.getAllNames()).isEqualTo(reports)
     }
 
     @Test
