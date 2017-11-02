@@ -26,6 +26,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
             val allReports = it.dsl.select(ORDERLY.NAME,
                     ORDERLY.DATE.max().`as`("maxDate"))
                     .from(ORDERLY)
+                    .where(shouldInclude)
                     .groupBy(ORDERLY.NAME)
 
             return it.dsl.with(tempTable).`as`(allReports)
