@@ -56,7 +56,7 @@ Schema: [`Versions.schema.json`](Version.schema.json)
   ]
 ```
 
-## GET /reports/:name/:version/
+## GET /reports/:name/versions/:version/
 
 Returns metadata about a single report version.
 
@@ -178,7 +178,7 @@ Schema: [`Status.schema.json`](Status.schema.json)
 }
 ```
 
-## POST /reports/:name/:version/publish/
+## POST /reports/:name/versions/:version/publish/
 
 Publish a report.  Sets the status of the "published" flag.  With no parameters sets the flag to `true` but reports can be unpublished by passing the query parameter `?value=false`.
 
@@ -242,7 +242,7 @@ Required permissions: `reports.run`.
   " create mode 100644 new"
 ]
 ```
-## GET /reports/:name/:version/data/
+## GET /reports/:name/versions/:version/data/
 
 Gets a dict of data names to hashes.
 
@@ -255,13 +255,13 @@ Required permissions: `reports.read`.
 }
 ```
 
-## GET /reports/:name/:version/data/:data/?type=:type
+## GET /reports/:name/versions/:version/data/:data/?type=:type
 
 Downloads a data file. Accepts an optional query parameter `type` which can be either `csv` or `rds`.
 
 Required permissions: `reports.read`.
 
-## GET /reports/:name/:version/artefacts/
+## GET /reports/:name/versions/:version/artefacts/
 
 Gets a dict of artefact names to hashes.
 
@@ -273,13 +273,13 @@ Required permissions: `reports.read`.
 }
 ```
 
-## GET /reports/:name/:version/artefacts/:artefact/
+## GET /reports/:name/versions/:version/artefacts/:artefact/
 
 Downloads an artefact. 
 
 Required permissions: `reports.read`.
 
-## GET /reports/:name/:version/resources/
+## GET /reports/:name/versions/:version/resources/
 
 Gets a dict of resource names to hashes.
 
@@ -291,13 +291,13 @@ Required permissions: `reports.read`.
 }
 ```
 
-## GET /reports/:name/:version/resources/:resource/
+## GET /reports/:name/versions/:version/resources/:resource/
 
 Downloads a resource. 
 
 Required permissions: `reports.read`.
 
-## GET /reports/:name/:version/all/
+## GET /reports/:name/versions/:version/all/
 
 Downloads a zip file of everything (including data).
 

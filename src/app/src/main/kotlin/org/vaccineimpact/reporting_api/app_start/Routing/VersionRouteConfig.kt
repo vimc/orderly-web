@@ -15,45 +15,45 @@ object VersionRouteConfig : RouteConfig
     private val reviewReports = setOf("*/reports.review")
 
     override val endpoints = listOf(
-            Endpoint("/reports/:name/:version/", "Report", "getByNameAndVersion")
+            Endpoint("/reports/:name/versions/:version/", "Report", "getByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/:version/all/", "Report", "getZippedByNameAndVersion",
+            Endpoint("/reports/:name/versions/:version/all/", "Report", "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/:version/publish/", "Report", "publish",
+            Endpoint("/reports/:name/versions/:version/publish/", "Report", "publish",
                     method = HttpMethod.post)
                     .json()
                     .secure(reviewReports),
 
-            Endpoint("/reports/:name/:version/artefacts/", "Artefact", "get")
+            Endpoint("/reports/:name/versions/:version/artefacts/", "Artefact", "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/:version/artefacts/:artefact/", "Artefact", "download")
+            Endpoint("/reports/:name/versions/:version/artefacts/:artefact/", "Artefact", "download")
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/:version/resources/", "Resource", "get")
+            Endpoint("/reports/:name/versions/:version/resources/", "Resource", "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/:version/resources/:resource/", "Resource", "download")
+            Endpoint("/reports/:name/versions/:version/resources/:resource/", "Resource", "download")
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/:version/data/", "Data", "get")
+            Endpoint("/reports/:name/versions/:version/data/", "Data", "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/:version/data/:data/", "Data", "downloadData")
+            Endpoint("/reports/:name/versions/:version/data/:data/", "Data", "downloadData")
                     .secure(readReports)
                     .allowParameterAuthentication()
     )

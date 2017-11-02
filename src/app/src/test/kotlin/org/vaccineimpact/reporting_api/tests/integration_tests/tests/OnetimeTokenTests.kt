@@ -31,7 +31,7 @@ class OnetimeTokenTests : IntegrationTest()
     fun `can use one time token to authenticate`()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]
-        val url = "/reports/other/$publishedVersion/artefacts/graph.png/"
+        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 
         val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
