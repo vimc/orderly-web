@@ -23,6 +23,7 @@ class OrderlyTests : DatabaseTests()
         insertReport("test", "vz")
         insertReport("test2", "vc")
         insertReport("test2", "vb")
+        insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
         val sut = createSut()

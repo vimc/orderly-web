@@ -14,12 +14,14 @@ class OrderlyReviewerTests : DatabaseTests()
     }
 
     @Test
-    fun `can get all published and unpublished report names`()
+    fun `can get all published and unpublished reports`()
     {
 
-        insertReport("test", "version1")
-        insertReport("test", "version2")
-        insertReport("test2", "test2version1")
+        insertReport("test", "va")
+        insertReport("test", "vz")
+        insertReport("test2", "vc")
+        insertReport("test2", "vb")
+        insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
         val sut = createSut()
@@ -29,6 +31,7 @@ class OrderlyReviewerTests : DatabaseTests()
         assertThat(results.count()).isEqualTo(3)
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[1].name).isEqualTo("test2")
+        assertThat(results[1].latestVersion).isEqualTo("vd")
         assertThat(results[2].name).isEqualTo("test3")
     }
 
