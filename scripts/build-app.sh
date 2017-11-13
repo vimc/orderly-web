@@ -5,6 +5,10 @@ git_id=$(git rev-parse --short=7 HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
 export ORDERLY_SERVER_VERSION=$(<./src/config/orderly_server_version)
 
+# This is the path for teamcity agents. If running locally, pass in your own docker config location
+# i.e. /home/{user}/.docker/config.json
+docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
+
 # Make the build environment image that is shared between multiple build targets
 ./scripts/make-build-env.sh
 
@@ -29,6 +33,7 @@ docker run --rm \
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
+    -v $docker_auth_path:/root/.docker/config.json \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
     --network=host \
