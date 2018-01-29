@@ -1,6 +1,10 @@
 package org.vaccineimpact.reporting_api
 
-import org.vaccineimpact.reporting_api.security.*
+import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
+import org.vaccineimpact.reporting_api.security.PermissionRequirement
+import org.vaccineimpact.reporting_api.security.TokenVerifyingConfigFactory
+import org.vaccineimpact.reporting_api.security.allowParameterAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 
@@ -38,26 +42,29 @@ data class Endpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        val allPermissions = this.requiredPermissions.map {
-            PermissionRequirement.parse(it)
-        }
-
-        var configFactory = TokenVerifyingConfigFactory(
-                allPermissions.toSet())
-
-        if (allowParameterAuthentication)
+        if (AppConfig().authEnabled)
         {
-            configFactory = configFactory.allowParameterAuthentication()
+            val allPermissions = this.requiredPermissions.map {
+                PermissionRequirement.parse(it)
+            }
+
+            var configFactory = TokenVerifyingConfigFactory(
+                    allPermissions.toSet())
+
+            if (allowParameterAuthentication)
+            {
+                configFactory = configFactory.allowParameterAuthentication()
+            }
+
+            val config = configFactory.build()
+
+            Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                    config,
+                    configFactory.allClients(),
+                    MontaguAuthorizer::class.java.simpleName,
+                    "SkipOptions"
+            ))
         }
-
-        val config = configFactory.build()
-
-        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                config,
-                configFactory.allClients(),
-                MontaguAuthorizer::class.java.simpleName,
-                "SkipOptions"
-        ))
     }
 
 }
