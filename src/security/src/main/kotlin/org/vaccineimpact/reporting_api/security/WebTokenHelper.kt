@@ -1,7 +1,6 @@
 package org.vaccineimpact.reporting_api.security
 
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import java.security.KeyPair
 import java.security.interfaces.RSAPublicKey
 

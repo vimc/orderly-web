@@ -14,7 +14,8 @@ abstract class DatabaseTests : MontaguTests()
     companion object
     {
 
-        @BeforeClass @JvmStatic
+        @BeforeClass
+        @JvmStatic
         fun createDatabase()
         {
             println("Looking for sqlite database at path: ${AppConfig()["db.template"]}")
@@ -26,7 +27,8 @@ abstract class DatabaseTests : MontaguTests()
             source.copyTo(newDbFile, true)
         }
 
-        @AfterClass @JvmStatic
+        @AfterClass
+        @JvmStatic
         fun dropDatabase()
         {
             File(AppConfig()["db.location"]).delete()

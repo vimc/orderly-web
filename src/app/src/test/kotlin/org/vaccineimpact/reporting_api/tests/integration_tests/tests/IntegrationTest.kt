@@ -23,7 +23,8 @@ abstract class IntegrationTest : MontaguTests()
     companion object
     {
 
-        @BeforeClass @JvmStatic
+        @BeforeClass
+        @JvmStatic
         fun startApp()
         {
             if (!APITests.appStarted)
@@ -32,7 +33,8 @@ abstract class IntegrationTest : MontaguTests()
             }
         }
 
-        @AfterClass @JvmStatic
+        @AfterClass
+        @JvmStatic
         fun stopApp()
         {
 

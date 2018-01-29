@@ -2,8 +2,6 @@ package org.vaccineimpact.reporting_api
 
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonParser
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
@@ -12,7 +10,6 @@ import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.security.montaguPermissions
 import spark.Request
 import spark.Response
-import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 open class DirectActionContext(private val context: SparkWebContext) : ActionContext
 {

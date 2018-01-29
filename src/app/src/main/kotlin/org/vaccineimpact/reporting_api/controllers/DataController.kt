@@ -60,14 +60,14 @@ class DataController(context: ActionContext,
         val absoluteFilePath = "${this.config["orderly.root"]}data/$type/$hash.$type"
 
         val contentType =
-        if (type == "csv")
-        {
-            ContentTypes.csv
-        }
-        else
-        {
-           ContentTypes.binarydata
-        }
+                if (type == "csv")
+                {
+                    ContentTypes.csv
+                }
+                else
+                {
+                    ContentTypes.binarydata
+                }
 
         return downloadFile(absoluteFilePath, "$hash.$type", contentType)
     }

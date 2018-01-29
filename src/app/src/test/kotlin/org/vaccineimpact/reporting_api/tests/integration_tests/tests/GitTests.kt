@@ -2,7 +2,8 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.junit.Test
 
-class GitTests: IntegrationTest() {
+class GitTests : IntegrationTest()
+{
 
     @Test
     fun `gets git status`()

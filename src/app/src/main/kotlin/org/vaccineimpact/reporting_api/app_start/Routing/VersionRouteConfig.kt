@@ -1,12 +1,7 @@
 package org.vaccineimpact.reporting_api.app_start.Routing
 
-import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.Endpoint
+import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.app_start.RouteConfig
-import org.vaccineimpact.reporting_api.json
-import org.vaccineimpact.reporting_api.secure
-import org.vaccineimpact.reporting_api.transform
-import org.vaccineimpact.reporting_api.allowParameterAuthentication
 import spark.route.HttpMethod
 
 object VersionRouteConfig : RouteConfig

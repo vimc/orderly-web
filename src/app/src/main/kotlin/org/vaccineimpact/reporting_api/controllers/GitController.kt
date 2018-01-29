@@ -1,6 +1,9 @@
 package org.vaccineimpact.reporting_api.controllers
 
-import org.vaccineimpact.reporting_api.*
+import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.KHttpClient
+import org.vaccineimpact.reporting_api.OrderlyServer
+import org.vaccineimpact.reporting_api.OrderlyServerAPI
 import org.vaccineimpact.reporting_api.db.AppConfig
 
 class GitController(context: ActionContext,

@@ -18,7 +18,7 @@ import java.io.File
         DataTests::class,
         SecurityTests::class,
         OnetimeTokenTests::class,
-        GitTests:: class,
+        GitTests::class,
         HomeTests::class)
 class APITests
 {
@@ -28,14 +28,16 @@ class APITests
         // ensures that the same keypair is used throughout.
         val tokenHelper = TestTokenGenerator()
 
-        @BeforeClass @JvmStatic
+        @BeforeClass
+        @JvmStatic
         fun startApp()
         {
             appStarted = true
             main(emptyArray())
         }
 
-        @AfterClass @JvmStatic
+        @AfterClass
+        @JvmStatic
         fun stopApp()
         {
             Spark.stop()

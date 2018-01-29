@@ -1,14 +1,12 @@
 package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
-import org.bouncycastle.util.Times
-import org.jooq.RowN
 import org.jooq.TableField
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
-import org.jooq.impl.DSL.*
 import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
@@ -113,8 +111,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     override fun getArtefact(name: String, version: String, filename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename] ?:
-                throw UnknownObjectError(filename, "Artefact")
+        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename]
+                ?: throw UnknownObjectError(filename, "Artefact")
 
         return result.asString
     }
@@ -126,8 +124,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     override fun getDatum(name: String, version: String, datumname: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname] ?:
-                throw UnknownObjectError(datumname, "Data")
+        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname]
+                ?: throw UnknownObjectError(datumname, "Data")
 
         return result.asString
     }
@@ -139,8 +137,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     override fun getResource(name: String, version: String, resourcename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename] ?:
-                throw UnknownObjectError(resourcename, "Resource")
+        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename]
+                ?: throw UnknownObjectError(resourcename, "Resource")
 
         return result.asString
     }

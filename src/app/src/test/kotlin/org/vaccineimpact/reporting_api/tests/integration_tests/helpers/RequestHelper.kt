@@ -116,6 +116,5 @@ class RequestHelper
         return get(baseUrl + url, headers)
     }
 
-    private fun get(url: String, headers: Map<String, String>)
-            = khttp.get(url, headers)
+    private fun get(url: String, headers: Map<String, String>) = khttp.get(url, headers)
 }

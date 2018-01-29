@@ -23,8 +23,7 @@ class ErrorHandler
         sparkException<InvocationTargetException>(this::handleInvocationError)
         sparkException<MontaguError>(this::handleError)
         sparkException<JsonSyntaxException> { e, req, res -> handleError(UnableToParseJsonError(e), req, res) }
-        sparkException<Exception> {
-            e, req, res ->
+        sparkException<Exception> { e, req, res ->
             logger.error("An unhandled exception occurred", e)
             handleError(UnexpectedError(), req, res)
         }
@@ -62,8 +61,7 @@ class ErrorHandler
             noinline handler: (exception: TException,
                                req: Request, res: Response) -> Unit)
     {
-        return spark.Spark.exception(TException::class.java) {
-            e, req, res ->
+        return spark.Spark.exception(TException::class.java) { e, req, res ->
             handler(e as TException, req, res)
         }
     }

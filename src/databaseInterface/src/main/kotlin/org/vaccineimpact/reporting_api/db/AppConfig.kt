@@ -8,7 +8,7 @@ interface Config
     operator fun get(key: String): String
 }
 
-class AppConfig: Config
+class AppConfig : Config
 {
     private companion object
     {
