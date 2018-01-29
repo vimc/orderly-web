@@ -13,9 +13,9 @@ class DirectActionContextTests
     @Test
     fun `can deserialise request body`()
     {
-        val request = mock<Request>(){
+        val request = mock<Request>() {
 
-            on {it.body()} doReturn "{ \"some\" : \"value\" }"
+            on { it.body() } doReturn "{ \"some\" : \"value\" }"
         }
 
         val context = mock<SparkWebContext>() {
@@ -34,9 +34,9 @@ class DirectActionContextTests
     @Test
     fun `returns empty map if no data`()
     {
-        val request = mock<Request>(){
+        val request = mock<Request>() {
 
-            on {it.body()} doReturn ""
+            on { it.body() } doReturn ""
         }
 
         val context = mock<SparkWebContext>() {

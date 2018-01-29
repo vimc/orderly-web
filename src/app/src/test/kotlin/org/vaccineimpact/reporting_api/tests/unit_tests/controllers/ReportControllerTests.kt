@@ -10,7 +10,6 @@ import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.OrderlyServerAPI
 import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
-import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 
@@ -28,12 +27,12 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val mockAPIResponse = mock<Response>(){
+        val mockAPIResponse = mock<Response>() {
             on { this.text } doReturn "okayresponse"
         }
 
-        val apiClient = mock<OrderlyServerAPI>(){
-            on { this.post(any(), any())} doReturn mockAPIResponse
+        val apiClient = mock<OrderlyServerAPI>() {
+            on { this.post(any(), any()) } doReturn mockAPIResponse
         }
 
         val sut = ReportController(actionContext, mock<OrderlyClient>(),

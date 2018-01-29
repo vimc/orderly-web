@@ -1,7 +1,10 @@
 package org.vaccineimpact.reporting_api
 
 import org.slf4j.LoggerFactory
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.OutputStream
 import java.util.*
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry

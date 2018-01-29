@@ -4,9 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.tests.insertReport
 

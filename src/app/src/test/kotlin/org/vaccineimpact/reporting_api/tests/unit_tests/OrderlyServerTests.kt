@@ -13,8 +13,8 @@ import org.vaccineimpact.reporting_api.db.Config
 class OrderlyServerTests
 {
     private val mockHttpclient = mock<HttpClient>()
-    private val mockConfig = mock<Config>(){
-        on {this.get("orderly.server")} doReturn "http://orderly"
+    private val mockConfig = mock<Config>() {
+        on { this.get("orderly.server") } doReturn "http://orderly"
     }
 
     private val standardHeaders = mapOf(

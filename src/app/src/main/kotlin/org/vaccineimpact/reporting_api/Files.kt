@@ -1,6 +1,9 @@
 package org.vaccineimpact.reporting_api
 
-import java.io.*
+import java.io.BufferedInputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.OutputStream
 import java.util.zip.GZIPOutputStream
 
 interface FileSystem
@@ -17,8 +20,7 @@ class Files : FileSystem
         val buffer = ByteArray(1024)
         val bufferSize = 8000
 
-        BufferedInputStream(FileInputStream(absoluteFilePath)).use {
-            inputStream ->
+        BufferedInputStream(FileInputStream(absoluteFilePath)).use { inputStream ->
 
             GZIPOutputStream(outputStream, bufferSize).use {
 

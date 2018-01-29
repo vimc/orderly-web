@@ -7,10 +7,9 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
-import org.vaccineimpact.reporting_api.security.NEEDS_URL
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class MontaguAuthorizerTests: MontaguTests()
+class MontaguAuthorizerTests : MontaguTests()
 {
     @Test
     fun `is not authorized if url claim does not match request`()
@@ -20,8 +19,8 @@ class MontaguAuthorizerTests: MontaguTests()
         val profile = CommonProfile()
         profile.addAttribute("url", "some/url")
 
-        val fakeContext = mock<SparkWebContext>(){
-            on (it.path) doReturn "/fake/url/"
+        val fakeContext = mock<SparkWebContext>() {
+            on(it.path) doReturn "/fake/url/"
         }
 
         val result = sut.isAuthorized(fakeContext, listOf(profile))
@@ -38,8 +37,8 @@ class MontaguAuthorizerTests: MontaguTests()
         val profile = CommonProfile()
         profile.addAttribute("url", "*")
 
-        val fakeContext = mock<SparkWebContext>(){
-            on (it.path) doReturn "/fake/url/"
+        val fakeContext = mock<SparkWebContext>() {
+            on(it.path) doReturn "/fake/url/"
         }
 
         val result = sut.isAuthorized(fakeContext, listOf(profile))

@@ -10,7 +10,7 @@ import org.vaccineimpact.reporting_api.security.WebTokenHelper
 class OnetimeTokenController(context: ActionContext,
                              val tokenStore: OnetimeTokenStore) : Controller(context)
 {
-    constructor(context: ActionContext): this(context, TokenStore.instance)
+    constructor(context: ActionContext) : this(context, TokenStore.instance)
 
     fun get(): String
     {
@@ -24,7 +24,7 @@ class OnetimeTokenController(context: ActionContext,
         val roles = profile.getAttribute("roles").toString()
 
         val user = MontaguUser(username, roles, permissions)
-        val issuer =  WebTokenHelper.oneTimeTokenHelper.issuer
+        val issuer = WebTokenHelper.oneTimeTokenHelper.issuer
         val token = issuer.generateOnetimeActionToken(user, url)
 
         tokenStore.storeToken(token)

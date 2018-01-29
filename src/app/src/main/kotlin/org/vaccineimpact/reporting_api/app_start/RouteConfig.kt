@@ -1,6 +1,6 @@
 package org.vaccineimpact.reporting_api.app_start
 
-import org.vaccineimpact.reporting_api.*
+import org.vaccineimpact.reporting_api.EndpointDefinition
 import org.vaccineimpact.reporting_api.app_start.Routing.*
 
 interface RouteConfig
