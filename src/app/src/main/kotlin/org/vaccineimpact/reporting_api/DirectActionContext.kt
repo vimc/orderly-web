@@ -8,6 +8,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.security.montaguPermissions
 import spark.Request
 import spark.Response
@@ -47,8 +48,17 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
         userProfile.montaguPermissions()
     }
 
-    override fun hasPermission(requirement: ReifiedPermission)
-            = permissions.any { requirement.satisfiedBy(it) }
+    override fun hasPermission(requirement: ReifiedPermission): Boolean
+    {
+        return if (AppConfig().authEnabled)
+        {
+            permissions.any { requirement.satisfiedBy(it) }
+        }
+        else
+        {
+            true
+        }
+    }
 
     override fun getSparkResponse(): Response
     {
@@ -59,6 +69,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     {
         response.status(statusCode)
     }
+
     override fun postData(): Map<String, String>
     {
         val body = request.body()

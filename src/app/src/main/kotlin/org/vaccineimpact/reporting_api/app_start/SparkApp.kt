@@ -36,11 +36,24 @@ class MontaguReportingApi
         TokenStore.instance.setup()
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
+
+        if (!AppConfig().authEnabled)
+        {
+            logger.warn("WARNING: AUTHENTICATION IS DISABLED")
+        }
     }
 
     private fun setupPort()
     {
-        val port = AppConfig().getInt("app.port")
+        val config = AppConfig()
+        val port = if (config.authEnabled)
+        {
+            config.getInt("app.port")
+        }
+        else
+        {
+            8888
+        }
         var attempts = 5
         spk.port(port)
 

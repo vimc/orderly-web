@@ -40,7 +40,12 @@ class AppConfig: Config
         }
     }
 
+    val authEnabled by lazy {
+        getBool("app.auth")
+    }
+
     fun getInt(key: String) = get(key).toInt()
+    fun getBool(key: String) = get(key).toBoolean()
 }
 
 class MissingConfiguration(key: String) : Exception("Detected a value like \${foo} for key '$key' in the configuration. This probably means that the config template has not been processed. Try running ./gradlew :PROJECT:copy[Test]Config")
