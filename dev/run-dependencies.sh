@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-export MONTAGU_API_VERSION=$(<config/api_version)
-export MONTAGU_DB_VERSION=$(<config/db_version)
-export MONTAGU_ORDERLY_SERVER_VERSION=$(<config/orderly_server_version)
+cd $(dirname $0)
+
+config_path=$(realpath ../config)
+export MONTAGU_API_VERSION=$(<$config_path/api_version)
+export MONTAGU_DB_VERSION=$(<$config_path/db_version)
+export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 cert_tool_version=master
 
 export TOKEN_KEY_PATH=/etc/montagu/reports_api/token_key

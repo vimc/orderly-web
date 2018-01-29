@@ -3,7 +3,7 @@
 set -ex
 git_id=$(git rev-parse --short=7 HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
-export ORDERLY_SERVER_VERSION=$(<./src/config/orderly_server_version)
+export ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
