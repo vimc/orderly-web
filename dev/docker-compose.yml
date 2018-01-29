@@ -1,0 +1,25 @@
+version: '2'
+services:
+  api:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-api:${MONTAGU_API_VERSION}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ${TOKEN_KEY_PATH}:/etc/montagu/api/token_key
+  db:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
+    ports:
+      - "5432:5432"
+  db_annex:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
+  orderly_server:
+    image: docker.montagu.dide.ic.ac.uk:5000/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
+    user: ${ORDERLY_SERVER_USER_ID}
+    command: /orderly
+    ports:
+      - "8123:8123"
+    volumes:
+      - ${MONTAGU_ORDERLY_PATH}:/orderly
+

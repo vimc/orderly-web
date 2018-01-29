@@ -13,6 +13,9 @@ System requirements:
    You may need to restart your machine for changes to take effect.
 3. Configure your Docker client to use our registry by following instructions 
    here: https://github.com/vimc/montagu-ci#configuring-docker-clients-to-use-the-registry
+4. Run all dependencies (API, DB, Orderly Server, etc.) with 
+   `./dev/run-dependencies.sh`
+5. Run the reporting API with `./gradlew :run`
 
 ### Tasks
 * Generate test data. To generate a test Orderly directory to develop against, 
@@ -43,6 +46,3 @@ To make use of a built image, run:
         docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
 
 replacing `{PATH_TO_OPRDERLY}` with an absolute path to an Orderly directory.
-
-## Dependency on Montagu API
-This API makes use of tokens from the Montagu API so can only be run in tandem with the latter with a shared public key for verifying tokens. For instructions on how to do this locally see steps 3 - 4 here: https://github.com/vimc/montagu-webapps/tree/master/app/src/main/report#development
