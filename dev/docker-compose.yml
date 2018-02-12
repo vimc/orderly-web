@@ -19,7 +19,7 @@ services:
     user: ${ORDERLY_SERVER_USER_ID}
     command: /orderly
     ports:
-      - "8123:8123"
+      - "8321:8321"
     volumes:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
 

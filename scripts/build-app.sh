@@ -24,7 +24,7 @@ docker build --tag montagu-reporting-api-app-build \
 docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION
 
 docker run --rm \
-    -p 8123:8123 \
+    -p 8321:8321 \
     -d \
     -v $PWD/git:/orderly \
     --network=host \
