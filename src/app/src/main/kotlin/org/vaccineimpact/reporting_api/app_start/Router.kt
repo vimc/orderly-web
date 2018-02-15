@@ -116,8 +116,8 @@ class Router(val config: RouteConfig)
         catch (e: NoSuchMethodException)
         {
             throw NoSuchMethodException("There is a problem with $controllerType. " +
-                    "All controllers must have a constructor that takes" +
-                    "an ActionContext")
+                    "All controllers must have a constructor with a single parameter of " +
+                    "type ActionContext")
         }
         return constructor.newInstance(context) as Controller
     }
