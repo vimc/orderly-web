@@ -28,7 +28,10 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .groupBy(ORDERLY.NAME)
 
             return it.dsl.with(tempTable).`as`(allReports)
-                    .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME, ORDERLY.ID.`as`("latestVersion"))
+                    .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME,
+                            ORDERLY.ID.`as`("latestVersion"),
+                            ORDERLY.PUBLISHED,
+                            ORDERLY.DATE)
                     .from(ORDERLY)
                     .join(table(name(tempTable)))
                     .on(ORDERLY.NAME.eq(field(name(tempTable, "name"), String::class.java))

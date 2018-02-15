@@ -4,7 +4,9 @@
   "properties": {
     "name": {"type" :"string"},
     "display_name": {"type": [ "string", "null"] },
-    "latest_version": { "type": "string" }
+    "latest_version": { "type": "string" },
+    "published": { "type": "boolean" },
+    "last_generated": { "type": "string" }
   },
   "required": ["name", "latest_version", "display_name"]
 }
