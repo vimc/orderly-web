@@ -7,10 +7,11 @@ import org.vaccineimpact.reporting_api.security.TokenVerifyingConfigFactory
 import org.vaccineimpact.reporting_api.security.allowParameterAuthentication
 import spark.Spark
 import spark.route.HttpMethod
+import kotlin.reflect.KClass
 
 data class Endpoint(
         override val urlFragment: String,
-        override val controllerName: String,
+        override val controller: KClass<*>,
         override val actionName: String,
         override val contentType: String = ContentTypes.binarydata,
         override val method: HttpMethod = HttpMethod.get,

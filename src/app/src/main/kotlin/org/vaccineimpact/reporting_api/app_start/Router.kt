@@ -10,6 +10,7 @@ import org.vaccineimpact.reporting_api.errors.UnsupportedValueException
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
+import java.lang.reflect.InvocationTargetException
 
 class Router(val config: RouteConfig)
 {
@@ -41,7 +42,7 @@ class Router(val config: RouteConfig)
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
 
-        logger.info("Mapping $fullUrl to ${endpoint.actionName} on Controller ${endpoint.controllerName}")
+        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
         when (endpoint.method)
         {
             HttpMethod.get -> Spark.get(fullUrl, contentType, route, this::transform)
@@ -65,7 +66,7 @@ class Router(val config: RouteConfig)
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
 
-        logger.info("Mapping $fullUrl to ${endpoint.actionName} on Controller ${endpoint.controllerName}")
+        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
         when (endpoint.method)
         {
             HttpMethod.get -> Spark.get(fullUrl, contentType, route)
@@ -88,16 +89,37 @@ class Router(val config: RouteConfig)
 
     private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any?
     {
-        val controllerName = endpoint.controllerName
+        val controllerType = endpoint.controller.java
         val actionName = endpoint.actionName
 
-        val controllerType = Class.forName("org.vaccineimpact.reporting_api.controllers.${controllerName}Controller")
-
-        val controller = controllerType.getConstructor(ActionContext::class.java)
-                .newInstance(context) as Controller
+        val controller = instantiateController(controllerType, context)
         val action = controllerType.getMethod(actionName)
 
-        return action.invoke(controller)
+        return try
+        {
+            action.invoke(controller)
+        }
+        catch (e: InvocationTargetException)
+        {
+            logger.warn("Exception was thrown whilst using reflection to invoke " +
+                    "$controllerType.$actionName, see below for details")
+            throw e.targetException
+        }
+    }
+
+    private fun instantiateController(controllerType: Class<*>, context: ActionContext): Controller
+    {
+        val constructor = try
+        {
+            controllerType.getConstructor(ActionContext::class.java)
+        }
+        catch (e: NoSuchMethodException)
+        {
+            throw NoSuchMethodException("There is a problem with $controllerType. " +
+                    "All controllers must have a constructor that takes" +
+                    "an ActionContext")
+        }
+        return constructor.newInstance(context) as Controller
     }
 
 }
