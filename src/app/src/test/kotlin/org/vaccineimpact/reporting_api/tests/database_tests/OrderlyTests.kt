@@ -40,7 +40,7 @@ class OrderlyTests : DatabaseTests()
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
-        assertThat(results[0].published).isTrue()
+        assertThat(results[1].published).isFalse()
     }
 
     @Test
