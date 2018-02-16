@@ -6,6 +6,7 @@ import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
+import java.time.Instant
 
 class OrderlyTests : DatabaseTests()
 {
@@ -18,7 +19,6 @@ class OrderlyTests : DatabaseTests()
     @Test
     fun `can get all published report names`()
     {
-
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -35,10 +35,12 @@ class OrderlyTests : DatabaseTests()
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[0].displayName).isEqualTo("display name test")
         assertThat(results[0].latestVersion).isEqualTo("vz")
+        assertThat(results[0].published).isTrue()
 
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
+        assertThat(results[1].published).isTrue()
     }
 
     @Test

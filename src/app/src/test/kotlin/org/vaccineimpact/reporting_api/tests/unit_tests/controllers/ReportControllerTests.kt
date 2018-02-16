@@ -12,6 +12,7 @@ import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
+import java.time.Instant
 
 class ReportControllerTests : ControllerTest()
 {
@@ -46,8 +47,8 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns all report names`()
     {
-        val reports = listOf(Report("testname1", "test full name 1", "v1"),
-                Report("testname2", "test full name 2", "v1"))
+        val reports = listOf(Report("testname1", "test full name 1", "v1", true),
+                Report("testname2", "test full name 2", "v1", true))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports

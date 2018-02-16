@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
+import java.time.Instant
 
 class OrderlyReviewerTests : DatabaseTests()
 {
@@ -16,7 +17,6 @@ class OrderlyReviewerTests : DatabaseTests()
     @Test
     fun `can get all published and unpublished reports`()
     {
-
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -29,9 +29,14 @@ class OrderlyReviewerTests : DatabaseTests()
         val results = sut.getAllReports()
 
         assertThat(results.count()).isEqualTo(3)
+
         assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].published).isTrue()
+
         assertThat(results[1].name).isEqualTo("test2")
+        assertThat(results[1].published).isFalse()
         assertThat(results[1].latestVersion).isEqualTo("vd")
+
         assertThat(results[2].name).isEqualTo("test3")
     }
 
