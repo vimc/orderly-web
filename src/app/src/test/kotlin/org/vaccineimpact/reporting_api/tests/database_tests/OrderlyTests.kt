@@ -19,8 +19,6 @@ class OrderlyTests : DatabaseTests()
     @Test
     fun `can get all published report names`()
     {
-        val then = Instant.now()
-
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -38,13 +36,11 @@ class OrderlyTests : DatabaseTests()
         assertThat(results[0].displayName).isEqualTo("display name test")
         assertThat(results[0].latestVersion).isEqualTo("vz")
         assertThat(results[0].published).isTrue()
-        assertThat(results[0].lastGenerated).isGreaterThan(then)
 
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
         assertThat(results[0].published).isTrue()
-        assertThat(results[0].lastGenerated).isGreaterThan(then)
     }
 
     @Test

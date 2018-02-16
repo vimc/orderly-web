@@ -17,8 +17,6 @@ class OrderlyReviewerTests : DatabaseTests()
     @Test
     fun `can get all published and unpublished reports`()
     {
-        val then = Instant.now()
-
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -34,7 +32,6 @@ class OrderlyReviewerTests : DatabaseTests()
 
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[0].published).isTrue()
-        assertThat(results[0].lastGenerated).isGreaterThan(then)
 
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].published).isFalse()

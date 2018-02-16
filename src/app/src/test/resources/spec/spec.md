@@ -19,9 +19,13 @@ Some files are directly copied over (with only whitespace changes) from `montagu
 * `Index.schema.json`
 * `Response.schema.json`
 
+For each endpoint, if the user does not have the `reports.review` permission then only published reports will be 
+accessible. If the user does have `reports.review` then all reports will be accessible.
+
 ## GET /reports/
 
-Return a list of all reports with minimal metadata - the id, human readable name, and latest version of each.
+Return a list of all reports with minimal metadata - the id, human readable name, latest version of each and
+whether that version is published.
 
 Required permissions: `reports.read`.
 
@@ -32,8 +36,8 @@ Schema: [`Reports.schema.json`](Reports.schema.json)
 ```json
 
   [
-    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
-    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
+    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63", "published": "true"},
+    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734", "published": "false"}       
   ]
 
 ```
