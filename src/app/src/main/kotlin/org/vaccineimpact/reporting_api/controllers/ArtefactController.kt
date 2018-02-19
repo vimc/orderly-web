@@ -33,6 +33,7 @@ class ArtefactController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
+        val inline = context.queryParams("inline")?.toBoolean() ?: false
 
         orderly.getArtefact(name, version, artefactname)
 
@@ -46,7 +47,10 @@ class ArtefactController(context: ActionContext,
         val response = context.getSparkResponse().raw()
 
         context.addDefaultResponseHeaders(ContentTypes.binarydata)
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        if (!inline)
+        {
+            context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        }
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
