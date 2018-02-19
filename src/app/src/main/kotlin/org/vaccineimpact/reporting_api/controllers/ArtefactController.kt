@@ -9,6 +9,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
+import java.io.File
 
 class ArtefactController(context: ActionContext,
                          private val orderly: OrderlyClient,
@@ -46,7 +47,7 @@ class ArtefactController(context: ActionContext,
 
         val response = context.getSparkResponse().raw()
 
-        context.addDefaultResponseHeaders(ContentTypes.binarydata)
+        context.addDefaultResponseHeaders(guessFileType(filename))
         if (!inline)
         {
             context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
@@ -55,6 +56,18 @@ class ArtefactController(context: ActionContext,
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
         return true
+    }
+
+    private fun guessFileType(filename: String): String
+    {
+        val ext = File(filename).extension
+        return when (ext)
+        {
+            "csv" -> "text/csv"
+            "png" -> "image/png"
+            "pdf" -> "application/pdf"
+            else -> ContentTypes.binarydata
+        }
     }
 
 }
