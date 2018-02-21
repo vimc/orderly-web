@@ -9,6 +9,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.OrderlyFileNotFoundError
+import java.io.File
 
 class ArtefactController(context: ActionContext,
                          private val orderly: OrderlyClient,
@@ -33,6 +34,7 @@ class ArtefactController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
+        val inline = context.queryParams("inline")?.toBoolean() ?: false
 
         orderly.getArtefact(name, version, artefactname)
 
@@ -45,12 +47,29 @@ class ArtefactController(context: ActionContext,
 
         val response = context.getSparkResponse().raw()
 
-        context.addDefaultResponseHeaders(ContentTypes.binarydata)
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addDefaultResponseHeaders(guessFileType(filename))
+        if (!inline)
+        {
+            context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        }
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
         return true
+    }
+
+    // TODO: Just return the mime type of the artefact file, once we have that metadata
+    private fun guessFileType(filename: String): String
+    {
+        val ext = File(filename).extension
+        return when (ext)
+        {
+            "csv" -> "text/csv"
+            "png" -> "image/png"
+            "pdf" -> "application/pdf"
+            "html" -> "text/html"
+            else -> ContentTypes.binarydata
+        }
     }
 
 }

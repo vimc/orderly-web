@@ -30,7 +30,7 @@ class ArtefactTests : IntegrationTest()
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
     }
 
@@ -43,7 +43,7 @@ class ArtefactTests : IntegrationTest()
         val response = requestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
     }
 
