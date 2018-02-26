@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api
 
+import org.vaccineimpact.reporting_api.security.PermissionRequirement
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -11,7 +12,7 @@ interface EndpointDefinition
     val method: HttpMethod
     val contentType: String
     val transform: Boolean
-    val requiredPermissions: Set<String>
+    val requiredPermissions: List<PermissionRequirement>
     val allowParameterAuthentication: Boolean
 
     fun additionalSetup(url: String)

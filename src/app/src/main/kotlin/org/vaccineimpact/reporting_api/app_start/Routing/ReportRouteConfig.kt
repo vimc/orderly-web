@@ -7,7 +7,6 @@ import spark.route.HttpMethod
 
 object ReportRouteConfig : RouteConfig
 {
-    private val readReports = setOf("*/reports.read")
     private val runReports = setOf("*/reports.run")
     private val controller = ReportController::class
 
@@ -16,12 +15,12 @@ object ReportRouteConfig : RouteConfig
             Endpoint("/reports/", controller, "getAllNames")
                     .json()
                     .transform()
-                    .secure(readReports),
+                    .secure(),
 
             Endpoint("/reports/:name/", controller, "getVersionsByName")
                     .json()
                     .transform()
-                    .secure(readReports),
+                    .secure(),
 
             Endpoint("/reports/:name/run/", controller, "run",
                     method = HttpMethod.post)
