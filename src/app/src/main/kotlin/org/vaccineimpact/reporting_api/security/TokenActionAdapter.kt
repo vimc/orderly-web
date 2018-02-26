@@ -42,15 +42,15 @@ class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : Defaul
 
             val profile = DirectActionContext(context).userProfile
 
-            val missingUrl = profile.getAttributeOrDefault(MISSING_URL, "")
+            val mismatchedURL = profile.mismatchedURL
 
             val authenticationErrors = mutableListOf<ErrorInfo>()
 
-            if (!missingUrl.isEmpty())
+            if (mismatchedURL != null)
             {
-                authenticationErrors.add(ErrorInfo("forbidden", missingUrl))
+                authenticationErrors.add(ErrorInfo("forbidden", mismatchedURL))
             }
-            val missingPermissions = profile.getAttributeOrDefault(MISSING_PERMISSIONS, mutableSetOf<String>())
+            val missingPermissions = profile.missingPermissions
 
             if (missingPermissions.any())
             {

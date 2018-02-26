@@ -7,6 +7,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 import org.vaccineimpact.reporting_api.security.montaguPermissions
 import spark.Request
 import spark.Response
@@ -42,7 +43,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     }
 
     override val permissions by lazy {
-        userProfile.montaguPermissions()
+        userProfile.montaguPermissions
     }
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean
@@ -54,6 +55,14 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
         else
         {
             true
+        }
+    }
+
+    override fun requirePermission(requirement: ReifiedPermission)
+    {
+        if (!hasPermission(requirement))
+        {
+            throw MissingRequiredPermissionError(setOf(requirement))
         }
     }
 

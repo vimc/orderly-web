@@ -6,7 +6,7 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.security.MontaguUser
+import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
 class RequestHelper
@@ -19,8 +19,8 @@ class RequestHelper
     private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
-    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
-    val fakeReviewer = MontaguUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review,*/reports.run")
+    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
+    val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review,*/reports.run")
 
     fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {
@@ -99,7 +99,7 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper.generateToken(MontaguUser("tettusername", "user", "*/fake-perm"))
+        val token = APITests.tokenHelper.generateToken(InternalUser("tettusername", "user", "*/fake-perm"))
 
         headers += mapOf("Authorization" to "Bearer $token")
 

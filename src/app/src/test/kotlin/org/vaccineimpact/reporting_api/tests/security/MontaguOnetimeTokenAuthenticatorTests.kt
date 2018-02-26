@@ -17,7 +17,7 @@ import java.util.*
 class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
 {
     lateinit var helper: WebTokenHelper
-    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
+    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
 
     val onetimeTokenIssuer = "onetimetokenissuer"
 

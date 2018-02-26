@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.security.KeyHelper
-import org.vaccineimpact.reporting_api.security.MontaguUser
+import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import java.security.interfaces.RSAPublicKey
 import java.security.spec.X509EncodedKeySpec
@@ -23,12 +23,12 @@ class TestTokenGenerator(config: Config = AppConfig())
         savePublicKey()
     }
 
-    fun generateToken(user: MontaguUser): String
+    fun generateToken(user: InternalUser): String
     {
         return helper.issuer.generator.generate(claims(user))
     }
 
-    fun claims(user: MontaguUser): Map<String, Any>
+    fun claims(user: InternalUser): Map<String, Any>
     {
         return mapOf(
                 "iss" to helper.issuerName,

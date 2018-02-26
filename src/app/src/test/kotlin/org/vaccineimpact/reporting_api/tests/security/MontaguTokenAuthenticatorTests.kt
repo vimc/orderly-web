@@ -11,13 +11,13 @@ import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.reporting_api.security.KeyHelper
 import org.vaccineimpact.reporting_api.security.MontaguTokenAuthenticator
-import org.vaccineimpact.reporting_api.security.MontaguUser
+import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 
 class MontaguTokenAuthenticatorTests
 {
     lateinit var helper: WebTokenHelper
-    val fakeUser = MontaguUser("tettusername", "user", "*/reports.read")
+    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
 
     val tokenIssuer = "tokenissuer"
 
