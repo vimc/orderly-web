@@ -27,14 +27,14 @@ class ReportController(context: ActionContext,
 
     fun run(): String
     {
-        val name = authorizedReport()
+        val name = context.params(":name")
         val response = orderlyServerAPI.post("/reports/$name/run/", context)
         return passThroughResponse(response)
     }
 
     fun publish(): String
     {
-        val name = authorizedReport()
+        val name = context.params(":name")
         val version = context.params(":version")
         val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
         return passThroughResponse(response)
@@ -55,19 +55,19 @@ class ReportController(context: ActionContext,
 
     fun getVersionsByName(): List<String>
     {
-        val name = authorizedReport()
+        val name = context.params(":name")
         return orderly.getReportsByName(name)
     }
 
     fun getByNameAndVersion(): JsonObject
     {
-        val name = authorizedReport()
+        val name = context.params(":name")
         return orderly.getReportsByNameAndVersion(name, context.params(":version"))
     }
 
     fun getZippedByNameAndVersion(): Boolean
     {
-        val name = authorizedReport()
+        val name = context.params(":name")
         val version = context.params(":version")
         val response = context.getSparkResponse().raw()
 
@@ -81,21 +81,5 @@ class ReportController(context: ActionContext,
         return true
     }
 
-    private val reportReadPermission = "reports.read"
-
-    private val reportReadingScopes = context.permissions
-            .filter { it.name == reportReadPermission }
-            .map { it.scope }
-
-    private fun authorizedReport(): String {
-        val name = context.params(":name")
-        val requiredScope = Scope.Specific("report", name)
-        if (!reportReadingScopes.any { it.encompasses(requiredScope) })
-        {
-            throw MissingRequiredPermissionError(PermissionSet("$requiredScope/$reportReadPermission"))
-        }
-
-        return name
-    }
 
 }
