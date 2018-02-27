@@ -19,8 +19,8 @@ class RequestHelper
     private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
-    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
-    val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/reports.read,*/reports.review,*/reports.run")
+    val fakeUser = InternalUser("tettusername", "user", "*/can-login", "*/reports.read")
+    val fakeReviewer = InternalUser("testreviewer", "*/can-login", "reports-reviewer", "*/reports.read,*/reports.review,*/reports.run")
 
     fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {
