@@ -20,7 +20,7 @@ class RequestHelper
     private val parser = JsonParser()
 
     val fakeUser = InternalUser("tettusername", "user", "*/reports.read,*/can-login")
-    val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/can-login,/reports.read,*/reports.review,*/reports.run")
+    val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/can-login,*/reports.read,*/reports.review,*/reports.run")
 
     fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
     {

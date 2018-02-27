@@ -21,12 +21,12 @@ object VersionRouteConfig : RouteConfig
             Endpoint("/reports/:name/versions/:version/", reportController, "getByNameAndVersion")
                     .json()
                     .transform()
-                    .secure(readReports),
+                    .secure(),
 
             Endpoint("/reports/:name/versions/:version/all/", reportController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
-                    .secure(readReports),
+                    .secure(),
 
             Endpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
                     method = HttpMethod.post)
