@@ -15,11 +15,13 @@ object ReportRouteConfig : RouteConfig
             Endpoint("/reports/", controller, "getAllNames")
                     .json()
                     .transform()
+                    // more specific permission checking in the controller action
                     .secure(),
 
             Endpoint("/reports/:name/", controller, "getVersionsByName")
                     .json()
                     .transform()
+                    // more specific permission checking in the controller action
                     .secure(),
 
             Endpoint("/reports/:name/run/", controller, "run",

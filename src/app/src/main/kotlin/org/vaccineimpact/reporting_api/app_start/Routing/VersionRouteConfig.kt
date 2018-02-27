@@ -21,11 +21,13 @@ object VersionRouteConfig : RouteConfig
             Endpoint("/reports/:name/versions/:version/", reportController, "getByNameAndVersion")
                     .json()
                     .transform()
+                    // more specific permission checking in the controller action
                     .secure(),
 
             Endpoint("/reports/:name/versions/:version/all/", reportController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
+                    // more specific permission checking in the controller action
                     .secure(),
 
             Endpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
