@@ -3,8 +3,10 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.encompass
 import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.api.models.permissions.RoleAssignment
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
@@ -50,24 +52,25 @@ class ReportController(context: ActionContext,
 
     fun getAllNames(): List<Report>
     {
-        return orderly.getAllReports()
+        val reports = orderly.getAllReports()
+        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
     }
 
     fun getVersionsByName(): List<String>
     {
-        val name = context.params(":name")
+        val name = authorizedReport()
         return orderly.getReportsByName(name)
     }
 
     fun getByNameAndVersion(): JsonObject
     {
-        val name = context.params(":name")
+        val name = authorizedReport()
         return orderly.getReportsByNameAndVersion(name, context.params(":version"))
     }
 
     fun getZippedByNameAndVersion(): Boolean
     {
-        val name = context.params(":name")
+        val name = authorizedReport()
         val version = context.params(":version")
         val response = context.getSparkResponse().raw()
 
@@ -81,5 +84,19 @@ class ReportController(context: ActionContext,
         return true
     }
 
+    private fun authorizedReport(): String {
+        val name = context.params(":name")
+        val requiredScope = Scope.Specific("report", name)
+        if (!reportReadingScopes.any({ it.encompasses(requiredScope) }))
+        {
+            throw MissingRequiredPermissionError(PermissionSet("$requiredScope/reports.read"))
+        }
+
+        return name
+    }
+
+    private val reportReadingScopes = context.permissions
+            .filter { it.name == "reports.read" }
+            .map { it.scope }
 
 }
