@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api
 
+import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.security.MontaguAuthorizer
 import org.vaccineimpact.reporting_api.security.PermissionRequirement
@@ -16,7 +17,7 @@ data class Endpoint(
         override val contentType: String = ContentTypes.binarydata,
         override val method: HttpMethod = HttpMethod.get,
         override val transform: Boolean = false,
-        override val requiredPermissions: Set<String> = emptySet(),
+        override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val allowParameterAuthentication: Boolean = false
 
 ) : EndpointDefinition
@@ -45,12 +46,8 @@ data class Endpoint(
     {
         if (AppConfig().authEnabled)
         {
-            val allPermissions = this.requiredPermissions.map {
-                PermissionRequirement.parse(it)
-            }
-
             var configFactory = TokenVerifyingConfigFactory(
-                    allPermissions.toSet())
+                    this.requiredPermissions.toSet())
 
             if (allowParameterAuthentication)
             {
@@ -75,9 +72,12 @@ fun Endpoint.allowParameterAuthentication(): Endpoint
     return this.copy(allowParameterAuthentication = true)
 }
 
-fun Endpoint.secure(permissions: Set<String>): Endpoint
+fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
 {
-    return this.copy(requiredPermissions = permissions)
+    val allPermissions = (permissions + "*/can-login").map {
+        PermissionRequirement.parse(it)
+    }
+    return this.copy(requiredPermissions = allPermissions)
 }
 
 fun Endpoint.transform(): Endpoint

@@ -39,15 +39,15 @@ class TokenVerifyingConfigFactory(
 
     fun allClients() = clientWrappers.map { it.client::class.java.simpleName }.joinToString()
 
-    private fun extractPermissionsFromToken(commonProfile: CommonProfile): CommonProfile
+    private fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
     {
-        val profile = commonProfile as JwtProfile
+        // "permissions" will exists as an attribute because profile is a JwtProfile
         val permissions = PermissionSet((profile.getAttribute("permissions") as String)
                 .split(',')
                 .filter { it.isNotEmpty() }
         )
-        commonProfile.addAttribute(PERMISSIONS, permissions)
-        return commonProfile
+        profile.montaguPermissions = permissions
+        return profile
     }
 
 }

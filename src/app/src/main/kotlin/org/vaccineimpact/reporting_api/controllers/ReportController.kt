@@ -3,12 +3,14 @@ package org.vaccineimpact.reporting_api.controllers
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.Scope
+import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
+import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
 
 class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
@@ -25,7 +27,6 @@ class ReportController(context: ActionContext,
 
     fun run(): String
     {
-
         val name = context.params(":name")
         val response = orderlyServerAPI.post("/reports/$name/run/", context)
         return passThroughResponse(response)
@@ -54,17 +55,18 @@ class ReportController(context: ActionContext,
 
     fun getVersionsByName(): List<String>
     {
-        return orderly.getReportsByName(context.params(":name"))
+        val name = context.params(":name")
+        return orderly.getReportsByName(name)
     }
 
     fun getByNameAndVersion(): JsonObject
     {
-        return orderly.getReportsByNameAndVersion(context.params(":name"), context.params(":version"))
+        val name = context.params(":name")
+        return orderly.getReportsByNameAndVersion(name, context.params(":version"))
     }
 
     fun getZippedByNameAndVersion(): Boolean
     {
-
         val name = context.params(":name")
         val version = context.params(":version")
         val response = context.getSparkResponse().raw()
@@ -78,5 +80,6 @@ class ReportController(context: ActionContext,
 
         return true
     }
+
 
 }
