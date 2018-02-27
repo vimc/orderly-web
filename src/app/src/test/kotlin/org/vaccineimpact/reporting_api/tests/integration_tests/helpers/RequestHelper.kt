@@ -19,49 +19,36 @@ class RequestHelper
     private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
-    val fakeUser = InternalUser("tettusername", "user", "*/can-login,*/reports.read")
+    val fakeSingleReportReader = InternalUser("tettusername", "user", "*/can-login,report:report1/reports.read")
+    val fakeGlobalReportReader = InternalUser("tettusername", "user", "*/can-login,*/reports.read")
     val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/can-login,*/reports.read,*/reports.review,*/reports.run")
 
-    fun get(url: String, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
+    fun get(url: String, contentType: String = ContentTypes.json, user: InternalUser = fakeGlobalReportReader): Response
     {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = if (!reviewer)
-        {
-            APITests.tokenHelper
-                    .generateToken(fakeUser)
-        }
-        else
-        {
-            APITests.tokenHelper
-                    .generateToken(fakeReviewer)
-        }
+        val token = APITests.tokenHelper
+                .generateToken(user)
+
 
         headers += mapOf("Authorization" to "Bearer $token")
 
         return get(baseUrl + url, headers)
     }
 
-    fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json, reviewer: Boolean = false): Response
+    fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
+             user: InternalUser = fakeGlobalReportReader): Response
     {
         var headers = mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = if (!reviewer)
-        {
-            APITests.tokenHelper
-                    .generateToken(fakeUser)
-        }
-        else
-        {
-            APITests.tokenHelper
-                    .generateToken(fakeReviewer)
-        }
+        val token = APITests.tokenHelper
+                .generateToken(user)
 
         headers += mapOf("Authorization" to "Bearer $token")
 

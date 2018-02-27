@@ -25,7 +25,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/minimal/run/", mapOf(), reviewer = true)
+        val response = requestHelper.post("/reports/minimal/run/", mapOf(), user = requestHelper.fakeReviewer)
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -35,7 +35,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = requestHelper.get("/reports/agronomic_seahorse/status/", reviewer = true)
+        val response = requestHelper.get("/reports/agronomic_seahorse/status/", user = requestHelper.fakeReviewer)
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Status")
@@ -54,7 +54,8 @@ class ReportTests : IntegrationTest()
                     .first()
         }
 
-        val response = requestHelper.post("/reports/minimal/versions/$unpublishedVersion/publish/", mapOf(), reviewer = true)
+        val response = requestHelper.post("/reports/minimal/versions/$unpublishedVersion/publish/", mapOf(),
+                user = requestHelper.fakeReviewer)
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Publish")
@@ -75,10 +76,11 @@ class ReportTests : IntegrationTest()
         }
 
         // first lets make sure its published
-        requestHelper.post("/reports/minimal/versions/$version/publish/", mapOf(), reviewer = true)
+        requestHelper.post("/reports/minimal/versions/$version/publish/", mapOf(), user = requestHelper.fakeReviewer)
 
         // now unpublish
-        val response = requestHelper.post("/reports/minimal/versions/$version/publish/?value=false", mapOf(), reviewer = true)
+        val response = requestHelper.post("/reports/minimal/versions/$version/publish/?value=false", mapOf(),
+                user = requestHelper.fakeReviewer)
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -124,7 +126,7 @@ class ReportTests : IntegrationTest()
     fun `reviewer can get unpublished report by name and version`()
     {
         insertReport("testname", "testversion", published = false)
-        val response = requestHelper.get("/reports/testname/versions/testversion", reviewer = true)
+        val response = requestHelper.get("/reports/testname/versions/testversion", user = requestHelper.fakeReviewer)
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -179,6 +181,19 @@ class ReportTests : IntegrationTest()
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
+    }
+
+    @Test
+    fun `returns 403 if wrong report reading permissions`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/all",
+                contentType = ContentTypes.zip, user = requestHelper.fakeSingleReportReader)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        JSONValidator.validateError(response.text, "forbidden",
+                "You do not have sufficient permissions to access this resource. Missing these permissions: report:testname/reports.read")
+
     }
 
 }
