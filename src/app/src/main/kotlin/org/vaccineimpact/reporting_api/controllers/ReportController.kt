@@ -54,7 +54,7 @@ class ReportController(context: ActionContext,
     {
         if (!reportReadingScopes.any())
         {
-            throw MissingRequiredPermissionError(setOf(ReifiedPermission("reports.read", Scope.Global())))
+            throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
         val reports = orderly.getAllReports()
