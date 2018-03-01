@@ -19,7 +19,6 @@ class RequestHelper
     private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
-    val fakeSingleReportReader = InternalUser("tettusername", "user", "*/can-login,report:report1/reports.read")
     val fakeGlobalReportReader = InternalUser("tettusername", "user", "*/can-login,*/reports.read")
     val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/can-login,*/reports.read,*/reports.review,*/reports.run")
 
@@ -55,9 +54,9 @@ class RequestHelper
         return khttp.post(baseUrl + url, headers, json = body)
     }
 
-    fun generateOnetimeToken(url: String): String
+    fun generateOnetimeToken(url: String, user: InternalUser = fakeGlobalReportReader): String
     {
-        val response = get("/onetime_token/?url=/v1$url")
+        val response = get("/onetime_token/?url=/v1$url", user = user)
         val json = parser.parse(response.text)
         if (json["status"].asString != "success")
         {

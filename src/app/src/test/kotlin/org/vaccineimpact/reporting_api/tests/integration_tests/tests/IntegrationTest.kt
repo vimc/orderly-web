@@ -8,6 +8,7 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.app_start.main
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
@@ -68,6 +69,7 @@ abstract class IntegrationTest : MontaguTests()
     {
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
+
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
@@ -93,6 +95,11 @@ abstract class IntegrationTest : MontaguTests()
     protected fun assertJsonContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json; charset=utf-8")
+    }
+
+    protected fun fakeReportReader(reportName: String): InternalUser
+    {
+        return InternalUser("tettusername", "user", "*/can-login,report:$reportName/reports.read")
     }
 
 }

@@ -11,11 +11,11 @@ class DataTests : IntegrationTest()
 {
 
     @Test
-    fun `gets dict of data names to hashes`()
+    fun `gets dict of data names to hashes with scoped report reading permission`()
     {
-
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/data/")
+        val response = requestHelper.get("/reports/testname/versions/testversion/data/",
+                user = fakeReportReader("testname"))
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -24,7 +24,35 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `gets csv data file`()
+    fun `can't get dict of data names if report not within report reading scope`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/data/",
+                user = fakeReportReader("badreportname"))
+
+        assertUnauthorized(response, "testname")
+    }
+
+    @Test
+    fun `gets csv data file with scoped permission`()
+    {
+        var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
+
+        // remove file extension
+        demoCSV = demoCSV.substring(0, demoCSV.length - 4)
+
+        insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
+
+        val url = "/reports/testname/versions/testversion/data/testdata/"
+        val response = requestHelper.get(url, ContentTypes.binarydata, user = fakeReportReader("testname"))
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoCSV.csv")
+    }
+
+    @Test
+    fun `can't get csv data file if report not in scoped permissions`()
     {
 
         var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
@@ -35,12 +63,10 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.get(url, ContentTypes.binarydata,
+                user = fakeReportReader("badreportname"))
 
-        assertSuccessful(response)
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoCSV.csv")
+        assertUnauthorized(response, "testname")
     }
 
     @Test
@@ -68,47 +94,32 @@ class DataTests : IntegrationTest()
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
 
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "file-not-found", "File with name '$fakehash.csv' does not exist")
     }
 
-    @Test
-    fun `gets 401 if no access token`()
-    {
-        val fakedata = "64328fyhdkjs"
-        val fakehash = "07dffb003   05279935544238b39d7b14b"
-        insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
-
-        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/data/$fakedata/", ContentTypes.binarydata)
-
-        Assertions.assertThat(response.statusCode).isEqualTo(401)
-        JSONValidator.validateMultipleAuthErrors(response.text)
-    }
-
 
     @Test
     fun `gets rds data file`()
     {
-
         var demoRDS = File("${AppConfig()["orderly.root"]}/data/rds/").list()[0]
 
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
-        val url = "/reports/testname/versions/testversion/data/testdata?type=rds"
-        val token = requestHelper.generateOnetimeToken(url)
-
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoRDS\"}")
-        val response = requestHelper.get("/reports/testname/versions/testversion/data/testdata?type=rds&access_token=$token", ContentTypes.binarydata)
+
+        val url = "/reports/testname/versions/testversion/data/testdata/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.getNoAuth("$url?type=rds&access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoRDS.rds")
     }
-
 
     @Test
     fun `gets csv data file by hash`()
@@ -121,7 +132,7 @@ class DataTests : IntegrationTest()
 
         val url = "/data/csv/$demoCSV/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.csv)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.csv)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -139,7 +150,7 @@ class DataTests : IntegrationTest()
 
         val url = "/data/rds/$demoRDS/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
