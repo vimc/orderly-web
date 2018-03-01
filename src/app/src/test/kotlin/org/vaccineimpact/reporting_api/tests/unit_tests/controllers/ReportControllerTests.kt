@@ -134,6 +134,7 @@ class ReportControllerTests : ControllerTest()
         }
 
         val mockContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
             on { it.params(":name") } doReturn reportName
         }
 
@@ -157,6 +158,7 @@ class ReportControllerTests : ControllerTest()
         }
 
         val actionContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
         }
@@ -171,7 +173,6 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getZippedByNameAndVersion returns zip file`()
     {
-
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
@@ -179,6 +180,7 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
             on { this.getSparkResponse() } doReturn mockSparkResponse
+            on { this.permissions } doReturn PermissionSet()
         }
 
         val mockZipClient = mock<ZipClient>()
