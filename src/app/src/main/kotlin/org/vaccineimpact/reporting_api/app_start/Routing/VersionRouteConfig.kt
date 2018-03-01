@@ -10,7 +10,7 @@ import spark.route.HttpMethod
 
 object VersionRouteConfig : RouteConfig
 {
-    private val readReports = setOf("report:<name>/reports.read")
+    private val readReports = setOf("*/reports.read")
     private val reviewReports = setOf("*/reports.review")
     private val artefactController = ArtefactController::class
     private val reportController = ReportController::class
