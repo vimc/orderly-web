@@ -55,9 +55,9 @@ class RequestHelper
         return khttp.post(baseUrl + url, headers, json = body)
     }
 
-    fun generateOnetimeToken(url: String): String
+    fun generateOnetimeToken(url: String, user: InternalUser = fakeGlobalReportReader): String
     {
-        val response = get("/onetime_token/?url=/v1$url")
+        val response = get("/onetime_token/?url=/v1$url", user = user)
         val json = parser.parse(response.text)
         if (json["status"].asString != "success")
         {
