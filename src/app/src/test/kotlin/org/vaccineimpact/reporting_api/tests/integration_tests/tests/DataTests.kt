@@ -24,7 +24,7 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `can't gets dict of data names if report not within report reading scope`()
+    fun `can't get dict of data names if report not within report reading scope`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
@@ -52,7 +52,7 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `can't gets csv data file if report not in scoped permissions`()
+    fun `can't get csv data file if report not in scoped permissions`()
     {
 
         var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
