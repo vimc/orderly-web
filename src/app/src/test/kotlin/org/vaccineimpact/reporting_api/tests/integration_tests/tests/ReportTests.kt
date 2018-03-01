@@ -202,6 +202,20 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
+    fun `gets zip file with scoped permissions`()
+    {
+        insertReport("testname", "testversion")
+
+        val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
+                user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
+
+        assertSuccessful(response)
+        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+    }
+
+
+    @Test
     fun `gets zip file with bearer token`()
     {
         insertReport("testname", "testversion")
@@ -215,7 +229,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `returns 401 if access token is missing`()
+    fun `get zip returns 401 if access token is missing`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
@@ -225,7 +239,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `returns 403 if wrong report reading permissions`()
+    fun `get zip returns 403 if wrong report reading permissions`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/all",
