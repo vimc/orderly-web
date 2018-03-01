@@ -11,10 +11,12 @@ import org.vaccineimpact.reporting_api.tests.insertReport
 class ArtefactTests : IntegrationTest()
 {
     @Test
-    fun `gets dict of artefact names to hashes with global permissions`()
+    fun `gets dict of artefact names to hashes with report scoped permission`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/")
+        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
+                user = fakeReportReader("testname"))
+
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -22,21 +24,11 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `gets dict of artefact names to hashes with report scoped permission`()
-    {
-        insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = fakeReportReader("testname"))
-
-        assertJsonContentType(response)
-    }
-
-    @Test
     fun `cant get artefacts dict if report not within report reading scope`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = requestHelper.fakeSingleReportReader)
+                user = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -87,7 +79,7 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = requestHelper.fakeSingleReportReader)
+                user = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "other")
     }

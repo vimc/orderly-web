@@ -10,15 +10,23 @@ import java.io.File
 class ResourceTests : IntegrationTest()
 {
     @Test
-    fun `gets dict of resource names to hashes`()
+    fun `gets dict of resource names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/resources")
+        val response = requestHelper.get("/reports/testname/versions/testversion/resources",
+                user = fakeReportReader("testname"))
 
         assertJsonContentType(response)
-        assertSuccessful(response)
-        JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+    }
 
+    @Test
+    fun `can't get dict of resource names to hashes if report not in scoped permissions`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/resources",
+                user = fakeReportReader("testname"))
+
+        assertJsonContentType(response)
     }
 
     @Test
@@ -35,6 +43,20 @@ class ResourceTests : IntegrationTest()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=use_resource/$version/meta/data.csv")
 
+    }
+
+    @Test
+    fun `can't get resource file if report not in scoped permissions`()
+    {
+        val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
+
+        val resourceEncoded = "meta:data.csv"
+        val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata,
+                user = fakeReportReader("badereportname"))
+
+        assertUnauthorized(response, "use_resource")
     }
 
     @Test

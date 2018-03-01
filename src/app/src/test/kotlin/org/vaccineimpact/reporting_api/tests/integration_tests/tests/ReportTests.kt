@@ -116,7 +116,7 @@ class ReportTests : IntegrationTest()
     fun `get report versions throws 403 if user not authorized to read report`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname", user = requestHelper.fakeSingleReportReader)
+        val response = requestHelper.get("/reports/testname", user = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -155,11 +155,11 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `get by name and version returns 403 if user is unauthorized`()
+    fun `get by name and version returns 403 if report not in scoped permissions`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion",
-                user = requestHelper.fakeSingleReportReader)
+                user = fakeReportReader("badreportname"))
         assertUnauthorized(response, "testname")
     }
 
@@ -239,11 +239,11 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `get zip returns 403 if wrong report reading permissions`()
+    fun `get zip returns 403 if report not in scoped report reading permissions`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/all",
-                contentType = ContentTypes.zip, user = requestHelper.fakeSingleReportReader)
+                contentType = ContentTypes.zip, user = fakeReportReader("badreportnamer"))
 
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",

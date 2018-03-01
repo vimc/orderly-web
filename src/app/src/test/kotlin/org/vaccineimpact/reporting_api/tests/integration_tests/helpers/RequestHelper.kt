@@ -19,7 +19,6 @@ class RequestHelper
     private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
-    val fakeSingleReportReader = InternalUser("tettusername", "user", "*/can-login,report:report1/reports.read")
     val fakeGlobalReportReader = InternalUser("tettusername", "user", "*/can-login,*/reports.read")
     val fakeReviewer = InternalUser("testreviewer", "reports-reviewer", "*/can-login,*/reports.read,*/reports.review,*/reports.run")
 
