@@ -79,7 +79,6 @@ class ReportControllerTests : ControllerTest()
         assertThat(result[0].name).isEqualTo(reportName)
     }
 
-
     @Test
     fun `getReports returns all report names if user has global read permissions`()
     {
@@ -103,6 +102,29 @@ class ReportControllerTests : ControllerTest()
     }
 
     @Test
+    fun `getReports throws MissingRequiredPermission error if user has no report reading permissions`()
+    {
+        val reports = listOf(Report(reportName, "test full name 1", "v1", true),
+                Report("testname2", "test full name 2", "v1", true))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getAllReports() } doReturn reports
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { it.permissions } doReturn PermissionSet()
+        }
+
+        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        assertThatThrownBy { sut.getAllNames() }
+                .isInstanceOf(MissingRequiredPermissionError::class.java)
+                .hasMessageContaining("*/reports.read")
+    }
+
+    @Test
     fun `getByName returns all reports versions by name`()
     {
         val reportVersions = listOf("version1", "version2")
@@ -113,7 +135,6 @@ class ReportControllerTests : ControllerTest()
 
         val mockContext = mock<ActionContext> {
             on { it.params(":name") } doReturn reportName
-            on { it.permissions } doReturn permissionSetGlobal
         }
 
         val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
@@ -124,31 +145,8 @@ class ReportControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getByName throws MissingRequiredPermissionError if user not authorized to read report`()
-    {
-        val reportVersions = listOf("version1", "version2")
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getReportsByName(reportName) } doReturn reportVersions
-        }
-
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "badreportname"
-            on { this.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        assertThrowsMissingPermissionError("badreportname",
-                { sut.getVersionsByName() })
-    }
-
-    @Test
     fun `getByNameAndVersion returns report metadata`()
     {
-
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
@@ -161,7 +159,6 @@ class ReportControllerTests : ControllerTest()
         val actionContext = mock<ActionContext> {
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
-            on { this.permissions } doReturn permissionSetGlobal
         }
 
         val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
@@ -169,31 +166,6 @@ class ReportControllerTests : ControllerTest()
                 mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
-    }
-
-    @Test
-    fun `getByNameAndVersion throws MissingRequiredPermissionError if user not authorized`()
-    {
-        val reportVersion = "reportVersion"
-
-        val report = JsonParser().parse("{\"key\":\"value\"}")
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report.asJsonObject
-        }
-
-        val actionContext = mock<ActionContext> {
-            on { this.params(":version") } doReturn reportVersion
-            on { this.params(":name") } doReturn "badreportname"
-            on { this.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        assertThrowsMissingPermissionError("badreportname",
-                { sut.getByNameAndVersion() })
     }
 
     @Test
@@ -207,7 +179,6 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
             on { this.getSparkResponse() } doReturn mockSparkResponse
-            on { this.permissions } doReturn permissionSetGlobal
         }
 
         val mockZipClient = mock<ZipClient>()
@@ -219,34 +190,6 @@ class ReportControllerTests : ControllerTest()
 
         verify(mockZipClient, times(1)).zipIt("root/archive/$reportName/$reportVersion/"
                 , mockOutputStream)
-    }
-
-    @Test
-    fun `getZippedByNameAndVersion throws MissingRequiredPermission error if user not authorized`()
-    {
-        val reportVersion = "reportVersion"
-
-        val actionContext = mock<ActionContext> {
-            on { this.params(":version") } doReturn reportVersion
-            on { this.params(":name") } doReturn "badreportname"
-            on { this.getSparkResponse() } doReturn mockSparkResponse
-            on { this.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val mockZipClient = mock<ZipClient>()
-
-        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient, mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        assertThrowsMissingPermissionError("badreportname",
-                { sut.getZippedByNameAndVersion() })
-    }
-
-    private fun assertThrowsMissingPermissionError(reportName: String, work: () -> Any)
-    {
-        assertThatThrownBy { work() }
-                .isInstanceOf(MissingRequiredPermissionError::class.java)
-                .hasMessageContaining("report:$reportName/reports.read")
     }
 
 }
