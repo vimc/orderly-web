@@ -80,6 +80,16 @@ abstract class IntegrationTest : MontaguTests()
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
+    protected fun assertUnauthorized(response: Response, reportName: String)
+    {
+        Assertions.assertThat(response.statusCode)
+                .isEqualTo(403)
+
+        JSONValidator.validateError(response.text, "forbidden",
+                "You do not have sufficient permissions to access this resource. Missing these permissions: report:${reportName}/reports.read")
+
+    }
+
     protected fun assertJsonContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json; charset=utf-8")

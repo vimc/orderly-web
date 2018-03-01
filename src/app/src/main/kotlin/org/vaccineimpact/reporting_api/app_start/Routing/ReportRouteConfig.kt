@@ -7,8 +7,8 @@ import spark.route.HttpMethod
 
 object ReportRouteConfig : RouteConfig
 {
-    private val readReports = setOf("*/reports.read")
     private val runReports = setOf("*/reports.run")
+    private val readReports = setOf("report:<name>/reports.read")
     private val controller = ReportController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
@@ -16,7 +16,8 @@ object ReportRouteConfig : RouteConfig
             Endpoint("/reports/", controller, "getAllNames")
                     .json()
                     .transform()
-                    .secure(readReports),
+                    // more specific permission checking in the controller action
+                    .secure(),
 
             Endpoint("/reports/:name/", controller, "getVersionsByName")
                     .json()
