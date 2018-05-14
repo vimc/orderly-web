@@ -31,7 +31,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME,
                             ORDERLY.ID.`as`("latestVersion"),
                             ORDERLY.PUBLISHED,
-                            ORDERLY.DATE.`as`("creationDate"),
+                            ORDERLY.DATE.`as`("updatedOn"),
                             ORDERLY.AUTHOR,
                             ORDERLY.REQUESTER)
                     .from(ORDERLY)
