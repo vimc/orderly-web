@@ -17,7 +17,7 @@ class OrderlyTests : DatabaseTests()
     }
 
     @Test
-    fun `can get all published report names`()
+    fun `can get all published reports`()
     {
         insertReport("test", "va")
         insertReport("test", "vz")
@@ -36,6 +36,8 @@ class OrderlyTests : DatabaseTests()
         assertThat(results[0].displayName).isEqualTo("display name test")
         assertThat(results[0].latestVersion).isEqualTo("vz")
         assertThat(results[0].published).isTrue()
+        assertThat(results[0].author).isEqualTo("author authorson")
+        assertThat(results[0].requester).isEqualTo("requester mcfunder")
 
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")

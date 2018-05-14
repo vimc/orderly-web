@@ -50,7 +50,7 @@ class ReportController(context: ActionContext,
         return passThroughResponse(response)
     }
 
-    fun getAllNames(): List<Report>
+    fun getAllReports(): List<Report>
     {
         if (!reportReadingScopes.any())
         {

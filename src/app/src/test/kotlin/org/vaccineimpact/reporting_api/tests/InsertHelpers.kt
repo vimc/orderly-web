@@ -13,7 +13,9 @@ fun insertReport(name: String,
                  hashData: String = "{\"dat\": \"62781hjwkjkeq\"}",
                  hashResources: String = "{\"resource.csv\": \"gfe7064mvdfjieync\"}",
                  resources: String = "[\"resource.csv\"]",
-                 published: Boolean = true)
+                 published: Boolean = true,
+                 author: String = "author authorson",
+                 requester: String = "requester mcfunder")
 {
     JooqContext().use {
 
@@ -31,8 +33,8 @@ fun insertReport(name: String,
                     this.hashResources = hashResources
                     this.published = published
                     this.resources = resources
-                    this.author = "author"
-                    this.requester = "requester"
+                    this.author = author
+                    this.requester = requester
                     this.script = "script.R"
                 }
         record.store()

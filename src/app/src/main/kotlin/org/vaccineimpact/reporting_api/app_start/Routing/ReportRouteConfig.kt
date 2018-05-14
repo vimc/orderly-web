@@ -13,7 +13,7 @@ object ReportRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            Endpoint("/reports/", controller, "getAllNames")
+            Endpoint("/reports/", controller, "getAllReports")
                     .json()
                     .transform()
                     // more specific permission checking in the controller action
