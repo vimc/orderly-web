@@ -17,6 +17,7 @@ import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.MissingRequiredPermissionError
+import java.time.Instant
 
 class ReportControllerTests : ControllerTest()
 {
@@ -59,8 +60,8 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns report names user is authorized to see`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true),
-                Report("testname2", "test full name 2", "v1", true))
+        val reports = listOf(Report(reportName, "test full name 1", "v1", true, Instant.now(), "author", "requester"),
+                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports
@@ -74,7 +75,7 @@ class ReportControllerTests : ControllerTest()
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
-        val result = sut.getAllNames()
+        val result = sut.getAllReports()
         assertThat(result).hasSize(1)
         assertThat(result[0].name).isEqualTo(reportName)
     }
@@ -82,8 +83,9 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns all report names if user has global read permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true),
-                Report("testname2", "test full name 2", "v1", true))
+        val reports = listOf(Report(reportName, "test full name 1", "v1", true,
+                Instant.now(), "author", "requester"),
+                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports
@@ -97,15 +99,15 @@ class ReportControllerTests : ControllerTest()
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
-        val result = sut.getAllNames()
+        val result = sut.getAllReports()
         assertThat(result).hasSameElementsAs(reports)
     }
 
     @Test
     fun `getReports throws MissingRequiredPermission error if user has no report reading permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true),
-                Report("testname2", "test full name 2", "v1", true))
+        val reports = listOf(Report(reportName, "test full name 1", "v1", true, Instant.now(), "author", "requester"),
+                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports
@@ -119,7 +121,7 @@ class ReportControllerTests : ControllerTest()
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
-        assertThatThrownBy { sut.getAllNames() }
+        assertThatThrownBy { sut.getAllReports() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
                 .hasMessageContaining("*/reports.read")
     }
