@@ -17,19 +17,19 @@ System requirements:
    `./dev/run-dependencies.sh`
 5. Run the reporting API with `./gradlew :run`
 
-### Tasks
-* Generate test data. To generate a test Orderly directory to develop against, 
-  run the `:app:generateTestData` gradle task (either from within your IDE or on the
-  command line from within the project root directory with 
-  `./gradlew :app:generateTestData`)
-  The above task will generate two Orderly directorys; one at `./src/app/demo` and one at `./src/app/git`. The latter contains an Orderly directory which is also a git repo, the former contains several different types of report. These are used for integration tests and for running locally.
-* Run the Orderly server (responsible for running reports) using the `:app:startOrderlyServer` task.
-* To run, use `:app:run`, having first set up a the test data using
-  `:app:generateTestData` and started the orderly server using `:app:startOrderlyServer` ,
-* To run the tests, use `./gradlew test`, making sure that the app is not 
-  currently running and you have already generated the test data and started the Orderly server.
-* Stop the Orderly server using `:app:stopOrderlyServer`.
-  
+### Generate test data.  
+This is done automatically by `run-dependencies.sh` above. To generate a test
+Orderly directory to develop against, run the `:app:generateTestData` gradle
+task (either from within your IDE or on the command line from within the project
+root directory with `./gradlew:app:generateTestData`).
+
+The above task will generate two Orderly directorys; one at `./src/app/demo`
+and one at `./src/app/git`. The latter contains an Orderly directory which is
+also a git repo, the former contains several different types of report. These
+are used for integration tests and for running locally.
+
+### Run tests
+To run the tests, use `./gradlew test` having first run `run-dependencies.sh`  
 
 ## Docker build
 The Teamcity build
