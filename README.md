@@ -29,7 +29,9 @@ also a git repo, the former contains several different types of report. These
 are used for integration tests and for running locally.
 
 ### Run tests
-To run the tests, use `./gradlew test` having first run `run-dependencies.sh`  
+To run the tests, use `./gradlew test` having first run `run-dependencies.sh`.
+You may have to run `sudo chmod 766 /etc/montagu/reports_api/token_key/public_key.der`
+or similar to let the tests write to this file.
 
 ## Docker build
 The Teamcity build
