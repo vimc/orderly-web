@@ -7,6 +7,7 @@ import org.assertj.core.api.Assertions
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.security.InternalUser
+import org.vaccineimpact.reporting_api.security.deflated
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 
 class RequestHelper
@@ -29,9 +30,7 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper
-                .generateToken(user)
-
+        val token = generateCompressedToken(user)
 
         headers += mapOf("Authorization" to "Bearer $token")
 
@@ -46,8 +45,7 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper
-                .generateToken(user)
+        val token = generateCompressedToken(user)
 
         headers += mapOf("Authorization" to "Bearer $token")
 
@@ -85,7 +83,7 @@ class RequestHelper
                 "Accept-Encoding" to "gzip"
         )
 
-        val token = APITests.tokenHelper.generateToken(InternalUser("tettusername", "user", "*/fake-perm"))
+        val token = generateCompressedToken(InternalUser("tettusername", "user", "*/fake-perm"))
 
         headers += mapOf("Authorization" to "Bearer $token")
 
@@ -103,4 +101,7 @@ class RequestHelper
     }
 
     private fun get(url: String, headers: Map<String, String>) = khttp.get(url, headers)
+
+    private fun generateCompressedToken(user: InternalUser) =
+            APITests.tokenHelper.generateToken(user).deflated()
 }
