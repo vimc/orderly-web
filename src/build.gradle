@@ -97,9 +97,15 @@ subprojects {
         into 'build/classes/test/'
         expand(rootProject.ext.props)
     }
+    task copyTestConfigToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
+        from 'src/test/resources'
+        include '*'
+        into 'build/resources/test/'
+        expand(rootProject.ext.props)
+    }
 
     processResources.finalizedBy 'copyConfig', 'copyConfigToResources'
-    processTestResources.finalizedBy 'copyTestConfig'
+    processTestResources.finalizedBy 'copyTestConfigToResources', 'copyTestConfig'
 
     task showConfig(dependsOn: 'copyConfig') {
         doLast {
