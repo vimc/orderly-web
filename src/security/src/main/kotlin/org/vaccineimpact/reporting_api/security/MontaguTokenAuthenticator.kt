@@ -1,23 +1,15 @@
 package org.vaccineimpact.reporting_api.security
 
-import com.nimbusds.jwt.JWT
-import org.pac4j.core.credentials.TokenCredentials
-import org.pac4j.core.exception.CredentialsException
+import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 
-open class MontaguTokenAuthenticator(signatureConfiguration: SignatureConfiguration, val expectedIssuer: String)
+abstract class MontaguTokenAuthenticator(signatureConfiguration: SignatureConfiguration,
+                                         protected val expectedIssuer: String)
     : JwtAuthenticator(signatureConfiguration)
 {
-    override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
+    override fun validateToken(compressedToken: String?): CommonProfile
     {
-        super.createJwtProfile(credentials, jwt)
-        val claims = jwt.jwtClaimsSet
-        val issuer = claims.issuer
-        if (issuer != expectedIssuer)
-        {
-            throw CredentialsException("Token was issued by '$issuer'. Must be issued by '$expectedIssuer'")
-        }
-        credentials.userProfile.addAttribute("url", "*")
+        return super.validateToken(inflate(compressedToken))
     }
 }

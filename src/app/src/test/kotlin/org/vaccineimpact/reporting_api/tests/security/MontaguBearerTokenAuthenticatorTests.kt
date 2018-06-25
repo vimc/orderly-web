@@ -10,11 +10,11 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.reporting_api.security.KeyHelper
-import org.vaccineimpact.reporting_api.security.MontaguTokenAuthenticator
+import org.vaccineimpact.reporting_api.security.MontaguBearerTokenAuthenticator
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 
-class MontaguTokenAuthenticatorTests
+class MontaguBearerTokenAuthenticatorTests
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
@@ -38,7 +38,7 @@ class MontaguTokenAuthenticatorTests
             on(it.path) doReturn url
         }
 
-        val sut = MontaguTokenAuthenticator(helper.verifier.signatureConfiguration, "differentissuer")
+        val sut = MontaguBearerTokenAuthenticator(helper.verifier.signatureConfiguration, "differentissuer")
 
         assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
     }
@@ -54,7 +54,7 @@ class MontaguTokenAuthenticatorTests
             on(it.path) doReturn url
         }
 
-        val sut = MontaguTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName)
+        val sut = MontaguBearerTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName)
 
         sut.validate(credentials, fakeContext)
 

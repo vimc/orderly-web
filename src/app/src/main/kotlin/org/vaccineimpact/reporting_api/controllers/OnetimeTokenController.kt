@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.controllers
 
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.db.TokenStore
+import org.vaccineimpact.reporting_api.security.deflated
 import org.vaccineimpact.reporting_api.errors.MissingParameterError
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.OnetimeTokenStore
@@ -29,6 +30,6 @@ class OnetimeTokenController(context: ActionContext,
 
         tokenStore.storeToken(token)
 
-        return token
+        return token.deflated()
     }
 }
