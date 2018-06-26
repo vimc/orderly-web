@@ -59,20 +59,20 @@ class SQLiteTokenStore(private val config: Config = AppConfig()) : OnetimeTokenS
         }
     }
 
-    override fun storeToken(token: String)
+    override fun storeToken(uncompressedToken: String)
     {
         getJooqContext().use {
             it.dsl.insertInto(ONETIME_TOKEN)
-                    .set(TOKEN, token)
+                    .set(TOKEN, uncompressedToken)
                     .execute()
         }
     }
 
-    override fun validateOneTimeToken(token: String): Boolean
+    override fun validateOneTimeToken(uncompressedToken: String): Boolean
     {
         getJooqContext().use {
             val deletedCount = it.dsl.deleteFrom(ONETIME_TOKEN)
-                    .where(TOKEN.eq(token))
+                    .where(TOKEN.eq(uncompressedToken))
                     .execute()
 
             return deletedCount == 1

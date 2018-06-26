@@ -3,7 +3,6 @@ package org.vaccineimpact.reporting_api.security
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.profile.CommonProfile
-import org.pac4j.jwt.profile.JwtProfile
 import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.reporting_api.db.TokenStore
 
@@ -13,10 +12,10 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        val headerClientWrapper = JWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
+        val headerClientWrapper = CompressedJWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
                 org.vaccineimpact.reporting_api.db.AppConfig()["token.issuer"]))
 
-        val parameterClientWrapper = JWTParameterClientWrapper(
+        val parameterClientWrapper = CompressedJWTParameterClientWrapper(
                 WebTokenHelper.oneTimeTokenHelper.verifier,
                 TokenStore.instance
         )

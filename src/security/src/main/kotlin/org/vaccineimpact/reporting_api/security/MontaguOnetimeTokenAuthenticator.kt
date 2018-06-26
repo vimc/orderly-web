@@ -4,12 +4,12 @@ import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
-import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 
-class MontaguOnetimeTokenAuthenticator(signatureConfiguration: SignatureConfiguration,
-                                       private val expectedIssuer: String,
-                                       private val tokenStore: OnetimeTokenStore)
-    : JwtAuthenticator(signatureConfiguration)
+class MontaguOnetimeTokenAuthenticator(
+        signatureConfiguration: SignatureConfiguration,
+        expectedIssuer: String,
+        private val tokenStore: OnetimeTokenStore
+) : MontaguTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {

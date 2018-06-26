@@ -11,14 +11,14 @@ class InMemoryTokenStore : OnetimeTokenStore
     }
 
     @Synchronized
-    override fun storeToken(token: String)
+    override fun storeToken(uncompressedToken: String)
     {
-        tokens.add(token)
+        tokens.add(uncompressedToken)
     }
 
     @Synchronized
-    override fun validateOneTimeToken(token: String): Boolean
+    override fun validateOneTimeToken(uncompressedToken: String): Boolean
     {
-        return tokens.remove(token)
+        return tokens.remove(uncompressedToken)
     }
 }
