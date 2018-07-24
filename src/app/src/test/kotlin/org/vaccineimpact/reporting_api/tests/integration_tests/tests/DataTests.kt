@@ -112,9 +112,9 @@ class DataTests : IntegrationTest()
 
         insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoRDS\"}")
 
-        val url = "/reports/testname/versions/testversion/data/testdata/"
+        val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?type=rds&access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url&access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
