@@ -21,7 +21,17 @@ open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
     override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
     {
         val claimedUrl = profile.getAttribute("url")
-        val requestedUrl = context.path
+        var requestedUrl = context.path
+        val queryParameters = context.requestParameters
+                .filter { it.key != "access_token" }
+
+        if (queryParameters.any())
+        {
+            requestedUrl = requestedUrl + "?" + queryParameters
+                    .map { "${it.key}=${context.getRequestParameter(it.key)}" }
+                    .joinToString("&")
+
+        }
 
         if (claimedUrl == "*" || requestedUrl == claimedUrl)
         {
