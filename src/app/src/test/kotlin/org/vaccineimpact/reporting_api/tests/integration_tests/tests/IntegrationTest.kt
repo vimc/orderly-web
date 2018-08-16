@@ -94,7 +94,7 @@ abstract class IntegrationTest : MontaguTests()
 
     protected fun assertJsonContentType(response: Response)
     {
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json; charset=utf-8")
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
     }
 
     protected fun fakeReportReader(reportName: String): InternalUser

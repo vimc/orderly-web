@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.security.InternalUser
@@ -18,7 +19,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 401 if token missing`()
     {
 
-        val response = RequestHelper().getNoAuth("/reports")
+        val response = RequestHelper().getNoAuth("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -28,10 +29,18 @@ class SecurityTests : IntegrationTest()
     }
 
     @Test
+    fun `returns 200 if token is present in cookie`()
+    {
+        val response = RequestHelper().getWithCookie("/reports/")
+        println(response.text)
+        assertThat(response.statusCode).isEqualTo(200)
+    }
+
+    @Test
     fun `returns 401 if token not valid`()
     {
 
-        val response = RequestHelper().getWrongAuth("/reports")
+        val response = RequestHelper().getWrongAuth("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -43,7 +52,7 @@ class SecurityTests : IntegrationTest()
     @Test
     fun `returns 403 if missing permissions`()
     {
-        val response = RequestHelper().getWrongPermissions("/reports")
+        val response = RequestHelper().getWrongPermissions("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(403)

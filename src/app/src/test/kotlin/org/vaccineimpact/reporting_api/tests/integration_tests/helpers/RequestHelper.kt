@@ -6,6 +6,7 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.security.CompressedJWTCookieClient
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.deflated
 import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
@@ -25,30 +26,29 @@ class RequestHelper
 
     fun get(url: String, contentType: String = ContentTypes.json, user: InternalUser = fakeGlobalReportReader): Response
     {
-        var headers = mapOf(
-                "Accept" to contentType,
-                "Accept-Encoding" to "gzip"
-        )
-
         val token = generateCompressedToken(user)
+        val headers = standardHeaders(contentType).withAuthorizationHeader(token)
+        return get(baseUrl + url, headers)
+    }
 
-        headers += mapOf("Authorization" to "Bearer $token")
-
+    fun getWithCookie(
+            url: String,
+            contentType: String = ContentTypes.json,
+            user: InternalUser = fakeGlobalReportReader
+    ): Response
+    {
+        val token = generateCompressedToken(user)
+        val cookieName = CompressedJWTCookieClient.cookie
+        val headers = standardHeaders(contentType) +
+                mapOf("Cookie" to "$cookieName=$token")
         return get(baseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
              user: InternalUser = fakeGlobalReportReader): Response
     {
-        var headers = mapOf(
-                "Accept" to contentType,
-                "Accept-Encoding" to "gzip"
-        )
-
         val token = generateCompressedToken(user)
-
-        headers += mapOf("Authorization" to "Bearer $token")
-
+        val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return khttp.post(baseUrl + url, headers, json = body)
     }
 
@@ -65,40 +65,33 @@ class RequestHelper
 
     fun getWrongAuth(url: String, contentType: String = ContentTypes.json): Response
     {
-        var headers = mapOf(
-                "Accept" to contentType,
-                "Accept-Encoding" to "gzip"
-        )
-
         val token = "faketoken"
-        headers += mapOf("Authorization" to "Bearer $token")
-
+        val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return get(baseUrl + url, headers)
     }
 
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
-        var headers = mapOf(
-                "Accept" to contentType,
-                "Accept-Encoding" to "gzip"
-        )
-
         val token = generateCompressedToken(InternalUser("tettusername", "user", "*/fake-perm"))
-
-        headers += mapOf("Authorization" to "Bearer $token")
-
+        val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return get(baseUrl + url, headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
     {
-        val headers = mapOf(
+        return get(baseUrl + url, standardHeaders(contentType))
+    }
+
+    private fun standardHeaders(contentType: String): Map<String, String>
+    {
+        return mapOf(
                 "Accept" to contentType,
                 "Accept-Encoding" to "gzip"
         )
-
-        return get(baseUrl + url, headers)
     }
+
+    private fun Map<String, String>.withAuthorizationHeader(token: String) = this +
+            mapOf("Authorization" to "Bearer $token")
 
     private fun get(url: String, headers: Map<String, String>) = khttp.get(url, headers)
 

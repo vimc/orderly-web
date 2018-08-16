@@ -26,7 +26,7 @@ mainClassName = "org.vaccineimpact.reporting_api.app_start.SparkAppKt"
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    compile "com.sparkjava:spark-core:2.5.4"
+    compile "com.sparkjava:spark-core:2.7.1"
     compile "org.slf4j:slf4j-simple:1.7.21"
 
     compile "com.google.code.gson:gson:2.2.4"
@@ -37,8 +37,8 @@ dependencies {
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
 
-    compile "org.pac4j:spark-pac4j:2.0.0"
-    compile "org.pac4j:pac4j-http:2.0.0"
+    compile "org.pac4j:spark-pac4j:2.2.0"
+    compile "org.pac4j:pac4j-http:2.2.1"
 
     compile "khttp:khttp:0.1.0"
 

@@ -7,6 +7,8 @@ import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration
 import com.github.fge.jsonschema.core.load.uri.URITranslatorConfiguration
 import com.github.fge.jsonschema.main.JsonSchemaFactory
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.fail
 
 class JSONValidator
 {
@@ -23,7 +25,7 @@ class JSONValidator
     {
         val json = parseJson(response)
         // Everything must meet the basic response schema
-        checkResultSchema(json, response, "success")
+        checkResultSchema(json, "success")
         // Then use the more specific schema on the data portion
         val data = json["data"]
         val schema = readSchema(schemaName)
@@ -35,44 +37,35 @@ class JSONValidator
                       expectedErrorText: String?)
     {
         val json = parseJson(response)
-        checkResultSchema(json, response, "failure")
-        val error = json["errors"].first()
+        checkResultSchema(json, "failure")
         if (expectedErrorCode != null)
         {
-            Assertions.assertThat(error["code"].asText())
-                    .withFailMessage("Expected error code to be '$expectedErrorCode' in $response")
-                    .isEqualTo(expectedErrorCode)
-        }
-        if (expectedErrorText != null)
-        {
-            Assertions.assertThat(error["message"].asText()).contains(expectedErrorText)
+            val error = json["errors"].singleOrNull { it["code"].asText() == expectedErrorCode }
+            if (error != null)
+            {
+                assertThat(error["message"].asText()).contains(expectedErrorText)
+            }
+            else
+            {
+                fail("Expected error code '$expectedErrorCode' to be present in $response")
+            }
         }
     }
 
     fun validateMultipleAuthErrors(response: String)
     {
-        val json = parseJson(response)
-        checkResultSchema(json, response, "failure")
-        var error = json["errors"].first()
-
-        Assertions.assertThat(error["code"].asText())
-                .withFailMessage("Expected error code to be 'bearer-token-invalid' in $response")
-                .isEqualTo("bearer-token-invalid")
-
-        Assertions.assertThat(error["message"].asText())
-                .contains("Bearer token not supplied in Authorization header, or bearer token was invalid")
-
-        error = json["errors"][1]
-
-        Assertions.assertThat(error["code"].asText())
-                .withFailMessage("Expected error code to be 'onetime-token-invalid' in $response")
-                .isEqualTo("onetime-token-invalid")
-
-        Assertions.assertThat(error["message"].asText())
-                .contains("Onetime token not supplied, or onetime token was invalid")
+        validateError(response,
+                expectedErrorCode = "bearer-token-invalid",
+                expectedErrorText = "Bearer token not supplied in Authorization header, or bearer token was invalid")
+        validateError(response,
+                expectedErrorCode = "cookie-bearer-token-invalid",
+                expectedErrorText = "Bearer token not supplied in cookie 'montagu_jwt_token', or bearer token was invalid")
+        validateError(response,
+                expectedErrorCode = "onetime-token-invalid",
+                expectedErrorText = "Onetime token not supplied, or onetime token was invalid")
     }
 
-    private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)
+    private fun checkResultSchema(json: JsonNode, expectedStatus: String)
     {
         assertValidates(responseSchema, json)
         val status = json["status"].textValue()
