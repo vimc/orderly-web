@@ -27,7 +27,6 @@ fun addDefaultResponseHeaders(res: HttpServletResponse, contentType: String)
     {
         res.contentType = contentType
         res.addHeader("Content-Encoding", "gzip")
-        res.addHeader("Access-Control-Allow-Origin", "*")
         // This allows cookies to be received over AJAX
         res.addHeader("Access-Control-Allow-Credentials", "true")
     }
