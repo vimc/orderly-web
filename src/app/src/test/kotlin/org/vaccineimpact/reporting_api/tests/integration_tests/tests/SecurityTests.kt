@@ -19,7 +19,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 401 if token missing`()
     {
 
-        val response = RequestHelper().getNoAuth("/reports")
+        val response = RequestHelper().getNoAuth("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -31,7 +31,7 @@ class SecurityTests : IntegrationTest()
     @Test
     fun `returns 200 if token is present in cookie`()
     {
-        val response = RequestHelper().getWithCookie("/reports")
+        val response = RequestHelper().getWithCookie("/reports/")
         println(response.text)
         assertThat(response.statusCode).isEqualTo(200)
     }
@@ -40,7 +40,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 401 if token not valid`()
     {
 
-        val response = RequestHelper().getWrongAuth("/reports")
+        val response = RequestHelper().getWrongAuth("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -52,7 +52,7 @@ class SecurityTests : IntegrationTest()
     @Test
     fun `returns 403 if missing permissions`()
     {
-        val response = RequestHelper().getWrongPermissions("/reports")
+        val response = RequestHelper().getWrongPermissions("/reports/")
 
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
         Assertions.assertThat(response.statusCode).isEqualTo(403)

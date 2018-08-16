@@ -38,8 +38,9 @@ class RequestHelper
     ): Response
     {
         val token = generateCompressedToken(user)
+        val cookieName = CompressedJWTCookieClient.cookie
         val headers = standardHeaders(contentType) +
-                mapOf("Cookie" to "${CompressedJWTCookieClient.cookie}=$token")
+                mapOf("Cookie" to "$cookieName=$token")
         return get(baseUrl + url, headers)
     }
 
