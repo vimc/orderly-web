@@ -23,7 +23,7 @@ class JSONValidator
     {
         val json = parseJson(response)
         // Everything must meet the basic response schema
-        checkResultSchema(json, response, "success")
+        checkResultSchema(json, "success")
         // Then use the more specific schema on the data portion
         val data = json["data"]
         val schema = readSchema(schemaName)
@@ -35,7 +35,7 @@ class JSONValidator
                       expectedErrorText: String?)
     {
         val json = parseJson(response)
-        checkResultSchema(json, response, "failure")
+        checkResultSchema(json, "failure")
         val error = json["errors"].first()
         if (expectedErrorCode != null)
         {
@@ -52,7 +52,7 @@ class JSONValidator
     fun validateMultipleAuthErrors(response: String)
     {
         val json = parseJson(response)
-        checkResultSchema(json, response, "failure")
+        checkResultSchema(json, "failure")
         var error = json["errors"].first()
 
         Assertions.assertThat(error["code"].asText())
@@ -72,7 +72,7 @@ class JSONValidator
                 .contains("Onetime token not supplied, or onetime token was invalid")
     }
 
-    private fun checkResultSchema(json: JsonNode, jsonAsString: String, expectedStatus: String)
+    private fun checkResultSchema(json: JsonNode, expectedStatus: String)
     {
         assertValidates(responseSchema, json)
         val status = json["status"].textValue()

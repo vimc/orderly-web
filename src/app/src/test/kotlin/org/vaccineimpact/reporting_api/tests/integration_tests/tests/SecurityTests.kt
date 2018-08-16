@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.security.InternalUser
@@ -25,6 +26,13 @@ class SecurityTests : IntegrationTest()
         JSONValidator.validateError(response.text, "bearer-token-invalid",
                 "Bearer token not supplied in Authorization header, or bearer token was invalid")
 
+    }
+
+    @Test
+    fun `returns 200 if token is present in cookie`()
+    {
+        val response = RequestHelper().getWithCookie("/reports")
+        assertThat(response.statusCode).isEqualTo(200)
     }
 
     @Test

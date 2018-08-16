@@ -12,8 +12,13 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        val headerClientWrapper = CompressedJWTHeaderClientWrapper(TokenVerifier(KeyHelper.authPublicKey,
-                org.vaccineimpact.reporting_api.db.AppConfig()["token.issuer"]))
+        private val tokenVerifier = TokenVerifier(
+                KeyHelper.authPublicKey,
+                org.vaccineimpact.reporting_api.db.AppConfig()["token.issuer"]
+        )
+
+        val headerClientWrapper = CompressedJWTHeaderClientWrapper(tokenVerifier)
+        val cookieClientWrapper = CompressedJWTCookieClientWrapper(tokenVerifier)
 
         val parameterClientWrapper = CompressedJWTParameterClientWrapper(
                 WebTokenHelper.oneTimeTokenHelper.verifier,
@@ -21,7 +26,7 @@ class TokenVerifyingConfigFactory(
         )
     }
 
-    val clientWrappers = mutableListOf<MontaguCredentialClientWrapper>(headerClientWrapper)
+    val clientWrappers = mutableListOf(headerClientWrapper, cookieClientWrapper)
 
     override fun build(vararg parameters: Any?): Config
     {
