@@ -10,7 +10,7 @@ class CompressedJWTCookieClientWrapper(helper: TokenVerifier) : MontaguCredentia
 {
     override val client = CompressedJWTCookieClient(helper)
     override val errorInfo = ErrorInfo(
-            "bearer-token-invalid",
+            "cookie-bearer-token-invalid",
             "Bearer token not supplied in cookie '${CompressedJWTCookieClient.cookie}', or bearer token was invalid"
     )
 }

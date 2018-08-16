@@ -32,6 +32,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 200 if token is present in cookie`()
     {
         val response = RequestHelper().getWithCookie("/reports")
+        println(response.text)
         assertThat(response.statusCode).isEqualTo(200)
     }
 
