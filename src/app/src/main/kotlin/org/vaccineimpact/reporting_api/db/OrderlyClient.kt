@@ -2,13 +2,14 @@ package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Report
+import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 interface OrderlyClient
 {
     fun getAllReports(): List<Report>
 
-    fun getAllReportVersions(): List<Report>
+    fun getAllReportVersions(): List<ReportVersion>
 
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>

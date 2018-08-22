@@ -18,6 +18,11 @@ object VersionRouteConfig : RouteConfig
     private val resourceController = ResourceController::class
 
     override val endpoints = listOf(
+            Endpoint("/versions/", reportController, "getAllVersions")
+                    .json()
+                    .transform()
+                    .secure(readReports),
+
             Endpoint("/reports/:name/versions/:version/", reportController, "getByNameAndVersion")
                     .json()
                     .transform()

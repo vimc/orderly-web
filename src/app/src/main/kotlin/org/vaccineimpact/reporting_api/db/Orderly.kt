@@ -4,6 +4,7 @@ import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Report
+import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -11,7 +12,7 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
-    override fun getAllReportVersions(): List<Report>
+    override fun getAllReportVersions(): List<ReportVersion>
     {
         JooqContext().use {
 
@@ -48,7 +49,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .join(table(name(tempAllTable)))
                     .on(ORDERLY.NAME.eq(field(name(tempAllTable, "name"), String::class.java)))
                     .where(shouldInclude)
-                    .fetchInto(Report::class.java)
+                    .fetchInto(ReportVersion::class.java)
         }
     }
 
