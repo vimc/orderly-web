@@ -1,9 +1,7 @@
 package org.vaccineimpact.reporting_api.app_start
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.reporting_api.addTrailingSlashes
 import org.vaccineimpact.reporting_api.db.AppConfig
-import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.TokenStore
 import org.vaccineimpact.reporting_api.security.AllowedOriginsFilter
 import java.net.BindException
@@ -28,7 +26,6 @@ class MontaguReportingApi
         waitForGoSignal()
         setupPort()
         spk.redirect.get("/", urlBase)
-        spk.before("*", ::addTrailingSlashes)
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
         spk.options("*", { _, res ->
             res.header("Access-Control-Allow-Headers", "Authorization")

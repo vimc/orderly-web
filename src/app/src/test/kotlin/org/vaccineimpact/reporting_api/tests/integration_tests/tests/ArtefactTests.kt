@@ -61,6 +61,19 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
+    fun `gets artefact file with bearer token without trailing slash`()
+    {
+        val publishedVersion = Orderly().getReportsByName("other")[0]
+
+        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png"
+        val response = requestHelper.get(url, ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+    }
+
+    @Test
     fun `can get artefact file with scoped report reading permission`()
     {
         val publishedVersion = Orderly().getReportsByName("other")[0]

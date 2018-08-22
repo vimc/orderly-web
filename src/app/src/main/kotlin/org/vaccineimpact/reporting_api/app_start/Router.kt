@@ -21,66 +21,54 @@ class Router(val config: RouteConfig)
         val urls: MutableList<String> = mutableListOf()
     }
 
-    fun transform(x: Any) = Serializer.instance.toResult(x)
+    private fun transform(x: Any) = Serializer.instance.toResult(x)
 
     fun mapEndpoints(urlBase: String)
     {
-        urls.addAll(config.endpoints.map {
-            when (it.transform)
+        urls.addAll(config.endpoints.map { mapEndpoint(it, urlBase) })
+    }
+
+    private fun mapEndpoint(endpoint: EndpointDefinition, urlBase: String): String
+    {
+        if (!endpoint.urlFragment.endsWith("/"))
+        {
+            throw Exception("All endpoints must end in a forward slash. Problematic endpoint: ${endpoint.urlFragment}")
+        }
+
+        val fullUrl = urlBase + endpoint.urlFragment
+        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
+        mapUrl(fullUrl, endpoint)
+        mapUrl(fullUrl.dropLast(1), endpoint)
+        return fullUrl
+    }
+
+    private fun mapUrl(fullUrl: String, endpoint: EndpointDefinition)
+    {
+        val route = getWrappedRoute(endpoint)::handle
+        val contentType = endpoint.contentType
+        when (endpoint.transform)
+        {
+            true -> when (endpoint.method)
             {
-                true -> mapTransformedEndpoint(it, urlBase)
-                false -> mapEndpoint(it, urlBase)
+                HttpMethod.get -> Spark.get(fullUrl, contentType, route, this::transform)
+                HttpMethod.post -> Spark.post(fullUrl, contentType, route, this::transform)
+                HttpMethod.put -> Spark.put(fullUrl, contentType, route, this::transform)
+                HttpMethod.patch -> Spark.patch(fullUrl, contentType, route, this::transform)
+                HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, this::transform)
+                else -> throw UnsupportedValueException(endpoint.method)
             }
-        })
-    }
-
-    private fun mapTransformedEndpoint(
-            endpoint: EndpointDefinition,
-            urlBase: String): String
-    {
-        val fullUrl = urlBase + endpoint.urlFragment
-        val route = getWrappedRoute(endpoint)::handle
-        val contentType = endpoint.contentType
-
-        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
-        when (endpoint.method)
-        {
-            HttpMethod.get -> Spark.get(fullUrl, contentType, route, this::transform)
-            HttpMethod.post -> Spark.post(fullUrl, contentType, route, this::transform)
-            HttpMethod.put -> Spark.put(fullUrl, contentType, route, this::transform)
-            HttpMethod.patch -> Spark.patch(fullUrl, contentType, route, this::transform)
-            HttpMethod.delete -> Spark.delete(fullUrl, contentType, route, this::transform)
-            else -> throw UnsupportedValueException(endpoint.method)
+            false -> when (endpoint.method)
+            {
+                HttpMethod.get -> Spark.get(fullUrl, contentType, route)
+                HttpMethod.post -> Spark.post(fullUrl, contentType, route)
+                HttpMethod.put -> Spark.put(fullUrl, contentType, route)
+                HttpMethod.patch -> Spark.patch(fullUrl, contentType, route)
+                HttpMethod.delete -> Spark.delete(fullUrl, contentType, route)
+                else -> throw UnsupportedValueException(endpoint.method)
+            }
         }
-
         endpoint.additionalSetup(fullUrl)
-        return fullUrl
     }
-
-    private fun mapEndpoint(
-            endpoint: EndpointDefinition,
-            urlBase: String): String
-    {
-
-        val fullUrl = urlBase + endpoint.urlFragment
-        val route = getWrappedRoute(endpoint)::handle
-        val contentType = endpoint.contentType
-
-        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
-        when (endpoint.method)
-        {
-            HttpMethod.get -> Spark.get(fullUrl, contentType, route)
-            HttpMethod.post -> Spark.post(fullUrl, contentType, route)
-            HttpMethod.put -> Spark.put(fullUrl, contentType, route)
-            HttpMethod.patch -> Spark.patch(fullUrl, contentType, route)
-            HttpMethod.delete -> Spark.delete(fullUrl, contentType, route)
-            else -> throw UnsupportedValueException(endpoint.method)
-        }
-
-        endpoint.additionalSetup(fullUrl)
-        return fullUrl
-    }
-
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route
     {
