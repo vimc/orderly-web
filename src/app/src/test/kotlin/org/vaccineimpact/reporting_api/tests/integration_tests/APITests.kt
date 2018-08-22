@@ -19,7 +19,8 @@ import java.io.File
         SecurityTests::class,
         OnetimeTokenTests::class,
         GitTests::class,
-        HomeTests::class)
+        HomeTests::class,
+        VersionTests::class)
 class APITests
 {
     companion object
