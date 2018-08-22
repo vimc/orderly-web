@@ -37,14 +37,12 @@ class Router(val config: RouteConfig)
 
         val fullUrl = urlBase + endpoint.urlFragment
         logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
-        addSparkRoute(fullUrl, endpoint)
-        addSparkRoute(fullUrl.dropLast(1), endpoint)
-
-        endpoint.additionalSetup(fullUrl)
+        mapUrl(fullUrl, endpoint)
+        mapUrl(fullUrl.dropLast(1), endpoint)
         return fullUrl
     }
 
-    private fun addSparkRoute(fullUrl: String, endpoint: EndpointDefinition)
+    private fun mapUrl(fullUrl: String, endpoint: EndpointDefinition)
     {
         val route = getWrappedRoute(endpoint)::handle
         val contentType = endpoint.contentType
@@ -69,6 +67,7 @@ class Router(val config: RouteConfig)
                 else -> throw UnsupportedValueException(endpoint.method)
             }
         }
+        endpoint.additionalSetup(fullUrl)
     }
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route
