@@ -11,6 +11,47 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
+    override fun getAllReportVersions(): List<Report>
+    {
+        JooqContext().use {
+
+            val tempLatestVersionsTable = "latest"
+            val tempAllTable = "all"
+
+            val latestVersions = it.dsl.select(ORDERLY.ID.`as`("latestVersion"),
+                    ORDERLY.DATE.max().`as`("maxDate"))
+                    .from(ORDERLY)
+                    .where(shouldInclude)
+                    .groupBy(ORDERLY.NAME)
+
+            val allVersions = latestVersions.fetch().map{ n -> Pair(n["maxDate"], n["latestVersion"])}
+
+            val allNames = it.dsl.with(tempLatestVersionsTable).`as`(latestVersions)
+                    .select(ORDERLY.NAME,
+                            field(name(tempLatestVersionsTable, "latestVersion"), String::class.java))
+                    .from(ORDERLY)
+                    .join(table(name(tempLatestVersionsTable)))
+                    .on(ORDERLY.ID.eq(field(name(tempLatestVersionsTable, "latestVersion"), String::class.java)))
+
+            val allRecords = allNames.fetch().map{ n -> Pair(n["name"], n["latestVersion"])}
+
+            return it.dsl.with(tempAllTable).`as`(allNames)
+                    .select(ORDERLY.NAME,
+                            ORDERLY.DISPLAYNAME,
+                            ORDERLY.ID,
+                            ORDERLY.PUBLISHED,
+                            ORDERLY.DATE.`as`("updatedOn"),
+                            ORDERLY.AUTHOR,
+                            ORDERLY.REQUESTER,
+                            field(name(tempAllTable, "latestVersion"), String::class.java))
+                    .from(ORDERLY)
+                    .join(table(name(tempAllTable)))
+                    .on(ORDERLY.NAME.eq(field(name(tempAllTable, "name"), String::class.java)))
+                    .where(shouldInclude)
+                    .fetchInto(Report::class.java)
+        }
+    }
+
     private val gsonParser = JsonParser()
 
     private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)

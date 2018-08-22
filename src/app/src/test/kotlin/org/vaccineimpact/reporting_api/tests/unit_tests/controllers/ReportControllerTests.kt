@@ -60,8 +60,8 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns report names user is authorized to see`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true, Instant.now(), "author", "requester"),
-                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
+        val reports = listOf(Report(reportName, "test full name 1", "1", "v1", true, Instant.now(), "author", "requester"),
+                Report("testname2", "test full name 2", "2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports
@@ -83,9 +83,9 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports returns all report names if user has global read permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true,
+        val reports = listOf(Report(reportName, "test full name 1", "1", "v1", true,
                 Instant.now(), "author", "requester"),
-                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
+                Report("testname2", "test full name 2", "2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports
@@ -106,8 +106,8 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getReports throws MissingRequiredPermission error if user has no report reading permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1", true, Instant.now(), "author", "requester"),
-                Report("testname2", "test full name 2", "v1", true, Instant.now(), "author", "requester"))
+        val reports = listOf(Report(reportName, "test full name 1", "1", "v1", true, Instant.now(), "author", "requester"),
+                Report("testname2", "test full name 2", "2", "v1", true, Instant.now(), "author", "requester"))
 
         val orderly = mock<OrderlyClient> {
             on { this.getAllReports() } doReturn reports

@@ -8,6 +8,8 @@ interface OrderlyClient
 {
     fun getAllReports(): List<Report>
 
+    fun getAllReportVersions(): List<Report>
+
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
 
