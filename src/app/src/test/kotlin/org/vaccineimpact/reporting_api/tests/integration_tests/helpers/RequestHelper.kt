@@ -9,7 +9,7 @@ import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.security.CompressedJWTCookieClient
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.deflated
-import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
+import org.vaccineimpact.reporting_api.tests.integration_tests.tests.IntegrationTest
 
 class RequestHelper
 {
@@ -96,5 +96,6 @@ class RequestHelper
     private fun get(url: String, headers: Map<String, String>) = khttp.get(url, headers)
 
     private fun generateCompressedToken(user: InternalUser) =
-            APITests.tokenHelper.generateToken(user).deflated()
+            IntegrationTest.tokenHelper.generateToken(user).deflated()
+
 }

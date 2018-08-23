@@ -60,7 +60,7 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `can get all versions global report reading permissions`()
+    fun `can get all versions with global report reading permissions`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/versions/", user = requestHelper.fakeGlobalReportReader)
@@ -71,7 +71,7 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `can get all versions specific report reading permissions`()
+    fun `can get all versions with report reading permissions`()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/versions/", user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
