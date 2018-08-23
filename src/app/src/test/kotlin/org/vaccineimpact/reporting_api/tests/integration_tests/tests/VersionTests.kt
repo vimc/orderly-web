@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
+import com.github.salomonbrys.kotson.toJsonArray
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -68,17 +69,39 @@ class VersionTests : IntegrationTest()
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Reports")
+        val data = JSONValidator.getData(response.text)
+
+        // there are 6 report versions in the test data set, plus the one we added above
+        assertThat(data.count()).isEqualTo(7)
+        val names = data.map {
+            it.get("name").asText()
+        }
+        assertThat(names.sorted())
+                .containsExactlyElementsOf(listOf(
+                        "minimal",
+                        "multi-artefact",
+                        "multifile-artefact",
+                        "other",
+                        "other",
+                        "testname",
+                        "use_resource"
+                ))
     }
 
     @Test
-    fun `can get all versions with report reading permissions`()
+    fun `can get all versions with specific report reading permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/versions/", user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
+        val response = requestHelper.get("/versions/",
+                user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
 
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Reports")
+        val data = JSONValidator.getData(response.text)
+
+        assertThat(data.count()).isEqualTo(1)
+        assertThat(data[0].get("name").asText()).isEqualTo("testname")
     }
 
 
