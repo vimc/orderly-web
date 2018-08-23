@@ -3,7 +3,6 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.junit.After
-import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.app_start.main
@@ -13,7 +12,6 @@ import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.TestTokenGenerator
 import org.vaccineimpact.reporting_api.tests.integration_tests.validators.JSONValidator
-import spark.Spark
 import java.io.File
 
 abstract class IntegrationTest : MontaguTests()
@@ -25,7 +23,7 @@ abstract class IntegrationTest : MontaguTests()
     {
         var appStarted: Boolean = false
 
-        // Use a single TestTokenGenerator for the whole suite. This
+        // Use a single TestTokenGenerator for all tests. This
         // ensures that the same keypair is used throughout.
         val tokenHelper = TestTokenGenerator()
 
@@ -37,18 +35,6 @@ abstract class IntegrationTest : MontaguTests()
             {
                 appStarted = true
                 main(emptyArray())
-            }
-        }
-
-        @AfterClass
-        @JvmStatic
-        fun stopApp()
-        {
-
-            if (!appStarted)
-            {
-                Spark.stop()
-                File(AppConfig()["onetime_token.db.location"]).delete()
             }
         }
     }
