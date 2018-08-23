@@ -122,9 +122,5 @@ task checkConfigDirExists() {
 }
 test.dependsOn 'checkConfigDirExists'
 
-// We run the integration test as a suite (see APITests); this line prevents
-// them being run individually as well
-test.exclude "**/integration_tests/tests/**"
-
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'

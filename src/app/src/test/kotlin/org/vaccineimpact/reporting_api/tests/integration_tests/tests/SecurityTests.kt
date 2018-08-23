@@ -4,10 +4,8 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
-import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
 import org.vaccineimpact.reporting_api.tests.insertReport
-import org.vaccineimpact.reporting_api.tests.integration_tests.APITests
 import org.vaccineimpact.reporting_api.tests.integration_tests.helpers.RequestHelper
 
 class SecurityTests : IntegrationTest()
