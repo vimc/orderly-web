@@ -72,12 +72,13 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text)
 
         // there are 6 report versions in the test data set, plus the one we added above
-        assertThat(data.count()).isEqualTo(7)
+        assertThat(data.count()).isEqualTo(8)
         val names = data.map {
             it.get("name").asText()
         }
         assertThat(names.sorted())
                 .containsExactlyElementsOf(listOf(
+                        "html",
                         "minimal",
                         "multi-artefact",
                         "multifile-artefact",
