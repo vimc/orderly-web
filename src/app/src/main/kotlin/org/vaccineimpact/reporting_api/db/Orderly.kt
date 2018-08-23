@@ -12,31 +12,44 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
+    companion object
+    {
+        val tempLatestVersions = "latest"
+        val tempAll = "all"
+
+        val LATEST_VERSIONS = table(name(tempLatestVersions))
+        val VERSION_ID = field(name(tempLatestVersions, "latestVersion"), String::class.java)
+
+        val ALL_VERSIONS = table(name(tempAll))
+        val LATEST_VERSION_ID = field(name(tempAll, "latestVersion"), String::class.java)
+        val NAME = field(name(tempAll, "name"), String::class.java)
+
+    }
+
     override fun getAllReportVersions(): List<ReportVersion>
     {
+        // Sorry for this hard to follow SQL
         JooqContext().use {
 
-            val tempLatestVersionsTable = "latest"
-            val tempAllTable = "all"
-
+            // this temp table contains all the latest version ids
             val latestVersions = it.dsl.select(ORDERLY.ID.`as`("latestVersion"),
                     ORDERLY.DATE.max().`as`("maxDate"))
                     .from(ORDERLY)
                     .where(shouldInclude)
                     .groupBy(ORDERLY.NAME)
 
-            val allVersions = latestVersions.fetch().map{ n -> Pair(n["maxDate"], n["latestVersion"])}
-
-            val allNames = it.dsl.with(tempLatestVersionsTable).`as`(latestVersions)
+            // this temp table, built using the previous one, contains all report names along
+            // with the latest version id for that name
+            val allNamesAndLatestVersionIds = it.dsl.with(tempLatestVersions).`as`(latestVersions)
                     .select(ORDERLY.NAME,
-                            field(name(tempLatestVersionsTable, "latestVersion"), String::class.java))
+                            VERSION_ID)
                     .from(ORDERLY)
-                    .join(table(name(tempLatestVersionsTable)))
-                    .on(ORDERLY.ID.eq(field(name(tempLatestVersionsTable, "latestVersion"), String::class.java)))
+                    .join(LATEST_VERSIONS)
+                    .on(ORDERLY.ID.eq(VERSION_ID))
 
-            val allRecords = allNames.fetch().map{ n -> Pair(n["name"], n["latestVersion"])}
-
-            return it.dsl.with(tempAllTable).`as`(allNames)
+            // finally we can join the names and latest version table to the whole table
+            // to get all the details we need including the id of the latest version
+            return it.dsl.with(tempAll).`as`(allNamesAndLatestVersionIds)
                     .select(ORDERLY.NAME,
                             ORDERLY.DISPLAYNAME,
                             ORDERLY.ID,
@@ -44,10 +57,10 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                             ORDERLY.DATE.`as`("updatedOn"),
                             ORDERLY.AUTHOR,
                             ORDERLY.REQUESTER,
-                            field(name(tempAllTable, "latestVersion"), String::class.java))
+                            LATEST_VERSION_ID)
                     .from(ORDERLY)
-                    .join(table(name(tempAllTable)))
-                    .on(ORDERLY.NAME.eq(field(name(tempAllTable, "name"), String::class.java)))
+                    .join(ALL_VERSIONS)
+                    .on(ORDERLY.NAME.eq(NAME))
                     .where(shouldInclude)
                     .fetchInto(ReportVersion::class.java)
         }
