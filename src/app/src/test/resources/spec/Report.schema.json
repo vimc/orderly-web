@@ -5,6 +5,7 @@
     "name": {"type" :"string"},
     "display_name": {"type": [ "string", "null"] },
     "latest_version": { "type": "string" },
+    "id": { "type": "string" },
     "published": { "type": "boolean" }
   },
   "required": ["name", "latest_version", "display_name", "published"]

@@ -2,6 +2,7 @@ package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Report
+import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.encompass
 import org.vaccineimpact.api.models.permissions.PermissionSet
@@ -58,6 +59,17 @@ class ReportController(context: ActionContext,
         }
 
         val reports = orderly.getAllReports()
+        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
+    }
+
+    fun getAllVersions(): List<ReportVersion>
+    {
+        if (!reportReadingScopes.any())
+        {
+            throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
+        }
+
+        val reports = orderly.getAllReportVersions()
         return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
     }
 

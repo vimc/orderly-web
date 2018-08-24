@@ -4,6 +4,7 @@ import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Report
+import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -11,6 +12,40 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
+    override fun getAllReportVersions(): List<ReportVersion>
+    {
+        JooqContext().use {
+            // create a temp table containing the latest version ID for each report name
+            val latestVersionForEachReport = it.dsl.select(
+                    ORDERLY.NAME,
+                    ORDERLY.ID.`as`("latestVersion"),
+                    ORDERLY.DATE.max().`as`("maxDate")
+            )
+                    .from(ORDERLY)
+                    .where(shouldInclude)
+                    .groupBy(ORDERLY.NAME)
+                    .asTemporaryTable(name = "latest_version_for_each_report")
+
+            // join with all the versions to get full details of each report + version alongside
+            // the latest version ID for that report
+            return it.dsl.withTemporaryTable(latestVersionForEachReport)
+                    .select(ORDERLY.NAME,
+                            ORDERLY.DISPLAYNAME,
+                            ORDERLY.ID,
+                            ORDERLY.PUBLISHED,
+                            ORDERLY.DATE.`as`("updatedOn"),
+                            ORDERLY.AUTHOR,
+                            ORDERLY.REQUESTER,
+                            latestVersionForEachReport.field<String>("latestVersion"))
+                    .from(ORDERLY)
+                    .join(latestVersionForEachReport.tableName)
+                    .on(ORDERLY.NAME.eq(latestVersionForEachReport.field("name")))
+                    .where(shouldInclude)
+                    .orderBy(ORDERLY.NAME, ORDERLY.ID)
+                    .fetchInto(ReportVersion::class.java)
+        }
+    }
+
     private val gsonParser = JsonParser()
 
     private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
