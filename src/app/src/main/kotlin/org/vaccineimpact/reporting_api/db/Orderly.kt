@@ -12,44 +12,23 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
-    companion object
-    {
-        val tempLatestVersions = "latest"
-        val tempAll = "all"
-
-        val LATEST_VERSIONS = table(name(tempLatestVersions))
-        val VERSION_ID = field(name(tempLatestVersions, "latestVersion"), String::class.java)
-
-        val ALL_VERSIONS = table(name(tempAll))
-        val LATEST_VERSION_ID = field(name(tempAll, "latestVersion"), String::class.java)
-        val NAME = field(name(tempAll, "name"), String::class.java)
-
-    }
-
     override fun getAllReportVersions(): List<ReportVersion>
     {
-        // Sorry for this hard to follow SQL
         JooqContext().use {
-
-            // this temp table contains all the latest version ids
-            val latestVersions = it.dsl.select(ORDERLY.ID.`as`("latestVersion"),
-                    ORDERLY.DATE.max().`as`("maxDate"))
+            // create a temp table containing the latest version ID for each report name
+            val latestVersionForEachReport = it.dsl.select(
+                    ORDERLY.NAME,
+                    ORDERLY.ID.`as`("latestVersion"),
+                    ORDERLY.DATE.max().`as`("maxDate")
+            )
                     .from(ORDERLY)
                     .where(shouldInclude)
                     .groupBy(ORDERLY.NAME)
+                    .asTemporaryTable(name = "latest_version_for_each_report")
 
-            // this temp table, built using the previous one, contains all report names along
-            // with the latest version id for that name
-            val allNamesAndLatestVersionIds = it.dsl.with(tempLatestVersions).`as`(latestVersions)
-                    .select(ORDERLY.NAME,
-                            VERSION_ID)
-                    .from(ORDERLY)
-                    .join(LATEST_VERSIONS)
-                    .on(ORDERLY.ID.eq(VERSION_ID))
-
-            // finally we can join the names and latest version table to the whole table
-            // to get all the details we need including the id of the latest version
-            return it.dsl.with(tempAll).`as`(allNamesAndLatestVersionIds)
+            // join with all the versions to get full details of each report + version alongside
+            // the latest version ID for that report
+            return it.dsl.withTemporaryTable(latestVersionForEachReport)
                     .select(ORDERLY.NAME,
                             ORDERLY.DISPLAYNAME,
                             ORDERLY.ID,
@@ -57,11 +36,12 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                             ORDERLY.DATE.`as`("updatedOn"),
                             ORDERLY.AUTHOR,
                             ORDERLY.REQUESTER,
-                            LATEST_VERSION_ID)
+                            latestVersionForEachReport.field<String>("latestVersion"))
                     .from(ORDERLY)
-                    .join(ALL_VERSIONS)
-                    .on(ORDERLY.NAME.eq(NAME))
+                    .join(latestVersionForEachReport.tableName)
+                    .on(ORDERLY.NAME.eq(latestVersionForEachReport.field("name")))
                     .where(shouldInclude)
+                    .orderBy(ORDERLY.NAME, ORDERLY.ID)
                     .fetchInto(ReportVersion::class.java)
         }
     }
