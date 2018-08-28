@@ -68,6 +68,7 @@ class ArtefactController(context: ActionContext,
             "png" -> "image/png"
             "pdf" -> "application/pdf"
             "html" -> "text/html"
+            "css" -> "text/css"
             else -> ContentTypes.binarydata
         }
     }
