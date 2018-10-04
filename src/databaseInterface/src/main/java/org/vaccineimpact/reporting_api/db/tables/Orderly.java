@@ -34,7 +34,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Orderly extends TableImpl<OrderlyRecord> {
 
-    private static final long serialVersionUID = -544025945;
+    private static final long serialVersionUID = -1523550801;
 
     /**
      * The reference instance of <code>orderly</code>
@@ -138,6 +138,11 @@ public class Orderly extends TableImpl<OrderlyRecord> {
      * The column <code>orderly.hash_artefacts</code>.
      */
     public final TableField<OrderlyRecord, String> HASH_ARTEFACTS = createField("hash_artefacts", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderly.depends</code>.
+     */
+    public final TableField<OrderlyRecord, String> DEPENDS = createField("depends", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>orderly.published</code>.

@@ -46,6 +46,7 @@ def loadProperties() {
                     "but no corresponding properties file exists at $userPropertiesFile.absolutePath")
         }
     }
+    properties["project_dir"] = new File(properties["project_dir"]).getAbsolutePath()
     return properties
 }
 
