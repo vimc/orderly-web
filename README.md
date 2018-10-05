@@ -21,7 +21,7 @@ System requirements:
 This is done automatically by `run-dependencies.sh` above. To generate a test
 Orderly directory to develop against, run the `:app:generateTestData` gradle
 task (either from within your IDE or on the command line from within the project
-root directory with `./gradlew:app:generateTestData`).
+root directory with `./gradlew :app:generateTestData`).
 
 The above task will generate two Orderly directorys; one at `./src/app/demo`
 and one at `./src/app/git`. The latter contains an Orderly directory which is
@@ -32,6 +32,15 @@ are used for integration tests and for running locally.
 To run the tests, use `./gradlew test` having first run `run-dependencies.sh`.
 You may have to run `sudo chmod 766 /etc/montagu/reports_api/token_key/public_key.der`
 or similar to let the tests write to this file.
+
+## Regenerate database interface
+```
+cd src
+# Make sure you have a fresh copy of the db
+rm -r app/demo && ./gradlew :app:generateTestData
+# Generate the classes
+./gradlew :app:generateDatabaseInterface
+```
 
 ## Docker build
 The Teamcity build

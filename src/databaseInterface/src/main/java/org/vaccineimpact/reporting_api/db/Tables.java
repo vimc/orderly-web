@@ -6,7 +6,22 @@ package org.vaccineimpact.reporting_api.db;
 
 import javax.annotation.Generated;
 
+import org.vaccineimpact.reporting_api.db.tables.ArtefactFormat;
+import org.vaccineimpact.reporting_api.db.tables.Data;
+import org.vaccineimpact.reporting_api.db.tables.Depends;
+import org.vaccineimpact.reporting_api.db.tables.File;
+import org.vaccineimpact.reporting_api.db.tables.FileArtefact;
+import org.vaccineimpact.reporting_api.db.tables.FileInput;
+import org.vaccineimpact.reporting_api.db.tables.FilePurpose;
 import org.vaccineimpact.reporting_api.db.tables.Orderly;
+import org.vaccineimpact.reporting_api.db.tables.OrderlySchema;
+import org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.reporting_api.db.tables.Report;
+import org.vaccineimpact.reporting_api.db.tables.ReportVersion;
+import org.vaccineimpact.reporting_api.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.reporting_api.db.tables.ReportVersionData;
+import org.vaccineimpact.reporting_api.db.tables.ReportVersionPackage;
+import org.vaccineimpact.reporting_api.db.tables.ReportVersionView;
 
 
 /**
@@ -23,7 +38,82 @@ import org.vaccineimpact.reporting_api.db.tables.Orderly;
 public class Tables {
 
     /**
+     * The table <code>artefact_format</code>.
+     */
+    public static final ArtefactFormat ARTEFACT_FORMAT = org.vaccineimpact.reporting_api.db.tables.ArtefactFormat.ARTEFACT_FORMAT;
+
+    /**
+     * The table <code>data</code>.
+     */
+    public static final Data DATA = org.vaccineimpact.reporting_api.db.tables.Data.DATA;
+
+    /**
+     * The table <code>depends</code>.
+     */
+    public static final Depends DEPENDS = org.vaccineimpact.reporting_api.db.tables.Depends.DEPENDS;
+
+    /**
+     * The table <code>file</code>.
+     */
+    public static final File FILE = org.vaccineimpact.reporting_api.db.tables.File.FILE;
+
+    /**
+     * The table <code>file_artefact</code>.
+     */
+    public static final FileArtefact FILE_ARTEFACT = org.vaccineimpact.reporting_api.db.tables.FileArtefact.FILE_ARTEFACT;
+
+    /**
+     * The table <code>file_input</code>.
+     */
+    public static final FileInput FILE_INPUT = org.vaccineimpact.reporting_api.db.tables.FileInput.FILE_INPUT;
+
+    /**
+     * The table <code>file_purpose</code>.
+     */
+    public static final FilePurpose FILE_PURPOSE = org.vaccineimpact.reporting_api.db.tables.FilePurpose.FILE_PURPOSE;
+
+    /**
      * The table <code>orderly</code>.
      */
     public static final Orderly ORDERLY = org.vaccineimpact.reporting_api.db.tables.Orderly.ORDERLY;
+
+    /**
+     * The table <code>orderly_schema</code>.
+     */
+    public static final OrderlySchema ORDERLY_SCHEMA = org.vaccineimpact.reporting_api.db.tables.OrderlySchema.ORDERLY_SCHEMA;
+
+    /**
+     * The table <code>orderly_schema_tables</code>.
+     */
+    public static final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>report</code>.
+     */
+    public static final Report REPORT = org.vaccineimpact.reporting_api.db.tables.Report.REPORT;
+
+    /**
+     * The table <code>report_version</code>.
+     */
+    public static final ReportVersion REPORT_VERSION = org.vaccineimpact.reporting_api.db.tables.ReportVersion.REPORT_VERSION;
+
+    /**
+     * The table <code>report_version_artefact</code>.
+     */
+    public static final ReportVersionArtefact REPORT_VERSION_ARTEFACT = org.vaccineimpact.reporting_api.db.tables.ReportVersionArtefact.REPORT_VERSION_ARTEFACT;
+
+    /**
+     * The table <code>report_version_data</code>.
+     */
+    public static final ReportVersionData REPORT_VERSION_DATA = org.vaccineimpact.reporting_api.db.tables.ReportVersionData.REPORT_VERSION_DATA;
+
+    /**
+     * The table <code>report_version_package</code>.
+     */
+    public static final ReportVersionPackage REPORT_VERSION_PACKAGE = org.vaccineimpact.reporting_api.db.tables.ReportVersionPackage.REPORT_VERSION_PACKAGE;
+
+    /**
+     * The table <code>report_version_view</code>.
+     */
+    public static final ReportVersionView REPORT_VERSION_VIEW = org.vaccineimpact.reporting_api.db.tables.ReportVersionView.REPORT_VERSION_VIEW;
 }
