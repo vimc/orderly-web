@@ -66,6 +66,7 @@ class ArtefactController(context: ActionContext,
         {
             "csv" -> "text/csv"
             "png" -> "image/png"
+            "svg" -> "image/svg+xml"
             "pdf" -> "application/pdf"
             "html" -> "text/html"
             "css" -> "text/css"
