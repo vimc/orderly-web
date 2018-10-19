@@ -39,7 +39,7 @@ cd src
 # Make sure you have a fresh copy of the db
 rm -r app/demo && ./gradlew :app:generateTestData
 # Generate the classes
-./gradlew :app:generateDatabaseInterface
+./gradlew :generateDatabaseInterface
 ```
 
 ## Docker build
