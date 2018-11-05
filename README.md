@@ -4,21 +4,32 @@ See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specifi
 
 ## Developing
 System requirements:
-* openjdk 8
-* Docker
+* **openjdk 8**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
+(for  development), not just the jre package.
+* **Docker**
+* **Docker Compose version 1.21.0:** This is version installed on the servers. There was a breaking change in 
+v1.23.0 which appends random strings to container names each time they run.
+* **Vault**
 
 1. Make sure you check out recursively, using `git clone --recursive URL`.
 2. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
-   You may need to restart your machine for changes to take effect.
+   You may need to restart your machine for group changes to take effect.
 3. Configure your Docker client to use our registry by following instructions 
-   here: https://github.com/vimc/montagu-ci#configuring-docker-clients-to-use-the-registry
+   here: https://github.com/vimc/montagu-registry/tree/master#login 
+   
+   This is where you will need to have Vault 
+   installed, and the VAULT_ADDR variable specified, e.g. by adding 
+   `export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'` to your profile using ` sudo nano ~/.profile` 
 4. Run all dependencies (API, DB, Orderly Server, etc.) with 
    `./dev/run-dependencies.sh`
-5. Run the reporting API with `./gradlew :run`
+5. Run the reporting API, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
+   project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
+   go signal. The API will now be available on your local machine at http://127.0.0.1:8081
+ 
 
 ### Generate test data.  
-This is done automatically by `run-dependencies.sh` above. To generate a test
+This is done automatically by `./dev/run-dependencies.sh` above. To generate a test
 Orderly directory to develop against, run the `:app:generateTestData` gradle
 task (either from within your IDE or on the command line from within the project
 root directory with `./gradlew :app:generateTestData`).
@@ -29,9 +40,9 @@ also a git repo, the former contains several different types of report. These
 are used for integration tests and for running locally.
 
 ### Run tests
-To run the tests, use `./gradlew test` having first run `run-dependencies.sh`.
+To run the tests, use `./gradlew test` from the src dir, having first run `run-dependencies.sh`.
 You may have to run `sudo chmod 766 /etc/montagu/reports_api/token_key/public_key.der`
-or similar to let the tests write to this file.
+or `sudo chmod u+rw /etc/montagu/reports_api/token_key` or similar to let the tests write to this file.
 
 ## Regenerate database interface
 ```
