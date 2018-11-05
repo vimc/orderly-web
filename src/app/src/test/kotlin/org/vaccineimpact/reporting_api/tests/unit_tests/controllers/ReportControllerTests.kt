@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.*
 import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.Scope
@@ -58,7 +57,6 @@ class ReportControllerTests : ControllerTest()
         assertThat(result).isEqualTo("okayresponse")
     }
 
-    @Ignore
     @Test
     fun `getReports returns report names user is authorized to see`()
     {
@@ -105,7 +103,7 @@ class ReportControllerTests : ControllerTest()
         assertThat(result).hasSameElementsAs(reports)
     }
 
-    @Ignore
+
     @Test
     fun `getReports throws MissingRequiredPermission error if user has no report reading permissions`()
     {

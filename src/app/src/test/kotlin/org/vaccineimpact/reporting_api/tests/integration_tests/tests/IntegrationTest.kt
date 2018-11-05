@@ -68,8 +68,8 @@ abstract class IntegrationTest : MontaguTests()
     protected fun assertSuccessfulWithResponseText(response: Response)
     {
         Assertions.assertThat(response.statusCode)
-                .isEqualTo(200)
                 .withFailMessage(response.text)
+                .isEqualTo(200)
 
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
