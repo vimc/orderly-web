@@ -2,6 +2,8 @@ package org.vaccineimpact.reporting_api.tests
 
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
+import org.vaccineimpact.reporting_api.db.Tables.REPORT
+import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import java.sql.Timestamp
 
 fun insertReport(name: String,
@@ -19,15 +21,20 @@ fun insertReport(name: String,
 {
     JooqContext().use {
 
+        //Insert report in both old and new schemas
+
+        val date = Timestamp(System.currentTimeMillis())
+        val displayname = "display name $name"
+
         val record = it.dsl.newRecord(ORDERLY)
                 .apply {
                     this.name = name
-                    this.displayname = "display name $name"
+                    this.displayname = displayname
                     this.id = version
                     this.views = views
                     this.data = data
                     this.artefacts = artefacts
-                    this.date = Timestamp(System.currentTimeMillis())
+                    this.date = date
                     this.hashArtefacts = hashArtefacts
                     this.hashData = hashData
                     this.hashResources = hashResources
@@ -38,5 +45,35 @@ fun insertReport(name: String,
                     this.script = "script.R"
                 }
         record.store()
+
+        //Does the report already exist in the REPORT table?
+        val rows = it.dsl.select(REPORT.NAME)
+                .from(REPORT)
+                .where(REPORT.NAME.eq(name))
+                .fetch()
+
+        if (rows.isEmpty())
+        {
+
+            val reportRecord = it.dsl.newRecord(REPORT)
+                    .apply {
+                        this.name = name
+                    }
+            reportRecord.store()
+        }
+
+        val reportVersionRecord = it.dsl.newRecord(REPORT_VERSION)
+                .apply{
+                    this.id = version
+                    this.report = name
+                    this.date = date
+                    this.displayname = displayname
+                    this.description = "description $name"
+                    this.requester = requester
+                    this.author = author
+                    this.published = published
+                }
+        reportVersionRecord.store()
+
     }
 }

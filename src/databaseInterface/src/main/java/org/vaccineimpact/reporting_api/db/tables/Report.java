@@ -10,6 +10,7 @@ import java.util.List;
 import javax.annotation.Generated;
 
 import org.jooq.Field;
+import org.jooq.ForeignKey;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -33,7 +34,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.ReportRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Report extends TableImpl<ReportRecord> {
 
-    private static final long serialVersionUID = -155330153;
+    private static final long serialVersionUID = -1403051986;
 
     /**
      * The reference instance of <code>report</code>
@@ -52,6 +53,11 @@ public class Report extends TableImpl<ReportRecord> {
      * The column <code>report.name</code>.
      */
     public final TableField<ReportRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>report.latest</code>.
+     */
+    public final TableField<ReportRecord, String> LATEST = createField("latest", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>report</code> table reference
@@ -97,6 +103,14 @@ public class Report extends TableImpl<ReportRecord> {
     @Override
     public List<UniqueKey<ReportRecord>> getKeys() {
         return Arrays.<UniqueKey<ReportRecord>>asList(Keys.PK_REPORT);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ForeignKey<ReportRecord, ?>> getReferences() {
+        return Arrays.<ForeignKey<ReportRecord, ?>>asList(Keys.FK_REPORT_REPORT_VERSION_1);
     }
 
     /**

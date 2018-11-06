@@ -1,11 +1,13 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.junit.Test
+import org.junit.Ignore
 
 class GitTests : IntegrationTest()
 {
 
     @Test
+    @Ignore
     fun `gets git status`()
     {
         val response = requestHelper.get("/reports/git/status/", user = requestHelper.fakeReviewer)
@@ -16,6 +18,7 @@ class GitTests : IntegrationTest()
     }
 
     @Test
+    @Ignore
     fun `pulls`()
     {
         val response = requestHelper.post("/reports/git/pull/", mapOf(), user = requestHelper.fakeReviewer)
