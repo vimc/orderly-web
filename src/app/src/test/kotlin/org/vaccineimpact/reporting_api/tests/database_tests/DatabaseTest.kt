@@ -6,6 +6,8 @@ import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
+import org.vaccineimpact.reporting_api.db.Tables.REPORT
+import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
@@ -41,6 +43,12 @@ abstract class DatabaseTests : MontaguTests()
     {
         JooqContext().use {
             it.dsl.deleteFrom(ORDERLY)
+                    .execute()
+
+            it.dsl.deleteFrom(REPORT)
+                    .execute()
+
+            it.dsl.deleteFrom(REPORT_VERSION)
                     .execute()
         }
     }
