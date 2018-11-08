@@ -30,6 +30,7 @@ docker run --rm \
     docker.montagu.dide.ic.ac.uk:5000/montagu-cert-tool:$cert_tool_version \
     gen-keypair /workspace
 
+docker-compose pull
 docker-compose up -d
 docker exec dev_api_1 touch /etc/montagu/api/go_signal
 
