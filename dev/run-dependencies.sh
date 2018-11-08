@@ -11,6 +11,10 @@ cert_tool_version=master
 
 export TOKEN_KEY_PATH=/etc/montagu/reports_api/token_key
 export MONTAGU_ORDERLY_PATH=$(realpath ../src/app/git)
+
+echo "using orderly path:"
+echo $MONTAGU_ORDERLY_PATH
+
 export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 (
