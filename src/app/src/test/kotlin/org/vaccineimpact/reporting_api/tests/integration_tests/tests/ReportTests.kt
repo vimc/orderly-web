@@ -16,6 +16,15 @@ class ReportTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Reports")
     }
 
+    @Test
+    fun `exception in test should break TC build`() {
+        throw Exception("test")
+    }
+
+    @Test
+    fun `assertion failure in test should break TC build`() {
+        assertThat(true).isFalse();
+    }
 
     @Test
     fun `runs report`()
