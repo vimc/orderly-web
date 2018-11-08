@@ -17,16 +17,6 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `exception in test should break TC build`() {
-        throw Exception("test")
-    }
-
-    @Test
-    fun `assertion failure in test should break TC build`() {
-        assertThat(true).isFalse();
-    }
-
-    @Test
     fun `runs report`()
     {
         val response = requestHelper.post("/reports/minimal/run/", mapOf(), user = requestHelper.fakeReviewer)
