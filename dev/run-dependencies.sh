@@ -19,9 +19,10 @@ export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 (
 	cd ../src
-	if [[ ! -d app/demo ]]; then
-		./gradlew :generateTestData
-	fi
+	# get fresh tests data
+	rm app/demo -rf
+	rm app/git -rf
+	./gradlew :generateTestData
 )
 
 # Generate a keypair
