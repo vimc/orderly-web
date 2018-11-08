@@ -72,6 +72,7 @@ fun insertReport(name: String,
                     this.requester = requester
                     this.author = author
                     this.published = published
+                    this.connection = false
                 }
         reportVersionRecord.store()
 

@@ -35,7 +35,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReportVersion extends TableImpl<ReportVersionRecord> {
 
-    private static final long serialVersionUID = 1688335117;
+    private static final long serialVersionUID = 220009595;
 
     /**
      * The reference instance of <code>report_version</code>
@@ -74,6 +74,11 @@ public class ReportVersion extends TableImpl<ReportVersionRecord> {
      * The column <code>report_version.description</code>.
      */
     public final TableField<ReportVersionRecord, String> DESCRIPTION = createField("description", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>report_version.connection</code>.
+     */
+    public final TableField<ReportVersionRecord, Boolean> CONNECTION = createField("connection", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false), this, "");
 
     /**
      * The column <code>report_version.published</code>.
