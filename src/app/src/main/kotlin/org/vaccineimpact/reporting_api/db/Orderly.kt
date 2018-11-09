@@ -3,8 +3,10 @@ package org.vaccineimpact.reporting_api.db
 import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
+import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
@@ -187,6 +189,40 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError(resourcename, "Resource")
 
         return result.asString
+    }
+
+    override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
+    {
+        JooqContext().use {
+
+            //raise exception if version does not belong to named report, or version does not exist
+            it.dsl.select()
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq(name))
+                    .and(REPORT_VERSION.ID.eq(version))
+                    .fetchAny()
+                ?: throw UnknownObjectError("$name-$version", "reportVersion")
+
+            val thisVersion = REPORT_VERSION.`as`("thisVersion")
+            val thisAndPreviousVersions = REPORT_VERSION.`as`("thisAndPreviousVersions")
+
+            return it.dsl
+                    .select(CHANGELOG.REPORT_VERSION,
+                            CHANGELOG.LABEL,
+                            CHANGELOG.VALUE,
+                            CHANGELOG.FROM_FILE)
+                    .from(thisVersion)
+                    .join(thisAndPreviousVersions)
+                    .on(thisAndPreviousVersions.REPORT.eq(thisVersion.REPORT))
+                    .and(thisAndPreviousVersions.DATE.lessOrEqual(thisVersion.DATE))
+                    .join(CHANGELOG)
+                    .on(CHANGELOG.REPORT_VERSION.eq(thisAndPreviousVersions.ID))
+                    .where(thisVersion.ID.eq(version))
+                    .orderBy(CHANGELOG.ID.desc())
+                    .fetchInto(Changelog::class.java)
+
+        }
+
     }
 
 

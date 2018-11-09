@@ -14,6 +14,8 @@ open class JooqContext(private val dbLocation: String = AppConfig()["db.location
 
     private fun getConnection(): Connection
     {
+        println("Making DB connection at $dbLocation")
+
         val fullLocation = File(dbLocation).absolutePath
         val url = "jdbc:sqlite://$fullLocation"
         try

@@ -14,6 +14,8 @@ import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
 import org.vaccineimpact.reporting_api.db.tables.ArtefactFormat;
+import org.vaccineimpact.reporting_api.db.tables.Changelog;
+import org.vaccineimpact.reporting_api.db.tables.ChangelogLabel;
 import org.vaccineimpact.reporting_api.db.tables.Data;
 import org.vaccineimpact.reporting_api.db.tables.Depends;
 import org.vaccineimpact.reporting_api.db.tables.File;
@@ -44,7 +46,7 @@ import org.vaccineimpact.reporting_api.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 99607863;
+    private static final long serialVersionUID = 951061047;
 
     /**
      * The reference instance of <code></code>
@@ -55,6 +57,16 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>artefact_format</code>.
      */
     public final ArtefactFormat ARTEFACT_FORMAT = org.vaccineimpact.reporting_api.db.tables.ArtefactFormat.ARTEFACT_FORMAT;
+
+    /**
+     * The table <code>changelog</code>.
+     */
+    public final Changelog CHANGELOG = org.vaccineimpact.reporting_api.db.tables.Changelog.CHANGELOG;
+
+    /**
+     * The table <code>changelog_label</code>.
+     */
+    public final ChangelogLabel CHANGELOG_LABEL = org.vaccineimpact.reporting_api.db.tables.ChangelogLabel.CHANGELOG_LABEL;
 
     /**
      * The table <code>data</code>.
@@ -157,6 +169,8 @@ public class DefaultSchema extends SchemaImpl {
     private final List<Table<?>> getTables0() {
         return Arrays.<Table<?>>asList(
             ArtefactFormat.ARTEFACT_FORMAT,
+            Changelog.CHANGELOG,
+            ChangelogLabel.CHANGELOG_LABEL,
             Data.DATA,
             Depends.DEPENDS,
             File.FILE,
