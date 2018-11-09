@@ -5,9 +5,10 @@ import com.nhaarman.mockito_kotlin.mock
 import org.junit.Test
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.reporting_api.DirectActionContext
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import spark.Request
 
-class DirectActionContextTests
+class DirectActionContextTests: MontaguTests()
 {
 
     @Test
