@@ -196,28 +196,35 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         JooqContext().use {
 
             //raise exception if version does not belong to named report, or version does not exist
-            it.dsl.select()
+            val thisVersion =
+                    it.dsl.select(REPORT_VERSION.REPORT.`as`("name"),
+                        REPORT_VERSION.DISPLAYNAME,
+                        REPORT_VERSION.ID,
+                        REPORT_VERSION.PUBLISHED,
+                        REPORT_VERSION.DATE.`as`("updatedOn"),
+                        REPORT_VERSION.AUTHOR,
+                        REPORT_VERSION.REQUESTER,
+                        REPORT_VERSION.ID.`as`("latestVersion")) //We aren't using this field but need to give the constructor some value
                     .from(REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(name))
                     .and(REPORT_VERSION.ID.eq(version))
-                    .fetchAny()
-                ?: throw UnknownObjectError("$name-$version", "reportVersion")
+                    .fetchInto(ReportVersion::class.java)
 
-            val thisVersion = REPORT_VERSION.`as`("thisVersion")
-            val thisAndPreviousVersions = REPORT_VERSION.`as`("thisAndPreviousVersions")
+            if (thisVersion.isEmpty())
+            {
+                throw UnknownObjectError("$name-$version", "reportVersion")
+            }
 
             return it.dsl
                     .select(CHANGELOG.REPORT_VERSION,
                             CHANGELOG.LABEL,
                             CHANGELOG.VALUE,
                             CHANGELOG.FROM_FILE)
-                    .from(thisVersion)
-                    .join(thisAndPreviousVersions)
-                    .on(thisAndPreviousVersions.REPORT.eq(thisVersion.REPORT))
-                    .and(thisAndPreviousVersions.DATE.lessOrEqual(thisVersion.DATE))
+                    .from(REPORT_VERSION)
                     .join(CHANGELOG)
-                    .on(CHANGELOG.REPORT_VERSION.eq(thisAndPreviousVersions.ID))
-                    .where(thisVersion.ID.eq(version))
+                    .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                    .where(REPORT_VERSION.REPORT.eq(thisVersion[0].name))
+                    .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(thisVersion[0].updatedOn)))
                     .orderBy(CHANGELOG.ID.desc())
                     .fetchInto(Changelog::class.java)
 
