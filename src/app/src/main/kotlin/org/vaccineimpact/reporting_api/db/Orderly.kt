@@ -197,23 +197,12 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
             //raise exception if version does not belong to named report, or version does not exist
             val thisVersion =
-                    it.dsl.select(REPORT_VERSION.REPORT.`as`("name"),
-                        REPORT_VERSION.DISPLAYNAME,
-                        REPORT_VERSION.ID,
-                        REPORT_VERSION.PUBLISHED,
-                        REPORT_VERSION.DATE.`as`("updatedOn"),
-                        REPORT_VERSION.AUTHOR,
-                        REPORT_VERSION.REQUESTER,
-                        REPORT_VERSION.ID.`as`("latestVersion")) //We aren't using this field but need to give the constructor some value
-                    .from(REPORT_VERSION)
+                    it.dsl.selectFrom(REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(name))
                     .and(REPORT_VERSION.ID.eq(version))
-                    .fetchInto(ReportVersion::class.java)
+                    .singleOrNull()
+                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
-            if (thisVersion.isEmpty())
-            {
-                throw UnknownObjectError("$name-$version", "reportVersion")
-            }
 
             return it.dsl
                     .select(CHANGELOG.REPORT_VERSION,
@@ -223,8 +212,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .from(REPORT_VERSION)
                     .join(CHANGELOG)
                     .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .where(REPORT_VERSION.REPORT.eq(thisVersion[0].name))
-                    .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(thisVersion[0].updatedOn)))
+                    .where(REPORT_VERSION.REPORT.eq(thisVersion.report))
+                    .and(REPORT_VERSION.DATE.lessOrEqual(thisVersion.date))
                     .orderBy(CHANGELOG.ID.desc())
                     .fetchInto(Changelog::class.java)
 
