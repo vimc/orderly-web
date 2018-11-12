@@ -49,6 +49,7 @@ abstract class IntegrationTest : MontaguTests()
         val source = File(AppConfig()["db.template"])
 
         source.copyTo(newDbFile, true)
+        Thread.sleep(2000)
     }
 
     @After
