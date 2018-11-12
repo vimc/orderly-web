@@ -7,6 +7,8 @@ package org.vaccineimpact.reporting_api.db;
 import javax.annotation.Generated;
 
 import org.vaccineimpact.reporting_api.db.tables.ArtefactFormat;
+import org.vaccineimpact.reporting_api.db.tables.Changelog;
+import org.vaccineimpact.reporting_api.db.tables.ChangelogLabel;
 import org.vaccineimpact.reporting_api.db.tables.Data;
 import org.vaccineimpact.reporting_api.db.tables.Depends;
 import org.vaccineimpact.reporting_api.db.tables.File;
@@ -41,6 +43,16 @@ public class Tables {
      * The table <code>artefact_format</code>.
      */
     public static final ArtefactFormat ARTEFACT_FORMAT = org.vaccineimpact.reporting_api.db.tables.ArtefactFormat.ARTEFACT_FORMAT;
+
+    /**
+     * The table <code>changelog</code>.
+     */
+    public static final Changelog CHANGELOG = org.vaccineimpact.reporting_api.db.tables.Changelog.CHANGELOG;
+
+    /**
+     * The table <code>changelog_label</code>.
+     */
+    public static final ChangelogLabel CHANGELOG_LABEL = org.vaccineimpact.reporting_api.db.tables.ChangelogLabel.CHANGELOG_LABEL;
 
     /**
      * The table <code>data</code>.
