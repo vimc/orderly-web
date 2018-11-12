@@ -40,7 +40,10 @@ also a git repo, the former contains several different types of report. These
 are used for integration tests and for running locally.
 
 ### Run tests
-To run the tests, use `./gradlew test` from the src dir, having first run `run-dependencies.sh`.
+To run the tests, 
+1. run `./dev/run-dependencies.sh` from this directory
+2. run `./gradlew test` from the src dir
+
 You may have to run `sudo chmod 766 /etc/montagu/reports_api/token_key/public_key.der`
 or `sudo chmod u+rw /etc/montagu/reports_api/token_key` or similar to let the tests write to this file.
 
@@ -48,7 +51,7 @@ or `sudo chmod u+rw /etc/montagu/reports_api/token_key` or similar to let the te
 ```
 cd src
 # Make sure you have a fresh copy of the db
-rm -r app/demo && ./gradlew :app:generateTestData
+rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
 # Generate the classes
 ./gradlew :generateDatabaseInterface
 ```

@@ -13,8 +13,9 @@ import org.vaccineimpact.reporting_api.security.KeyHelper
 import org.vaccineimpact.reporting_api.security.MontaguBearerTokenAuthenticator
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class MontaguBearerTokenAuthenticatorTests
+class MontaguBearerTokenAuthenticatorTests: MontaguTests()
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = InternalUser("tettusername", "user", "*/reports.read")

@@ -11,13 +11,18 @@ cert_tool_version=master
 
 export TOKEN_KEY_PATH=/etc/montagu/reports_api/token_key
 export MONTAGU_ORDERLY_PATH=$(realpath ../src/app/git)
+
+echo "using orderly path:"
+echo $MONTAGU_ORDERLY_PATH
+
 export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 (
 	cd ../src
-	if [[ ! -d app/demo ]]; then
-		./gradlew :generateTestData
-	fi
+	# get fresh tests data
+	rm app/demo -rf
+	rm app/git -rf
+	./gradlew :generateTestData
 )
 
 # Generate a keypair
@@ -26,6 +31,7 @@ docker run --rm \
     docker.montagu.dide.ic.ac.uk:5000/montagu-cert-tool:$cert_tool_version \
     gen-keypair /workspace
 
+docker-compose pull
 docker-compose up -d
 docker exec dev_api_1 touch /etc/montagu/api/go_signal
 

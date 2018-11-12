@@ -9,8 +9,9 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.HttpClient
 import org.vaccineimpact.reporting_api.OrderlyServer
 import org.vaccineimpact.reporting_api.db.Config
+import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 
-class OrderlyServerTests
+class OrderlyServerTests: MontaguTests()
 {
     private val mockHttpclient = mock<HttpClient>()
     private val mockConfig = mock<Config>() {

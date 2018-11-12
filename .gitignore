@@ -1,6 +1,7 @@
 *.pyc
 */config/current_user
 .~lock*
+.idea
 src/*/build/*
 src/.gradle
 src/.idea/.name
