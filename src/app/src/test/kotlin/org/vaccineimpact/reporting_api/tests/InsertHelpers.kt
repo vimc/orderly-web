@@ -57,10 +57,20 @@ fun insertReport(name: String,
 
             val reportRecord = it.dsl.newRecord(REPORT)
                     .apply {
-                        this.name = name
+                        this.name = name,
+                        this.latest = version
                     }
             reportRecord.store()
         }
+        else
+        {
+            //Update latest version of Report
+            it.dsl.update(REPORT)
+                    .set(REPORT.LATEST, version)
+                    .where(REPORT.NAME.eq(name))
+                    .execute()
+        }
+
 
         val reportVersionRecord = it.dsl.newRecord(REPORT_VERSION)
                 .apply{

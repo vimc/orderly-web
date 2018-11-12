@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -34,4 +35,7 @@ interface OrderlyClient
 
     @Throws(UnknownObjectError::class)
     fun getResource(name: String, version: String, resourcename: String): String
+
+    @Throws(UnknownObjectError::class)
+    fun getLatestChangelogByName(name: String): List<Changelog>
 }

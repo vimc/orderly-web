@@ -9,6 +9,7 @@ object ReportRouteConfig : RouteConfig
 {
     private val runReports = setOf("*/reports.run")
     private val readReports = setOf("report:<name>/reports.read")
+    private val reviewReports = setOf("*/reports.review")
     private val controller = ReportController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
@@ -31,5 +32,9 @@ object ReportRouteConfig : RouteConfig
 
             Endpoint("/reports/:key/status/", controller, "status")
                     .json()
-                    .secure(runReports))
+                    .secure(runReports),
+            Endpoint("/reports/:name/latest/changelog/", controller, "getLatestChangelogByName")
+                    .json()
+                    .transform()
+                    .secure(reviewReports))
 }

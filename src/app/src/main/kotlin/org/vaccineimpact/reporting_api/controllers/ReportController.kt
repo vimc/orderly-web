@@ -1,6 +1,7 @@
 package org.vaccineimpact.reporting_api.controllers
 
 import com.google.gson.JsonObject
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.api.models.Scope
@@ -99,6 +100,12 @@ class ReportController(context: ActionContext,
         zip.zipIt(folderName, response.outputStream)
 
         return true
+    }
+
+    fun getLatestChangelogByName(): List<Changelog>
+    {
+        val name = context.params(":name")
+        return orderly.getLatestChangelogByName(name)
     }
 
     private val reportReadingScopes = context.permissions

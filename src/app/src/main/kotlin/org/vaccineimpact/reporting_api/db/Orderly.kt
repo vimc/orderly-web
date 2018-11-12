@@ -3,6 +3,7 @@ package org.vaccineimpact.reporting_api.db
 import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
@@ -189,6 +190,26 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         return result.asString
     }
 
+    override fun getLatestChangelogByName(name: String): List<Changelog>
+    {
+        var latestVersion = ""
+        JooqContext().use {
+
+            val reportResult = it.dsl.select()
+                    .from(REPORT)
+                    .where(REPORT.NAME.eq(name))
+                    .fetchInto(Report::class.java)
+
+            if (reportResult.count() == 0)
+            {
+                throw UnknownObjectError(name, "report")
+            }
+
+            latestVersion = reportResult[0].latestVersion
+
+        }
+        return getChangelogByNameAndVersion(name, latestVersion)
+    }
 
     private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject
     {

@@ -165,5 +165,61 @@ class OrderlyTests : DatabaseTests()
 
     }
 
+    @Test
+    fun `can get latest changelog for report`()
+    {
+        insertTestReportChangelogs()
+
+        val sut = createSut()
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertThat(results.count()).isEqualTo(6)
+
+        assertChangelogValuesMatch(results[0], "version3", "technical", "everything is broken", false)
+        assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
+        assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
+
+        assertChangelogValuesMatch(results[3], "version2", "public", "did something great v2", true)
+
+        assertChangelogValuesMatch(results[4], "version1", "internal", "did something awful v1", false)
+        assertChangelogValuesMatch(results[5], "version1", "public", "did something great v1", true)
+
+    }
+
+    @Test
+    fun `do not get latest changelog for other reports`()
+    {
+        insertTestReportChangelogs()
+
+        insertReport("anothertest", "anotherversion1", changelog = listOf(
+                Changelog("anotherversion1", "public","did something great v1", true),
+                Changelog("anotherversion1","internal","did something awful v1", false)))
+
+        val sut = createSut()
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertThat(results.count()).isEqualTo(6)
+
+        assertChangelogValuesMatch(results[0], "version3", "technical", "everything is broken", false)
+        assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
+        assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
+
+        assertChangelogValuesMatch(results[3], "version2", "public", "did something great v2", true)
+
+        assertChangelogValuesMatch(results[4], "version1", "internal", "did something awful v1", false)
+        assertChangelogValuesMatch(results[5], "version1", "public", "did something great v1", true)
+    }
+
+    @Test
+    fun `throws unknown object error when getting latest changelog for nonexistent report`()
+    {
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getLatestChangelogByName("does not exist") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
 
 }
