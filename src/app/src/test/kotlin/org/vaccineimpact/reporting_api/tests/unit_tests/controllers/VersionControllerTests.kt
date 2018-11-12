@@ -78,8 +78,10 @@ class VersionControllerTests : ControllerTest()
 
         val result = sut.getChangelogByNameAndVersion()
         assertThat(result.count()).isEqualTo(changelogs.count())
-        for(i in 0..result.count()-1)
-        assertThat(result[i]).isEqualTo(changelogs[i])
+        for(i in 0 until result.count()-1)
+        {
+            assertThat(result[i]).isEqualTo(changelogs[i])
+        }
     }
 
     @Test

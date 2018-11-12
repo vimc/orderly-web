@@ -314,7 +314,7 @@ class VersionTests : IntegrationTest()
     @Test
     fun `can get empty version changelog by name and version`()
     {
-        insertReport("testname", "testversion", changelog = arrayListOf<Changelog>())
+        insertReport("testname", "testversion", changelog = listOf())
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
                 user = requestHelper.fakeReviewer)
         assertSuccessful(response)
