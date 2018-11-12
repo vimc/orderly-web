@@ -6,6 +6,7 @@ import org.vaccineimpact.reporting_api.controllers.ArtefactController
 import org.vaccineimpact.reporting_api.controllers.DataController
 import org.vaccineimpact.reporting_api.controllers.ReportController
 import org.vaccineimpact.reporting_api.controllers.ResourceController
+import org.vaccineimpact.reporting_api.controllers.VersionController
 import spark.route.HttpMethod
 
 object VersionRouteConfig : RouteConfig
@@ -16,6 +17,7 @@ object VersionRouteConfig : RouteConfig
     private val reportController = ReportController::class
     private val dataController = DataController::class
     private val resourceController = ResourceController::class
+    private val versionController = VersionController::class
 
     override val endpoints = listOf(
             Endpoint("/versions/", reportController, "getAllVersions")
@@ -24,12 +26,12 @@ object VersionRouteConfig : RouteConfig
                     // more specific permission checking in the controller action
                     .secure(),
 
-            Endpoint("/reports/:name/versions/:version/", reportController, "getByNameAndVersion")
+            Endpoint("/reports/:name/versions/:version/", versionController, "getByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/all/", reportController, "getZippedByNameAndVersion",
+            Endpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
                     .secure(readReports),
@@ -38,6 +40,11 @@ object VersionRouteConfig : RouteConfig
                     method = HttpMethod.post)
                     .json()
                     .secure(reviewReports),
+            Endpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
+                    .json()
+                    .transform()
+                    .secure(reviewReports)
+                    .allowParameterAuthentication(),
 
             Endpoint("/reports/:name/versions/:version/artefacts/", artefactController, "get")
                     .json()

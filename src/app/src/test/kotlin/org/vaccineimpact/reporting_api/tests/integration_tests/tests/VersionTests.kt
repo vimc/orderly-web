@@ -1,14 +1,18 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import com.github.salomonbrys.kotson.toJsonArray
+import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.tests.insertReport
+import org.vaccineimpact.reporting_api.tests.createArchiveFolder
+import org.vaccineimpact.reporting_api.tests.deleteArchiveFolder
 
 class VersionTests : IntegrationTest()
 {
@@ -195,28 +199,47 @@ class VersionTests : IntegrationTest()
     @Test
     fun `gets zip file with access token`()
     {
+
         insertReport("testname", "testversion")
+        createArchiveFolder("testname", "testversion")
 
-        val url = "/reports/testname/versions/testversion/all/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
+        try
+        {
 
-        assertSuccessful(response)
-        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            val url = "/reports/testname/versions/testversion/all/"
+            val token = requestHelper.generateOnetimeToken(url)
+            val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
+
+            assertSuccessful(response)
+            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+        }
+        finally
+        {
+            deleteArchiveFolder("testname", "testversion")
+        }
     }
 
     @Test
     fun `gets zip file with scoped permissions`()
     {
         insertReport("testname", "testversion")
+        createArchiveFolder("testname", "testversion")
 
-        val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
-                user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
+        try
+        {
+            val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
+                    user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
 
-        assertSuccessful(response)
-        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            assertSuccessful(response)
+            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+        }
+        finally
+        {
+            deleteArchiveFolder("testname", "testversion")
+        }
+
     }
 
 
@@ -224,13 +247,22 @@ class VersionTests : IntegrationTest()
     fun `gets zip file with bearer token`()
     {
         insertReport("testname", "testversion")
+        createArchiveFolder("testname", "testversion")
 
-        val token = requestHelper.generateOnetimeToken("")
-        val response = requestHelper.get("/reports/testname/versions/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+        try
+        {
 
-        assertSuccessful(response)
-        assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-        assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            val token = requestHelper.generateOnetimeToken("")
+            val response = requestHelper.get("/reports/testname/versions/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+
+            assertSuccessful(response)
+            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+        }
+        finally
+        {
+            deleteArchiveFolder("testname", "testversion")
+        }
     }
 
     @Test
@@ -255,5 +287,67 @@ class VersionTests : IntegrationTest()
                 "You do not have sufficient permissions to access this resource. Missing these permissions: report:testname/reports.read")
 
     }
+
+    @Test
+    fun `get zip returns 404 if report version does not exist`()
+    {
+        val response = requestHelper.get("/reports/notaname/versions/notareport/all",
+                contentType = ContentTypes.zip)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        JSONValidator.validateError(response.text, "unknown-report-version",
+                "Unknown report-version")
+
+    }
+
+    @Test
+    fun `can get version changelog by name and version`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
+                user = requestHelper.fakeReviewer)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
+    }
+
+    @Test
+    fun `can get empty version changelog by name and version`()
+    {
+        insertReport("testname", "testversion", changelog = listOf())
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
+                user = requestHelper.fakeReviewer)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
+        val count = (JSONValidator.getData(response.text) as ArrayNode).size()
+        Assertions.assertThat(count).isEqualTo(0)
+    }
+
+    @Test
+    fun `get changelog returns 403 if reader permissions only`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
+                 user = requestHelper.fakeGlobalReportReader)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        JSONValidator.validateError(response.text, "forbidden",
+                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.review")
+
+    }
+
+    @Test
+    fun `get changelog returns 404 if version does not belong to report`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/notatestversion/changelog",
+                user = requestHelper.fakeReviewer)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        JSONValidator.validateError(response.text, "unknown-report-version",
+                "Unknown report-version")
+    }
+
 
 }
