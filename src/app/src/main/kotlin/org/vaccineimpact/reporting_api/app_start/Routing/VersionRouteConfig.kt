@@ -42,6 +42,7 @@ object VersionRouteConfig : RouteConfig
                     .secure(reviewReports),
             Endpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
                     .json()
+                    .transform()
                     .secure(reviewReports)
                     .allowParameterAuthentication(),
 

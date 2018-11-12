@@ -1,9 +1,11 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import com.github.salomonbrys.kotson.toJsonArray
+import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
@@ -296,6 +298,55 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateError(response.text, "unknown-report-version",
                 "Unknown report-version")
 
+    }
+
+    @Test
+    fun `can get version changelog by name and version`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
+                user = requestHelper.fakeReviewer)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
+    }
+
+    @Test
+    fun `can get empty version changelog by name and version`()
+    {
+        insertReport("testname", "testversion", changelog = arrayListOf<Changelog>())
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
+                user = requestHelper.fakeReviewer)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
+        val count = (JSONValidator.getData(response.text) as ArrayNode).size()
+        Assertions.assertThat(count).isEqualTo(0)
+    }
+
+    @Test
+    fun `get changelog returns 403 if reader permissions only`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
+                 user = requestHelper.fakeGlobalReportReader)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        JSONValidator.validateError(response.text, "forbidden",
+                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.review")
+
+    }
+
+    @Test
+    fun `get changelog returns 404 if version does not belong to report`()
+    {
+        insertReport("testname", "testversion")
+        val response = requestHelper.get("/reports/testname/versions/notatestversion/changelog",
+                user = requestHelper.fakeReviewer)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        JSONValidator.validateError(response.text, "unknown-report-version",
+                "Unknown report-version")
     }
 
 
