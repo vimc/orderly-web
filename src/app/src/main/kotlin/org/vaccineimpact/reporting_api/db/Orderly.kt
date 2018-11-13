@@ -196,7 +196,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
        JooqContext().use {
 
-            val latestVersion = it.dsl
+            val latestVersionDate = it.dsl
                     .select(REPORT_VERSION.DATE)
                     .from(REPORT_VERSION)
                     .join(REPORT)
@@ -205,7 +205,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .singleOrNull()
                     ?: throw UnknownObjectError(name, "report")
 
-            return getDatedChangelogForReport(name, latestVersion.value1(), it)
+            return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
 
         }
 
