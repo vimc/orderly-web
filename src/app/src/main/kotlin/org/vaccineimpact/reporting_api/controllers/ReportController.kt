@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api.controllers
 
-import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
