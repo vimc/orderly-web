@@ -195,20 +195,15 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         var latestVersion = ""
         JooqContext().use {
 
-            val reportResult = it.dsl.select()
-                    .from(REPORT)
+            val report = it.dsl.selectFrom(REPORT)
                     .where(REPORT.NAME.eq(name))
-                    .fetchInto(Report::class.java)
+                    .singleOrNull()
+                    ?: throw UnknownObjectError(name, "report")
 
-            if (reportResult.count() == 0)
-            {
-                throw UnknownObjectError(name, "report")
-            }
-
-            latestVersion = reportResult[0].latestVersion
+            latestVersion = report.latest
 
         }
-        return getChangelogByNameAndVersion(name, latestVersion)
+        return getChangelogForConfirmedVersion(name, latestVersion)
     }
 
     private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject
