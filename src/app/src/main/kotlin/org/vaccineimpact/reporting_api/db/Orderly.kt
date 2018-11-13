@@ -6,10 +6,12 @@ import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
+import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
+import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
 
@@ -192,19 +194,57 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     override fun getLatestChangelogByName(name: String): List<Changelog>
     {
-        var latestVersion = ""
-        JooqContext().use {
+       JooqContext().use {
 
-            val report = it.dsl.selectFrom(REPORT)
+            val latestVersion = it.dsl
+                    .select(REPORT_VERSION.DATE)
+                    .from(REPORT_VERSION)
+                    .join(REPORT)
+                    .on(REPORT_VERSION.ID.eq(REPORT.LATEST))
                     .where(REPORT.NAME.eq(name))
                     .singleOrNull()
                     ?: throw UnknownObjectError(name, "report")
 
-            latestVersion = report.latest
+            return getDatedChangelogForReport(name, latestVersion.value1(), it)
 
         }
-        return getChangelogForConfirmedVersion(name, latestVersion)
+
     }
+
+    override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
+    {
+        JooqContext().use {
+
+            //raise exception if version does not belong to named report, or version does not exist
+            val thisVersion =
+                    it.dsl.selectFrom(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq(name))
+                    .and(REPORT_VERSION.ID.eq(version))
+                    .singleOrNull()
+                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
+
+            return getDatedChangelogForReport(thisVersion.report, thisVersion.date, it)
+
+        }
+
+    }
+
+    private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext) : List<Changelog>
+    {
+        return ctx.dsl
+                .select(CHANGELOG.REPORT_VERSION,
+                        CHANGELOG.LABEL,
+                        CHANGELOG.VALUE,
+                        CHANGELOG.FROM_FILE)
+                .from(REPORT_VERSION)
+                .join(CHANGELOG)
+                .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                .where(REPORT_VERSION.REPORT.eq(report))
+                .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
+                .orderBy(CHANGELOG.ID.desc())
+                .fetchInto(Changelog::class.java)
+    }
+
 
     private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject
     {

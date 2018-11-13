@@ -1,8 +1,10 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions.assertThat
+import com.fasterxml.jackson.databind.node.ArrayNode
 import org.junit.Test
 import org.vaccineimpact.reporting_api.tests.insertReport
+
 
 class ReportTests : IntegrationTest()
 {
@@ -59,7 +61,7 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `can get empty latest changelog by namen`()
+    fun `can get empty latest changelog by name`()
     {
         insertReport("testname", "testversion", changelog = listOf())
         val response = requestHelper.get("/reports/testname/latest/changelog/",

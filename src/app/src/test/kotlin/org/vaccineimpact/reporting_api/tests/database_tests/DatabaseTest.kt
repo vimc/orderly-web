@@ -1,18 +1,18 @@
 package org.vaccineimpact.reporting_api.tests.database_tests
 
+import org.jooq.Table
 import org.junit.AfterClass
 import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.JooqContext
-import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
-import org.vaccineimpact.reporting_api.db.Tables.REPORT
-import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
+import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.io.File
 
 abstract class DatabaseTests : MontaguTests()
 {
+
     companion object
     {
 
@@ -41,16 +41,20 @@ abstract class DatabaseTests : MontaguTests()
     @Before
     fun clearDatabase()
     {
+
+        val tables = Tables::class.java;
+        val fields = tables.declaredFields;
+
+
         JooqContext().use {
-            it.dsl.deleteFrom(ORDERLY)
-                    .execute()
 
-            it.dsl.deleteFrom(REPORT)
-                    .execute()
+            for (field in fields){
+                it.dsl.deleteFrom(field.get(null) as Table<*>)
+                        .execute()
+            }
 
-            it.dsl.deleteFrom(REPORT_VERSION)
-                    .execute()
         }
     }
+
 
 }

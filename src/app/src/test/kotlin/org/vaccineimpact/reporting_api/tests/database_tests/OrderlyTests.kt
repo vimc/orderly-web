@@ -3,6 +3,7 @@ package org.vaccineimpact.reporting_api.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
@@ -166,6 +167,116 @@ class OrderlyTests : DatabaseTests()
     }
 
     @Test
+    fun `can get changelog for report version`()
+    {
+        insertReport("test", "version1")
+
+        val sut = createSut()
+
+        val results = sut.getChangelogByNameAndVersion("test", "version1")
+
+        assertThat(results.count()).isEqualTo(2)
+
+        //changelog items are returned in desc order
+        assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false)
+        assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true)
+    }
+
+    @Test
+    fun `can get changelog for previous report versions`()
+    {
+        insertTestReportChangelogs()
+
+        val sut = createSut()
+
+        val results = sut.getChangelogByNameAndVersion("test", "version3")
+
+        assertThat(results.count()).isEqualTo(6)
+
+        assertChangelogValuesMatch(results[0], "version3", "technical", "everything is broken", false)
+        assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
+        assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
+
+        assertChangelogValuesMatch(results[3], "version2", "public", "did something great v2", true)
+
+        assertChangelogValuesMatch(results[4], "version1", "internal", "did something awful v1", false)
+        assertChangelogValuesMatch(results[5], "version1", "public", "did something great v1", true)
+
+    }
+
+    @Test
+    fun `do not get changelog for later report versions`()
+    {
+        insertTestReportChangelogs()
+        val sut = createSut()
+
+        val results = sut.getChangelogByNameAndVersion("test", "version2")
+
+        assertThat(results.count()).isEqualTo(3)
+
+        assertChangelogValuesMatch(results[0], "version2", "public", "did something great v2", true)
+
+        assertChangelogValuesMatch(results[1], "version1", "internal", "did something awful v1", false)
+        assertChangelogValuesMatch(results[2], "version1", "public", "did something great v1", true)
+
+    }
+
+    @Test
+    fun `do not get changelog for other reports`()
+    {
+        insertTestReportChangelogs()
+
+        insertReport("anothertest", "anotherversion1", changelog = listOf(
+                Changelog("anotherversion1", "public","did something great v1", true),
+                Changelog("anotherversion1","internal","did something awful v1", false)))
+
+        val sut = createSut()
+
+        val results = sut.getChangelogByNameAndVersion("test", "version2")
+
+        assertThat(results.count()).isEqualTo(3)
+
+        assertChangelogValuesMatch(results[0], "version2", "public", "did something great v2", true)
+
+        assertChangelogValuesMatch(results[1], "version1", "internal", "did something awful v1", false)
+        assertChangelogValuesMatch(results[2], "version1", "public", "did something great v1", true)
+    }
+
+
+    @Test
+    fun `can get empty changelog`()
+    {
+        insertReport("emptytest", "version1", changelog = listOf())
+
+        val sut = createSut()
+
+        val results = sut.getChangelogByNameAndVersion("emptytest", "version1")
+
+        assertThat(results.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `throws unknown object error when getting changelog for nonexistent version`()
+    {
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getChangelogByNameAndVersion("test", "versionX") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `throws unknown object error when getting changelog for version which is not in named report`()
+    {
+        insertTestReportChangelogs()
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getChangelogByNameAndVersion("anothertest", "version1") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
     fun `can get latest changelog for report`()
     {
         insertTestReportChangelogs()
@@ -221,5 +332,31 @@ class OrderlyTests : DatabaseTests()
         assertThatThrownBy { sut.getLatestChangelogByName("does not exist") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
+
+
+    private fun insertTestReportChangelogs()
+    {
+        insertReport("test", "version1", changelog = listOf(
+                Changelog("version1", "public","did something great v1", true),
+                Changelog("version1","internal","did something awful v1", false)))
+
+        insertReport("test", "version2", changelog = listOf(
+                Changelog("version2", "public","did something great v2", true)))
+
+        insertReport("test", "version3", changelog = listOf(
+                Changelog("version3", "public","did something great v3", true),
+                Changelog("version3","internal","did something awful v3", false),
+                Changelog("version3", "technical", "everything is broken", false)))
+    }
+
+    private fun assertChangelogValuesMatch(changelog: Changelog, report_version: String, label: String,
+                                           value: String, fromFile: Boolean)
+    {
+        assertThat(changelog.report_version).isEqualTo(report_version)
+        assertThat(changelog.fromFile).isEqualTo(fromFile)
+        assertThat(changelog.label).isEqualTo(label)
+        assertThat(changelog.value).isEqualTo(value)
+    }
+
 
 }

@@ -149,54 +149,7 @@ class ReportControllerTests : ControllerTest()
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
 
-    @Test
-    fun `getByNameAndVersion returns report metadata`()
-    {
-        val reportName = "reportName"
-        val reportVersion = "reportVersion"
 
-        val report = JsonParser().parse("{\"key\":\"value\"}")
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report.asJsonObject
-        }
-
-        val actionContext = mock<ActionContext> {
-            on { this.permissions } doReturn PermissionSet()
-            on { this.params(":version") } doReturn reportVersion
-            on { this.params(":name") } doReturn reportName
-        }
-
-        val sut = ReportController(actionContext, orderly, mock<ZipClient>(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        assertThat(sut.getByNameAndVersion()).isEqualTo(report)
-    }
-
-    @Test
-    fun `getZippedByNameAndVersion returns zip file`()
-    {
-        val reportName = "reportName"
-        val reportVersion = "reportVersion"
-
-        val actionContext = mock<ActionContext> {
-            on { this.params(":version") } doReturn reportVersion
-            on { this.params(":name") } doReturn reportName
-            on { this.getSparkResponse() } doReturn mockSparkResponse
-            on { this.permissions } doReturn PermissionSet()
-        }
-
-        val mockZipClient = mock<ZipClient>()
-
-        val sut = ReportController(actionContext, mock<OrderlyClient>(), mockZipClient, mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        sut.getZippedByNameAndVersion()
-
-        verify(mockZipClient, times(1)).zipIt("root/archive/$reportName/$reportVersion/"
-                , mockOutputStream)
-    }
 
     @Test
     fun `getLatestChangelogByName returns changelog`()

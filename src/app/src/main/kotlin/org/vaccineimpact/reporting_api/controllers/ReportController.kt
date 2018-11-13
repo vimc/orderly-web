@@ -80,27 +80,6 @@ class ReportController(context: ActionContext,
         return orderly.getReportsByName(name)
     }
 
-    fun getByNameAndVersion(): JsonObject
-    {
-        val name = context.params(":name")
-        return orderly.getReportsByNameAndVersion(name, context.params(":version"))
-    }
-
-    fun getZippedByNameAndVersion(): Boolean
-    {
-        val name = context.params(":name")
-        val version = context.params(":version")
-        val response = context.getSparkResponse().raw()
-
-        context.addDefaultResponseHeaders(ContentTypes.zip)
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
-
-        val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
-
-        zip.zipIt(folderName, response.outputStream)
-
-        return true
-    }
 
     fun getLatestChangelogByName(): List<Changelog>
     {
