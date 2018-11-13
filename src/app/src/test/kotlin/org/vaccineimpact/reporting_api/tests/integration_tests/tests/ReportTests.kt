@@ -86,14 +86,14 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `get latest changelog returns 404 if version does not belong to report`()
+    fun `get latest changelog returns 404 if report does not exist`()
     {
         val response = requestHelper.get("/reports/testname/latest/changelog",
                 user = requestHelper.fakeReviewer)
 
         assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report-version",
-                "Unknown report-version")
+        JSONValidator.validateError(response.text, "unknown-report",
+                "Unknown report")
     }
 
 }
