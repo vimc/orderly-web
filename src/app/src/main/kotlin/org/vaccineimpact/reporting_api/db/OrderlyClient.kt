@@ -39,4 +39,7 @@ interface OrderlyClient
 
     @Throws(UnknownObjectError::class)
     fun getResource(name: String, version: String, resourcename: String): String
+
+    @Throws(UnknownObjectError::class)
+    fun getLatestChangelogByName(name: String): List<Changelog>
 }

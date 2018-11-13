@@ -6,6 +6,7 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.PermissionSet
@@ -148,6 +149,37 @@ class ReportControllerTests : ControllerTest()
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
 
+
+
+    @Test
+    fun `getLatestChangelogByName returns changelog`()
+    {
+        val reportName = "reportName"
+
+        val latestVersion = "latestVersion"
+        val changelogs = listOf(Changelog(latestVersion, "public", "did a thing", true),
+                Changelog(latestVersion,"public", "did another thing", true))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getLatestChangelogByName(reportName) } doReturn changelogs
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        val result = sut.getLatestChangelogByName()
+        assertThat(result.count()).isEqualTo(changelogs.count())
+        for(i in 0 until result.count()-1)
+        {
+            assertThat(result[i]).isEqualTo(changelogs[i])
+        }
+    }
 
 
 }

@@ -191,6 +191,25 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         return result.asString
     }
 
+    override fun getLatestChangelogByName(name: String): List<Changelog>
+    {
+       JooqContext().use {
+
+            val latestVersionDate = it.dsl
+                    .select(REPORT_VERSION.DATE)
+                    .from(REPORT_VERSION)
+                    .join(REPORT)
+                    .on(REPORT_VERSION.ID.eq(REPORT.LATEST))
+                    .where(REPORT.NAME.eq(name))
+                    .singleOrNull()
+                    ?: throw UnknownObjectError(name, "report")
+
+            return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
+
+        }
+
+    }
+
     override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
     {
         JooqContext().use {
@@ -203,22 +222,26 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .singleOrNull()
                     ?: throw UnknownObjectError("$name-$version", "reportVersion")
 
-
-            return it.dsl
-                    .select(CHANGELOG.REPORT_VERSION,
-                            CHANGELOG.LABEL,
-                            CHANGELOG.VALUE,
-                            CHANGELOG.FROM_FILE)
-                    .from(REPORT_VERSION)
-                    .join(CHANGELOG)
-                    .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .where(REPORT_VERSION.REPORT.eq(thisVersion.report))
-                    .and(REPORT_VERSION.DATE.lessOrEqual(thisVersion.date))
-                    .orderBy(CHANGELOG.ID.desc())
-                    .fetchInto(Changelog::class.java)
+            return getDatedChangelogForReport(thisVersion.report, thisVersion.date, it)
 
         }
 
+    }
+
+    private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext) : List<Changelog>
+    {
+        return ctx.dsl
+                .select(CHANGELOG.REPORT_VERSION,
+                        CHANGELOG.LABEL,
+                        CHANGELOG.VALUE,
+                        CHANGELOG.FROM_FILE)
+                .from(REPORT_VERSION)
+                .join(CHANGELOG)
+                .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                .where(REPORT_VERSION.REPORT.eq(report))
+                .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
+                .orderBy(CHANGELOG.ID.desc())
+                .fetchInto(Changelog::class.java)
     }
 
 

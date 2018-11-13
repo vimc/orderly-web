@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.tests.database_tests
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -191,16 +192,7 @@ class OrderlyTests : DatabaseTests()
 
         val results = sut.getChangelogByNameAndVersion("test", "version3")
 
-        assertThat(results.count()).isEqualTo(6)
-
-        assertChangelogValuesMatch(results[0], "version3", "technical", "everything is broken", false)
-        assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
-        assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
-
-        assertChangelogValuesMatch(results[3], "version2", "public", "did something great v2", true)
-
-        assertChangelogValuesMatch(results[4], "version1", "internal", "did something awful v1", false)
-        assertChangelogValuesMatch(results[5], "version1", "public", "did something great v1", true)
+        assertExpectedTestChangelogValues("version3", results)
 
     }
 
@@ -212,13 +204,7 @@ class OrderlyTests : DatabaseTests()
 
         val results = sut.getChangelogByNameAndVersion("test", "version2")
 
-        assertThat(results.count()).isEqualTo(3)
-
-        assertChangelogValuesMatch(results[0], "version2", "public", "did something great v2", true)
-
-        assertChangelogValuesMatch(results[1], "version1", "internal", "did something awful v1", false)
-        assertChangelogValuesMatch(results[2], "version1", "public", "did something great v1", true)
-
+        assertExpectedTestChangelogValues("version2", results)
     }
 
     @Test
@@ -234,13 +220,9 @@ class OrderlyTests : DatabaseTests()
 
         val results = sut.getChangelogByNameAndVersion("test", "version2")
 
-        assertThat(results.count()).isEqualTo(3)
-
-        assertChangelogValuesMatch(results[0], "version2", "public", "did something great v2", true)
-
-        assertChangelogValuesMatch(results[1], "version1", "internal", "did something awful v1", false)
-        assertChangelogValuesMatch(results[2], "version1", "public", "did something great v1", true)
+        assertExpectedTestChangelogValues("version2", results)
     }
+
 
     @Test
     fun `can get empty changelog`()
@@ -275,6 +257,45 @@ class OrderlyTests : DatabaseTests()
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
+    @Test
+    fun `can get latest changelog for report`()
+    {
+        insertTestReportChangelogs()
+
+        val sut = createSut()
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertExpectedTestChangelogValues("version3", results)
+    }
+
+    @Test
+    fun `do not get latest changelog for other reports`()
+    {
+        insertTestReportChangelogs()
+
+        insertReport("anothertest", "anotherversion1", changelog = listOf(
+                Changelog("anotherversion1", "public","did something great v1", true),
+                Changelog("anotherversion1","internal","did something awful v1", false)))
+
+        val sut = createSut()
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertExpectedTestChangelogValues("version3", results)
+    }
+
+    @Test
+    fun `throws unknown object error when getting latest changelog for nonexistent report`()
+    {
+
+        val sut = createSut()
+
+        assertThatThrownBy { sut.getLatestChangelogByName("does not exist") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+
     private fun insertTestReportChangelogs()
     {
         insertReport("test", "version1", changelog = listOf(
@@ -290,10 +311,46 @@ class OrderlyTests : DatabaseTests()
                 Changelog("version3", "technical", "everything is broken", false)))
     }
 
+    private fun assertExpectedTestChangelogValues(latestVersion: String, results: List<Changelog>)
+    {
+        var index = 0
+
+        if (latestVersion == "version3")
+        {
+            assertChangelogValuesMatch(results[0], "version3", "technical", "everything is broken", false)
+            assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
+            assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
+
+            index += 3
+        }
+
+        if (latestVersion == "version2" || index > 0)
+        {
+            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true)
+
+            index++
+        }
+
+        if (latestVersion == "version1" || index > 0)
+        {
+            assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false)
+            assertChangelogValuesMatch(results[index+1], "version1", "public", "did something great v1", true)
+
+            index += 2
+        }
+
+        assertThat(results.count()).isEqualTo(index)
+
+        if (index == 0)
+        {
+            Assertions.fail("Bad test configuration - unexpected report version when checking expected test changelog values")
+        }
+    }
+
     private fun assertChangelogValuesMatch(changelog: Changelog, report_version: String, label: String,
                                            value: String, fromFile: Boolean)
     {
-        assertThat(changelog.report_version).isEqualTo(report_version)
+        assertThat(changelog.reportVersion).isEqualTo(report_version)
         assertThat(changelog.fromFile).isEqualTo(fromFile)
         assertThat(changelog.label).isEqualTo(label)
         assertThat(changelog.value).isEqualTo(value)
