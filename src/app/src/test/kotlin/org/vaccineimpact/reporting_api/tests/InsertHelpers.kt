@@ -103,7 +103,7 @@ fun insertReport(name: String,
                     .set(CHANGELOG.LABEL, entry.label)
                     .set(CHANGELOG.VALUE, entry.value)
                     .set(CHANGELOG.FROM_FILE, entry.fromFile)
-                    .set(CHANGELOG.REPORT_VERSION, entry.report_version)
+                    .set(CHANGELOG.REPORT_VERSION, entry.reportVersion)
                     .execute()
 
         }

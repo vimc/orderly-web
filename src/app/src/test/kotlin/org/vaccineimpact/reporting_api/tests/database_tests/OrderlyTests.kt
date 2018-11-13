@@ -350,7 +350,7 @@ class OrderlyTests : DatabaseTests()
     private fun assertChangelogValuesMatch(changelog: Changelog, report_version: String, label: String,
                                            value: String, fromFile: Boolean)
     {
-        assertThat(changelog.report_version).isEqualTo(report_version)
+        assertThat(changelog.reportVersion).isEqualTo(report_version)
         assertThat(changelog.fromFile).isEqualTo(fromFile)
         assertThat(changelog.label).isEqualTo(label)
         assertThat(changelog.value).isEqualTo(value)
