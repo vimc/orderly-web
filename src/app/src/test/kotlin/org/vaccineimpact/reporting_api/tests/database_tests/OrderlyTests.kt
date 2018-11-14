@@ -102,13 +102,15 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        val result = sut.getReportsByNameAndVersion("test", "version1")
+        val result = sut.getReportByNameAndVersion("test", "version1")
 
-        assertThat(result.has("name")).isTrue()
-        assertThat(result.has("id")).isTrue()
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
 
-        assertThat(result.has("hash_artefacts")).isTrue()
-        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
+        //TODO: fix this!
+        throw Exception("Not implemented")
+        //assertThat(result.has("hash_artefacts")).isTrue()
+        //assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
     @Test
@@ -119,7 +121,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "version1") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -132,7 +134,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "dsajkdsj") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -144,7 +146,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("dsajkdsj", "version") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
 
     }

@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
-import java.time.Instant
 
 class OrderlyReviewerTests : DatabaseTests()
 {
@@ -100,13 +99,14 @@ class OrderlyReviewerTests : DatabaseTests()
 
         val sut = createSut()
 
-        val result = sut.getReportsByNameAndVersion("test", "version1")
+        val result = sut.getReportByNameAndVersion("test", "version1")
 
-        assertThat(result.has("name")).isTrue()
-        assertThat(result.has("id")).isTrue()
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
 
-        assertThat(result.has("hash_artefacts")).isTrue()
-        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
+        throw Exception("Not implemented yet!")
+        //assertThat(result.has("hash_artefacts")).isTrue()
+        //assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
 
