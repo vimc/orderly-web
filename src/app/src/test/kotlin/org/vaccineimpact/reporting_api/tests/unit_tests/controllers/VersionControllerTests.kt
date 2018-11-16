@@ -37,11 +37,7 @@ class VersionControllerTests : ControllerTest()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
-                                            name = "name", published = true, requester = "requester", description = "description",
-                                            comment = "comment", script = "script", hashScript = "hashscript",
-                                            data = JsonObject(), artefacts = JsonArray())
-
+        val report = JsonObject()
         val orderly = mock<OrderlyClient> {
             on { this.getReportByNameAndVersion(reportName, reportVersion) } doReturn report
         }
@@ -57,6 +53,33 @@ class VersionControllerTests : ControllerTest()
                 mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
+    }
+
+    @Test
+    fun `getDetailsByNameAndVersion returns report metadata`()
+    {
+        val reportName = "reportName"
+        val reportVersion = "reportVersion"
+
+        val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
+                name = "name", published = true, requester = "requester", description = "description",
+                comment = "comment", script = "script", hashScript = "hashscript")
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        assertThat(sut.getDetailsByNameAndVersion()).isEqualTo(report)
     }
 
     @Test

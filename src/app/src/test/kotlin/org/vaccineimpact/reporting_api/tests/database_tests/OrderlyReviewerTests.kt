@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class OrderlyReviewerTests : DatabaseTests()
+class OrderlyReviewerTests : CleanDatabaseTests()
 {
 
     private fun createSut(): Orderly
@@ -101,12 +101,11 @@ class OrderlyReviewerTests : DatabaseTests()
 
         val result = sut.getReportByNameAndVersion("test", "version1")
 
-        assertThat(result.name).isEqualTo("test")
-        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.has("name")).isTrue()
+        assertThat(result.has("id")).isTrue()
 
-        throw Exception("Not implemented yet!")
-        //assertThat(result.has("hash_artefacts")).isTrue()
-        //assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
+        assertThat(result.has("hash_artefacts")).isTrue()
+        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
 

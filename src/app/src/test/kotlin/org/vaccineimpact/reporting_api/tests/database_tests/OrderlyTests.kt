@@ -9,7 +9,7 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class OrderlyTests : DatabaseTests()
+class OrderlyTests : CleanDatabaseTests()
 {
 
     private fun createSut(): Orderly
@@ -104,13 +104,11 @@ class OrderlyTests : DatabaseTests()
 
         val result = sut.getReportByNameAndVersion("test", "version1")
 
-        assertThat(result.name).isEqualTo("test")
-        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.has("name"))
+        assertThat(result.has("id"))
 
-        //TODO: fix this!
-        throw Exception("Not implemented")
-        //assertThat(result.has("hash_artefacts")).isTrue()
-        //assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
+        assertThat(result.has("hash_artefacts")).isTrue()
+        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
     @Test

@@ -7,7 +7,7 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class DataTests : DatabaseTests()
+class DataTests : CleanDatabaseTests()
 {
 
     private fun createSut(): Orderly

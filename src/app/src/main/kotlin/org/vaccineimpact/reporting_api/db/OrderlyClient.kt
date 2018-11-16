@@ -18,7 +18,10 @@ interface OrderlyClient
     fun getReportsByName(name: String): List<String>
 
     @Throws(UnknownObjectError::class)
-    fun getReportByNameAndVersion(name: String, version: String): ReportVersionDetails
+    fun getReportByNameAndVersion(name: String, version: String): JsonObject
+
+    @Throws(UnknownObjectError::class)
+    fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
 
     @Throws(UnknownObjectError::class)
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>

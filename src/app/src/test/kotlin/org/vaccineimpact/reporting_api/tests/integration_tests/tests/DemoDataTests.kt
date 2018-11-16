@@ -4,7 +4,6 @@ import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import com.google.gson.JsonObject
 
 class DemoDataTests : IntegrationTest()
 {
@@ -13,9 +12,6 @@ class DemoDataTests : IntegrationTest()
         const val MINIMAL_REPORT_NAME = "minimal"
         const val OTHER_REPORT_NAME = "other"
         const val CHANGELOG_REPORT_NAME = "changelog"
-
-        const val OTHER_REPORT_VERSION = "20171121-201156-b9e7fb19"
-        const val CHANGELOG_REPORT_VERSION = "20171202-074745-4f66ded4"
     }
 
     @Test
@@ -29,15 +25,17 @@ class DemoDataTests : IntegrationTest()
         assertThat(data is ArrayNode)
         val dataArray = data as ArrayNode
         assertThat(dataArray.size()).isEqualTo(3)
-        assertThat(dataArray[0].asText()).isEqualTo("20171112-084541-6e980032")
-        assertThat(dataArray[1].asText()).isEqualTo("20171114-065304-e0146037")
-        assertThat(dataArray[2].asText()).isEqualTo("20171118-162858-fbf862e4")
+        assertThat(dataArray[0].asText()).isNotBlank()
+        assertThat(dataArray[1].asText()).isNotBlank()
+        assertThat(dataArray[2].asText()).isNotBlank()
     }
 
     @Test
     fun `can get demo report version data`()
     {
-        val response = requestHelper.get("/reports/$OTHER_REPORT_NAME/versions/$OTHER_REPORT_VERSION",
+        val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
+
+        val response = requestHelper.get("/reports/$OTHER_REPORT_NAME/versions/$reportVersion/",
                 user = requestHelper.fakeReviewer)
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -45,9 +43,10 @@ class DemoDataTests : IntegrationTest()
         assertThat(data is ObjectNode)
         val dataObj = data as ObjectNode
 
-        assertExpectedOtherReportVersionProperties(dataObj)
+        assertExpectedOtherReportVersionProperties(dataObj, reportVersion)
 
-        assertThat(dataObj.get("date").asText()).isEqualTo("2017-11-21T20:11:56Z")
+        assertThat(dataObj.get("displayname").asText()).isEqualTo("another report")
+
         assertThat(dataObj.get("description").asText()).isEqualTo("An extended comment field.  This can be quite long.  This is not so long though, but long enough I'm sure.")
         assertThat(dataObj.get("comment").asText()).isEqualTo("This is another comment")
 
@@ -61,14 +60,10 @@ class DemoDataTests : IntegrationTest()
         val fileNamesArray = dataArtefactObj.get("filenames") as ArrayNode
         assertThat(fileNamesArray[0].asText()).isEqualTo("summary.csv")
 
-        assertThat(dataObj.get("script").asText()).isEqualTo("script.R")
-
-        assertThat(dataObj.get("hash_script").asText()).isEqualTo("0e47057061019918a94f83570d06ef54")
-
         val parametersObj = dataObj.get("parameters") as ObjectNode
         assertThat(parametersObj.get("nmin").asInt()).isEqualTo(0)
 
-        assertThat(dataObj.get("hash_orderly").asText()).isEqualTo("e69d1ff419b92c502e3712e86b3e1953")
+        assertThat(dataObj.get("hash_orderly").asText()).isEqualTo("5dfd610af385c346ede42a5802b1a3bf")
         assertThat(dataObj.get("hash_input").asText()).isEqualTo("360533871dcc18a93868649c5b55b3f1")
 
         val hashResourcesObj = dataObj.get("hash_resources") as ObjectNode
@@ -78,9 +73,32 @@ class DemoDataTests : IntegrationTest()
         assertThat(hashDataObj.get("extract").asText()).isEqualTo("386f507375907a60176b717016f0a648")
 
         val hashArtefactsObj = dataObj.get("hash_artefacts") as ObjectNode
-        assertThat(hashArtefactsObj.get("summary.csv").asText()).isEqualTo("23877598325ab7d45999349ef868a7f5")
-        assertThat(hashArtefactsObj.get("graph.png").asText()).isEqualTo("7360cb2eed3327ff8a677b3598ed7343")
+        assertThat(hashArtefactsObj.get("summary.csv").asText()).isEqualTo("3a9dcd5ad0326386af938cf3a4b395cc")
+        assertThat(hashArtefactsObj.get("graph.png").asText()).isEqualTo("067a7300a693861283e7479dfa7857d2")
 
+        assertThat(dataObj.get("script").asText()).isEqualTo("script.R")
+
+        assertThat(dataObj.get("hash_script").asText()).isEqualTo("ba1490c1ef2934c00b03e6fb5fdb5248")
+
+    }
+
+    @Test
+    fun `can get demo report version details`()
+    {
+        val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
+        val response = requestHelper.get("/reports/$OTHER_REPORT_NAME/versions/$reportVersion/details",
+                user = requestHelper.fakeReviewer)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val data = JSONValidator.getData(response.text)
+        assertThat(data is ObjectNode)
+        val dataObj = data as ObjectNode
+
+        assertExpectedOtherReportVersionProperties(dataObj, reportVersion)
+
+        assertThat(dataObj.get("script").asText()).isEqualTo("script.R")
+
+        assertThat(dataObj.get("hash_script").asText()).isEqualTo("ba1490c1ef2934c00b03e6fb5fdb5248")
     }
 
     @Test
@@ -96,16 +114,18 @@ class DemoDataTests : IntegrationTest()
         val versionArray = data as ArrayNode
 
         //Check that we have one expected version which should contain values for all fields
-        val versionObj = versionArray.find { it.get("id").asText() == OTHER_REPORT_VERSION } as ObjectNode
-        assertThat(versionObj.get("date").asText()).isEqualTo("2017-11-21T20:11:56Z")
-        assertExpectedOtherReportVersionProperties(versionObj)
+        val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
+        val versionObj = versionArray.find { it.get("id").asText() == reportVersion } as ObjectNode
+        assertThat(versionObj.get("date").asText()).isEqualTo("2017-12-04T12:28:16Z")
+        assertExpectedOtherReportVersionProperties(versionObj, reportVersion)
 
     }
 
     @Test
     fun `can get demo changelog data`()
     {
-        val response = requestHelper.get("/reports/$CHANGELOG_REPORT_NAME/versions/$CHANGELOG_REPORT_VERSION/changelog/",
+        val reportVersion = getLatestReportVersion(CHANGELOG_REPORT_NAME)
+        val response = requestHelper.get("/reports/$CHANGELOG_REPORT_NAME/versions/$reportVersion/changelog/",
                 user = requestHelper.fakeReviewer)
 
         assertSuccessful(response)
@@ -114,30 +134,46 @@ class DemoDataTests : IntegrationTest()
         assertThat(data is ArrayNode)
         val clArray = data as ArrayNode
 
-        assertThat(clArray.size()).isEqualTo(2)
+        assertThat(clArray.size()).isEqualTo(3)
 
         val entry1 = clArray[0] as ObjectNode
-        assertThat(entry1.get("report_version").asText()).isEqualTo(CHANGELOG_REPORT_VERSION)
+        assertThat(entry1.get("report_version").asText()).isEqualTo(reportVersion)
         assertThat(entry1.get("label").asText()).isEqualTo("public")
         assertThat(entry1.get("from_file").asBoolean()).isTrue()
-        assertThat(entry1.get("value").asText()).startsWith("Now that we know who you are, I know who I am. I'm not a mistake!")
+        assertThat(entry1.get("value").asText()).startsWith("Do you see any Teletubbies in here?")
 
         val entry2 = clArray[1] as ObjectNode
-        assertThat(entry2.get("report_version").asText()).isEqualTo(CHANGELOG_REPORT_VERSION)
-        assertThat(entry2.get("label").asText()).isEqualTo("internal")
+        assertThat(entry2.get("label").asText()).isEqualTo("public")
         assertThat(entry2.get("from_file").asBoolean()).isTrue()
-        assertThat(entry2.get("value").asText()).startsWith("Well, the way they make shows is, they make one show.")
+        assertThat(entry2.get("value").asText()).startsWith("Now that we know who you are, I know who I am. I'm not a mistake!")
+
+        val entry3 = clArray[2] as ObjectNode
+        assertThat(entry3.get("label").asText()).isEqualTo("internal")
+        assertThat(entry3.get("from_file").asBoolean()).isTrue()
+        assertThat(entry3.get("value").asText()).startsWith("Well, the way they make shows is, they make one show.")
 
     }
 
-    private fun assertExpectedOtherReportVersionProperties(dataObj : ObjectNode)
+    private fun assertExpectedOtherReportVersionProperties(dataObj : ObjectNode, reportVersion : String)
     {
         assertThat(dataObj.get("name").asText()).isEqualTo(OTHER_REPORT_NAME)
-        assertThat(dataObj.get("id").asText()).isEqualTo(OTHER_REPORT_VERSION)
+        assertThat(dataObj.get("id").asText()).isEqualTo(reportVersion)
 
-        assertThat(dataObj.get("display_name").asText()).isEqualTo("another report")
-        assertThat(dataObj.get("published").asInt()).isEqualTo(0)
+        assertThat(dataObj.get("published").asInt()).isEqualTo(1)
         assertThat(dataObj.get("requester").asText()).isEqualTo("ACME")
         assertThat(dataObj.get("author").asText()).isEqualTo("Dr Serious")
+
+    }
+
+    private fun getLatestReportVersion(report: String) : String
+    {
+        //report versions are different every time the data is generated, so fetch whatever is there at the moment
+        val response = requestHelper.get("/reports/$report",  user = requestHelper.fakeReviewer)
+
+        val data = JSONValidator.getData(response.text)
+        val dataArray = data as ArrayNode
+        return dataArray[dataArray.size()-1].asText()
+
+
     }
 }

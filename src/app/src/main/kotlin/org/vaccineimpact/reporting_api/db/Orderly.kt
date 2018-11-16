@@ -9,13 +9,10 @@ import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
-import org.vaccineimpact.reporting_api.db.Tables.FILE_ARTEFACT
 import org.vaccineimpact.reporting_api.db.Tables.FILE_INPUT
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
-import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION_ARTEFACT
-import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION_DATA
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
@@ -113,97 +110,11 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
-    override fun getReportByNameAndVersion(name: String, version: String): ReportVersionDetails
+    override fun getReportByNameAndVersion(name: String, version: String): JsonObject
     {
         JooqContext().use {
 
-            // get data
-            val versionDataResult = it.dsl.selectFrom(REPORT_VERSION_DATA)
-                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
-                    .fetch()
-            val versionDataJson = JsonObject()
-            for(r in versionDataResult)
-            {
-                versionDataJson.addProperty(r.name, r.sql)
-            }
-
-            val reportVersionResult = it.dsl.selectFrom(REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(name))
-                    .and(REPORT_VERSION.ID.eq(version))
-                    .and(shouldIncludeReportVersion)
-                    .singleOrNull()
-                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
-            // get artefacts
-            val artefactsResult = it.dsl.select(REPORT_VERSION_ARTEFACT.FORMAT,
-                    REPORT_VERSION_ARTEFACT.DESCRIPTION,
-                    FILE_ARTEFACT.FILENAME)
-                    .from(REPORT_VERSION_ARTEFACT)
-                    .join(FILE_ARTEFACT)
-                    .on(REPORT_VERSION_ARTEFACT.ID.eq(FILE_ARTEFACT.ARTEFACT))
-                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
-                    .fetch()
-
-            val artefactsJson = JsonArray()
-            for(r in artefactsResult)
-            {
-                val format = r.value1()
-                val description = r.value2()
-                val filename = r.value3()
-
-                var formatObj : JsonObject? = null
-                for(a in artefactsJson)
-                {
-                    formatObj = (a as JsonObject).get(format) as JsonObject?
-                    if (formatObj != null)
-                    {
-                        break;
-                    }
-                }
-
-                if (formatObj == null)
-                {
-                    val subObj = JsonObject()
-                    subObj.addProperty("description", description)
-                    subObj.add("filenames", JsonArray())
-
-                    formatObj = JsonObject()
-                    formatObj.add(format, subObj)
-
-                    artefactsJson.add(formatObj)
-                }
-
-                ((formatObj.get(format) as JsonObject).get("filenames") as JsonArray).add(filename)
-
-            }
-
-            //get script
-            val scriptResult = it.dsl.select(FILE_INPUT.FILENAME,
-                    FILE_INPUT.FILE_HASH)
-                    .from(FILE_INPUT)
-                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
-                    .and(FILE_INPUT.FILE_PURPOSE.eq("script"))
-                    .fetchAny()
-            val script = if (scriptResult == null) "" else scriptResult.value1()
-            val hashScript = if (scriptResult == null) "" else scriptResult.value2()
-
-            val result = ReportVersionDetails( id = reportVersionResult.id,
-                    name = reportVersionResult.report,
-                    displayName = reportVersionResult.displayname,
-                    author = reportVersionResult.author,
-                    comment = reportVersionResult.comment,
-                    date = reportVersionResult.date.toInstant(),
-                    description = reportVersionResult.description,
-                    published = reportVersionResult.published,
-                    requester = reportVersionResult.requester,
-                    script = script,
-                    hashScript = hashScript,
-                    data = versionDataJson,
-                    artefacts = artefactsJson)
-
-            return result
-
-           /* val result = it.dsl.select()
+           val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name)
                             .and((ORDERLY.ID).eq(version))
@@ -239,7 +150,45 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
             }
 
-            return obj*/
+            return obj
+        }
+
+    }
+
+    ///This is a temporary location for logic accessing the new Orderly schema, until it is completed and replaces
+    ///GetReportByNameAndVersion above
+    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
+    {
+        JooqContext().use {
+
+            val reportVersionResult = it.dsl.selectFrom(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq(name))
+                    .and(REPORT_VERSION.ID.eq(version))
+                    .and(shouldIncludeReportVersion)
+                    .singleOrNull()
+                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
+
+            //get script
+            val scriptResult = it.dsl.selectFrom(FILE_INPUT)
+                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq("script"))
+                    .singleOrNull()
+
+
+            val result = ReportVersionDetails( id = reportVersionResult.id,
+                    name = reportVersionResult.report,
+                    displayName = reportVersionResult.displayname,
+                    author = reportVersionResult.author,
+                    comment = reportVersionResult.comment,
+                    date = reportVersionResult.date.toInstant(),
+                    description = reportVersionResult.description,
+                    published = reportVersionResult.published,
+                    requester = reportVersionResult.requester,
+                    script = scriptResult?.filename,
+                    hashScript = scriptResult?.fileHash)
+
+            return result
+
         }
 
     }
