@@ -14,6 +14,7 @@ import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
+import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
 
@@ -161,12 +162,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-            val reportVersionResult = it.dsl.selectFrom(REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(name))
-                    .and(REPORT_VERSION.ID.eq(version))
-                    .and(shouldIncludeReportVersion)
-                    .singleOrNull()
-                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
+            val reportVersionResult = getReportVersion(name, version, it)
 
             //get script
             val scriptResult = it.dsl.selectFrom(FILE_INPUT)
@@ -255,18 +251,22 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-            //raise exception if version does not belong to named report, or version does not exist
-            val thisVersion =
-                    it.dsl.selectFrom(REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(name))
-                    .and(REPORT_VERSION.ID.eq(version))
-                    .singleOrNull()
-                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
+            val thisVersion = getReportVersion(name, version, it)
             return getDatedChangelogForReport(thisVersion.report, thisVersion.date, it)
 
         }
 
+    }
+
+    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionRecord
+    {
+        //raise exception if version does not belong to named report, or version does not exist
+        return ctx.dsl.selectFrom(REPORT_VERSION)
+                        .where(REPORT_VERSION.REPORT.eq(name))
+                        .and(REPORT_VERSION.ID.eq(version))
+                        .and(shouldIncludeReportVersion)
+                        .singleOrNull()
+                        ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext) : List<Changelog>

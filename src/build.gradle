@@ -73,7 +73,6 @@ subprojects {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-        compile "com.google.code.gson:gson:2.2.4"
     }
 
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
