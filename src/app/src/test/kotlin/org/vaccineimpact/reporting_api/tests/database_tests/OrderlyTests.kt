@@ -9,7 +9,7 @@ import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertReport
 
-class OrderlyTests : DatabaseTests()
+class OrderlyTests : CleanDatabaseTests()
 {
 
     private fun createSut(): Orderly
@@ -102,10 +102,10 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        val result = sut.getReportsByNameAndVersion("test", "version1")
+        val result = sut.getReportByNameAndVersion("test", "version1")
 
-        assertThat(result.has("name")).isTrue()
-        assertThat(result.has("id")).isTrue()
+        assertThat(result.has("name"))
+        assertThat(result.has("id"))
 
         assertThat(result.has("hash_artefacts")).isTrue()
         assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
@@ -119,7 +119,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "version1") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -132,7 +132,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("test", "dsajkdsj") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -144,7 +144,7 @@ class OrderlyTests : DatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportsByNameAndVersion("dsajkdsj", "version") }
+        assertThatThrownBy { sut.getReportByNameAndVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
 
     }

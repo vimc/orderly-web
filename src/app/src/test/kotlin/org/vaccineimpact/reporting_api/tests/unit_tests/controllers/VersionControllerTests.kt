@@ -1,15 +1,18 @@
 package org.vaccineimpact.reporting_api.tests.unit_tests.controllers
 
-import com.google.gson.JsonParser
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.times
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
+import java.time.Instant
 import org.junit.Test
+
 import org.vaccineimpact.api.models.Changelog
+import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.reporting_api.ActionContext
 import org.vaccineimpact.reporting_api.OrderlyServerAPI
@@ -34,10 +37,9 @@ class VersionControllerTests : ControllerTest()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = JsonParser().parse("{\"key\":\"value\"}")
-
+        val report = JsonObject()
         val orderly = mock<OrderlyClient> {
-            on { this.getReportsByNameAndVersion(reportName, reportVersion) } doReturn report.asJsonObject
+            on { this.getReportByNameAndVersion(reportName, reportVersion) } doReturn report
         }
 
         val actionContext = mock<ActionContext> {
@@ -51,6 +53,33 @@ class VersionControllerTests : ControllerTest()
                 mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
+    }
+
+    @Test
+    fun `getDetailsByNameAndVersion returns report metadata`()
+    {
+        val reportName = "reportName"
+        val reportVersion = "reportVersion"
+
+        val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
+                name = "name", published = true, requester = "requester", description = "description",
+                comment = "comment", script = "script", hashScript = "hashscript")
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        assertThat(sut.getDetailsByNameAndVersion()).isEqualTo(report)
     }
 
     @Test

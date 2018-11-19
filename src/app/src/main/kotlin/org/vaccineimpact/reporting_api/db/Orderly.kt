@@ -1,16 +1,20 @@
 package org.vaccineimpact.reporting_api.db
 
+import com.github.salomonbrys.kotson.addPropertyIfNotNull
 import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
+import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
+import org.vaccineimpact.reporting_api.db.Tables.FILE_INPUT
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
+import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
 
@@ -37,7 +41,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID,
                             REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE.`as`("updatedOn"),
+                            REPORT_VERSION.DATE,
                             REPORT_VERSION.AUTHOR,
                             REPORT_VERSION.REQUESTER,
                             latestVersionForEachReport.field<String>("latestVersion")
@@ -107,11 +111,11 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
-    override fun getReportsByNameAndVersion(name: String, version: String): JsonObject
+    override fun getReportByNameAndVersion(name: String, version: String): JsonObject
     {
         JooqContext().use {
 
-            val result = it.dsl.select()
+           val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name)
                             .and((ORDERLY.ID).eq(version))
@@ -148,6 +152,39 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
             }
 
             return obj
+        }
+
+    }
+
+    ///This is a temporary location for logic accessing the new Orderly schema, until it is completed and replaces
+    ///GetReportByNameAndVersion above
+    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
+    {
+        JooqContext().use {
+
+            val reportVersionResult = getReportVersion(name, version, it)
+
+            //get script
+            val scriptResult = it.dsl.selectFrom(FILE_INPUT)
+                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq("script"))
+                    .singleOrNull()
+
+
+            val result = ReportVersionDetails( id = reportVersionResult.id,
+                    name = reportVersionResult.report,
+                    displayName = reportVersionResult.displayname,
+                    author = reportVersionResult.author,
+                    comment = reportVersionResult.comment,
+                    date = reportVersionResult.date.toInstant(),
+                    description = reportVersionResult.description,
+                    published = reportVersionResult.published,
+                    requester = reportVersionResult.requester,
+                    script = scriptResult?.filename,
+                    hashScript = scriptResult?.fileHash)
+
+            return result
+
         }
 
     }
@@ -214,18 +251,22 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-            //raise exception if version does not belong to named report, or version does not exist
-            val thisVersion =
-                    it.dsl.selectFrom(REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(name))
-                    .and(REPORT_VERSION.ID.eq(version))
-                    .singleOrNull()
-                    ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
+            val thisVersion = getReportVersion(name, version, it)
             return getDatedChangelogForReport(thisVersion.report, thisVersion.date, it)
 
         }
 
+    }
+
+    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionRecord
+    {
+        //raise exception if version does not belong to named report, or version does not exist
+        return ctx.dsl.selectFrom(REPORT_VERSION)
+                        .where(REPORT_VERSION.REPORT.eq(name))
+                        .and(REPORT_VERSION.ID.eq(version))
+                        .and(shouldIncludeReportVersion)
+                        .singleOrNull()
+                        ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext) : List<Changelog>

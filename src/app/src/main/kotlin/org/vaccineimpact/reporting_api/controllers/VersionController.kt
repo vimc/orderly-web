@@ -1,8 +1,10 @@
 package org.vaccineimpact.reporting_api.controllers
 
-import com.google.gson.JsonObject
 import java.io.File
+import com.google.gson.JsonObject
+
 import org.vaccineimpact.api.models.Changelog
+import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.*
@@ -37,7 +39,13 @@ class VersionController(context: ActionContext,
     fun getByNameAndVersion(): JsonObject
     {
         val name = context.params(":name")
-        return orderly.getReportsByNameAndVersion(name, context.params(":version"))
+        return orderly.getReportByNameAndVersion(name, context.params(":version"))
+    }
+
+    fun getDetailsByNameAndVersion(): ReportVersionDetails
+    {
+        val name = context.params(":name")
+        return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
     }
 
     fun getZippedByNameAndVersion(): Boolean

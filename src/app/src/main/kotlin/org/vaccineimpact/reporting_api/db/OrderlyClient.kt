@@ -5,6 +5,7 @@ import com.google.gson.JsonObject
 import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
+import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 interface OrderlyClient
@@ -17,7 +18,10 @@ interface OrderlyClient
     fun getReportsByName(name: String): List<String>
 
     @Throws(UnknownObjectError::class)
-    fun getReportsByNameAndVersion(name: String, version: String): JsonObject
+    fun getReportByNameAndVersion(name: String, version: String): JsonObject
+
+    @Throws(UnknownObjectError::class)
+    fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
 
     @Throws(UnknownObjectError::class)
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
