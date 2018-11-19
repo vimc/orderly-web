@@ -116,7 +116,7 @@ class DemoDataTests : IntegrationTest()
         //Check that we have one expected version which should contain values for all fields
         val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
         val versionObj = versionArray.find { it.get("id").asText() == reportVersion } as ObjectNode
-        assertThat(versionObj.get("date").asText()).isEqualTo("2017-12-04T12:28:16Z")
+        assertThat(versionObj.get("date").asText()).isNotBlank()
         assertExpectedOtherReportVersionProperties(versionObj, reportVersion)
 
     }
