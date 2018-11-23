@@ -76,11 +76,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
             return it.dsl.with(tempTable).`as`(allReports)
                     .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME,
-                            ORDERLY.ID.`as`("latestVersion"),
-                            ORDERLY.PUBLISHED,
-                            ORDERLY.DATE.`as`("updatedOn"),
-                            ORDERLY.AUTHOR,
-                            ORDERLY.REQUESTER)
+                            ORDERLY.ID.`as`("latestVersion"))
                     .from(ORDERLY)
                     .join(table(name(tempTable)))
                     .on(ORDERLY.NAME.eq(field(name(tempTable, "name"), String::class.java))
