@@ -30,10 +30,8 @@ class OrderlyReviewerTests : CleanDatabaseTests()
         assertThat(results.count()).isEqualTo(3)
 
         assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].published).isTrue()
 
         assertThat(results[1].name).isEqualTo("test2")
-        assertThat(results[1].published).isFalse()
         assertThat(results[1].latestVersion).isEqualTo("vd")
 
         assertThat(results[2].name).isEqualTo("test3")

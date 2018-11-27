@@ -36,14 +36,10 @@ class OrderlyTests : CleanDatabaseTests()
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[0].displayName).isEqualTo("display name test")
         assertThat(results[0].latestVersion).isEqualTo("vz")
-        assertThat(results[0].published).isTrue()
-        assertThat(results[0].author).isEqualTo("author authorson")
-        assertThat(results[0].requester).isEqualTo("requester mcfunder")
 
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
-        assertThat(results[1].published).isTrue()
     }
 
     @Test
