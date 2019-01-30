@@ -36,5 +36,5 @@ object ReportRouteConfig : RouteConfig
             Endpoint("/reports/:name/latest/changelog/", controller, "getLatestChangelogByName")
                     .json()
                     .transform()
-                    .secure(reviewReports))
+                    .secure(reviewReports.union(readReports)))
 }

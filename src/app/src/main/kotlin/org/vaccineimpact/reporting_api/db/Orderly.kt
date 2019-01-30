@@ -62,6 +62,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
 
+    private val shouldIncludeChangelogItem = CHANGELOG.LABEL.eq('public').itOr(isReviewer)
+
     override fun getAllReports(): List<Report>
     {
         JooqContext().use {
@@ -277,6 +279,8 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
                 .where(REPORT_VERSION.REPORT.eq(report))
                 .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
+                .and(shouldIncludeReportVersion)
+                .and(shouldIncludeChangelogItem)
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
     }
