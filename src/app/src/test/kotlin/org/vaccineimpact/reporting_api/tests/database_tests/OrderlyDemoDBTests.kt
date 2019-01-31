@@ -42,7 +42,6 @@ class OrderlyDemoDBTests : DatabaseTests()
             assertThat(names.contains("interactivegraph")).isTrue()
             assertThat(names.contains("data")).isTrue()
             assertThat(names.contains("report")).isTrue()
-            assertThat(names.contains("shinyapp")).isTrue()
             assertThat(names.contains("interactivehtml")).isTrue()
 
         }

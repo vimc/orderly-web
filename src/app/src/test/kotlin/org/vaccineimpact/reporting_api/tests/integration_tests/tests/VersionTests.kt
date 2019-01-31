@@ -325,16 +325,15 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `get changelog returns 403 if reader permissions only`()
+    fun `can get version changelog by name and version if global reader permissions only`()
     {
+        //reader now has permission to get public changelog items for published reports which they have perms to read
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
-                 user = requestHelper.fakeGlobalReportReader)
-
-        Assertions.assertThat(response.statusCode).isEqualTo(403)
-        JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.review")
-
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
+                user = requestHelper.fakeGlobalReportReader)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
     }
 
     @Test

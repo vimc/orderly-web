@@ -74,14 +74,17 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `get latest changelog returns 403 if reader permissions only`()
+    fun `can get latest changelog if reader permissions only`()
     {
-       val response = requestHelper.get("/reports/testname/latest/changelog",
+        //This report has been published so we should be able to see it, though it has no log items
+       val response = requestHelper.get("/reports/other/latest/changelog",
                 user = requestHelper.fakeGlobalReportReader)
 
-        assertThat(response.statusCode).isEqualTo(403)
-        JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.review")
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Changelog")
+        val count = (JSONValidator.getData(response.text) as ArrayNode).size()
+        assertThat(count).isEqualTo(0)
 
     }
 

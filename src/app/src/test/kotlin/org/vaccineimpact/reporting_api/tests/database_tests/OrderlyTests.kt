@@ -12,9 +12,9 @@ import org.vaccineimpact.reporting_api.tests.insertReport
 class OrderlyTests : CleanDatabaseTests()
 {
 
-    private fun createSut(): Orderly
+    private fun createSut(isReviewer: Boolean = false): Orderly
     {
-        return Orderly(false)
+        return Orderly(isReviewer)
     }
 
     @Test
@@ -164,11 +164,11 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can get changelog for report version`()
+    fun `reviewer can get all changelog for report version`()
     {
         insertReport("test", "version1")
 
-        val sut = createSut()
+        val sut = createSut(true)
 
         val results = sut.getChangelogByNameAndVersion("test", "version1")
 
@@ -180,11 +180,25 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can get changelog for previous report versions`()
+    fun `reader can get public changelog for report version`()
+    {
+        insertReport("test", "version1")
+
+        val sut = createSut(false)
+
+        val results = sut.getChangelogByNameAndVersion("test", "version1")
+
+        assertThat(results.count()).isEqualTo(1)
+
+        assertChangelogValuesMatch(results[0], "version1", "public", "did something great", true)
+    }
+
+    @Test
+    fun `reviewer can get all changelog for previous report versions`()
     {
         insertTestReportChangelogs()
 
-        val sut = createSut()
+        val sut = createSut(true)
 
         val results = sut.getChangelogByNameAndVersion("test", "version3")
 
@@ -193,10 +207,23 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `do not get changelog for later report versions`()
+    fun `reader can get public changelog for previous report versions`()
     {
         insertTestReportChangelogs()
-        val sut = createSut()
+
+        val sut = createSut(false)
+
+        val results = sut.getChangelogByNameAndVersion("test", "version3")
+
+        assertExpectedPublicTestChangelogValues("version3", results)
+
+    }
+
+    @Test
+    fun `reviewer does not get changelog for later report versions`()
+    {
+        insertTestReportChangelogs()
+        val sut = createSut(true)
 
         val results = sut.getChangelogByNameAndVersion("test", "version2")
 
@@ -204,7 +231,18 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `do not get changelog for other reports`()
+    fun `reader does not get changelog for later report versions`()
+    {
+        insertTestReportChangelogs()
+        val sut = createSut(false)
+
+        val results = sut.getChangelogByNameAndVersion("test", "version1")
+
+        assertExpectedPublicTestChangelogValues("version1", results)
+    }
+
+    @Test
+    fun `reviewer does not get changelog for other reports`()
     {
         insertTestReportChangelogs()
 
@@ -212,11 +250,27 @@ class OrderlyTests : CleanDatabaseTests()
                 Changelog("anotherversion1", "public","did something great v1", true),
                 Changelog("anotherversion1","internal","did something awful v1", false)))
 
-        val sut = createSut()
+        val sut = createSut(true)
 
         val results = sut.getChangelogByNameAndVersion("test", "version2")
 
         assertExpectedTestChangelogValues("version2", results)
+    }
+
+    @Test
+    fun `reader does not get changelog for other reports`()
+    {
+        insertTestReportChangelogs()
+
+        insertReport("anothertest", "anotherversion1", changelog = listOf(
+                Changelog("anotherversion1", "public","did something great v1", true),
+                Changelog("anotherversion1","internal","did something awful v1", false)))
+
+        val sut = createSut(false)
+
+        val results = sut.getChangelogByNameAndVersion("test", "version3")
+
+        assertExpectedPublicTestChangelogValues("version3", results)
     }
 
 
@@ -254,11 +308,11 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can get latest changelog for report`()
+    fun `reviewer can get latest changelog for report`()
     {
         insertTestReportChangelogs()
 
-        val sut = createSut()
+        val sut = createSut(true)
 
         val results = sut.getLatestChangelogByName("test")
 
@@ -266,7 +320,19 @@ class OrderlyTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `do not get latest changelog for other reports`()
+    fun `reader can get latest public changelog for report`()
+    {
+        insertTestReportChangelogs()
+
+        val sut = createSut(false)
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertExpectedPublicTestChangelogValues("version3", results)
+    }
+
+    @Test
+    fun `reviewer does not get latest changelog for other reports`()
     {
         insertTestReportChangelogs()
 
@@ -274,11 +340,55 @@ class OrderlyTests : CleanDatabaseTests()
                 Changelog("anotherversion1", "public","did something great v1", true),
                 Changelog("anotherversion1","internal","did something awful v1", false)))
 
-        val sut = createSut()
+        val sut = createSut(true)
 
         val results = sut.getLatestChangelogByName("test")
 
         assertExpectedTestChangelogValues("version3", results)
+    }
+
+    @Test
+    fun `reader does not get latest changelog for other reports`()
+    {
+        insertTestReportChangelogs()
+
+        insertReport("anothertest", "anotherversion1", changelog = listOf(
+                Changelog("anotherversion1", "public","did something great v1", true),
+                Changelog("anotherversion1","internal","did something awful v1", false)))
+
+        val sut = createSut(false)
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertExpectedPublicTestChangelogValues("version3", results)
+    }
+
+    @Test
+    fun `reader get latest changelog gets latest published version's changelog`()
+    {
+        //Should not get changelog for latest version if it is not public
+        //but should get public changelog items for versions previous to latest
+        //published version, even id those old versions were unpublished
+        insertReport("test", "v1", published = false, changelog = listOf(
+                    Changelog("v1", "public","did something great v1", true),
+                    Changelog("v1","internal","did something awful v1", false)))
+        insertReport("test", "v2", published = true, changelog = listOf(
+                    Changelog("v2", "public","did something great v2", true),
+                    Changelog("v2","internal","did something awful v2", false)))
+        insertReport("test", "v3",  published =  false,
+                changelog = listOf(
+                    Changelog("v3", "public","did something great v3", true),
+                    Changelog("v3","internal","did something awful v3", false)))
+
+        val sut = createSut(false)
+
+        val results = sut.getLatestChangelogByName("test")
+
+        assertThat(results.count()).isEqualTo(2)
+        //v2 - published
+        assertChangelogValuesMatch(results[0], "v2", "public", "did something great v2", true)
+        //v1 - unpublished
+        assertChangelogValuesMatch(results[1], "v1", "public", "did something great v1", true)
     }
 
     @Test
@@ -298,8 +408,10 @@ class OrderlyTests : CleanDatabaseTests()
                 Changelog("version1", "public","did something great v1", true),
                 Changelog("version1","internal","did something awful v1", false)))
 
-        insertReport("test", "version2", changelog = listOf(
-                Changelog("version2", "public","did something great v2", true)))
+        insertReport("test", "version2",
+                published = false, //This version is unpublished but its item is public so both readers and reviewers should see it
+                changelog = listOf(
+                    Changelog("version2", "public","did something great v2", true)))
 
         insertReport("test", "version3", changelog = listOf(
                 Changelog("version3", "public","did something great v3", true),
@@ -340,6 +452,39 @@ class OrderlyTests : CleanDatabaseTests()
         if (index == 0)
         {
             Assertions.fail("Bad test configuration - unexpected report version when checking expected test changelog values")
+        }
+    }
+
+    private fun assertExpectedPublicTestChangelogValues(latestVersion: String, results: List<Changelog>)
+    {
+        var index = 0
+
+        if (latestVersion == "version3")
+        {
+            assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true)
+
+            index ++
+        }
+
+        if (latestVersion == "version2" || index > 0)
+        {
+            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true)
+
+            index++
+        }
+
+        if (latestVersion == "version1" || index > 0)
+        {
+            assertChangelogValuesMatch(results[index], "version1", "public", "did something great v1", true)
+
+            index ++
+        }
+
+        assertThat(results.count()).isEqualTo(index)
+
+        if (index == 0)
+        {
+            Assertions.fail("Bad test configuration - unexpected report version when checking expected public test changelog values")
         }
     }
 
