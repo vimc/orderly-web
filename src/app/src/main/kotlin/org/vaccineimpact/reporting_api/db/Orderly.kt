@@ -62,7 +62,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
 
-    private val shouldIncludeChangelogItem = CHANGELOG.LABEL.eq('public').itOr(isReviewer)
+    private val shouldIncludeChangelogItem = if (isReviewer) trueCondition() else CHANGELOG.LABEL.eq("public")
 
     override fun getAllReports(): List<Report>
     {
