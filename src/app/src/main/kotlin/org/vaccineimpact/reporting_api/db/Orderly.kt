@@ -9,6 +9,7 @@ import org.vaccineimpact.api.models.Report
 import org.vaccineimpact.api.models.ReportVersion
 import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
+import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG_LABEL
 import org.vaccineimpact.reporting_api.db.Tables.FILE_INPUT
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
@@ -62,7 +63,15 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
 
-    private val shouldIncludeChangelogItem = if (isReviewer) trueCondition() else CHANGELOG.LABEL.eq("public")
+    private val shouldIncludeChangelogItem =
+            if (isReviewer)
+                trueCondition()
+            else
+                CHANGELOG.LABEL.`in`(
+                        select(CHANGELOG_LABEL.ID)
+                                .from(CHANGELOG_LABEL)
+                                .where(CHANGELOG_LABEL.PUBLIC)
+                )
 
     override fun getAllReports(): List<Report>
     {

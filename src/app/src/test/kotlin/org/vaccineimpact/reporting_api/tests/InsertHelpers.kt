@@ -5,6 +5,7 @@ import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
+import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG_LABEL
 import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
 import org.vaccineimpact.reporting_api.db.Tables.REPORT
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
@@ -93,6 +94,28 @@ fun insertReport(name: String,
                     this.connection = false
                 }
         reportVersionRecord.store()
+
+        //Check if we need to add changelog labels
+        val labels = it.dsl.select(CHANGELOG_LABEL.ID)
+                .from(CHANGELOG_LABEL)
+                .fetch()
+
+        if (labels.isEmpty())
+        {
+             val publicRecord = it.dsl.newRecord(CHANGELOG_LABEL)
+                     .apply{
+                         this.id = "public"
+                         this.public = true
+                     }
+             publicRecord.store();
+
+            val internalRecord = it.dsl.newRecord(CHANGELOG_LABEL)
+                    .apply{
+                        this.id = "internal"
+                        this.public = false
+                    }
+            internalRecord.store();
+        }
 
         for(entry in changelog)
         {
