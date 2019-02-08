@@ -25,7 +25,7 @@ interface OrderlyClient
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
 
     @Throws(UnknownObjectError::class)
-    fun getArtefactHashes(name: String, version: String): JsonObject
+    fun getArtefactHashes(name: String, version: String): Map<String, String>
 
     @Throws(UnknownObjectError::class)
     fun getArtefacts(report: String, version: String): List<Artefact>

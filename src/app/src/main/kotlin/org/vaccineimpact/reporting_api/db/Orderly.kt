@@ -5,6 +5,7 @@ import org.jooq.TableField
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.*
 import org.vaccineimpact.reporting_api.db.Tables.*
+import org.vaccineimpact.reporting_api.db.tables.File
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -201,17 +202,26 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     }
 
-    override fun getArtefactHashes(name: String, version: String): JsonObject
+    override fun getArtefactHashes(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)
+        return JooqContext().use {
+            getReportVersion(name, version, it)
+            it.dsl.select(FILE_ARTEFACT.FILENAME, FILE_ARTEFACT.FILE_HASH)
+                    .from(FILE_ARTEFACT)
+                    .join(REPORT_VERSION_ARTEFACT)
+                    .on(FILE_ARTEFACT.ARTEFACT.eq(REPORT_VERSION_ARTEFACT.ID))
+                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[FILE_ARTEFACT.FILENAME] to it[FILE_ARTEFACT.FILE_HASH] }
+        }
     }
 
     override fun getArtefactHash(name: String, version: String, filename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename]
+        val result = getArtefactHashes(name, version)[filename]
                 ?: throw UnknownObjectError(filename, "Artefact")
 
-        return result.asString
+        return result
     }
 
     override fun getData(name: String, version: String): JsonObject
