@@ -40,13 +40,10 @@ interface OrderlyClient
     fun getDatum(name: String, version: String, datumname: String): String
 
     @Throws(UnknownObjectError::class)
-    fun getResources(name: String, version: String): JsonObject
+    fun getResourceHashes(name: String, version: String): Map<String, String>
 
     @Throws(UnknownObjectError::class)
-    fun getResource(name: String, version: String, resourcename: String): String
-
-    @Throws(UnknownObjectError::class)
-    fun getResourceFileNames(report: String, version: String): List<String>
+    fun getResourceHash(name: String, version: String, resourcename: String): String
 
     @Throws(UnknownObjectError::class)
     fun getLatestChangelogByName(name: String): List<Changelog>

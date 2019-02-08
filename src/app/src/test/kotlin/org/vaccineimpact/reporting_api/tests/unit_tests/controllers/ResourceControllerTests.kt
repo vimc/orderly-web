@@ -26,10 +26,10 @@ class ResourceControllerTests : ControllerTest()
         val name = "testname"
         val version = "testversion"
 
-        val resources = JsonParser().parse("{ \"test\" : \"hjkdasjkldas6762i1j\"}")
+        val resources = mapOf("test" to "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getResources(name, version) } doReturn resources.asJsonObject
+            on { this.getResourceHashes(name, version) } doReturn resources
         }
 
         val actionContext = mock<ActionContext> {
@@ -52,7 +52,7 @@ class ResourceControllerTests : ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getResource(name, version, resource) } doReturn ""
+            on { this.getResourceHash(name, version, resource) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
@@ -79,7 +79,7 @@ class ResourceControllerTests : ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getResource(name, version, resource) } doThrow UnknownObjectError("", "")
+            on { this.getResourceHash(name, version, resource) } doThrow UnknownObjectError("", "")
         }
 
         val actionContext = mock<ActionContext> {
@@ -102,7 +102,7 @@ class ResourceControllerTests : ControllerTest()
         val resource = "testresource"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getResource(name, version, resource) } doReturn ""
+            on { this.getResourceHash(name, version, resource) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
