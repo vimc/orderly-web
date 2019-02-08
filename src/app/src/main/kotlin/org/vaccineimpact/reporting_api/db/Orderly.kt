@@ -5,6 +5,7 @@ import org.jooq.TableField
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.api.models.*
 import org.vaccineimpact.reporting_api.db.Tables.*
+import org.vaccineimpact.reporting_api.db.tables.File
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -201,17 +202,24 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     }
 
-    override fun getArtefactHashes(name: String, version: String): JsonObject
+    override fun getArtefactHashes(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_ARTEFACT.FILENAME, FILE_ARTEFACT.FILE_HASH)
+                    .from(FILE_ARTEFACT)
+                    .join(REPORT_VERSION_ARTEFACT)
+                    .on(FILE_ARTEFACT.ARTEFACT.eq(REPORT_VERSION_ARTEFACT.ID))
+                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[FILE_ARTEFACT.FILENAME] to it[FILE_ARTEFACT.FILE_HASH] }
+        }
     }
 
     override fun getArtefactHash(name: String, version: String, filename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename]
+        return getArtefactHashes(name, version)[filename]
                 ?: throw UnknownObjectError(filename, "Artefact")
-
-        return result.asString
     }
 
     override fun getData(name: String, version: String): JsonObject
@@ -227,29 +235,23 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         return result.asString
     }
 
-    override fun getResources(name: String, version: String): JsonObject
+    override fun getResourceHashes(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)
-    }
-
-    override fun getResource(name: String, version: String, resourcename: String): String
-    {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename]
-                ?: throw UnknownObjectError(resourcename, "Resource")
-
-        return result.asString
-    }
-
-    override fun getResourceFileNames(report: String, version: String): List<String>
-    {
-        return JooqContext().use {
-            getReportVersion(report, version, it)
-            it.dsl.select(FILE_INPUT.FILENAME)
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.FILE_HASH)
                     .from(FILE_INPUT)
                     .where(FILE_INPUT.REPORT_VERSION.eq(version))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
-                    .fetchInto(String::class.java)
+                    .fetch()
+                    .associate { it[FILE_INPUT.FILENAME] to it[FILE_INPUT.FILE_HASH] }
         }
+    }
+
+    override fun getResourceHash(name: String, version: String, resourcename: String): String
+    {
+        return getResourceHashes(name, version)[resourcename]
+                ?: throw UnknownObjectError(resourcename, "Resource")
     }
 
     override fun getLatestChangelogByName(name: String): List<Changelog>

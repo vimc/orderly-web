@@ -4,10 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Orderly
-import org.vaccineimpact.reporting_api.db.Tables
-import org.vaccineimpact.reporting_api.db.tables.ArtefactFormat
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertArtefact
 import org.vaccineimpact.reporting_api.tests.insertReport
@@ -23,14 +20,10 @@ class ArtefactTests : CleanDatabaseTests()
     @Test
     fun `getArtefactHash returns artefact hash if report has artefact`()
     {
-
-        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
-                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
-
-        insertReport("test", "version1", hashArtefacts = artefactHashString)
+        insertReport("test", "version1")
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
 
         val sut = createSut()
-
         val result = sut.getArtefactHash("test", "version1", "summary.csv")
 
         assertThat(result).isNotNull()
@@ -39,11 +32,8 @@ class ArtefactTests : CleanDatabaseTests()
     @Test
     fun `getArtefactHash throws unknown object error if report does not have artefact`()
     {
-
-        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
-                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
-
-        insertReport("test", "version1", hashArtefacts = artefactHashString)
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
+        insertReport("test", "version1")
 
         val sut = createSut()
 
@@ -55,11 +45,8 @@ class ArtefactTests : CleanDatabaseTests()
     @Test
     fun `getArtefactHash throws unknown object error if report not published`()
     {
-
-        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
-                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
-
-        insertReport("test", "version1", hashArtefacts = artefactHashString, published = false)
+        insertReport("test", "version1", published = false)
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
 
         val sut = createSut()
 
@@ -71,18 +58,28 @@ class ArtefactTests : CleanDatabaseTests()
     @Test
     fun `can get artefact hashes for report`()
     {
-
-        val artefactHashString = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"," +
-                "\"graph.png\":\"4b89e0b767cee1c30f2e910684189680\"}"
-
-        insertReport("test", "version1", hashArtefacts = artefactHashString)
-
+        insertReport("test", "version1")
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
         val sut = createSut()
 
         val result = sut.getArtefactHashes("test", "version1")
 
-        assertThat(result["summary.csv"].asString).isEqualTo("07dffb00305279935544238b39d7b14b")
-        assertThat(result["graph.png"].asString).isEqualTo("4b89e0b767cee1c30f2e910684189680")
+        assertThat(result["summary.csv"]).isNotNull()
+        assertThat(result["graph.png"]).isNotNull()
+    }
+
+    @Test
+    fun `getArtefactHashes does not get artefacts for wrong report`()
+    {
+        insertReport("test", "version1")
+        insertReport("test", "version2")
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
+        insertArtefact("version2", fileNames = listOf("image.gif"))
+        val sut = createSut()
+
+        val result = sut.getArtefactHashes("test", "version2")
+
+        assertThat(result.keys).containsExactlyElementsOf(listOf("image.gif"))
     }
 
     @Test

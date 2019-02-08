@@ -21,9 +21,9 @@ class ResourceController(context: ActionContext,
                     Files(),
                     AppConfig())
 
-    fun get(): JsonObject
+    fun get(): Map<String, String>
     {
-        return orderly.getResources(context.params(":name"), context.params(":version"))
+        return orderly.getResourceHashes(context.params(":name"), context.params(":version"))
     }
 
     fun download(): Boolean
@@ -32,7 +32,7 @@ class ResourceController(context: ActionContext,
         val version = context.params(":version")
         val resourcename = parseRouteParamToFilepath(context.params(":resource"))
 
-        orderly.getResource(name, version, resourcename)
+        orderly.getResourceHash(name, version, resourcename)
 
         val filename = "$name/$version/$resourcename"
 

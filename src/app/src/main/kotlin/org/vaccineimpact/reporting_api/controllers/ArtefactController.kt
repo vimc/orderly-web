@@ -24,7 +24,7 @@ class ArtefactController(context: ActionContext,
                     Files(),
                     AppConfig())
 
-    fun get(): JsonObject
+    fun get(): Map<String, String>
     {
         return orderly.getArtefactHashes(context.params(":name"), context.params(":version"))
     }

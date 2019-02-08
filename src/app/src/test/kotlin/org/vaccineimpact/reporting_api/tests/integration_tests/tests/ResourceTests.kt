@@ -2,8 +2,10 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.vaccineimpact.api.models.FilePurpose
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.tests.insertFileInput
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
 
@@ -88,7 +90,8 @@ class ResourceTests : IntegrationTest()
     @Test
     fun `gets 404 if resource file doesnt exist`()
     {
-        insertReport("testname", "testversion", hashResources = "{\"resource.csv\": \"gfe7064mvdfjieync\"}")
+        insertReport("testname", "testversion")
+        insertFileInput("testversion", "resource.csv", FilePurpose.RESOURCE)
 
         val url = "/reports/testname/versions/testversion/resources/resource.csv/"
         val token = requestHelper.generateOnetimeToken(url)
