@@ -9,6 +9,7 @@ import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables.*
 import java.io.File
 import java.sql.Timestamp
+import kotlin.streams.asSequence
 
 fun insertReport(name: String,
                  version: String,
@@ -117,11 +118,10 @@ fun insertArtefact(reportVersionId: String,
                    fileNames: List<String>)
 {
 
-    JooqContext().use {
+    JooqContext().use { it ->
 
-        val lastId = it.dsl.select(REPORT_VERSION_ARTEFACT.ID)
+        val lastId = it.dsl.select(REPORT_VERSION_ARTEFACT.ID.max())
                 .from(REPORT_VERSION_ARTEFACT)
-                .orderBy(REPORT_VERSION_ARTEFACT.ID)
                 .fetchAnyInto(Int::class.java)
                 ?: 0
 
@@ -129,7 +129,7 @@ fun insertArtefact(reportVersionId: String,
                 .set(REPORT_VERSION_ARTEFACT.DESCRIPTION, description)
                 .set(REPORT_VERSION_ARTEFACT.FORMAT, format.toString().toLowerCase())
                 .set(REPORT_VERSION_ARTEFACT.REPORT_VERSION, reportVersionId)
-                .set(REPORT_VERSION_ARTEFACT.ORDER, 1)
+                .set(REPORT_VERSION_ARTEFACT.ORDER, lastId + 1)
                 .set(REPORT_VERSION_ARTEFACT.ID, lastId + 1)
                 .execute()
 
@@ -137,18 +137,28 @@ fun insertArtefact(reportVersionId: String,
             it.dsl.insertInto(FILE_ARTEFACT)
                     .set(FILE_ARTEFACT.FILENAME, f)
                     .set(FILE_ARTEFACT.ARTEFACT, lastId + 1)
-                    .set(FILE_ARTEFACT.FILE_HASH, "361278")
+                    .set(FILE_ARTEFACT.FILE_HASH, generateRandomString())
                     .execute()
         }
     }
 }
 
-fun insertFileInput(reportVersion: String, fileName: String, purpose: FilePurpose) {
+private fun generateRandomString(len: Long = 10): String
+{
+    val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    return java.util.Random().ints(len, 0, source.length)
+            .asSequence()
+            .map(source::get)
+            .joinToString("")
+}
+
+fun insertFileInput(reportVersion: String, fileName: String, purpose: FilePurpose)
+{
     JooqContext().use {
         it.dsl.insertInto(FILE_INPUT)
                 .set(FILE_INPUT.FILE_PURPOSE, purpose.toString())
                 .set(FILE_INPUT.FILENAME, fileName)
-                .set(FILE_INPUT.FILE_HASH, "361281")
+                .set(FILE_INPUT.FILE_HASH, generateRandomString())
                 .set(FILE_INPUT.REPORT_VERSION, reportVersion)
                 .execute()
     }
