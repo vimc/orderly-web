@@ -15,10 +15,10 @@ import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class VersionController(context: ActionContext,
-                       private val orderly: OrderlyClient,
-                       private val zip: ZipClient,
-                       private val orderlyServerAPI: OrderlyServerAPI,
-                       private val config: Config) : Controller(context)
+                        private val orderly: OrderlyClient,
+                        private val zip: ZipClient,
+                        private val orderlyServerAPI: OrderlyServerAPI,
+                        private val config: Config) : Controller(context)
 {
 
     constructor(context: ActionContext) :
@@ -28,12 +28,11 @@ class VersionController(context: ActionContext,
                     OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
 
-    fun getChangelogByNameAndVersion() : List<Changelog>
+    fun getChangelogByNameAndVersion(): List<Changelog>
     {
         val name = context.params(":name")
         val version = context.params(":version")
         return orderly.getChangelogByNameAndVersion(name, version)
-
     }
 
     fun getByNameAndVersion(): JsonObject
@@ -52,6 +51,11 @@ class VersionController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
+
+        checkCanReadReport(context)
+
+        orderly.getReportByNameAndVersion(name, version)
+
         val response = context.getSparkResponse().raw()
 
         context.addDefaultResponseHeaders(ContentTypes.zip)
@@ -59,16 +63,24 @@ class VersionController(context: ActionContext,
 
         val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
 
-        //Check if folder exists
-        if (!File(folderName).exists())
-        {
-            println("Path $folderName does not exist")
-            throw UnknownObjectError("$name-$version", "reportVersion")
-        }
-
-        zip.zipIt(folderName, response.outputStream)
+        zip.zipIt(folderName, response.outputStream, buildFileRegex(name, version, folderName))
 
         return true
+    }
+
+    private fun buildFileRegex(report: String, version: String, folderName: String): String
+    {
+        return if (isReportReviewer)
+        {
+            ".*"
+        }
+        else
+        {
+            val fileNameGroup = (orderly.getArtefacts(report, version).flatMap {
+                it.files
+            } + orderly.getResourceFileNames(report, version)).joinToString("|")
+            "$folderName($fileNameGroup)"
+        }
     }
 
 }

@@ -9,22 +9,21 @@ import java.util.*
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
+import kotlin.collections.ArrayList
 
 interface ZipClient
 {
-    fun zipIt(sourceAbsolutePath: String, output: OutputStream)
+    fun zipIt(sourceAbsolutePath: String, output: OutputStream, regexPattern: String)
 }
 
 class Zip : ZipClient
 {
     val logger = LoggerFactory.getLogger(Zip::class.java)
 
-    override fun zipIt(sourceAbsolutePath: String, output: OutputStream)
+    override fun zipIt(sourceAbsolutePath: String, output: OutputStream, regexPattern: String)
     {
         val source = File(sourceAbsolutePath)
-        val fileList: ArrayList<String> = ArrayList<String>()
-
-        populateFileList(source, fileList)
+        val fileList = getListOfFilesToZip(sourceAbsolutePath, regexPattern)
 
         val bufferSize = 8000
         ZipOutputStream(GZIPOutputStream(output, bufferSize)).use {
@@ -72,10 +71,20 @@ class Zip : ZipClient
         }
     }
 
-    private fun populateFileList(node: File, fileList: ArrayList<String>)
+    fun getListOfFilesToZip(sourceAbsolutePath: String, regexPattern: String): ArrayList<String>
+    {
+        val source = File(sourceAbsolutePath)
+        val fileList = arrayListOf<String>()
+
+        populateFileList(source, fileList, regexPattern.toRegex())
+
+        return fileList
+    }
+
+    private fun populateFileList(node: File, fileList: ArrayList<String>, regex: Regex)
     {
 
-        if (node.isFile)
+        if (node.isFile && regex.matches(node.path))
         {
             fileList.add(node.absolutePath.toString())
         }
@@ -85,7 +94,7 @@ class Zip : ZipClient
             val subNodes = node.list()
             for (filename in subNodes)
             {
-                populateFileList(File(node, filename), fileList)
+                populateFileList(File(node, filename), fileList, regex)
             }
         }
     }

@@ -41,7 +41,8 @@ object VersionRouteConfig : RouteConfig
             Endpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
-                    .secure(readReports),
+                    // more specific permission checking in the controller action
+                    .secure(),
 
             Endpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
                     method = HttpMethod.post)
