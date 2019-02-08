@@ -16,9 +16,11 @@ abstract class Controller(val context: ActionContext)
         return response.text
     }
 
-    protected val reportReadingScopes = context.permissions
-            .filter { it.name == "reports.read" }
-            .map { it.scope }
+    protected val reportReadingScopes by lazy {
+        context.permissions
+                .filter { it.name == "reports.read" }
+                .map { it.scope }
+    }
 
     protected fun checkCanReadReport(context: ActionContext)
     {
@@ -27,6 +29,4 @@ abstract class Controller(val context: ActionContext)
            throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
        }
     }
-
-    protected val isReportReviewer = context.permissions.names.contains("reports.review")
 }

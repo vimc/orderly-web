@@ -129,9 +129,9 @@ class VersionControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
-            on { getArtefacts(reportName, reportVersion) } doReturn listOf(Artefact(ArtefactFormat.DATA,
-                    "some desc", listOf("file1.csv", "file2.pdf")))
-            on { getResourceFileNames(reportName, reportVersion) } doReturn listOf("/meta/inputs1.rds", "table.xlsx")
+            on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
+            on { getResourceHashes(reportName, reportVersion) } doReturn mapOf("/meta/inputs1.rds" to "123",
+                    "table.xlsx" to "456")
         }
 
         val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),

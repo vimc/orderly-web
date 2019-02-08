@@ -70,15 +70,15 @@ class VersionController(context: ActionContext,
 
     private fun buildFileRegex(report: String, version: String, folderName: String): String
     {
-        return if (isReportReviewer)
+        return if (context.hasPermission(ReifiedPermission("reports.review", Scope.Global())))
         {
             ".*"
         }
         else
         {
-            val fileNameGroup = (orderly.getArtefacts(report, version).flatMap {
-                it.files
-            } + orderly.getResourceFileNames(report, version)).joinToString("|")
+            val fileNameGroup = (orderly.getArtefactHashes(report, version)
+                    + orderly.getResourceHashes(report, version))
+                    .map { it.key }.joinToString("|")
             "$folderName($fileNameGroup)"
         }
     }
