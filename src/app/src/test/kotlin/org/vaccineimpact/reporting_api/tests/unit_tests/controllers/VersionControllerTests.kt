@@ -4,10 +4,10 @@ import com.google.gson.JsonObject
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import java.time.Instant
 import org.junit.Test
-import org.vaccineimpact.api.models.*
-
+import org.vaccineimpact.api.models.Changelog
+import org.vaccineimpact.api.models.ReportVersionDetails
+import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.ActionContext
@@ -17,6 +17,7 @@ import org.vaccineimpact.reporting_api.controllers.VersionController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import java.time.Instant
 
 
 class VersionControllerTests : ControllerTest()
@@ -108,24 +109,21 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
             on { this.getSparkResponse() } doReturn mockSparkResponse
-            on { this.permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read", Scope.Global()),
-                    ReifiedPermission("reports.review", Scope.Global())))
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
 
         val mockZipClient = mock<ZipClient>()
-        val sut = VersionController(actionContext, mock(), mockZipClient, mock(),
-                mockConfig)
+        val sut = VersionController(actionContext, mock(), mockZipClient, mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
-
-        verify(mockZipClient, times(1)).zipIt("root/archive/$reportName/$reportVersion/"
-                , mockOutputStream, ".*")
+        val sourcePath = "root/archive/$reportName/$reportVersion/"
+        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, ".*")
     }
 
     @Test
     fun `getZippedByNameAndVersion only returns artefacts and resources if user is not a reviewer`()
     {
-        val actionContext = makeMockReportReadingContext()
+        val actionContext = makeReportReaderActionContext()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
@@ -134,20 +132,18 @@ class VersionControllerTests : ControllerTest()
                     "table.xlsx" to "456")
         }
 
-        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),
-                mockConfig)
+        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
 
         val sourcePath = "root/archive/$reportName/$reportVersion/"
-        verify(mockZipClient, times(1)).zipIt(sourcePath,
-                mockOutputStream, "$sourcePath(file1.csv|file2.pdf|/meta/inputs1.rds|table.xlsx)")
+        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, "$sourcePath(file1.csv|file2.pdf|/meta/inputs1.rds|table.xlsx)")
     }
 
     @Test
     fun `getZippedByNameAndVersion checks that report exists`()
     {
-        val actionContext = makeMockReportReadingContext()
+        val actionContext = makeReportReaderActionContext()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
@@ -165,13 +161,12 @@ class VersionControllerTests : ControllerTest()
     private val reportName: String = "Report name"
     private val reportVersion: String = "Report version"
 
-    private fun makeMockReportReadingContext(): ActionContext
+    private fun makeReportReaderActionContext(): ActionContext
     {
         return mock {
             on { this.params(":version") } doReturn reportVersion
             on { this.params(":name") } doReturn reportName
             on { this.getSparkResponse() } doReturn mockSparkResponse
-            on { this.permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read", Scope.Global())))
         }
     }
 
