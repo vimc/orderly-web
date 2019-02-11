@@ -52,8 +52,6 @@ class VersionController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
 
-        checkCanReadReport(context)
-
         orderly.getReportByNameAndVersion(name, version)
 
         val response = context.getSparkResponse().raw()

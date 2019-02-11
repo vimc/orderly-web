@@ -21,12 +21,4 @@ abstract class Controller(val context: ActionContext)
                 .filter { it.name == "reports.read" }
                 .map { it.scope }
     }
-
-    protected fun checkCanReadReport(context: ActionContext)
-    {
-       if (!reportReadingScopes.encompass(Scope.Specific("report", context.params(":name"))))
-       {
-           throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
-       }
-    }
 }
