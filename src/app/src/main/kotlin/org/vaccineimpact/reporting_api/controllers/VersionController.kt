@@ -52,6 +52,7 @@ class VersionController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
 
+        // check that the requested version exists for the given report
         orderly.getReportByNameAndVersion(name, version)
 
         val response = context.getSparkResponse().raw()
