@@ -1,18 +1,11 @@
 package org.vaccineimpact.reporting_api.db
 
-import com.github.salomonbrys.kotson.addPropertyIfNotNull
 import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
-import org.vaccineimpact.api.models.Changelog
-import org.vaccineimpact.api.models.Report
-import org.vaccineimpact.api.models.ReportVersion
-import org.vaccineimpact.api.models.ReportVersionDetails
-import org.vaccineimpact.reporting_api.db.Tables.CHANGELOG
-import org.vaccineimpact.reporting_api.db.Tables.FILE_INPUT
-import org.vaccineimpact.reporting_api.db.Tables.ORDERLY
-import org.vaccineimpact.reporting_api.db.Tables.REPORT
-import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
+import org.vaccineimpact.api.models.*
+import org.vaccineimpact.reporting_api.db.Tables.*
+import org.vaccineimpact.reporting_api.db.tables.File
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
@@ -20,6 +13,30 @@ import java.sql.Timestamp
 
 class Orderly(isReviewer: Boolean = false) : OrderlyClient
 {
+    override fun getArtefacts(report: String, version: String): List<Artefact>
+    {
+        JooqContext().use {
+
+            getReportVersion(report, version, it)
+            return it.dsl.select(REPORT_VERSION_ARTEFACT.ID, REPORT_VERSION_ARTEFACT.FORMAT,
+                    REPORT_VERSION_ARTEFACT.DESCRIPTION)
+                    .from(REPORT_VERSION_ARTEFACT)
+                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .map { a ->
+                        val id = a[REPORT_VERSION_ARTEFACT.ID]
+                        val format = a[REPORT_VERSION_ARTEFACT.FORMAT]
+                        val description = a[REPORT_VERSION_ARTEFACT.DESCRIPTION]
+                        val fileNames = it.dsl.select(FILE_ARTEFACT.FILENAME)
+                                .from(FILE_ARTEFACT)
+                                .where(FILE_ARTEFACT.ARTEFACT.eq(id))
+                                .fetchInto(String::class.java)
+
+                        Artefact(parseEnum(format), description, fileNames)
+                    }
+        }
+    }
+
     override fun getAllReportVersions(): List<ReportVersion>
     {
         JooqContext().use {
@@ -45,7 +62,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                             REPORT_VERSION.AUTHOR,
                             REPORT_VERSION.REQUESTER,
                             latestVersionForEachReport.field<String>("latestVersion")
-                            )
+                    )
                     .from(REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
@@ -111,7 +128,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-           val result = it.dsl.select()
+            val result = it.dsl.select()
                     .from(ORDERLY)
                     .where(ORDERLY.NAME.eq(name)
                             .and((ORDERLY.ID).eq(version))
@@ -167,7 +184,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .singleOrNull()
 
 
-            val result = ReportVersionDetails( id = reportVersionResult.id,
+            val result = ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
                     author = reportVersionResult.author,
@@ -185,17 +202,24 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     }
 
-    override fun getArtefacts(name: String, version: String): JsonObject
+    override fun getArtefactHashes(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_ARTEFACT.FILENAME, FILE_ARTEFACT.FILE_HASH)
+                    .from(FILE_ARTEFACT)
+                    .join(REPORT_VERSION_ARTEFACT)
+                    .on(FILE_ARTEFACT.ARTEFACT.eq(REPORT_VERSION_ARTEFACT.ID))
+                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[FILE_ARTEFACT.FILENAME] to it[FILE_ARTEFACT.FILE_HASH] }
+        }
     }
 
-    override fun getArtefact(name: String, version: String, filename: String): String
+    override fun getArtefactHash(name: String, version: String, filename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_ARTEFACTS)[filename]
+        return getArtefactHashes(name, version)[filename]
                 ?: throw UnknownObjectError(filename, "Artefact")
-
-        return result.asString
     }
 
     override fun getData(name: String, version: String): JsonObject
@@ -211,22 +235,28 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         return result.asString
     }
 
-    override fun getResources(name: String, version: String): JsonObject
+    override fun getResourceHashes(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.FILE_HASH)
+                    .from(FILE_INPUT)
+                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
+                    .fetch()
+                    .associate { it[FILE_INPUT.FILENAME] to it[FILE_INPUT.FILE_HASH] }
+        }
     }
 
-    override fun getResource(name: String, version: String, resourcename: String): String
+    override fun getResourceHash(name: String, version: String, resourcename: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_RESOURCES)[resourcename]
+        return getResourceHashes(name, version)[resourcename]
                 ?: throw UnknownObjectError(resourcename, "Resource")
-
-        return result.asString
     }
 
     override fun getLatestChangelogByName(name: String): List<Changelog>
     {
-       JooqContext().use {
+        JooqContext().use {
 
             val latestVersionDate = it.dsl
                     .select(REPORT_VERSION.DATE)
@@ -258,14 +288,14 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     {
         //raise exception if version does not belong to named report, or version does not exist
         return ctx.dsl.selectFrom(REPORT_VERSION)
-                        .where(REPORT_VERSION.REPORT.eq(name))
-                        .and(REPORT_VERSION.ID.eq(version))
-                        .and(shouldIncludeReportVersion)
-                        .singleOrNull()
-                        ?: throw UnknownObjectError("$name-$version", "reportVersion")
+                .where(REPORT_VERSION.REPORT.eq(name))
+                .and(REPORT_VERSION.ID.eq(version))
+                .and(shouldIncludeReportVersion)
+                .singleOrNull()
+                ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 
-    private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext) : List<Changelog>
+    private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
                 .select(CHANGELOG.REPORT_VERSION,

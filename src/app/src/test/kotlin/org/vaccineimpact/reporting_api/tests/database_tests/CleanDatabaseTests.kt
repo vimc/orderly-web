@@ -5,7 +5,7 @@ import org.junit.Before
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
 
-abstract class CleanDatabaseTests :DatabaseTests()
+abstract class CleanDatabaseTests: DatabaseTests()
 {
 
     @Before

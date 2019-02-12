@@ -24,9 +24,9 @@ class ArtefactController(context: ActionContext,
                     Files(),
                     AppConfig())
 
-    fun get(): JsonObject
+    fun get(): Map<String, String>
     {
-        return orderly.getArtefacts(context.params(":name"), context.params(":version"))
+        return orderly.getArtefactHashes(context.params(":name"), context.params(":version"))
     }
 
     fun download(): Boolean
@@ -36,7 +36,7 @@ class ArtefactController(context: ActionContext,
         val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
         val inline = context.queryParams("inline")?.toBoolean() ?: false
 
-        orderly.getArtefact(name, version, artefactname)
+        orderly.getArtefactHash(name, version, artefactname)
 
         val filename = "$name/$version/$artefactname"
 
