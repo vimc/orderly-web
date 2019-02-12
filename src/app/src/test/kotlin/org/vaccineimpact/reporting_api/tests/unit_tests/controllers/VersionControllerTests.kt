@@ -11,6 +11,7 @@ import org.vaccineimpact.api.models.Scope
 import org.vaccineimpact.api.models.permissions.PermissionSet
 import org.vaccineimpact.api.models.permissions.ReifiedPermission
 import org.vaccineimpact.reporting_api.ActionContext
+import org.vaccineimpact.reporting_api.FileSystem
 import org.vaccineimpact.reporting_api.OrderlyServerAPI
 import org.vaccineimpact.reporting_api.ZipClient
 import org.vaccineimpact.reporting_api.controllers.VersionController
@@ -41,6 +42,7 @@ class VersionControllerTests : ControllerTest()
         }
 
         val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
+                mock(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -68,6 +70,7 @@ class VersionControllerTests : ControllerTest()
         }
 
         val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
+                 mock(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -91,6 +94,7 @@ class VersionControllerTests : ControllerTest()
         }
 
         val sut = VersionController(mockContext, orderly, mock<ZipClient>(),
+                mock(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -112,12 +116,15 @@ class VersionControllerTests : ControllerTest()
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
 
+        val sourcePath = "root/archive/$reportName/$reportVersion/"
         val mockZipClient = mock<ZipClient>()
-        val sut = VersionController(actionContext, mock(), mockZipClient, mock(), mockConfig)
+        val mockFiles = mock<FileSystem>() {
+            on { getAllFilesInFolder(sourcePath)} doReturn arrayListOf("TEST")
+        }
+        val sut = VersionController(actionContext, mock(), mockZipClient, mockFiles, mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
-        val sourcePath = "root/archive/$reportName/$reportVersion/"
-        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, ".*")
+        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, listOf("TEST"))
     }
 
     @Test
@@ -132,12 +139,14 @@ class VersionControllerTests : ControllerTest()
                     "table.xlsx" to "456")
         }
 
-        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(), mockConfig)
+        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),
+                mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
 
         val sourcePath = "root/archive/$reportName/$reportVersion/"
-        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, "$sourcePath(file1.csv|file2.pdf|/meta/inputs1.rds|table.xlsx)")
+        verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream,
+                listOf("$sourcePath/file1.csv", "$sourcePath/file2.pdf", "$sourcePath/meta/inputs1.rds", "$sourcePath/table.xlsx"))
     }
 
     @Test
@@ -151,6 +160,7 @@ class VersionControllerTests : ControllerTest()
                     UnknownObjectError(reportVersion, "report")
         }
         val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),
+                mock(),
                 mockConfig)
 
         Assertions.assertThatThrownBy { sut.getZippedByNameAndVersion() }

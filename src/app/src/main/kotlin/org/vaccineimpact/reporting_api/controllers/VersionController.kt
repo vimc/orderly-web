@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api.controllers
 
-import java.io.File
 import com.google.gson.JsonObject
 
 import org.vaccineimpact.api.models.Changelog
@@ -12,11 +11,11 @@ import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
-import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 
 class VersionController(context: ActionContext,
                         private val orderly: OrderlyClient,
                         private val zip: ZipClient,
+                        private val files: FileSystem = Files(),
                         private val orderlyServerAPI: OrderlyServerAPI,
                         private val config: Config) : Controller(context)
 {
@@ -25,6 +24,7 @@ class VersionController(context: ActionContext,
             this(context,
                     Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
                     Zip(),
+                    Files(),
                     OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
 
@@ -62,23 +62,22 @@ class VersionController(context: ActionContext,
 
         val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
 
-        zip.zipIt(folderName, response.outputStream, buildFileRegex(name, version, folderName))
+        zip.zipIt(folderName, response.outputStream, buildFileList(name, version, folderName))
 
         return true
     }
 
-    private fun buildFileRegex(report: String, version: String, folderName: String): String
+    private fun buildFileList(report: String, version: String, folderName: String): List<String>
     {
         return if (context.hasPermission(ReifiedPermission("reports.review", Scope.Global())))
         {
-            ".*"
+            files.getAllFilesInFolder(folderName)
         }
         else
         {
-            val fileNameGroup = (orderly.getArtefactHashes(report, version)
+            (orderly.getArtefactHashes(report, version)
                     + orderly.getResourceHashes(report, version))
-                    .map { it.key }.joinToString("|")
-            "$folderName($fileNameGroup)"
+                    .map { "$folderName/${it.key}" }
         }
     }
 
