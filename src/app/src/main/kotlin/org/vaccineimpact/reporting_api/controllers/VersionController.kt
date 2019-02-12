@@ -11,6 +11,7 @@ import org.vaccineimpact.reporting_api.db.AppConfig
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.db.OrderlyClient
+import java.io.File
 
 class VersionController(context: ActionContext,
                         private val orderly: OrderlyClient,
@@ -60,7 +61,7 @@ class VersionController(context: ActionContext,
         context.addDefaultResponseHeaders(ContentTypes.zip)
         context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
-        val folderName = "${this.config["orderly.root"]}archive/$name/$version/"
+        val folderName = File("${this.config["orderly.root"]}archive/$name/$version/").absolutePath
 
         zip.zipIt(folderName, response.outputStream, buildFileList(name, version, folderName))
 
@@ -77,7 +78,7 @@ class VersionController(context: ActionContext,
         {
             (orderly.getArtefactHashes(report, version)
                     + orderly.getResourceHashes(report, version))
-                    .map { "$folderName${it.key}" }
+                    .map { "$folderName/${it.key}" }
         }
     }
 

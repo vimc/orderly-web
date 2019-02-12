@@ -20,7 +20,6 @@ import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.time.Instant
 
-
 class VersionControllerTests : ControllerTest()
 {
     private val mockConfig = mock<Config> {
