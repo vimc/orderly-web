@@ -25,7 +25,6 @@ class ZipTests : IntegrationTest()
 
         try
         {
-
             val url = "/reports/testname/versions/testversion/all/"
             val token = requestHelper.generateOnetimeToken(url)
             val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)

@@ -77,7 +77,7 @@ class VersionController(context: ActionContext,
         {
             (orderly.getArtefactHashes(report, version)
                     + orderly.getResourceHashes(report, version))
-                    .map { "$folderName/${it.key}" }
+                    .map { "$folderName${it.key}" }
         }
     }
 

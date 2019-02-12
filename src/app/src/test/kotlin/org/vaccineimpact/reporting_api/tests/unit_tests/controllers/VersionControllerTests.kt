@@ -135,7 +135,7 @@ class VersionControllerTests : ControllerTest()
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
             on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
-            on { getResourceHashes(reportName, reportVersion) } doReturn mapOf("/meta/inputs1.rds" to "123",
+            on { getResourceHashes(reportName, reportVersion) } doReturn mapOf("meta/inputs1.rds" to "123",
                     "table.xlsx" to "456")
         }
 
@@ -146,7 +146,7 @@ class VersionControllerTests : ControllerTest()
 
         val sourcePath = "root/archive/$reportName/$reportVersion/"
         verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream,
-                listOf("$sourcePath/file1.csv", "$sourcePath/file2.pdf", "$sourcePath/meta/inputs1.rds", "$sourcePath/table.xlsx"))
+                listOf("${sourcePath}file1.csv", "${sourcePath}file2.pdf", "${sourcePath}meta/inputs1.rds", "${sourcePath}table.xlsx"))
     }
 
     @Test
