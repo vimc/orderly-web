@@ -9,7 +9,6 @@ import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-
 interface ZipClient
 {
     fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>)

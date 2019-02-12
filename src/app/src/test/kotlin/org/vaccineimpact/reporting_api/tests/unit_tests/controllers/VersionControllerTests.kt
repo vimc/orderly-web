@@ -18,6 +18,7 @@ import org.vaccineimpact.reporting_api.controllers.VersionController
 import org.vaccineimpact.reporting_api.db.Config
 import org.vaccineimpact.reporting_api.db.OrderlyClient
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import java.io.File
 import java.time.Instant
 
 class VersionControllerTests : ControllerTest()
@@ -115,7 +116,7 @@ class VersionControllerTests : ControllerTest()
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
 
-        val sourcePath = "root/archive/$reportName/$reportVersion/"
+        val sourcePath = File("root/archive/$reportName/$reportVersion/").absolutePath
         val mockZipClient = mock<ZipClient>()
         val mockFiles = mock<FileSystem>() {
             on { getAllFilesInFolder(sourcePath)} doReturn arrayListOf("TEST")
@@ -143,9 +144,9 @@ class VersionControllerTests : ControllerTest()
 
         sut.getZippedByNameAndVersion()
 
-        val sourcePath = "root/archive/$reportName/$reportVersion/"
+        val sourcePath = File("root/archive/$reportName/$reportVersion/").absolutePath
         verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream,
-                listOf("${sourcePath}file1.csv", "${sourcePath}file2.pdf", "${sourcePath}meta/inputs1.rds", "${sourcePath}table.xlsx"))
+                listOf("$sourcePath/file1.csv", "$sourcePath/file2.pdf", "$sourcePath/meta/inputs1.rds", "$sourcePath/table.xlsx"))
     }
 
     @Test
