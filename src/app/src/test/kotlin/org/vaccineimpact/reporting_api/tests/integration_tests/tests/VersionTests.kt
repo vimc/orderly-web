@@ -19,10 +19,10 @@ class VersionTests : IntegrationTest()
     {
         val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
 
-            it.dsl.select(Tables.ORDERLY.ID)
-                    .from(Tables.ORDERLY)
-                    .where(Tables.ORDERLY.NAME.eq("minimal"))
-                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
+            it.dsl.select(Tables.REPORT_VERSION.ID)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.PUBLISHED.eq(false))
                     .fetchInto(String::class.java)
                     .first()
         }
@@ -34,6 +34,18 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Publish")
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(true)
+
+        val publishStatus = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.ID.eq(unpublishedVersion))
+                    .fetchInto(Boolean::class.java)
+                    .first()
+        }
+
+        assertThat(publishStatus).isTrue()
     }
 
     @Test
@@ -60,6 +72,18 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Publish")
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(false)
+
+        val publishStatus = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.ID.eq(version))
+                    .fetchInto(Boolean::class.java)
+                    .first()
+        }
+
+        assertThat(publishStatus).isFalse()
     }
 
     @Test
