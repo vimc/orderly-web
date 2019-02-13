@@ -10,6 +10,7 @@ interface FileSystem
 {
     fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     fun fileExists(absoluteFilePath: String): Boolean
+    fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
 }
 
 class Files : FileSystem
@@ -39,5 +40,34 @@ class Files : FileSystem
     override fun fileExists(absoluteFilePath: String): Boolean
     {
         return File(absoluteFilePath).exists()
+    }
+
+
+    override fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
+    {
+        val source = File(sourceAbsolutePath)
+        val fileList = arrayListOf<String>()
+
+        populateFileList(source, fileList)
+
+        return fileList
+    }
+
+    private fun populateFileList(node: File, fileList: ArrayList<String>)
+    {
+
+        if (node.isFile)
+        {
+            fileList.add(node.absolutePath.toString())
+        }
+
+        if (node.isDirectory)
+        {
+            val subNodes = node.list()
+            for (filename in subNodes)
+            {
+                populateFileList(File(node, filename), fileList)
+            }
+        }
     }
 }

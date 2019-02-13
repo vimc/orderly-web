@@ -86,8 +86,4 @@ class ReportController(context: ActionContext,
         return orderly.getLatestChangelogByName(name)
     }
 
-    private val reportReadingScopes = context.permissions
-            .filter { it.name == "reports.read" }
-            .map { it.scope }
-
 }
