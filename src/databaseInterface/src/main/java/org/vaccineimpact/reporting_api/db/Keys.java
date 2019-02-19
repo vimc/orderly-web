@@ -21,6 +21,8 @@ import org.vaccineimpact.reporting_api.db.tables.FilePurpose;
 import org.vaccineimpact.reporting_api.db.tables.Orderly;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchema;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.reporting_api.db.tables.Parameters;
+import org.vaccineimpact.reporting_api.db.tables.ParametersType;
 import org.vaccineimpact.reporting_api.db.tables.Report;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersion;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersionArtefact;
@@ -39,6 +41,8 @@ import org.vaccineimpact.reporting_api.db.tables.records.FileRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlySchemaRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.OrderlySchemaTablesRecord;
+import org.vaccineimpact.reporting_api.db.tables.records.ParametersRecord;
+import org.vaccineimpact.reporting_api.db.tables.records.ParametersTypeRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.ReportRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionArtefactRecord;
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionDataRecord;
@@ -82,6 +86,8 @@ public class Keys {
     public static final UniqueKey<OrderlyRecord> PK_ORDERLY = UniqueKeys0.PK_ORDERLY;
     public static final UniqueKey<OrderlySchemaRecord> PK_ORDERLY_SCHEMA = UniqueKeys0.PK_ORDERLY_SCHEMA;
     public static final UniqueKey<OrderlySchemaTablesRecord> PK_ORDERLY_SCHEMA_TABLES = UniqueKeys0.PK_ORDERLY_SCHEMA_TABLES;
+    public static final UniqueKey<ParametersRecord> PK_PARAMETERS = UniqueKeys0.PK_PARAMETERS;
+    public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = UniqueKeys0.PK_PARAMETERS_TYPE;
     public static final UniqueKey<ReportRecord> PK_REPORT = UniqueKeys0.PK_REPORT;
     public static final UniqueKey<ReportVersionRecord> PK_REPORT_VERSION = UniqueKeys0.PK_REPORT_VERSION;
     public static final UniqueKey<ReportVersionArtefactRecord> PK_REPORT_VERSION_ARTEFACT = UniqueKeys0.PK_REPORT_VERSION_ARTEFACT;
@@ -93,6 +99,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<ChangelogRecord, ReportVersionRecord> FK_CHANGELOG_REPORT_VERSION_2 = ForeignKeys0.FK_CHANGELOG_REPORT_VERSION_2;
     public static final ForeignKey<ChangelogRecord, ReportVersionRecord> FK_CHANGELOG_REPORT_VERSION_1 = ForeignKeys0.FK_CHANGELOG_REPORT_VERSION_1;
     public static final ForeignKey<ChangelogRecord, ChangelogLabelRecord> FK_CHANGELOG_CHANGELOG_LABEL_1 = ForeignKeys0.FK_CHANGELOG_CHANGELOG_LABEL_1;
     public static final ForeignKey<DependsRecord, ReportVersionRecord> FK_DEPENDS_REPORT_VERSION_1 = ForeignKeys0.FK_DEPENDS_REPORT_VERSION_1;
@@ -102,6 +109,8 @@ public class Keys {
     public static final ForeignKey<FileInputRecord, ReportVersionRecord> FK_FILE_INPUT_REPORT_VERSION_1 = ForeignKeys0.FK_FILE_INPUT_REPORT_VERSION_1;
     public static final ForeignKey<FileInputRecord, FileRecord> FK_FILE_INPUT_FILE_1 = ForeignKeys0.FK_FILE_INPUT_FILE_1;
     public static final ForeignKey<FileInputRecord, FilePurposeRecord> FK_FILE_INPUT_FILE_PURPOSE_1 = ForeignKeys0.FK_FILE_INPUT_FILE_PURPOSE_1;
+    public static final ForeignKey<ParametersRecord, ReportVersionRecord> FK_PARAMETERS_REPORT_VERSION_1 = ForeignKeys0.FK_PARAMETERS_REPORT_VERSION_1;
+    public static final ForeignKey<ParametersRecord, ParametersTypeRecord> FK_PARAMETERS_PARAMETERS_TYPE_1 = ForeignKeys0.FK_PARAMETERS_PARAMETERS_TYPE_1;
     public static final ForeignKey<ReportRecord, ReportVersionRecord> FK_REPORT_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionRecord, ReportRecord> FK_REPORT_VERSION_REPORT_1 = ForeignKeys0.FK_REPORT_VERSION_REPORT_1;
     public static final ForeignKey<ReportVersionArtefactRecord, ReportVersionRecord> FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1;
@@ -128,6 +137,8 @@ public class Keys {
         public static final UniqueKey<OrderlyRecord> PK_ORDERLY = createUniqueKey(Orderly.ORDERLY, "pk_orderly", Orderly.ORDERLY.ID);
         public static final UniqueKey<OrderlySchemaRecord> PK_ORDERLY_SCHEMA = createUniqueKey(OrderlySchema.ORDERLY_SCHEMA, "pk_orderly_schema", OrderlySchema.ORDERLY_SCHEMA.SCHEMA_VERSION);
         public static final UniqueKey<OrderlySchemaTablesRecord> PK_ORDERLY_SCHEMA_TABLES = createUniqueKey(OrderlySchemaTables.ORDERLY_SCHEMA_TABLES, "pk_orderly_schema_tables", OrderlySchemaTables.ORDERLY_SCHEMA_TABLES.NAME);
+        public static final UniqueKey<ParametersRecord> PK_PARAMETERS = createUniqueKey(Parameters.PARAMETERS, "pk_parameters", Parameters.PARAMETERS.ID);
+        public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = createUniqueKey(ParametersType.PARAMETERS_TYPE, "pk_parameters_type", ParametersType.PARAMETERS_TYPE.NAME);
         public static final UniqueKey<ReportRecord> PK_REPORT = createUniqueKey(Report.REPORT, "pk_report", Report.REPORT.NAME);
         public static final UniqueKey<ReportVersionRecord> PK_REPORT_VERSION = createUniqueKey(ReportVersion.REPORT_VERSION, "pk_report_version", ReportVersion.REPORT_VERSION.ID);
         public static final UniqueKey<ReportVersionArtefactRecord> PK_REPORT_VERSION_ARTEFACT = createUniqueKey(ReportVersionArtefact.REPORT_VERSION_ARTEFACT, "pk_report_version_artefact", ReportVersionArtefact.REPORT_VERSION_ARTEFACT.ID);
@@ -137,7 +148,8 @@ public class Keys {
     }
 
     private static class ForeignKeys0 extends AbstractKeys {
-        public static final ForeignKey<ChangelogRecord, ReportVersionRecord> FK_CHANGELOG_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Changelog.CHANGELOG, "fk_changelog_report_version_1", Changelog.CHANGELOG.REPORT_VERSION);
+        public static final ForeignKey<ChangelogRecord, ReportVersionRecord> FK_CHANGELOG_REPORT_VERSION_2 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Changelog.CHANGELOG, "fk_changelog_report_version_2", Changelog.CHANGELOG.REPORT_VERSION);
+        public static final ForeignKey<ChangelogRecord, ReportVersionRecord> FK_CHANGELOG_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Changelog.CHANGELOG, "fk_changelog_report_version_1", Changelog.CHANGELOG.REPORT_VERSION_PUBLIC);
         public static final ForeignKey<ChangelogRecord, ChangelogLabelRecord> FK_CHANGELOG_CHANGELOG_LABEL_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_CHANGELOG_LABEL, Changelog.CHANGELOG, "fk_changelog_changelog_label_1", Changelog.CHANGELOG.LABEL);
         public static final ForeignKey<DependsRecord, ReportVersionRecord> FK_DEPENDS_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Depends.DEPENDS, "fk_depends_report_version_1", Depends.DEPENDS.REPORT_VERSION);
         public static final ForeignKey<DependsRecord, FileArtefactRecord> FK_DEPENDS_FILE_ARTEFACT_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_FILE_ARTEFACT, Depends.DEPENDS, "fk_depends_file_artefact_1", Depends.DEPENDS.USE);
@@ -146,6 +158,8 @@ public class Keys {
         public static final ForeignKey<FileInputRecord, ReportVersionRecord> FK_FILE_INPUT_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, FileInput.FILE_INPUT, "fk_file_input_report_version_1", FileInput.FILE_INPUT.REPORT_VERSION);
         public static final ForeignKey<FileInputRecord, FileRecord> FK_FILE_INPUT_FILE_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_FILE, FileInput.FILE_INPUT, "fk_file_input_file_1", FileInput.FILE_INPUT.FILE_HASH);
         public static final ForeignKey<FileInputRecord, FilePurposeRecord> FK_FILE_INPUT_FILE_PURPOSE_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_FILE_PURPOSE, FileInput.FILE_INPUT, "fk_file_input_file_purpose_1", FileInput.FILE_INPUT.FILE_PURPOSE);
+        public static final ForeignKey<ParametersRecord, ReportVersionRecord> FK_PARAMETERS_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Parameters.PARAMETERS, "fk_parameters_report_version_1", Parameters.PARAMETERS.REPORT_VERSION);
+        public static final ForeignKey<ParametersRecord, ParametersTypeRecord> FK_PARAMETERS_PARAMETERS_TYPE_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_PARAMETERS_TYPE, Parameters.PARAMETERS, "fk_parameters_parameters_type_1", Parameters.PARAMETERS.TYPE);
         public static final ForeignKey<ReportRecord, ReportVersionRecord> FK_REPORT_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, Report.REPORT, "fk_report_report_version_1", Report.REPORT.LATEST);
         public static final ForeignKey<ReportVersionRecord, ReportRecord> FK_REPORT_VERSION_REPORT_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT, ReportVersion.REPORT_VERSION, "fk_report_version_report_1", ReportVersion.REPORT_VERSION.REPORT);
         public static final ForeignKey<ReportVersionArtefactRecord, ReportVersionRecord> FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.reporting_api.db.Keys.PK_REPORT_VERSION, ReportVersionArtefact.REPORT_VERSION_ARTEFACT, "fk_report_version_artefact_report_version_1", ReportVersionArtefact.REPORT_VERSION_ARTEFACT.REPORT_VERSION);

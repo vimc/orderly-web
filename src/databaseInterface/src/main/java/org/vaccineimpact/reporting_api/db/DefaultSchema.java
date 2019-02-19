@@ -25,6 +25,8 @@ import org.vaccineimpact.reporting_api.db.tables.FilePurpose;
 import org.vaccineimpact.reporting_api.db.tables.Orderly;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchema;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.reporting_api.db.tables.Parameters;
+import org.vaccineimpact.reporting_api.db.tables.ParametersType;
 import org.vaccineimpact.reporting_api.db.tables.Report;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersion;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersionArtefact;
@@ -46,7 +48,7 @@ import org.vaccineimpact.reporting_api.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 951061047;
+    private static final long serialVersionUID = -1130226641;
 
     /**
      * The reference instance of <code></code>
@@ -112,6 +114,16 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>orderly_schema_tables</code>.
      */
     public final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>parameters</code>.
+     */
+    public final Parameters PARAMETERS = org.vaccineimpact.reporting_api.db.tables.Parameters.PARAMETERS;
+
+    /**
+     * The table <code>parameters_type</code>.
+     */
+    public final ParametersType PARAMETERS_TYPE = org.vaccineimpact.reporting_api.db.tables.ParametersType.PARAMETERS_TYPE;
 
     /**
      * The table <code>report</code>.
@@ -180,6 +192,8 @@ public class DefaultSchema extends SchemaImpl {
             Orderly.ORDERLY,
             OrderlySchema.ORDERLY_SCHEMA,
             OrderlySchemaTables.ORDERLY_SCHEMA_TABLES,
+            Parameters.PARAMETERS,
+            ParametersType.PARAMETERS_TYPE,
             Report.REPORT,
             ReportVersion.REPORT_VERSION,
             ReportVersionArtefact.REPORT_VERSION_ARTEFACT,

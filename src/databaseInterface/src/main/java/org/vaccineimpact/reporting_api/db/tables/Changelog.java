@@ -34,7 +34,7 @@ import org.vaccineimpact.reporting_api.db.tables.records.ChangelogRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Changelog extends TableImpl<ChangelogRecord> {
 
-    private static final long serialVersionUID = -579485511;
+    private static final long serialVersionUID = 1766464602;
 
     /**
      * The reference instance of <code>changelog</code>
@@ -58,6 +58,11 @@ public class Changelog extends TableImpl<ChangelogRecord> {
      * The column <code>changelog.report_version</code>.
      */
     public final TableField<ChangelogRecord, String> REPORT_VERSION = createField("report_version", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>changelog.report_version_public</code>.
+     */
+    public final TableField<ChangelogRecord, String> REPORT_VERSION_PUBLIC = createField("report_version_public", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>changelog.label</code>.
@@ -125,7 +130,7 @@ public class Changelog extends TableImpl<ChangelogRecord> {
      */
     @Override
     public List<ForeignKey<ChangelogRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<ChangelogRecord, ?>>asList(Keys.FK_CHANGELOG_REPORT_VERSION_1, Keys.FK_CHANGELOG_CHANGELOG_LABEL_1);
+        return Arrays.<ForeignKey<ChangelogRecord, ?>>asList(Keys.FK_CHANGELOG_REPORT_VERSION_2, Keys.FK_CHANGELOG_REPORT_VERSION_1, Keys.FK_CHANGELOG_CHANGELOG_LABEL_1);
     }
 
     /**
