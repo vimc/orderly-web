@@ -1,11 +1,9 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
-import com.github.salomonbrys.kotson.toJsonArray
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.api.models.Changelog
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
@@ -21,10 +19,10 @@ class VersionTests : IntegrationTest()
     {
         val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
 
-            it.dsl.select(Tables.ORDERLY.ID)
-                    .from(Tables.ORDERLY)
-                    .where(Tables.ORDERLY.NAME.eq("minimal"))
-                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
+            it.dsl.select(Tables.REPORT_VERSION.ID)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.PUBLISHED.eq(false))
                     .fetchInto(String::class.java)
                     .first()
         }
@@ -36,6 +34,18 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Publish")
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(true)
+
+        val publishStatus = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.ID.eq(unpublishedVersion))
+                    .fetchInto(Boolean::class.java)
+                    .first()
+        }
+
+        assertThat(publishStatus).isTrue()
     }
 
     @Test
@@ -62,6 +72,18 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Publish")
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(false)
+
+        val publishStatus = JooqContext("git/orderly.sqlite").use {
+
+            it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
+                    .and(Tables.REPORT_VERSION.ID.eq(version))
+                    .fetchInto(Boolean::class.java)
+                    .first()
+        }
+
+        assertThat(publishStatus).isFalse()
     }
 
     @Test
@@ -193,111 +215,6 @@ class VersionTests : IntegrationTest()
         assertJsonContentType(response)
         assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version", "Unknown report-version : 'testname-$fakeVersion'")
-    }
-
-
-    @Test
-    fun `gets zip file with access token`()
-    {
-
-        insertReport("testname", "testversion")
-        createArchiveFolder("testname", "testversion")
-
-        try
-        {
-
-            val url = "/reports/testname/versions/testversion/all/"
-            val token = requestHelper.generateOnetimeToken(url)
-            val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
-        }
-        finally
-        {
-            deleteArchiveFolder("testname", "testversion")
-        }
-    }
-
-    @Test
-    fun `gets zip file with scoped permissions`()
-    {
-        insertReport("testname", "testversion")
-        createArchiveFolder("testname", "testversion")
-
-        try
-        {
-            val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
-                    user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
-        }
-        finally
-        {
-            deleteArchiveFolder("testname", "testversion")
-        }
-
-    }
-
-
-    @Test
-    fun `gets zip file with bearer token`()
-    {
-        insertReport("testname", "testversion")
-        createArchiveFolder("testname", "testversion")
-
-        try
-        {
-
-            val token = requestHelper.generateOnetimeToken("")
-            val response = requestHelper.get("/reports/testname/versions/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
-        }
-        finally
-        {
-            deleteArchiveFolder("testname", "testversion")
-        }
-    }
-
-    @Test
-    fun `get zip returns 401 if access token is missing`()
-    {
-        insertReport("testname", "testversion")
-        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
-
-        Assertions.assertThat(response.statusCode).isEqualTo(401)
-        JSONValidator.validateMultipleAuthErrors(response.text)
-    }
-
-    @Test
-    fun `get zip returns 403 if report not in scoped report reading permissions`()
-    {
-        insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/all",
-                contentType = ContentTypes.zip, user = fakeReportReader("badreportnamer"))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(403)
-        JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: report:testname/reports.read")
-
-    }
-
-    @Test
-    fun `get zip returns 404 if report version does not exist`()
-    {
-        val response = requestHelper.get("/reports/notaname/versions/notareport/all",
-                contentType = ContentTypes.zip)
-
-        Assertions.assertThat(response.statusCode).isEqualTo(404)
-        JSONValidator.validateError(response.text, "unknown-report-version",
-                "Unknown report-version")
-
     }
 
     @Test

@@ -26,10 +26,10 @@ class ArtefactControllerTests : ControllerTest()
         val name = "testname"
         val version = "testversion"
 
-        val artefacts = JsonParser().parse("{ \"test.png\" : \"hjkdasjkldas6762i1j\"}")
+        val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefacts(name, version) } doReturn artefacts.asJsonObject
+            on { this.getArtefactHashes(name, version) } doReturn artefacts
         }
 
         val actionContext = mock<ActionContext> {
@@ -50,7 +50,7 @@ class ArtefactControllerTests : ControllerTest()
         val artefact = "testartefact"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefact(name, version, artefact) } doReturn ""
+            on { this.getArtefactHash(name, version, artefact) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
@@ -78,7 +78,7 @@ class ArtefactControllerTests : ControllerTest()
         val artefact = "test.png"
 
         val orderly = mock<OrderlyClient> {
-            on { this.getArtefact(name, version, artefact) } doThrow UnknownObjectError("", "")
+            on { this.getArtefactHash(name, version, artefact) } doThrow UnknownObjectError("", "")
         }
 
         val actionContext = mock<ActionContext> {

@@ -5,26 +5,22 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.OutputStream
-import java.util.*
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 interface ZipClient
 {
-    fun zipIt(sourceAbsolutePath: String, output: OutputStream)
+    fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>)
 }
 
 class Zip : ZipClient
 {
     val logger = LoggerFactory.getLogger(Zip::class.java)
 
-    override fun zipIt(sourceAbsolutePath: String, output: OutputStream)
+    override fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>)
     {
         val source = File(sourceAbsolutePath)
-        val fileList: ArrayList<String> = ArrayList<String>()
-
-        populateFileList(source, fileList)
 
         val bufferSize = 8000
         ZipOutputStream(GZIPOutputStream(output, bufferSize)).use {
@@ -68,24 +64,6 @@ class Zip : ZipClient
             {
                 zipOutputStream.write(buffer, 0, len)
                 len = bufferedInputStream.read(buffer)
-            }
-        }
-    }
-
-    private fun populateFileList(node: File, fileList: ArrayList<String>)
-    {
-
-        if (node.isFile)
-        {
-            fileList.add(node.absolutePath.toString())
-        }
-
-        if (node.isDirectory)
-        {
-            val subNodes = node.list()
-            for (filename in subNodes)
-            {
-                populateFileList(File(node, filename), fileList)
             }
         }
     }

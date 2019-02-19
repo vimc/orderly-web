@@ -6,6 +6,7 @@ import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.security.WebTokenHelper
+import org.vaccineimpact.reporting_api.tests.insertArtefact
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class ArtefactTests : IntegrationTest()
@@ -118,7 +119,8 @@ class ArtefactTests : IntegrationTest()
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
         val token = requestHelper.generateOnetimeToken(url)
 
-        insertReport("testname", "testversion", hashArtefacts = "{\"$fakeartefact\":\"07dffb00305279935544238b39d7b14b\"}")
+        insertReport("testname", "testversion")
+        insertArtefact("testversion", fileNames = listOf(fakeartefact))
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
