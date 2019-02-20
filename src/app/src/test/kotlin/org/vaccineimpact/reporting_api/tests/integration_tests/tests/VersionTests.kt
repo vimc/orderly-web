@@ -56,6 +56,7 @@ class VersionTests : IntegrationTest()
             it.dsl.select(Tables.ORDERLY.ID)
                     .from(Tables.ORDERLY)
                     .where(Tables.ORDERLY.NAME.eq("minimal"))
+                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
                     .fetchInto(String::class.java)
                     .first()
         }
