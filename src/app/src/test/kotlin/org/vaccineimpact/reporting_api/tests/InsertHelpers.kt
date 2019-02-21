@@ -11,6 +11,13 @@ import java.io.File
 import java.sql.Timestamp
 import kotlin.streams.asSequence
 
+data class ChangelogWithPublicVersion
+constructor(val reportVersion: String,
+            val label: String,
+            val value: String,
+            val fromFile: Boolean,
+            val reportVersionPublic: String? = null)
+
 fun insertReport(name: String,
                  version: String,
                  views: String = "{\"coverage_info\":\"coverage_info.sql\"}",
@@ -23,8 +30,8 @@ fun insertReport(name: String,
                  published: Boolean = true,
                  author: String = "author authorson",
                  requester: String = "requester mcfunder",
-                 changelog: List<Changelog> = listOf(Changelog(version, "public", "did something great", true),
-                         Changelog(version, "internal", "did something awful", false)))
+                 changelog: List<ChangelogWithPublicVersion> = listOf(ChangelogWithPublicVersion(version, "public", "did something great", true, version),
+                         ChangelogWithPublicVersion(version, "internal", "did something awful", false)))
 {
 
     JooqContext().use {
@@ -126,6 +133,7 @@ fun insertReport(name: String,
                     .set(CHANGELOG.VALUE, entry.value)
                     .set(CHANGELOG.FROM_FILE, entry.fromFile)
                     .set(CHANGELOG.REPORT_VERSION, entry.reportVersion)
+                    .set(CHANGELOG.REPORT_VERSION_PUBLIC, entry.reportVersionPublic)
                     .execute()
 
         }

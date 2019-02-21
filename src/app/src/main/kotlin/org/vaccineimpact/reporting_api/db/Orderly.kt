@@ -92,7 +92,13 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                         select(CHANGELOG_LABEL.ID)
                                 .from(CHANGELOG_LABEL)
                                 .where(CHANGELOG_LABEL.PUBLIC)
-                )
+                ).and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+
+    private val changelogReportVersionColumnForUser =
+            if (isReviewer)
+                CHANGELOG.REPORT_VERSION
+            else
+                CHANGELOG.REPORT_VERSION_PUBLIC
 
     override fun getAllReports(): List<Report>
     {
@@ -315,13 +321,13 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
-                .select(CHANGELOG.REPORT_VERSION,
+                .select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                         CHANGELOG.LABEL,
                         CHANGELOG.VALUE,
                         CHANGELOG.FROM_FILE)
-                .from(REPORT_VERSION)
-                .join(CHANGELOG)
-                .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                .from(CHANGELOG)
+                .join(REPORT_VERSION)
+                .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
                 .where(REPORT_VERSION.REPORT.eq(report))
                 .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
                 .and(shouldIncludeChangelogItem)
