@@ -266,5 +266,16 @@ class VersionTests : IntegrationTest()
                 "Unknown report-version")
     }
 
+    @Test
+    fun `get changelog returns 404 if version is not published and user has reader permission only`()
+    {
+        insertReport("testname", "testversion", published = false)
+        val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
+                user = requestHelper.fakeGlobalReportReader)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        JSONValidator.validateError(response.text, "unknown-report-version",
+                "Unknown report-version")
+    }
 
 }
