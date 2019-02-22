@@ -4,13 +4,10 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.tests.insertReport
-import org.vaccineimpact.reporting_api.tests.createArchiveFolder
-import org.vaccineimpact.reporting_api.tests.deleteArchiveFolder
 
 class VersionTests : IntegrationTest()
 {
@@ -35,6 +32,7 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(true)
 
+        Thread.sleep(500)
         val publishStatus = JooqContext("git/orderly.sqlite").use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
@@ -74,6 +72,7 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(false)
 
+        Thread.sleep(500)
         val publishStatus = JooqContext("git/orderly.sqlite").use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
