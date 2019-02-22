@@ -50,7 +50,7 @@ object VersionRouteConfig : RouteConfig
             Endpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
                     .json()
                     .transform()
-                    .secure(reviewReports)
+                    .secure(readReports)
                     .allowParameterAuthentication(),
 
             Endpoint("/reports/:name/versions/:version/artefacts/", artefactController, "get")

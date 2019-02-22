@@ -15,7 +15,6 @@ abstract class CleanDatabaseTests: DatabaseTests()
         val tables = Tables::class.java;
         val fields = tables.declaredFields;
 
-
         JooqContext().use {
 
             for (field in fields){

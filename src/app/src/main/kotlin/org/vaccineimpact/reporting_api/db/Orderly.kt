@@ -3,6 +3,11 @@ package org.vaccineimpact.reporting_api.db
 import com.google.gson.*
 import org.jooq.TableField
 import org.jooq.impl.DSL.*
+
+import org.vaccineimpact.api.models.Changelog
+import org.vaccineimpact.api.models.Report
+import org.vaccineimpact.api.models.ReportVersion
+import org.vaccineimpact.api.models.ReportVersionDetails
 import org.vaccineimpact.api.models.*
 import org.vaccineimpact.reporting_api.db.Tables.*
 import org.vaccineimpact.reporting_api.db.tables.File
@@ -78,6 +83,22 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
+
+    private val shouldIncludeChangelogItem =
+            if (isReviewer)
+                trueCondition()
+            else
+                CHANGELOG.LABEL.`in`(
+                        select(CHANGELOG_LABEL.ID)
+                                .from(CHANGELOG_LABEL)
+                                .where(CHANGELOG_LABEL.PUBLIC)
+                ).and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+
+    private val changelogReportVersionColumnForUser =
+            if (isReviewer)
+                CHANGELOG.REPORT_VERSION
+            else
+                CHANGELOG.REPORT_VERSION_PUBLIC
 
     override fun getAllReports(): List<Report>
     {
@@ -262,9 +283,11 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     .select(REPORT_VERSION.DATE)
                     .from(REPORT_VERSION)
                     .join(REPORT)
-                    .on(REPORT_VERSION.ID.eq(REPORT.LATEST))
+                    .on(REPORT_VERSION.REPORT.eq(REPORT.NAME))
                     .where(REPORT.NAME.eq(name))
-                    .singleOrNull()
+                    .and(shouldIncludeReportVersion)
+                    .orderBy(REPORT_VERSION.DATE.desc())
+                    .fetchAny()
                     ?: throw UnknownObjectError(name, "report")
 
             return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
@@ -298,15 +321,16 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
-                .select(CHANGELOG.REPORT_VERSION,
+                .select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                         CHANGELOG.LABEL,
                         CHANGELOG.VALUE,
                         CHANGELOG.FROM_FILE)
-                .from(REPORT_VERSION)
-                .join(CHANGELOG)
-                .on(CHANGELOG.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                .from(CHANGELOG)
+                .join(REPORT_VERSION)
+                .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
                 .where(REPORT_VERSION.REPORT.eq(report))
                 .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
+                .and(shouldIncludeChangelogItem)
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
     }

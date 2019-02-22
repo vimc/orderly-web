@@ -18,6 +18,8 @@ import org.vaccineimpact.reporting_api.db.tables.FilePurpose;
 import org.vaccineimpact.reporting_api.db.tables.Orderly;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchema;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.reporting_api.db.tables.Parameters;
+import org.vaccineimpact.reporting_api.db.tables.ParametersType;
 import org.vaccineimpact.reporting_api.db.tables.Report;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersion;
 import org.vaccineimpact.reporting_api.db.tables.ReportVersionArtefact;
@@ -98,6 +100,16 @@ public class Tables {
      * The table <code>orderly_schema_tables</code>.
      */
     public static final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>parameters</code>.
+     */
+    public static final Parameters PARAMETERS = org.vaccineimpact.reporting_api.db.tables.Parameters.PARAMETERS;
+
+    /**
+     * The table <code>parameters_type</code>.
+     */
+    public static final ParametersType PARAMETERS_TYPE = org.vaccineimpact.reporting_api.db.tables.ParametersType.PARAMETERS_TYPE;
 
     /**
      * The table <code>report</code>.

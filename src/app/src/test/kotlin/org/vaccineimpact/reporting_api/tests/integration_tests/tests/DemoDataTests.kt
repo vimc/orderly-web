@@ -134,20 +134,26 @@ class DemoDataTests : IntegrationTest()
         assertThat(data is ArrayNode)
         val clArray = data as ArrayNode
 
-        assertThat(clArray.size()).isEqualTo(3)
+        assertThat(clArray.size()).isEqualTo(4)
 
-        val entry1 = clArray[0] as ObjectNode
+        val entry0 = clArray[0] as ObjectNode
+        assertThat(entry0.get("report_version").asText()).isEqualTo(reportVersion)
+        assertThat(entry0.get("label").asText()).isEqualTo("public")
+        assertThat(entry0.get("from_file").asBoolean()).isTrue()
+        assertThat(entry0.get("value").asText()).startsWith("You think water moves fast?")
+
+        val entry1 = clArray[1] as ObjectNode
         assertThat(entry1.get("report_version").asText()).isEqualTo(reportVersion)
         assertThat(entry1.get("label").asText()).isEqualTo("public")
         assertThat(entry1.get("from_file").asBoolean()).isTrue()
         assertThat(entry1.get("value").asText()).startsWith("Do you see any Teletubbies in here?")
 
-        val entry2 = clArray[1] as ObjectNode
+        val entry2 = clArray[2] as ObjectNode
         assertThat(entry2.get("label").asText()).isEqualTo("public")
         assertThat(entry2.get("from_file").asBoolean()).isTrue()
         assertThat(entry2.get("value").asText()).startsWith("Now that we know who you are, I know who I am. I'm not a mistake!")
 
-        val entry3 = clArray[2] as ObjectNode
+        val entry3 = clArray[3] as ObjectNode
         assertThat(entry3.get("label").asText()).isEqualTo("internal")
         assertThat(entry3.get("from_file").asBoolean()).isTrue()
         assertThat(entry3.get("value").asText()).startsWith("Well, the way they make shows is, they make one show.")
