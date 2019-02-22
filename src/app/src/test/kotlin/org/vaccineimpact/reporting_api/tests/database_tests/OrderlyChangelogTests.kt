@@ -99,8 +99,8 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1", changelog = listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public","did something great v1", true),
-                ChangelogWithPublicVersion("anotherversion1","internal","did something awful v1", false)))
+                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true),
+                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false)))
 
         val sut = createSut(true)
 
@@ -115,8 +115,8 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1", changelog = listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public","did something great v1", true),
-                ChangelogWithPublicVersion("anotherversion1","internal","did something awful v1", false)))
+                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true),
+                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false)))
 
         val sut = createSut(false)
 
@@ -209,8 +209,8 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1", changelog = listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public","did something great v1", true, "anotherversion1"),
-                ChangelogWithPublicVersion("anotherversion1","internal","did something awful v1", false, "anotherversion1")))
+                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true, "anotherversion1"),
+                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false, "anotherversion1")))
 
         val sut = createSut(true)
 
@@ -225,8 +225,8 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1", changelog = listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public","did something great v1", true, "anotherversion1"),
-                ChangelogWithPublicVersion("anotherversion1","internal","did something awful v1", false, "anotherversion1")))
+                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true, "anotherversion1"),
+                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false, "anotherversion1")))
 
         val sut = createSut(false)
 
@@ -236,51 +236,54 @@ class OrderlychangelogTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `reader get latest changelog gets latest published version's changelog`()
+    fun `getLatestChangelogByName returns changelog for latest published to reader`()
     {
-        //Should not get changelog for latest version if it is not public
-        //but should get public changelog items for versions previous to latest
-        //published version, even id those old versions were unpublished
-        //as long as they have report version public values
+        // old unpublished version with changelogs forwarded to next published version
         insertReport("test", "v1", published = false, changelog = listOf(
-                ChangelogWithPublicVersion("v1", "public","did something great v1", true, "v2"),
-                //This changelog has a public version set, but should not be returned as it is marke internal
-                ChangelogWithPublicVersion("v1","internal","did something awful v1", false)))
-        insertReport("test", "v2", published = true, changelog = listOf(
-                ChangelogWithPublicVersion("v2", "public","did something great v2", true, "v2"),
-                ChangelogWithPublicVersion("v2","internal","did something awful v2", false, "v2")))
-        insertReport("test", "v3",  published =  false,
+                ChangelogWithPublicVersion("v1", "public", "did something great v1", true, reportVersionPublic = "v2"),
+                ChangelogWithPublicVersion("v1", "internal", "did something awful v1", false, reportVersionPublic = "v2")))
+
+        // old published version
+        insertReport("test", "v2", published = false, changelog = listOf(
+                ChangelogWithPublicVersion("v2", "public", "did something great v2", true, reportVersionPublic = "v2"),
+                ChangelogWithPublicVersion("v2", "internal", "did something awful v2", false, reportVersionPublic = "v2")))
+
+        // latest published version
+        insertReport("test", "v3", published = true, changelog = listOf(
+                ChangelogWithPublicVersion("v3", "public", "did something great v3", true, reportVersionPublic = "v3"),
+                ChangelogWithPublicVersion("v3", "internal", "did something awful v3", false, reportVersionPublic = "v3")))
+
+        // latest unpublished version
+        insertReport("test", "v4", published = false,
                 changelog = listOf(
-                        //Set a public version here just for testing - this version should not be considered the latest for
-                        //a reader, so its changelog items should not be returned, even if they have a public version set
-                        ChangelogWithPublicVersion("v3", "public","did something great v3", true, "v3"),
-                        ChangelogWithPublicVersion("v3","internal","did something awful v3", false)))
+                        ChangelogWithPublicVersion("v4", "public", "did something great v4", true, reportVersionPublic = null),
+                        ChangelogWithPublicVersion("v4", "internal", "did something awful v4", false, reportVersionPublic = null)))
 
         val sut = createSut(false)
 
         val results = sut.getLatestChangelogByName("test")
 
-        Assertions.assertThat(results.count()).isEqualTo(2)
-        //v2 - published
-        assertChangelogValuesMatch(results[0], "v2", "public", "did something great v2", true)
-        //v1 - unpublished, but public version marked as v2
-        assertChangelogValuesMatch(results[1], "v2", "public", "did something great v1", true)
+        Assertions.assertThat(results.count()).isEqualTo(3)
+
+        assertChangelogValuesMatch(results[0], "v3", "public", "did something great v3", true)
+        assertChangelogValuesMatch(results[1], "v2", "public", "did something great v2", true)
+        assertChangelogValuesMatch(results[2], "v2", "public", "did something great v1", true)
     }
 
     private fun insertTestReportChangelogs()
     {
         insertReport("test", "version1", changelog = listOf(
-                ChangelogWithPublicVersion("version1", "public","did something great v1", true, null),
-                ChangelogWithPublicVersion("version1","internal","did something awful v1", false, null)))
+                ChangelogWithPublicVersion("version1", "public", "did something great v1", true, null),
+                ChangelogWithPublicVersion("version1", "internal", "did something awful v1", false, null)))
 
         insertReport("test", "version2",
                 published = false, //This version is unpublished but its item is public so both readers and reviewers should see it
                 changelog = listOf(
-                        ChangelogWithPublicVersion("version2", "public","did something great v2", true, "version3")))
+                        ChangelogWithPublicVersion("version2", "public", "did something great v2", true, "version3")))
 
         insertReport("test", "version3", changelog = listOf(
-                ChangelogWithPublicVersion("version3", "public","did something great v3", true, "version3"),
-                ChangelogWithPublicVersion("version3","internal","did something awful v3", false, "version3"),
+                ChangelogWithPublicVersion("version3", "public", "did something great v3", true, "version3"),
+                ChangelogWithPublicVersion("version3", "internal", "did something awful v3", false, "version3"),
                 ChangelogWithPublicVersion("version3", "technical", "everything is broken", false, "version3")))
     }
 
@@ -307,7 +310,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
         if (latestVersion == "version1" || index > 0)
         {
             assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false)
-            assertChangelogValuesMatch(results[index+1], "version1", "public", "did something great v1", true)
+            assertChangelogValuesMatch(results[index + 1], "version1", "public", "did something great v1", true)
 
             index += 2
         }
@@ -328,7 +331,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
         {
             assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true)
 
-            index ++
+            index++
         }
 
         if (latestVersion == "version2" || index > 0)
