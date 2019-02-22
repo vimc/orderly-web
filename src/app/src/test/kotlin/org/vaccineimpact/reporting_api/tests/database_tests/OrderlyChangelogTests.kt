@@ -236,7 +236,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getLatestChangelogByName returns changelog for latest published to reader`()
+    fun `getLatestChangelogByName returns changelog for latest published version to reader`()
     {
         // old unpublished version with changelogs forwarded to next published version
         insertReport("test", "v1", published = false, changelog = listOf(
