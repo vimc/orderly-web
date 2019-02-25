@@ -308,13 +308,13 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
     "label": "public",
     "value": "Added graphs",
     "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3",
+    "report_version": "20171220-234033-f97cc4f3"
   },
   {
     "label": "internal",
     "value": "Fixed typos in text",
     "from_file": true,
-    "report_version": "20171202-074745-4f66ded4",
+    "report_version": "20171202-074745-4f66ded4"
   }
 ]
 ```
@@ -348,13 +348,13 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
     "label": "public",
     "value": "Added graphs",
     "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3",
+    "report_version": "20171220-234033-f97cc4f3"
   },
   {
     "label": "internal",
     "value": "Fixed typos in text",
     "from_file": true,
-    "report_version": "20171202-074745-4f66ded4",
+    "report_version": "20171202-074745-4f66ded4"
   }
 ]
 ```
