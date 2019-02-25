@@ -45,41 +45,14 @@ class DemoDataTests : IntegrationTest()
 
         assertExpectedOtherReportVersionProperties(dataObj, reportVersion)
 
-        assertThat(dataObj.get("displayname").asText()).isEqualTo("another report")
-
+        assertThat(dataObj.get("display_name").asText()).isEqualTo("another report")
         assertThat(dataObj.get("description").asText()).isEqualTo("An extended comment field.  This can be quite long.  This is not so long though, but long enough I'm sure.")
-        assertThat(dataObj.get("comment").asText()).isEqualTo("This is another comment")
-
-        val dataFieldObj = dataObj.get("data") as ObjectNode
-        assertThat(dataFieldObj.get("extract").asText()).isEqualTo("SELECT name, number FROM thing WHERE number > ?nmin")
-
 
         val artefactsArray = dataObj.get("artefacts") as ArrayNode
-        val dataArtefactObj = (artefactsArray[0] as ObjectNode).get("data") as ObjectNode
+        val dataArtefactObj = (artefactsArray[0] as ObjectNode)
         assertThat(dataArtefactObj.get("description").asText()).isEqualTo("A summary table")
-        val fileNamesArray = dataArtefactObj.get("filenames") as ArrayNode
+        val fileNamesArray = dataArtefactObj.get("files") as ArrayNode
         assertThat(fileNamesArray[0].asText()).isEqualTo("summary.csv")
-
-        val parametersObj = dataObj.get("parameters") as ObjectNode
-        assertThat(parametersObj.get("nmin").asInt()).isEqualTo(0)
-
-        assertThat(dataObj.get("hash_orderly").asText()).isEqualTo("5dfd610af385c346ede42a5802b1a3bf")
-        assertThat(dataObj.get("hash_input").asText()).isEqualTo("360533871dcc18a93868649c5b55b3f1")
-
-        val hashResourcesObj = dataObj.get("hash_resources") as ObjectNode
-        assertThat(hashResourcesObj.get("functions.R").asText()).isEqualTo("cceb0c1c68beaa96266c6f2e3445b423")
-
-        val hashDataObj = dataObj.get("hash_data") as ObjectNode
-        assertThat(hashDataObj.get("extract").asText()).isEqualTo("386f507375907a60176b717016f0a648")
-
-        val hashArtefactsObj = dataObj.get("hash_artefacts") as ObjectNode
-        assertThat(hashArtefactsObj.get("summary.csv").asText()).isEqualTo("3a9dcd5ad0326386af938cf3a4b395cc")
-        assertThat(hashArtefactsObj.get("graph.png").asText()).isEqualTo("067a7300a693861283e7479dfa7857d2")
-
-        assertThat(dataObj.get("script").asText()).isEqualTo("script.R")
-
-        assertThat(dataObj.get("hash_script").asText()).isEqualTo("ba1490c1ef2934c00b03e6fb5fdb5248")
-
     }
 
     @Test
@@ -95,10 +68,6 @@ class DemoDataTests : IntegrationTest()
         val dataObj = data as ObjectNode
 
         assertExpectedOtherReportVersionProperties(dataObj, reportVersion)
-
-        assertThat(dataObj.get("script").asText()).isEqualTo("script.R")
-
-        assertThat(dataObj.get("hash_script").asText()).isEqualTo("ba1490c1ef2934c00b03e6fb5fdb5248")
     }
 
     @Test
