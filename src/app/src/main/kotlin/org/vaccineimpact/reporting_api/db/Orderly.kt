@@ -1,17 +1,10 @@
 package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
-import org.jooq.TableField
-import org.jooq.impl.DSL.*
-
-import org.vaccineimpact.api.models.Changelog
-import org.vaccineimpact.api.models.Report
-import org.vaccineimpact.api.models.ReportVersion
-import org.vaccineimpact.api.models.ReportVersionDetails
+import org.jooq.impl.DSL.select
+import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.api.models.*
 import org.vaccineimpact.reporting_api.db.Tables.*
-import org.vaccineimpact.reporting_api.db.tables.File
-import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
@@ -47,15 +40,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         JooqContext().use {
 
             // create a temp table containing the latest version ID for each report name
-            val latestVersionForEachReport = it.dsl.select(
-                    REPORT_VERSION.REPORT,
-                    REPORT_VERSION.ID.`as`("latestVersion"),
-                    REPORT_VERSION.DATE.max().`as`("maxDate")
-            )
-                    .from(REPORT_VERSION)
-                    .where(shouldIncludeReportVersion)
-                    .groupBy(REPORT_VERSION.REPORT)
-                    .asTemporaryTable(name = "latest_version_for_each_report")
+            val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             //Use relational schema
             return it.dsl.withTemporaryTable(latestVersionForEachReport)
@@ -77,62 +62,34 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
-    private val gsonParser = JsonParser()
-
-    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
-
-    // shouldInclude for the relational schema
-    private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
-
-    private val shouldIncludeChangelogItem =
-            if (isReviewer)
-                trueCondition()
-            else
-                CHANGELOG.LABEL.`in`(
-                        select(CHANGELOG_LABEL.ID)
-                                .from(CHANGELOG_LABEL)
-                                .where(CHANGELOG_LABEL.PUBLIC)
-                ).and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
-
-    private val changelogReportVersionColumnForUser =
-            if (isReviewer)
-                CHANGELOG.REPORT_VERSION
-            else
-                CHANGELOG.REPORT_VERSION_PUBLIC
-
     override fun getAllReports(): List<Report>
     {
         JooqContext().use {
 
-            val tempTable = "all"
+            // create a temp table containing the latest version ID for each report name
+            val latestVersionForEachReport = getLatestVersionsForReports(it)
 
-            val allReports = it.dsl.select(ORDERLY.NAME,
-                    ORDERLY.DATE.max().`as`("maxDate"))
-                    .from(ORDERLY)
-                    .where(shouldInclude)
-                    .groupBy(ORDERLY.NAME)
-
-            return it.dsl.with(tempTable).`as`(allReports)
-                    .select(ORDERLY.NAME, ORDERLY.DISPLAYNAME,
-                            ORDERLY.ID.`as`("latestVersion"))
-                    .from(ORDERLY)
-                    .join(table(name(tempTable)))
-                    .on(ORDERLY.NAME.eq(field(name(tempTable, "name"), String::class.java))
-                            .and(ORDERLY.DATE.eq(field(name(tempTable, "maxDate"), Timestamp::class.java))))
-                    .where(shouldInclude)
+            return it.dsl.withTemporaryTable(latestVersionForEachReport)
+                    .select(REPORT_VERSION.REPORT.`as`("name"),
+                            REPORT_VERSION.DISPLAYNAME,
+                            REPORT_VERSION.ID.`as`("latestVersion"))
+                    .from(REPORT_VERSION)
+                    .join(latestVersionForEachReport.tableName)
+                    .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .where(shouldIncludeReportVersion)
+                    .orderBy(REPORT_VERSION.REPORT)
                     .fetchInto(Report::class.java)
         }
-
     }
 
     override fun getReportsByName(name: String): List<String>
     {
         JooqContext().use {
 
-            val result = it.dsl.select(ORDERLY.ID)
-                    .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name)
-                            .and(shouldInclude))
+            val result = it.dsl.select(REPORT_VERSION.ID)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq(name)
+                            .and(shouldIncludeReportVersion))
 
             if (result.count() == 0)
             {
@@ -325,6 +282,20 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 
+    private fun getLatestVersionsForReports(db: JooqContext): TempTable
+    {
+
+        return db.dsl.select(
+                REPORT_VERSION.REPORT,
+                REPORT_VERSION.ID.`as`("latestVersion"),
+                REPORT_VERSION.DATE.max().`as`("maxDate")
+        )
+                .from(REPORT_VERSION)
+                .where(shouldIncludeReportVersion)
+                .groupBy(REPORT_VERSION.REPORT)
+                .asTemporaryTable(name = "latest_version_for_each_report")
+    }
+    
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
@@ -341,4 +312,28 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
     }
+
+    private val gsonParser = JsonParser()
+
+    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
+
+    // shouldInclude for the relational schema
+    private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
+
+    private val shouldIncludeChangelogItem =
+            if (isReviewer)
+                trueCondition()
+            else
+                CHANGELOG.LABEL.`in`(
+                        select(CHANGELOG_LABEL.ID)
+                                .from(CHANGELOG_LABEL)
+                                .where(CHANGELOG_LABEL.PUBLIC)
+                ).and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+
+    private val changelogReportVersionColumnForUser =
+            if (isReviewer)
+                CHANGELOG.REPORT_VERSION
+            else
+                CHANGELOG.REPORT_VERSION_PUBLIC
+
 }
