@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
+import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.tests.insertReport
 
@@ -16,15 +17,16 @@ class VersionTests : IntegrationTest()
     {
         val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
 
-            it.dsl.select(Tables.REPORT_VERSION.ID)
+            it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
-                    .and(Tables.REPORT_VERSION.PUBLISHED.eq(false))
-                    .fetchInto(String::class.java)
-                    .first()
+                    .where(Tables.REPORT_VERSION.PUBLISHED.eq(false))
+                    .fetchOne()
         }
 
-        val response = requestHelper.post("/reports/minimal/versions/$unpublishedVersion/publish/", mapOf(),
+        val versionId = unpublishedVersion[REPORT_VERSION.ID]
+        val reportName = unpublishedVersion[REPORT_VERSION.REPORT]
+
+        val response = requestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
                 user = requestHelper.fakeReviewer)
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -32,13 +34,12 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(true)
 
-        Thread.sleep(500)
         val publishStatus = JooqContext("git/orderly.sqlite").use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
                     .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
-                    .and(Tables.REPORT_VERSION.ID.eq(unpublishedVersion))
+                    .where(Tables.REPORT_VERSION.REPORT.eq(reportName))
+                    .and(Tables.REPORT_VERSION.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
                     .first()
         }
@@ -49,21 +50,19 @@ class VersionTests : IntegrationTest()
     @Test
     fun `unpublishes report`()
     {
-        val version = JooqContext("git/orderly.sqlite").use {
+        val publishedVersion = JooqContext("git/orderly.sqlite").use {
 
-            it.dsl.select(Tables.ORDERLY.ID)
-                    .from(Tables.ORDERLY)
-                    .where(Tables.ORDERLY.NAME.eq("minimal"))
-                    .and(Tables.ORDERLY.PUBLISHED.eq(false))
-                    .fetchInto(String::class.java)
-                    .first()
+            it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(Tables.REPORT_VERSION)
+                    .where(Tables.REPORT_VERSION.PUBLISHED.eq(true))
+                    .fetchOne()
         }
 
-        // first lets make sure its published
-        requestHelper.post("/reports/minimal/versions/$version/publish/", mapOf(), user = requestHelper.fakeReviewer)
+        val versionId = publishedVersion[REPORT_VERSION.ID]
+        val reportName = publishedVersion[REPORT_VERSION.REPORT]
 
         // now unpublish
-        val response = requestHelper.post("/reports/minimal/versions/$version/publish/?value=false", mapOf(),
+        val response = requestHelper.post("/reports/$reportName/versions/$versionId/publish/?value=false", mapOf(),
                 user = requestHelper.fakeReviewer)
 
         assertSuccessfulWithResponseText(response)
@@ -72,13 +71,12 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(false)
 
-        Thread.sleep(500)
         val publishStatus = JooqContext("git/orderly.sqlite").use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
                     .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.REPORT.eq("minimal"))
-                    .and(Tables.REPORT_VERSION.ID.eq(version))
+                    .where(Tables.REPORT_VERSION.REPORT.eq(reportName))
+                    .and(Tables.REPORT_VERSION.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
                     .first()
         }
