@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
-import com.fasterxml.jackson.databind.JsonNode
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
