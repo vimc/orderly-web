@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.vaccineimpact.reporting_api.tests.insertData
 import org.vaccineimpact.reporting_api.tests.insertReport
 
 class DataTests : CleanDatabaseTests()
@@ -20,8 +21,8 @@ class DataTests : CleanDatabaseTests()
     {
 
         val hash = "07dffb00305279935544238b39d7b14b"
-        val dataHashString = "{\"data.csv\":\"$hash\"}"
-        insertReport("test", "version1", hashData = dataHashString)
+        insertReport("test", "version1")
+        insertData("version1", "data.csv", "SELECT * FROM THING", hash)
 
         val sut = createSut()
 
@@ -34,9 +35,9 @@ class DataTests : CleanDatabaseTests()
     fun `throw unknown object error if report does not have data`()
     {
 
-        val dataHashString = "{\"data2.rds\":\"07dffb00305279935544238b39d7b14b\"}"
-
-        insertReport("test", "version1", hashData = dataHashString)
+        val hash = "07dffb00305279935544238b39d7b14b"
+        insertReport("test", "version1")
+        insertData("version1", "data2.rds", "SELECT * FROM THING", hash)
 
         val sut = createSut()
 
@@ -47,10 +48,8 @@ class DataTests : CleanDatabaseTests()
     @Test
     fun `can get data hash for report`()
     {
-
-        val dataHashString = "{\"data.csv\":\"07dffb00305279935544238b39d7b14b\"}"
-
-        insertReport("test", "version1", hashData = dataHashString)
+        insertReport("test", "version1")
+        insertData("version1", "data.csv", "SELECT * FROM THING", "07dffb00305279935544238b39d7b14b")
 
         val sut = createSut()
 
