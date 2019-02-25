@@ -1,21 +1,47 @@
 package org.vaccineimpact.reporting_api.tests.database_tests
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.api.models.Artefact
+import org.vaccineimpact.api.models.ArtefactFormat
+import org.vaccineimpact.api.models.FilePurpose
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
+import org.vaccineimpact.reporting_api.tests.insertArtefact
+import org.vaccineimpact.reporting_api.tests.insertFileInput
 import org.vaccineimpact.reporting_api.tests.insertReport
+import java.sql.Timestamp
 
-class VersionTests: CleanDatabaseTests() {
+class VersionTests : CleanDatabaseTests()
+{
 
     @Test
     fun `reader can get published report version details`()
     {
-        insertReport("test", "version1",
-                hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
+        val now = Timestamp(System.currentTimeMillis())
+        insertReport("test", "version1", date = now,
+                author = "dr author", requester = "ms requester")
+
+        insertFileInput("version1", "file.csv", FilePurpose.RESOURCE)
+        insertFileInput("version1", "graph.png", FilePurpose.RESOURCE)
+
+        insertArtefact("version1", "some artefact",
+                ArtefactFormat.DATA, fileNames = listOf("artefactfile.csv"))
 
         val sut = Orderly()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
+
+        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.displayName).isEqualTo("display name test")
+        assertThat(result.author).isEqualTo("dr author")
+        assertThat(result.requester).isEqualTo("ms requester")
+        assertThat(result.date).isEqualTo(now.toInstant())
+        assertThat(result.published).isTrue()
+        assertThat(result.resources).hasSameElementsAs(listOf("file.csv", "graph.png"))
+        assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
+                "some artefact", listOf("artefactfile.csv")))
 
     }
 
@@ -32,8 +58,7 @@ class VersionTests: CleanDatabaseTests() {
     @Test
     fun `getDetailsByNameAndVersion throws unknown object error if report version doesnt exist`()
     {
-        insertReport("test", "version1",
-                hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
+        insertReport("test", "version1")
 
         val sut = Orderly()
 
@@ -51,21 +76,20 @@ class VersionTests: CleanDatabaseTests() {
 
         Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
-
     }
 
     @Test
     fun `reviewer can get unpublished verion details`()
     {
-        insertReport("test", "version1",
-                hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}", published = false)
+        insertReport("test", "version1", published = false)
 
         val sut = Orderly(isReviewer = true)
 
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
-        Assertions.assertThat(result.name).isEqualTo("test")
-        Assertions.assertThat(result.id).isEqualTo("version1")
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.published).isFalse()
     }
 
 

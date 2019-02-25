@@ -20,8 +20,7 @@ class DataTests : CleanDatabaseTests()
     {
 
         val hash = "07dffb00305279935544238b39d7b14b"
-        val dataHashString = "{\"data.csv\":\"$hash\"}"
-        insertReport("test", "version1", hashData = dataHashString)
+        insertReport("test", "version1")
 
         val sut = createSut()
 
@@ -33,10 +32,7 @@ class DataTests : CleanDatabaseTests()
     @Test
     fun `throw unknown object error if report does not have data`()
     {
-
-        val dataHashString = "{\"data2.rds\":\"07dffb00305279935544238b39d7b14b\"}"
-
-        insertReport("test", "version1", hashData = dataHashString)
+        insertReport("test", "version1")
 
         val sut = createSut()
 
@@ -47,10 +43,7 @@ class DataTests : CleanDatabaseTests()
     @Test
     fun `can get data hash for report`()
     {
-
-        val dataHashString = "{\"data.csv\":\"07dffb00305279935544238b39d7b14b\"}"
-
-        insertReport("test", "version1", hashData = dataHashString)
+        insertReport("test", "version1")
 
         val sut = createSut()
 

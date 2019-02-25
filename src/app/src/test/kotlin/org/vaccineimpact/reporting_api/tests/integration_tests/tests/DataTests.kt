@@ -41,7 +41,7 @@ class DataTests : IntegrationTest()
         // remove file extension
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
-        insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
+        insertReport("testname", "testversion")
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata, user = fakeReportReader("testname"))
@@ -60,7 +60,7 @@ class DataTests : IntegrationTest()
         // remove file extension
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
-        insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoCSV\"}")
+        insertReport("testname", "testversion")
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
@@ -90,7 +90,7 @@ class DataTests : IntegrationTest()
 
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
-        insertReport("testname", "testversion", hashData = "{\"$fakedata\":\"$fakehash\"}")
+        insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
 
@@ -110,7 +110,7 @@ class DataTests : IntegrationTest()
         // remove file extension
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
-        insertReport("testname", "testversion", hashData = "{ \"testdata\" : \"$demoRDS\"}")
+        insertReport("testname", "testversion")
 
         val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
         val token = requestHelper.generateOnetimeToken(url)
