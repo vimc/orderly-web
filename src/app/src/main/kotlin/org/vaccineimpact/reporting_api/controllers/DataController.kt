@@ -24,7 +24,7 @@ class DataController(context: ActionContext,
                     Files(),
                     AppConfig())
 
-    fun get(): JsonObject
+    fun get(): Map<String, String>
     {
         return orderly.getData(context.params(":name"), context.params(":version"))
     }

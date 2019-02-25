@@ -34,7 +34,7 @@ interface OrderlyClient
     fun getArtefactHash(name: String, version: String, filename: String): String
 
     @Throws(UnknownObjectError::class)
-    fun getData(name: String, version: String): JsonObject
+    fun getData(name: String, version: String): Map<String, String>
 
     @Throws(UnknownObjectError::class)
     fun getDatum(name: String, version: String, datumname: String): String

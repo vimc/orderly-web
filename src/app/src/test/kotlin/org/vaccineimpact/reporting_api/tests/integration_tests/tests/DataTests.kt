@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
 import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.reporting_api.tests.insertData
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.io.File
 
@@ -14,12 +15,16 @@ class DataTests : IntegrationTest()
     fun `gets dict of data names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
+        insertData("testversion", "testdata", "SELECT * FROM thing", "123456")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
                 user = fakeReportReader("testname"))
 
         assertJsonContentType(response)
         assertSuccessful(response)
-        JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+
+        val responseData = JSONValidator.getData(response.text)
+        Assertions.assertThat(responseData.count()).isEqualTo(1)
+        Assertions.assertThat(responseData["testdata"].asText()).isEqualTo("123456")
 
     }
 
@@ -42,6 +47,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion")
+        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata, user = fakeReportReader("testname"))
@@ -61,6 +67,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion")
+        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
@@ -91,6 +98,7 @@ class DataTests : IntegrationTest()
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
         insertReport("testname", "testversion")
+        insertData("testversion", fakedata, "SELECT * FROM thing", fakehash)
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
 
@@ -111,6 +119,7 @@ class DataTests : IntegrationTest()
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
         insertReport("testname", "testversion")
+        insertData("testversion", "testdata", "SELECT * FROM thing", demoRDS)
 
         val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
         val token = requestHelper.generateOnetimeToken(url)
