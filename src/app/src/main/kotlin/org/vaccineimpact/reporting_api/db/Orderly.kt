@@ -349,6 +349,4 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
-
-
 }

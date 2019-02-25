@@ -63,7 +63,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROME thing", demoCSV)
+        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
