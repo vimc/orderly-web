@@ -245,15 +245,15 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
     override fun getData(name: String, version: String): JsonObject
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_DATA)
+       return Gson().toJsonTree(
+               getDataAsMap(name, version)
+       ) as JsonObject
     }
 
     override fun getDatum(name: String, version: String, datumname: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname]
-                ?: throw UnknownObjectError(datumname, "Data")
-
-        return result.asString
+        val data = getDataAsMap(name, version)
+        return data[datumname] ?: throw UnknownObjectError(datumname, "Data")
     }
 
     override fun getResourceHashes(name: String, version: String): Map<String, String>
@@ -335,23 +335,20 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .fetchInto(Changelog::class.java)
     }
 
-
-    private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject
+    private fun getDataAsMap(name: String, version: String):  Map<String, String>
     {
         JooqContext().use {
-            val result = it.dsl.select(column)
-                    .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version))
-                            .and(shouldInclude))
-                    .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
-            if (result.value1() == null)
-                return JsonObject()
-
-            return gsonParser.parse(result
-                    .into(String::class.java))
-                    .asJsonObject
+            getReportVersion(name, version, it)
+            return it.dsl.select(
+                    REPORT_VERSION_DATA.NAME,
+                    REPORT_VERSION_DATA.HASH)
+                    .from(REPORT_VERSION_DATA)
+                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[REPORT_VERSION_DATA.NAME] to it[REPORT_VERSION_DATA.HASH] }
         }
     }
+
+
 
 }
