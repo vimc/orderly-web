@@ -76,39 +76,23 @@ Schema: [`Report.schema.json`](Version.schema.json)
     "name": "minimal",
     "displayname": null,
     "description": null,
-    "views": {},
-    "data": {
-      "dat": "SELECT name, number FROM thing"
-    },
-    "packages": null,
-    "script": "script.R",
     "artefacts": [
-      {
-        "staticgraph": {
+      {        
+          "format": "staticgraph",
           "description": "A graph of things",
-          "filenames": [
+          "files": [
             "mygraph.png"
-          ]
-        }
+          ]        
       }
     ],
-    "resources": [],
-    "hash_script": "b483640f63fbd45f509b98d6ee8a6852",
-    "parameters": {},
-    "date": "2016-10-06 14:23:57.0",
-    "hash_orderly": "3ef8378b2d322b4849e112811f44114b",
-    "hash_input": "4985c6c6d4004e9c8bfd1bcd5b6d0ce7",
-    "hash_resources": [],
-    "hash_data": {
+    "resources": ["source/inputdata.csv"],
+    "date": "2016-10-06 14:23:57.0",   
+    "data_hashes": {
       "dat": "386f507375907a60176b717016f0a648"
-    },
-    "hash_artefacts": {
-      "mygraph.png": "7360cb2eed3327ff8a677b3598ed7343"
     },
     "published": false,
     "requester": "Funder McFunderface",
-    "author": "Researcher McResearcherface",
-    "comment": "This is a comment"
+    "author": "Researcher McResearcherface"
   }
 ```
 
@@ -324,13 +308,13 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
     "label": "public",
     "value": "Added graphs",
     "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3",
+    "report_version": "20171220-234033-f97cc4f3"
   },
   {
     "label": "internal",
     "value": "Fixed typos in text",
     "from_file": true,
-    "report_version": "20171202-074745-4f66ded4",
+    "report_version": "20171202-074745-4f66ded4"
   }
 ]
 ```
@@ -364,13 +348,13 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
     "label": "public",
     "value": "Added graphs",
     "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3",
+    "report_version": "20171220-234033-f97cc4f3"
   },
   {
     "label": "internal",
     "value": "Fixed typos in text",
     "from_file": true,
-    "report_version": "20171202-074745-4f66ded4",
+    "report_version": "20171202-074745-4f66ded4"
   }
 ]
 ```
