@@ -1,5 +1,6 @@
 package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 
+import com.fasterxml.jackson.databind.JsonNode
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.reporting_api.ContentTypes
@@ -15,12 +16,16 @@ class DataTests : IntegrationTest()
     fun `gets dict of data names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
+        insertData("testversion", "testdata", "SELECT * FROM thing", "123456")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
                 user = fakeReportReader("testname"))
 
         assertJsonContentType(response)
         assertSuccessful(response)
-        JSONValidator.validateAgainstSchema(response.text, "Dictionary")
+
+        val responseData = JSONValidator.getData(response.text)
+        Assertions.assertThat(responseData.count()).isEqualTo(1)
+        Assertions.assertThat(responseData["testdata"].asText()).isEqualTo("123456")
 
     }
 

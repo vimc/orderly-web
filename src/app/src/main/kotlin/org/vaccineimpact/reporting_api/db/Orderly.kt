@@ -243,16 +243,23 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError(filename, "Artefact")
     }
 
-    override fun getData(name: String, version: String): JsonObject
+    override fun getData(name: String, version: String): Map<String, String>
     {
-       return Gson().toJsonTree(
-               getDataAsMap(name, version)
-       ) as JsonObject
+        JooqContext().use {
+            getReportVersion(name, version, it)
+            return it.dsl.select(
+                    REPORT_VERSION_DATA.NAME,
+                    REPORT_VERSION_DATA.HASH)
+                    .from(REPORT_VERSION_DATA)
+                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[REPORT_VERSION_DATA.NAME] to it[REPORT_VERSION_DATA.HASH] }
+        }
     }
 
     override fun getDatum(name: String, version: String, datumname: String): String
     {
-        val data = getDataAsMap(name, version)
+        val data = getData(name, version)
         return data[datumname] ?: throw UnknownObjectError(datumname, "Data")
     }
 
@@ -334,19 +341,4 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
     }
-
-    private fun getDataAsMap(name: String, version: String):  Map<String, String>
-    {
-        JooqContext().use {
-            getReportVersion(name, version, it)
-            return it.dsl.select(
-                    REPORT_VERSION_DATA.NAME,
-                    REPORT_VERSION_DATA.HASH)
-                    .from(REPORT_VERSION_DATA)
-                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
-                    .fetch()
-                    .associate { it[REPORT_VERSION_DATA.NAME] to it[REPORT_VERSION_DATA.HASH] }
-        }
-    }
-
 }

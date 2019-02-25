@@ -55,7 +55,7 @@ class DataTests : CleanDatabaseTests()
 
         val result = sut.getData("test", "version1")
 
-        assertThat(result["data.csv"].asString).isEqualTo("07dffb00305279935544238b39d7b14b")
+        assertThat(result["data.csv"]).isEqualTo("07dffb00305279935544238b39d7b14b")
     }
 
 }

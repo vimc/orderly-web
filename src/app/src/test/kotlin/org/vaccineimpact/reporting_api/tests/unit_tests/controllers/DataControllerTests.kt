@@ -27,10 +27,10 @@ class DataControllerTests : ControllerTest()
         val name = "testname"
         val version = "testversion"
 
-        val data = JsonParser().parse("{ \"test.csv\" : \"hjkdasjkldas6762i1j\"}")
+        val data = mapOf("test.csv" to "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getData(name, version) } doReturn data.asJsonObject
+            on { this.getData(name, version) } doReturn data
         }
 
         val actionContext = mock<ActionContext> {
@@ -152,10 +152,10 @@ class DataControllerTests : ControllerTest()
         val name = "testname"
         val version = "testversion"
 
-        val data = JsonParser().parse("{ \"test.csv\" : \"hjkdasjkldas6762i1j\"}")
+        val data = mapOf("test.csv" to "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
-            on { this.getData(name, version) } doReturn data.asJsonObject
+            on { this.getData(name, version) } doReturn data
         }
 
         val actionContext = mock<ActionContext> {
