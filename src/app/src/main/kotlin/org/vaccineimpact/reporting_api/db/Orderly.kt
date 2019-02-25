@@ -1,12 +1,10 @@
 package org.vaccineimpact.reporting_api.db
 
 import com.google.gson.*
-import org.jooq.TableField
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.api.models.*
 import org.vaccineimpact.reporting_api.db.Tables.*
-import org.vaccineimpact.reporting_api.db.tables.records.OrderlyRecord
 import org.vaccineimpact.reporting_api.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import java.sql.Timestamp
@@ -202,17 +200,24 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError(filename, "Artefact")
     }
 
-    override fun getData(name: String, version: String): JsonObject
+    override fun getData(name: String, version: String): Map<String, String>
     {
-        return getSimpleMap(name, version, ORDERLY.HASH_DATA)
+        JooqContext().use {
+            getReportVersion(name, version, it)
+            return it.dsl.select(
+                    REPORT_VERSION_DATA.NAME,
+                    REPORT_VERSION_DATA.HASH)
+                    .from(REPORT_VERSION_DATA)
+                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .associate { it[REPORT_VERSION_DATA.NAME] to it[REPORT_VERSION_DATA.HASH] }
+        }
     }
 
     override fun getDatum(name: String, version: String, datumname: String): String
     {
-        val result = getSimpleMap(name, version, ORDERLY.HASH_DATA)[datumname]
-                ?: throw UnknownObjectError(datumname, "Data")
-
-        return result.asString
+        val data = getData(name, version)
+        return data[datumname] ?: throw UnknownObjectError(datumname, "Data")
     }
 
     override fun getResourceHashes(name: String, version: String): Map<String, String>
@@ -306,25 +311,6 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .and(shouldIncludeChangelogItem)
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
-    }
-
-
-    private fun getSimpleMap(name: String, version: String, column: TableField<OrderlyRecord, String>): JsonObject
-    {
-        JooqContext().use {
-            val result = it.dsl.select(column)
-                    .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name).and((ORDERLY.ID).eq(version))
-                            .and(shouldInclude))
-                    .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
-            if (result.value1() == null)
-                return JsonObject()
-
-            return gsonParser.parse(result
-                    .into(String::class.java))
-                    .asJsonObject
-        }
     }
 
     private val gsonParser = JsonParser()
