@@ -22,8 +22,7 @@ class VersionTests : IntegrationTest()
 
             it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.PUBLISHED.eq(false))
-                    .fetchOne()
+                    .fetchAny()
         }
 
         val versionId = unpublishedVersion[REPORT_VERSION.ID]
@@ -58,7 +57,7 @@ class VersionTests : IntegrationTest()
             it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(Tables.REPORT_VERSION)
                     .where(Tables.REPORT_VERSION.PUBLISHED.eq(true))
-                    .fetchOne()
+                    .fetchAny()
         }
 
         val versionId = publishedVersion[REPORT_VERSION.ID]
