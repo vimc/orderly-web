@@ -35,7 +35,7 @@ class VersionControllerTests : ControllerTest()
 
         val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
                 name = "name", published = true, requester = "requester", description = "description",
-                comment = "comment", script = "script", hashScript = "hashscript", artefacts = listOf(),
+                artefacts = listOf(),
                 resources = listOf(), dataHashes = mapOf())
 
         val orderly = mock<OrderlyClient> {
