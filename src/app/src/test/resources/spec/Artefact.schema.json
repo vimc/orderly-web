@@ -1,5 +1,10 @@
 {
   "id": "Artefact",
   "type": "object",
-  "additionalProperties": { "$ref": "ArtefactDetail.schema.json"}
+  "properties": {
+    "format": { "type": "string"},
+    "description": {"type": "string"},
+    "files": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
 }
