@@ -90,19 +90,13 @@ class OrderlyTests : CleanDatabaseTests()
     @Test
     fun `can get report metadata`()
     {
-
         insertReport("test", "version1",
                 hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}")
 
         val sut = createSut()
 
-        val result = sut.getReportByNameAndVersion("test", "version1")
+        val result = sut.getDetailsByNameAndVersion("test", "version1")
 
-        assertThat(result.has("name"))
-        assertThat(result.has("id"))
-
-        assertThat(result.has("hash_artefacts")).isTrue()
-        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
     }
 
     @Test
@@ -113,7 +107,7 @@ class OrderlyTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportByNameAndVersion("test", "version1") }
+        assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -126,7 +120,7 @@ class OrderlyTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportByNameAndVersion("test", "dsajkdsj") }
+        assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -138,7 +132,7 @@ class OrderlyTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        assertThatThrownBy { sut.getReportByNameAndVersion("dsajkdsj", "version") }
+        assertThatThrownBy { sut.getDetailsByNameAndVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
 
     }

@@ -28,28 +28,6 @@ class VersionControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getByNameAndVersion returns report metadata`()
-    {
-        val report = JsonObject()
-        val orderly = mock<OrderlyClient> {
-            on { this.getReportByNameAndVersion(reportName, reportVersion) } doReturn report
-        }
-
-        val actionContext = mock<ActionContext> {
-            on { this.permissions } doReturn PermissionSet()
-            on { this.params(":version") } doReturn reportVersion
-            on { this.params(":name") } doReturn reportName
-        }
-
-        val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
-                mock(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        assertThat(sut.getByNameAndVersion()).isEqualTo(report)
-    }
-
-    @Test
     fun `getDetailsByNameAndVersion returns report metadata`()
     {
         val reportName = "reportName"
@@ -57,7 +35,8 @@ class VersionControllerTests : ControllerTest()
 
         val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
                 name = "name", published = true, requester = "requester", description = "description",
-                comment = "comment", script = "script", hashScript = "hashscript")
+                comment = "comment", script = "script", hashScript = "hashscript", artefacts = listOf(),
+                resources = listOf(), dataHashes = mapOf())
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
@@ -156,7 +135,7 @@ class VersionControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
-            on { getReportByNameAndVersion(reportName, reportVersion) } doThrow
+            on { checkVersionExistsForReport(reportName, reportVersion) } doThrow
                     UnknownObjectError(reportVersion, "report")
         }
         val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),

@@ -36,10 +36,10 @@ class VersionController(context: ActionContext,
         return orderly.getChangelogByNameAndVersion(name, version)
     }
 
-    fun getByNameAndVersion(): JsonObject
+    fun getByNameAndVersion(): ReportVersionDetails
     {
         val name = context.params(":name")
-        return orderly.getReportByNameAndVersion(name, context.params(":version"))
+        return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
     }
 
     fun getDetailsByNameAndVersion(): ReportVersionDetails
@@ -54,7 +54,7 @@ class VersionController(context: ActionContext,
         val version = context.params(":version")
 
         // check that the requested version exists for the given report
-        orderly.getReportByNameAndVersion(name, version)
+        orderly.checkVersionExistsForReport(name, version)
 
         val response = context.getSparkResponse().raw()
 

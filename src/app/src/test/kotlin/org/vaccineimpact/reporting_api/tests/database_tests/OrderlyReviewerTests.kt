@@ -91,19 +91,15 @@ class OrderlyReviewerTests : CleanDatabaseTests()
     @Test
     fun `can get unpublished report metadata`()
     {
-
         insertReport("test", "version1",
                 hashArtefacts = "{\"summary.csv\":\"07dffb00305279935544238b39d7b14b\"}", published = false)
 
         val sut = createSut()
 
-        val result = sut.getReportByNameAndVersion("test", "version1")
+        val result = sut.getDetailsByNameAndVersion("test", "version1")
 
-        assertThat(result.has("name")).isTrue()
-        assertThat(result.has("id")).isTrue()
-
-        assertThat(result.has("hash_artefacts")).isTrue()
-        assertThat(result["hash_artefacts"].asJsonObject.has("summary.csv")).isTrue()
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
     }
 
 
