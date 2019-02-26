@@ -56,21 +56,6 @@ class DemoDataTests : IntegrationTest()
     }
 
     @Test
-    fun `can get demo report version details`()
-    {
-        val reportVersion = getLatestReportVersion(OTHER_REPORT_NAME)
-        val response = requestHelper.get("/reports/$OTHER_REPORT_NAME/versions/$reportVersion/details",
-                user = requestHelper.fakeReviewer)
-        assertSuccessful(response)
-        assertJsonContentType(response)
-        val data = JSONValidator.getData(response.text)
-        assertThat(data is ObjectNode)
-        val dataObj = data as ObjectNode
-
-        assertExpectedOtherReportVersionProperties(dataObj, reportVersion)
-    }
-
-    @Test
     fun `can get all demo version data`()
     {
         //This is hitting the Report_Version table rather than Orderly
