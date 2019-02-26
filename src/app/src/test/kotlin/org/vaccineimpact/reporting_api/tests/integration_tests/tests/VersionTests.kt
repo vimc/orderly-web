@@ -15,7 +15,7 @@ import org.vaccineimpact.reporting_api.tests.insertReport
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class VersionTests : IntegrationTest()
 {
-    @Test
+    @Test // method name prefixed with A so runs first
     fun `A publishes report`()
     {
         val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
@@ -49,7 +49,7 @@ class VersionTests : IntegrationTest()
         assertThat(publishStatus).isTrue()
     }
 
-    @Test
+    @Test // method name prefixed with B so runs first
     fun `B unpublishes report`()
     {
         val publishedVersion = JooqContext("git/orderly.sqlite").use {
