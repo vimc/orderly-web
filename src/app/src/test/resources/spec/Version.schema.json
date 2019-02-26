@@ -1,5 +1,5 @@
 {
-	"id": "VersionDetails",
+	"id": "Version",
 	"type": "object",
 	"properties": {
 		"name": {"type" :"string"},
