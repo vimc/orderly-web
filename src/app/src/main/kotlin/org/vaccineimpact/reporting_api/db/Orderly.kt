@@ -102,82 +102,31 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
-    override fun getReportByNameAndVersion(name: String, version: String): JsonObject
-    {
-        JooqContext().use {
-
-            val result = it.dsl.select()
-                    .from(ORDERLY)
-                    .where(ORDERLY.NAME.eq(name)
-                            .and((ORDERLY.ID).eq(version))
-                            .and(shouldInclude))
-                    .fetchAny() ?: throw UnknownObjectError("$name-$version", "reportVersion")
-
-            val obj = JsonObject()
-
-            for (field in result.fields())
-            {
-
-                val value = result.get(field)
-
-                val valAsJson = if (value != null)
-                {
-                    val valueString = value.toString()
-
-                    try
-                    {
-                        gsonParser.parse(valueString)
-                    }
-                    catch (e: JsonParseException)
-                    {
-                        JsonPrimitive(valueString)
-                    }
-                }
-                else
-                {
-                    JsonNull.INSTANCE
-                }
-
-                obj.add(field.name, valAsJson)
-
-            }
-
-            return obj
-        }
-
-    }
-
-    ///This is a temporary location for logic accessing the new Orderly schema, until it is completed and replaces
-    ///GetReportByNameAndVersion above
     override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
     {
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
 
-            //get script
             val scriptResult = it.dsl.selectFrom(FILE_INPUT)
                     .where(FILE_INPUT.REPORT_VERSION.eq(version))
                     .and(FILE_INPUT.FILE_PURPOSE.eq("script"))
                     .singleOrNull()
 
+            val aretefacts = getArtefacts(name, version)
 
-            val result = ReportVersionDetails(id = reportVersionResult.id,
+            return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
                     author = reportVersionResult.author,
-                    comment = reportVersionResult.comment,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
                     requester = reportVersionResult.requester,
-                    script = scriptResult?.filename,
-                    hashScript = scriptResult?.fileHash)
-
-            return result
-
+                    artefacts = aretefacts,
+                    resources = getResourceHashes(name, version).keys.toList(),
+                    dataHashes = getData(name, version))
         }
-
     }
 
     override fun getArtefactHashes(name: String, version: String): Map<String, String>
@@ -269,6 +218,12 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
 
         }
 
+    }
+
+    override fun checkVersionExistsForReport(name: String, version: String) {
+        JooqContext().use {
+            getReportVersion(name, version, it)
+        }
     }
 
     private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionRecord

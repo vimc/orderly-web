@@ -31,13 +31,6 @@ object VersionRouteConfig : RouteConfig
                     .transform()
                     .secure(readReports),
 
-            // This is a temporary endpoint for Orderly logic which uses new schema, until it can replace the main
-            // version endpoint above
-            Endpoint("/reports/:name/versions/:version/details/", versionController, "getDetailsByNameAndVersion")
-                    .json()
-                    .transform()
-                    .secure(readReports),
-
             Endpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()

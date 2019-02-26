@@ -3,17 +3,20 @@ package org.vaccineimpact.reporting_api.tests.integration_tests.tests
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runners.MethodSorters
 import org.vaccineimpact.reporting_api.db.JooqContext
 import org.vaccineimpact.reporting_api.db.Tables
 import org.vaccineimpact.reporting_api.db.Tables.REPORT_VERSION
 import org.vaccineimpact.reporting_api.security.InternalUser
 import org.vaccineimpact.reporting_api.tests.insertReport
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class VersionTests : IntegrationTest()
 {
-    @Test
-    fun `publishes report`()
+    @Test // method name prefixed with A so runs first
+    fun `A publishes report`()
     {
         val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
 
@@ -46,8 +49,8 @@ class VersionTests : IntegrationTest()
         assertThat(publishStatus).isTrue()
     }
 
-    @Test
-    fun `unpublishes report`()
+    @Test // method name prefixed with B so runs first
+    fun `B unpublishes report`()
     {
         val publishedVersion = JooqContext("git/orderly.sqlite").use {
 

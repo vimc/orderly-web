@@ -34,7 +34,6 @@ class DataTests : CleanDatabaseTests()
     @Test
     fun `throw unknown object error if report does not have data`()
     {
-
         val hash = "07dffb00305279935544238b39d7b14b"
         insertReport("test", "version1")
         insertData("version1", "data2.rds", "SELECT * FROM THING", hash)
