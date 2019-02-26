@@ -42,12 +42,6 @@ class VersionController(context: ActionContext,
         return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
     }
 
-    fun getDetailsByNameAndVersion(): ReportVersionDetails
-    {
-        val name = context.params(":name")
-        return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
-    }
-
     fun getZippedByNameAndVersion(): Boolean
     {
         val name = context.params(":name")

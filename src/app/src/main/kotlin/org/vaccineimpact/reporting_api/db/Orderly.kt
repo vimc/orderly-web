@@ -125,7 +125,7 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                     requester = reportVersionResult.requester,
                     artefacts = aretefacts,
                     resources = getResourceHashes(name, version).keys.toList(),
-                    dataHashes = mapOf())
+                    dataHashes = getData(name, version))
         }
     }
 

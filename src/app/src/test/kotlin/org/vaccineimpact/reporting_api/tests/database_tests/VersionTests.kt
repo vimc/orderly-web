@@ -9,6 +9,7 @@ import org.vaccineimpact.api.models.FilePurpose
 import org.vaccineimpact.reporting_api.db.Orderly
 import org.vaccineimpact.reporting_api.errors.UnknownObjectError
 import org.vaccineimpact.reporting_api.tests.insertArtefact
+import org.vaccineimpact.reporting_api.tests.insertData
 import org.vaccineimpact.reporting_api.tests.insertFileInput
 import org.vaccineimpact.reporting_api.tests.insertReport
 import java.sql.Timestamp
@@ -26,6 +27,8 @@ class VersionTests : CleanDatabaseTests()
         insertFileInput("version1", "file.csv", FilePurpose.RESOURCE)
         insertFileInput("version1", "graph.png", FilePurpose.RESOURCE)
 
+        insertData("version1", "dat", "some sql", "somehash")
+
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, fileNames = listOf("artefactfile.csv"))
 
@@ -42,6 +45,8 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.resources).hasSameElementsAs(listOf("file.csv", "graph.png"))
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf("artefactfile.csv")))
+        assertThat(result.dataHashes.keys).containsExactly("dat")
+        assertThat(result.dataHashes["dat"]).isEqualTo("somehash")
 
     }
 

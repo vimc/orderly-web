@@ -28,7 +28,7 @@ class VersionControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getDetailsByNameAndVersion returns report metadata`()
+    fun `getByNameAndVersion returns report metadata`()
     {
         val reportName = "reportName"
         val reportVersion = "reportVersion"
@@ -53,7 +53,7 @@ class VersionControllerTests : ControllerTest()
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
-        assertThat(sut.getDetailsByNameAndVersion()).isEqualTo(report)
+        assertThat(sut.getByNameAndVersion()).isEqualTo(report)
     }
 
     @Test
