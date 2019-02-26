@@ -4,7 +4,7 @@
 	"properties": {
 		"name": {"type" :"string"},
 		"id": {"type" :"string"},
-		"displayname": {"type": [ "string", "null"] },
+		"display_sname": {"type": [ "string", "null"] },
 		"description": {"type": [ "string", "null"] },
         "date": {"type" :"string"},
         "published":  {"type" :"boolean"},
