@@ -107,12 +107,6 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
-
-            val scriptResult = it.dsl.selectFrom(FILE_INPUT)
-                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
-                    .and(FILE_INPUT.FILE_PURPOSE.eq("script"))
-                    .singleOrNull()
-
             val aretefacts = getArtefacts(name, version)
 
             return ReportVersionDetails(id = reportVersionResult.id,
