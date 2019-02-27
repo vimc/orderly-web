@@ -1,6 +1,5 @@
 package org.vaccineimpact.reporting_api.db
 
-import com.google.gson.*
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.api.models.*
@@ -261,10 +260,6 @@ class Orderly(isReviewer: Boolean = false) : OrderlyClient
                 .orderBy(CHANGELOG.ID.desc())
                 .fetchInto(Changelog::class.java)
     }
-
-    private val gsonParser = JsonParser()
-
-    private val shouldInclude = ORDERLY.PUBLISHED.bitOr(isReviewer)
 
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
