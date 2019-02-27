@@ -15,7 +15,6 @@ import org.vaccineimpact.reporting_api.db.tables.File;
 import org.vaccineimpact.reporting_api.db.tables.FileArtefact;
 import org.vaccineimpact.reporting_api.db.tables.FileInput;
 import org.vaccineimpact.reporting_api.db.tables.FilePurpose;
-import org.vaccineimpact.reporting_api.db.tables.Orderly;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchema;
 import org.vaccineimpact.reporting_api.db.tables.OrderlySchemaTables;
 import org.vaccineimpact.reporting_api.db.tables.Parameters;
@@ -85,11 +84,6 @@ public class Tables {
      * The table <code>file_purpose</code>.
      */
     public static final FilePurpose FILE_PURPOSE = org.vaccineimpact.reporting_api.db.tables.FilePurpose.FILE_PURPOSE;
-
-    /**
-     * The table <code>orderly</code>.
-     */
-    public static final Orderly ORDERLY = org.vaccineimpact.reporting_api.db.tables.Orderly.ORDERLY;
 
     /**
      * The table <code>orderly_schema</code>.
