@@ -6,9 +6,7 @@ import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.controllers.web.HomeViewModel
 import org.vaccineimpact.orderlyweb.controllers.web.Template
-import org.vaccineimpact.orderlyweb.controllers.web.ViewModel
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import spark.ModelAndView
 import spark.Route
@@ -16,7 +14,7 @@ import spark.Spark
 import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.declaredMemberProperties
 
 class Router(val config: RouteConfig) {
     private val logger = LoggerFactory.getLogger(Router::class.java)
@@ -71,6 +69,11 @@ class Router(val config: RouteConfig) {
         return Route { req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) }
     }
 
+    private fun readProperty(instance: Any, propertyName: String): Any? {
+        val clazz = instance.javaClass.kotlin
+        return clazz.declaredMemberProperties.first { it.name == propertyName }.get(instance)
+    }
+
     private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any? {
         val controllerType = endpoint.controller.java
         val actionName = endpoint.actionName
@@ -83,9 +86,12 @@ class Router(val config: RouteConfig) {
 
         return try {
             if (templateName != null) {
-                val vm = (action.invoke(controller) as ViewModel).toMap()
+                val vm = action.invoke(controller)
+                val map = action.returnType.kotlin.declaredMemberProperties.associate {
+                    it.name to readProperty(vm, it.name)
+                }
                 return FreeMarkerEngine().render(
-                        ModelAndView(vm, "index.ftl")
+                        ModelAndView(map, "index.ftl")
                 )
             }
             action.invoke(controller)
