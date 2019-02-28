@@ -53,7 +53,7 @@ data class Endpoint(
                 configFactory = configFactory.allowParameterAuthentication()
             }
 
-            val config = configFactory.build()
+            val config = configFactory.build(this.contentType == ContentTypes.html)
 
             Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                     config,

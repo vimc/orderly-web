@@ -69,11 +69,6 @@ class Router(val config: RouteConfig) {
         return Route { req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) }
     }
 
-    private fun readProperty(instance: Any, propertyName: String): Any? {
-        val clazz = instance.javaClass.kotlin
-        return clazz.declaredMemberProperties.first { it.name == propertyName }.get(instance)
-    }
-
     private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any? {
         val controllerType = endpoint.controller.java
         val actionName = endpoint.actionName
@@ -88,7 +83,7 @@ class Router(val config: RouteConfig) {
             if (templateName != null) {
                 val vm = action.invoke(controller)
                 val map = action.returnType.kotlin.declaredMemberProperties.associate {
-                    it.name to readProperty(vm, it.name)
+                    it.name to vm.javaClass.kotlin.declaredMemberProperties.first { p-> p.name == it.name }.get(vm)
                 }
                 return FreeMarkerEngine().render(
                         ModelAndView(map, "index.ftl")

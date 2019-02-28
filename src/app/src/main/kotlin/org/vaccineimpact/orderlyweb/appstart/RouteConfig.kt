@@ -21,5 +21,7 @@ object ApiRouteConfig : RouteConfig
 
 object WebRouteConfig: RouteConfig {
     override val endpoints = listOf(Endpoint("/", HomeController::class, "get")
-            .html())
+            .html()
+            .secure()
+    )
 }

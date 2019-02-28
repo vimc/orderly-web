@@ -31,13 +31,13 @@ class TokenVerifyingConfigFactory(
     override fun build(vararg parameters: Any?): Config
     {
         clientWrappers.forEach {
-            it.client.addAuthorizationGenerator({ _, profile -> extractPermissionsFromToken(profile) })
+            it.client.addAuthorizationGenerator { _, profile -> extractPermissionsFromToken(profile) }
         }
 
         return Config(clientWrappers.map { it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter(clientWrappers)
+            httpActionAdapter = if (parameters.firstOrNull() as Boolean) WebRequestActionAdapter() else TokenActionAdapter(clientWrappers)
         }
     }
 
