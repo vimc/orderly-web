@@ -30,10 +30,6 @@ class Router(val config: RouteConfig) {
     }
 
     private fun mapEndpoint(endpoint: EndpointDefinition, urlBase: String): String {
-        if (!endpoint.urlFragment.endsWith("/")) {
-            throw Exception("All endpoints must end in a forward slash. Problematic endpoint: ${endpoint.urlFragment}")
-        }
-
         val fullUrl = urlBase + endpoint.urlFragment
         logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
         mapUrl(fullUrl, endpoint)
@@ -86,7 +82,7 @@ class Router(val config: RouteConfig) {
                     it.name to vm.javaClass.kotlin.declaredMemberProperties.first { p-> p.name == it.name }.get(vm)
                 }
                 return FreeMarkerEngine().render(
-                        ModelAndView(map, "index.ftl")
+                        ModelAndView(map, templateName)
                 )
             }
             action.invoke(controller)
