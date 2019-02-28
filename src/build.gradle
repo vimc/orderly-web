@@ -76,8 +76,8 @@ subprojects {
     }
 
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
-        from 'src/main/resources'
-        include '*'
+        from 'src/main/resources/'
+        include 'config.properties'
         into 'build/classes/main/'
         expand(rootProject.ext.props)
         outputs.upToDateWhen { false }
@@ -87,20 +87,20 @@ subprojects {
     //which one we need. So let's just do both
     task copyConfigToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/main/resources'
-        include '*'
+        include 'config.properties'
         into 'build/resources/main/'
         expand(rootProject.ext.props)
         outputs.upToDateWhen { false }
     }
     task copyTestConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/test/resources'
-        include '*'
+        include 'config.properties'
         into 'build/classes/test/'
         expand(rootProject.ext.props)
     }
     task copyTestConfigToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/test/resources'
-        include '*'
+        include 'config.properties'
         into 'build/resources/test/'
         expand(rootProject.ext.props)
     }
