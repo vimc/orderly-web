@@ -59,7 +59,7 @@ class Router(freeMarkerConfig: Configuration) {
                 else -> throw UnsupportedValueException(endpoint.method)
             }
         }
-        // Using Route
+
         notFound { req, res ->
             if (!req.url().contains("v1")) {
                 res.type("text/html")
