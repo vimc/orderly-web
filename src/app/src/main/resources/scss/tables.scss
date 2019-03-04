@@ -1,0 +1,161 @@
+table {
+  @extend .table;
+  @extend .table-responsive;
+  @extend .table-bordered;
+
+  // Prevent double border on horizontal scroll due to combining table-bordered and table-responsive
+  border: 0;
+}
+
+.DayPickerInput {
+  input.form-control {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+
+.picker-on-right {
+  .DayPickerInput {
+    .DayPickerInput-Overlay {
+      left: initial;
+      right: 0;
+    }
+  }
+}
+
+.report-date-filter {
+  font-size: 85%;
+
+  .input-group {
+    flex-wrap: nowrap !important;
+  }
+
+  .date-picker {
+    width: 46%;
+  }
+
+}
+
+.report-filter-label {
+  margin-bottom: 0;
+  margin-right: 0.5em;
+  font-size: 80%;
+  font-weight: 700;
+}
+
+.ReactTable {
+
+  .-filters {
+    border-bottom: 1px solid $gray-300 !important;
+    border-top: 1px solid $gray-200 !important;
+
+    .rt-th {
+      overflow: visible !important;
+    }
+
+  }
+
+  .rt-th {
+    padding: 10px !important;
+  }
+
+  .-pagination {
+
+    box-shadow: none !important;
+    border-width: 1px !important;
+
+    .-btn {
+      background: white !important;
+      color: #007bff;
+      border: none !important;
+      box-shadow: none !important;
+      font-weight: normal !important;
+
+      &:hover:not(:disabled) {
+        color: #0056b3 !important;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .-header {
+    box-shadow: none !important;
+  }
+
+}
+
+// adapted from https://css-tricks.com/responsive-data-tables/
+@media only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px) {
+
+  .ReactTable.responsive {
+
+    display: block;
+
+    .rt-thead, .rt-tbody, .rt-td, .rt-tr {
+      display: block;
+      min-width: 0 !important;
+
+      .rt-resizable-header:last-child {
+        overflow: visible;
+      }
+    }
+
+    .rt-th {
+      display: inline-block;
+      width: auto !important;
+    }
+
+    /* Hide filters and resizer */
+    .-filters, .rt-resizer {
+      display: none;
+    }
+
+    .rt-tbody {
+      .rt-tr {
+        border: 1px solid #ccc;
+      }
+
+      .rt-td {
+        /* Behave  like a "row" */
+        border: none;
+        border-bottom: 1px solid #eee;
+        position: relative;
+        padding-left: 40%;
+        width: auto !important;
+        max-width: none !important;
+      }
+
+      .rt-td:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 35%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-size: 80%;
+      }
+
+      /*
+      Label the data
+      */
+      .rt-td:nth-of-type(1):before {
+        content: "Name";
+      }
+      .rt-td:nth-of-type(2):before {
+        content: "Version";
+      }
+      .rt-td:nth-of-type(3):before {
+        content: "Author";
+      }
+      .rt-td:nth-of-type(4):before {
+        content: "Requester";
+      }
+      .rt-td:nth-of-type(5):before {
+        content: "Published";
+      }
+    }
+  }
+}

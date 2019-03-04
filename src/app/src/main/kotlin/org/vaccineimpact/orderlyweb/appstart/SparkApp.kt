@@ -8,21 +8,29 @@ import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
 import spark.Spark as spk
+import freemarker.template.Configuration
+import spark.Spark.staticFiles
+
 
 fun main(args: Array<String>)
 {
-    val api = MontaguReportingApi()
+    val api = OrderlyWeb()
     api.run()
 }
 
-class MontaguReportingApi
+class OrderlyWeb
 {
     private val urlBase = "/v1"
 
-    private val logger = LoggerFactory.getLogger(MontaguReportingApi::class.java)
+    private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
     fun run()
     {
+        val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
+        freeMarkerConfig.setClassLoaderForTemplateLoading(OrderlyWeb::class.java.classLoader, "/templates")
+        freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
+        staticFiles.location("/public")
+
         waitForGoSignal()
         setupPort()
         spk.redirect.get("/", urlBase)
@@ -35,8 +43,9 @@ class MontaguReportingApi
 
         TokenStore.instance.setup()
         ErrorHandler.setup()
-        Router(ApiRouteConfig).mapEndpoints(urlBase)
-        Router(WebRouteConfig).mapEndpoints("")
+        val router = Router(freeMarkerConfig)
+        router.mapEndpoints(ApiRouteConfig, urlBase)
+        router.mapEndpoints(WebRouteConfig, "")
 
         if (!AppConfig().authEnabled)
         {

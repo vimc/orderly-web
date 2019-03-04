@@ -14,7 +14,7 @@ class WebRequestActionAdapter() : DefaultHttpActionAdapter()
         }
         HttpConstants.FORBIDDEN ->
         {
-            context.sparkResponse.redirect("/404")
+            context.sparkResponse.redirect("/")
         }
         else -> super.adapt(code, context)
     }

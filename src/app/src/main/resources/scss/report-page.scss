@@ -1,0 +1,55 @@
+.changelog-header tr th {
+  background-color: $montagu-header-bg-color;
+}
+
+.changelog-label {
+  border-radius: 0.25rem 0.25rem 0 0;
+}
+
+.changelog-item {
+  padding-right: 5px;
+  padding-top: 5px;
+  margin-top: -2px;
+
+  &.published {
+    border-top: 1px solid $published-color;
+    border-right: 1px solid $published-color;
+  }
+
+  &.internal {
+    border-top: 1px solid $internal-color;
+    border-right: 1px solid $internal-color;
+  }
+
+  &.no-badge {
+    border-top: 1px solid $montagu-table-border-color;
+    padding-bottom: 5px;
+  }
+
+  &.no-badge:first-of-type {
+    border-top: 0;
+  }
+
+  &.no-badge:last-of-type {
+    padding-bottom: 0;
+  }
+}
+
+.pinned-report-link {
+  margin: 0 auto;
+  width: 204px;
+  display: block !important;
+}
+
+td, th {
+  border-width: 1px !important;
+  border-color: $montagu-table-border-color !important;
+
+  &.changelog-date {
+    min-width: 120px;
+    padding-top: 16px;
+    @include media-breakpoint-up(sm) {
+      width: 180px;
+    }
+  }
+}

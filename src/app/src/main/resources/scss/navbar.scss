@@ -1,0 +1,25 @@
+.montagu-navbar {
+    background-color: $montagu-breadcrumb-bg-color;
+    padding: 2px 5px 5px 16px;
+    color: $montagu-breadcrumb-color;
+
+    .montagu-navbar__chunk {
+        font-weight: bold;
+        font-size: 13px;
+        display: inline-block;
+        margin: 0 5px 0 0;
+
+        a {
+            color: $montagu-breadcrumb-color !important;
+        }
+    }
+
+    .montagu-navbar__chunk:before {
+        content: " » ";
+    }
+
+    a .montagu-navbar__chunk {
+        color: black;
+    }
+}
+

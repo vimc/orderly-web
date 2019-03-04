@@ -27,5 +27,5 @@ src/config/users/current_user
 src/out
 test-data\.sql
 src/*/out/*
-
+src/app/src/main/resources/
 src/config/users/martin\.properties

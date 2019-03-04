@@ -1,0 +1,42 @@
+button, .button {
+    @include button-variant(rgb(0, 173, 239), rgb(200, 200, 200));
+    @include button-size(5px, 20px, 1em, 1.5em,  0);
+    font-weight: bold;
+    @extend .d-inline-block;
+    @extend .align-top;
+    border: 2px outset buttonface;
+    border-image: initial;
+    text-decoration: none !important;
+}
+
+button[type=submit], button.submit, .button.submit {
+    @include button-variant($success, $success);
+}
+
+button:disabled, .button.disabled {
+    cursor: not-allowed;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+    @include button-variant(#d4d4d4, #d4d4d4);
+}
+
+.arrowDown:before {
+    content: "\25be";
+    float:right;
+    color: inherit;
+}
+
+.arrowUp:before {
+    content: "\25b4";
+    float:right;
+    color: inherit;
+}
+
+.arrowUp:after, .arrowDown:after
+{
+    content: "";
+    margin:0 0.5em;
+    display:inline-block;
+}

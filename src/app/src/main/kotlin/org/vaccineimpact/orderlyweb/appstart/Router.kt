@@ -1,23 +1,24 @@
 package org.vaccineimpact.orderlyweb.appstart
 
+import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.DirectActionContext
-import org.vaccineimpact.orderlyweb.EndpointDefinition
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.controllers.web.Template
+import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import spark.ModelAndView
 import spark.Route
 import spark.Spark
+import spark.Spark.notFound
 import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
 import kotlin.reflect.full.declaredMemberProperties
 
-class Router(val config: RouteConfig) {
+class Router(freeMarkerConfig: Configuration) {
     private val logger = LoggerFactory.getLogger(Router::class.java)
+    private val freeMarkerEngine = FreeMarkerEngine(freeMarkerConfig)
 
     companion object {
         val urls: MutableList<String> = mutableListOf()
@@ -25,7 +26,7 @@ class Router(val config: RouteConfig) {
 
     private fun transform(x: Any) = Serializer.instance.toResult(x)
 
-    fun mapEndpoints(urlBase: String) {
+    fun mapEndpoints(config: RouteConfig, urlBase: String) {
         urls.addAll(config.endpoints.map { mapEndpoint(it, urlBase) })
     }
 
@@ -58,6 +59,19 @@ class Router(val config: RouteConfig) {
                 else -> throw UnsupportedValueException(endpoint.method)
             }
         }
+        // Using Route
+        notFound { req, res ->
+            if (!req.url().contains("v1")) {
+                res.type("text/html")
+                freeMarkerEngine.render(
+                        ModelAndView(null, "404.ftl")
+                )
+
+            } else {
+                res.type("${ContentTypes.json}; charset=utf-8")
+                Serializer.instance.toJson(RouteNotFound().asResult())
+            }
+        }
         endpoint.additionalSetup(fullUrl)
     }
 
@@ -79,9 +93,9 @@ class Router(val config: RouteConfig) {
             if (templateName != null) {
                 val vm = action.invoke(controller)
                 val map = action.returnType.kotlin.declaredMemberProperties.associate {
-                    it.name to vm.javaClass.kotlin.declaredMemberProperties.first { p-> p.name == it.name }.get(vm)
+                    it.name to vm.javaClass.kotlin.declaredMemberProperties.first { p -> p.name == it.name }.get(vm)
                 }
-                return FreeMarkerEngine().render(
+                return freeMarkerEngine.render(
                         ModelAndView(map, templateName)
                 )
             }

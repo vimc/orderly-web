@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.appstart.routing.*
 import org.vaccineimpact.orderlyweb.controllers.web.HomeController
 import org.vaccineimpact.orderlyweb.controllers.web.LoginController
+import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.html
 import org.vaccineimpact.orderlyweb.secure
 
@@ -27,6 +28,10 @@ object WebRouteConfig : RouteConfig {
                     .html()
                     .secure(),
             Endpoint("/login", LoginController::class, "get")
+                    .html(),
+            Endpoint("/reports/", ReportController::class, "getAll")
+                    .html(),
+            Endpoint("/reports/:name/versions/:version", ReportController::class, "get")
                     .html()
     )
 }
