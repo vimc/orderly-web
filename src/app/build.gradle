@@ -13,7 +13,7 @@ def api_docker_version = 'UNKNOWN'
 if (hasProperty('docker_version')) {
     api_docker_version = docker_version
 }
-def api_docker_name = 'montagu-reporting-api'
+def api_docker_name = 'orderly-web'
 if (hasProperty('docker_name')) {
     api_docker_name = docker_name
 }

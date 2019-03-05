@@ -11,15 +11,15 @@ import spark.Spark as spk
 
 fun main(args: Array<String>)
 {
-    val api = MontaguReportingApi()
+    val api = OrderlyWeb()
     api.run()
 }
 
-class MontaguReportingApi
+class OrderlyWeb
 {
     private val urlBase = "/v1"
 
-    private val logger = LoggerFactory.getLogger(MontaguReportingApi::class.java)
+    private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
     fun run()
     {
@@ -27,9 +27,9 @@ class MontaguReportingApi
         setupPort()
         spk.redirect.get("/", urlBase)
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
-        spk.options("*", { _, res ->
+        spk.options("*") { _, res ->
             res.header("Access-Control-Allow-Headers", "Authorization")
-        })
+        }
 
         logger.info("Expecting orderly database at ${AppConfig()["db.location"]}")
 

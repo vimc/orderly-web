@@ -14,7 +14,7 @@ class AppConfig : Config
     {
         val properties = Properties().apply {
             load(getResource("config.properties").openStream())
-            val global = File("/etc/montagu/reporting-orderlyweb/config.properties")
+            val global = File("/etc/orderly/web/config.properties")
             if (global.exists())
             {
                 global.inputStream().use { load(it) }
