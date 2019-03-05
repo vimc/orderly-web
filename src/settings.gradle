@@ -1,4 +1,4 @@
-rootProject.name = 'reporting_api'
+rootProject.name = 'orderlyweb'
 include 'app',
         'models',
         'security',
