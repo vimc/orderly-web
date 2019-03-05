@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.vaccineimpact.orderlyweb.models.*
-
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 
 interface OrderlyClient

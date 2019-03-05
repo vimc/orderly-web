@@ -3,13 +3,13 @@ package org.vaccineimpact.orderlyweb.security
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.models.ErrorInfo
-import org.vaccineimpact.orderlyweb.models.Result
-import org.vaccineimpact.orderlyweb.models.ResultStatus
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.DirectActionContext
-import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
+import org.vaccineimpact.orderlyweb.models.ResultStatus
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.models.Result
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 
 class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()

@@ -5,7 +5,6 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.DirectActionContext
 
 open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)

@@ -5,6 +5,7 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.Scope

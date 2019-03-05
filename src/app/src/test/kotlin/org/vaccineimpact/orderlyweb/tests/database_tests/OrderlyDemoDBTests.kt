@@ -18,7 +18,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLY_SCHEMA
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLY_SCHEMA_TABLES
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
-import org.vaccineimpact.`orderlyweb`.db.Tables.REPORT_VERSION_ARTEFACT
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_DATA
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_PACKAGE
 
