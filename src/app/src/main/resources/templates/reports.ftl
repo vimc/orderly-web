@@ -46,12 +46,6 @@
     </table>
 
     <#macro scripts>
-        <script src="/js/jquery.dataTables.min.js"></script>
-        <script src="/js/dataTables.bootstrap4.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $('#reports').DataTable();
-            });
-        </script>
+        <script src="/js/reports.bundle.js"></script>
     </#macro>
 </@layout>

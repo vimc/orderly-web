@@ -1,19 +1,20 @@
 package org.vaccineimpact.orderlyweb.appstart
 
-import org.vaccineimpact.orderlyweb.Endpoint
-import org.vaccineimpact.orderlyweb.EndpointDefinition
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.appstart.routing.*
+import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import org.vaccineimpact.orderlyweb.controllers.web.HomeController
 import org.vaccineimpact.orderlyweb.controllers.web.LoginController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.html
-import org.vaccineimpact.orderlyweb.secure
+import spark.route.HttpMethod
 
-interface RouteConfig {
+interface RouteConfig
+{
     val endpoints: List<EndpointDefinition>
 }
 
-object ApiRouteConfig : RouteConfig {
+object ApiRouteConfig : RouteConfig
+{
     override val endpoints: List<EndpointDefinition> =
             ReportRouteConfig.endpoints
                     .plus(VersionRouteConfig.endpoints)
@@ -22,14 +23,19 @@ object ApiRouteConfig : RouteConfig {
                     .plus(DataRouteConfig.endpoints)
 }
 
-object WebRouteConfig : RouteConfig {
+object WebRouteConfig : RouteConfig
+{
     override val endpoints = listOf(
             Endpoint("/", HomeController::class, "get")
                     .html()
                     .secure(),
             Endpoint("/login", LoginController::class, "get")
                     .html(),
-            Endpoint("/reports/", ReportController::class, "getAll")
+            Endpoint("/admin", AdminController::class, "get")
+                    .html(),
+            Endpoint("/admin/adduser", AdminController::class, "post")
+                    .copy(method = HttpMethod.post),
+            Endpoint("/reports", ReportController::class, "getAll")
                     .html(),
             Endpoint("/reports/:name/versions/:version", ReportController::class, "get")
                     .html()

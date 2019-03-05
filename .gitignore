@@ -28,4 +28,6 @@ src/out
 test-data\.sql
 src/*/out/*
 src/app/src/main/resources/node_modules
+src/app/src/main/resources/public/css
+src/app/src/main/resources/public/js
 src/config/users/martin\.properties
