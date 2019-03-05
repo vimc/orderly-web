@@ -1,12 +1,19 @@
 import Vue from "vue";
 import axios from "axios";
 
-const mapUser = (user) => {
+export const mapUser = (user) => {
     return {...user, url: "/users/" + user.username}
 };
 
+let mappedUsers = [];
+
+// users var should be set externally in the browser
+if (typeof users !== "undefined") {
+    mappedUsers = users.map(mapUser);
+}
+
 const data = {
-    users: users.map(mapUser),
+    users: mappedUsers,
     newUser: "",
     error: ""
 };
@@ -16,11 +23,12 @@ const addUser = (username) => {
         data.users.push(mapUser({username: username, email: username + "@gmail.com"}));
         data.newUser = ""
     }).catch(() => {
-        data.error = "An error occured while adding a new user."
+        data.error = "An error occurred while adding a new user.";
+        data.newUser = "";
     });
 };
 
-const vm = new Vue({
+export const vm = new Vue({
     el: '#vueApp',
     data: data,
     methods: {
