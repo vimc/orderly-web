@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -8,21 +9,26 @@ import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 
 class ReportController(context: ActionContext,
-                     private val orderly: OrderlyClient) : Controller(context) {
+                       private val orderly: OrderlyClient) : Controller(context)
+{
 
-    constructor(context: ActionContext): this(context, Orderly())
+    constructor(context: ActionContext) : this(context, Orderly())
 
     @Template("reports.ftl")
-    fun getAll(): ReportsViewModel {
+    fun getAll(): ReportsViewModel
+    {
         return ReportsViewModel(orderly.getAllReportVersions())
     }
 
     @Template("report.ftl")
-    fun get(): ReportVersionViewModel {
-        return ReportVersionViewModel(orderly.getDetailsByNameAndVersion(context.params(":name"), context.params(":version")))
+    fun get(): ReportVersionViewModel
+    {
+        val reportVersion = orderly
+                .getDetailsByNameAndVersion(context.params(":name"), context.params(":version"))
+        return ReportVersionViewModel(reportVersion, Serializer.instance.gson.toJson(reportVersion))
     }
 
-    data class ReportVersionViewModel(val report: ReportVersionDetails)
+    data class ReportVersionViewModel(val report: ReportVersionDetails, val reportDetailsJson: String)
 
     data class ReportsViewModel(val reports: List<ReportVersion>)
 }

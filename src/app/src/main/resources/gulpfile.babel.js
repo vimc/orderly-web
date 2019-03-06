@@ -11,7 +11,7 @@ import through from 'through';
 sass.compiler = require('node-sass');
 
 gulp.task('sass', function () {
-    return gulp.src('src/scss/style.scss')
+    return gulp.src('src/scss/*.scss')
         .pipe(sass().on('error', sass.logError))
         .pipe(gulp.dest('public/css'))
         .pipe(minify({compatibility: 'ie8'}))
@@ -31,7 +31,7 @@ gulp.task('css', function () {
 
 gulp.task('js', () => {
     return gulp.src('src/js/*.js')
-        .pipe(through(function(file) {
+        .pipe(through(function (file) {
             file.named = path.basename(file.path, path.extname(file.path));
             this.queue(file);
         }))
@@ -39,7 +39,8 @@ gulp.task('js', () => {
             output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
             resolve: {
                 alias: {
-                    'vue$': 'vue/dist/vue.esm.js'
+                    'vue$': process.env.NODE_ENV === 'production' ?
+                        'vue/dist/vue.min.js' : 'vue/dist/vue.js'
                 }
             },
             mode: 'production'

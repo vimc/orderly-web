@@ -1,11 +1,7 @@
 import {expect} from "chai";
 import {mapUser, vm} from "../js/admin";
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 import {describe} from "mocha";
-
-// This sets the mock adapter on the default instance
-const mock = new MockAdapter(axios);
+import {mockAxios} from "./setup";
 
 describe('mapUser', () => {
 
@@ -18,7 +14,7 @@ describe('mapUser', () => {
 describe('addUser', () => {
 
     it('adds user to vm on success', (done) => {
-        mock.onPost('/admin/adduser').reply(200);
+        mockAxios.onPost('/admin/adduser').reply(200);
 
         const newUser = "new.user";
         vm.newUser = newUser;
@@ -32,7 +28,7 @@ describe('addUser', () => {
     });
 
     it('does not add user but adds error to vm on failure', (done) => {
-        mock.onPost('/admin/adduser').reply(500);
+        mockAxios.onPost('/admin/adduser').reply(500);
 
         const badUser = "bad.user";
         vm.newUser = badUser;

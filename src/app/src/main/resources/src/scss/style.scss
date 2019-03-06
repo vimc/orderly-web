@@ -1,5 +1,5 @@
 $success: #28a75e;
-@import "variables";
+@import "partials/variables";
 @import "../../node_modules/bootstrap/scss/bootstrap.scss";
 
 $table-border-color: $gray-700;
@@ -11,16 +11,15 @@ $montagu-breadcrumb-bg-color: $gray-100;
 $montagu-breadcrumb-color: $success;
 $montagu-table-border-color: $gray-300;
 
-@import "sidebar";
-@import "tables";
-@import "report-page";
-@import "buttons";
-@import "fonts";
-@import "navbar";
-@import "transitions";
-@import "logout";
-@import "navbar";
-@import "page";
+@import "partials/sidebar";
+@import "partials/tables";
+@import "partials/buttons";
+@import "partials/fonts";
+@import "partials/navbar";
+@import "partials/transitions";
+@import "partials/logout";
+@import "partials/navbar";
+@import "partials/page";
 
 html, body {
   height: 100%

@@ -6,7 +6,7 @@ module.exports = {
     target: 'node', // in order to ignore built-in modules like path, fs, etc.
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.esm.js'
+            'vue$': 'vue/dist/vue.js'
         }
     },
     plugins: [

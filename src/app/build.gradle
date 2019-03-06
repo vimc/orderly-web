@@ -123,5 +123,15 @@ task checkConfigDirExists() {
 }
 test.dependsOn 'checkConfigDirExists'
 
+task compileJs() {
+    doLast {
+     exec {
+         commandLine "npm", "run", "js", "--prefix=$projectDir/src/main/resources/"
+     }
+    }
+}
+
+processResources.dependsOn 'compileJs'
+
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'
