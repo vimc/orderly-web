@@ -2,25 +2,17 @@
 <@layout>
 <h1>Users</h1>
 <div id="vueApp">
-    <ul v-for="user in users">
-        <li class="form-group">
+    <ul>
+        <li class="form-group" v-for="user in users">
             <span v-text="user.username"></span> |
             <span v-text="user.email"></span> |
             <a v-bind:href="user.url">edit</a>
         </li>
     </ul>
-    <form class="row">
-        <div class="input-group mb-3 col-4">
-            <input type="text" v-model="newUser" class="form-control" placeholder="Username">
-            <div class="input-group-append">
-                <button class="btn submit" type="button"
-                        v-on:click="addUser">Add</button>
-            </div>
-        </div>
-        <div v-if="error.length < 0" class="alert alert-danger">
-            <span v-text="error"></span>
-        </div>
-    </form>
+    <div class="col-6">
+        <h2>Add new user:</h2>
+        <new-user-form @created="handleCreate"></new-user-form>
+    </div>
 </div>
 
     <#macro scripts>

@@ -1,5 +1,6 @@
 import Vue from "vue";
-import axios from "axios";
+
+import newUserForm from './components/admin/newUserForm.vue'
 
 export const mapUser = (user) => {
     return {...user, url: "/users/" + user.username}
@@ -14,24 +15,22 @@ if (typeof users !== "undefined") {
 
 const data = {
     users: mappedUsers,
-    newUser: "",
     error: ""
-};
-
-const addUser = (username) => {
-    axios.post('/admin/adduser', username).then(() => {
-        data.users.push(mapUser({username: username, email: username + "@gmail.com"}));
-        data.newUser = ""
-    }).catch(() => {
-        data.error = "An error occurred while adding a new user.";
-        data.newUser = "";
-    });
 };
 
 export const vm = new Vue({
     el: '#vueApp',
     data: data,
+    components: {
+        newUserForm: newUserForm
+    },
     methods: {
-        addUser: () => addUser(data.newUser)
+        handleCreate(user) {
+            data.users.push(mapUser(user));
+        }
+    },
+    render: function (h) {
+        return h();
     }
 });
+

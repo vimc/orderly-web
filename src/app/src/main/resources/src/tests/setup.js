@@ -1,5 +1,6 @@
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+require('jsdom-global')(undefined, { pretendToBeVisual: true, url: 'http://localhost' })
 
-// This sets the mock adapter on the default instance
-export const mockAxios = new MockAdapter(axios);
+// https://github.com/vuejs/vue-test-utils/issues/936
+// better fix for "TypeError: Super expression must either be null or
+// a function" than pinning an old version of prettier.
+window.Date = Date

@@ -1,12 +1,15 @@
 'use strict';
 
-import path from 'path'
-import gulp from 'gulp';
-import sass from 'gulp-sass';
-import rename from 'gulp-rename';
-import minify from 'gulp-clean-css';
-import webpack from 'webpack-stream';
-import through from 'through';
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+
+const path = require('path'),
+    gulp = require('gulp'),
+    sass = require('gulp-sass'),
+    rename = require('gulp-rename')
+    , minify = require('gulp-clean-css')
+    , webpack = require('webpack-stream')
+    , through = require('through')
+   // , webpackConfig = require('webpack.config');
 
 sass.compiler = require('node-sass');
 
@@ -43,7 +46,26 @@ gulp.task('js', () => {
                         'vue/dist/vue.min.js' : 'vue/dist/vue.js'
                 }
             },
-            mode: 'production'
+            module: {
+                rules: [
+                    {
+                        test: /\.vue$/,
+                        loader: 'vue-loader'
+                    },
+                    {
+                        test: /\.js$/,
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['@babel/preset-env']
+                        }
+                    }
+                ]
+            },
+            plugins: [
+                // make sure to include the plugin!
+                new VueLoaderPlugin()
+            ],
+            mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
         }))
         .pipe(gulp.dest('public/js'));
 });

@@ -1,25 +1,29 @@
 import Vue from 'vue';
-import axios from "axios";
 
-let data = {error: ""};
+import publishSwitch from './components/reports/publishSwitch.vue'
+
+let data = {tab: "report", report: null};
 
 // report var should be set externally in the browser
 if (typeof report !== "undefined") {
-    data = {...data, ...report};
+    data.report = report;
 }
 
 export const vm = new Vue({
     el: '#vueApp',
     data: data,
+    components: {
+        publishSwitch: publishSwitch
+    },
     methods: {
-        publish: () => {
-            axios.post(`/v1/reports/${data.name}/versions/${data.id}/publish/`)
-                .then(() => {
-                    data.published = !data.published;
-                })
-                .catch(() => {
-                    data.error = "An error occurred while publishing.";
-                });
+        switchTab: function (tabName) {
+            this.tab = tabName
+        },
+        handleToggle: function() {
+            this.report.published = !this.report.published
         }
-    }
+    },
+    // render: function (h) {
+    //     return h();
+    // }
 });

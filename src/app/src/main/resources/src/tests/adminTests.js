@@ -1,45 +1,55 @@
-import {expect} from "chai";
-import {mapUser, vm} from "../js/admin";
 import {describe} from "mocha";
-import {mockAxios} from "./setup";
+import {expect} from "chai";
+import axios from "axios";
+import {mount} from '@vue/test-utils'
+import MockAdapter from "axios-mock-adapter";
+import NewUserForm from '../js/components/admin/newUserForm.vue'
 
 describe('mapUser', () => {
 
-    it('adds url to users', () => {
-        const user = {username: "test.user", email: "test@test.com"};
-        expect(mapUser(user).url).to.eq("/users/test.user")
-    })
+    // it('adds url to users', () => {
+    //     const user = {username: "test.user", email: "test@test.com"};
+    //     expect(mapUser(user).url).to.eq("/users/test.user")
+    // })
 });
 
-describe('addUser', () => {
+describe('addUserForm', () => {
 
-    it('adds user to vm on success', (done) => {
-        mockAxios.onPost('/admin/adduser').reply(200);
-
-        const newUser = "new.user";
-        vm.newUser = newUser;
-        vm.addUser();
-
-        setTimeout(() => {
-            expect(vm.users.map(u => u.username).indexOf(newUser)).to.be.above(-1);
-            expect(vm.newUser).to.eq("");
-            done();
-        })
+    it('sets default data', () => {
+        const defaultData = NewUserForm.data();
+        expect(defaultData.error).to.eq("");
+        expect(defaultData.username).to.eq("");
+        expect(defaultData.email).to.eq("");
     });
 
-    it('does not add user but adds error to vm on failure', (done) => {
-        mockAxios.onPost('/admin/adduser').reply(500);
+    it('emits created event on successful user creation', (done) => {
+        const mockAxios = new MockAdapter(axios);
+        mockAxios.onPost('/admin/adduser', "")
+            .reply(200, {});
 
-        const badUser = "bad.user";
-        vm.newUser = badUser;
-        vm.addUser();
+        const wrapper = mount(NewUserForm);
+        wrapper.find('.submit').trigger('click');
 
         setTimeout(() => {
-            expect(vm.users.map(u => u.username).indexOf(badUser)).to.eq(-1);
-            expect(vm.error).to.eq("An error occurred while adding a new user.");
-            expect(vm.newUser).to.eq("");
-            done();
-        })
+            expect(mockAxios.history.post.length).to.eq(1);
+            expect(wrapper.emitted().created).to.deep.include([{username: "", email: ""}]);
+            done()
+        });
+    });
+
+    it('shows error on user creation failure', (done) => {
+        const mockAxios = new MockAdapter(axios);
+        mockAxios.onPost('/admin/adduser', "")
+            .reply(500, {});
+
+        const wrapper = mount(NewUserForm);
+        wrapper.find('.submit').trigger('click');
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).to.eq(1);
+            expect(wrapper.emitted().created).to.eq(undefined);
+            done()
+        });
     });
 
 });

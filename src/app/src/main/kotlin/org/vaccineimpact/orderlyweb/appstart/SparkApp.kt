@@ -29,6 +29,7 @@ class OrderlyWeb
         val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
         freeMarkerConfig.setClassLoaderForTemplateLoading(OrderlyWeb::class.java.classLoader, "/templates")
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
+        freeMarkerConfig.addAutoInclude("layouts/layoutwide.ftl")
         staticFiles.location("/public")
 
         waitForGoSignal()
