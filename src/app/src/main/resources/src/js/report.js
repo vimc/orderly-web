@@ -22,8 +22,5 @@ export const vm = new Vue({
         handleToggle: function() {
             this.report.published = !this.report.published
         }
-    },
-    // render: function (h) {
-    //     return h();
-    // }
+    }
 });

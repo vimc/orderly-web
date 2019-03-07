@@ -1,15 +1,13 @@
 'use strict';
 
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
-
 const path = require('path'),
     gulp = require('gulp'),
     sass = require('gulp-sass'),
-    rename = require('gulp-rename')
-    , minify = require('gulp-clean-css')
-    , webpack = require('webpack-stream')
-    , through = require('through')
-   // , webpackConfig = require('webpack.config');
+    rename = require('gulp-rename'),
+    minify = require('gulp-clean-css'),
+    webpack = require('webpack-stream'),
+    through = require('through'),
+    VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 sass.compiler = require('node-sass');
 

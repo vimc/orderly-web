@@ -28,9 +28,6 @@ export const vm = new Vue({
         handleCreate(user) {
             data.users.push(mapUser(user));
         }
-    },
-    render: function (h) {
-        return h();
     }
 });
 
