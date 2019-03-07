@@ -8,7 +8,8 @@
 <div class="row" id="vueApp">
     <div class="col-2">
         <div v-on:click="publish"
-             v-bind:class="[{'toggle':true}, 'btn', {'btn-primary':published}, {'off':!published}]" data-toggle="toggle"
+             v-bind:class="[{'toggle':true}, 'btn', {'btn-primary':published}, {'off':!published}]"
+             data-toggle="toggle"
              style="width: 109.281px; height: 38px;">
             <div class="toggle-group">
                 <label class="btn btn-primary toggle-on">Published</label>

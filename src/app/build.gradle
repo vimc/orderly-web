@@ -60,6 +60,7 @@ dependencies {
     testCompile "org.assertj:assertj-core:3.6.2"
     testCompile "com.beust:klaxon:0.31"
     testCompile project(":testHelpers")
+    testCompile "org.seleniumhq.selenium:selenium-java:3.11.0"
 }
 
 docker {
