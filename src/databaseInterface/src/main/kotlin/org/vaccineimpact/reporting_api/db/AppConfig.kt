@@ -44,6 +44,7 @@ class AppConfig : Config
         getBool("app.auth")
     }
 
+
     fun getInt(key: String) = get(key).toInt()
     fun getBool(key: String) = get(key).toBoolean()
 }
