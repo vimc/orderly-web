@@ -10,21 +10,21 @@ import java.time.Instant
 import java.util.*
 import org.vaccineimpact.reporting_api.db.AppConfig
 
-open class TokenIssuer(keyPair: KeyPair, val issuer: String)
+open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
 {
     val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(10)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)
 
     val appConfig = AppConfig()
-    val app_name = config["app.name"]
-    val tokenLifeSpan = Duration.ofMinutes("token_expiry.minutes")
+    val app_name = appConfig["app.name"]
+    val tokenLifeSpan = Duration.ofMinutes(appConfig["token_expiry.minutes"].toLong())
 
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
 
     open fun generateOnetimeActionToken(user: InternalUser, url: String): String
     {
-        return generator.generate(oneTimeTokenClaims(user, url))
+        return generator.generate(onetimeTokenClaims(user, url))
     }
 
     open fun generateBearerToken(user: InternalUser): String
@@ -32,10 +32,10 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         return generator.generate(bearerTokenClaims(user))
     }
 
-    private fun oneTimeTokenClaims(user: InternalUser, url: String): Map<String, Any>
+    fun onetimeTokenClaims(user: InternalUser, url: String): Map<String, Any>
     {
         return mapOf(
-                "iss" to issuer,
+                "iss" to onetimeTokenIssuer,
                 "sub" to oneTimeActionSubject,
                 "exp" to getExpiry(oneTimeLinkLifeSpan),
                 "permissions" to user.permissions,
@@ -45,7 +45,7 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         )
     }
 
-    private fun bearerTokenClaims(user: InternalUser): String
+    fun bearerTokenClaims(user: InternalUser): Map<String, Any>
     {
         return mapOf(
                 "sub" to user.username,
@@ -62,9 +62,9 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         return Base64.getEncoder().encodeToString(bytes)
     }
 
-    private fun getExpiry(duration: Duration)
+    private fun getExpiry(duration: Duration): Date
     {
-        Date.from(Instant.now().plus(duration))
+        return Date.from(Instant.now().plus(duration))
     }
 
     companion object

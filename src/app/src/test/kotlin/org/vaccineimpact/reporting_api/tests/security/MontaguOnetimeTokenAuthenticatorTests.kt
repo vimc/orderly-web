@@ -54,7 +54,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `token fails validation when issuer is wrong`()
     {
         val url = "testurl"
-        val claims = helper.issuer.claims(fakeUser, url)
+        val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
         val credentials = TokenCredentials(badToken, "MontaguTests")
 
@@ -77,7 +77,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
     fun `token fails validation when token is old`()
     {
         val url = "testurl"
-        val claims = helper.issuer.claims(fakeUser, url)
+        val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
         val credentials = TokenCredentials(badToken, "MontaguTests")
 
