@@ -3,10 +3,10 @@ package org.vaccineimpact.reporting_api.tests.security
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nimbusds.jwt.JWTParser
-import org.vaccineimpact.reporting_api.security.InternalUser
-import org.vaccineimpact.reporting_api.security.KeyHelper
-import org.vaccineimpact.reporting_api.security.TokenIssuer
-import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.security.InternalUser
+import org.vaccineimpact.orderlyweb.security.KeyHelper
+import org.vaccineimpact.orderlyweb.security.TokenIssuer
+import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import java.time.Duration
 import java.time.Instant
 import java.util.*
@@ -52,6 +52,4 @@ class TokenIssuerTests : MontaguTests()
         val exp = claims["exp"] as Date
         assertThat(exp).isInSameMinuteWindowAs(Date.from(Instant.now().plus(Duration.ofHours(1))))
     }
-
-
 }

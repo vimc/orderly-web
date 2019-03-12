@@ -8,7 +8,7 @@ import java.security.SecureRandom
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-import org.vaccineimpact.reporting_api.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.AppConfig
 
 open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
 {
