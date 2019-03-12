@@ -15,7 +15,7 @@
         </database>
 
         <target>
-            <packageName>org.vaccineimpact.reporting-api.db</packageName>
+            <packageName>org.vaccineimpact.orderlyweb.db</packageName>
             <directory>../databaseInterface/src/main/java</directory>
         </target>
     </generator>
