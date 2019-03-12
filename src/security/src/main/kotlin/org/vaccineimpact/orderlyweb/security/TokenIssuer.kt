@@ -16,7 +16,7 @@ open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)
 
     val appConfig = AppConfig()
-    val app_name = appConfig["app.name"]
+    val appName = appConfig["app.name"]
     val tokenLifeSpan = Duration.ofMinutes(appConfig["token_expiry.minutes"].toLong())
 
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
@@ -49,7 +49,7 @@ open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
     {
         return mapOf(
                 "sub" to user.username,
-                "iss" to app_name,
+                "iss" to appName,
                 "exp" to getExpiry(tokenLifeSpan),
                 "token_type" to "bearer"
         )

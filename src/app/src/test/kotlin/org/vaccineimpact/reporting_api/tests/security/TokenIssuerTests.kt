@@ -22,6 +22,7 @@ class TokenIssuerTests : MontaguTests()
         val sut = TokenIssuer(keyPair, "testIssuer")
 
         val result = sut.generateOnetimeActionToken(user, "/test")
+
         val jwt = JWTParser.parse(result)
         val claims = jwt.jwtClaimsSet.claims
         assertThat(claims["iss"]).isEqualTo("testIssuer")
@@ -42,8 +43,8 @@ class TokenIssuerTests : MontaguTests()
         val sut = TokenIssuer(keyPair, "testIssuer")
 
         val result = sut.generateBearerToken(user)
-        val jwt = JWTParser.parse(result)
 
+        val jwt = JWTParser.parse(result)
         val claims = jwt.jwtClaimsSet.claims
         assertThat(claims["iss"]).isEqualTo("orderlyweb")
         assertThat(claims["sub"]).isEqualTo("testusername")

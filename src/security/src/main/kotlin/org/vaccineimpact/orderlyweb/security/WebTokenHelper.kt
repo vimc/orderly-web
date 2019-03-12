@@ -12,6 +12,6 @@ class WebTokenHelper(keyPair: KeyPair,
 
     companion object
     {
-        val oneTimeTokenHelper = WebTokenHelper(KeyHelper.generateKeyPair(),  AppConfig()["onetime_token.issuer"])
+        val oneTimeTokenHelper = WebTokenHelper(KeyHelper.generateKeyPair(), AppConfig()["onetime_token.issuer"])
     }
 }
