@@ -1,8 +1,5 @@
 package org.vaccineimpact.reporting_api.tests.security
 
-import java.security.KeyPair
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import com.nimbusds.jwt.JWTParser
@@ -13,7 +10,6 @@ import org.vaccineimpact.reporting_api.test_helpers.MontaguTests
 import java.time.Duration
 import java.time.Instant
 import java.util.*
-
 
 class TokenIssuerTests : MontaguTests()
 {
