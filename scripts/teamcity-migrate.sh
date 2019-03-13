@@ -26,12 +26,12 @@ docker pull $COMMIT_TAG
 
 docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
 
-#docker run --rm --entrypoint create_orderly_demo.sh \
-#    -u ${UID} \
-#    -v ${PWD}:/orderly \
-#    -w /orderly \
-#    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
-#    "./src/app/"
+docker run --rm --entrypoint create_orderly_demo.sh \
+    -u ${UID} \
+    -v ${PWD}:/orderly \
+    -w /orderly \
+    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
+    "./src/app/"
 
 # Do the migrations
 #docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
