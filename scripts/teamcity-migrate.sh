@@ -34,4 +34,4 @@ docker run --rm --entrypoint create_orderly_demo.sh \
     "./src/app/"
 
 # Do the migrations
-#docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
+docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
