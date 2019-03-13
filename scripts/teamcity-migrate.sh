@@ -11,9 +11,6 @@ COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
 BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
 DB=$REGISTRY/montagu-db:$GIT_ID
 
-## Get directory of the 'scripts/' directory
-DIR=$(dirname "$(readlink -f "$0")")
-
 docker build \
        --tag $COMMIT_TAG \
        --tag $BRANCH_TAG \
@@ -24,4 +21,17 @@ docker build \
 docker push $COMMIT_TAG
 docker push $BRANCH_TAG
 
-# TODO: should test can run the image here, alongside an orderly image to initially generate the db?
+# test if we can run the migrations using the registry image - the following is otherwise the same as test-migrate
+docker pull $COMMIT_TAG
+
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
+
+#docker run --rm --entrypoint create_orderly_demo.sh \
+#    -u ${UID} \
+#    -v ${PWD}:/orderly \
+#    -w /orderly \
+#    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
+#    "./src/app/"
+
+# Do the migrations
+#docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG

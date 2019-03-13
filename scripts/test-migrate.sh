@@ -5,8 +5,6 @@
 set -ex
 
 MIGRATE_IMAGE=orderlyweb_migrate
-NETWORK=orderly_db_nw
-ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
 
 # Create orderly demo data just so we're sure of having something to migrate against
 # This will fail if there's anything in the demo folder already
