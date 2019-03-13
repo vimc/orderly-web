@@ -10,14 +10,12 @@ import java.time.Instant
 import java.util.*
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
-open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
+open class TokenIssuer(keyPair: KeyPair, val tokenIssuer: String)
 {
     val oneTimeLinkLifeSpan: Duration = Duration.ofMinutes(10)
     val signatureConfiguration = RSASignatureConfiguration(keyPair)
 
-    val appConfig = AppConfig()
-    val appName = appConfig["app.name"]
-    val tokenLifeSpan = Duration.ofMinutes(appConfig["token_expiry.minutes"].toLong())
+    val tokenLifeSpan = Duration.ofMinutes(AppConfig()["token_expiry.minutes"].toLong())
 
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
@@ -35,7 +33,7 @@ open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
     fun onetimeTokenClaims(user: InternalUser, url: String): Map<String, Any>
     {
         return mapOf(
-                "iss" to onetimeTokenIssuer,
+                "iss" to tokenIssuer,
                 "sub" to oneTimeActionSubject,
                 "exp" to getExpiry(oneTimeLinkLifeSpan),
                 "permissions" to user.permissions,
@@ -49,7 +47,7 @@ open class TokenIssuer(keyPair: KeyPair, val onetimeTokenIssuer: String)
     {
         return mapOf(
                 "sub" to user.username,
-                "iss" to appName,
+                "iss" to tokenIssuer,
                 "exp" to getExpiry(tokenLifeSpan),
                 "token_type" to "bearer"
         )
