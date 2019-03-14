@@ -12,16 +12,10 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        private val tokenVerifier = TokenVerifier(
-                KeyHelper.authPublicKey,
-                org.vaccineimpact.orderlyweb.db.AppConfig()["token.issuer"]
-        )
-
-        val headerClientWrapper = CompressedJWTHeaderClientWrapper(tokenVerifier)
-        val cookieClientWrapper = CompressedJWTCookieClientWrapper(tokenVerifier)
-
+        val headerClientWrapper = CompressedJWTHeaderClientWrapper(WebTokenHelper.instance.verifier)
+        val cookieClientWrapper = CompressedJWTCookieClientWrapper(WebTokenHelper.instance.verifier)
         val parameterClientWrapper = CompressedJWTParameterClientWrapper(
-                WebTokenHelper.oneTimeTokenHelper.verifier,
+                WebTokenHelper.instance.verifier,
                 TokenStore.instance
         )
     }

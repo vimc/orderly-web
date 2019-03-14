@@ -6,7 +6,7 @@ import java.io.File
 // but before the API starts running.
 fun waitForGoSignal()
 {
-    val path = File("/etc/montagu/reports_api/go_signal")
+    val path = File("/etc/orderly/web/go_signal")
     println("Waiting for signal file at $path.")
     println("(In development environments, run `sudo touch $path`)")
 

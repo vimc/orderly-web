@@ -25,7 +25,7 @@ class OnetimeTokenController(context: ActionContext,
         val roles = profile.getAttribute("roles").toString()
 
         val user = InternalUser(username, roles, permissions)
-        val issuer = WebTokenHelper.oneTimeTokenHelper.issuer
+        val issuer = WebTokenHelper.instance.issuer
         val token = issuer.generateOnetimeActionToken(user, url)
 
         tokenStore.storeToken(token)
