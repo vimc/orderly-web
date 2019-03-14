@@ -43,7 +43,7 @@ class AppConfig : Config
     val authEnabled by lazy {
         getBool("app.auth")
     }
-
+    
     fun getInt(key: String) = get(key).toInt()
     fun getBool(key: String) = get(key).toBoolean()
 }
