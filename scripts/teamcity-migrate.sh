@@ -16,17 +16,7 @@ DB=$REGISTRY/montagu-db:$GIT_ID
 # Test migrations before pushing image
 docker build --tag $TESTING_MIGRATE_IMAGE -f migrations/Dockerfile .
 
-docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
-
-docker run --rm --entrypoint create_orderly_demo.sh \
-    -u ${UID} \
-    -v ${PWD}:/orderly \
-    -w /orderly \
-    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
-    "./src/app/"
-
-# Do the test migration
-docker run --rm -v ${PWD}/src/app/demo:/orderly $TESTING_MIGRATE_IMAGE
+docker run --rm -v ${PWD}/demo:/orderly $TESTING_MIGRATE_IMAGE
 
 # build tagged images
 docker build \
