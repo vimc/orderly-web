@@ -112,11 +112,11 @@ test.dependsOn 'copySpec'
 
 task checkConfigDirExists() {
     doLast {
-        def dir = file("/etc/montagu/reports_api/token_key")
+        def dir = file("/etc/orderly/web/token_key")
         if (!dir.exists() || !dir.canWrite()) {
             throw new Exception("Cannot write to ${dir.path}. " +
                     "Please create it and make sure the user running the tests has write permissions. " +
-                    "e.g. sudo mkdir -m 777 -p /etc/montagu/reports_api/token_key")
+                    "e.g. sudo mkdir -m 777 -p /etc/orderly/web/token_key")
         }
     }
 }
