@@ -18,7 +18,7 @@ class RequestHelper
         CertificateHelper.disableCertificateValidation()
     }
 
-    private val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
+    val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
     private val parser = JsonParser()
 
     val fakeGlobalReportReader = InternalUser("tettusername", "user", "*/can-login,*/reports.read")

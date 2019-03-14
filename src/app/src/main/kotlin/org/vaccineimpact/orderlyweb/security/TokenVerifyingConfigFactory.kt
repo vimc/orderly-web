@@ -31,11 +31,11 @@ class TokenVerifyingConfigFactory(
         return Config(clientWrappers.map { it.client }).apply {
             setAuthorizer(MontaguAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter(clientWrappers)
+            httpActionAdapter = OrdelyActionAdaptor(clientWrappers)
         }
     }
 
-    fun allClients() = clientWrappers.map { it.client::class.java.simpleName }.joinToString()
+    fun allClients() = clientWrappers.joinToString { it.client::class.java.simpleName }
 
     private fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
     {

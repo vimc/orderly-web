@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.errors
 
-abstract class MontaguError(
+abstract class OrderlyWebError(
         open val httpStatus: Int,
         val problems: Iterable<org.vaccineimpact.orderlyweb.models.ErrorInfo>
 ) : Exception(formatProblemsIntoMessage(problems))

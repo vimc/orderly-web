@@ -34,7 +34,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
 
     override fun addDefaultResponseHeaders(contentType: String)
     {
-        addDefaultResponseHeaders(response.raw(), contentType = contentType)
+        addDefaultResponseHeaders(request, response.raw(), contentType = contentType)
     }
 
     override val userProfile: CommonProfile by lazy {

@@ -14,6 +14,7 @@ interface EndpointDefinition
     val transform: Boolean
     val requiredPermissions: List<PermissionRequirement>
     val allowParameterAuthentication: Boolean
+    val basicAuth: Boolean
 
     fun additionalSetup(url: String)
 }

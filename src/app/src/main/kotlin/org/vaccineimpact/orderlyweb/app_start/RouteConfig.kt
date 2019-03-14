@@ -16,4 +16,5 @@ object MontaguRouteConfig : RouteConfig
                     .plus(GitRouteConfig.endpoints)
                     .plus(HomeRouteConfig.endpoints)
                     .plus(DataRouteConfig.endpoints)
+                    .plus(UserRouteConfig.endpoints)
 }
