@@ -74,7 +74,7 @@ data class Endpoint(
         val config = TokenIssuingConfigFactory().build()
         Spark.before(url, SecurityFilter(
                 config,
-                DirectBasicAuthClient::class.java.simpleName,
+                GithubBasicAuthClient::class.java.simpleName,
                 null,
                 "method:${HttpMethod.post}"
         ))

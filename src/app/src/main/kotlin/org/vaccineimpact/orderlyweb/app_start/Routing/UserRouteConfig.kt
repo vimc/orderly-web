@@ -15,6 +15,5 @@ object UserRouteConfig: RouteConfig {
                     .post()
                     .json()
                     .basicAuth()
-                    .transform()
     )
 }

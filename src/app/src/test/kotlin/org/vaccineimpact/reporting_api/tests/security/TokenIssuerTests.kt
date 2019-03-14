@@ -47,7 +47,7 @@ class TokenIssuerTests : MontaguTests()
     {
         val sut = TokenIssuer(keyPair, "testIssuer")
 
-        val result = sut.generateBearerToken(user)
+        val result = sut.generateBearerToken(user.username)
 
         // Check that valid token has been generated
         JwtAuthenticator(sut.signatureConfiguration).validateToken(result)
