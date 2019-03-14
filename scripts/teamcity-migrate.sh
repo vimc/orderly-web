@@ -13,7 +13,7 @@ COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
 BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
 DB=$REGISTRY/montagu-db:$GIT_ID
 
-# Test migrations before pushing image
+# Test migrations by running container before pushing image
 docker build --tag $TESTING_MIGRATE_IMAGE -f migrations/Dockerfile .
 
 docker run --rm -v ${PWD}/demo:/orderly $TESTING_MIGRATE_IMAGE
