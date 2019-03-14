@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.trueCondition
-import org.vaccineimpact.api.models.*
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError

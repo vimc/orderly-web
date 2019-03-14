@@ -1,13 +1,13 @@
 package org.vaccineimpact.orderlyweb.controllers
 
-import org.vaccineimpact.api.models.Changelog
-import org.vaccineimpact.api.models.Report
-import org.vaccineimpact.api.models.ReportVersion
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.encompass
-import org.vaccineimpact.api.models.permissions.PermissionSet
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
-import org.vaccineimpact.api.models.permissions.RoleAssignment
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.Report
+import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.encompass
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.RoleAssignment
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config

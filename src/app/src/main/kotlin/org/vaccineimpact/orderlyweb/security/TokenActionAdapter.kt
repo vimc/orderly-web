@@ -3,9 +3,9 @@ package org.vaccineimpact.orderlyweb.security
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.api.models.ErrorInfo
-import org.vaccineimpact.api.models.Result
-import org.vaccineimpact.api.models.ResultStatus
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.models.Result
+import org.vaccineimpact.orderlyweb.models.ResultStatus
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.Serializer

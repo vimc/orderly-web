@@ -3,9 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.api.models.Artefact
-import org.vaccineimpact.api.models.ArtefactFormat
-import org.vaccineimpact.api.models.FilePurpose
+import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.tests.insertArtefact

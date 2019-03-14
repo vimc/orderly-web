@@ -5,11 +5,11 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.api.models.Changelog
-import org.vaccineimpact.api.models.Report
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.permissions.PermissionSet
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.Report
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.ZipClient
