@@ -12,6 +12,6 @@ class WebTokenHelper(keyPair: KeyPair,
 
     companion object
     {
-        val instance = WebTokenHelper(KeyHelper.generateKeyPair(), AppConfig()["token.issuer"])
+        val instance = WebTokenHelper(KeyHelper.keyPair, AppConfig()["token.issuer"])
     }
 }
