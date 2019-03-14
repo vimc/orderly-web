@@ -11,7 +11,7 @@ import java.util.*
 object KeyHelper
 {
     private val keyFactory = KeyFactory.getInstance("RSA")
-    private val keyPath = "/etc/orderly/web/token_key"
+    val keyPath = "/etc/orderly/web/token_key"
     private val logger: Logger = LoggerFactory.getLogger(KeyHelper::class.java)
 
     val keyPair by lazy {
