@@ -44,3 +44,8 @@ FOREIGN KEY ("id") REFERENCES "orderlyweb_user_group_permission" ("id") ,
 FOREIGN KEY ("version") REFERENCES "report_version" ("id")
 );
 
+CREATE TABLE "orderlyweb_user_group_global_permission" (
+"id" INTEGER NOT NULL ,
+FOREIGN KEY ("id") REFERENCES "orderlyweb_user_group_permission" ("id")
+);
+
