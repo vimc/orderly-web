@@ -35,6 +35,7 @@ object KeyHelper
     {
         val keyBytes = File(keyPath, "public_key.der").readBytes()
         val spec = X509EncodedKeySpec(keyBytes)
+
         return keyFactory.generatePublic(spec)
     }
 
