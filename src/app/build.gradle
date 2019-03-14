@@ -87,6 +87,15 @@ task generateTestData() {
         exec {
             commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
+
+        String owMigrateImage = "docker.montagu.dide.ic.ac.uk:5000/orderlyweb-migrate:mrc-183"
+        println("Pulling " + owMigrateImage)
+        exec {
+            commandLine 'docker', 'pull', owMigrateImage
+        }
+        exec {
+            commandLine 'docker', 'run', '--rm', '-v', "$projectDir:/orderly/demo", owMigrateImage
+        }
     }
 }
 
