@@ -11,7 +11,9 @@
         <database>
             <name>org.jooq.util.sqlite.SQLiteDatabase</name>
             <includes>.*</includes>
-            <excludes/>
+            <excludes>
+                flyway_schema_history
+            </excludes>
         </database>
 
         <target>
