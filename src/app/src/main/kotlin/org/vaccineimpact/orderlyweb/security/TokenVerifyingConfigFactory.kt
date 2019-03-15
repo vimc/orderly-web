@@ -12,9 +12,9 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        val headerClientWrapper = CompressedJWTHeaderClientWrapper(WebTokenHelper.instance.verifier)
-        val cookieClientWrapper = CompressedJWTCookieClientWrapper(WebTokenHelper.instance.verifier)
-        val parameterClientWrapper = CompressedJWTParameterClientWrapper(
+        val headerClientWrapper = JWTHeaderClientWrapper(WebTokenHelper.instance.verifier)
+        val cookieClientWrapper = JWTCookieClientWrapper(WebTokenHelper.instance.verifier)
+        val parameterClientWrapper = JWTParameterClientWrapper(
                 WebTokenHelper.instance.verifier,
                 TokenStore.instance
         )

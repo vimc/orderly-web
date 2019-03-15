@@ -3,6 +3,6 @@ package org.vaccineimpact.orderlyweb.security
 interface OnetimeTokenStore
 {
     fun setup()
-    fun storeToken(uncompressedToken: String)
-    fun validateOneTimeToken(uncompressedToken: String): Boolean
+    fun storeToken(token: String)
+    fun validateOneTimeToken(token: String): Boolean
 }

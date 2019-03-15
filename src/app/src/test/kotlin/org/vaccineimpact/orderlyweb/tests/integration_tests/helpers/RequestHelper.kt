@@ -6,9 +6,8 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.CompressedJWTCookieClient
+import org.vaccineimpact.orderlyweb.security.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.InternalUser
-import org.vaccineimpact.orderlyweb.security.deflated
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class RequestHelper
@@ -26,7 +25,7 @@ class RequestHelper
 
     fun get(url: String, contentType: String = ContentTypes.json, user: InternalUser = fakeGlobalReportReader): Response
     {
-        val token = generateCompressedToken(user)
+        val token = generateToken(user)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return get(baseUrl + url, headers)
     }
@@ -37,8 +36,8 @@ class RequestHelper
             user: InternalUser = fakeGlobalReportReader
     ): Response
     {
-        val token = generateCompressedToken(user)
-        val cookieName = CompressedJWTCookieClient.cookie
+        val token = generateToken(user)
+        val cookieName = JWTCookieClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$token")
         return get(baseUrl + url, headers)
@@ -47,7 +46,7 @@ class RequestHelper
     fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
              user: InternalUser = fakeGlobalReportReader): Response
     {
-        val token = generateCompressedToken(user)
+        val token = generateToken(user)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return khttp.post(baseUrl + url, headers, json = body)
     }
@@ -72,7 +71,7 @@ class RequestHelper
 
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
-        val token = generateCompressedToken(InternalUser("tettusername", "user", "*/fake-perm"))
+        val token = generateToken(InternalUser("tettusername", "user", "*/fake-perm"))
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return get(baseUrl + url, headers)
     }
@@ -95,7 +94,7 @@ class RequestHelper
 
     private fun get(url: String, headers: Map<String, String>) = khttp.get(url, headers)
 
-    private fun generateCompressedToken(user: InternalUser) =
-            IntegrationTest.tokenHelper.generateToken(user).deflated()
+    private fun generateToken(user: InternalUser) =
+            IntegrationTest.tokenHelper.generateToken(user)
 
 }

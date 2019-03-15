@@ -8,8 +8,8 @@ abstract class MontaguTokenAuthenticator(signatureConfiguration: SignatureConfig
                                          protected val expectedIssuer: String)
     : JwtAuthenticator(signatureConfiguration)
 {
-    override fun validateToken(compressedToken: String?): CommonProfile
+    override fun validateToken(token: String?): CommonProfile
     {
-        return super.validateToken(inflate(compressedToken))
+        return super.validateToken(token)
     }
 }
