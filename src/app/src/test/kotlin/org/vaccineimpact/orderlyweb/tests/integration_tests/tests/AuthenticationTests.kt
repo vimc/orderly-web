@@ -15,18 +15,27 @@ class AuthenticationTests : IntegrationTest()
     @Test
     fun `authentication fails without Auth header`()
     {
-        val result = post("token", includeAuth = false)
-        assertThat(result.statusCode)
-                .isEqualTo(401)
+        val result = post(url)
+        assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
                 expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid")
     }
 
     @Test
-    fun `authentication succeeds with Auth header`()
+    fun `authentication fails with malformed Auth header`()
     {
-        val result = post("token")
+        val result = post(url, auth = GithubTokenHeader("token","bearer"))
+        assertThat(result.statusCode).isEqualTo(401)
+        JSONValidator.validateError(result.text,
+                expectedErrorCode = "github-token-invalid",
+                expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid")
+    }
+
+    @Test
+    fun `authentication succeeds with well-formed Auth header`()
+    {
+        val result = post(url, auth = GithubTokenHeader("token"))
         assertSuccessful(result)
 
         val json = JsonLoader.fromString(result.text)
@@ -57,21 +66,13 @@ class AuthenticationTests : IntegrationTest()
 
     val url = "${RequestHelper().baseUrl}/login/"
 
-    private fun post(token: String, includeAuth: Boolean = true): Response
-    {
-        val auth = if (includeAuth) GithubTokenHeader(token) else null
-        return post(url,
-                auth = auth
-        )
-    }
-
-    data class GithubTokenHeader(val token: String) : Authorization
+    data class GithubTokenHeader(val token: String, val prefix: String = "token") : Authorization
     {
         override val header: Pair<String, String>
             get()
             {
                 val b64 = Base64.getEncoder().encode(token.toByteArray()).toString(Charsets.UTF_8)
-                return "Authorization" to "token $b64"
+                return "Authorization" to "$prefix $b64"
             }
     }
 
