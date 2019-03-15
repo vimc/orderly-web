@@ -4,7 +4,8 @@
 
 set -ex
 
-MIGRATE_IMAGE=orderlyweb_migrate
+HERE=$(dirname $0)
+. $HERE/migrate-common.sh
 
 # Create orderly demo data just so we're sure of having something to migrate against
 # This will fail if there's anything in the demo folder already
@@ -18,11 +19,8 @@ docker run --rm --entrypoint create_orderly_demo.sh \
     "./src/app/"
 
 # Build the migration image
-docker build --tag $MIGRATE_IMAGE -f migrations/Dockerfile .
+./scripts/migrate-build.sh
 
 # Do the migrations
-docker run --rm \
-    -u ${UID} \
-    -v ${PWD}/src/app/demo:/orderly \
-    $MIGRATE_IMAGE
+docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
 
