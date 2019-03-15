@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.File;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FileRecord extends UpdatableRecordImpl<FileRecord> implements Record2<String, Long> {
 
-    private static final long serialVersionUID = -384904420;
+    private static final long serialVersionUID = 1271275916;
 
     /**
      * Setter for <code>file.hash</code>.

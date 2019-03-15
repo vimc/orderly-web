@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Depends;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DependsRecord extends UpdatableRecordImpl<DependsRecord> implements Record6<Integer, String, Integer, String, Boolean, Boolean> {
 
-    private static final long serialVersionUID = 122202403;
+    private static final long serialVersionUID = 800601731;
 
     /**
      * Setter for <code>depends.id</code>.

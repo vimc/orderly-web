@@ -33,7 +33,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogLabelRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ChangelogLabel extends TableImpl<ChangelogLabelRecord> {
 
-    private static final long serialVersionUID = 1737669489;
+    private static final long serialVersionUID = -1683558095;
 
     /**
      * The reference instance of <code>changelog_label</code>

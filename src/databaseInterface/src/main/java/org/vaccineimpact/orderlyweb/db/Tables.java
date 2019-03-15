@@ -15,8 +15,17 @@ import org.vaccineimpact.orderlyweb.db.tables.File;
 import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.FileInput;
 import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
+import org.vaccineimpact.orderlyweb.db.tables.Orderly;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
@@ -86,6 +95,11 @@ public class Tables {
     public static final FilePurpose FILE_PURPOSE = org.vaccineimpact.orderlyweb.db.tables.FilePurpose.FILE_PURPOSE;
 
     /**
+     * The table <code>orderly</code>.
+     */
+    public static final Orderly ORDERLY = org.vaccineimpact.orderlyweb.db.tables.Orderly.ORDERLY;
+
+    /**
      * The table <code>orderly_schema</code>.
      */
     public static final OrderlySchema ORDERLY_SCHEMA = org.vaccineimpact.orderlyweb.db.tables.OrderlySchema.ORDERLY_SCHEMA;
@@ -94,6 +108,46 @@ public class Tables {
      * The table <code>orderly_schema_tables</code>.
      */
     public static final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>orderlyweb_permission</code>.
+     */
+    public static final OrderlywebPermission ORDERLYWEB_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission.ORDERLYWEB_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user</code>.
+     */
+    public static final OrderlywebUser ORDERLYWEB_USER = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser.ORDERLYWEB_USER;
+
+    /**
+     * The table <code>orderlyweb_user_group</code>.
+     */
+    public static final OrderlywebUserGroup ORDERLYWEB_USER_GROUP = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup.ORDERLYWEB_USER_GROUP;
+
+    /**
+     * The table <code>orderlyweb_user_group_global_permission</code>.
+     */
+    public static final OrderlywebUserGroupGlobalPermission ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_permission</code>.
+     */
+    public static final OrderlywebUserGroupPermission ORDERLYWEB_USER_GROUP_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_report_permission</code>.
+     */
+    public static final OrderlywebUserGroupReportPermission ORDERLYWEB_USER_GROUP_REPORT_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_user</code>.
+     */
+    public static final OrderlywebUserGroupUser ORDERLYWEB_USER_GROUP_USER = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER;
+
+    /**
+     * The table <code>orderlyweb_user_group_version_permission</code>.
+     */
+    public static final OrderlywebUserGroupVersionPermission ORDERLYWEB_USER_GROUP_VERSION_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION;
 
     /**
      * The table <code>parameters</code>.
