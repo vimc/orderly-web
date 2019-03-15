@@ -1,4 +1,4 @@
-# Orderly Web
+# OrderlyWeb
 
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
@@ -73,14 +73,20 @@ To make use of a built image, run:
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
 
 
-## Orderly Web database schema
+## OrderlyWeb database schema
 
-Tables required by Orderly Web, relating to users and permissions, are added to the Orderly database by this application. Code and migrations for 
+Tables required by OrderlyWeb, relating to presentation and access logic (e.g. users & permissions), are added to the 
+Orderly database by this application. 
+
+Code and migrations for 
 this can be found in the ```migrations``` folder.  Migrations are run by the docker container defined by 
 ```migrations/Dockerfile``` which uses [Flyway](https://flywaydb.org/) to apply migrations defined in 
 ```migrations/sql``` using Flyway configiration defined in ```migrations/flyway.conf```.
-The ```scripts/teamcity-migrate.sh``` script tests, builds and pushes this docker image as part of the Team City build, 
-and migrations can also be tested locally with ```scripts/local-test-migrate.sh``` 
+
+The ```scripts/migrate-build.sh```, ```scripts/migrate-test.sh``` and ```scripts/migrate-push.sh``` 
+are run as separate build steps in the TeamCity build configuration, to respectively
+build the docker image, test it by running it and finally push it to the registry. 
+Migrations can also be tested locally with ```scripts/migrate-local-test.sh``` 
 
 We don't create a schema as such in the Orderly database, as Sqlite does not support schema. Instead we prefix all our 
 tables' names with "orderlyweb".
@@ -90,7 +96,7 @@ These tables are:
 The users of OrderlyWeb, however they are authenticated.
 
 ### orderlyweb_user_group
-A user group could be something like 'report reviewers' or 'Ebola team'. Individual users also get their own users, 
+A user group could be something like 'report reviewers' or 'Ebola team'. Each individual user also gets their own group, 
 because permissions are defined for user groups. 
 
 ### orderlyweb_user_group_user
@@ -105,14 +111,16 @@ context to be fully specified, which may be either global level, report level or
 found by joining to the following tables:
 
 ### orderlyweb_user_group_global_permission
-Defines a global level permission. If a row in this table joins against a user_group_permission, then that user group has
+Defines global level permissions. If a row in this table joins against a user_group_permission, then that user group has
 that permission in all contexts
 
 ### orderlyweb_user_group_report_permission
-Defines a report level permission. If one or more rows in this table joins against a user_group_permission then the 
-group has that permission (e.g. read or run) in the context of the reports specified by the the 'report' column. 
+Defines report level permissions. If one or more rows in this table joins against a user_group_permission then the 
+group has that permission (e.g. read or run) in the context of the report(s) specified by the 'report' column values in 
+the joining rows. 
 
 ### orderlyweb_user_group_version_permission
-Defines a report version level permission. If one or more rows in this table joins against a user_group_permission then the 
-group has that permission in the context of the report versions specified by the the 'version' column. 
+Defines report version level permissions. If one or more rows in this table joins against a user_group_permission then the 
+group has that permission in the context of the report version(s) specified by the 'version' column values in the 
+joining rows. 
 
