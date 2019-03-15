@@ -33,7 +33,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.FilePurposeRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FilePurpose extends TableImpl<FilePurposeRecord> {
 
-    private static final long serialVersionUID = 304891438;
+    private static final long serialVersionUID = -1063003154;
 
     /**
      * The reference instance of <code>file_purpose</code>

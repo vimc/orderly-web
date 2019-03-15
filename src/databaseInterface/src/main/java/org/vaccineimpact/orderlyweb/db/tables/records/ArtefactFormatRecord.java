@@ -26,7 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ArtefactFormat;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ArtefactFormatRecord extends UpdatableRecordImpl<ArtefactFormatRecord> implements Record1<String> {
 
-    private static final long serialVersionUID = 1628913070;
+    private static final long serialVersionUID = -830159560;
 
     /**
      * Setter for <code>artefact_format.name</code>.

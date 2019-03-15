@@ -26,7 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ParametersTypeRecord extends UpdatableRecordImpl<ParametersTypeRecord> implements Record1<String> {
 
-    private static final long serialVersionUID = -1599868429;
+    private static final long serialVersionUID = 236026237;
 
     /**
      * Setter for <code>parameters_type.name</code>.

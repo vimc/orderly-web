@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Data;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DataRecord extends UpdatableRecordImpl<DataRecord> implements Record3<String, Long, Long> {
 
-    private static final long serialVersionUID = -1261442718;
+    private static final long serialVersionUID = 1895810742;
 
     /**
      * Setter for <code>data.hash</code>.

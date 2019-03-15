@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionPackageRecord
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReportVersionPackage extends TableImpl<ReportVersionPackageRecord> {
 
-    private static final long serialVersionUID = 267679061;
+    private static final long serialVersionUID = 118401101;
 
     /**
      * The reference instance of <code>report_version_package</code>

@@ -26,7 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlySchemaTablesRecord extends UpdatableRecordImpl<OrderlySchemaTablesRecord> implements Record1<String> {
 
-    private static final long serialVersionUID = -1160358679;
+    private static final long serialVersionUID = 1661916147;
 
     /**
      * Setter for <code>orderly_schema_tables.name</code>.
