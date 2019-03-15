@@ -39,6 +39,8 @@ dependencies {
 
     compile "org.pac4j:spark-pac4j:2.2.0"
     compile "org.pac4j:pac4j-http:2.2.1"
+    compile 'org.pac4j:pac4j-jwt:2.0.0'
+    compile 'commons-codec:commons-codec:1.10'
 
     compile "khttp:khttp:0.1.0"
 
