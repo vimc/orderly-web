@@ -14,7 +14,7 @@ class JWTHeaderClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWra
 class JWTHeaderClient(helper: TokenVerifier) : HeaderClient(
         "Authorization",
         "Bearer ",
-        MontaguBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer))
+        OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer))
 {
     init
     {

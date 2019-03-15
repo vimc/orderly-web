@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import java.time.Instant
 import java.util.*
 
-class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
+class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
@@ -43,7 +43,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
         }
 
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
         sut.validate(credentials, fakeContext)
@@ -67,7 +67,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
         assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
@@ -89,7 +89,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
                 helper.issuerName, fakeStore)
 
         sut.validate(credentials, fakeContext)
@@ -112,7 +112,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration,
                 helper.issuerName,
                 fakeStore)
 
@@ -135,7 +135,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
             on(it.path) doReturn "url"
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
         assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
@@ -158,7 +158,7 @@ class MontaguOnetimeTokenAuthenticatorTests : MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
+        val sut = OrderlyWebOnetimeTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName,
                 fakeStore)
 
         assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)

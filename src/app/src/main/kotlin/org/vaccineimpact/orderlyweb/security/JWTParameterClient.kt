@@ -14,7 +14,7 @@ class JWTParameterClientWrapper(helper: TokenVerifier,
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
 class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : ParameterClient(
         "access_token",
-        MontaguOnetimeTokenAuthenticator(helper.signatureConfiguration,
+        OrderlyWebOnetimeTokenAuthenticator(helper.signatureConfiguration,
                 helper.expectedIssuer,
                 tokenStore))
 {
