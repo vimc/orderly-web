@@ -116,7 +116,7 @@ class SecurityTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/artefacts/6943yhks/"
-        val token = WebTokenHelper.oneTimeTokenHelper.issuer
+        val token = WebTokenHelper.instance.issuer
                 .generateOnetimeActionToken(requestHelper.fakeGlobalReportReader, url)
         val response = requestHelper
                 .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)

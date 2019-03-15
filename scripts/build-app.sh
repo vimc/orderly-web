@@ -14,7 +14,7 @@ docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
 
 # Create an image based on the shared build env that compiles, tests and dockerises
 # the app
-docker build --tag montagu-reporting-api-app-build \
+docker build --tag orderly-web-app-build \
 	--build-arg git_id=$git_id \
 	--build-arg git_branch=$git_branch \
     -f app.Dockerfile \
@@ -37,4 +37,4 @@ docker run --rm \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
     --network=host \
-    montagu-reporting-api-app-build
+    orderly-web-app-build

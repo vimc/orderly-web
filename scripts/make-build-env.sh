@@ -1,1 +1,1 @@
-docker build --tag montagu-reporting-api-build-environment .
+docker build --tag orderly-web-build-environment .

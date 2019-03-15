@@ -11,21 +11,20 @@ System requirements:
 v1.23.0 which appends random strings to container names each time they run.
 * **Vault**
 
-1. Make sure you check out recursively, using `git clone --recursive URL`.
-2. Install Docker and add your user to the Docker group 
+1. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
    You may need to restart your machine for group changes to take effect.
-3. Configure your Docker client to use our registry by following instructions 
+1. Configure your Docker client to use our registry by following instructions 
    here: https://github.com/vimc/montagu-registry/tree/master#login 
    
    This is where you will need to have Vault 
    installed, and the VAULT_ADDR variable specified, e.g. by adding 
    `export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'` to your profile using ` sudo nano ~/.profile` 
-4. Run all dependencies (API, DB, Orderly Server, etc.) with 
+1. Run all dependencies (Orderly Server etc.) with 
    `./dev/run-dependencies.sh`
-5. Run the reporting API, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
+1. Run the app, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
    project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
-   go signal. The API will now be available on your local machine at http://127.0.0.1:8081
+   go signal. The app will now be available on your local machine at http://127.0.0.1:8081
  
 
 ### Generate test data.  
@@ -34,7 +33,7 @@ Orderly directory to develop against, run the `:app:generateTestData` gradle
 task (either from within your IDE or on the command line from within the project
 root directory with `./gradlew :app:generateTestData`).
 
-The above task will generate two Orderly directorys; one at `./src/app/demo`
+The above task will generate two Orderly directories; one at `./src/app/demo`
 and one at `./src/app/git`. The latter contains an Orderly directory which is
 also a git repo, the former contains several different types of report. These
 are used for integration tests and for running locally.
@@ -43,9 +42,6 @@ are used for integration tests and for running locally.
 To run the tests, 
 1. run `./dev/run-dependencies.sh` from this directory
 2. run `./gradlew test` from the src dir
-
-You may have to run `sudo chmod 766 /etc/montagu/reports_api/token_key/public_key.der`
-or `sudo chmod u+rw /etc/montagu/reports_api/token_key` or similar to let the tests write to this file.
 
 ## Regenerate database interface
 ```
@@ -60,15 +56,18 @@ rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
 The Teamcity build
 1. Pulls in artifacts `demo` and `git` from the Orderly container build.
 2. Runs `./scripts/make-build-env.sh` which builds a Docker image containing the source code and dependencies.
-3. Runs `./scripts/build-app.sh` which uses the above image, mounting the `demo` folder as a volume, to compile code, run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and build a Docker image containing the compiled app code.
+3. Runs `./scripts/build-app.sh` which uses the above image, mounting the `demo` folder as a volume, to compile code, 
+run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and build a
+ Docker image containing the compiled app code.
 
-To build the image locally you will have to replace step one with generating the `demo` folder in your project directory following instructions here: https://github.com/vimc/orderly/tree/master/docker
+To build the image locally you will have to replace step one with generating the `demo` folder in your project 
+directory following instructions here: https://github.com/vimc/orderly/tree/master/docker
 
 ## Docker run
 To make use of a built image, run:
 
-        docker pull docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
-        docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
+        docker pull docker.montagu.dide.ic.ac.uk:5000/orderly-web:master
+        docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/orderly-web:master
 
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
 

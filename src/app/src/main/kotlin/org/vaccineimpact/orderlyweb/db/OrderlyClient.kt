@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.vaccineimpact.api.models.*
+import org.vaccineimpact.orderlyweb.models.*
 
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 

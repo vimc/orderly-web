@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.security
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.api.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.db.TokenStore
 
 class TokenVerifyingConfigFactory(
@@ -12,16 +12,10 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        private val tokenVerifier = TokenVerifier(
-                KeyHelper.authPublicKey,
-                org.vaccineimpact.orderlyweb.db.AppConfig()["token.issuer"]
-        )
-
-        val headerClientWrapper = CompressedJWTHeaderClientWrapper(tokenVerifier)
-        val cookieClientWrapper = CompressedJWTCookieClientWrapper(tokenVerifier)
-
+        val headerClientWrapper = CompressedJWTHeaderClientWrapper(WebTokenHelper.instance.verifier)
+        val cookieClientWrapper = CompressedJWTCookieClientWrapper(WebTokenHelper.instance.verifier)
         val parameterClientWrapper = CompressedJWTParameterClientWrapper(
-                WebTokenHelper.oneTimeTokenHelper.verifier,
+                WebTokenHelper.instance.verifier,
                 TokenStore.instance
         )
     }

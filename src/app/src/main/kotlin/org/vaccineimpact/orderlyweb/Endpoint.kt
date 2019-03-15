@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.MontaguAuthorizer
 import org.vaccineimpact.orderlyweb.security.PermissionRequirement
