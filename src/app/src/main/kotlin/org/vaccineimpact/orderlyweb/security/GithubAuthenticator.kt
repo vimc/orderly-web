@@ -7,6 +7,7 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
+import org.vaccineimpact.orderlyweb.db.JooqContext
 
 class GithubAuthenticator : Authenticator<TokenCredentials>
 {
@@ -36,6 +37,9 @@ class GithubAuthenticator : Authenticator<TokenCredentials>
     {
         // TODO check github org
         // TODO save to db
+        JooqContext().use {
+            it.dsl
+        }
         return "user.name"
     }
 
