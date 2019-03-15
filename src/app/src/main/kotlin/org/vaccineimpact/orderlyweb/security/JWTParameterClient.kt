@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.http.client.direct.ParameterClient
-import org.vaccineimpact.api.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 class JWTParameterClientWrapper(helper: TokenVerifier,
                                 tokenStore: OnetimeTokenStore)
