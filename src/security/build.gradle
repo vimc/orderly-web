@@ -1,8 +1,0 @@
-dependencies {
-    compile 'org.pac4j:spark-pac4j:2.0.0'
-    compile 'org.pac4j:pac4j-jwt:2.0.0'
-    compile 'commons-codec:commons-codec:1.10'
-
-    compile project(":models")
-    compile project(":databaseInterface")
-}
