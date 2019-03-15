@@ -12,7 +12,7 @@ class UserController(context: ActionContext,
 {
     constructor(context: ActionContext) : this(context, WebTokenHelper.instance, Serializer.instance)
 
-    fun githubAuth(): AuthenticationResponse
+    fun auth(): AuthenticationResponse
     {
         return AuthenticationResponse(
                 accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile.username),
