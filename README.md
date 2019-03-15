@@ -83,7 +83,7 @@ this can be found in the ```migrations``` folder.  Migrations are run by the doc
 ```migrations/Dockerfile``` which uses [Flyway](https://flywaydb.org/) to apply migrations defined in 
 ```migrations/sql``` using Flyway configiration defined in ```migrations/flyway.conf```.
 
-The ```scripts/migrate-build.sh```, ```scripts/migrate-test.sh``` and ```scripts/migrate-push.sh``` 
+```scripts/migrate-build.sh```, ```scripts/migrate-test.sh``` and ```scripts/migrate-push.sh``` 
 are run as separate build steps in the TeamCity build configuration, to respectively
 build the docker image, test it by running it and finally push it to the registry. 
 Migrations can also be tested locally with ```scripts/migrate-local-test.sh``` 
