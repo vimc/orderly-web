@@ -55,17 +55,14 @@ class AuthenticationTests : IntegrationTest()
         }
     }
 
-    companion object
-    {
-        val url = "${RequestHelper().baseUrl}/login/"
+    val url = "${RequestHelper().baseUrl}/login/"
 
-        fun post(token: String, includeAuth: Boolean = true): Response
-        {
-            val auth = if (includeAuth) GithubTokenHeader(token) else null
-            return post(url,
-                    auth = auth
-            )
-        }
+    private fun post(token: String, includeAuth: Boolean = true): Response
+    {
+        val auth = if (includeAuth) GithubTokenHeader(token) else null
+        return post(url,
+                auth = auth
+        )
     }
 
     data class GithubTokenHeader(val token: String) : Authorization
