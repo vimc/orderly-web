@@ -1,18 +1,11 @@
 package org.vaccineimpact.orderlyweb.security
 
+import org.pac4j.core.context.WebContext
 import org.pac4j.http.client.direct.ParameterClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class JWTParameterClientWrapper(helper: TokenVerifier,
-                                tokenStore: OnetimeTokenStore)
-    : OrderlyWebCredentialClientWrapper
-{
-    override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
-    override val client = JWTParameterClient(helper, tokenStore)
-}
-
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
-class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : ParameterClient(
+class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : OrderlyWebCredentialClient, ParameterClient(
         "access_token",
         OrderlyWebOnetimeTokenAuthenticator(helper.signatureConfiguration,
                 helper.expectedIssuer,
@@ -22,4 +15,12 @@ class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) :
     {
         this.isSupportGetRequest = true
     }
+
+    override fun clientInit(context: WebContext?)
+    {
+        addAuthorizationGenerator{ _, profile -> extractPermissionsFromToken(profile) }
+        super.clientInit(context)
+    }
+
+    override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
 }
