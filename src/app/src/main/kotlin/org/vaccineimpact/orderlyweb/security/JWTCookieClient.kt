@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.http.client.direct.CookieClient
-import org.pac4j.http.credentials.extractor.CookieExtractor
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 class JWTCookieClientWrapper(helper: TokenVerifier) : OrderlyWebCredentialClientWrapper
@@ -19,11 +18,6 @@ class JWTCookieClient(helper: TokenVerifier) : CookieClient(
         OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer)
 )
 {
-    init
-    {
-        credentialsExtractor = CookieExtractor(cookie, name)
-    }
-
     companion object
     {
         const val cookie = "orderlyweb_jwt_token"
