@@ -26,7 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FilePurposeRecord extends UpdatableRecordImpl<FilePurposeRecord> implements Record1<String> {
 
-    private static final long serialVersionUID = 1181449243;
+    private static final long serialVersionUID = -2002733871;
 
     /**
      * Setter for <code>file_purpose.name</code>.

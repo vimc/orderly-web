@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.FileInput;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FileInputRecord extends UpdatableRecordImpl<FileInputRecord> implements Record5<Integer, String, String, String, String> {
 
-    private static final long serialVersionUID = 2072829404;
+    private static final long serialVersionUID = 587062144;
 
     /**
      * Setter for <code>file_input.id</code>.

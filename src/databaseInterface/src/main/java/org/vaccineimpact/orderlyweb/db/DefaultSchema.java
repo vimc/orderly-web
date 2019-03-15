@@ -22,8 +22,17 @@ import org.vaccineimpact.orderlyweb.db.tables.File;
 import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.FileInput;
 import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
+import org.vaccineimpact.orderlyweb.db.tables.Orderly;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
@@ -47,7 +56,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -857464804;
+    private static final long serialVersionUID = 1024132591;
 
     /**
      * The reference instance of <code></code>
@@ -100,6 +109,11 @@ public class DefaultSchema extends SchemaImpl {
     public final FilePurpose FILE_PURPOSE = org.vaccineimpact.orderlyweb.db.tables.FilePurpose.FILE_PURPOSE;
 
     /**
+     * The table <code>orderly</code>.
+     */
+    public final Orderly ORDERLY = org.vaccineimpact.orderlyweb.db.tables.Orderly.ORDERLY;
+
+    /**
      * The table <code>orderly_schema</code>.
      */
     public final OrderlySchema ORDERLY_SCHEMA = org.vaccineimpact.orderlyweb.db.tables.OrderlySchema.ORDERLY_SCHEMA;
@@ -108,6 +122,46 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>orderly_schema_tables</code>.
      */
     public final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>orderlyweb_permission</code>.
+     */
+    public final OrderlywebPermission ORDERLYWEB_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission.ORDERLYWEB_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user</code>.
+     */
+    public final OrderlywebUser ORDERLYWEB_USER = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser.ORDERLYWEB_USER;
+
+    /**
+     * The table <code>orderlyweb_user_group</code>.
+     */
+    public final OrderlywebUserGroup ORDERLYWEB_USER_GROUP = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup.ORDERLYWEB_USER_GROUP;
+
+    /**
+     * The table <code>orderlyweb_user_group_global_permission</code>.
+     */
+    public final OrderlywebUserGroupGlobalPermission ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_permission</code>.
+     */
+    public final OrderlywebUserGroupPermission ORDERLYWEB_USER_GROUP_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_report_permission</code>.
+     */
+    public final OrderlywebUserGroupReportPermission ORDERLYWEB_USER_GROUP_REPORT_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION;
+
+    /**
+     * The table <code>orderlyweb_user_group_user</code>.
+     */
+    public final OrderlywebUserGroupUser ORDERLYWEB_USER_GROUP_USER = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER;
+
+    /**
+     * The table <code>orderlyweb_user_group_version_permission</code>.
+     */
+    public final OrderlywebUserGroupVersionPermission ORDERLYWEB_USER_GROUP_VERSION_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION;
 
     /**
      * The table <code>parameters</code>.
@@ -183,8 +237,17 @@ public class DefaultSchema extends SchemaImpl {
             FileArtefact.FILE_ARTEFACT,
             FileInput.FILE_INPUT,
             FilePurpose.FILE_PURPOSE,
+            Orderly.ORDERLY,
             OrderlySchema.ORDERLY_SCHEMA,
             OrderlySchemaTables.ORDERLY_SCHEMA_TABLES,
+            OrderlywebPermission.ORDERLYWEB_PERMISSION,
+            OrderlywebUser.ORDERLYWEB_USER,
+            OrderlywebUserGroup.ORDERLYWEB_USER_GROUP,
+            OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION,
+            OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION,
+            OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION,
+            OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER,
+            OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION,
             Parameters.PARAMETERS,
             ParametersType.PARAMETERS_TYPE,
             Report.REPORT,
