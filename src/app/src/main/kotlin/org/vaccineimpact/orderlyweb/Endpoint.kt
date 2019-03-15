@@ -1,8 +1,5 @@
 package org.vaccineimpact.orderlyweb
 
-import org.pac4j.http.client.direct.DirectBasicAuthClient
-import org.pac4j.sparkjava.SecurityFilter
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.*
 import spark.Spark
@@ -18,7 +15,7 @@ data class Endpoint(
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val allowParameterAuthentication: Boolean = false,
-        override val basicAuth: Boolean = false
+        override val authenticateWithGithub: Boolean = false
 
 ) : EndpointDefinition
 {
@@ -35,10 +32,6 @@ data class Endpoint(
         if (requiredPermissions.any())
         {
             addSecurityFilter(url)
-        }
-        if (basicAuth)
-        {
-            setUpBasicAuth(url)
         }
         if (this.contentType == ContentTypes.json)
         {
@@ -58,6 +51,11 @@ data class Endpoint(
                 configFactory = configFactory.allowParameterAuthentication()
             }
 
+            if (authenticateWithGithub)
+            {
+                configFactory = configFactory.githubAuthentication()
+            }
+
             val config = configFactory.build()
 
             Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
@@ -67,17 +65,6 @@ data class Endpoint(
                     "SkipOptions"
             ))
         }
-    }
-
-    private fun setUpBasicAuth(url: String)
-    {
-        val config = TokenIssuingConfigFactory().build()
-        Spark.before(url, SecurityFilter(
-                config,
-                GithubBasicAuthClient::class.java.simpleName,
-                null,
-                "method:${HttpMethod.post}"
-        ))
     }
 
 }
@@ -105,9 +92,9 @@ fun Endpoint.json(): Endpoint
     return this.copy(contentType = ContentTypes.json)
 }
 
-fun Endpoint.basicAuth(): Endpoint
+fun Endpoint.githubAuth(): Endpoint
 {
-    return this.copy(basicAuth = true)
+    return this.copy(authenticateWithGithub = true)
 }
 
 fun Endpoint.post(): Endpoint

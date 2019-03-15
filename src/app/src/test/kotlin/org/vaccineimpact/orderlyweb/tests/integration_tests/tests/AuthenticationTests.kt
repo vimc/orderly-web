@@ -1,10 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
-import com.beust.klaxon.json
+import com.github.fge.jackson.JsonLoader
 import khttp.options
 import khttp.post
+import khttp.responses.Response
 import khttp.structures.authorization.Authorization
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -14,17 +13,26 @@ import java.util.*
 class AuthenticationTests : IntegrationTest()
 {
     @Test
-    fun `authentication fails without GithubBasicAuth header`()
+    fun `authentication fails without Auth header`()
     {
-        val result = post("username", "password", includeAuth = false)
-        assertDoesNotAuthenticate(result)
+        val result = post("token", includeAuth = false)
+        assertThat(result.statusCode)
+                .isEqualTo(401)
+        JSONValidator.validateError(result.text,
+                expectedErrorCode = "github-token-invalid",
+                expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid")
     }
 
     @Test
-    fun `authentication succeeds with custom GithubBasicAuth header`()
+    fun `authentication succeeds with Auth header`()
     {
-        val result = post("username", "password")
-        assertDoesAuthenticate(result)
+        val result = post("token")
+        assertSuccessful(result)
+
+        val json = JsonLoader.fromString(result.text)
+        assertThat(json["token_type"].textValue()).isEqualTo("bearer")
+        assertThat(json["access_token"]).isNotNull
+        assertThat(isLong(json["expires_in"].toString())).isTrue()
     }
 
     @Test
@@ -32,24 +40,6 @@ class AuthenticationTests : IntegrationTest()
     {
         val result = options(url)
         assertThat(result.statusCode).isEqualTo(200)
-    }
-
-    private fun assertDoesAuthenticate(result: JsonObject)
-    {
-        assertThat(result).doesNotContainKey("error")
-        assertThat(result).containsKey("access_token")
-        assertThat(result["token_type"]).isEqualTo("bearer")
-        assertThat(isLong(result["expires_in"].toString()))
-    }
-
-    private fun assertDoesNotAuthenticate(result: JsonObject)
-    {
-        assertThat(result).isEqualTo(json {
-            obj(
-                    "error" to "invalid_client"
-
-            )
-        })
     }
 
     private fun isLong(raw: String): Boolean
@@ -69,24 +59,22 @@ class AuthenticationTests : IntegrationTest()
     {
         val url = "${RequestHelper().baseUrl}/login/"
 
-        fun post(username: String, token: String, includeAuth: Boolean = true): JsonObject
+        fun post(token: String, includeAuth: Boolean = true): Response
         {
-            val auth = if (includeAuth) GithubBasicAuthorization(username, token) else null
-            val response = post(url,
-                    data = mapOf("grant_type" to "client_credentials"),
+            val auth = if (includeAuth) GithubTokenHeader(token) else null
+            return post(url,
                     auth = auth
             )
-            val text = response.text
-            return Parser().parse(StringBuilder(text)) as JsonObject
         }
     }
 
-    data class GithubBasicAuthorization(val user: String, val password: String) : Authorization
+    data class GithubTokenHeader(val token: String) : Authorization
     {
         override val header: Pair<String, String>
-            get() {
-                val b64 = Base64.getEncoder().encode("${this.user}:${this.password}".toByteArray()).toString(Charsets.UTF_8)
-                return "Authorization" to "GithubBasic $b64"
+            get()
+            {
+                val b64 = Base64.getEncoder().encode(token.toByteArray()).toString(Charsets.UTF_8)
+                return "Authorization" to "token $b64"
             }
     }
 

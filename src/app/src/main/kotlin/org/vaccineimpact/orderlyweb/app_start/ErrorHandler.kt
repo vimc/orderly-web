@@ -53,7 +53,7 @@ class ErrorHandler
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
         res.body(Serializer.instance.toJson(error.asResult()))
         res.status(error.httpStatus)
-        addDefaultResponseHeaders(req, res.raw(), "${ContentTypes.json}; charset=utf-8")
+        addDefaultResponseHeaders(res.raw(), "${ContentTypes.json}; charset=utf-8")
     }
 
     // Just a helper to let us call Spark.exception using generic type parameters

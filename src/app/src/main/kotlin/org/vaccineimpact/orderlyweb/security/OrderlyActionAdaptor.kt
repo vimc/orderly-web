@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 
-class OrdelyActionAdaptor(clients: List<MontaguCredentialClientWrapper>)
+class OrderlyActionAdaptor(clients: List<CredentialClientWrapper>)
     : DefaultHttpActionAdapter()
 {
     val unauthorizedResponse: String = Serializer.instance.toJson(Result(
@@ -34,12 +34,12 @@ class OrdelyActionAdaptor(clients: List<MontaguCredentialClientWrapper>)
     {
         HttpConstants.UNAUTHORIZED ->
         {
-            addDefaultResponseHeaders(context.sparkRequest, context.response, ContentTypes.json)
+            addDefaultResponseHeaders(context.response, ContentTypes.json)
             spark.Spark.halt(code, unauthorizedResponse)
         }
         HttpConstants.FORBIDDEN ->
         {
-            addDefaultResponseHeaders(context.sparkRequest, context.response, ContentTypes.json)
+            addDefaultResponseHeaders(context.response, ContentTypes.json)
 
             val profile = DirectActionContext(context).userProfile
 

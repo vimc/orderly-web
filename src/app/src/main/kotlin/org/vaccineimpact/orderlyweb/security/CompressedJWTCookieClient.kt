@@ -6,7 +6,7 @@ import org.pac4j.http.client.direct.CookieClient
 import org.pac4j.http.credentials.extractor.CookieExtractor
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class CompressedJWTCookieClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWrapper
+class CompressedJWTCookieClientWrapper(helper: TokenVerifier) : CredentialClientWrapper
 {
     override val client = CompressedJWTCookieClient(helper)
     override val errorInfo = ErrorInfo(
@@ -24,6 +24,7 @@ class CompressedJWTCookieClient(helper: TokenVerifier) : CookieClient(
     init
     {
         credentialsExtractor = CompressedCookieExtractor(cookie, name)
+        setAuthorizationGenerator { _, profile -> extractPermissionsFromToken(profile) }
     }
 
     companion object

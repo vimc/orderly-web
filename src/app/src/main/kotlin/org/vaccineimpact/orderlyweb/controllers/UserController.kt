@@ -13,23 +13,11 @@ class UserController(context: ActionContext,
 {
     constructor(context: ActionContext) : this(context, WebTokenHelper.instance, Serializer.instance)
 
-    private val requiredBasicAuthContentType = "application/x-www-form-urlencoded"
-
-    fun basicAuth(): String
+    fun githubAuth(): AuthenticationResponse
     {
-        if (context.contentType() != requiredBasicAuthContentType)
-        {
-            throw FailedLoginError("Content-Type must be '$requiredBasicAuthContentType'")
-        }
-
-        if (context.queryParams("grant_type") != "client_credentials")
-        {
-            throw FailedLoginError("Expected grant_type to be client_credentials")
-        }
-
-        return serializer.gson.toJson(AuthenticationResponse(
+        return AuthenticationResponse(
                 accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile.username),
-                expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds))
+                expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds)
     }
 
 }

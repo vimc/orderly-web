@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 class CompressedJWTParameterClientWrapper(helper: TokenVerifier,
                                           tokenStore: OnetimeTokenStore)
-    : MontaguCredentialClientWrapper
+    : CredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
     override val client = CompressedJWTParameterClient(helper, tokenStore)
@@ -26,6 +26,8 @@ class CompressedJWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTok
         this.isSupportGetRequest = true
         credentialsExtractor = CompressedParameterExtractor(
                 parameterName, isSupportGetRequest, isSupportPostRequest, name)
+
+        setAuthorizationGenerator { _, profile -> extractPermissionsFromToken(profile) }
     }
 }
 
