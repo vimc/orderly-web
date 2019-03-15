@@ -6,6 +6,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.db.OrderlyUserData
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 
@@ -23,7 +24,7 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>()
                 HttpConstants.AUTHORIZATION_HEADER,
                 "token ", this.name))
 
-        defaultAuthenticator(GithubAuthenticator())
+        defaultAuthenticator(GithubAuthenticator(OrderlyUserData()))
 
         setAuthorizationGenerator { _, profile -> addLoginPermission(profile) }
     }

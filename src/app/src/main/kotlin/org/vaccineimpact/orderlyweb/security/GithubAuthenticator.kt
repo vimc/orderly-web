@@ -7,9 +7,9 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
-import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.UserData
 
-class GithubAuthenticator : Authenticator<TokenCredentials>
+class GithubAuthenticator(private val userData: UserData) : Authenticator<TokenCredentials>
 {
     override fun validate(credentials: TokenCredentials?, context: WebContext)
     {
@@ -36,11 +36,13 @@ class GithubAuthenticator : Authenticator<TokenCredentials>
     private fun validate(token: String): String
     {
         // TODO check github org
-        // TODO save to db
-        JooqContext().use {
-            it.dsl
-        }
-        return "user.name"
+
+
+        val userName = "user.name"
+        val email = "email"
+
+        userData.addUser(userName, email)
+        return userName
     }
 
     private fun throwsException(message: String)
