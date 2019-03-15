@@ -1,11 +1,10 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.client.Client
-import org.pac4j.core.client.DirectClient
+import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.credentials.Credentials
-import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -22,19 +21,19 @@ class TokenVerifyingConfigFactory(
 
     }
 
-    val clients = mutableListOf<DirectClient<TokenCredentials, CommonProfile>>(headerClient, cookieClient)
+    val allClients = mutableListOf<OrderlyWebCredentialClient>(headerClient, cookieClient)
 
     override fun build(vararg parameters: Any?): Config
     {
         @Suppress("UNCHECKED_CAST")
-        return Config(clients as List<Client<Credentials, CommonProfile>>).apply {
+        return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
             setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter(listOf(JWTCookieClient(WebTokenHelper.instance.verifier)))
+            httpActionAdapter = TokenActionAdapter(allClients)
         }
     }
 
-    fun allClients() = clients.joinToString { it::class.java.simpleName }
+    fun allClients() = allClients.joinToString { it::class.java.simpleName }
 
 }
 
@@ -51,6 +50,6 @@ fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
 
 fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingConfigFactory
 {
-    this.clients.add(TokenVerifyingConfigFactory.parameterClient)
+    this.allClients.add(TokenVerifyingConfigFactory.parameterClient)
     return this
 }
