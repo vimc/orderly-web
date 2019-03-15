@@ -3,12 +3,10 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 import com.github.fge.jackson.JsonLoader
 import khttp.options
 import khttp.post
-import khttp.responses.Response
 import khttp.structures.authorization.Authorization
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
-import java.util.*
 
 class AuthenticationTests : IntegrationTest()
 {
@@ -25,7 +23,7 @@ class AuthenticationTests : IntegrationTest()
     @Test
     fun `authentication fails with malformed Auth header`()
     {
-        val result = post(url, auth = GithubTokenHeader("token","bearer"))
+        val result = post(url, auth = GithubTokenHeader("token", "bearer"))
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -33,9 +31,23 @@ class AuthenticationTests : IntegrationTest()
     }
 
     @Test
+    fun `authentication fails with invalid github token`()
+    {
+        val result = post(url, auth = GithubTokenHeader("badtoken"))
+        assertThat(result.statusCode).isEqualTo(401)
+        JSONValidator.validateError(result.text,
+                expectedErrorCode = "github-token-invalid",
+                expectedErrorText = "GitHub token not supplied in Authorization header, or GitHub token was invalid")
+    }
+
+
+    @Test
     fun `authentication succeeds with well-formed Auth header`()
     {
-        val result = post(url, auth = GithubTokenHeader("token"))
+        val token = ""
+
+        val result = post(url, auth = GithubTokenHeader(token))
+
         assertSuccessful(result)
 
         val json = JsonLoader.fromString(result.text)
@@ -71,8 +83,7 @@ class AuthenticationTests : IntegrationTest()
         override val header: Pair<String, String>
             get()
             {
-                val b64 = Base64.getEncoder().encode(token.toByteArray()).toString(Charsets.UTF_8)
-                return "Authorization" to "$prefix $b64"
+                return "Authorization" to "$prefix $token"
             }
     }
 

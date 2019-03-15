@@ -33,7 +33,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebUser extends TableImpl<OrderlywebUserRecord> {
 
-    private static final long serialVersionUID = -810452329;
+    private static final long serialVersionUID = 192697798;
 
     /**
      * The reference instance of <code>orderlyweb_user</code>
@@ -57,6 +57,16 @@ public class OrderlywebUser extends TableImpl<OrderlywebUserRecord> {
      * The column <code>orderlyweb_user.email</code>.
      */
     public final TableField<OrderlywebUserRecord, String> EMAIL = createField("email", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_user.disabled</code>.
+     */
+    public final TableField<OrderlywebUserRecord, Integer> DISABLED = createField("disabled", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>orderlyweb_user.user_source</code>.
+     */
+    public final TableField<OrderlywebUserRecord, String> USER_SOURCE = createField("user_source", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>orderlyweb_user</code> table reference

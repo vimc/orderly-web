@@ -1,6 +1,9 @@
 package org.vaccineimpact.orderlyweb.security
 
-import org.pac4j.core.context.Pac4jConstants
+import org.eclipse.egit.github.core.User
+import org.eclipse.egit.github.core.client.GitHubClient
+import org.eclipse.egit.github.core.client.RequestException
+import org.eclipse.egit.github.core.service.UserService
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.authenticator.Authenticator
@@ -9,44 +12,51 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
 import org.vaccineimpact.orderlyweb.db.UserData
 
-class GithubAuthenticator(private val userData: UserData) : Authenticator<TokenCredentials>
+
+class GithubAuthenticator(private val userData: UserData,
+                          private val githubApiClient: GitHubClient) : Authenticator<TokenCredentials>
 {
     override fun validate(credentials: TokenCredentials?, context: WebContext)
     {
         if (credentials == null)
         {
-            throwsException("No credentials supplied")
+            throw CredentialsException("No credentials supplied")
         }
-        else
-        {
-            val token = credentials.token
 
-            if (CommonHelper.isBlank(token))
-            {
-                throwsException("Token cannot be blank")
-            }
-            val username = validate(token)
-            credentials.userProfile = CommonProfile().apply {
-                this.addAttribute("url", "*")
-                this.addAttribute(Pac4jConstants.USERNAME, username)
-            }
+        val token = credentials.token
+
+        if (CommonHelper.isBlank(token))
+        {
+            throw CredentialsException("Token cannot be blank")
         }
+
+        val email = validate(token)
+        credentials.userProfile = CommonProfile().apply {
+            this.addAttribute("url", "*")
+            this.setId(email)
+        }
+
     }
 
     private fun validate(token: String): String
     {
-        // TODO check github org
+        githubApiClient.setOAuth2Token(token)
 
+        val user: User = try
+        {
+            val service = UserService(githubApiClient)
+            service.user
+        }
+        catch (e: RequestException)
+        {
+            if (e.status == 401)
+            {
+                throw CredentialsException(e.message)
+            }
+            else throw e
+        }
 
-        val userName = "user.name"
-        val email = "email"
-
-        userData.addUser(userName, email)
-        return userName
-    }
-
-    private fun throwsException(message: String)
-    {
-        throw CredentialsException(message)
+        userData.addGithubUser(user.name, user.email)
+        return user.email
     }
 }

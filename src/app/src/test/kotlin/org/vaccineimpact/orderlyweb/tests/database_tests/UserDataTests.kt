@@ -12,10 +12,10 @@ class UserDataTests : DatabaseTests()
 {
 
     @Test
-    fun `addUser can create new user`()
+    fun `addUser can create new github user`()
     {
         val sut = OrderlyUserData()
-        sut.addUser("user.name", "email@somewhere.com")
+        sut.addGithubUser("user.name", "email@somewhere.com")
 
         val result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
@@ -24,13 +24,14 @@ class UserDataTests : DatabaseTests()
         }
 
         assertThat(result.email).isEqualTo("email@somewhere.com")
+        assertThat(result.source).isEqualTo("github")
     }
 
     @Test
     fun `addUser adds user group`()
     {
         val sut = OrderlyUserData()
-        sut.addUser("user.name", "email@somewhere.com")
+        sut.addGithubUser("user.name", "email@somewhere.com")
 
         val result = JooqContext().use {
             it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
@@ -38,22 +39,22 @@ class UserDataTests : DatabaseTests()
                     .fetchOneInto(String::class.java)
         }
 
-        assertThat(result).isEqualTo("user.name")
+        assertThat(result).isEqualTo("email@somewhere.com")
     }
 
     @Test
-    fun `addUser does nothing if user exists`()
+    fun `addUser does nothing if email already exists`()
     {
         val sut = OrderlyUserData()
-        sut.addUser("user.name", "email@somewhere.com")
-        sut.addUser("user.name", "anotheremail@somewhere.com")
+        sut.addGithubUser("user.name", "email@somewhere.com")
+        sut.addGithubUser("another name", "email@somewhere.com")
 
         val result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
-                    .where(ORDERLYWEB_USER.USERNAME.eq("user.name"))
+                    .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))
                     .fetchOneInto(User::class.java)
         }
 
-        assertThat(result.email).isEqualTo("email@somewhere.com")
+        assertThat(result.username).isEqualTo("user.name")
     }
 }
