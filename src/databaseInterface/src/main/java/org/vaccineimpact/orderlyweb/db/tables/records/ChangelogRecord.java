@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Changelog;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ChangelogRecord extends UpdatableRecordImpl<ChangelogRecord> implements Record6<Integer, String, String, String, String, Boolean> {
 
-    private static final long serialVersionUID = -860358396;
+    private static final long serialVersionUID = 496621476;
 
     /**
      * Setter for <code>changelog.id</code>.

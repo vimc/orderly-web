@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class FileArtefactRecord extends UpdatableRecordImpl<FileArtefactRecord> implements Record4<Integer, Integer, String, String> {
 
-    private static final long serialVersionUID = 71560225;
+    private static final long serialVersionUID = 1074741257;
 
     /**
      * Setter for <code>file_artefact.id</code>.

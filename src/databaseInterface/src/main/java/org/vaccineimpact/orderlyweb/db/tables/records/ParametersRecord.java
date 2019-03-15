@@ -27,7 +27,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ParametersRecord extends UpdatableRecordImpl<ParametersRecord> implements Record5<Integer, String, String, String, String> {
 
-    private static final long serialVersionUID = -69151520;
+    private static final long serialVersionUID = -1769452924;
 
     /**
      * Setter for <code>parameters.id</code>.
