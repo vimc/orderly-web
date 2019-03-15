@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.api.models.permissions.PermissionSet
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 private const val USER_OBJECT = "userObject"
 private const val MISSING_PERMISSIONS = "missingPermissions"

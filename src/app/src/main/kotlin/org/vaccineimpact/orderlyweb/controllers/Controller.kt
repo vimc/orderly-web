@@ -1,9 +1,9 @@
 package org.vaccineimpact.orderlyweb.controllers
 
 import khttp.responses.Response
-import org.vaccineimpact.api.models.Scope
-import org.vaccineimpact.api.models.encompass
-import org.vaccineimpact.api.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.encompass
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.ActionContext
 
 

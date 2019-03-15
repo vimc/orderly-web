@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests
 
-import org.vaccineimpact.api.models.ArtefactFormat
-import org.vaccineimpact.api.models.Changelog
-import org.vaccineimpact.api.models.FilePurpose
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext

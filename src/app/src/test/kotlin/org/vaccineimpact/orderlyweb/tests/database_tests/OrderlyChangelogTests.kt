@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.api.models.Changelog
+import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.tests.ChangelogWithPublicVersion

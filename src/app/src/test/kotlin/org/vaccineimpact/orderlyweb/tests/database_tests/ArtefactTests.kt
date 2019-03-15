@@ -91,7 +91,7 @@ class ArtefactTests : CleanDatabaseTests()
                 fileNames = listOf("graph.png", "summary.csv"))
 
         insertArtefact("version1", description = "animated gif",
-                format = org.vaccineimpact.api.models.ArtefactFormat.DATA,
+                format = org.vaccineimpact.orderlyweb.models.ArtefactFormat.DATA,
                 fileNames = listOf("img.gif"))
 
         val sut = createSut()
@@ -100,11 +100,11 @@ class ArtefactTests : CleanDatabaseTests()
 
         assertThat(result[0].description).isEqualTo("graph and summary")
         assertThat(result[0].files).hasSameElementsAs(listOf("graph.png", "summary.csv"))
-        assertThat(result[0].format).isEqualTo(org.vaccineimpact.api.models.ArtefactFormat.REPORT)
+        assertThat(result[0].format).isEqualTo(org.vaccineimpact.orderlyweb.models.ArtefactFormat.REPORT)
 
         assertThat(result[1].description).isEqualTo("animated gif")
         assertThat(result[1].files).hasSameElementsAs(listOf("img.gif"))
-        assertThat(result[1].format).isEqualTo(org.vaccineimpact.api.models.ArtefactFormat.DATA)
+        assertThat(result[1].format).isEqualTo(org.vaccineimpact.orderlyweb.models.ArtefactFormat.DATA)
     }
 
     @Test

@@ -4,7 +4,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.http.client.direct.HeaderClient
-import org.vaccineimpact.api.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 class CompressedJWTHeaderClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWrapper
 {

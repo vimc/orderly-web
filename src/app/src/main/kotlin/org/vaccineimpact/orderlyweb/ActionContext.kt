@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.api.models.permissions.PermissionSet
-import org.vaccineimpact.api.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Response
 
 interface ActionContext

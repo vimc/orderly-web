@@ -1,3 +1,0 @@
-[submodule "src/models"]
-	path = src/models
-	url = https://github.com/vimc/montagu-webmodels.git

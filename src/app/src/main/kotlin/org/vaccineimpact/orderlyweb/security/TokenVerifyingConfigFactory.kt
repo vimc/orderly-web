@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.security
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.api.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.db.TokenStore
 
 class TokenVerifyingConfigFactory(
