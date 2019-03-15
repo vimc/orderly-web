@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.controllers
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
-import org.vaccineimpact.orderlyweb.errors.FailedLoginError
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 
