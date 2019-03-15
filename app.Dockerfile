@@ -1,9 +1,9 @@
-FROM montagu-reporting-api-build-environment
+FROM orderly-web-build-environment
 
 ARG git_id='UNKNOWN'
 ARG git_branch='UNKNOWN'
 ARG registry=docker.montagu.dide.ic.ac.uk:5000
-ARG name=montagu-reporting-api
+ARG name=orderly-web
 
 ENV GIT_ID $git_id
 ENV APP_DOCKER_TAG $registry/$name
