@@ -59,7 +59,7 @@ class JSONValidator
                 expectedErrorText = "Bearer token not supplied in Authorization header, or bearer token was invalid")
         validateError(response,
                 expectedErrorCode = "cookie-bearer-token-invalid",
-                expectedErrorText = "Bearer token not supplied in cookie 'montagu_jwt_token', or bearer token was invalid")
+                expectedErrorText = "Bearer token not supplied in cookie 'orderlyweb_jwt_token', or bearer token was invalid")
         validateError(response,
                 expectedErrorCode = "onetime-token-invalid",
                 expectedErrorText = "Onetime token not supplied, or onetime token was invalid")
