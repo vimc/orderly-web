@@ -9,6 +9,7 @@ class JWTHeaderClient(helper: TokenVerifier) : OrderlyWebCredentialClient, Heade
         "Authorization",
         "Bearer ",
         OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer))
+
 {
     override val errorInfo = ErrorInfo("bearer-token-invalid",
             "Bearer token not supplied in Authorization header, or bearer token was invalid")
