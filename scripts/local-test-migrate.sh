@@ -21,5 +21,8 @@ docker run --rm --entrypoint create_orderly_demo.sh \
 docker build --tag $MIGRATE_IMAGE -f migrations/Dockerfile .
 
 # Do the migrations
-docker run --rm -v ${PWD}/src/app/demo:/orderly $MIGRATE_IMAGE
+docker run --rm \
+    -u ${UID} \
+    -v ${PWD}/src/app/demo:/orderly \
+    $MIGRATE_IMAGE
 

@@ -1,4 +1,4 @@
-# Montagu Reporting API
+# Orderly Web
 
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
@@ -70,4 +70,49 @@ To make use of a built image, run:
         docker pull docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
         docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/montagu-reporting-api:master
 
-replacing `{PATH_TO_OPRDERLY}` with an absolute path to an Orderly directory.
+replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
+
+
+## Orderly Web database schema
+
+Tables required by Orderly Web, relating to users and permissions, are added to the Orderly database by this application. Code and migrations for 
+this can be found in the ```migrations``` folder.  Migrations are run by the docker container defined by 
+```migrations/Dockerfile``` which uses [Flyway](https://flywaydb.org/) to apply migrations defined in 
+```migrations/sql``` using Flyway configiration defined in ```migrations/flyway.conf```.
+The ```scripts/teamcity-migrate.sh``` script tests, builds and pushes this docker image as part of the Team City build, 
+and migrations can also be tested locally with ```scripts/local-test-migrate.sh``` 
+
+We don't create a schema as such in the Orderly database, as Sqlite does not support schema. Instead we prefix all our 
+tables' names with "orderlyweb".
+
+These tables are:
+### orderlyweb_user
+The users of OrderlyWeb, however they are authenticated.
+
+### orderlyweb_user_group
+A user group could be something like 'report reviewers' or 'Ebola team'. Individual users also get their own users, 
+because permissions are defined for user groups. 
+
+### orderlyweb_user_group_user
+Defines the membership for a user of a user group
+
+### orderlyweb_permission
+Defines a type of permission e.g. 'run reports'
+
+### orderlyweb_user_group_permission
+Links a user group to a permission to define that the user group has that permission. However that permission needs 
+context to be fully specified, which may be either global level, report level or report version level, which will be 
+found by joining to the following tables:
+
+### orderlyweb_user_group_global_permission
+Defines a global level permission. If a row in this table joins against a user_group_permission, then that user group has
+that permission in all contexts
+
+### orderlyweb_user_group_report_permission
+Defines a report level permission. If one or more rows in this table joins against a user_group_permission then the 
+group has that permission (e.g. read or run) in the context of the reports specified by the the 'report' column. 
+
+### orderlyweb_user_group_version_permission
+Defines a report version level permission. If one or more rows in this table joins against a user_group_permission then the 
+group has that permission in the context of the report versions specified by the the 'version' column. 
+
