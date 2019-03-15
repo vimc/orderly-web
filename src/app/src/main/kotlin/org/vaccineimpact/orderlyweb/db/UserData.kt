@@ -26,7 +26,7 @@ class OrderlyUserData : UserData
                 it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
                         .apply {
                             this.id = username
-                        }
+                        }.store()
             }
         }
     }

@@ -31,12 +31,11 @@ class UserDataTests : DatabaseTests()
     {
         val sut = OrderlyUserData()
         sut.addUser("user.name", "email@somewhere.com")
-        sut.addUser("user.name", "anotheremail@somewhere.com")
 
         val result = JooqContext().use {
-            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
-                    .where(ORDERLYWEB_USER_GROUP.ID.eq("user.name"))
-                    .fetchOne()
+            it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
+                    .from(ORDERLYWEB_USER_GROUP)
+                    .fetchOneInto(String::class.java)
         }
 
         assertThat(result).isEqualTo("user.name")
