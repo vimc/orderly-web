@@ -15,7 +15,6 @@ import org.vaccineimpact.orderlyweb.db.tables.File;
 import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.FileInput;
 import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
-import org.vaccineimpact.orderlyweb.db.tables.FlywaySchemaHistory;
 import org.vaccineimpact.orderlyweb.db.tables.Orderly;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
@@ -94,11 +93,6 @@ public class Tables {
      * The table <code>file_purpose</code>.
      */
     public static final FilePurpose FILE_PURPOSE = org.vaccineimpact.orderlyweb.db.tables.FilePurpose.FILE_PURPOSE;
-
-    /**
-     * The table <code>flyway_schema_history</code>.
-     */
-    public static final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = org.vaccineimpact.orderlyweb.db.tables.FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
 
     /**
      * The table <code>orderly</code>.

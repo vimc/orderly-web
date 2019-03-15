@@ -22,7 +22,6 @@ import org.vaccineimpact.orderlyweb.db.tables.File;
 import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.FileInput;
 import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
-import org.vaccineimpact.orderlyweb.db.tables.FlywaySchemaHistory;
 import org.vaccineimpact.orderlyweb.db.tables.Orderly;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
@@ -57,7 +56,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 1339719834;
+    private static final long serialVersionUID = 1024132591;
 
     /**
      * The reference instance of <code></code>
@@ -108,11 +107,6 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>file_purpose</code>.
      */
     public final FilePurpose FILE_PURPOSE = org.vaccineimpact.orderlyweb.db.tables.FilePurpose.FILE_PURPOSE;
-
-    /**
-     * The table <code>flyway_schema_history</code>.
-     */
-    public final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = org.vaccineimpact.orderlyweb.db.tables.FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
 
     /**
      * The table <code>orderly</code>.
@@ -243,7 +237,6 @@ public class DefaultSchema extends SchemaImpl {
             FileArtefact.FILE_ARTEFACT,
             FileInput.FILE_INPUT,
             FilePurpose.FILE_PURPOSE,
-            FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY,
             Orderly.ORDERLY,
             OrderlySchema.ORDERLY_SCHEMA,
             OrderlySchemaTables.ORDERLY_SCHEMA_TABLES,
