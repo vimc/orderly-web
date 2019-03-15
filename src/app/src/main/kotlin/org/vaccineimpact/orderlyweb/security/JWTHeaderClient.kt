@@ -4,7 +4,7 @@ import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.http.client.direct.HeaderClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class JWTHeaderClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWrapper
+class JWTHeaderClientWrapper(helper: TokenVerifier) : OrderlyWebCredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("bearer-token-invalid", "Bearer token not supplied in Authorization header, or bearer token was invalid")
     override val client = JWTHeaderClient(helper)

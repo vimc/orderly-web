@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 class JWTParameterClientWrapper(helper: TokenVerifier,
                                 tokenStore: OnetimeTokenStore)
-    : MontaguCredentialClientWrapper
+    : OrderlyWebCredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
     override val client = JWTParameterClient(helper, tokenStore)

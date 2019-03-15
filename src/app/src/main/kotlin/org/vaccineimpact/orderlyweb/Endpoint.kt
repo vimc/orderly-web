@@ -1,8 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.MontaguAuthorizer
+import org.vaccineimpact.orderlyweb.security.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
 import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
@@ -59,7 +58,7 @@ data class Endpoint(
             Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                     config,
                     configFactory.allClients(),
-                    MontaguAuthorizer::class.java.simpleName,
+                    OrderlyWebAuthorizer::class.java.simpleName,
                     "SkipOptions"
             ))
         }

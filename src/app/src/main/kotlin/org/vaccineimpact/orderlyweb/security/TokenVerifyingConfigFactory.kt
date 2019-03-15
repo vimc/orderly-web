@@ -29,7 +29,7 @@ class TokenVerifyingConfigFactory(
         }
 
         return Config(clientWrappers.map { it.client }).apply {
-            setAuthorizer(MontaguAuthorizer(requiredPermissions))
+            setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = TokenActionAdapter(clientWrappers)
         }

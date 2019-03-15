@@ -4,7 +4,7 @@ import org.pac4j.http.client.direct.CookieClient
 import org.pac4j.http.credentials.extractor.CookieExtractor
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class JWTCookieClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWrapper
+class JWTCookieClientWrapper(helper: TokenVerifier) : OrderlyWebCredentialClientWrapper
 {
     override val client = JWTCookieClient(helper)
     override val errorInfo = ErrorInfo(
