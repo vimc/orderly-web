@@ -1,4 +1,4 @@
-# Montagu Reporting API
+# OrderlyWeb API
 
 Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/spec/spec.md)
 
@@ -21,6 +21,42 @@ Some files are directly copied over (with only whitespace changes) from `montagu
 
 For each endpoint, if the user does not have the `reports.review` permission then only published reports will be 
 accessible. If the user does have `reports.review` then all reports will be accessible.
+
+## POST /login/
+At the moment only GitHub authentication is supported. Users who are members of a configured GitHub organization or team
+ will be able to access the API.
+ 
+To authenticate with GitHub, first create a limited scope GitHub token by going [here](https://github.com/settings/tokens)
+and choosing `read:org` under section `admin:org` and `read:user` under section `user` as the only selected scopes.
+
+Then make a POST request to `/login/` sending request header `Authorization: token GITHUB_TOKEN`
+
+Like so:
+
+    POST /login/ HTTP/1.1
+    Host: server.example.com
+    Authorization: token czZCaGRSa3F0MzpnWDFmQmF0M2JW
+    Content-Type: application/x-www-form-urlencoded
+
+### Response
+If the GitHub token is valid, and the user is a member of the app's configured organization or team then an 
+OrderlyWeb access_token is returned that can be used in future
+requests. To use the token include the access token using the Authorization
+header, with this format: `Authorization: Bearer TOKEN` in future requests to
+other  endpoints.
+
+Schema: [`LoginSuccessful.schema.json`](../schemas/LoginSuccessful.schema.json)
+
+#### Example
+
+    {
+        "access_token": "2YotnFZFEjr1zCsicMWpAA",
+        "token_type": "bearer",
+        "expires_in": 3600
+    }
+
+Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the user is not
+ a member of the configured GitHub organization or team.
 
 ## GET /reports/
 

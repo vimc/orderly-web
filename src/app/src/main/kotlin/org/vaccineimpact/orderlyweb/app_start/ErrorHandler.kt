@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
-import org.vaccineimpact.orderlyweb.errors.MontaguError
+import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import org.vaccineimpact.orderlyweb.errors.UnableToParseJsonError
 import org.vaccineimpact.orderlyweb.errors.UnexpectedError
 import spark.Request
@@ -21,7 +21,7 @@ class ErrorHandler
     {
         @Suppress("RemoveExplicitTypeArguments")
         sparkException<InvocationTargetException>(this::handleInvocationError)
-        sparkException<MontaguError>(this::handleError)
+        sparkException<OrderlyWebError>(this::handleError)
         sparkException<JsonSyntaxException> { e, req, res -> handleError(UnableToParseJsonError(e), req, res) }
         sparkException<Exception> { e, req, res ->
             logger.error("An unhandled exception occurred", e)
@@ -38,7 +38,7 @@ class ErrorHandler
 
         when (cause)
         {
-            is MontaguError -> this.handleError(cause, req, res)
+            is OrderlyWebError -> this.handleError(cause, req, res)
             is JsonSyntaxException -> this.handleError(UnableToParseJsonError(cause), req, res)
             else ->
             {
@@ -48,7 +48,7 @@ class ErrorHandler
         }
     }
 
-    fun handleError(error: MontaguError, req: Request, res: Response)
+    fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
         res.body(Serializer.instance.toJson(error.asResult()))

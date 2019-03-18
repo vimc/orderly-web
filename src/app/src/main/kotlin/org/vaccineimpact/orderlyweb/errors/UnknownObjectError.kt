@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.errors
 
-class UnknownObjectError(id: Any, typeName: Any) : MontaguError(404, listOf(
+class UnknownObjectError(id: Any, typeName: Any) : OrderlyWebError(404, listOf(
         org.vaccineimpact.orderlyweb.models.ErrorInfo("unknown-${mangleTypeName(typeName)}", "Unknown ${mangleTypeName(typeName)} : '$id'")
 ))
 {

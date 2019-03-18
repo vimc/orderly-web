@@ -1,10 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
-import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
+import org.vaccineimpact.orderlyweb.security.*
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -17,7 +14,8 @@ data class Endpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
-        override val allowParameterAuthentication: Boolean = false
+        override val allowParameterAuthentication: Boolean = false,
+        override val authenticateWithGithub: Boolean = false
 
 ) : EndpointDefinition
 {
@@ -51,6 +49,11 @@ data class Endpoint(
             if (allowParameterAuthentication)
             {
                 configFactory = configFactory.allowParameterAuthentication()
+            }
+
+            if (authenticateWithGithub)
+            {
+                configFactory = configFactory.githubAuthentication()
             }
 
             val config = configFactory.build()
@@ -87,4 +90,14 @@ fun Endpoint.transform(): Endpoint
 fun Endpoint.json(): Endpoint
 {
     return this.copy(contentType = ContentTypes.json)
+}
+
+fun Endpoint.githubAuth(): Endpoint
+{
+    return this.copy(authenticateWithGithub = true)
+}
+
+fun Endpoint.post(): Endpoint
+{
+    return this.copy(method = HttpMethod.post)
 }
