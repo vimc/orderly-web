@@ -1,10 +1,12 @@
 package org.vaccineimpact.orderlyweb.security
 
+import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
+import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.db.TokenStore
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 
 class TokenVerifyingConfigFactory(
         private val requiredPermissions: Set<PermissionRequirement>
@@ -12,27 +14,25 @@ class TokenVerifyingConfigFactory(
 {
     companion object
     {
-        val headerClientWrapper = CompressedJWTHeaderClientWrapper(WebTokenHelper.instance.verifier)
-        val cookieClientWrapper = CompressedJWTCookieClientWrapper(WebTokenHelper.instance.verifier)
-        val parameterClientWrapper = CompressedJWTParameterClientWrapper(
-                WebTokenHelper.instance.verifier,
-                TokenStore.instance
-        )
-        val githubDirectClientWrapper = GithubDirectClientWrapper()
+        val headerClient = JWTHeaderClient(WebTokenHelper.instance.verifier)
+        val cookieClient = JWTCookieClient(WebTokenHelper.instance.verifier)
+        val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
+        val githubDirectClient = GithubDirectClient()
     }
 
-    val clientWrappers = mutableListOf(headerClientWrapper, cookieClientWrapper)
+    val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient, cookieClient)
 
     override fun build(vararg parameters: Any?): Config
     {
-        return Config(clientWrappers.map { it.client }).apply {
-            setAuthorizer(MontaguAuthorizer(requiredPermissions))
+        @Suppress("UNCHECKED_CAST")
+        return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = OrderlyActionAdaptor(clientWrappers)
+            httpActionAdapter = TokenActionAdapter(allClients)
+            setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
         }
     }
 
-    fun allClients() = clientWrappers.joinToString { it.client::class.java.simpleName }
+    fun allClients() = allClients.joinToString { it::class.java.simpleName }
 
 }
 
@@ -49,13 +49,13 @@ fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
 
 fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingConfigFactory
 {
-    this.clientWrappers.add(TokenVerifyingConfigFactory.parameterClientWrapper)
+    this.allClients.add(TokenVerifyingConfigFactory.parameterClient)
     return this
 }
 
 fun TokenVerifyingConfigFactory.githubAuthentication(): TokenVerifyingConfigFactory
 {
-    this.clientWrappers.clear()
-    this.clientWrappers.add(TokenVerifyingConfigFactory.githubDirectClientWrapper)
+    this.allClients.clear()
+    this.allClients.add(TokenVerifyingConfigFactory.githubDirectClient)
     return this
 }

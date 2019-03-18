@@ -5,8 +5,8 @@ import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 
-open class MontaguBearerTokenAuthenticator(signatureConfiguration: SignatureConfiguration, expectedIssuer: String)
-    : MontaguTokenAuthenticator(signatureConfiguration, expectedIssuer)
+open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureConfiguration, expectedIssuer: String)
+    : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {

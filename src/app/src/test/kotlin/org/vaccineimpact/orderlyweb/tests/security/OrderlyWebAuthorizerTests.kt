@@ -6,15 +6,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.security.MontaguAuthorizer
+import org.vaccineimpact.orderlyweb.security.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
-class MontaguAuthorizerTests : MontaguTests()
+class OrderlyWebAuthorizerTests : MontaguTests()
 {
     @Test
     fun `is not authorized if url claim does not match request`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "some/url")
@@ -31,7 +31,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is authorized if url claim matches request`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "/some/url/")
@@ -48,7 +48,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is authorized if url claim matches request and query params match`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "/some/url/?query=whatever")
@@ -65,7 +65,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is not authorized if request does not contain same query params as claim`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "/some/url/?query=whatever")
@@ -82,7 +82,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is not authorized if claim does not have same query params as request`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "/some/url/")
@@ -99,7 +99,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is sensitive to query parameter values`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "/some/url/?query=whatever")
@@ -116,7 +116,7 @@ class MontaguAuthorizerTests : MontaguTests()
     @Test
     fun `is authorized if claim is global *`()
     {
-        val sut = MontaguAuthorizer(setOf())
+        val sut = OrderlyWebAuthorizer(setOf())
 
         val profile = CommonProfile()
         profile.addAttribute("url", "*")

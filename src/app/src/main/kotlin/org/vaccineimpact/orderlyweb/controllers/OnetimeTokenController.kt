@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.controllers
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.TokenStore
-import org.vaccineimpact.orderlyweb.security.deflated
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.security.OnetimeTokenStore
@@ -30,6 +29,6 @@ class OnetimeTokenController(context: ActionContext,
 
         tokenStore.storeToken(token)
 
-        return token.deflated()
+        return token
     }
 }

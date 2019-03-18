@@ -5,10 +5,9 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.DirectActionContext
 
-open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
+open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
     : AbstractRequireAllAuthorizer<PermissionRequirement, CommonProfile>()
 {
     init
@@ -16,7 +15,7 @@ open class MontaguAuthorizer(requiredPermissions: Set<PermissionRequirement>)
         elements = requiredPermissions
     }
 
-    private val logger = LoggerFactory.getLogger(MontaguAuthorizer::class.java)
+    private val logger = LoggerFactory.getLogger(OrderlyWebAuthorizer::class.java)
 
     override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
     {

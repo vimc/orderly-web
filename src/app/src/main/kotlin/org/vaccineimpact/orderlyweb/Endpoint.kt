@@ -61,7 +61,7 @@ data class Endpoint(
             Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                     config,
                     configFactory.allClients(),
-                    MontaguAuthorizer::class.java.simpleName,
+                    OrderlyWebAuthorizer::class.java.simpleName,
                     "SkipOptions"
             ))
         }
