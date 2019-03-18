@@ -3,19 +3,18 @@ package org.vaccineimpact.orderlyweb.security
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.models.ErrorInfo
-import org.vaccineimpact.orderlyweb.models.Result
-import org.vaccineimpact.orderlyweb.models.ResultStatus
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.models.Result
+import org.vaccineimpact.orderlyweb.models.ResultStatus
 
-class OrderlyActionAdaptor(clients: List<CredentialClientWrapper>)
-    : DefaultHttpActionAdapter()
+class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
 {
-    val unauthorizedResponse: String = Serializer.instance.toJson(Result(
+    private val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
             clients.map {
@@ -23,7 +22,7 @@ class OrderlyActionAdaptor(clients: List<CredentialClientWrapper>)
             }
     ))
 
-    fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(Result(
+    private fun forbiddenResponse(authenticationErrors: List<ErrorInfo>): String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
             authenticationErrors

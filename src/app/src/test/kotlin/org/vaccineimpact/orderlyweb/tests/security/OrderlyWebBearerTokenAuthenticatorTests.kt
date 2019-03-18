@@ -10,12 +10,12 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.security.KeyHelper
-import org.vaccineimpact.orderlyweb.security.MontaguBearerTokenAuthenticator
+import org.vaccineimpact.orderlyweb.security.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
-class MontaguBearerTokenAuthenticatorTests: MontaguTests()
+class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
@@ -39,7 +39,7 @@ class MontaguBearerTokenAuthenticatorTests: MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguBearerTokenAuthenticator(helper.verifier.signatureConfiguration, "differentissuer")
+        val sut = OrderlyWebBearerTokenAuthenticator(helper.verifier.signatureConfiguration, "differentissuer")
 
         assertThatThrownBy { sut.validate(credentials, fakeContext) }.isInstanceOf(CredentialsException::class.java)
     }
@@ -55,7 +55,7 @@ class MontaguBearerTokenAuthenticatorTests: MontaguTests()
             on(it.path) doReturn url
         }
 
-        val sut = MontaguBearerTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName)
+        val sut = OrderlyWebBearerTokenAuthenticator(helper.verifier.signatureConfiguration, helper.issuerName)
 
         sut.validate(credentials, fakeContext)
 

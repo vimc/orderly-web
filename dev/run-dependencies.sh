@@ -33,9 +33,8 @@ docker run --rm \
 
 docker-compose pull
 docker-compose up -d
-docker exec dev_api_1 touch /etc/montagu/api/go_signal
 
-echo "Depedencies are now running; press Ctrl+C to teardown"
+echo "Dependencies are now running; press Ctrl+C to teardown"
 
 # From now on, if the user presses Ctrl+C we should teardown gracefully
 trap on_interrupt INT
