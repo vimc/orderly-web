@@ -9,7 +9,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 
-class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebCredentialClient
+class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
 {
     override val errorInfo = ErrorInfo("github-token-invalid",
             "GitHub token not supplied in Authorization header, or GitHub token is invalid")

@@ -5,7 +5,7 @@ import org.pac4j.http.client.direct.CookieClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
-class JWTCookieClient(helper: TokenVerifier): OrderlyWebCredentialClient, CookieClient(
+class JWTCookieClient(helper: TokenVerifier): OrderlyWebTokenCredentialClient, CookieClient(
         cookie,
         OrderlyWebBearerTokenAuthenticator(helper.signatureConfiguration, helper.expectedIssuer)
 )

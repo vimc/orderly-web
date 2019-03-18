@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
 
-class TokenActionAdapter(clients: List<OrderlyWebCredentialClient>) : DefaultHttpActionAdapter()
+class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
 {
     private val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,

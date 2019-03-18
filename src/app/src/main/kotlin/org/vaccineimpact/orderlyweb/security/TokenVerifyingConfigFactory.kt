@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.security
 
 import org.pac4j.core.client.Client
-import org.pac4j.core.client.Clients
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.credentials.Credentials
@@ -21,7 +20,7 @@ class TokenVerifyingConfigFactory(
         val githubDirectClient = GithubDirectClient()
     }
 
-    val allClients = mutableListOf<OrderlyWebCredentialClient>(headerClient, cookieClient)
+    val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient, cookieClient)
 
     override fun build(vararg parameters: Any?): Config
     {

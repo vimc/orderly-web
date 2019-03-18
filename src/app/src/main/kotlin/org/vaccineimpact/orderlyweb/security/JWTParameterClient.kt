@@ -5,7 +5,7 @@ import org.pac4j.http.client.direct.ParameterClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
-class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : OrderlyWebCredentialClient, ParameterClient(
+class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : OrderlyWebTokenCredentialClient, ParameterClient(
         "access_token",
         OrderlyWebOnetimeTokenAuthenticator(helper.signatureConfiguration,
                 helper.expectedIssuer,
