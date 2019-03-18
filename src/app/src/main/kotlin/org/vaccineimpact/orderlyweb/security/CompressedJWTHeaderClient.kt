@@ -6,7 +6,7 @@ import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.http.client.direct.HeaderClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-class CompressedJWTHeaderClientWrapper(helper: TokenVerifier) : MontaguCredentialClientWrapper
+class CompressedJWTHeaderClientWrapper(helper: TokenVerifier) : CredentialClientWrapper
 {
     override val errorInfo = ErrorInfo("bearer-token-invalid", "Bearer token not supplied in Authorization header, or bearer token was invalid")
     override val client = CompressedJWTHeaderClient(helper)
@@ -21,6 +21,7 @@ class CompressedJWTHeaderClient(helper: TokenVerifier) : HeaderClient(
     init
     {
         credentialsExtractor = CompressedHeaderExtractor(headerName, prefixHeader, name)
+        setAuthorizationGenerator { _, profile -> extractPermissionsFromToken(profile) }
     }
 }
 

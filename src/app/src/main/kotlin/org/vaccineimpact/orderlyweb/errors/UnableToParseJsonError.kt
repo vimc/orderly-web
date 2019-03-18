@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.errors
 
 import com.google.gson.JsonSyntaxException
 
-class UnableToParseJsonError(e: JsonSyntaxException) : MontaguError(400, listOf(
+class UnableToParseJsonError(e: JsonSyntaxException) : OrderlyWebError(400, listOf(
         org.vaccineimpact.orderlyweb.models.ErrorInfo("bad-json", formatMessage(e))
 ))
 {

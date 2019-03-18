@@ -12,7 +12,8 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 
-class TokenActionAdapter(clients: List<MontaguCredentialClientWrapper>) : DefaultHttpActionAdapter()
+class OrderlyActionAdaptor(clients: List<CredentialClientWrapper>)
+    : DefaultHttpActionAdapter()
 {
     val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,

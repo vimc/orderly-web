@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
+import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import spark.Route
 import spark.Spark
 import spark.route.HttpMethod
@@ -21,7 +22,11 @@ class Router(val config: RouteConfig)
         val urls: MutableList<String> = mutableListOf()
     }
 
-    private fun transform(x: Any) = Serializer.instance.toResult(x)
+    private fun transform(x: Any) = when (x)
+    {
+        is AuthenticationResponse -> Serializer.instance.gson.toJson(x)!!
+        else -> Serializer.instance.toResult(x)
+    }
 
     fun mapEndpoints(urlBase: String)
     {
