@@ -57,7 +57,7 @@ class GithubAuthenticator(private val userData: UserData,
         {
             throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
-        if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
+        if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
