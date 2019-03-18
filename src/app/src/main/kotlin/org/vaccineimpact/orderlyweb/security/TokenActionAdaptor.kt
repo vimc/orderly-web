@@ -12,24 +12,13 @@ import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
 
-class TokenActionAdapter(clients: List<Client>) : DefaultHttpActionAdapter()
+class TokenActionAdapter(clients: List<OrderlyWebCredentialClient>) : DefaultHttpActionAdapter()
 {
     private val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
             null,
             clients.map {
-                when (it)
-                {
-                    is GithubDirectClient -> ErrorInfo("github-token-invalid",
-                            "GitHub token not supplied in Authorization header, or GitHub token was invalid")
-                    is JWTHeaderClient -> ErrorInfo("bearer-token-invalid",
-                            "Bearer token not supplied in Authorization header, or bearer token was invalid")
-                    is JWTCookieClient -> ErrorInfo(
-                            "cookie-bearer-token-invalid",
-                            "Bearer token not supplied in cookie '${JWTCookieClient.cookie}', or bearer token was invalid"
-                    )
-                    is JWTParameterClient -> ErrorInfo("onetime-token-invalid", "Onetime token not supplied, or onetime token was invalid")
-                }
+                it.errorInfo
             }
     ))
 

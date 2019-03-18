@@ -26,4 +26,3 @@ class JWTCookieClient(helper: TokenVerifier): OrderlyWebCredentialClient, Cookie
             "Bearer token not supplied in cookie '${JWTCookieClient.cookie}', or bearer token was invalid"
     )
 }
-

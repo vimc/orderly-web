@@ -18,19 +18,18 @@ class TokenVerifyingConfigFactory(
         val headerClient = JWTHeaderClient(WebTokenHelper.instance.verifier)
         val cookieClient = JWTCookieClient(WebTokenHelper.instance.verifier)
         val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
-
-        val githubDirectClientWrapper = GithubDirectClientWrapper()
+        val githubDirectClient = GithubDirectClient()
     }
 
     val allClients = mutableListOf<OrderlyWebCredentialClient>(headerClient, cookieClient)
 
     override fun build(vararg parameters: Any?): Config
     {
-            setAuthorizer(MontaguAuthorizer(requiredPermissions))
         @Suppress("UNCHECKED_CAST")
         return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = TokenActionAdapter(allClients)
+            setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
         }
     }
 
@@ -57,7 +56,7 @@ fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingCo
 
 fun TokenVerifyingConfigFactory.githubAuthentication(): TokenVerifyingConfigFactory
 {
-    this.clientWrappers.clear()
-    this.clientWrappers.add(TokenVerifyingConfigFactory.githubDirectClientWrapper)
+    this.allClients.clear()
+    this.allClients.add(TokenVerifyingConfigFactory.githubDirectClient)
     return this
 }
