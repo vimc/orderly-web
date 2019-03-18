@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
 {
     override val errorInfo = ErrorInfo("github-token-invalid",
-            "GitHub token not supplied in Authorization header, or GitHub token is invalid")
+            "GitHub token not supplied in Authorization header, or GitHub token was invalid")
 
     override fun clientInit(context: WebContext?)
     {
