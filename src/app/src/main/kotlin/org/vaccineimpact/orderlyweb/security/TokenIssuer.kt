@@ -25,9 +25,9 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         return generator.generate(onetimeTokenClaims(user, url))
     }
 
-    open fun generateBearerToken(emailId: String): String
+    open fun generateBearerToken(emailAddress: String): String
     {
-        return generator.generate(bearerTokenClaims(emailId))
+        return generator.generate(bearerTokenClaims(emailAddress))
     }
 
     fun onetimeTokenClaims(user: InternalUser, url: String): Map<String, Any>
@@ -43,10 +43,10 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         )
     }
 
-    fun bearerTokenClaims(emailId: String): Map<String, Any>
+    fun bearerTokenClaims(emailAddress: String): Map<String, Any>
     {
         return mapOf(
-                "sub" to emailId,
+                "sub" to emailAddress,
                 "iss" to issuer,
                 "exp" to getExpiry(tokenLifeSpan),
                 "token_type" to "bearer"

@@ -5,6 +5,7 @@ import khttp.options
 import khttp.post
 import khttp.structures.authorization.Authorization
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 
@@ -41,6 +42,7 @@ class AuthenticationTests : IntegrationTest()
     }
 
 
+    @Ignore
     @Test
     fun `authentication succeeds with well-formed Auth header`()
     {

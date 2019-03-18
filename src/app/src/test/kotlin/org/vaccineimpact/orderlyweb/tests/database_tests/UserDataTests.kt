@@ -12,7 +12,7 @@ class UserDataTests : DatabaseTests()
 {
 
     @Test
-    fun `addUser can create new github user`()
+    fun `addGithubUser can create new github user`()
     {
         val sut = OrderlyUserData()
         sut.addGithubUser("user.name", "email@somewhere.com")
@@ -28,7 +28,7 @@ class UserDataTests : DatabaseTests()
     }
 
     @Test
-    fun `addUser adds user group`()
+    fun `addGithubUser adds user group`()
     {
         val sut = OrderlyUserData()
         sut.addGithubUser("user.name", "email@somewhere.com")
@@ -43,7 +43,7 @@ class UserDataTests : DatabaseTests()
     }
 
     @Test
-    fun `addUser does nothing if email already exists`()
+    fun `addGithubUser does nothing if email already exists`()
     {
         val sut = OrderlyUserData()
         sut.addGithubUser("user.name", "email@somewhere.com")
