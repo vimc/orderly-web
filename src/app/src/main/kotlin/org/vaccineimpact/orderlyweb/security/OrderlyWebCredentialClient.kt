@@ -1,12 +1,11 @@
 package org.vaccineimpact.orderlyweb.security
 
-import org.pac4j.core.client.DirectClient
+import org.pac4j.core.client.Client
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-interface OrderlyWebCredentialClientWrapper
+interface OrderlyWebCredentialClient: Client<TokenCredentials, CommonProfile>
 {
     val errorInfo: ErrorInfo
-    val client: DirectClient<TokenCredentials, CommonProfile>
 }
