@@ -167,7 +167,7 @@ public class Keys {
         public static final UniqueKey<OrderlySchemaRecord> PK_ORDERLY_SCHEMA = createUniqueKey(OrderlySchema.ORDERLY_SCHEMA, "pk_orderly_schema", OrderlySchema.ORDERLY_SCHEMA.SCHEMA_VERSION);
         public static final UniqueKey<OrderlySchemaTablesRecord> PK_ORDERLY_SCHEMA_TABLES = createUniqueKey(OrderlySchemaTables.ORDERLY_SCHEMA_TABLES, "pk_orderly_schema_tables", OrderlySchemaTables.ORDERLY_SCHEMA_TABLES.NAME);
         public static final UniqueKey<OrderlywebPermissionRecord> PK_ORDERLYWEB_PERMISSION = createUniqueKey(OrderlywebPermission.ORDERLYWEB_PERMISSION, "pk_orderlyweb_permission", OrderlywebPermission.ORDERLYWEB_PERMISSION.ID);
-        public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = createUniqueKey(OrderlywebUser.ORDERLYWEB_USER, "pk_orderlyweb_user", OrderlywebUser.ORDERLYWEB_USER.USERNAME);
+        public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = createUniqueKey(OrderlywebUser.ORDERLYWEB_USER, "pk_orderlyweb_user", OrderlywebUser.ORDERLYWEB_USER.EMAIL);
         public static final UniqueKey<OrderlywebUserGroupRecord> PK_ORDERLYWEB_USER_GROUP = createUniqueKey(OrderlywebUserGroup.ORDERLYWEB_USER_GROUP, "pk_orderlyweb_user_group", OrderlywebUserGroup.ORDERLYWEB_USER_GROUP.ID);
         public static final UniqueKey<OrderlywebUserGroupPermissionRecord> PK_ORDERLYWEB_USER_GROUP_PERMISSION = createUniqueKey(OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION, "pk_orderlyweb_user_group_permission", OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION.ID);
         public static final UniqueKey<ParametersRecord> PK_PARAMETERS = createUniqueKey(Parameters.PARAMETERS, "pk_parameters", Parameters.PARAMETERS.ID);

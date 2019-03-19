@@ -4,9 +4,15 @@ import java.beans.ConstructorProperties
 import java.time.Instant
 
 data class User
-@ConstructorProperties("username", "name", "email", "lastLoggedIn")
+@ConstructorProperties("username", "displayName", "email", "userSource", "lastLoggedIn")
 constructor(val username: String,
-            val name: String,
+            val displayName: String,
             val email: String,
-            val lastLoggedIn: Instant?
+            val source: String,
+            val lastLoggedIn: Instant
 )
+
+enum class UserSource {
+    Montagu,
+    GitHub
+}

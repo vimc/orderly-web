@@ -42,6 +42,8 @@ dependencies {
     compile 'org.pac4j:pac4j-jwt:2.0.0'
     compile 'commons-codec:commons-codec:1.10'
 
+    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
+
     compile "khttp:khttp:0.1.0"
 
     testCompile "org.slf4j:slf4j-simple:1.7.21"

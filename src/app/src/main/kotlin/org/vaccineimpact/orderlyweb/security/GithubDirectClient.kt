@@ -1,11 +1,13 @@
 package org.vaccineimpact.orderlyweb.security
 
+import org.eclipse.egit.github.core.client.GitHubClient
 import org.pac4j.core.client.DirectClient
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 
@@ -20,7 +22,7 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), Orde
                 HttpConstants.AUTHORIZATION_HEADER,
                 "token ", this.name))
 
-        defaultAuthenticator(GithubAuthenticator())
+        defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository(), GitHubClient()))
 
         setAuthorizationGenerator { _, profile -> addLoginPermission(profile) }
     }

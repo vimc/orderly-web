@@ -1,7 +1,11 @@
 CREATE TABLE "orderlyweb_user" (
 "username"  TEXT ,
+"display_name" TEXT ,
 "email" TEXT ,
-PRIMARY KEY ("username")
+"disabled" INTEGER DEFAULT 0 ,
+"user_source" TEXT ,
+"last_logged_in" TEXT ,
+PRIMARY KEY ("email")
 );
 
 CREATE TABLE "orderlyweb_user_group" (

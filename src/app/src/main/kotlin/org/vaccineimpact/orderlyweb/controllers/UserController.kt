@@ -6,16 +6,15 @@ import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 
 class UserController(context: ActionContext,
-                     private val tokenHelper: WebTokenHelper,
-                     private val serializer: Serializer)
+                     private val tokenHelper: WebTokenHelper)
     : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, WebTokenHelper.instance, Serializer.instance)
+    constructor(context: ActionContext) : this(context, WebTokenHelper.instance)
 
     fun auth(): AuthenticationResponse
     {
         return AuthenticationResponse(
-                accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile.username),
+                accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile.id),
                 expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds)
     }
 
