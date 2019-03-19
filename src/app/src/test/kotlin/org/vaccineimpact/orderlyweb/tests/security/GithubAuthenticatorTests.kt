@@ -99,7 +99,7 @@ class GithubAuthenticatorTests : MontaguTests()
         val credentials = TokenCredentials("token", "")
         sut.validate(credentials, mock())
 
-        verify(mockUserData).addUser("user.name", "email", "full name", UserSource.GitHub)
+        verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
     }
 
     @Test
