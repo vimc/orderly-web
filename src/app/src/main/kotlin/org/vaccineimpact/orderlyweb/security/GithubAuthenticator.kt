@@ -56,15 +56,34 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         if (!githubOrg.isEmpty() && !userBelongToOrg(githubOrg, user))
         {
-            throw CredentialsException("User is not a member of GitHub org $githubOrg")
+            throw CredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
         }
         if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
 
-        userRepository.addUser(user.email, user.login, user.name?: "", UserSource.GitHub)
-        return user.email
+        // If the GitHub user has no public email set, we need to make an extra call to get it
+        val email = user.email ?: getEmailForUser()
+
+        userRepository.addUser(email, user.login, user.name ?: "", UserSource.GitHub)
+        return email
+    }
+
+    private fun getEmailForUser(): String
+    {
+        return try
+        {
+            UserService(githubApiClient).emails.first()
+        }
+        catch (e: RequestException)
+        {
+            if (e.status == 404)
+            {
+                throw CredentialsException("GitHub token must include scope user:email")
+            }
+            else throw e
+        }
     }
 
     private fun userBelongToOrg(githubOrg: String, user: User): Boolean
@@ -96,7 +115,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
                 ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
-                return members.contains(user)
+        return members.contains(user)
     }
 
     private fun getGitHubUser(): User
@@ -115,4 +134,5 @@ class GithubAuthenticator(private val userRepository: UserRepository,
             else throw e
         }
     }
+
 }

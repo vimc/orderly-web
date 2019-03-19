@@ -175,7 +175,7 @@ class GithubAuthenticatorTests : MontaguTests()
         assertThatThrownBy {
             sut.validate(credentials, mock())
         }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("User is not a member of GitHub org orgName")
+                .hasMessageContaining("User is not a member of GitHub org orgName or token does not include read:org scope")
     }
 
     @Test
@@ -201,4 +201,31 @@ class GithubAuthenticatorTests : MontaguTests()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub team teamName")
     }
+
+    @Test
+    fun `CredentialsException is thrown if token does not have email scope`()
+    {
+        val userWithNullEmail = mockUser.apply { email = null }
+        val mockGithubApiClient = mock<GitHubClient> {
+            on { get(argWhere { it.uri.contains("user") }) } doReturn
+                    GitHubResponse(mock(), userWithNullEmail)
+            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockUser))
+            on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockTeam))
+            on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
+                    GitHubResponse(mock(), listOf(userWithNullEmail))
+            on { get(argWhere { it.uri.contains("emails") }) } doThrow RequestException(mock(), 404)
+        }
+
+        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
+
+        val credentials = TokenCredentials("token", "")
+
+        assertThatThrownBy {
+            sut.validate(credentials, mock())
+        }.isInstanceOf(CredentialsException::class.java)
+                .hasMessageContaining("GitHub token must include scope user:email")
+    }
+
 }
