@@ -12,8 +12,9 @@ import org.junit.Test
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.UserData
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
+import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
@@ -22,6 +23,7 @@ class GithubAuthenticatorTests : MontaguTests()
     private val mockUser = User().apply {
         login = "user.name"
         email = "email"
+        name = "full name"
     }
 
     private val mockTeam = Team().apply {
@@ -45,7 +47,7 @@ class GithubAuthenticatorTests : MontaguTests()
                 GitHubResponse(mock(), listOf(mockUser))
     }
 
-    private val mockUserData = mock<UserData>()
+    private val mockUserData = mock<UserRepository>()
 
     @Test
     fun `token validation fails if credentials are not supplied`()
@@ -97,7 +99,7 @@ class GithubAuthenticatorTests : MontaguTests()
         val credentials = TokenCredentials("token", "")
         sut.validate(credentials, mock())
 
-        verify(mockUserData).addGithubUser("user.name", "email")
+        verify(mockUserData).addUser("user.name", "email", "full name", UserSource.GitHub)
     }
 
     @Test

@@ -14,11 +14,12 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.UserData
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
+import org.vaccineimpact.orderlyweb.models.UserSource
 
 
-class GithubAuthenticator(private val userData: UserData,
+class GithubAuthenticator(private val userRepository: UserRepository,
                           private val githubApiClient: GitHubClient,
                           private val appConfig: Config = AppConfig()) : Authenticator<TokenCredentials>
 {
@@ -62,7 +63,7 @@ class GithubAuthenticator(private val userData: UserData,
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
 
-        userData.addGithubUser(user.login, user.email)
+        userRepository.addUser(user.email, user.login, user.name?: "", UserSource.GitHub)
         return user.email
     }
 
