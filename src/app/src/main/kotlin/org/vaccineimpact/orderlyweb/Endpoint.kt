@@ -77,7 +77,7 @@ fun Endpoint.allowParameterAuthentication(): Endpoint
 
 fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
 {
-    val allPermissions = (permissions + "*/can-login").map {
+    val allPermissions = (permissions).map {
         PermissionRequirement.parse(it)
     }
     return this.copy(requiredPermissions = allPermissions)

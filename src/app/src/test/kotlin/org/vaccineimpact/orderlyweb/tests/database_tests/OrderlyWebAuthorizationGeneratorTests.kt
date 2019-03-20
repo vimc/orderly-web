@@ -6,12 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
@@ -30,11 +28,15 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can get global permissions for user`()
+    fun `can get permissions for user`()
     {
         JooqContext().use {
             insertUser("user@email.com", "user.name")
             giveUserGroupPermission("user@email.com", "report.read", Scope.Global(), addPermission = true)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r1"),
+                    addPermission = false)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r2"),
+                    addPermission = false)
         }
 
         val sut = OrderlyWebAuthorizationGenerator()
@@ -44,6 +46,8 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
         val result = sut.generate(mock(), profile)
 
         assertThat(result.orderlyWebPermissions)
-                .hasSameElementsAs(listOf(ReifiedPermission("report.read", Scope.Global())))
+                .hasSameElementsAs(listOf(ReifiedPermission("report.read", Scope.Global()),
+                        ReifiedPermission("report.read", Scope.Specific("report", "r1")),
+                        ReifiedPermission("report.read", Scope.Specific("report", "r2"))))
     }
 }

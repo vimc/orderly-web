@@ -8,7 +8,10 @@ import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
 import java.io.File
@@ -82,32 +85,5 @@ abstract class IntegrationTest : MontaguTests()
     protected fun assertJsonContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
-    }
-
-    protected fun fakeReportReader(reportName: String): String
-    {
-        JooqContext().use {
-            // TODO save report read perm
-
-        }
-        return "report.reader@email.com"
-    }
-
-    protected fun fakeGlobalReportReader(): String
-    {
-        JooqContext().use {
-            // TODO save report read perm
-
-        }
-        return "global.report.reader@email.com"
-    }
-
-    protected fun fakeGlobalReportReviewer(): String
-    {
-        JooqContext().use {
-            // TODO save report read perm
-
-        }
-        return "report.reviewer@email.com"
     }
 }

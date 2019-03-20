@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
 class DataTests : IntegrationTest()

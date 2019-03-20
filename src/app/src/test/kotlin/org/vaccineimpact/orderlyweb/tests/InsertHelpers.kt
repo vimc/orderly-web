@@ -216,14 +216,16 @@ fun giveUserGroupPermission(groupName: String,
         }
         if (scope.databaseScopePrefix == "report")
         {
-            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID, id)
+                    .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT, scope.databaseScopeId)
                     .execute()
         }
         if (scope.databaseScopePrefix == "version")
         {
-            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID, id)
+                    .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION, scope.databaseScopeId)
                     .execute()
         }
     }
