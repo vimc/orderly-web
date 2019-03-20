@@ -1,12 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests
 
-import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.FilePurpose
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.FilePurpose
+import org.vaccineimpact.orderlyweb.models.Scope
 import java.io.File
 import java.sql.Timestamp
 import kotlin.streams.asSequence
@@ -79,15 +79,15 @@ fun insertReport(name: String,
 
         if (labels.isEmpty())
         {
-             val publicRecord = it.dsl.newRecord(CHANGELOG_LABEL)
-                     .apply{
-                         this.id = "public"
-                         this.public = true
-                     }
-             publicRecord.store();
+            val publicRecord = it.dsl.newRecord(CHANGELOG_LABEL)
+                    .apply {
+                        this.id = "public"
+                        this.public = true
+                    }
+            publicRecord.store();
 
             val internalRecord = it.dsl.newRecord(CHANGELOG_LABEL)
-                    .apply{
+                    .apply {
                         this.id = "internal"
                         this.public = false
                     }
@@ -146,7 +146,7 @@ fun insertArtefact(reportVersionId: String,
 
 fun insertData(reportVersionId: String,
                name: String,
-               sql: String ,
+               sql: String,
                hash: String)
 {
     JooqContext().use {
@@ -156,6 +156,76 @@ fun insertData(reportVersionId: String,
                 .set(REPORT_VERSION_DATA.SQL, sql)
                 .set(REPORT_VERSION_DATA.HASH, hash)
                 .execute()
+    }
+}
+
+
+fun insertUser(email: String,
+               name: String)
+{
+    JooqContext().use {
+        it.dsl.insertInto(ORDERLYWEB_USER)
+                .set(ORDERLYWEB_USER.EMAIL, email)
+                .set(ORDERLYWEB_USER.USERNAME, name)
+                .set(ORDERLYWEB_USER.DISPLAY_NAME, name)
+                .set(ORDERLYWEB_USER.USER_SOURCE, "github")
+                .execute()
+
+        it.dsl.insertInto(ORDERLYWEB_USER_GROUP)
+                .set(ORDERLYWEB_USER_GROUP.ID, email)
+                .execute()
+
+        it.dsl.insertInto(ORDERLYWEB_USER_GROUP_USER)
+                .set(ORDERLYWEB_USER_GROUP_USER.USER, email)
+                .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, email)
+                .execute()
+    }
+}
+
+fun giveUserGroupPermission(groupName: String,
+                            permissionName: String,
+                            scope: Scope,
+                            addPermission: Boolean)
+{
+    JooqContext().use {
+
+        if (addPermission)
+        {
+            it.dsl.insertInto(ORDERLYWEB_PERMISSION)
+                    .set(ORDERLYWEB_PERMISSION.ID, permissionName)
+                    .execute()
+
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .set(ORDERLYWEB_USER_GROUP_PERMISSION.ID, 1)
+                    .set(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION, permissionName)
+                    .set(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP, groupName)
+                    .execute()
+        }
+
+        val id = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                .from(ORDERLYWEB_USER_GROUP_PERMISSION)
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permissionName))
+                .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
+                .fetchOneInto(Int::class.java)
+
+        if (scope is Scope.Global)
+        {
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                    .set(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, id)
+                    .execute()
+        }
+        if (scope.databaseScopePrefix == "report")
+        {
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                    .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID, id)
+                    .execute()
+        }
+        if (scope.databaseScopePrefix == "version")
+        {
+            it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                    .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID, id)
+                    .execute()
+        }
     }
 }
 

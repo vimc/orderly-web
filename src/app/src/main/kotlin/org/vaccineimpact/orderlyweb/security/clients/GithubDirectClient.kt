@@ -9,9 +9,8 @@ import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizationGenerator
 
 class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
 {
@@ -25,13 +24,7 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), Orde
                 "token ", this.name))
 
         defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository(), GitHubClient()))
-
-        setAuthorizationGenerator { _, profile -> addLoginPermission(profile) }
+        setAuthorizationGenerator(OrderlyWebAuthorizationGenerator())
     }
 
-    private fun addLoginPermission(profile: CommonProfile): CommonProfile
-    {
-        profile.orderlyWebPermissions = PermissionSet("*/can-login")
-        return profile
-    }
 }
