@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.issuing
 
 import java.security.KeyPair
 import java.security.KeyPairGenerator

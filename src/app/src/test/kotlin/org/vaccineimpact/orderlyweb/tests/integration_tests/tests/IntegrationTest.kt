@@ -7,10 +7,9 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.InternalUser
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.TestTokenGenerator
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
 import java.io.File
 
@@ -22,10 +21,6 @@ abstract class IntegrationTest : MontaguTests()
     companion object
     {
         var appStarted: Boolean = false
-
-        // Use a single TestTokenGenerator for all tests. This
-        // ensures that the same keypair is used throughout.
-        val tokenHelper = TestTokenGenerator()
 
         @BeforeClass
         @JvmStatic
@@ -89,9 +84,30 @@ abstract class IntegrationTest : MontaguTests()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
     }
 
-    protected fun fakeReportReader(reportName: String): InternalUser
+    protected fun fakeReportReader(reportName: String): String
     {
-        return InternalUser("tettusername", "user", "*/can-login,report:$reportName/reports.read")
+        JooqContext().use {
+            // TODO save report read perm
+
+        }
+        return "report.reader@email.com"
     }
 
+    protected fun fakeGlobalReportReader(): String
+    {
+        JooqContext().use {
+            // TODO save report read perm
+
+        }
+        return "global.report.reader@email.com"
+    }
+
+    protected fun fakeGlobalReportReviewer(): String
+    {
+        JooqContext().use {
+            // TODO save report read perm
+
+        }
+        return "report.reviewer@email.com"
+    }
 }

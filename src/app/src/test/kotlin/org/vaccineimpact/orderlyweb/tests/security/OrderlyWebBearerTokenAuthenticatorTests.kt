@@ -9,16 +9,15 @@ import org.junit.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
-import org.vaccineimpact.orderlyweb.security.KeyHelper
-import org.vaccineimpact.orderlyweb.security.OrderlyWebBearerTokenAuthenticator
-import org.vaccineimpact.orderlyweb.security.InternalUser
+import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
 class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
 {
     lateinit var helper: WebTokenHelper
-    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
+    val fakeUserEmail = "user@email.com"
 
     val tokenIssuer = "tokenissuer"
 
@@ -32,7 +31,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     fun `token is invalid if issuer is not expected`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
+        val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
         val credentials = TokenCredentials(token, "MontaguTests")
 
         val fakeContext = mock<WebContext>() {
@@ -48,7 +47,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     fun `global * attribute is added to user profile`()
     {
         val url = "testurl"
-        val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
+        val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
         val credentials = TokenCredentials(token, "MontaguTests")
 
         val fakeContext = mock<WebContext>() {

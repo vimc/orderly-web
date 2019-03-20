@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.security.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 

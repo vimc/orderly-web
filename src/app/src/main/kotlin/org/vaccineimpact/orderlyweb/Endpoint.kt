@@ -1,7 +1,10 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.*
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.clients.TokenVerifyingConfigFactory
+import org.vaccineimpact.orderlyweb.security.clients.allowParameterAuthentication
+import org.vaccineimpact.orderlyweb.security.clients.githubAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -41,30 +44,28 @@ data class Endpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        if (AppConfig().authEnabled)
+
+        var configFactory = TokenVerifyingConfigFactory(
+                this.requiredPermissions.toSet())
+
+        if (allowParameterAuthentication)
         {
-            var configFactory = TokenVerifyingConfigFactory(
-                    this.requiredPermissions.toSet())
-
-            if (allowParameterAuthentication)
-            {
-                configFactory = configFactory.allowParameterAuthentication()
-            }
-
-            if (authenticateWithGithub)
-            {
-                configFactory = configFactory.githubAuthentication()
-            }
-
-            val config = configFactory.build()
-
-            Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                    config,
-                    configFactory.allClients(),
-                    OrderlyWebAuthorizer::class.java.simpleName,
-                    "SkipOptions"
-            ))
+            configFactory = configFactory.allowParameterAuthentication()
         }
+
+        if (authenticateWithGithub)
+        {
+            configFactory = configFactory.githubAuthentication()
+        }
+
+        val config = configFactory.build()
+
+        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                config,
+                configFactory.allClients(),
+                OrderlyWebAuthorizer::class.java.simpleName,
+                "SkipOptions"
+        ))
     }
 
 }

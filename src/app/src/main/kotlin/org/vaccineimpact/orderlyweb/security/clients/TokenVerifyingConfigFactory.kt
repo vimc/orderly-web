@@ -1,12 +1,18 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.clients
 
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
+import org.vaccineimpact.orderlyweb.security.WebTokenHelper
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 
 class TokenVerifyingConfigFactory(
         private val requiredPermissions: Set<PermissionRequirement>
@@ -28,7 +34,11 @@ class TokenVerifyingConfigFactory(
         return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = TokenActionAdapter(allClients)
-            setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
+
+            if (AppConfig().authEnabled)
+            {
+                setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
+            }
         }
     }
 
@@ -43,7 +53,7 @@ fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
             .split(',')
             .filter { it.isNotEmpty() }
     )
-    profile.montaguPermissions = permissions
+    profile.orderlyWebPermissions = permissions
     return profile
 }
 

@@ -8,7 +8,7 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
-import org.vaccineimpact.orderlyweb.security.montaguPermissions
+import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
 import spark.Response
 
@@ -43,7 +43,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     }
 
     override val permissions by lazy {
-        userProfile.montaguPermissions
+        userProfile.orderlyWebPermissions
     }
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean

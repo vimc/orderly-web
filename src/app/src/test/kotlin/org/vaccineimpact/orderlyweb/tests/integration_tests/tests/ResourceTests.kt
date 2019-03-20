@@ -16,7 +16,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/resources",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
     }
@@ -26,7 +26,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/resources",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
     }
@@ -56,7 +56,7 @@ class ResourceTests : IntegrationTest()
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
         val token = requestHelper.generateOnetimeToken(url)
         val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata,
-                user = fakeReportReader("badereportname"))
+                userEmail = fakeReportReader("badereportname"))
 
         assertUnauthorized(response, "use_resource")
     }

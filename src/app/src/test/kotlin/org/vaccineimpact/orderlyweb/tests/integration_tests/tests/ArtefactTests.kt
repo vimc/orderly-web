@@ -14,7 +14,7 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
 
         assertJsonContentType(response)
@@ -27,7 +27,7 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -79,7 +79,7 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = fakeReportReader("other"))
+                userEmail = fakeReportReader("other"))
 
         assertSuccessful(response)
     }
@@ -91,7 +91,7 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "other")
     }

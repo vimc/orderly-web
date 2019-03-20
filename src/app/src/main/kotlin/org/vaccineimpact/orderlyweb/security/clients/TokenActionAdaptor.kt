@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.clients
 
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.sparkjava.DefaultHttpActionAdapter
@@ -11,6 +11,8 @@ import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
+import org.vaccineimpact.orderlyweb.security.authorization.mismatchedURL
+import org.vaccineimpact.orderlyweb.security.authorization.missingPermissions
 
 class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
 {

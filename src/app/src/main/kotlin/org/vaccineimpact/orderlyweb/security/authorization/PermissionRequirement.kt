@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission

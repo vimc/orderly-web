@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.pac4j.core.authorization.authorizer.AbstractRequireAllAuthorizer
 import org.pac4j.core.context.WebContext
@@ -47,7 +47,7 @@ open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
 
     override fun check(context: WebContext, profile: CommonProfile, element: PermissionRequirement): Boolean
     {
-        val profilePermissions = profile.montaguPermissions
+        val profilePermissions = profile.orderlyWebPermissions
         val reifiedRequirement = element.reify(DirectActionContext(context as SparkWebContext))
 
         val hasPermission = profilePermissions.any { reifiedRequirement.satisfiedBy(it) }

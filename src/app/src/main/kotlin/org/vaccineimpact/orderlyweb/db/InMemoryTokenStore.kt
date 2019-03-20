@@ -1,7 +1,5 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.vaccineimpact.orderlyweb.security.OnetimeTokenStore
-
 class InMemoryTokenStore : OnetimeTokenStore
 {
     private var tokens = mutableSetOf<String>()

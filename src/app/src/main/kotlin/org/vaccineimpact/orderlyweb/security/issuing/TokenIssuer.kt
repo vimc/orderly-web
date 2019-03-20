@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.issuing
 
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.jwt.config.signature.RSASignatureConfiguration
@@ -20,9 +20,9 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
     val generator = JwtGenerator<CommonProfile>(signatureConfiguration)
     private val random = SecureRandom()
 
-    open fun generateOnetimeActionToken(user: InternalUser, url: String): String
+    open fun generateOnetimeActionToken(emailAddress: String, url: String): String
     {
-        return generator.generate(onetimeTokenClaims(user, url))
+        return generator.generate(onetimeTokenClaims(emailAddress, url))
     }
 
     open fun generateBearerToken(emailAddress: String): String
@@ -30,14 +30,13 @@ open class TokenIssuer(keyPair: KeyPair, val issuer: String)
         return generator.generate(bearerTokenClaims(emailAddress))
     }
 
-    fun onetimeTokenClaims(user: InternalUser, url: String): Map<String, Any>
+    fun onetimeTokenClaims(emailAddress: String, url: String): Map<String, Any>
     {
         return mapOf(
                 "iss" to issuer,
                 "sub" to oneTimeActionSubject,
+                "id" to emailAddress,
                 "exp" to getExpiry(oneTimeLinkLifeSpan),
-                "permissions" to user.permissions,
-                "roles" to user.roles,
                 "url" to url,
                 "nonce" to getNonce()
         )

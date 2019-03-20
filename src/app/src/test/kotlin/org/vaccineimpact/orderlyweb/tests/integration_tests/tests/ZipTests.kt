@@ -6,7 +6,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.tests.createArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.deleteArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.insertReport
@@ -47,7 +46,7 @@ class ZipTests : IntegrationTest()
         try
         {
             val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
-                    user = InternalUser("testusername", "user", "*/can-login,report:testname/reports.read"))
+                    userEmail = "user@email.com")
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -95,7 +94,7 @@ class ZipTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/all",
-                contentType = ContentTypes.zip, user = fakeReportReader("badreportnamer"))
+                contentType = ContentTypes.zip,  userEmail = "user@email.com")
 
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
@@ -127,7 +126,7 @@ class ZipTests : IntegrationTest()
                     .first()
         }
         val response = requestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
-                user = InternalUser("testusername", "user", "*/can-login,report:use_resource/reports.read"))
+                userEmail = "user@email.com")
 
         val entries = getZipEntries(response)
         Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv")
@@ -144,7 +143,7 @@ class ZipTests : IntegrationTest()
                     .first()
         }
         val response = requestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
-                user = InternalUser("testusername", "user", "*/can-login,*/reports.read,*/reports.review"))
+                userEmail = "user@email.com")
 
         val entries = getZipEntries(response)
 
