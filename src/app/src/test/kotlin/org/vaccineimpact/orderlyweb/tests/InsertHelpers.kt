@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests
 
+import com.nhaarman.mockito_kotlin.doNothing
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -164,20 +165,24 @@ fun insertUser(email: String,
                name: String)
 {
     JooqContext().use {
+
         it.dsl.insertInto(ORDERLYWEB_USER)
                 .set(ORDERLYWEB_USER.EMAIL, email)
                 .set(ORDERLYWEB_USER.USERNAME, name)
                 .set(ORDERLYWEB_USER.DISPLAY_NAME, name)
                 .set(ORDERLYWEB_USER.USER_SOURCE, "github")
+                .onDuplicateKeyIgnore()
                 .execute()
 
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP)
                 .set(ORDERLYWEB_USER_GROUP.ID, email)
+                .onDuplicateKeyIgnore()
                 .execute()
 
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP_USER)
                 .set(ORDERLYWEB_USER_GROUP_USER.USER, email)
                 .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, email)
+                .onDuplicateKeyIgnore()
                 .execute()
     }
 }
@@ -189,16 +194,23 @@ fun giveUserGroupPermission(groupName: String,
 {
     JooqContext().use {
 
+        val lastId = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID.max())
+                .from(ORDERLYWEB_USER_GROUP_PERMISSION)
+                .singleOrNull()?.into(Int::class.java) ?: 0
+
         if (addPermission)
         {
             it.dsl.insertInto(ORDERLYWEB_PERMISSION)
                     .set(ORDERLYWEB_PERMISSION.ID, permissionName)
+                    .onDuplicateKeyIgnore()
                     .execute()
 
+
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_PERMISSION)
-                    .set(ORDERLYWEB_USER_GROUP_PERMISSION.ID, 1)
+                    .set(ORDERLYWEB_USER_GROUP_PERMISSION.ID, lastId + 1)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION, permissionName)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP, groupName)
+                    .onDuplicateKeyIgnore()
                     .execute()
         }
 
@@ -206,12 +218,14 @@ fun giveUserGroupPermission(groupName: String,
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                 .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permissionName))
                 .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
-                .fetchOneInto(Int::class.java)
+                .fetchInto(Int::class.java)
+                .first()
 
         if (scope is Scope.Global)
         {
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, id)
+                    .onDuplicateKeyIgnore()
                     .execute()
         }
         if (scope.databaseScopePrefix == "report")
@@ -219,6 +233,7 @@ fun giveUserGroupPermission(groupName: String,
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID, id)
                     .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT, scope.databaseScopeId)
+                    .onDuplicateKeyIgnore()
                     .execute()
         }
         if (scope.databaseScopePrefix == "version")
@@ -226,6 +241,7 @@ fun giveUserGroupPermission(groupName: String,
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID, id)
                     .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION, scope.databaseScopeId)
+                    .onDuplicateKeyIgnore()
                     .execute()
         }
     }

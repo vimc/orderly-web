@@ -18,7 +18,8 @@ class DemoDataTests : IntegrationTest()
     @Test
     fun `can get demo report data`()
     {
-        val response = requestHelper.get("/reports/$MINIMAL_REPORT_NAME",  userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.get("/reports/$MINIMAL_REPORT_NAME",
+                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         assertJsonContentType(response)

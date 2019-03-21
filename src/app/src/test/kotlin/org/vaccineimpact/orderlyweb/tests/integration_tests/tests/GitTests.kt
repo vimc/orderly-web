@@ -1,11 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 
 class GitTests : IntegrationTest()
 {
-
     @Test
     fun `gets git status`()
     {

@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 
@@ -91,7 +92,7 @@ class VersionTests : IntegrationTest()
     fun `can get all versions with global report reading permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/versions/", userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.get("/versions/", userEmail = fakeGlobalReportReader())
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -121,7 +122,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/versions/",
-                userEmail = "user@email.com")
+                userEmail = fakeReportReader("testname"))
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -137,7 +138,8 @@ class VersionTests : IntegrationTest()
     fun `can get report versions by name with global report reading permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname", userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.get("/reports/testname",
+                userEmail = fakeGlobalReportReader())
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -148,7 +150,8 @@ class VersionTests : IntegrationTest()
     fun `can get report versions by name with specific report reading permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname", userEmail =  "user@email.com")
+        val response = requestHelper.get("/reports/testname",
+                userEmail = fakeReportReader("testname"))
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -159,7 +162,8 @@ class VersionTests : IntegrationTest()
     fun `get report versions throws 403 if user not authorized to read report`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname", userEmail = fakeReportReader("badreportname"))
+        val response = requestHelper.get("/reports/testname",
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -169,7 +173,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")
@@ -180,7 +184,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion",
-                userEmail = "user@email.com")
+                userEmail = fakeReportReader("testname"))
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Version")
@@ -199,7 +203,8 @@ class VersionTests : IntegrationTest()
     fun `reviewer can get unpublished report by name and version`()
     {
         insertReport("testname", "testversion", published = false)
-        val response = requestHelper.get("/reports/testname/versions/testversion", userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.get("/reports/testname/versions/testversion",
+                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -223,7 +228,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -234,7 +239,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion", changelog = listOf())
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -248,7 +253,7 @@ class VersionTests : IntegrationTest()
         //reader now has permission to get public changelog items for published reports which they have perms to read
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -259,7 +264,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/notatestversion/changelog",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version",
@@ -271,7 +276,7 @@ class VersionTests : IntegrationTest()
     {
         insertReport("testname", "testversion", published = false)
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
-                userEmail = fakeGlobalReportReviewer())
+                userEmail = fakeGlobalReportReader())
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version",

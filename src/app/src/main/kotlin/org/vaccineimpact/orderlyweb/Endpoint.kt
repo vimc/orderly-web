@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb
 
+import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
@@ -18,7 +19,8 @@ data class Endpoint(
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val allowParameterAuthentication: Boolean = false,
-        override val authenticateWithGithub: Boolean = false
+        override val authenticateWithGithub: Boolean = false,
+        override val secure: Boolean = false
 
 ) : EndpointDefinition
 {
@@ -32,7 +34,7 @@ data class Endpoint(
 
     override fun additionalSetup(url: String)
     {
-        if (requiredPermissions.any())
+        if (secure)
         {
             addSecurityFilter(url)
         }
@@ -64,7 +66,7 @@ data class Endpoint(
                 config,
                 configFactory.allClients(),
                 OrderlyWebAuthorizer::class.java.simpleName,
-                "SkipOptions"
+                SkipOptionsMatcher.name
         ))
     }
 
@@ -80,7 +82,7 @@ fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
     val allPermissions = (permissions).map {
         PermissionRequirement.parse(it)
     }
-    return this.copy(requiredPermissions = allPermissions)
+    return this.copy(requiredPermissions = allPermissions, secure = true)
 }
 
 fun Endpoint.transform(): Endpoint

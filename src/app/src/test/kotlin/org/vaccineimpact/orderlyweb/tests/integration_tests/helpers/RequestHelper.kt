@@ -119,6 +119,8 @@ fun fakeGlobalReportReviewer(): String
 {
     val email = "global.report.reviewer@email.com"
     insertUser(email, "report reviewer")
+    giveUserGroupPermission(email, "reports.read", Scope.Global(), addPermission = true)
     giveUserGroupPermission(email, "reports.review", Scope.Global(), addPermission = true)
+    giveUserGroupPermission(email, "reports.run", Scope.Global(), addPermission = true)
     return email
 }

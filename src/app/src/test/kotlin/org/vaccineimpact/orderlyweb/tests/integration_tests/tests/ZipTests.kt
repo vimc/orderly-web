@@ -68,7 +68,8 @@ class ZipTests : IntegrationTest()
         {
 
             val token = requestHelper.generateOnetimeToken("")
-            val response = requestHelper.get("/reports/testname/versions/testversion/all/?access_token=$token", contentType = ContentTypes.zip)
+            val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all/?access_token=$token",
+                    contentType = ContentTypes.zip)
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")

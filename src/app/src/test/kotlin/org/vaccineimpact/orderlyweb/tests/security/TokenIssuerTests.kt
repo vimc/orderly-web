@@ -1,4 +1,4 @@
-package org.vaccineimpact.reporting_api.tests.security
+package org.vaccineimpact.orderlyweb.tests.security
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -52,7 +52,7 @@ class TokenIssuerTests : MontaguTests()
         val jwt = JWTParser.parse(result)
         val claims = jwt.jwtClaimsSet.claims
         assertThat(claims["iss"]).isEqualTo("testIssuer")
-        assertThat(claims["sub"]).isEqualTo("testusername")
+        assertThat(claims["sub"]).isEqualTo("test@email.com")
         assertThat(claims["token_type"]).isEqualTo("bearer")
 
         val exp = claims["exp"] as Date

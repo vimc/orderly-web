@@ -22,7 +22,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/minimal/run/", mapOf(), userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.post("/reports/minimal/run/", mapOf(),
+                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -32,7 +33,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = requestHelper.get("/reports/agronomic_seahorse/status/", userEmail = fakeGlobalReportReviewer())
+        val response = requestHelper.get("/reports/agronomic_seahorse/status/",
+                userEmail = fakeGlobalReportReviewer())
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Status")

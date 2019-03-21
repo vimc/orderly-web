@@ -85,7 +85,7 @@ class DataTests : IntegrationTest()
         val fakedata = "hf647sa674yh3basrhj"
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
