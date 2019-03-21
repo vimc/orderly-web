@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.clients
 
 import org.pac4j.core.client.Client
 import org.pac4j.core.credentials.TokenCredentials

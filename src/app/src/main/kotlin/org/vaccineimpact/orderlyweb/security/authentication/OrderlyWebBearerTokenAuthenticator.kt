@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authentication
 
 import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials

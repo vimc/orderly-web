@@ -5,8 +5,8 @@ import org.junit.Test
 import com.nimbusds.jwt.JWTParser
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.vaccineimpact.orderlyweb.security.InternalUser
-import org.vaccineimpact.orderlyweb.security.KeyHelper
-import org.vaccineimpact.orderlyweb.security.TokenIssuer
+import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
+import org.vaccineimpact.orderlyweb.security.issuing.TokenIssuer
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import java.time.Duration
 import java.time.Instant

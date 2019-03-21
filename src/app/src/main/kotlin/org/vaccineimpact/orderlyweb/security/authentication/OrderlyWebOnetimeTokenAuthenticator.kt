@@ -1,9 +1,11 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authentication
 
 import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
+import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
+import org.vaccineimpact.orderlyweb.security.issuing.TokenIssuer
 
 class OrderlyWebOnetimeTokenAuthenticator(
         signatureConfiguration: SignatureConfiguration,

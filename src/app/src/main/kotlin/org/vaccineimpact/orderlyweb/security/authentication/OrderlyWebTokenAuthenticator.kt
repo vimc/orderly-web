@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authentication
 
 import org.pac4j.jwt.config.signature.SignatureConfiguration
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator

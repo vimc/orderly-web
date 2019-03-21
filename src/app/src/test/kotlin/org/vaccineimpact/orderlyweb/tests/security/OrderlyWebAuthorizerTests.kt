@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.security.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
 class OrderlyWebAuthorizerTests : MontaguTests()

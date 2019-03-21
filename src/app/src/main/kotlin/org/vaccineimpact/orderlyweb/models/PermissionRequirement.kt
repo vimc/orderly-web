@@ -1,6 +1,5 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.models
 
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException

@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authentication
 
 import org.eclipse.egit.github.core.User
 import org.eclipse.egit.github.core.client.GitHubClient
