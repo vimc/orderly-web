@@ -9,6 +9,9 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.tests.createArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.deleteArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipInputStream
 
@@ -46,7 +49,7 @@ class ZipTests : IntegrationTest()
         try
         {
             val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
-                    userEmail = "user@email.com")
+                    userEmail = fakeReportReader("testname"))
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -66,9 +69,7 @@ class ZipTests : IntegrationTest()
 
         try
         {
-
-            val token = requestHelper.generateOnetimeToken("")
-            val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all/?access_token=$token",
+            val response = requestHelper.get("/reports/testname/versions/testversion/all/",
                     contentType = ContentTypes.zip)
 
             assertSuccessful(response)
@@ -127,7 +128,7 @@ class ZipTests : IntegrationTest()
                     .first()
         }
         val response = requestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
-                userEmail = "user@email.com")
+                userEmail = fakeGlobalReportReader())
 
         val entries = getZipEntries(response)
         Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv")
@@ -143,8 +144,9 @@ class ZipTests : IntegrationTest()
                     .fetchInto(String::class.java)
                     .first()
         }
-        val response = requestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
-                userEmail = "user@email.com")
+        val response = requestHelper.get("/reports/use_resource/versions/$version/all/",
+                contentType = ContentTypes.zip,
+                userEmail = fakeGlobalReportReviewer())
 
         val entries = getZipEntries(response)
 
