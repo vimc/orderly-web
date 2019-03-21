@@ -7,10 +7,8 @@ import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.security.clients.*
 
 class TokenVerifyingConfigFactory(

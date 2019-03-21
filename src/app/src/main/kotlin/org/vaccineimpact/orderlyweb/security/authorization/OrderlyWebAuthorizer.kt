@@ -6,6 +6,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.DirectActionContext
+import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 
 open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
     : AbstractRequireAllAuthorizer<PermissionRequirement, CommonProfile>()

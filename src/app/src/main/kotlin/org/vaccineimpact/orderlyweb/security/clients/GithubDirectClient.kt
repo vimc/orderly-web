@@ -26,5 +26,4 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), Orde
         defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository(), GitHubClient()))
         setAuthorizationGenerator(OrderlyWebAuthorizationGenerator())
     }
-
 }

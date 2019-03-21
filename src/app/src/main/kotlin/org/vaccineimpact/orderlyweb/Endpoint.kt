@@ -1,10 +1,10 @@
 package org.vaccineimpact.orderlyweb
 
+import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.authorization.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
 import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.githubAuthentication
 import spark.Spark
 import spark.route.HttpMethod

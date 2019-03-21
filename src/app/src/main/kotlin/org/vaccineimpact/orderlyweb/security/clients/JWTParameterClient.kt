@@ -4,8 +4,8 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.http.client.direct.ParameterClient
 import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
-import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebOnetimeTokenAuthenticator
+import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizationGenerator
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
