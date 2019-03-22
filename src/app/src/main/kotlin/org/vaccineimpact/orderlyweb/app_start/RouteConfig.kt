@@ -8,7 +8,7 @@ interface RouteConfig
     val endpoints: List<EndpointDefinition>
 }
 
-object MontaguRouteConfig : RouteConfig
+object APIRouteConfig : RouteConfig
 {
     override val endpoints: List<EndpointDefinition> =
             ReportRouteConfig.endpoints

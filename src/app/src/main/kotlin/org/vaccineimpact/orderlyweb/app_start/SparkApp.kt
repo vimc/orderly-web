@@ -1,9 +1,12 @@
 package org.vaccineimpact.orderlyweb.app_start
 
+import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
+import spark.Spark.staticFiles
+import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
@@ -17,15 +20,20 @@ fun main(args: Array<String>)
 
 class OrderlyWeb
 {
-    private val urlBase = "/v1"
+    private val apiUrlBase = "/api/v1"
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
     fun run()
     {
+        val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
+        freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
+        freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
+
+        staticFiles.externalLocation(File("static/public").absolutePath)
+
         waitForGoSignal()
         setupPort()
-        spk.redirect.get("/", urlBase)
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
         spk.options("*") { _, res ->
             res.header("Access-Control-Allow-Headers", "Authorization")
@@ -35,12 +43,9 @@ class OrderlyWeb
 
         TokenStore.instance.setup()
         ErrorHandler.setup()
-        Router(MontaguRouteConfig).mapEndpoints(urlBase)
+        val router = Router(freeMarkerConfig)
+        router.mapEndpoints(APIRouteConfig, apiUrlBase)
 
-        if (!AppConfig().authEnabled)
-        {
-            logger.warn("WARNING: AUTHENTICATION IS DISABLED")
-        }
     }
 
     private fun setupPort()
