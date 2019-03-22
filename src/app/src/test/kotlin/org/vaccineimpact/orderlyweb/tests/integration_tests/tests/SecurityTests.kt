@@ -21,11 +21,10 @@ class SecurityTests : IntegrationTest()
 
         val response = RequestHelper().getNoAuth("/reports/")
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateError(response.text, "bearer-token-invalid",
                 "Bearer token not supplied in Authorization header, or bearer token was invalid")
-
     }
 
     @Test
@@ -42,7 +41,7 @@ class SecurityTests : IntegrationTest()
 
         val response = RequestHelper().getWrongAuth("/reports/")
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateError(response.text, "bearer-token-invalid",
                 "Bearer token not supplied in Authorization header, or bearer token was invalid")
@@ -54,7 +53,6 @@ class SecurityTests : IntegrationTest()
     {
         val response = RequestHelper().getWrongPermissions("/reports/")
 
-        val test = response.text
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
@@ -74,7 +72,7 @@ class SecurityTests : IntegrationTest()
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/someartefact/?access_token=$token",
                         ContentTypes.binarydata)
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
                 "You do not have sufficient permissions to access this resource." +
@@ -92,11 +90,11 @@ class SecurityTests : IntegrationTest()
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/someotherartefact/?access_token=$token",
                         ContentTypes.binarydata)
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
-                "This token is issued for /v1/reports/testname/versions/testversion/artefacts/someartefact/ but the " +
-                        "current request is for /v1/reports/testname/versions/testversion/artefacts/someotherartefact/")
+                "This token is issued for /api/v1/reports/testname/versions/testversion/artefacts/someartefact/ but the " +
+                        "current request is for /api/v1/reports/testname/versions/testversion/artefacts/someotherartefact/")
 
     }
 
@@ -108,7 +106,7 @@ class SecurityTests : IntegrationTest()
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/fakeartefact/?access_token=42678iwek",
                         ContentTypes.binarydata)
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
 
@@ -124,7 +122,7 @@ class SecurityTests : IntegrationTest()
         val response = requestHelper
                 .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
     }
@@ -138,7 +136,7 @@ class SecurityTests : IntegrationTest()
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact"
         val response = requestHelper.getNoAuth("$url/", ContentTypes.binarydata)
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
     }
