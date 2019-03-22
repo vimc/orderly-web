@@ -2,8 +2,6 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.*
 import org.jooq.impl.TableImpl
-import org.vaccineimpact.orderlyweb.models.AmbiguousRelationBetweenTables
-import org.vaccineimpact.orderlyweb.models.MissingRelationBetweenTables
 
 /**
  * A JoinPath allows us to automatically construct the series of join operations needed

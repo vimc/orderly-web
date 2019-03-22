@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.models
+package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Table
 
