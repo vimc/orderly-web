@@ -19,7 +19,7 @@ class RequestHelper
         CertificateHelper.disableCertificateValidation()
     }
 
-    val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
+    val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     private val parser = JsonParser()
 
     fun get(url: String, contentType: String = ContentTypes.json,
