@@ -4,11 +4,11 @@ import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.controllers.Template
+import org.vaccineimpact.orderlyweb.controllers.api.Template
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
-import org.vaccineimpact.orderlyweb.viiewmodels.AppViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 import spark.ModelAndView
 import spark.Route
 import spark.Spark
@@ -16,8 +16,6 @@ import spark.Spark.notFound
 import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
-import kotlin.reflect.KProperty1
-import kotlin.reflect.full.declaredMemberProperties
 
 class Router(freeMarkerConfig: Configuration)
 {
@@ -77,13 +75,16 @@ class Router(freeMarkerConfig: Configuration)
 
         notFound { req, res ->
             val acceptHeader = req.headers("Accept")
-            if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*")) {
+            if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
+            {
                 res.type("text/html")
                 freeMarkerEngine.render(
                         ModelAndView(AppViewModel(), "404.ftl")
                 )
 
-            } else {
+            }
+            else
+            {
                 res.type("${ContentTypes.json}; charset=utf-8")
                 Serializer.instance.toJson(RouteNotFound().asResult())
             }
@@ -105,9 +106,22 @@ class Router(freeMarkerConfig: Configuration)
         val controller = instantiateController(controllerType, context)
         val action = controllerType.getMethod(actionName)
 
+        val template = (action.annotations.firstOrNull { it is Template } as Template?)
+        val templateName = template?.templateName
+
         return try
         {
-            action.invoke(controller)
+            val model = action.invoke(controller)
+            if (templateName != null)
+            {
+                freeMarkerEngine.render(
+                        ModelAndView(model, templateName)
+                )
+            }
+            else
+            {
+                model
+            }
         }
         catch (e: InvocationTargetException)
         {

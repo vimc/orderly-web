@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.viiewmodels
+package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.db.AppConfig
 

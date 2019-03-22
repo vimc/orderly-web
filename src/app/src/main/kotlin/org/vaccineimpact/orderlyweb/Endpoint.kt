@@ -95,6 +95,11 @@ fun Endpoint.json(): Endpoint
     return this.copy(contentType = ContentTypes.json)
 }
 
+fun Endpoint.html(): Endpoint
+{
+    return this.copy(contentType = ContentTypes.html)
+}
+
 fun Endpoint.githubAuth(): Endpoint
 {
     return this.copy(authenticateWithGithub = true)

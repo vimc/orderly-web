@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
-import org.vaccineimpact.orderlyweb.controllers.ResourceController
+import org.vaccineimpact.orderlyweb.controllers.api.ResourceController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError

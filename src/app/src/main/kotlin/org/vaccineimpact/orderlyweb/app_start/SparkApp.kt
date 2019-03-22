@@ -45,6 +45,7 @@ class OrderlyWeb
         ErrorHandler.setup()
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
+        router.mapEndpoints(WebRouteConfig, "")
 
     }
 
