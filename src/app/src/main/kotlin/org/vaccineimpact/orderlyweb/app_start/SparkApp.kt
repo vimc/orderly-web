@@ -37,7 +37,7 @@ class OrderlyWeb
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
 
-        if (!AppConfig().authEnabled)
+        if (!AppConfig().authorizationEnabled)
         {
             logger.warn("WARNING: AUTHENTICATION IS DISABLED")
         }
@@ -46,7 +46,7 @@ class OrderlyWeb
     private fun setupPort()
     {
         val config = AppConfig()
-        val port = if (config.authEnabled)
+        val port = if (config.authorizationEnabled)
         {
             config.getInt("app.port")
         }
