@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.security.InternalUser
-import org.vaccineimpact.orderlyweb.security.OnetimeTokenStore
+import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 
 class OnetimeTokenController(context: ActionContext,

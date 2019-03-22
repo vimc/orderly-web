@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.security.KeyHelper
+import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import java.time.Duration

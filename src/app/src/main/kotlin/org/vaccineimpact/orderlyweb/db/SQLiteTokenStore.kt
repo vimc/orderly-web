@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.db
 import org.jooq.impl.DSL.*
 import org.jooq.impl.SQLDataType
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.security.OnetimeTokenStore
 import java.io.File
 import java.sql.DriverManager
 import java.sql.SQLException

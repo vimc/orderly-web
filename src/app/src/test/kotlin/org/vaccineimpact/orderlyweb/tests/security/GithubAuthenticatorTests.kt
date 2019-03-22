@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 import org.vaccineimpact.orderlyweb.models.UserSource
-import org.vaccineimpact.orderlyweb.security.GithubAuthenticator
+import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
 class GithubAuthenticatorTests : MontaguTests()

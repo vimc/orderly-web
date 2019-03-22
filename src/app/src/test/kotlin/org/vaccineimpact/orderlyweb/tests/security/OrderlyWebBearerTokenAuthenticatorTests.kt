@@ -9,8 +9,8 @@ import org.junit.Test
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
-import org.vaccineimpact.orderlyweb.security.KeyHelper
-import org.vaccineimpact.orderlyweb.security.OrderlyWebBearerTokenAuthenticator
+import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests

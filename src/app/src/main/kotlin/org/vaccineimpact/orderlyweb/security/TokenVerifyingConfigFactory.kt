@@ -6,7 +6,10 @@ import org.pac4j.core.config.ConfigFactory
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.TokenStore
+import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.clients.*
 
 class TokenVerifyingConfigFactory(
         private val requiredPermissions: Set<PermissionRequirement>
@@ -43,7 +46,7 @@ fun extractPermissionsFromToken(profile: CommonProfile): CommonProfile
             .split(',')
             .filter { it.isNotEmpty() }
     )
-    profile.montaguPermissions = permissions
+    profile.orderlyWebPermissions = permissions
     return profile
 }
 

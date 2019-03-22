@@ -6,7 +6,7 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.JWTCookieClient
+import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.InternalUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
