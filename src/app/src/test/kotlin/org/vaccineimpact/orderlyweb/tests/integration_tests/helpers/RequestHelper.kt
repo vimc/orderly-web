@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
-open class RequestHelper
+class RequestHelper
 {
     init
     {
