@@ -105,20 +105,9 @@ class Router(freeMarkerConfig: Configuration)
         val controller = instantiateController(controllerType, context)
         val action = controllerType.getMethod(actionName)
 
-        val template = (action.annotations.firstOrNull { it is Template } as Template?)
-        val templateName = template?.templateName
-
         return try
         {
-            val model = action.invoke(controller)
-            if (templateName != null)
-            {
-                renderTemplateWithModel(model, action.returnType.kotlin.declaredMemberProperties, templateName)
-            }
-            else
-            {
-                model
-            }
+            action.invoke(controller)
         }
         catch (e: InvocationTargetException)
         {
@@ -126,19 +115,6 @@ class Router(freeMarkerConfig: Configuration)
                     "$controllerType.$actionName, see below for details")
             throw e.targetException
         }
-    }
-
-    private fun renderTemplateWithModel(vm: Any,
-                                        properties: Collection<KProperty1<*, *>>,
-                                        templateName: String): String
-    {
-
-        val map = properties.associate {
-            it.name to vm.javaClass.kotlin.declaredMemberProperties.first { p -> p.name == it.name }.get(vm)
-        }
-        return freeMarkerEngine.render(
-                ModelAndView(map, templateName)
-        )
     }
 
     private fun instantiateController(controllerType: Class<*>, context: ActionContext): Controller
