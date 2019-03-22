@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.controllers.Template
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
+import org.vaccineimpact.orderlyweb.viiewmodels.PageNotFound
 import spark.ModelAndView
 import spark.Route
 import spark.Spark
@@ -79,7 +80,7 @@ class Router(freeMarkerConfig: Configuration)
             if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*")) {
                 res.type("text/html")
                 freeMarkerEngine.render(
-                        ModelAndView(null, "404.ftl")
+                        ModelAndView(PageNotFound("test"), "404.ftl")
                 )
 
             } else {
