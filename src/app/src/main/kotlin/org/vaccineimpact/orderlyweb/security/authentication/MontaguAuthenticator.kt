@@ -12,28 +12,6 @@ import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebTokenCredentialClient
 
-class MontaguClient : OrderlyWebTokenCredentialClient, CookieClient(
-        cookie,
-        MontaguAuthenticator()
-)
-{
-    override fun clientInit(context: WebContext?)
-    {
-        setAuthorizationGenerator(AuthorizationRepository())
-        super.clientInit(context)
-    }
-
-    companion object
-    {
-        const val cookie = "montagu_jwt_token"
-    }
-
-    override val errorInfo = ErrorInfo(
-            "montagu-cookie-bearer-token-invalid",
-            "Montagu bearer token not supplied in cookie '$cookie', or bearer token was invalid"
-    )
-}
-
 class MontaguAuthenticator : Authenticator<TokenCredentials>
 {
     private val logger = LoggerFactory.getLogger(MontaguAuthenticator::class.java)
