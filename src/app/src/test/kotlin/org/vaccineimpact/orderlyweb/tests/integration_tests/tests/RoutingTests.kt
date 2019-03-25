@@ -3,8 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 
-class RoutingTests : IntegrationTest()
-{
+
+class RoutingTests: IntegrationTest() {
+
     @Test
     fun `can get url with or without trailing slash`()
     {

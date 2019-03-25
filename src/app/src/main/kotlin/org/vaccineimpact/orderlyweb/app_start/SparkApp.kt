@@ -26,6 +26,7 @@ class OrderlyWeb
 
     fun run()
     {
+
         val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
         freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
