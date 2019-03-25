@@ -40,7 +40,7 @@ class AppConfig : Config
         }
     }
 
-    val authEnabled by lazy {
+    val authorizationEnabled by lazy {
         getBool("app.auth")
     }
     

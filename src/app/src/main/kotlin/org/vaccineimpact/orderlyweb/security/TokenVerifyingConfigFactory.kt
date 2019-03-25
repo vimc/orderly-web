@@ -32,7 +32,7 @@ class TokenVerifyingConfigFactory(
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
             httpActionAdapter = TokenActionAdapter(allClients)
 
-            if (AppConfig().authEnabled)
+            if (AppConfig().authorizationEnabled)
             {
                 setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
             }

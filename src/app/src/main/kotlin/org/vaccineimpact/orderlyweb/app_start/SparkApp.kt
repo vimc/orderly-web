@@ -45,13 +45,12 @@ class OrderlyWeb
         ErrorHandler.setup()
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
-
     }
 
     private fun setupPort()
     {
         val config = AppConfig()
-        val port = if (config.authEnabled)
+        val port = if (config.authorizationEnabled)
         {
             config.getInt("app.port")
         }
