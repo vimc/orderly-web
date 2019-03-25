@@ -1,14 +1,18 @@
 package org.vaccineimpact.orderlyweb.app_start
 
+import org.vaccineimpact.orderlyweb.Endpoint
 import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.Routing.*
+import org.vaccineimpact.orderlyweb.controllers.web.HomeController
+import org.vaccineimpact.orderlyweb.html
+import org.vaccineimpact.orderlyweb.*
 
 interface RouteConfig
 {
     val endpoints: List<EndpointDefinition>
 }
 
-object MontaguRouteConfig : RouteConfig
+object APIRouteConfig : RouteConfig
 {
     override val endpoints: List<EndpointDefinition> =
             ReportRouteConfig.endpoints
@@ -17,4 +21,17 @@ object MontaguRouteConfig : RouteConfig
                     .plus(HomeRouteConfig.endpoints)
                     .plus(DataRouteConfig.endpoints)
                     .plus(UserRouteConfig.endpoints)
+}
+
+object WebRouteConfig : RouteConfig
+{
+    override val endpoints: List<EndpointDefinition> = listOf(
+            Endpoint("/", HomeController::class, "index")
+                    .secure()
+                    .html(),
+            Endpoint("/login", HomeController::class, "login")
+                    .secure()
+                    .html()
+                    .montaguAuth()
+    )
 }

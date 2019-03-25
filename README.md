@@ -24,8 +24,7 @@ v1.23.0 which appends random strings to container names each time they run.
    `./dev/run-dependencies.sh`
 1. Run the app, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
    project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
-   go signal. The app will now be available on your local machine at http://127.0.0.1:8081
- 
+   go signal. The app will now be available on your local machine at http://127.0.0.1:8081 
 
 ### Generate test data.  
 This is done automatically by `./dev/run-dependencies.sh` above. To generate a test
@@ -42,6 +41,15 @@ are used for integration tests and for running locally.
 To run the tests, 
 1. run `./dev/run-dependencies.sh` from this directory
 2. run `./gradlew test` from the src dir
+
+## Authenticating with the local app
+### Montagu
+This is an extremely basic first pass.
+1. run `./dev/run-dependencies.sh`
+1. run a copy of [montagu-webapps](https://github.com/vimc/montagu-webapps) admin portal 
+locally with `npm run admin`
+1. log in to the locally running admin portal
+1. now visiting any OrderlyWeb page should automatically log you in
 
 ## Regenerate database interface
 ```

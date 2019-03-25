@@ -8,6 +8,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.authentication.MontaguClient
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
@@ -21,6 +22,7 @@ class TokenVerifyingConfigFactory(
         val cookieClient = JWTCookieClient(WebTokenHelper.instance.verifier)
         val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
         val githubDirectClient = GithubDirectClient()
+        val montaguClient = MontaguClient()
     }
 
     val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient, cookieClient)
@@ -53,5 +55,11 @@ fun TokenVerifyingConfigFactory.githubAuthentication(): TokenVerifyingConfigFact
 {
     this.allClients.clear()
     this.allClients.add(TokenVerifyingConfigFactory.githubDirectClient)
+    return this
+}
+
+fun TokenVerifyingConfigFactory.montaguAuthentication(): TokenVerifyingConfigFactory
+{
+    this.allClients.add(TokenVerifyingConfigFactory.montaguClient)
     return this
 }

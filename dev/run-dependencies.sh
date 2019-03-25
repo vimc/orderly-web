@@ -8,7 +8,6 @@ export MONTAGU_API_VERSION=$(<$config_path/api_version)
 export MONTAGU_DB_VERSION=$(<$config_path/db_version)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
-export TOKEN_KEY_PATH=/etc/montagu/reports_api/token_key
 export MONTAGU_ORDERLY_PATH=$(realpath ../src/app/git)
 
 echo "using orderly path:"
@@ -16,13 +15,13 @@ echo $MONTAGU_ORDERLY_PATH
 
 export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
-#(
-#	cd ../src
-#	# get fresh tests data
-#	rm app/demo -rf
-#	rm app/git -rf
-#	./gradlew :generateTestData
-#)
+(
+	cd ../src
+	# get fresh tests data
+	rm app/demo -rf
+	rm app/git -rf
+	./gradlew :generateTestData
+)
 
 docker-compose pull
 docker-compose up -d
@@ -44,6 +43,7 @@ docker run --rm --network=dev_default \
 ./cli.sh addRole test.user user
 ./cli.sh addRole test.user admin
 
+docker exec dev_api_1 mkdir -p /etc/montagu/api
 docker exec dev_api_1 touch /etc/montagu/api/go_signal
 
 echo "Dependencies are now running; press Ctrl+C to teardown"

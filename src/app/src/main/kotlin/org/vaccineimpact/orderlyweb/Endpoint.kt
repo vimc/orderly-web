@@ -1,11 +1,8 @@
 package org.vaccineimpact.orderlyweb
 
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
-import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
+import org.vaccineimpact.orderlyweb.security.*
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.githubAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -20,18 +17,11 @@ data class Endpoint(
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val allowParameterAuthentication: Boolean = false,
         override val authenticateWithGithub: Boolean = false,
+        override val authenticateWithMontagu: Boolean = false,
         override val secure: Boolean = false
 
 ) : EndpointDefinition
 {
-    init
-    {
-        if (!urlFragment.endsWith("/"))
-        {
-            throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
-        }
-    }
-
     override fun additionalSetup(url: String)
     {
         if (secure)
@@ -58,6 +48,11 @@ data class Endpoint(
         if (authenticateWithGithub)
         {
             configFactory = configFactory.githubAuthentication()
+        }
+
+        if (authenticateWithMontagu)
+        {
+            configFactory = configFactory.montaguAuthentication()
         }
 
         val config = configFactory.build()
@@ -95,9 +90,19 @@ fun Endpoint.json(): Endpoint
     return this.copy(contentType = ContentTypes.json)
 }
 
+fun Endpoint.html(): Endpoint
+{
+    return this.copy(contentType = ContentTypes.html)
+}
+
 fun Endpoint.githubAuth(): Endpoint
 {
     return this.copy(authenticateWithGithub = true)
+}
+
+fun Endpoint.montaguAuth(): Endpoint
+{
+    return this.copy(authenticateWithMontagu = true)
 }
 
 fun Endpoint.post(): Endpoint

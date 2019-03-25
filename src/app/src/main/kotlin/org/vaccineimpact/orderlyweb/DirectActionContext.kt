@@ -7,6 +7,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
@@ -14,7 +15,7 @@ import spark.Response
 
 open class DirectActionContext(private val context: SparkWebContext) : ActionContext
 {
-    private val request
+    override val request
         get() = context.sparkRequest
     private val response
         get() = context.sparkResponse
@@ -88,5 +89,19 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
         {
             GsonBuilder().create().fromJson<Map<String, String>>(request.body())
         }
+    }
+
+    override fun setCookie(cookieName: String, value: String, config: Config)
+    {
+        val secure = if (config["allow.localhost"].toBoolean())
+        {
+            ""
+        }
+        else
+        {
+            " Secure;"
+        }
+        // https://www.owasp.org/index.php/SameSite
+        addResponseHeader("Set-Cookie", "${cookieName}=$value; Path=/;$secure HttpOnly; SameSite=Strict")
     }
 }

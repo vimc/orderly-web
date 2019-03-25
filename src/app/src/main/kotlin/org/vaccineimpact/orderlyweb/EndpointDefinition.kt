@@ -15,6 +15,7 @@ interface EndpointDefinition
     val requiredPermissions: List<PermissionRequirement>
     val allowParameterAuthentication: Boolean
     val authenticateWithGithub: Boolean
+    val authenticateWithMontagu: Boolean
     val secure: Boolean
 
     fun additionalSetup(url: String)

@@ -6,8 +6,6 @@ services:
       - "8080:8080"
     depends_on:
       - db
-    volumes:
-      - ${TOKEN_KEY_PATH}:/etc/montagu/api/token_key
   db:
     image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
     ports:

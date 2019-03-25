@@ -1,21 +1,26 @@
 package org.vaccineimpact.orderlyweb.app_start
 
+import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.DirectActionContext
-import org.vaccineimpact.orderlyweb.EndpointDefinition
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.controllers.api.Template
+import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
+import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
+import spark.ModelAndView
 import spark.Route
 import spark.Spark
+import spark.Spark.notFound
 import spark.route.HttpMethod
+import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
 
-class Router(val config: RouteConfig)
+class Router(freeMarkerConfig: Configuration)
 {
     private val logger = LoggerFactory.getLogger(Router::class.java)
+    private val freeMarkerEngine = FreeMarkerEngine(freeMarkerConfig)
 
     companion object
     {
@@ -28,18 +33,13 @@ class Router(val config: RouteConfig)
         else -> Serializer.instance.toResult(x)
     }
 
-    fun mapEndpoints(urlBase: String)
+    fun mapEndpoints(routeConfig: RouteConfig, urlBase: String)
     {
-        urls.addAll(config.endpoints.map { mapEndpoint(it, urlBase) })
+        urls.addAll(routeConfig.endpoints.map { mapEndpoint(it, urlBase) })
     }
 
     private fun mapEndpoint(endpoint: EndpointDefinition, urlBase: String): String
     {
-        if (!endpoint.urlFragment.endsWith("/"))
-        {
-            throw Exception("All endpoints must end in a forward slash. Problematic endpoint: ${endpoint.urlFragment}")
-        }
-
         val fullUrl = urlBase + endpoint.urlFragment
         logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
         mapUrl(fullUrl, endpoint)
@@ -72,12 +72,30 @@ class Router(val config: RouteConfig)
                 else -> throw UnsupportedValueException(endpoint.method)
             }
         }
+
+        notFound { req, res ->
+            val acceptHeader = req.headers("Accept")
+            if (acceptHeader != null && acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
+            {
+                res.type("text/html")
+                freeMarkerEngine.render(
+                        ModelAndView(AppViewModel(), "404.ftl")
+                )
+
+            }
+            else
+            {
+                res.type("${ContentTypes.json}; charset=utf-8")
+                Serializer.instance.toJson(RouteNotFound().asResult())
+            }
+        }
+
         endpoint.additionalSetup(fullUrl)
     }
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route
     {
-        return Route({ req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) })
+        return Route { req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) }
     }
 
     private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any?
@@ -88,9 +106,22 @@ class Router(val config: RouteConfig)
         val controller = instantiateController(controllerType, context)
         val action = controllerType.getMethod(actionName)
 
+        val template = (action.annotations.firstOrNull { it is Template } as Template?)
+        val templateName = template?.templateName
+
         return try
         {
-            action.invoke(controller)
+            val model = action.invoke(controller)
+            if (templateName != null)
+            {
+                freeMarkerEngine.render(
+                        ModelAndView(model, templateName)
+                )
+            }
+            else
+            {
+                model
+            }
         }
         catch (e: InvocationTargetException)
         {
