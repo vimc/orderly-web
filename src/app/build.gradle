@@ -126,5 +126,15 @@ task copySpec(type: Copy) {
 }
 test.dependsOn 'copySpec'
 
+task compileFrontEnd() {
+    doLast {
+        exec {
+            commandLine "npm", "run", "build", "--prefix=$projectDir/static/"
+        }
+    }
+}
+
+processResources.dependsOn 'compileFrontEnd'
+
 copyConfig.finalizedBy 'showConfig'
 copyTestConfig.finalizedBy 'showTestConfig'
