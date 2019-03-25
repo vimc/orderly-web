@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
-class OrderlyWebAuthorizationGenerator : AuthorizationGenerator<CommonProfile>
+class AuthorizationRepository : AuthorizationGenerator<CommonProfile>
 {
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"

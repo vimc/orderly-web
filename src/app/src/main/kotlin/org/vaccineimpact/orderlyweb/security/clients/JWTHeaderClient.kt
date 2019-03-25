@@ -5,7 +5,7 @@ import org.pac4j.http.client.direct.HeaderClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
-import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizationGenerator
+import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
 class JWTHeaderClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, HeaderClient(
@@ -19,7 +19,7 @@ class JWTHeaderClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, 
 
     override fun clientInit(context: WebContext?)
     {
-        setAuthorizationGenerator(OrderlyWebAuthorizationGenerator())
+        setAuthorizationGenerator(AuthorizationRepository())
         super.clientInit(context)
     }
 }

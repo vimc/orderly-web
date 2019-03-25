@@ -26,6 +26,7 @@ class OrderlyWeb
 
     fun run()
     {
+
         val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
         freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
@@ -46,13 +47,12 @@ class OrderlyWeb
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
         router.mapEndpoints(WebRouteConfig, "")
-
     }
 
     private fun setupPort()
     {
         val config = AppConfig()
-        val port = if (config.authEnabled)
+        val port = if (config.authorizationEnabled)
         {
             config.getInt("app.port")
         }

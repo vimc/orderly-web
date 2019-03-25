@@ -48,7 +48,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean
     {
-        return if (AppConfig().authEnabled)
+        return if (AppConfig().authorizationEnabled)
         {
             permissions.any { requirement.satisfiedBy(it) }
         }
