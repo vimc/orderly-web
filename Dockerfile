@@ -38,3 +38,5 @@ RUN ./gradlew
 # Copy source
 COPY . /api
 
+# Install front-end dependencies
+RUN npm install --prefix=/api/src/app/static
