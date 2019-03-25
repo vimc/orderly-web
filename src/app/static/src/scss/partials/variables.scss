@@ -1,0 +1,13 @@
+// Variables to overwrite original bootstrap sass vars
+//
+// Variables should follow the `$component-state-property-size` formula for
+// consistent naming. Ex: $nav-link-disabled-color and $modal-content-box-shadow-xs.
+
+@import "../../../node_modules/bootstrap/scss/functions";
+@import "../../../node_modules/bootstrap/scss/variables";
+
+$table-border-color: $gray-700;
+$montagu-header-bg-color: rgb(38, 50, 122);
+$montagu-header-color: white;
+$montagu-breadcrumb-bg-color: rgb(200, 200, 200);
+$montagu-breadcrumb-color: $blue;

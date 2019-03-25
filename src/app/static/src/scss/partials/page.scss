@@ -1,0 +1,73 @@
+header {
+  padding: 10px;
+  background-color: $montagu-header-bg-color;
+  border-bottom: 2px solid white;
+  color: $montagu-header-color;
+
+  .site-title {
+    display: inline-block;
+    margin-bottom: 5px;
+    margin-left: 10px;
+    vertical-align: bottom;
+    font-family: header, sans-serif;
+    font-size: 24pt;
+    font-variant-caps: small-caps;
+
+    a, a:visited, a:hover {
+      text-decoration: inherit;
+      color: inherit;
+    }
+  }
+
+  .logo {
+    margin: 2px 15px 5px 5px;
+  }
+
+}
+
+.title-addition {
+  font-family: body, sans-serif;
+  font-size: 10pt;
+}
+
+.page {
+  margin: 0 auto;
+  padding: 20px;
+
+  .page-title {
+    font-family: header, sans-serif;
+    font-size: 24pt;
+    margin-bottom: 30px;
+    border-bottom: 1px dashed;
+  }
+
+  .page__content {
+    color: inherit;
+  }
+}
+
+.largeSectionTitle {
+  font-family: header;
+  font-size: 24pt;
+  margin: 30px 0 5px 0;
+}
+
+.sectionTitle {
+  font-family: header;
+  font-size: 16pt;
+  margin: 30px 0 15px 0;
+}
+
+.subSectionTitle {
+  font-family: header;
+  font-size: 12pt;
+  margin: 15px 0;
+  color: rgb(127, 127, 127);
+}
+
+.smallTitle {
+  font-family: header;
+  font-size: 12pt;
+  margin: 20px 0 5px 0;
+  color: rgb(127, 127, 127);
+} 
