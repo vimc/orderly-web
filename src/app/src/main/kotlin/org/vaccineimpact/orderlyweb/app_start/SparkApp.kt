@@ -36,24 +36,13 @@ class OrderlyWeb
         TokenStore.instance.setup()
         ErrorHandler.setup()
         Router(MontaguRouteConfig).mapEndpoints(urlBase)
-
-        if (!AppConfig().authorizationEnabled)
-        {
-            logger.warn("WARNING: AUTHENTICATION IS DISABLED")
-        }
     }
 
     private fun setupPort()
     {
         val config = AppConfig()
-        val port = if (config.authorizationEnabled)
-        {
-            config.getInt("app.port")
-        }
-        else
-        {
-            8888
-        }
+        val port = config.getInt("app.port")
+
         var attempts = 5
         spk.port(port)
 
