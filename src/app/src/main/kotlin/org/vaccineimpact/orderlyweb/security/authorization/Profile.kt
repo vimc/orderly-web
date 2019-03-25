@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security
+package org.vaccineimpact.orderlyweb.security.authorization
 
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet

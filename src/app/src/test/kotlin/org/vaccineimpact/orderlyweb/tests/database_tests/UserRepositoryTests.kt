@@ -53,7 +53,6 @@ class UserRepositoryTests : DatabaseTests()
         val sut = OrderlyUserRepository()
         sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.Montagu)
 
-
         var result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))

@@ -8,7 +8,7 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
-import org.vaccineimpact.orderlyweb.security.orderlyWebPermissions
+import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
 import spark.Response
 
@@ -48,7 +48,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean
     {
-        return if (AppConfig().authEnabled)
+        return if (AppConfig().authorizationEnabled)
         {
             permissions.any { requirement.satisfiedBy(it) }
         }

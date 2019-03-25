@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
 class ResourceTests : IntegrationTest()
@@ -16,7 +17,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/resources",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
     }
@@ -26,7 +27,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/resources",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
     }
@@ -39,7 +40,7 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -54,9 +55,8 @@ class ResourceTests : IntegrationTest()
 
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata,
-                user = fakeReportReader("badereportname"))
+        val token = requestHelper.generateOnetimeToken(url, fakeReportReader("badereportname"))
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertUnauthorized(response, "use_resource")
     }
@@ -68,7 +68,7 @@ class ResourceTests : IntegrationTest()
         val fakeresource = "hf647rhj"
         val url = "/reports/testname/versions/testversion/resources/$fakeresource/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -95,7 +95,7 @@ class ResourceTests : IntegrationTest()
 
         val url = "/reports/testname/versions/testversion/resources/resource.csv/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

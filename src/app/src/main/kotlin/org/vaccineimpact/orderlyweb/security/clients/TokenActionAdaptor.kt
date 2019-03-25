@@ -11,8 +11,8 @@ import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
-import org.vaccineimpact.orderlyweb.security.mismatchedURL
-import org.vaccineimpact.orderlyweb.security.missingPermissions
+import org.vaccineimpact.orderlyweb.security.authorization.mismatchedURL
+import org.vaccineimpact.orderlyweb.security.authorization.missingPermissions
 
 class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
 {

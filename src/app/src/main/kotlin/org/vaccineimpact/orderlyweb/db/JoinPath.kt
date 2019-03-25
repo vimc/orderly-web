@@ -93,3 +93,4 @@ fun <T> T.getOther(a: T, b: T) = when (this)
 
 // This helper avoids overloading ambiguity when the field type is "Any"
 fun <T> TableField<*, T>.eqField(otherField: Field<T>): Condition = this.eq(otherField)
+

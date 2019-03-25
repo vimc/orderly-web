@@ -6,8 +6,7 @@ class PermissionSet(val permissions: Set<ReifiedPermission>): Set<ReifiedPermiss
             : this(rawPermissions.map { ReifiedPermission.parse(it) }.toSet())
     constructor(rawPermissions: Iterable<String>)
             : this(rawPermissions.map { ReifiedPermission.parse(it) }.toSet())
-
-    val names by lazy { permissions.map { it.name }.distinct() }
+    constructor(permissions: List<ReifiedPermission>) : this(permissions.toSet())
 
     infix operator fun plus(other: PermissionSet) = PermissionSet(this.permissions + other.permissions)
     infix operator fun plus(other: ReifiedPermission) = PermissionSet(this.permissions + other)

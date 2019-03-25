@@ -7,6 +7,8 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 
 class SecurityTests : IntegrationTest()
 {
@@ -52,10 +54,11 @@ class SecurityTests : IntegrationTest()
     {
         val response = RequestHelper().getWrongPermissions("/reports/")
 
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json")
+        val test = response.text
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(403)
         JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: */can-login")
+                "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.read")
 
     }
 
@@ -117,7 +120,7 @@ class SecurityTests : IntegrationTest()
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/artefacts/6943yhks/"
         val token = WebTokenHelper.instance.issuer
-                .generateOnetimeActionToken(requestHelper.fakeGlobalReportReader, url)
+                .generateOnetimeActionToken(fakeGlobalReportReviewer(), url)
         val response = requestHelper
                 .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 

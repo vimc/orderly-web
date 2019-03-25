@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
 class DataTests : IntegrationTest()
@@ -17,7 +18,7 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         insertData("testversion", "testdata", "SELECT * FROM thing", "123456")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -33,7 +34,7 @@ class DataTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -50,7 +51,7 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = requestHelper.get(url, ContentTypes.binarydata, user = fakeReportReader("testname"))
+        val response = requestHelper.get(url, ContentTypes.binarydata, userEmail = fakeReportReader("testname"))
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
@@ -71,7 +72,7 @@ class DataTests : IntegrationTest()
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -84,7 +85,7 @@ class DataTests : IntegrationTest()
         val fakedata = "hf647sa674yh3basrhj"
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

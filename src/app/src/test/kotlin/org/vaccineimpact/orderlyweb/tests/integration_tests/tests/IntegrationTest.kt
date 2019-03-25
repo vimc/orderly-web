@@ -7,10 +7,12 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.InternalUser
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.TestTokenGenerator
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
 import java.io.File
 
@@ -22,10 +24,6 @@ abstract class IntegrationTest : MontaguTests()
     companion object
     {
         var appStarted: Boolean = false
-
-        // Use a single TestTokenGenerator for all tests. This
-        // ensures that the same keypair is used throughout.
-        val tokenHelper = TestTokenGenerator()
 
         @BeforeClass
         @JvmStatic
@@ -88,10 +86,4 @@ abstract class IntegrationTest : MontaguTests()
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
     }
-
-    protected fun fakeReportReader(reportName: String): InternalUser
-    {
-        return InternalUser("tettusername", "user", "*/can-login,report:$reportName/reports.read")
-    }
-
 }

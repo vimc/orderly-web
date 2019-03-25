@@ -20,7 +20,7 @@ import java.util.*
 class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
 {
     lateinit var helper: WebTokenHelper
-    val fakeUser = InternalUser("tettusername", "user", "*/reports.read")
+    val fakeUser = "testuser@email.com"
 
     val onetimeTokenIssuer = "onetimetokenissuer"
 

@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.insertReport
-
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 
 class ReportTests : IntegrationTest()
 {
@@ -22,7 +22,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/minimal/run/", mapOf(), user = requestHelper.fakeReviewer)
+        val response = requestHelper.post("/reports/minimal/run/", mapOf(),
+                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -32,7 +33,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = requestHelper.get("/reports/agronomic_seahorse/status/", user = requestHelper.fakeReviewer)
+        val response = requestHelper.get("/reports/agronomic_seahorse/status/",
+                userEmail = fakeGlobalReportReviewer())
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Status")
@@ -54,7 +56,7 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/latest/changelog/",
-                user = requestHelper.fakeReviewer)
+                userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -65,7 +67,7 @@ class ReportTests : IntegrationTest()
     {
         insertReport("testname", "testversion", changelog = listOf())
         val response = requestHelper.get("/reports/testname/latest/changelog/",
-                user = requestHelper.fakeReviewer)
+                userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Changelog")
@@ -78,7 +80,7 @@ class ReportTests : IntegrationTest()
     {
         //This report has been published so we should be able to see it, though it has no log items
        val response = requestHelper.get("/reports/other/latest/changelog",
-                user = requestHelper.fakeGlobalReportReader)
+               userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -92,7 +94,7 @@ class ReportTests : IntegrationTest()
     fun `get latest changelog returns 404 if report does not exist`()
     {
         val response = requestHelper.get("/reports/testname/latest/changelog",
-                user = requestHelper.fakeReviewer)
+                userEmail = fakeGlobalReportReviewer())
 
         assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report",

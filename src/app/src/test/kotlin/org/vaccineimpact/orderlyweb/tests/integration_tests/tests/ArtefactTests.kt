@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 
 class ArtefactTests : IntegrationTest()
 {
@@ -14,7 +15,7 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = fakeReportReader("testname"))
+                userEmail = fakeReportReader("testname"))
 
 
         assertJsonContentType(response)
@@ -27,7 +28,7 @@ class ArtefactTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
     }
@@ -79,7 +80,7 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = fakeReportReader("other"))
+                userEmail = fakeReportReader("other"))
 
         assertSuccessful(response)
     }
@@ -91,7 +92,7 @@ class ArtefactTests : IntegrationTest()
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
-                user = fakeReportReader("badreportname"))
+                userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "other")
     }

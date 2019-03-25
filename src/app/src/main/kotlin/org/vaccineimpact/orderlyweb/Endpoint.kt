@@ -1,9 +1,11 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.*
+import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
+import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
+import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.githubAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -17,7 +19,8 @@ data class Endpoint(
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val allowParameterAuthentication: Boolean = false,
-        override val authenticateWithGithub: Boolean = false
+        override val authenticateWithGithub: Boolean = false,
+        override val secure: Boolean = false
 
 ) : EndpointDefinition
 {
@@ -31,7 +34,7 @@ data class Endpoint(
 
     override fun additionalSetup(url: String)
     {
-        if (requiredPermissions.any())
+        if (secure)
         {
             addSecurityFilter(url)
         }
@@ -43,30 +46,28 @@ data class Endpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        if (AppConfig().authEnabled)
+
+        var configFactory = TokenVerifyingConfigFactory(
+                this.requiredPermissions.toSet())
+
+        if (allowParameterAuthentication)
         {
-            var configFactory = TokenVerifyingConfigFactory(
-                    this.requiredPermissions.toSet())
-
-            if (allowParameterAuthentication)
-            {
-                configFactory = configFactory.allowParameterAuthentication()
-            }
-
-            if (authenticateWithGithub)
-            {
-                configFactory = configFactory.githubAuthentication()
-            }
-
-            val config = configFactory.build()
-
-            Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                    config,
-                    configFactory.allClients(),
-                    OrderlyWebAuthorizer::class.java.simpleName,
-                    "SkipOptions"
-            ))
+            configFactory = configFactory.allowParameterAuthentication()
         }
+
+        if (authenticateWithGithub)
+        {
+            configFactory = configFactory.githubAuthentication()
+        }
+
+        val config = configFactory.build()
+
+        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                config,
+                configFactory.allClients(),
+                OrderlyWebAuthorizer::class.java.simpleName,
+                SkipOptionsMatcher.name
+        ))
     }
 
 }
@@ -78,10 +79,10 @@ fun Endpoint.allowParameterAuthentication(): Endpoint
 
 fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
 {
-    val allPermissions = (permissions + "*/can-login").map {
+    val allPermissions = (permissions).map {
         PermissionRequirement.parse(it)
     }
-    return this.copy(requiredPermissions = allPermissions)
+    return this.copy(requiredPermissions = allPermissions, secure = true)
 }
 
 fun Endpoint.transform(): Endpoint

@@ -7,9 +7,6 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.mismatchedURL
-import org.vaccineimpact.orderlyweb.security.missingPermissions
-import org.vaccineimpact.orderlyweb.security.orderlyWebPermissions
 
 open class OrderlyWebAuthorizer(requiredPermissions: Set<PermissionRequirement>)
     : AbstractRequireAllAuthorizer<PermissionRequirement, CommonProfile>()
