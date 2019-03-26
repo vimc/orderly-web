@@ -107,7 +107,7 @@ class AuthenticationTests : IntegrationTest()
         }
     }
 
-    val url = "${RequestHelper().baseUrl}/login/"
+    val url = "${RequestHelper().apiBaseUrl}/login/"
 
     data class GithubTokenHeader(val token: String, val prefix: String = "token") : Authorization
     {

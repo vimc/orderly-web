@@ -19,7 +19,9 @@ class RequestHelper
         CertificateHelper.disableCertificateValidation()
     }
 
-    val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
+    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
+    val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
+
     private val parser = JsonParser()
 
     fun get(url: String, contentType: String = ContentTypes.json,
@@ -27,7 +29,20 @@ class RequestHelper
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return get(apiBaseUrl + url, headers)
+    }
+
+    fun getWebPage(
+            url: String,
+            contentType: String = "text/html",
+            userEmail: String = fakeGlobalReportReader()
+    ): Response
+    {
+        val token = generateToken(userEmail)
+        val cookieName = JWTCookieClient.cookie
+        val headers = standardHeaders(contentType) +
+                mapOf("Cookie" to "$cookieName=$token")
+        return get(webBaseUrl + url, headers)
     }
 
     fun getWithCookie(
@@ -40,7 +55,7 @@ class RequestHelper
         val cookieName = JWTCookieClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$token")
-        return get(baseUrl + url, headers)
+        return get(apiBaseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
@@ -48,7 +63,7 @@ class RequestHelper
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return khttp.post(baseUrl + url, headers, json = body)
+        return khttp.post(apiBaseUrl + url, headers, json = body)
     }
 
     fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
@@ -66,19 +81,19 @@ class RequestHelper
     {
         val token = "faketoken"
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return get(apiBaseUrl + url, headers)
     }
 
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
         val token = generateToken("bademail@gmail.com")
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return get(apiBaseUrl + url, headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
     {
-        return get(baseUrl + url, standardHeaders(contentType))
+        return get(apiBaseUrl + url, standardHeaders(contentType))
     }
 
     private fun standardHeaders(contentType: String): Map<String, String>

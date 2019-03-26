@@ -1,4 +1,11 @@
-FROM openjdk:8u121-jdk
+FROM node:8
+
+# Install OpenJDK
+RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list
+RUN apt-get update
+RUN apt-get install -t stretch-backports -y \
+    openjdk-8-jdk
+RUN rm /etc/apt/sources.list.d/stretch-backports.list
 
 # Install docker
 RUN apt-get update
@@ -13,7 +20,7 @@ RUN add-apt-repository \
    $(lsb_release -cs) \
    stable"
 RUN apt-get update
-RUN apt-get install -y docker-ce=17.03.0~ce-0~debian-jessie
+RUN apt-get install -y docker-ce=5:18.09.0~3-0~debian-stretch
 
 # Setup gradle
 COPY src/gradlew /api/src/
@@ -31,3 +38,5 @@ RUN ./gradlew
 # Copy source
 COPY . /api
 
+# Install front-end dependencies
+RUN npm install --prefix=/api/src/app/static

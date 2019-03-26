@@ -4,6 +4,8 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
+import spark.Spark.staticFiles
+import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
@@ -23,6 +25,8 @@ class OrderlyWeb
 
     fun run()
     {
+        staticFiles.externalLocation(File("static/public").absolutePath)
+
         waitForGoSignal()
         setupPort()
         spk.redirect.get("/", urlBase)
