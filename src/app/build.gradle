@@ -67,7 +67,16 @@ dependencies {
 }
 
 docker {
-    baseImage = "openjdk:8u121-jre"
+    baseImage = "orderly-web-dist-base"
+}
+
+distributions {
+    main {
+        contents {
+            from("$projectDir/static")
+            from("$projectDir/templates")
+        }
+    }
 }
 
 distDocker {

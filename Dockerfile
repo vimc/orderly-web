@@ -1,4 +1,4 @@
-FROM node:8
+FROM node:8-stretch
 
 # Install OpenJDK
 RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list

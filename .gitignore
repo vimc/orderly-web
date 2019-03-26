@@ -29,6 +29,8 @@ test-data\.sql
 src/*/out/*
 src/app/static/node_modules
 src/app/static/public/css
+demo
+git
 
 src/config/users/martin\.properties
 

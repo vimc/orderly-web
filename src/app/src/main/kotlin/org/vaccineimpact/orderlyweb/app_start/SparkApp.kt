@@ -34,6 +34,9 @@ class OrderlyWeb
         staticFiles.externalLocation(File("static/public").absolutePath)
 
         waitForGoSignal()
+
+        logger.info(AppConfig()["app.github_org"])
+
         setupPort()
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
         spk.options("*") { _, res ->
