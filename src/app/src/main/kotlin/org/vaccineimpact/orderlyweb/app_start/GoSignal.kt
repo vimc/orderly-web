@@ -12,7 +12,7 @@ fun waitForGoSignal()
 
     while (!path.exists())
     {
-        Thread.sleep(2000)
+        Thread.sleep(500)
     }
     println("Go signal detected. Running API")
 }
