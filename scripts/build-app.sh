@@ -1,18 +1,21 @@
 #!/usr/bin/env bash
 
 set -ex
+here=$(dirname $0)
+
 git_id=$(git rev-parse --short=7 HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
-export ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
+export MONTAGU_ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
 export MONTAGU_API_VERSION=$(<./config/api_version)
 export MONTAGU_DB_VERSION=$(<./config/db_version)
+export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
 docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
 
 # Make the build environment image that is shared between multiple build targets
-./scripts/make-build-env.sh
+$here/make-build-env.sh
 
 # Create an image based on the shared build env that compiles, tests and dockerises
 # the app
@@ -22,49 +25,15 @@ docker build --tag orderly-web-app-build \
     -f app.Dockerfile \
 	.
 
-# Run the orderly server
-docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION
-
-docker run --rm \
-    -d \
-    -v $PWD/git:/orderly \
-    --network=host \
-    docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION "orderly"
-
-# Run the db on a network
-export NETWORK=db_nw
-
-docker network create $NETWORK
+# Run all dependencies
+export MONTAGU_ORDERLY_PATH=$PWD/git
+$here/run-dependencies.sh
 
 function cleanup {
     set +e
-    docker stop db api
-    docker network rm $NETWORK
+    docker-compose -f $here/docker-compose.yml  --project-name montagu down
 }
 trap cleanup EXIT
-
-docker run --rm \
-    -d \
-    --network=$NETWORK \
-    -p 5432:5432 \
-    --name db \
-    docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
-
-docker exec db montagu-wait.sh
-
-# Set up db with the test user
-./scripts/setup-montagu-db.sh
-
-# Run the api
-docker run --rm \
-    -d \
-    --network=$NETWORK \
-    -p 8080:8080 \
-    --name api \
-    docker.montagu.dide.ic.ac.uk:5000/montagu-api:${MONTAGU_API_VERSION}
-
-docker exec api mkdir -p /etc/montagu/api
-docker exec api touch /etc/montagu/api/go_signal
 
 # Run the created image
 docker run --rm \

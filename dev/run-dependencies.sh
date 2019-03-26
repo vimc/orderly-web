@@ -1,49 +1,34 @@
 #!/usr/bin/env bash
 set -e
 
-cd $(dirname $0)
+here=$(dirname $0)
 
-config_path=$(realpath ../config)
+config_path=$(realpath $here/../config)
 export MONTAGU_API_VERSION=$(<$config_path/api_version)
 export MONTAGU_DB_VERSION=$(<$config_path/db_version)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
-export MONTAGU_ORDERLY_PATH=$(realpath ../src/app/git)
-
-echo "using orderly path:"
-echo $MONTAGU_ORDERLY_PATH
+export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)
 
 export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 (
-	cd ../src
+	cd $here/../src
 	# get fresh tests data
 	rm app/demo -rf
 	rm app/git -rf
 	./gradlew :generateTestData
 )
 
-docker-compose pull
-docker-compose up -d
-
-trap cleanup EXIT
-
-docker exec dev_db_1 montagu-wait.sh
-
-export NETWORK=dev_default
-
-scripts=$(realpath ../scripts)
-$scripts/setup-montagu-db.sh
-
-docker exec dev_api_1 mkdir -p /etc/montagu/api
-docker exec dev_api_1 touch /etc/montagu/api/go_signal
+$here/../scripts/run-dependencies.sh
 
 echo "Dependencies are now running; press Ctrl+C to teardown"
 
-# From now on, if the user presses Ctrl+C we should teardown gracefully
-trap cleanup INT
+# From now on, if the user presses Ctrl+C we should teardown
 function cleanup() {
-    docker-compose down
+    docker-compose -f $here/../scripts/docker-compose.yml --project-name montagu down
 }
+trap cleanup INT
+trap cleanup EXIT
 
 sleep infinity
