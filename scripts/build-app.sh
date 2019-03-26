@@ -5,10 +5,6 @@ here=$(dirname $0)
 
 git_id=$(git rev-parse --short=7 HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
-export MONTAGU_ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
-export MONTAGU_API_VERSION=$(<./config/api_version)
-export MONTAGU_DB_VERSION=$(<./config/db_version)
-export ORDERLY_SERVER_USER_ID=$(id -u $USER)
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
