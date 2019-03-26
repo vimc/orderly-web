@@ -35,12 +35,12 @@ class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : Defau
     {
         HttpConstants.UNAUTHORIZED ->
         {
-            addDefaultResponseHeaders(context.response, ContentTypes.json)
+            addDefaultResponseHeaders(context.response)
             spark.Spark.halt(code, unauthorizedResponse)
         }
         HttpConstants.FORBIDDEN ->
         {
-            addDefaultResponseHeaders(context.response, ContentTypes.json)
+            addDefaultResponseHeaders(context.response)
 
             val profile = DirectActionContext(context).userProfile
 

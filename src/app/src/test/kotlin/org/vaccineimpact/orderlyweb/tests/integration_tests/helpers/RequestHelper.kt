@@ -19,7 +19,7 @@ class RequestHelper
         CertificateHelper.disableCertificateValidation()
     }
 
-    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/v1"
+    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
 
     private val parser = JsonParser()
@@ -68,7 +68,7 @@ class RequestHelper
 
     fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
     {
-        val response = get("/onetime_token/?url=/v1$url", userEmail = userEmail)
+        val response = get("/onetime_token/?url=/api/v1$url", userEmail = userEmail)
         val json = parser.parse(response.text)
         if (json["status"].asString != "success")
         {

@@ -20,9 +20,7 @@ class OnetimeTokenTests : IntegrationTest()
         assertJsonContentType(response)
         assertSuccessful(response)
         JSONValidator.validateAgainstSchema(response.text, "Token")
-
     }
-
 
     @Test
     fun `can use one time token to authenticate`()
@@ -30,7 +28,7 @@ class OnetimeTokenTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 
-        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
+        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
 
         val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
@@ -47,7 +45,7 @@ class OnetimeTokenTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/?query=whatever"
 
-        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/v1$url", "UTF-8"))
+        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
 
         val response = requestHelper.getNoAuth("$url&access_token=$token", ContentTypes.binarydata)

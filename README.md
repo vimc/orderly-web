@@ -22,6 +22,7 @@ v1.23.0 which appends random strings to container names each time they run.
    `export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'` to your profile using ` sudo nano ~/.profile` 
 1. Run all dependencies (Orderly Server etc.) with 
    `./dev/run-dependencies.sh`
+1. Install node dependencies by running `npm install --prefix src/app/static`. Javascript and CSS will be compiled automatically as part of the gradle build.
 1. Run the app, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
    project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
    go signal. The app will now be available on your local machine at http://127.0.0.1:8081 
