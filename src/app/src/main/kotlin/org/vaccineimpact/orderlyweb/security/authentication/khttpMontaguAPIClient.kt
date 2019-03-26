@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.security.authentication
 import com.fasterxml.jackson.core.JsonParseException
 import com.github.salomonbrys.kotson.fromJson
 import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.io.IOException
 
 interface MontaguAPIClient
@@ -35,9 +36,11 @@ interface MontaguAPIClient
 
 class khttpMontaguAPIClient : MontaguAPIClient
 {
+    private val urlBase = AppConfig()["montagu.api_url"]
+
     override fun getUserDetails(token: String): MontaguAPIClient.MontaguUserDetails
     {
-        val response = khttp.get("http://localhost:8080/v1/user/modelling-groups/",
+        val response = khttp.get("$urlBase/user/modelling-groups/",
                 headers = mapOf("Authorization" to "Bearer $token"))
 
         val result = parseResult(response.text)
