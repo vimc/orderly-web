@@ -8,3 +8,13 @@ services:
       - "8321:8321"
     volumes:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
+  api:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-api:${MONTAGU_API_VERSION}
+    ports:
+    - "8080:8080"
+    depends_on:
+    - db
+  db:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
+    ports:
+    - "5432:5432"

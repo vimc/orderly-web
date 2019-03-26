@@ -12,6 +12,7 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.UserRepository
@@ -23,18 +24,20 @@ class GithubAuthenticator(private val userRepository: UserRepository,
                           private val githubApiClient: GitHubClient,
                           private val appConfig: Config = AppConfig()) : Authenticator<TokenCredentials>
 {
+    private val logger = LoggerFactory.getLogger(GithubAuthenticator::class.java)
+
     override fun validate(credentials: TokenCredentials?, context: WebContext)
     {
         if (credentials == null)
         {
-            throw CredentialsException("No credentials supplied")
+            throw loggedCredentialsException("No credentials supplied")
         }
 
         val token = credentials.token
 
         if (CommonHelper.isBlank(token))
         {
-            throw CredentialsException("Token cannot be blank")
+            throw loggedCredentialsException("Token cannot be blank")
         }
 
         val email = validate(token)
@@ -56,11 +59,11 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         if (!githubOrg.isEmpty() && !userBelongToOrg(githubOrg, user))
         {
-            throw CredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
+            throw loggedCredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
         }
         if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
         {
-            throw CredentialsException("User is not a member of GitHub team $teamName")
+            throw loggedCredentialsException("User is not a member of GitHub team $teamName")
         }
 
         // If the GitHub user has no public email set, we need to make an extra call to get it
@@ -80,7 +83,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 404)
             {
-                throw CredentialsException("GitHub token must include scope user:email")
+                throw loggedCredentialsException("GitHub token must include scope user:email")
             }
             else throw e
         }
@@ -98,7 +101,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 404)
             {
-                throw BadConfigurationError("GitHub org $githubOrg does not exist")
+                throw loggedConfigurationException("GitHub org $githubOrg does not exist")
             }
             else throw e
         }
@@ -112,7 +115,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
                 .getTeams(githubOrg).firstOrNull {
                     it.name == teamName
                 }
-                ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
+                ?: throw loggedConfigurationException("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
         return members.contains(user)
@@ -129,10 +132,22 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 401)
             {
-                throw CredentialsException(e.message)
+                throw loggedCredentialsException(e.message?:"")
             }
             else throw e
         }
+    }
+
+    private fun loggedCredentialsException(error: String): CredentialsException
+    {
+        logger.error(error)
+        return CredentialsException(error)
+    }
+
+    private fun loggedConfigurationException(error: String): BadConfigurationError
+    {
+        logger.error(error)
+        return BadConfigurationError(error)
     }
 
 }
