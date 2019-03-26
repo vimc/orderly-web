@@ -52,15 +52,29 @@ rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
 ```
 
 ## Docker build
-The Teamcity build
-1. Pulls in artifacts `demo` and `git` from the Orderly container build.
-2. Runs `./scripts/make-build-env.sh` which builds a Docker image containing the source code and dependencies.
-3. Runs `./scripts/build-app.sh` which uses the above image, mounting the `demo` folder as a volume, to compile code, 
-run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and build a
- Docker image containing the compiled app code.
+The app is dockerised by running `./build-app.sh` which does the following:
+1. Calls `./make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the gradle and npm dependencies needed to 
+distribute the app. This image will also be re-used for the blackbox tests.
+1. Builds the app specific build environment image based on `app.Dockerfile` which inherits from the above.
+1. Runs all dependencies needed for tests as a docker network
+1. Runs the image created in step 2. which tests the app and if successful, runs the `distDocker` task which builds and 
+pushes the final docker image containing just the compiled app.
 
-To build the image locally you will have to replace step one with generating the `demo` folder in your project 
-directory following instructions here: https://github.com/vimc/orderly/tree/master/docker
+This script is designed to be run on Teamcity. To run it locally you will first have to generate test data following
+ instructions here: https://github.com/vimc/orderly/tree/master/docker and to push the image locally you will need to
+  pass your docker login information as an argument to the script, i.e.
+  
+    ./scripts/build-app.sh /home/{user}/.docker/config.json
+ 
+## Teamcity
+The Teamcity build:
+1. Pulls in artifacts `demo` and `git` from the Orderly container build.
+1. Runs `./scripts/migrate-build.sh` to build the migrations image.
+1. Runs `./scripts/migrate-test.sh` to test the image build in the previous step.
+1. Runs `./scripts/migrate-push.sh` to push the tested image to our registy.
+1. Runs `./scripts/build-app.sh` which mounts the `demo` folder as a volume, to compile code, 
+run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and
+ build a Docker image containing the compiled app code (see steps [here](#docker-build))
 
 ## Docker run
 To make use of a built image, run:
