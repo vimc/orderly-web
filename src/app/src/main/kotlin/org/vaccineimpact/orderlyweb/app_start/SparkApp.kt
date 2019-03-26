@@ -48,8 +48,6 @@ class OrderlyWeb
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
 
-        Router(MontaguRouteConfig).mapEndpoints(urlBase)
-
     }
 
     private fun setupPort()
@@ -57,7 +55,7 @@ class OrderlyWeb
         val config = AppConfig()
         val port = config.getInt("app.port")
 
-        var attempts = 5
+        var attempts = 5git
         spk.port(port)
 
         while (!isPortAvailable(port) && attempts > 0)
