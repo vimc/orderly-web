@@ -25,6 +25,15 @@ class RoutingTests: IntegrationTest() {
     }
 
     @Test
+    fun `can get index`()
+    {
+        val response = requestHelper.getWebPage("/")
+        Assertions.assertThat(response.statusCode)
+                .isEqualTo(200)
+        Assertions.assertThat(response.headers["content-type"]).contains("text/html")
+    }
+
+    @Test
     fun `gets 404 page if accept header contains html`()
     {
         val response = requestHelper.getWebPage("/nonsense", "text/html")

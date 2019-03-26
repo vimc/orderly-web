@@ -1,9 +1,10 @@
-package org.vaccineimpact.orderlyweb.controllers
+package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.KHttpClient
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class GitController(context: ActionContext,

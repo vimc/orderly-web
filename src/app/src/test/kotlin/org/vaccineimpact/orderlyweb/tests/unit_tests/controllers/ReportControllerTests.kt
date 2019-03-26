@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.ZipClient
-import org.vaccineimpact.orderlyweb.controllers.ReportController
+import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError

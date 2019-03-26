@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.app_start.Routing
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
-import org.vaccineimpact.orderlyweb.controllers.ReportController
+import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import spark.route.HttpMethod
 
 object ReportRouteConfig : RouteConfig

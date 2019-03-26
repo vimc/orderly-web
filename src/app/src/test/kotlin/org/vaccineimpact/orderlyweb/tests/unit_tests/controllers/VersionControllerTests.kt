@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.ZipClient
-import org.vaccineimpact.orderlyweb.controllers.VersionController
+import org.vaccineimpact.orderlyweb.controllers.api.VersionController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -48,7 +48,7 @@ class VersionControllerTests : ControllerTest()
         }
 
         val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
-                 mock(),
+                mock(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
