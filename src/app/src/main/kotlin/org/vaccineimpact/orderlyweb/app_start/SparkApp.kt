@@ -44,21 +44,19 @@ class OrderlyWeb
 
         TokenStore.instance.setup()
         ErrorHandler.setup()
+
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
+
+        Router(MontaguRouteConfig).mapEndpoints(urlBase)
+
     }
 
     private fun setupPort()
     {
         val config = AppConfig()
-        val port = if (config.authorizationEnabled)
-        {
-            config.getInt("app.port")
-        }
-        else
-        {
-            8888
-        }
+        val port = config.getInt("app.port")
+
         var attempts = 5
         spk.port(port)
 
