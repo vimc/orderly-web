@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import com.google.gson.JsonSyntaxException
+import org.pac4j.core.exception.TechnicalException
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.Serializer
@@ -33,8 +34,14 @@ class ErrorHandler
     // all controller errors appear as InvocationTargetExceptions
     fun handleInvocationError(error: InvocationTargetException, req: Request, res: Response)
     {
+        var cause = error.cause!!
 
-        val cause = error.cause!!
+        // pac4j throws a TechnicalException if errors are thrown during the Authentication process
+        // if the cause is an OrderlyWebError we want that to bubble up
+        if (cause is TechnicalException && cause.cause is OrderlyWebError)
+        {
+            cause = cause.cause as OrderlyWebError
+        }
 
         when (cause)
         {
