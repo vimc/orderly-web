@@ -31,7 +31,7 @@ docker run --rm \
     --network=host \
     docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION "orderly"
 
-# Run the db and migrate
+# Run the db on a network
 export NETWORK=db_nw
 
 docker network create $NETWORK
@@ -52,14 +52,8 @@ docker run --rm \
 
 docker exec db montagu-wait.sh
 
-MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:${MONTAGU_DB_VERSION}
-
-docker pull ${MIGRATE_IMAGE}
-docker run --rm \
-    -d \
-    --network=$NETWORK \
-    ${MIGRATE_IMAGE} \
-    migrate
+# Set up db with the test user
+./scripts/setup-montagu-db.sh
 
 # Run the api
 docker run --rm \
@@ -71,12 +65,6 @@ docker run --rm \
 
 docker exec api mkdir -p /etc/montagu/api
 docker exec api touch /etc/montagu/api/go_signal
-
-./scripts/cli.sh add "Test User" test.user \
-    test.user@example.com password \
-
-./scripts/cli.sh addRole test.user user
-./scripts/cli.sh addRole test.user admin
 
 # Run the created image
 docker run --rm \
