@@ -30,18 +30,21 @@ trap cleanup EXIT
 
 docker exec dev_db_1 montagu-wait.sh
 
+export NETWORK=dev_default
+
 export MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:${MONTAGU_DB_VERSION}
 
 docker pull ${MIGRATE_IMAGE}
-docker run --rm --network=dev_default \
+docker run --rm --network=$NETWORK \
                      ${MIGRATE_IMAGE} \
                      migrate
 
-./cli.sh add "Test User" test.user \
+cli_path=$(realpath ../scripts)
+$cli_path/cli.sh add "Test User" test.user \
     test.user@example.com password \
 
-./cli.sh addRole test.user user
-./cli.sh addRole test.user admin
+$cli_path/cli.sh addRole test.user user
+$cli_path/cli.sh addRole test.user admin
 
 docker exec dev_api_1 mkdir -p /etc/montagu/api
 docker exec dev_api_1 touch /etc/montagu/api/go_signal

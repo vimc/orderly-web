@@ -4,6 +4,8 @@ set -ex
 git_id=$(git rev-parse --short=7 HEAD)
 git_branch=$(git symbolic-ref --short HEAD)
 export ORDERLY_SERVER_VERSION=$(<./config/orderly_server_version)
+export MONTAGU_API_VERSION=$(<./config/api_version)
+export MONTAGU_DB_VERSION=$(<./config/db_version)
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
@@ -24,11 +26,57 @@ docker build --tag orderly-web-app-build \
 docker pull docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION
 
 docker run --rm \
-    -p 8321:8321 \
     -d \
     -v $PWD/git:/orderly \
     --network=host \
     docker.montagu.dide.ic.ac.uk:5000/orderly.server:$ORDERLY_SERVER_VERSION "orderly"
+
+# Run the db and migrate
+export NETWORK=db_nw
+
+docker network create $NETWORK
+
+function cleanup {
+    set +e
+    docker stop db api
+    docker network rm $NETWORK
+}
+trap cleanup EXIT
+
+docker run --rm \
+    -d \
+    --network=$NETWORK \
+    -p 5432:5432 \
+    --name db \
+    docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
+
+docker exec db montagu-wait.sh
+
+MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:${MONTAGU_DB_VERSION}
+
+docker pull ${MIGRATE_IMAGE}
+docker run --rm \
+    -d \
+    --network=$NETWORK \
+    ${MIGRATE_IMAGE} \
+    migrate
+
+# Run the api
+docker run --rm \
+    -d \
+    --network=$NETWORK \
+    -p 8080:8080 \
+    --name api \
+    docker.montagu.dide.ic.ac.uk:5000/montagu-api:${MONTAGU_API_VERSION}
+
+docker exec api mkdir -p /etc/montagu/api
+docker exec api touch /etc/montagu/api/go_signal
+
+./scripts/cli.sh add "Test User" test.user \
+    test.user@example.com password \
+
+./scripts/cli.sh addRole test.user user
+./scripts/cli.sh addRole test.user admin
 
 # Run the created image
 docker run --rm \
