@@ -10,11 +10,12 @@ import org.junit.After
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import java.io.BufferedReader
+import java.io.File
 import java.io.InputStreamReader
 
 class AuthTests : MontaguTests()
 {
-    val docker = DefaultDockerClient.fromEnv().build()
+    private val docker = DefaultDockerClient.fromEnv().build()
     private var containerId: String? = null
 
     @After
@@ -22,25 +23,32 @@ class AuthTests : MontaguTests()
     {
         docker.killContainer(containerId)
         docker.removeContainer(containerId)
-        docker.close();
+        docker.close()
+        File("tmp").delete()
     }
 
     @Test
-    fun `gets error if GitHub org does not exist`()
+    fun `gets informative error if GitHub org does not exist`()
     {
         val fakeConfigLine = "app.github_org=hdyeiksn"
-        runWithConfig("")
+        runWithConfig(fakeConfigLine)
         Thread.sleep(3000)
         val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
         val result = khttp.post("http://localhost:8081/api/v1/login", auth = GithubTokenHeader(token))
-        //  Assertions.assertThat(result.statusCode).isEqualTo(500)
-        Assertions.assertThat(result.text).contains("token was invalid")
+        Assertions.assertThat(result.statusCode).isEqualTo(500)
+        Assertions.assertThat(result.text).contains("GitHub org hdyeiksn does not exist")
     }
 
     private fun runWithConfig(fakeConfigLine: String)
     {
+        val configFile = File("tmp")
+        configFile.createNewFile()
+
+        configFile.writeText(fakeConfigLine)
+
         // run app with config
         val hostConfig = HostConfig.builder()
+                .appendBinds("${configFile.absolutePath}:/etc/orderly/web/config.properties")
                 .portBindings(mapOf("8081" to listOf(PortBinding.of("0.0.0.0", 8081))))
                 .build()
 
@@ -58,11 +66,9 @@ class AuthTests : MontaguTests()
         docker.startContainer(id)
         containerId = id
 
-        docker.execStart(docker.execCreate(id, arrayOf("mkdir", "-p", "/etc/orderly/web")).id())
-        docker.execStart(docker.execCreate(id, arrayOf("touch", "/etc/orderly/web/config.properties")).id())
-        docker.execStart(docker.execCreate(id, arrayOf("echo", fakeConfigLine, ">>", "/etc/orderly/web/config.properties")).id())
-        docker.execStart(docker.execCreate(id, arrayOf("touch", "/etc/orderly/web/go_signal")).id())
 
+
+        docker.execStart(docker.execCreate(id, arrayOf("touch", "/etc/orderly/web/go_signal")).id())
     }
 
     private fun getCurrentGitBranch(): String

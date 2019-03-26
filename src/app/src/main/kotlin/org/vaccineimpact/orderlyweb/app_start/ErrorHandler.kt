@@ -24,6 +24,19 @@ class ErrorHandler
         sparkException<InvocationTargetException>(this::handleInvocationError)
         sparkException<OrderlyWebError>(this::handleError)
         sparkException<JsonSyntaxException> { e, req, res -> handleError(UnableToParseJsonError(e), req, res) }
+        sparkException<TechnicalException> { e, req, res ->
+            // pac4j throws a TechnicalException if errors are thrown during the Authentication process
+            // If the cause is an OrderlyWebError we want that to bubble up
+            if (e.cause is OrderlyWebError)
+            {
+                handleError(e.cause as OrderlyWebError, req, res)
+            }
+            else
+            {
+                logger.error("An unhandled exception occurred", e.cause)
+                handleError(UnexpectedError(), req, res)
+            }
+        }
         sparkException<Exception> { e, req, res ->
             logger.error("An unhandled exception occurred", e)
             handleError(UnexpectedError(), req, res)
@@ -34,14 +47,7 @@ class ErrorHandler
     // all controller errors appear as InvocationTargetExceptions
     fun handleInvocationError(error: InvocationTargetException, req: Request, res: Response)
     {
-        var cause = error.cause!!
-
-        // pac4j throws a TechnicalException if errors are thrown during the Authentication process
-        // if the cause is an OrderlyWebError we want that to bubble up
-        if (cause is TechnicalException && cause.cause is OrderlyWebError)
-        {
-            cause = cause.cause as OrderlyWebError
-        }
+        val cause = error.cause!!
 
         when (cause)
         {
