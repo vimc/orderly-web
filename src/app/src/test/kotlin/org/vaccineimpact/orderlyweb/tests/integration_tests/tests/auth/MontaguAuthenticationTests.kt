@@ -4,26 +4,38 @@ import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
 import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Assert.assertThat
 import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIException
 import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
 class MontaguAuthenticationTests : MontaguTests()
 {
     @Test
-    fun `can talk to API`()
+    fun `khttpMontaguAPIClient can talk to API`()
     {
         val token = login()["access_token"].toString()
         val sut = khttpMontaguAPIClient()
         val result = sut.getUserDetails(token)
     }
 
+    @Test
+    fun `khttpMontaguAPIClient throws error if request fails`()
+    {
+        val sut = khttpMontaguAPIClient()
+
+        assertThatThrownBy {
+            sut.getUserDetails("bad-token")
+        }.isInstanceOf(MontaguAPIException::class.java)
+    }
+
     @Ignore
     @Test
-    fun `can get user details`()
+    fun `khttpMontaguAPIClient can get user details`()
     {
         val token = login()["access_token"].toString()
         val sut = khttpMontaguAPIClient()
@@ -36,7 +48,7 @@ class MontaguAuthenticationTests : MontaguTests()
     {
         // these user login details are set up in ./dev/run-dependencies.sh
         val auth = BasicAuthorization("test.user@example.com", "password")
-        val response = khttp.post(AppConfig()["montagu.api_url"],
+        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
                 data = mapOf("grant_type" to "client_credentials"),
                 auth = auth
         )
