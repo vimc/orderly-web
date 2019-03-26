@@ -55,7 +55,7 @@ class OrderlyWeb
         val config = AppConfig()
         val port = config.getInt("app.port")
 
-        var attempts = 5git
+        var attempts = 5
         spk.port(port)
 
         while (!isPortAvailable(port) && attempts > 0)
