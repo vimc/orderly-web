@@ -24,20 +24,18 @@ class GithubAuthenticator(private val userRepository: UserRepository,
                           private val githubApiClient: GitHubClient,
                           private val appConfig: Config = AppConfig()) : Authenticator<TokenCredentials>
 {
-    private val logger = LoggerFactory.getLogger(GithubAuthenticator::class.java)
-
     override fun validate(credentials: TokenCredentials?, context: WebContext)
     {
         if (credentials == null)
         {
-            throw loggedCredentialsException("No credentials supplied")
+            throw CredentialsException("No credentials supplied")
         }
 
         val token = credentials.token
 
         if (CommonHelper.isBlank(token))
         {
-            throw loggedCredentialsException("Token cannot be blank")
+            throw CredentialsException("Token cannot be blank")
         }
 
         val email = validate(token)
@@ -45,7 +43,6 @@ class GithubAuthenticator(private val userRepository: UserRepository,
             this.addAttribute("url", "*")
             this.setId(email)
         }
-
     }
 
     private fun validate(token: String): String
@@ -59,11 +56,11 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         if (!githubOrg.isEmpty() && !userBelongToOrg(githubOrg, user))
         {
-            throw loggedCredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
+            throw CredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
         }
         if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
         {
-            throw loggedCredentialsException("User is not a member of GitHub team $teamName")
+            throw CredentialsException("User is not a member of GitHub team $teamName")
         }
 
         // If the GitHub user has no public email set, we need to make an extra call to get it
@@ -83,7 +80,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 404)
             {
-                throw loggedCredentialsException("GitHub token must include scope user:email")
+                throw CredentialsException("GitHub token must include scope user:email")
             }
             else throw e
         }
@@ -101,7 +98,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 404)
             {
-                throw loggedConfigurationException("GitHub org $githubOrg does not exist")
+                throw BadConfigurationError("GitHub org $githubOrg does not exist")
             }
             else throw e
         }
@@ -115,7 +112,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
                 .getTeams(githubOrg).firstOrNull {
                     it.name == teamName
                 }
-                ?: throw loggedConfigurationException("GitHub org $githubOrg has no team called $teamName")
+                ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
         return members.contains(user)
@@ -132,22 +129,10 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 401)
             {
-                throw loggedCredentialsException(e.message?:"")
+                throw CredentialsException(e.message?:"")
             }
             else throw e
         }
-    }
-
-    private fun loggedCredentialsException(error: String): CredentialsException
-    {
-        logger.error(error)
-        return CredentialsException(error)
-    }
-
-    private fun loggedConfigurationException(error: String): BadConfigurationError
-    {
-        logger.error(error)
-        return BadConfigurationError(error)
     }
 
 }

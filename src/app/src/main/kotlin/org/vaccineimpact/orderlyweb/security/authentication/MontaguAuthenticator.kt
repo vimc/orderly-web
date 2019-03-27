@@ -14,20 +14,18 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
                            private val montaguClient: MontaguAPIClient
 ) : Authenticator<TokenCredentials>
 {
-    private val logger = LoggerFactory.getLogger(MontaguAuthenticator::class.java)
-
     override fun validate(credentials: TokenCredentials?, context: WebContext?)
     {
         if (credentials == null)
         {
-            throw loggedCredentialsException("No credentials supplied")
+            throw CredentialsException("No credentials supplied")
         }
 
         val token = credentials.token
 
         if (CommonHelper.isBlank(token))
         {
-            throw loggedCredentialsException("Token cannot be blank")
+            throw CredentialsException("Token cannot be blank")
         }
 
         val email = validate(token)
@@ -48,15 +46,10 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
         }
         catch (e: MontaguAPIException)
         {
-            throw loggedCredentialsException("Montagu authentication failed with status ${e.status} and message ${e.message}")
+            throw CredentialsException("Montagu authentication failed with status ${e.status} and message ${e.message}")
         }
 
         return user.email
     }
 
-    private fun loggedCredentialsException(error: String): CredentialsException
-    {
-        logger.error(error)
-        return CredentialsException(error)
-    }
 }
