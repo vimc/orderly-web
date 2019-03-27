@@ -11,6 +11,7 @@ here=$(dirname $0)
 )
 
 export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)
+export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
 echo "Dependencies are now running; press Ctrl+C to teardown"

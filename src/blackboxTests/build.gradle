@@ -9,7 +9,6 @@ dependencies {
     testCompile "com.beust:klaxon:2.1.8"
 
     testCompile project(":testHelpers")
-    testCompile project(":databaseInterface")
 
     testCompile "com.spotify:docker-client:8.15.1"
 }

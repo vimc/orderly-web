@@ -1,4 +1,9 @@
+#!/usr/bin/env bash
+
 ORDERLY_IMAGE=docker.montagu.dide.ic.ac.uk:5000/orderly:master
+
+rm demo -rf
+rm git -rf
 
 docker pull $ORDERLY_IMAGE
 docker run --rm \
@@ -12,9 +17,6 @@ docker run --rm \
 MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/orderlyweb-migrate:master
 
 docker pull $MIGRATE_IMAGE
-
-rm demo -rf
-rm git -rf
 
 docker run --rm \
     -v $PWD/demo:/orderly \
