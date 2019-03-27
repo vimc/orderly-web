@@ -4,16 +4,13 @@ import com.spotify.docker.client.DefaultDockerClient
 import com.spotify.docker.client.messages.ContainerConfig
 import com.spotify.docker.client.messages.HostConfig
 import com.spotify.docker.client.messages.PortBinding
-import khttp.structures.authorization.Authorization
-import org.assertj.core.api.Assertions
 import org.junit.After
-import org.junit.Test
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.io.BufferedReader
 import java.io.File
 import java.io.InputStreamReader
 
-class AuthTests : MontaguTests()
+abstract class CustomConfigTests : TeamcityTests()
 {
     private val docker = DefaultDockerClient.fromEnv().build()
     private var containerId: String? = null
@@ -27,24 +24,12 @@ class AuthTests : MontaguTests()
         File("tmp").delete()
     }
 
-    @Test
-    fun `gets informative error if GitHub org does not exist`()
-    {
-        val fakeConfigLine = "app.github_org=hdyeiksn"
-        runWithConfig(fakeConfigLine)
-        Thread.sleep(3000)
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
-        val result = khttp.post("http://localhost:8081/api/v1/login", auth = GithubTokenHeader(token))
-        Assertions.assertThat(result.statusCode).isEqualTo(500)
-        Assertions.assertThat(result.text).contains("GitHub org hdyeiksn does not exist")
-    }
-
-    private fun runWithConfig(fakeConfigLine: String)
+    protected fun runWithConfig(fakeConfig: String)
     {
         val configFile = File("tmp")
         configFile.createNewFile()
 
-        configFile.writeText(fakeConfigLine)
+        configFile.writeText(fakeConfig)
 
         // run app with config
         val hostConfig = HostConfig.builder()
@@ -66,8 +51,6 @@ class AuthTests : MontaguTests()
         docker.startContainer(id)
         containerId = id
 
-
-
         docker.execStart(docker.execCreate(id, arrayOf("touch", "/etc/orderly/web/go_signal")).id())
     }
 
@@ -80,14 +63,5 @@ class AuthTests : MontaguTests()
                 InputStreamReader(process.inputStream))
 
         return reader.readLine()
-    }
-
-    data class GithubTokenHeader(val token: String, val prefix: String = "token") : Authorization
-    {
-        override val header: Pair<String, String>
-            get()
-            {
-                return "Authorization" to "$prefix $token"
-            }
     }
 }

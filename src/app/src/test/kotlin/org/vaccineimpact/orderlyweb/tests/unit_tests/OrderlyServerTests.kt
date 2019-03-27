@@ -9,9 +9,9 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.HttpClient
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyServerTests: MontaguTests()
+class OrderlyServerTests: TeamcityTests()
 {
     private val mockHttpclient = mock<HttpClient>()
     private val mockConfig = mock<Config>() {

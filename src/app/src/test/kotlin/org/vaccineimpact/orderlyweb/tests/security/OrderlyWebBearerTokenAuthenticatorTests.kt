@@ -12,9 +12,9 @@ import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
+class OrderlyWebBearerTokenAuthenticatorTests: TeamcityTests()
 {
     lateinit var helper: WebTokenHelper
     val fakeUserEmail = "user@email.com"
@@ -32,7 +32,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "MontaguTests")
+        val credentials = TokenCredentials(token, "TeamcityTests")
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
@@ -48,7 +48,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "MontaguTests")
+        val credentials = TokenCredentials(token, "TeamcityTests")
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
