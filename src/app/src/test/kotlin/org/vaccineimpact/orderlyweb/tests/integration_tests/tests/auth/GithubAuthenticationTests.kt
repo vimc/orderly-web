@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
 
 import com.github.fge.jackson.JsonLoader
 import khttp.options
@@ -7,8 +7,9 @@ import khttp.structures.authorization.Authorization
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class AuthenticationTests : IntegrationTest()
+class GithubAuthenticationTests : IntegrationTest()
 {
     @Test
     fun `authentication fails without Auth header`()

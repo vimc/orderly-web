@@ -12,6 +12,7 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.UserRepository
@@ -42,7 +43,6 @@ class GithubAuthenticator(private val userRepository: UserRepository,
             this.addAttribute("url", "*")
             this.setId(email)
         }
-
     }
 
     private fun validate(token: String): String
@@ -129,7 +129,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         {
             if (e.status == 401)
             {
-                throw CredentialsException(e.message)
+                throw CredentialsException(e.message?:"")
             }
             else throw e
         }
