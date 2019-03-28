@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
@@ -80,8 +81,8 @@ class ArtefactTests : IntegrationTest()
     {
         val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
 
-        val url = "/reports/spaces/versions/$version/artefacts/a+graph+with+spaces.png/"
-        val response = requestHelper.get(url, ContentTypes.binarydata)
+        val url = "/reports/spaces/versions/$version/artefacts/a+graph+with+spaces.png"
+        val response = requestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")

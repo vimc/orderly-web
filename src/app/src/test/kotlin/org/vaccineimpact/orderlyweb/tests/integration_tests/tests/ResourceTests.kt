@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
@@ -56,7 +57,7 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "a+resource+with+spaces.csv"
         val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
 
-        val testresponse = requestHelper.get("/reports/spaces/versions/$version/")
+        val testresponse = requestHelper.get("/reports/spaces/versions/$version/", userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(testresponse)
 
