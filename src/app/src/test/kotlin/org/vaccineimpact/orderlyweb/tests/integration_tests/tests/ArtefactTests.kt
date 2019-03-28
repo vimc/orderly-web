@@ -44,7 +44,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
     }
 
     @Test
@@ -57,7 +57,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
     }
 
     @Test
@@ -70,7 +70,20 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=other/$publishedVersion/graph.png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
+    }
+
+    @Test
+    fun `gets artefact file with space in name`()
+    {
+        val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
+
+        val url = "/reports/spaces/versions/$version/artefacts/a+graph+with+spaces.png/"
+        val response = requestHelper.get(url, ContentTypes.binarydata, user = requestHelper.fakeReviewer)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/a graph with spaces.png\"")
     }
 
     @Test

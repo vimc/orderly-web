@@ -44,7 +44,28 @@ class ResourceTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=use_resource/$version/meta/data.csv")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/meta/data.csv\"")
+
+    }
+
+    @Test
+    fun `gets resource file with space in name`()
+    {
+        val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
+
+        val resourceEncoded = "a+resource+with+spaces.csv"
+        val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
+
+        val testresponse = requestHelper.get("/reports/spaces/versions/$version/", user = requestHelper.fakeReviewer)
+
+        assertSuccessful(testresponse)
+
+        val token = requestHelper.generateOnetimeToken(url)
+        val response = requestHelper.get("$url?access_token=$token", ContentTypes.binarydata, user = requestHelper.fakeReviewer)
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/a resource with spaces.csv\"")
 
     }
 

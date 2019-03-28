@@ -50,7 +50,7 @@ class ArtefactController(context: ActionContext,
         context.addDefaultResponseHeaders(guessFileType(filename))
         if (!inline)
         {
-            context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+            context.addResponseHeader("Content-Disposition", "attachment; filename=\"$filename\"")
         }
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
