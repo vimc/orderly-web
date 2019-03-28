@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.security
 
+import org.pac4j.core.authorization.authorizer.IsAuthenticatedAuthorizer
 import org.pac4j.core.client.Client
 import org.pac4j.core.config.Config
 import org.pac4j.core.config.ConfigFactory
@@ -11,32 +12,34 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
-class TokenVerifyingConfigFactory(
+class APISecurityConfigFactory(
         private val requiredPermissions: Set<PermissionRequirement>
 ) : ConfigFactory
 {
     companion object
     {
         val headerClient = JWTHeaderClient(WebTokenHelper.instance.verifier)
-        val cookieClient = JWTCookieClient(WebTokenHelper.instance.verifier)
         val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
         val githubDirectClient = GithubDirectClient()
     }
 
-    val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient, cookieClient)
+    val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
 
     override fun build(vararg parameters: Any?): Config
     {
         @Suppress("UNCHECKED_CAST")
         return Config(allClients as List<Client<Credentials, CommonProfile>>).apply {
             addMatcher(SkipOptionsMatcher.name, SkipOptionsMatcher)
-            httpActionAdapter = TokenActionAdapter(allClients)
+            httpActionAdapter = APIActionAdaptor(allClients)
 
             if (AppConfig().authorizationEnabled)
             {
                 setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
             }
-
+            else
+            {
+                setAuthorizer(IsAuthenticatedAuthorizer<CommonProfile>())
+            }
         }
     }
 
@@ -44,15 +47,15 @@ class TokenVerifyingConfigFactory(
 
 }
 
-fun TokenVerifyingConfigFactory.allowParameterAuthentication(): TokenVerifyingConfigFactory
+fun APISecurityConfigFactory.allowParameterAuthentication(): APISecurityConfigFactory
 {
-    this.allClients.add(TokenVerifyingConfigFactory.parameterClient)
+    this.allClients.add(APISecurityConfigFactory.parameterClient)
     return this
 }
 
-fun TokenVerifyingConfigFactory.githubAuthentication(): TokenVerifyingConfigFactory
+fun APISecurityConfigFactory.githubAuthentication(): APISecurityConfigFactory
 {
     this.allClients.clear()
-    this.allClients.add(TokenVerifyingConfigFactory.githubDirectClient)
+    this.allClients.add(APISecurityConfigFactory.githubDirectClient)
     return this
 }

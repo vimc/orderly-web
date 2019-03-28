@@ -13,11 +13,12 @@ class HomeController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    data class IndexViewModel(val reports: List<Report>) : AppViewModel()
+    class IndexViewModel(context: ActionContext, val reports: List<Report>) : AppViewModel(context)
 
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
-        return IndexViewModel(orderly.getAllReports())
+        val user = context.userProfile
+        return IndexViewModel(context, orderly.getAllReports())
     }
 }

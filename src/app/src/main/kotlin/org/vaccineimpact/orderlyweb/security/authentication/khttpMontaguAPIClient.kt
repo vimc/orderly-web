@@ -15,9 +15,8 @@ interface MontaguAPIClient
     // The following are identical to orderlyweb.models.Result, orderlyweb.models.ResultStatus,
     // and orderlyweb.models.ErrorInfo but in principle they need not be and should either spec
     // change could diverge, so defining Montagu specific models here
-    class MontaguResult(val status: MontaguResultStatus, data: Any?, errors: Iterable<MontaguErrorInfo>)
+    class MontaguResult(val status: MontaguResultStatus, val data: MontaguUserDetails?, errors: Iterable<MontaguErrorInfo>)
     {
-        val data = data ?: ""
         val errors = errors.toList()
     }
 
@@ -33,14 +32,13 @@ interface MontaguAPIClient
 
 }
 
-
 class khttpMontaguAPIClient : MontaguAPIClient
 {
-    private val urlBase = AppConfig()["montagu.api_url"]
+    private val urlBase = "${AppConfig()["montagu.api_url"]}/v1"
 
     override fun getUserDetails(token: String): MontaguAPIClient.MontaguUserDetails
     {
-        val response = khttp.get("$urlBase/user/modelling-groups/",
+        val response = khttp.get("$urlBase/user/",
                 headers = mapOf("Authorization" to "Bearer $token"))
 
         val result = parseResult(response.text)
@@ -50,10 +48,7 @@ class khttpMontaguAPIClient : MontaguAPIClient
             throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.statusCode)
         }
 
-        // TODO get real user details once endpoint exists
-        return MontaguAPIClient.MontaguUserDetails("test.user@example.com",
-                "test.user",
-                "Test user")
+        return result.data!!
     }
 
     private fun parseResult(jsonAsString: String): MontaguAPIClient.MontaguResult
@@ -68,6 +63,5 @@ class khttpMontaguAPIClient : MontaguAPIClient
         }
     }
 }
-
 
 class MontaguAPIException(override val message: String, val status: Int) : IOException(message)

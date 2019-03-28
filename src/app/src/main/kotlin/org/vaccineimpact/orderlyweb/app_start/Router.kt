@@ -16,6 +16,10 @@ import spark.Spark.notFound
 import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
+import org.pac4j.sparkjava.CallbackRoute
+import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
+
 
 class Router(freeMarkerConfig: Configuration)
 {
@@ -77,9 +81,10 @@ class Router(freeMarkerConfig: Configuration)
             val acceptHeader = req.headers("Accept")
             if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
             {
+                val context = DirectActionContext(req, res)
                 res.type("text/html")
                 freeMarkerEngine.render(
-                        ModelAndView(AppViewModel(), "404.ftl")
+                        ModelAndView(AppViewModel(context), "404.ftl")
                 )
 
             }
@@ -89,6 +94,12 @@ class Router(freeMarkerConfig: Configuration)
                 Serializer.instance.toJson(RouteNotFound().asResult())
             }
         }
+
+        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
+                .build()
+        val loginCallback = CallbackRoute(config)
+        Spark.get("/login", loginCallback)
+        Spark.get("/login/", loginCallback)
 
         endpoint.additionalSetup(fullUrl)
     }

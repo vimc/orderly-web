@@ -19,7 +19,7 @@ class OnetimeTokenController(context: ActionContext,
 
         val profile = context.userProfile
 
-        val emailAddress = profile.id
+        val emailAddress = profile!!.id
 
         val issuer = WebTokenHelper.instance.issuer
         val token = issuer.generateOnetimeActionToken(emailAddress, url)

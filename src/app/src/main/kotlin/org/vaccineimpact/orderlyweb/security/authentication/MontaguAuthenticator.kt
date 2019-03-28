@@ -32,7 +32,7 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
-            this.setId(email)
+            this.id = email
         }
     }
 

@@ -6,7 +6,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.UserController
 
 object UserRouteConfig: RouteConfig {
     override val endpoints: List<EndpointDefinition> = listOf(
-            Endpoint("/login/", UserController::class, "auth")
+            APIEndpoint("/login/", UserController::class, "auth")
                     .post()
                     .json()
                     .secure()

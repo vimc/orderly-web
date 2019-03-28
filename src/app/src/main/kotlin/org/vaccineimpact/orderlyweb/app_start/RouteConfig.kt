@@ -1,10 +1,10 @@
 package org.vaccineimpact.orderlyweb.app_start
 
-import org.vaccineimpact.orderlyweb.Endpoint
 import org.vaccineimpact.orderlyweb.EndpointDefinition
+import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.Routing.*
 import org.vaccineimpact.orderlyweb.controllers.web.HomeController
-import org.vaccineimpact.orderlyweb.html
+import org.vaccineimpact.orderlyweb.secure
 
 interface RouteConfig
 {
@@ -25,7 +25,7 @@ object APIRouteConfig : RouteConfig
 object WebRouteConfig : RouteConfig
 {
     override val endpoints: List<EndpointDefinition> = listOf(
-            Endpoint("/", HomeController::class, "index")
-                    .html()
+            WebEndpoint("/", HomeController::class, "index")
+                    .secure()
     )
 }

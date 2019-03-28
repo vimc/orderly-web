@@ -14,26 +14,26 @@ object ReportRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            Endpoint("/reports/", controller, "getAllReports")
+            APIEndpoint("/reports/", controller, "getAllReports")
                     .json()
                     .transform()
                     // more specific permission checking in the controller action
                     .secure(),
 
-            Endpoint("/reports/:name/", controller, "getVersionsByName")
+            APIEndpoint("/reports/:name/", controller, "getVersionsByName")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/run/", controller, "run",
+            APIEndpoint("/reports/:name/run/", controller, "run",
                     method = HttpMethod.post)
                     .json()
                     .secure(runReports),
 
-            Endpoint("/reports/:key/status/", controller, "status")
+            APIEndpoint("/reports/:key/status/", controller, "status")
                     .json()
                     .secure(runReports),
-            Endpoint("/reports/:name/latest/changelog/", controller, "getLatestChangelogByName")
+            APIEndpoint("/reports/:name/latest/changelog/", controller, "getLatestChangelogByName")
                     .json()
                     .transform()
                     .secure(readReports)

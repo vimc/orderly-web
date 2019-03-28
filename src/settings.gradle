@@ -1,7 +1,5 @@
 rootProject.name = 'orderlyweb'
 include 'app',
-        'models',
-        'security',
         'databaseInterface',
         'generateDatabaseInterface',
         'testHelpers'
