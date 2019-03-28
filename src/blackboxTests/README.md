@@ -18,8 +18,3 @@ followed by
     ./scripts/build-app.sh
     
 Then the tests can be run through the IDE as usual.
-
-### Teamcity
-On Teamcity these tests are run in a docker container. The script `./run-blackbox-tests.sh`
-dockerises and then runs the tests. This step only happens after `./scripts/build-app.sh` 
-has run successfully.

@@ -70,15 +70,6 @@ docker {
     baseImage = "orderly-web-dist-base"
 }
 
-distributions {
-    main {
-        contents {
-            from("$projectDir/static")
-            from("$projectDir/templates")
-        }
-    }
-}
-
 distDocker {
     dependsOn = [build]
     push = true

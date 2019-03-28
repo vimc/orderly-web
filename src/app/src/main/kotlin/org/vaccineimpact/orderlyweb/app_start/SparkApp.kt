@@ -35,8 +35,6 @@ class OrderlyWeb
 
         waitForGoSignal()
 
-        logger.info(AppConfig()["app.github_org"])
-
         setupPort()
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
         spk.options("*") { _, res ->
