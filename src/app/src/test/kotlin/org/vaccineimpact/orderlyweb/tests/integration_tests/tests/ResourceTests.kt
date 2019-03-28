@@ -57,12 +57,7 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "a+resource+with+spaces.csv"
         val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
 
-        val testresponse = requestHelper.get("/reports/spaces/versions/$version/", userEmail = fakeGlobalReportReviewer())
-
-        assertSuccessful(testresponse)
-
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = requestHelper.get(url,  ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
