@@ -1,12 +1,15 @@
 package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import spark.Request
 import spark.Response
 
 interface ActionContext
 {
+    val request: Request
     val userProfile: CommonProfile
     val permissions: PermissionSet
 

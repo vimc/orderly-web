@@ -64,7 +64,7 @@ class GithubAuthenticatorTests : MontaguTests()
     {
         val sut = GithubAuthenticator(mock(), mock(), mockAppConfig)
 
-        assertThatThrownBy { sut.validate(TokenCredentials("", ""), mock()) }
+        assertThatThrownBy { sut.validate(TokenCredentials(""), mock()) }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("Token cannot be blank")
     }
@@ -74,7 +74,7 @@ class GithubAuthenticatorTests : MontaguTests()
     {
         val sut = GithubAuthenticator(mock(), mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
@@ -85,7 +85,7 @@ class GithubAuthenticatorTests : MontaguTests()
     {
         val sut = GithubAuthenticator(mock(), mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         assertThat(credentials.userProfile.id).isEqualTo("email")
@@ -96,7 +96,7 @@ class GithubAuthenticatorTests : MontaguTests()
     {
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
@@ -118,7 +118,7 @@ class GithubAuthenticatorTests : MontaguTests()
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
 
         assertThatThrownBy {
             sut.validate(credentials, mock())
@@ -146,7 +146,7 @@ class GithubAuthenticatorTests : MontaguTests()
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
 
         assertThatThrownBy {
             sut.validate(credentials, mock())
@@ -170,7 +170,7 @@ class GithubAuthenticatorTests : MontaguTests()
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
 
         assertThatThrownBy {
             sut.validate(credentials, mock())
@@ -194,7 +194,7 @@ class GithubAuthenticatorTests : MontaguTests()
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
 
         assertThatThrownBy {
             sut.validate(credentials, mock())
@@ -220,7 +220,7 @@ class GithubAuthenticatorTests : MontaguTests()
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
 
         assertThatThrownBy {
             sut.validate(credentials, mock())

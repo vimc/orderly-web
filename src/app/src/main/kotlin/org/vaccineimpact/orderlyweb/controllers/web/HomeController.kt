@@ -18,6 +18,7 @@ class HomeController(actionContext: ActionContext,
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
+        context.request.session(true)
         return IndexViewModel(orderly.getAllReports())
     }
 }

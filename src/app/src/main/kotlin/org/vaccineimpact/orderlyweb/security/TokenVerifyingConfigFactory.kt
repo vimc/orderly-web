@@ -36,6 +36,7 @@ class TokenVerifyingConfigFactory(
             {
                 setAuthorizer(OrderlyWebAuthorizer(requiredPermissions))
             }
+
         }
     }
 

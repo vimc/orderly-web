@@ -35,7 +35,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
-        val credentials = TokenCredentials(token, "MontaguTests")
+        val credentials = TokenCredentials(token)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(token)) doReturn true
@@ -59,7 +59,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
-        val credentials = TokenCredentials(badToken, "MontaguTests")
+        val credentials = TokenCredentials(badToken)
 
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -82,7 +82,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
-        val credentials = TokenCredentials(badToken, "MontaguTests")
+        val credentials = TokenCredentials(badToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
@@ -105,7 +105,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
         val evilToken = sauron.issuer.generateOnetimeActionToken(fakeUser, url)
-        val credentials = TokenCredentials(evilToken, "MontaguTests")
+        val credentials = TokenCredentials(evilToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(evilToken)) doReturn true
@@ -128,7 +128,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val badToken = helper.issuer
                 .generateOnetimeActionToken(fakeUser, "")
 
-        val credentials = TokenCredentials(badToken, "MontaguTests")
+        val credentials = TokenCredentials(badToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
@@ -151,7 +151,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val notInDbToken = helper.issuer
                 .generateOnetimeActionToken(fakeUser, url)
 
-        val credentials = TokenCredentials(notInDbToken, "MontaguTests")
+        val credentials = TokenCredentials(notInDbToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(notInDbToken)) doReturn false
