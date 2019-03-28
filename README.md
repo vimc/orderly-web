@@ -79,8 +79,6 @@ The Teamcity build:
 run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and
  build a Docker image containing the compiled app code (see steps [here](#docker-build))
 1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
-1. Runs `./scripts/run-blackbox-tests.sh` which builds a blackbox test image and runs it - this step may be 
-deprecated and the blackbox tests moved to the [deploy tool](https://github.com/vimc/orderly-web-deploy)
 
 ## Docker run
 To make use of a built image, run:

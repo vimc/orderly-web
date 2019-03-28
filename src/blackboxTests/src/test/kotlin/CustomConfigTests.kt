@@ -20,6 +20,8 @@ abstract class CustomConfigTests : TeamcityTests()
     @After
     fun cleanUp()
     {
+        docker.logs(containerId, LogsParam.stdout(), LogsParam.stderr())
+                .use { stream -> println(stream.readFully()) }
         try
         {
             docker.killContainer(containerId)
@@ -27,16 +29,20 @@ abstract class CustomConfigTests : TeamcityTests()
         }
         catch (e: Exception)
         {
-            docker.logs(containerId, LogsParam.stdout(), LogsParam.stderr())
-                    .use { stream -> println(stream.readFully()) }
         }
         docker.close()
     }
 
     protected fun runWithConfig(fakeConfig: String)
     {
+        val configFile = File("config.properties")
+        configFile.createNewFile()
+
+        configFile.writeText(fakeConfig)
+
         // run app with config
         val hostConfig = HostConfig.builder()
+                .appendBinds("${configFile.absolutePath}:/etc/orderly/web/config.properties")
                 .portBindings(mapOf("8081" to listOf(PortBinding.of("0.0.0.0", 8081))))
                 .build()
 
@@ -53,8 +59,6 @@ abstract class CustomConfigTests : TeamcityTests()
         docker.startContainer(id)
         containerId = id
 
-        docker.execStart(docker.execCreate(id, arrayOf("mkdir", "/etc/orderly/web/")).id())
-        docker.execStart(docker.execCreate(id, arrayOf("echo", fakeConfig, ">>", "/etc/orderly/web/config.properties")).id())
         docker.execStart(docker.execCreate(id, arrayOf("touch", "/etc/orderly/web/go_signal")).id())
     }
 
