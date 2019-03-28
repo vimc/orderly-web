@@ -14,7 +14,7 @@ import spark.Response
 
 open class DirectActionContext(private val context: SparkWebContext) : ActionContext
 {
-    override val request
+    private val request
         get() = context.sparkRequest
     private val response
         get() = context.sparkResponse

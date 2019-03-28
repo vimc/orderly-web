@@ -9,7 +9,6 @@ import spark.Response
 
 interface ActionContext
 {
-    val request: Request
     val userProfile: CommonProfile
     val permissions: PermissionSet
 
