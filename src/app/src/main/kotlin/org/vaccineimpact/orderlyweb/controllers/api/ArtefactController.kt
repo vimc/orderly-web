@@ -1,8 +1,9 @@
-package org.vaccineimpact.orderlyweb.controllers
+package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
@@ -49,7 +50,7 @@ class ArtefactController(context: ActionContext,
         context.addDefaultResponseHeaders(guessFileType(filename))
         if (!inline)
         {
-            context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+            context.addResponseHeader("Content-Disposition", "attachment; filename=\"$filename\"")
         }
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)

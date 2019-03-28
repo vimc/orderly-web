@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.app_start.Routing
 import org.vaccineimpact.orderlyweb.Endpoint
 import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
-import org.vaccineimpact.orderlyweb.controllers.GitController
+import org.vaccineimpact.orderlyweb.controllers.api.GitController
 import org.vaccineimpact.orderlyweb.json
 import org.vaccineimpact.orderlyweb.secure
 import spark.route.HttpMethod

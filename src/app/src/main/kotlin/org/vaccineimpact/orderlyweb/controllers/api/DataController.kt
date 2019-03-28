@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.controllers
+package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.Files
+import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly

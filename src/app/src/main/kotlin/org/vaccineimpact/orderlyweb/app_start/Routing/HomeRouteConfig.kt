@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.app_start.Routing
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
-import org.vaccineimpact.orderlyweb.controllers.HomeController
-import org.vaccineimpact.orderlyweb.controllers.OnetimeTokenController
+import org.vaccineimpact.orderlyweb.controllers.api.HomeController
+import org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController
 
 object HomeRouteConfig : RouteConfig
 {

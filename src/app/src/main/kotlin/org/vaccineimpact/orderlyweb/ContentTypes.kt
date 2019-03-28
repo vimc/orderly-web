@@ -6,4 +6,5 @@ object ContentTypes
     val json = "application/json"
     val binarydata = "application/octet-stream"
     val zip = "application/zip"
+    val html = "text/html"
 }

@@ -4,6 +4,7 @@ import spark.Filter
 import spark.Request
 import spark.Response
 import javax.servlet.http.HttpServletResponse
+import java.net.URLDecoder
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
@@ -31,5 +32,5 @@ class DefaultHeadersFilter(val contentType: String) : Filter
 
 fun parseRouteParamToFilepath(routeParam: String): String
 {
-    return routeParam.replace(":", "/")
+    return  URLDecoder.decode(routeParam.replace(":", "/")) //route param may include URL encoding
 }

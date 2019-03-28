@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import java.io.File
 
@@ -44,7 +45,23 @@ class ResourceTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=use_resource/$version/meta/data.csv")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/meta/data.csv\"")
+
+    }
+
+    @Test
+    fun `gets resource file with space in name`()
+    {
+        val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
+
+        val resourceEncoded = "a+resource+with+spaces.csv"
+        val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
+
+        val response = requestHelper.get(url,  ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
+
+        assertSuccessful(response)
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/a resource with spaces.csv\"")
 
     }
 
