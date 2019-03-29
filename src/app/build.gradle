@@ -38,9 +38,9 @@ dependencies {
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
 
-    compile "org.pac4j:spark-pac4j:2.2.0"
-    compile "org.pac4j:pac4j-http:2.2.1"
-    compile 'org.pac4j:pac4j-jwt:2.0.0'
+    compile "org.pac4j:spark-pac4j:3.0.0"
+    compile "org.pac4j:pac4j-http:3.2.0"
+    compile 'org.pac4j:pac4j-jwt:3.2.0'
     compile 'commons-codec:commons-codec:1.10'
 
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
@@ -55,8 +55,6 @@ dependencies {
     testCompile "com.github.fge:json-schema-validator:2.2.6"
 
     compile project(":databaseInterface")
-    compile project(":models")
-    compile project(":security")
 
     testCompile "junit:junit:4.12"
     testCompile "org.mockito:mockito-core:2.+"

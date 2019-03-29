@@ -41,7 +41,7 @@ class OrderlyWebOnetimeTokenAuthenticator(
             throw CredentialsException("No 'url' claim provided. Token is invalid")
         }
 
-        credentials.userProfile?.setId(claims.getClaim("id"))
+        credentials.userProfile?.id = claims.getClaim("id").toString()
     }
 
 }

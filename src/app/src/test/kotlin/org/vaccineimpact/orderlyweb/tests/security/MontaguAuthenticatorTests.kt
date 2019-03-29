@@ -39,7 +39,7 @@ class MontaguAuthenticatorTests : MontaguTests()
     {
         val sut = MontaguAuthenticator(mock(), mock())
 
-        Assertions.assertThatThrownBy { sut.validate(TokenCredentials("", ""), mock()) }
+        Assertions.assertThatThrownBy { sut.validate(TokenCredentials(""), mock()) }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("Token cannot be blank")
     }
@@ -50,7 +50,7 @@ class MontaguAuthenticatorTests : MontaguTests()
 
         val sut = MontaguAuthenticator(mock(), mockMontaguAPIClient)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         Assertions.assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
@@ -61,7 +61,7 @@ class MontaguAuthenticatorTests : MontaguTests()
     {
         val sut = MontaguAuthenticator(mock(), mockMontaguAPIClient)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         Assertions.assertThat(credentials.userProfile.id).isEqualTo("user@example.com")
@@ -72,7 +72,7 @@ class MontaguAuthenticatorTests : MontaguTests()
     {
         val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
 
-        val credentials = TokenCredentials("token", "")
+        val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         verify(mockUserRepo).addUser("user@example.com", "test.user", "Test User",

@@ -32,7 +32,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "MontaguTests")
+        val credentials = TokenCredentials(token)
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
@@ -48,7 +48,7 @@ class OrderlyWebBearerTokenAuthenticatorTests: MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "MontaguTests")
+        val credentials = TokenCredentials(token)
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
