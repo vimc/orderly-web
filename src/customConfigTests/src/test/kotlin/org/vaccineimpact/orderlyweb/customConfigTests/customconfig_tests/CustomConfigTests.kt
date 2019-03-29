@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.customconfig_tests
+package org.vaccineimpact.orderlyweb.customConfigTests.customconfig_tests
 
 import khttp.responses.Response
 import org.assertj.core.api.Assertions
@@ -8,14 +8,10 @@ import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 import java.io.File
 
 abstract class CustomConfigTests : MontaguTests()
 {
-
-    val requestHelper = RequestHelper()
-    val JSONValidator = org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator()
     var appRunning: Boolean = false
 
     fun startApp(customConfig: String)
@@ -55,6 +51,7 @@ abstract class CustomConfigTests : MontaguTests()
         File("local").delete()
         spark.Spark.stop()
 
+        // reset the properties
         AppConfig.properties.apply {
             load(getResource("config.properties").openStream())
             val global = File("/etc/orderly/web/config.properties")
@@ -71,11 +68,6 @@ abstract class CustomConfigTests : MontaguTests()
                 .isEqualTo(200)
 
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
-    }
-
-    protected fun assertJsonContentType(response: Response)
-    {
-        Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
     }
 
 }

@@ -3,9 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
 import com.github.fge.jackson.JsonLoader
 import khttp.options
 import khttp.post
-import khttp.structures.authorization.Authorization
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.test_helpers.GithubTokenHeader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
@@ -109,14 +109,4 @@ class GithubAuthenticationTests : IntegrationTest()
     }
 
     val url = "${RequestHelper().apiBaseUrl}/login/"
-
-    data class GithubTokenHeader(val token: String, val prefix: String = "token") : Authorization
-    {
-        override val header: Pair<String, String>
-            get()
-            {
-                return "Authorization" to "$prefix $token"
-            }
-    }
-
 }
