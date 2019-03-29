@@ -31,6 +31,12 @@ class Router(freeMarkerConfig: Configuration)
         val urls: MutableList<String> = mutableListOf()
     }
 
+    init
+    {
+        mapNotFound()
+        mapLoginCallback()
+    }
+
     private fun transform(x: Any) = when (x)
     {
         is AuthenticationResponse -> Serializer.instance.gson.toJson(x)!!
@@ -40,6 +46,37 @@ class Router(freeMarkerConfig: Configuration)
     fun mapEndpoints(routeConfig: RouteConfig, urlBase: String)
     {
         urls.addAll(routeConfig.endpoints.map { mapEndpoint(it, urlBase) })
+    }
+
+    private fun mapLoginCallback()
+    {
+        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
+                .build()
+        val loginCallback = CallbackRoute(config)
+        val url = "login"
+        Spark.get(url, loginCallback)
+        Spark.get("$url/", loginCallback)
+    }
+
+    private fun mapNotFound()
+    {
+        notFound { req, res ->
+            val acceptHeader = req.headers("Accept")
+            if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
+            {
+                val context = DirectActionContext(req, res)
+                res.type("text/html")
+                freeMarkerEngine.render(
+                        ModelAndView(AppViewModel(context), "404.ftl")
+                )
+
+            }
+            else
+            {
+                res.type("${ContentTypes.json}; charset=utf-8")
+                Serializer.instance.toJson(RouteNotFound().asResult())
+            }
+        }
     }
 
     private fun mapEndpoint(endpoint: EndpointDefinition, urlBase: String): String
@@ -76,30 +113,6 @@ class Router(freeMarkerConfig: Configuration)
                 else -> throw UnsupportedValueException(endpoint.method)
             }
         }
-
-        notFound { req, res ->
-            val acceptHeader = req.headers("Accept")
-            if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
-            {
-                val context = DirectActionContext(req, res)
-                res.type("text/html")
-                freeMarkerEngine.render(
-                        ModelAndView(AppViewModel(context), "404.ftl")
-                )
-
-            }
-            else
-            {
-                res.type("${ContentTypes.json}; charset=utf-8")
-                Serializer.instance.toJson(RouteNotFound().asResult())
-            }
-        }
-
-        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
-                .build()
-        val loginCallback = CallbackRoute(config)
-        Spark.get("/login", loginCallback)
-        Spark.get("/login/", loginCallback)
 
         endpoint.additionalSetup(fullUrl)
     }

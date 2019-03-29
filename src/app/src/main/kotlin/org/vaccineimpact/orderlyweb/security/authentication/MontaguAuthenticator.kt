@@ -16,6 +16,7 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 {
     override fun validate(credentials: TokenCredentials?, context: WebContext?)
     {
+        println("-------------------- Validating Montagu token -------------------")
         if (credentials == null)
         {
             throw CredentialsException("No credentials supplied")
@@ -30,6 +31,7 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         val email = validate(token)
 
+        println("-------------------- successful validation, logging user in -------------------")
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
             this.id = email

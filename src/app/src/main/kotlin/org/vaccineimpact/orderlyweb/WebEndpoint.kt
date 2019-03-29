@@ -19,10 +19,10 @@ data class WebEndpoint(
         override val secure: Boolean = false
 ) : EndpointDefinition
 {
-    override val authenticateWithGithub = false
     override val transform = false
     override val contentType = ContentTypes.html
     override val allowParameterAuthentication = false
+    override val authenticateWithExternalProvider: Boolean = true
 
     init
     {
@@ -42,6 +42,7 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
+        // TODO use GitHub OAuth Client if configured to do so
         val configFactory = WebSecurityConfigFactory(
                 MontaguIndirectClient(),
                 this.requiredPermissions.toSet())

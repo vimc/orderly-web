@@ -53,9 +53,10 @@ fun APISecurityConfigFactory.allowParameterAuthentication(): APISecurityConfigFa
     return this
 }
 
-fun APISecurityConfigFactory.githubAuthentication(): APISecurityConfigFactory
+fun APISecurityConfigFactory.externalAuthentication(): APISecurityConfigFactory
 {
     this.allClients.clear()
+    // TODO add Montagu direct client and use if configured to do so
     this.allClients.add(APISecurityConfigFactory.githubDirectClient)
     return this
 }

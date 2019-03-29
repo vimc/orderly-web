@@ -1,60 +1,32 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
-import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Assert.assertThat
-import org.junit.Ignore
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIException
-import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClient
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class MontaguAuthenticationTests : MontaguTests()
+class MontaguAuthenticationTests: IntegrationTest()
 {
     @Test
-    fun `khttpMontaguAPIClient can talk to API`()
+    fun `user is redirected to Montagu if not logged in`()
     {
-        val token = login()["access_token"].toString()
-        val sut = khttpMontaguAPIClient()
-        val result = sut.getUserDetails(token)
+        val response = khttp.get(RequestHelper().webBaseUrl, allowRedirects = false)
+        Assertions.assertThat(response.statusCode).isEqualTo(302)
     }
 
     @Test
-    fun `khttpMontaguAPIClient throws error if request fails`()
+    fun `user can login with Montagu cookie`()
     {
-        val sut = khttpMontaguAPIClient()
+        val loginResponse = RequestHelper()
+                .getWithMontaguCookie("/login")
 
-        assertThatThrownBy {
-            sut.getUserDetails("bad-token")
-        }.isInstanceOf(MontaguAPIException::class.java)
+        // the session cookie should now have been set
+        // so pull this out of the response and send it back
+        val cookie = loginResponse.headers["Set-Cookie"]
+
+        val response = khttp.get(RequestHelper().webBaseUrl,
+                headers = mapOf("Cookie" to cookie!!))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(200)
     }
-
-    @Ignore
-    @Test
-    fun `khttpMontaguAPIClient can get user details`()
-    {
-        val token = login()["access_token"].toString()
-        val sut = khttpMontaguAPIClient()
-        val result = sut.getUserDetails(token)
-        Assertions.assertThat(result.username).isEqualTo("test.user")
-        Assertions.assertThat(result.email).isEqualTo("test.user@example.com")
-    }
-
-    fun login(): JsonObject
-    {
-        // these user login details are set up in ./dev/run-dependencies.sh
-        val auth = BasicAuthorization("test.user@example.com", "password")
-        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
-                data = mapOf("grant_type" to "client_credentials"),
-                auth = auth
-        )
-        val text = response.text
-        println(text)
-        return Parser().parse(StringBuilder(text)) as JsonObject
-    }
-
 }

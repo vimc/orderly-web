@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClien
 class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient {
 
     init {
-        setCallbackUrl("/callback")
+        setCallbackUrl("/login")
     }
 
     override fun clientInit()

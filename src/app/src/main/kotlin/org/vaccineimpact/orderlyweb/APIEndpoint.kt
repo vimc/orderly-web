@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.githubAuthentication
+import org.vaccineimpact.orderlyweb.security.externalAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -18,7 +18,7 @@ data class APIEndpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
-        override val authenticateWithGithub: Boolean = false,
+        override val authenticateWithExternalProvider: Boolean = false,
         override val allowParameterAuthentication: Boolean = false,
         override val secure: Boolean = false
 
@@ -46,7 +46,6 @@ data class APIEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-
         var configFactory = APISecurityConfigFactory(
                 this.requiredPermissions.toSet())
 
@@ -55,9 +54,9 @@ data class APIEndpoint(
             configFactory = configFactory.allowParameterAuthentication()
         }
 
-        if (authenticateWithGithub)
+        if (authenticateWithExternalProvider)
         {
-            configFactory = configFactory.githubAuthentication()
+            configFactory = configFactory.externalAuthentication()
         }
 
         val config = configFactory.build()
@@ -102,7 +101,7 @@ fun APIEndpoint.html(): APIEndpoint
 
 fun APIEndpoint.githubAuth(): APIEndpoint
 {
-    return this.copy(authenticateWithGithub = true)
+    return this.copy(authenticateWithExternalProvider = true)
 }
 
 fun APIEndpoint.post(): APIEndpoint

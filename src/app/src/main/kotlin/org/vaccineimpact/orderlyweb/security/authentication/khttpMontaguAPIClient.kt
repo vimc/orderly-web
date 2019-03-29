@@ -34,7 +34,7 @@ interface MontaguAPIClient
 
 class khttpMontaguAPIClient : MontaguAPIClient
 {
-    private val urlBase = "${AppConfig()["montagu.api_url"]}/v1"
+    private val urlBase = AppConfig()["montagu.api_url"]
 
     override fun getUserDetails(token: String): MontaguAPIClient.MontaguUserDetails
     {
