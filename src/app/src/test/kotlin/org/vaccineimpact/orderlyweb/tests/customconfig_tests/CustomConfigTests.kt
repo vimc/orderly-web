@@ -8,13 +8,15 @@ import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.io.File
 
-abstract class CustomConfigTests: MontaguTests()
+abstract class CustomConfigTests : MontaguTests()
 {
 
     val requestHelper = RequestHelper()
     val JSONValidator = org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator()
+    var appRunning: Boolean = false
 
     fun startApp(customConfig: String)
     {
@@ -26,6 +28,11 @@ abstract class CustomConfigTests: MontaguTests()
             localConfig.inputStream().use { load(it) }
         }
 
+        while (appRunning)
+        {
+            Thread.sleep(1000)
+        }
+        appRunning = true
         main(emptyArray())
     }
 
@@ -46,6 +53,7 @@ abstract class CustomConfigTests: MontaguTests()
     {
         File(AppConfig()["db.location"]).delete()
         File("local").delete()
+        spark.Spark.stop()
     }
 
     protected fun assertSuccessful(response: Response)
@@ -55,6 +63,7 @@ abstract class CustomConfigTests: MontaguTests()
 
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
+
     protected fun assertJsonContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/json;charset=utf-8")
