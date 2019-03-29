@@ -7,6 +7,7 @@ docker build -f customConfig.Dockerfile \
      	.
 
  # Run the tests
-docker run --rm orderly-web-config-tests \
+docker run --rm \
     -v $PWD/demo:/api/src/customConfigTests/demo \
-    -v $PWD/git:/api/src/customConfigTests/git
+    -v $PWD/git:/api/src/customConfigTests/git \
+    orderly-web-config-tests

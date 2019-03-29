@@ -37,4 +37,3 @@ task copyDemo(type: Copy) {
 
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'
-test.dependsOn 'copyDemo'
