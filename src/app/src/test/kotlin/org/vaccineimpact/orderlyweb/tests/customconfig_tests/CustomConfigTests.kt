@@ -6,9 +6,9 @@ import org.junit.After
 import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.io.File
 
 abstract class CustomConfigTests : MontaguTests()
@@ -54,6 +54,15 @@ abstract class CustomConfigTests : MontaguTests()
         File(AppConfig()["db.location"]).delete()
         File("local").delete()
         spark.Spark.stop()
+
+        AppConfig.properties.apply {
+            load(getResource("config.properties").openStream())
+            val global = File("/etc/orderly/web/config.properties")
+            if (global.exists())
+            {
+                global.inputStream().use { load(it) }
+            }
+        }
     }
 
     protected fun assertSuccessful(response: Response)

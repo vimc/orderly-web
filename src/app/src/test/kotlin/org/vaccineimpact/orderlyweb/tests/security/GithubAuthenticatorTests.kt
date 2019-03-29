@@ -32,8 +32,8 @@ class GithubAuthenticatorTests : MontaguTests()
     }
 
     private val mockAppConfig = mock<Config> {
-        on { get("app.github_org") } doReturn "orgName"
-        on { get("app.github_team") } doReturn "teamName"
+        on { get("auth.github_org") } doReturn "orgName"
+        on { get("auth.github_team") } doReturn "teamName"
     }
 
     private val mockGithubApiClient = mock<GitHubClient> {
@@ -112,8 +112,8 @@ class GithubAuthenticatorTests : MontaguTests()
         }
 
         val mockAppConfig = mock<Config> {
-            on { get("app.github_org") } doReturn "nonsense"
-            on { get("app.github_team") } doReturn ""
+            on { get("auth.github_org") } doReturn "nonsense"
+            on { get("auth.github_team") } doReturn ""
         }
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
@@ -140,8 +140,8 @@ class GithubAuthenticatorTests : MontaguTests()
         }
 
         val mockAppConfig = mock<Config> {
-            on { get("app.github_org") } doReturn "orgName"
-            on { get("app.github_team") } doReturn "teamName"
+            on { get("auth.github_org") } doReturn "orgName"
+            on { get("auth.github_team") } doReturn "teamName"
         }
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
@@ -165,7 +165,7 @@ class GithubAuthenticatorTests : MontaguTests()
         }
 
         val mockAppConfig = mock<Config> {
-            on { get("app.github_org") } doReturn "orgName"
+            on { get("auth.github_org") } doReturn "orgName"
         }
 
         val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
