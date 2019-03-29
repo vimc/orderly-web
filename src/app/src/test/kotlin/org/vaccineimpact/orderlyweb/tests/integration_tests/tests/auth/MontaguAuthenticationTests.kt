@@ -10,7 +10,8 @@ class MontaguAuthenticationTests: IntegrationTest()
     @Test
     fun `user is redirected to Montagu if not logged in`()
     {
-        val response = khttp.get(RequestHelper().webBaseUrl, allowRedirects = false)
+        val response = khttp.get(RequestHelper()
+                .webBaseUrl, allowRedirects = false)
         Assertions.assertThat(response.statusCode).isEqualTo(302)
     }
 
