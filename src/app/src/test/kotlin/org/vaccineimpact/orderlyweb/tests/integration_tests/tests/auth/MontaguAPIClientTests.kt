@@ -29,7 +29,7 @@ class MontaguAPIClientTests : MontaguTests()
         }.isInstanceOf(MontaguAPIException::class.java)
     }
 
-    
+
     @Test
     fun `khttpMontaguAPIClient can get user details`()
     {

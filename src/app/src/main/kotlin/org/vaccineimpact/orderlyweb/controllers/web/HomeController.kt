@@ -18,7 +18,6 @@ class HomeController(actionContext: ActionContext,
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
-        val user = context.userProfile
         return IndexViewModel(context, orderly.getAllReports())
     }
 }
