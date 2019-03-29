@@ -31,4 +31,7 @@ src/app/static/node_modules
 src/app/static/public/css
 
 src/config/users/martin\.properties
-
+src/customConfigTests/git
+src/customConfigTests/demo
+src/customConfigTests/static
+src/customConfigTests/templates

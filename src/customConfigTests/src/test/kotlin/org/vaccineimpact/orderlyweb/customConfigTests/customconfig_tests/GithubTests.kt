@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.customConfigTests.customconfig_tests
+
 import com.github.fge.jackson.JsonLoader
 import khttp.post
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -27,6 +29,24 @@ class GithubTests : CustomConfigTests()
         val json = JsonLoader.fromString(result.text)
         assertThat(json["token_type"].textValue()).isEqualTo("bearer")
         assertThat(json["access_token"]).isNotNull
+    }
+
+    @Test
+    fun `no permissions are required when fine-grained permissions are turned off`()
+    {
+        startApp("auth.fine_grained=false")
+
+        val response = RequestHelper().get("/reports/minimal", userEmail = "test.user@example.com")
+        assertSuccessful(response)
+    }
+
+    @Test
+    fun `permissions are required when fine-grained permissions are turned on`()
+    {
+        startApp("auth.fine_grained=true")
+
+        val response = RequestHelper().get("/reports/minimal", userEmail = "test.user@example.com")
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
     }
 
     @Test

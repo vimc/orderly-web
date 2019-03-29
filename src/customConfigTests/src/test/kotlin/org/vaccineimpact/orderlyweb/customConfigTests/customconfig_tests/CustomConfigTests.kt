@@ -30,6 +30,7 @@ abstract class CustomConfigTests : MontaguTests()
         }
         appRunning = true
         main(emptyArray())
+        Thread.sleep(500)
     }
 
     @Before

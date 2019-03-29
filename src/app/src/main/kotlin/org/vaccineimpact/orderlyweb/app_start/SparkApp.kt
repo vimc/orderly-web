@@ -28,7 +28,7 @@ class OrderlyWeb
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
-    private fun getPropertiesAsString(prop: Properties): String
+    fun getPropertiesAsString(prop: Properties): String
     {
         val writer = StringWriter()
         prop.list(PrintWriter(writer))
