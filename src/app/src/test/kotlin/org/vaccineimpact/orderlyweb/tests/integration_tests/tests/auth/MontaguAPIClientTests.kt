@@ -1,14 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
-import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Assert.assertThat
 import org.junit.Ignore
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIException
 import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
@@ -34,7 +29,7 @@ class MontaguAPIClientTests : MontaguTests()
         }.isInstanceOf(MontaguAPIException::class.java)
     }
 
-    @Ignore
+    
     @Test
     fun `khttpMontaguAPIClient can get user details`()
     {

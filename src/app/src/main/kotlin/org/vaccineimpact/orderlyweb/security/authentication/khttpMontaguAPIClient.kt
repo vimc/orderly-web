@@ -1,31 +1,23 @@
 package org.vaccineimpact.orderlyweb.security.authentication
 
-import com.fasterxml.jackson.core.JsonParseException
 import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.JsonSyntaxException
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.io.IOException
 
 interface MontaguAPIClient
 {
-    fun getUserDetails(token: String): MontaguUserDetails
+    fun getUserDetails(token: String): UserDetails
 
-    data class MontaguUserDetails(val email: String, val username: String, val displayName: String?)
+    data class UserDetails(val email: String, val username: String, val displayName: String?)
 
     // The following are identical to orderlyweb.models.Result, orderlyweb.models.ResultStatus,
     // and orderlyweb.models.ErrorInfo but in principle they need not be and should either spec
     // change could diverge, so defining Montagu specific models here
-    class MontaguResult(val status: MontaguResultStatus, val data: MontaguUserDetails?, errors: Iterable<MontaguErrorInfo>)
-    {
-        val errors = errors.toList()
-    }
+    data class Result(val status: String, val data: Any?, val errors: List<ErrorInfo>)
 
-    enum class MontaguResultStatus
-    {
-        SUCCESS, FAILURE
-    }
-
-    data class MontaguErrorInfo(val code: String, val message: String)
+    data class ErrorInfo(val code: String, val message: String)
     {
         override fun toString(): String = message
     }
@@ -35,8 +27,9 @@ interface MontaguAPIClient
 class khttpMontaguAPIClient : MontaguAPIClient
 {
     private val urlBase = AppConfig()["montagu.api_url"]
+    private val serializer = Serializer.instance.gson
 
-    override fun getUserDetails(token: String): MontaguAPIClient.MontaguUserDetails
+    override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
     {
         val response = khttp.get("$urlBase/user/",
                 headers = mapOf("Authorization" to "Bearer $token"))
@@ -48,19 +41,25 @@ class khttpMontaguAPIClient : MontaguAPIClient
             throw MontaguAPIException("Response had errors ${result.errors.joinToString(",") { it.toString() }}", response.statusCode)
         }
 
-        return result.data!!
+        return result.data as MontaguAPIClient.UserDetails
     }
 
-    private fun parseResult(jsonAsString: String): MontaguAPIClient.MontaguResult
+    private fun parseResult(jsonAsString: String): MontaguAPIClient.Result
     {
         return try
         {
-            Serializer.instance.gson.fromJson(jsonAsString)
+            val result = serializer.fromJson<MontaguAPIClient.Result>(jsonAsString)
+            if (result.data != null)
+            {
+                result.copy(data = serializer.fromJson<MontaguAPIClient.UserDetails>(serializer.toJson(result.data)))
+            }
+            else result
         }
-        catch (e: JsonParseException)
+        catch (e: JsonSyntaxException)
         {
             throw MontaguAPIException("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e", 500)
         }
+
     }
 }
 

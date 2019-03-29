@@ -20,12 +20,15 @@ v1.23.0 which appends random strings to container names each time they run.
    This is where you will need to have Vault 
    installed, and the VAULT_ADDR variable specified, e.g. by adding 
    `export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'` to your profile using ` sudo nano ~/.profile` 
-1. Run all dependencies (Orderly Server etc.) with 
-   `./dev/run-dependencies.sh`
 1. Install node dependencies by running `npm install --prefix src/app/static`. Javascript and CSS will be compiled automatically as part of the gradle build.
 1. Run the app, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
    project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
-   go signal. The app will now be available on your local machine at http://127.0.0.1:8081 
+   go signal. The app will now be available on your local machine at http://127.0.0.1:8888 and the API at http://127.0.0.1:8888/api/v1
+1. To test the API you can run all dependencies (Orderly Server etc.) with `./dev/run-dependencies.sh`.
+   To interact with the webapp you will instead have to run a full copy of Montagu; the easiest way to do this is to 
+   clone the [reverse proxy](https://github.com/vimc/montagu-proxy) and run it in dev mode (see https://github.com/vimc/montagu-proxy#build-and-run-locally).
+    Note that the app will redirect you to your local Montagu to login, but Montagu will not yet redirect you back to the app. 
+    You can do this manually by navigating to http://localhost:8888/login after a successful Montagu login.
 
 ### Generate test data.  
 This is done automatically by `./dev/run-dependencies.sh` above. To generate a test

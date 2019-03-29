@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
 
 class MontaguAuthenticatorTests : MontaguTests()
 {
-    private val fakeUserDetails = MontaguAPIClient.MontaguUserDetails("user@example.com",
+    private val fakeUserDetails = MontaguAPIClient.UserDetails("user@example.com",
             "test.user", "Test User")
 
     private val mockMontaguAPIClient = mock<MontaguAPIClient> {
