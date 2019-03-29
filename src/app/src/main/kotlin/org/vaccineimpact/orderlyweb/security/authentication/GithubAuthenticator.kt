@@ -51,8 +51,8 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         val user = getGitHubUser()
 
-        val githubOrg = appConfig["app.github_org"]
-        val teamName = appConfig["app.github_team"]
+        val githubOrg = appConfig["auth.github_org"]
+        val teamName = appConfig["auth.github_team"]
 
         if (!githubOrg.isEmpty() && !userBelongToOrg(githubOrg, user))
         {
