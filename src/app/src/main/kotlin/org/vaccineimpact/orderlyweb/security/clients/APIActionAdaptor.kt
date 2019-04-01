@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.models.ResultStatus
 import org.vaccineimpact.orderlyweb.security.authorization.mismatchedURL
 import org.vaccineimpact.orderlyweb.security.authorization.missingPermissions
 
-class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
+class APIActionAdaptor(clients: List<OrderlyWebTokenCredentialClient>) : DefaultHttpActionAdapter()
 {
     private val unauthorizedResponse: String = Serializer.instance.toJson(Result(
             ResultStatus.FAILURE,
@@ -42,7 +42,7 @@ class TokenActionAdapter(clients: List<OrderlyWebTokenCredentialClient>) : Defau
         {
             addDefaultResponseHeaders(context.response)
 
-            val profile = DirectActionContext(context).userProfile
+            val profile = DirectActionContext(context).userProfile!!
 
             val mismatchedURL = profile.mismatchedURL
 

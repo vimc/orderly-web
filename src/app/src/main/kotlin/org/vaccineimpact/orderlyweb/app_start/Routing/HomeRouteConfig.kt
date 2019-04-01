@@ -9,12 +9,12 @@ object HomeRouteConfig : RouteConfig
 {
     override val endpoints: List<EndpointDefinition> = listOf(
 
-            Endpoint("/onetime_token/", OnetimeTokenController::class, "get")
+            APIEndpoint("/onetime_token/", OnetimeTokenController::class, "get")
                     .json()
                     .secure()
                     .transform(),
 
-            Endpoint("/", HomeController::class, "index")
+            APIEndpoint("/", HomeController::class, "index")
                     .json()
                     .transform()
     )

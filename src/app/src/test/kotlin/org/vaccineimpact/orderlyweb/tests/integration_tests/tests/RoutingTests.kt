@@ -25,12 +25,12 @@ class RoutingTests: IntegrationTest() {
     }
 
     @Test
-    fun `can get index`()
+    fun `can get API index`()
     {
-        val response = requestHelper.getWebPage("/")
+        val response = requestHelper.get("/")
+        assertJsonContentType(response)
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
-        Assertions.assertThat(response.headers["content-type"]).contains("text/html")
     }
 
     @Test

@@ -1,4 +1,6 @@
 <#-- @ftlvariable name="appName" type="String" -->
+<#-- @ftlvariable name="loggedIn" type="Boolean" -->
+<#-- @ftlvariable name="user" type="String" -->
 <head>
     <link rel="stylesheet" type="text/css" href="/css/style.css">
     <#if styles??>
@@ -16,4 +18,9 @@
             ${appName}
         </a>
     </div>
+    <#if loggedIn>
+    <div class="logout">
+        <span>Logged in as ${user} | <a href="/logout">Logout</a></span>
+    </div>
+    </#if>
 </header>

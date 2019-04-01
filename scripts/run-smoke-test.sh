@@ -15,7 +15,7 @@ $here/run-dependencies.sh
 docker run --rm \
     -d \
     -v $PWD/demo:/orderly \
-    -p 8081:8081 \
+    -p 8888:8888 \
     --name orderly-web \
     docker.montagu.dide.ic.ac.uk:5000/orderly-web:$git_id
 
@@ -32,6 +32,6 @@ docker exec orderly-web touch /etc/orderly/web/go_signal
 sleep 2
 
  # Hit the index page and check it works
-response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8081/api/v1)
+response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8888/api/v1)
 
 if [[ $response -ne 200 ]]; then exit 1; fi;

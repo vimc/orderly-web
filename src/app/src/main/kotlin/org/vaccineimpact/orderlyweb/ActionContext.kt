@@ -9,7 +9,7 @@ import spark.Response
 
 interface ActionContext
 {
-    val userProfile: CommonProfile
+    val userProfile: CommonProfile?
     val permissions: PermissionSet
 
     fun contentType(): String

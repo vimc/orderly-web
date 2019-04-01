@@ -49,7 +49,6 @@ class OrderlyWeb
         val router = Router(freeMarkerConfig)
         router.mapEndpoints(APIRouteConfig, apiUrlBase)
         router.mapEndpoints(WebRouteConfig, "")
-
     }
 
     private fun setupPort()

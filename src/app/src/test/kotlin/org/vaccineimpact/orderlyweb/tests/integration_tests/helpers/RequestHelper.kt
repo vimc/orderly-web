@@ -1,14 +1,18 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Parser
 import com.github.salomonbrys.kotson.get
 import com.google.gson.JsonParser
 import khttp.responses.Response
+import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
@@ -34,15 +38,23 @@ class RequestHelper
 
     fun getWebPage(
             url: String,
-            contentType: String = "text/html",
-            userEmail: String = fakeGlobalReportReader()
+            contentType: String = "text/html"
     ): Response
     {
-        val token = generateToken(userEmail)
-        val cookieName = JWTCookieClient.cookie
+        val headers = standardHeaders(contentType)
+        return get(webBaseUrl + url, headers)
+    }
+
+    fun getWithMontaguCookie(
+            url: String,
+            contentType: String = "text/html"
+    ): Response
+    {
+        val token = loginWithMontagu()["access_token"]
+        val cookieName = MontaguIndirectClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$token")
-        return get(webBaseUrl + url, headers)
+        return khttp.get(webBaseUrl + url, headers, allowRedirects = false)
     }
 
     fun getWithCookie(
@@ -111,6 +123,19 @@ class RequestHelper
 
     private fun generateToken(emailAddress: String) =
             WebTokenHelper.instance.issuer.generateBearerToken(emailAddress)
+
+    fun loginWithMontagu(): JsonObject
+    {
+        // these user login details are set up in ./dev/run-dependencies.sh
+        val auth = BasicAuthorization("test.user@example.com", "password")
+        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
+                data = mapOf("grant_type" to "client_credentials"),
+                auth = auth
+        )
+        val text = response.text
+        println(text)
+        return Parser().parse(StringBuilder(text)) as JsonObject
+    }
 
 }
 
