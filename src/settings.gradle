@@ -4,5 +4,4 @@ include 'app',
         'security',
         'databaseInterface',
         'generateDatabaseInterface',
-        'testHelpers',
-        'customConfigTests'
+        'testHelpers'
