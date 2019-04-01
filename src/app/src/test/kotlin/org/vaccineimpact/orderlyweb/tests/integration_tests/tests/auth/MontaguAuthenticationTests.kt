@@ -5,15 +5,14 @@ import com.beust.klaxon.Parser
 import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Assert.assertThat
 import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIException
 import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClient
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguAuthenticationTests : MontaguTests()
+class MontaguAuthenticationTests : TeamcityTests()
 {
     @Test
     fun `khttpMontaguAPIClient can talk to API`()

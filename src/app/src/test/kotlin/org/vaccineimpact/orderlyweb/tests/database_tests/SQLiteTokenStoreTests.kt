@@ -8,10 +8,10 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.SQLiteTokenStore
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.io.File
 
-class SQLiteTokenStoreTests : MontaguTests()
+class SQLiteTokenStoreTests : TeamcityTests()
 {
 
     @Before

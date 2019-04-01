@@ -5,10 +5,10 @@ import com.nhaarman.mockito_kotlin.mock
 import org.junit.Test
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Request
 
-class DirectActionContextTests: MontaguTests()
+class DirectActionContextTests: TeamcityTests()
 {
 
     @Test

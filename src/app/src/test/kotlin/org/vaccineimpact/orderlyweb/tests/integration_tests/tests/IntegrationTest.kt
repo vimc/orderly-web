@@ -7,12 +7,12 @@ import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
 import java.io.File
 
-abstract class IntegrationTest : MontaguTests()
+abstract class IntegrationTest : TeamcityTests()
 {
     val requestHelper = RequestHelper()
     val JSONValidator = JSONValidator()

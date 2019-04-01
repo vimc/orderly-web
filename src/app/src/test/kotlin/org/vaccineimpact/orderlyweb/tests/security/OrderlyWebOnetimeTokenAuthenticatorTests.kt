@@ -13,11 +13,11 @@ import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.security.*
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebOnetimeTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.Instant
 import java.util.*
 
-class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
+class OrderlyWebOnetimeTokenAuthenticatorTests : TeamcityTests()
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = "testuser@email.com"
@@ -35,6 +35,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUser, url)
+
         val credentials = TokenCredentials(token)
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -59,8 +60,8 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("iss" to "unexpected.issuer"))
-        val credentials = TokenCredentials(badToken)
 
+        val credentials = TokenCredentials(badToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
             on(it.validateOneTimeToken(badToken)) doReturn true
@@ -82,6 +83,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val claims = helper.issuer.onetimeTokenClaims(fakeUser, url)
         val badToken = helper.issuer.generator.generate(claims.plus("exp" to Date.from(Instant.now())))
+
         val credentials = TokenCredentials(badToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
@@ -105,6 +107,7 @@ class OrderlyWebOnetimeTokenAuthenticatorTests : MontaguTests()
         val url = "testurl"
         val sauron = WebTokenHelper(KeyHelper.generateKeyPair(), onetimeTokenIssuer)
         val evilToken = sauron.issuer.generateOnetimeActionToken(fakeUser, url)
+
         val credentials = TokenCredentials(evilToken)
 
         val fakeStore = mock<OnetimeTokenStore>() {
