@@ -23,6 +23,7 @@ docker build --tag orderly-web-app-build \
 
 # Run all dependencies
 export MONTAGU_ORDERLY_PATH=$PWD/git
+export ORDERLY_SERVER_USER_ID=$UID
 $here/run-dependencies.sh
 
 function cleanup {

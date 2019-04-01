@@ -61,9 +61,11 @@ distribute the app. This image will also be re-used for the blackbox tests.
 1. Runs the image created in step 2. which tests the app and if successful, runs the `distDocker` task which builds and 
 pushes the final docker image containing just the compiled app.
 
-This script is designed to be run on Teamcity. To run it locally you will first have to generate test data following
- instructions here: https://github.com/vimc/orderly/tree/master/docker and to push the image locally you will need to
-  pass your docker login information as an argument to the script, i.e.
+This script is designed to be run on Teamcity. To run it locally you will first have to generate test data by running
+    
+    ./scripts/generate-test-data.sh
+    
+and to push the image locally you will need to pass your docker login information as an argument to the script, i.e.
   
     ./scripts/build-app.sh /home/{user}/.docker/config.json
  
@@ -72,10 +74,11 @@ The Teamcity build:
 1. Pulls in artifacts `demo` and `git` from the Orderly container build.
 1. Runs `./scripts/migrate-build.sh` to build the migrations image.
 1. Runs `./scripts/migrate-test.sh` to test the image build in the previous step.
-1. Runs `./scripts/migrate-push.sh` to push the tested image to our registy.
+1. Runs `./scripts/migrate-push.sh` to push the tested image to our registry.
 1. Runs `./scripts/build-app.sh` which mounts the `demo` folder as a volume, to compile code, 
 run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and
  build a Docker image containing the compiled app code (see steps [here](#docker-build))
+1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
 
 ## Docker run
 To make use of a built image, run:
