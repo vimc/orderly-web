@@ -24,14 +24,6 @@ data class APIEndpoint(
 
 ) : EndpointDefinition
 {
-    init
-    {
-        if (!urlFragment.endsWith("/"))
-        {
-            throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
-        }
-    }
-
     override fun additionalSetup(url: String)
     {
         if (secure)
