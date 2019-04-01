@@ -18,11 +18,6 @@ abstract class CustomConfigTests : MontaguTests()
 {
     fun startApp(customConfig: String)
     {
-        if (IntegrationTest.appStarted)
-        {
-            spark.Spark.stop()
-        }
-
         AppConfig.properties.apply {
             customConfig.byteInputStream().use { load(it) }
         }
