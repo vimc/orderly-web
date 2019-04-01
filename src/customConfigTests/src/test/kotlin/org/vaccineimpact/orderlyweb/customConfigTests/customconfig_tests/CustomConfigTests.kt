@@ -7,28 +7,24 @@ import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.io.File
+import java.net.BindException
+import java.net.ServerSocket
 
-abstract class CustomConfigTests : MontaguTests()
+abstract class CustomConfigTests : TeamcityTests()
 {
-    var appRunning: Boolean = false
-
     fun startApp(customConfig: String)
     {
-        val localConfig = File("local")
-        localConfig.createNewFile()
-        localConfig.writeText(customConfig)
-
         AppConfig.properties.apply {
-            localConfig.inputStream().use { load(it) }
+            customConfig.byteInputStream().use { load(it) }
         }
 
-        while (appRunning)
+        while (!isPortAvailable())
         {
             Thread.sleep(500)
         }
-        appRunning = true
+
         main(emptyArray())
         Thread.sleep(500)
     }
@@ -39,7 +35,12 @@ abstract class CustomConfigTests : MontaguTests()
         println("Copying database from: ${AppConfig()["db.template"]}")
 
         val newDbFile = File(AppConfig()["db.location"])
+        println("--------------------------------------------------------")
+        println(newDbFile.absolutePath)
         val source = File(AppConfig()["db.template"])
+
+        println("--------------------------------------------------------")
+        println(source.absolutePath)
 
         source.copyTo(newDbFile, true)
         Thread.sleep(1000)
@@ -48,9 +49,8 @@ abstract class CustomConfigTests : MontaguTests()
     @After
     fun cleanup()
     {
-        File(AppConfig()["db.location"]).delete()
-        File("local").delete()
         spark.Spark.stop()
+        File(AppConfig()["db.location"]).delete()
 
         // reset the properties
         AppConfig.properties.apply {
@@ -61,6 +61,7 @@ abstract class CustomConfigTests : MontaguTests()
                 global.inputStream().use { load(it) }
             }
         }
+
     }
 
     protected fun assertSuccessful(response: Response)
@@ -71,4 +72,16 @@ abstract class CustomConfigTests : MontaguTests()
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
+    private fun isPortAvailable(): Boolean
+    {
+        return try
+        {
+            ServerSocket(AppConfig().getInt("app.port")).use {}
+            true
+        }
+        catch (e: BindException)
+        {
+            false
+        }
+    }
 }
