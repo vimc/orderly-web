@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.customConfigTests.customconfig_tests
+package org.vaccineimpact.orderlyweb.tests.customconfig_tests
 
 import khttp.responses.Response
 import org.assertj.core.api.Assertions
@@ -16,6 +16,7 @@ abstract class CustomConfigTests : MontaguTests()
 
     fun startApp(customConfig: String)
     {
+        spark.Spark.stop()
         val localConfig = File("local")
         localConfig.createNewFile()
         localConfig.writeText(customConfig)
@@ -50,7 +51,6 @@ abstract class CustomConfigTests : MontaguTests()
     {
         File(AppConfig()["db.location"]).delete()
         File("local").delete()
-        spark.Spark.stop()
 
         // reset the properties
         AppConfig.properties.apply {
