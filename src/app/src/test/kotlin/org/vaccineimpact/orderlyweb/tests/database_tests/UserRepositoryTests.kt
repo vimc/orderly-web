@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserSource
 import java.time.Instant
 
-class UserRepositoryTests : DatabaseTests()
+class UserRepositoryTests : CleanDatabaseTests()
 {
 
     @Test

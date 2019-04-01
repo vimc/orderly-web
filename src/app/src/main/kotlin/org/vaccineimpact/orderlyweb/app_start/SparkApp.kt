@@ -18,8 +18,8 @@ import java.util.*
 
 fun main(args: Array<String>)
 {
-    val api = OrderlyWeb()
-    api.run()
+    val app = OrderlyWeb()
+    app.run()
 }
 
 class OrderlyWeb

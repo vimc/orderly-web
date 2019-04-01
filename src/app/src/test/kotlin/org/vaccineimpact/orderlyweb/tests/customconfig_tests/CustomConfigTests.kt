@@ -8,28 +8,30 @@ import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+
 import java.io.File
+import java.net.BindException
+import java.net.ServerSocket
 
 abstract class CustomConfigTests : MontaguTests()
 {
-    var appRunning: Boolean = false
-
     fun startApp(customConfig: String)
     {
-        spark.Spark.stop()
-        val localConfig = File("local")
-        localConfig.createNewFile()
-        localConfig.writeText(customConfig)
-
-        AppConfig.properties.apply {
-            localConfig.inputStream().use { load(it) }
+        if (IntegrationTest.appStarted)
+        {
+            spark.Spark.stop()
         }
 
-        while (appRunning)
+        AppConfig.properties.apply {
+            customConfig.byteInputStream().use { load(it) }
+        }
+
+        while (!isPortAvailable())
         {
             Thread.sleep(500)
         }
-        appRunning = true
+
         main(emptyArray())
         Thread.sleep(500)
     }
@@ -49,8 +51,8 @@ abstract class CustomConfigTests : MontaguTests()
     @After
     fun cleanup()
     {
+        spark.Spark.stop()
         File(AppConfig()["db.location"]).delete()
-        File("local").delete()
 
         // reset the properties
         AppConfig.properties.apply {
@@ -61,6 +63,7 @@ abstract class CustomConfigTests : MontaguTests()
                 global.inputStream().use { load(it) }
             }
         }
+
     }
 
     protected fun assertSuccessful(response: Response)
@@ -71,4 +74,16 @@ abstract class CustomConfigTests : MontaguTests()
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
+    private fun isPortAvailable(): Boolean
+    {
+        try
+        {
+            ServerSocket(AppConfig().getInt("app.port")).use {}
+            return true
+        }
+        catch (e: BindException)
+        {
+            return false
+        }
+    }
 }
