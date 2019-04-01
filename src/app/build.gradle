@@ -38,9 +38,9 @@ dependencies {
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
 
-    compile "org.pac4j:spark-pac4j:2.2.0"
-    compile "org.pac4j:pac4j-http:2.2.1"
-    compile 'org.pac4j:pac4j-jwt:2.0.0'
+    compile "org.pac4j:spark-pac4j:3.0.0"
+    compile "org.pac4j:pac4j-http:3.2.0"
+    compile 'org.pac4j:pac4j-jwt:3.2.0'
     compile 'commons-codec:commons-codec:1.10'
 
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"

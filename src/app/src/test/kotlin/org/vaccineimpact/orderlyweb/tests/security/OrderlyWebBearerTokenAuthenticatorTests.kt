@@ -32,7 +32,8 @@ class OrderlyWebBearerTokenAuthenticatorTests: TeamcityTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "TeamcityTests")
+
+        val credentials = TokenCredentials(token)
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
@@ -48,7 +49,8 @@ class OrderlyWebBearerTokenAuthenticatorTests: TeamcityTests()
     {
         val url = "testurl"
         val token = helper.issuer.generateOnetimeActionToken(fakeUserEmail, url)
-        val credentials = TokenCredentials(token, "TeamcityTests")
+
+        val credentials = TokenCredentials(token)
 
         val fakeContext = mock<WebContext>() {
             on(it.path) doReturn url
