@@ -2,16 +2,16 @@ package org.vaccineimpact.orderlyweb
 
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.TokenVerifyingConfigFactory
 import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.githubAuthentication
+import org.vaccineimpact.orderlyweb.security.externalAuthentication
 import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
-data class Endpoint(
+data class APIEndpoint(
         override val urlFragment: String,
         override val controller: KClass<*>,
         override val actionName: String,
@@ -19,20 +19,12 @@ data class Endpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val transform: Boolean = false,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
+        override val authenticateWithExternalProvider: Boolean = false,
         override val allowParameterAuthentication: Boolean = false,
-        override val authenticateWithGithub: Boolean = false,
         override val secure: Boolean = false
 
 ) : EndpointDefinition
 {
-    init
-    {
-        if (!urlFragment.endsWith("/"))
-        {
-            throw Exception("All endpoint definitions must end with a forward slash: $urlFragment")
-        }
-    }
-
     override fun additionalSetup(url: String)
     {
         if (secure)
@@ -47,8 +39,7 @@ data class Endpoint(
 
     private fun addSecurityFilter(url: String)
     {
-
-        var configFactory = TokenVerifyingConfigFactory(
+        var configFactory = APISecurityConfigFactory(
                 this.requiredPermissions.toSet())
 
         if (allowParameterAuthentication)
@@ -56,9 +47,9 @@ data class Endpoint(
             configFactory = configFactory.allowParameterAuthentication()
         }
 
-        if (authenticateWithGithub)
+        if (authenticateWithExternalProvider)
         {
-            configFactory = configFactory.githubAuthentication()
+            configFactory = configFactory.externalAuthentication()
         }
 
         val config = configFactory.build()
@@ -73,12 +64,12 @@ data class Endpoint(
 
 }
 
-fun Endpoint.allowParameterAuthentication(): Endpoint
+fun APIEndpoint.allowParameterAuthentication(): APIEndpoint
 {
     return this.copy(allowParameterAuthentication = true)
 }
 
-fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
+fun APIEndpoint.secure(permissions: Set<String> = setOf()): APIEndpoint
 {
     val allPermissions = (permissions).map {
         PermissionRequirement.parse(it)
@@ -86,27 +77,27 @@ fun Endpoint.secure(permissions: Set<String> = setOf()): Endpoint
     return this.copy(requiredPermissions = allPermissions, secure = true)
 }
 
-fun Endpoint.transform(): Endpoint
+fun APIEndpoint.transform(): APIEndpoint
 {
     return this.copy(transform = true)
 }
 
-fun Endpoint.json(): Endpoint
+fun APIEndpoint.json(): APIEndpoint
 {
     return this.copy(contentType = ContentTypes.json)
 }
 
-fun Endpoint.html(): Endpoint
+fun APIEndpoint.html(): APIEndpoint
 {
     return this.copy(contentType = ContentTypes.html)
 }
 
-fun Endpoint.githubAuth(): Endpoint
+fun APIEndpoint.externalAuth(): APIEndpoint
 {
-    return this.copy(authenticateWithGithub = true)
+    return this.copy(authenticateWithExternalProvider = true)
 }
 
-fun Endpoint.post(): Endpoint
+fun APIEndpoint.post(): APIEndpoint
 {
     return this.copy(method = HttpMethod.post)
 }
