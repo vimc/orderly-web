@@ -11,9 +11,9 @@ import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguAuthenticatorTests : MontaguTests()
+class MontaguAuthenticatorTests : TeamcityTests()
 {
     private val fakeUserDetails = MontaguAPIClient.UserDetails("user@example.com",
             "test.user", "Test User")

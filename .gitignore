@@ -29,6 +29,9 @@ test-data\.sql
 src/*/out/*
 src/app/static/node_modules
 src/app/static/public/css
+src/blackboxTests/tmp
+demo
+git
 
 src/config/users/martin\.properties
 

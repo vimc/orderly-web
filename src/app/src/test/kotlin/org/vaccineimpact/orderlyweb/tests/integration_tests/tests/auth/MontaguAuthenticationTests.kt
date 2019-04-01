@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class MontaguAuthenticationTests: IntegrationTest()
+class MontaguAuthenticationTests : IntegrationTest()
 {
     @Test
     fun `user is redirected to Montagu if not logged in`()

@@ -2,12 +2,12 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Response
 import javax.servlet.ServletOutputStream
 import javax.servlet.http.HttpServletResponse
 
-abstract class ControllerTest : MontaguTests()
+abstract class ControllerTest : TeamcityTests()
 {
     protected val mockOutputStream = mock<ServletOutputStream>()
 
