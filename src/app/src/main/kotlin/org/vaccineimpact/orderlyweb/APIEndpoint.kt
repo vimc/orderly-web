@@ -91,7 +91,7 @@ fun APIEndpoint.html(): APIEndpoint
     return this.copy(contentType = ContentTypes.html)
 }
 
-fun APIEndpoint.githubAuth(): APIEndpoint
+fun APIEndpoint.externalAuth(): APIEndpoint
 {
     return this.copy(authenticateWithExternalProvider = true)
 }

@@ -11,6 +11,6 @@ object UserRouteConfig: RouteConfig {
                     .json()
                     .secure()
                     .transform()
-                    .githubAuth()
+                    .externalAuth()
     )
 }
