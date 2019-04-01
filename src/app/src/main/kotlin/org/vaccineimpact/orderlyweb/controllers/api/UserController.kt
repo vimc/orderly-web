@@ -14,7 +14,7 @@ class UserController(context: ActionContext,
     fun auth(): AuthenticationResponse
     {
         return AuthenticationResponse(
-                accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile.id),
+                accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile!!.id),
                 expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds)
     }
 

@@ -20,56 +20,56 @@ object VersionRouteConfig : RouteConfig
     private val versionController = VersionController::class
 
     override val endpoints = listOf(
-            Endpoint("/versions/", reportController, "getAllVersions")
+            APIEndpoint("/versions/", reportController, "getAllVersions")
                     .json()
                     .transform()
                     // more specific permission checking in the controller action
                     .secure(),
 
-            Endpoint("/reports/:name/versions/:version/", versionController, "getByNameAndVersion")
+            APIEndpoint("/reports/:name/versions/:version/", versionController, "getByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
+            APIEndpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
+            APIEndpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
                     method = HttpMethod.post)
                     .json()
                     .secure(reviewReports),
-            Endpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
+            APIEndpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
                     .json()
                     .transform()
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/versions/:version/artefacts/", artefactController, "get")
+            APIEndpoint("/reports/:name/versions/:version/artefacts/", artefactController, "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/artefacts/:artefact/", artefactController, "download")
+            APIEndpoint("/reports/:name/versions/:version/artefacts/:artefact/", artefactController, "download")
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/versions/:version/resources/", resourceController, "get")
+            APIEndpoint("/reports/:name/versions/:version/resources/", resourceController, "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/resources/:resource/", resourceController, "download")
+            APIEndpoint("/reports/:name/versions/:version/resources/:resource/", resourceController, "download")
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            Endpoint("/reports/:name/versions/:version/data/", dataController, "get")
+            APIEndpoint("/reports/:name/versions/:version/data/", dataController, "get")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            Endpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData")
+            APIEndpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData")
                     .secure(readReports)
                     .allowParameterAuthentication()
     )

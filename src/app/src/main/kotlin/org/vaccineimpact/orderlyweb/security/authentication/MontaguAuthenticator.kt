@@ -6,7 +6,6 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
-import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 
@@ -32,7 +31,7 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
-            this.setId(email)
+            this.id = email
         }
     }
 
