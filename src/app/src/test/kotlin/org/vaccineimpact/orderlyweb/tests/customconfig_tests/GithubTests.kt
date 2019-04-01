@@ -14,16 +14,16 @@ class GithubTests : CustomConfigTests()
     val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     val url = "$apiBaseUrl/login/"
 
+    // this is a PAT for a test user who only has access to a test org with no repos
+    // reversed so GitHub doesn't spot it and invalidate it
+    val validGitHubToken = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
+
     @Test
     fun `can login when fine-grained permissions are turned off`()
     {
         startApp("auth.fine_grained=false")
 
-        // this is a PAT for a test user who only has access to a test org with no repos
-        // reversed so GitHub doesn't spot it and invalidate it
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
-
-        val result = post(url, auth = GithubTokenHeader(token))
+        val result = post(url, auth = GithubTokenHeader(validGitHubToken))
 
         assertSuccessful(result)
 
@@ -37,11 +37,7 @@ class GithubTests : CustomConfigTests()
     {
         startApp("auth.fine_grained=true")
 
-        // this is a PAT for a test user who only has access to a test org with no repos
-        // reversed so GitHub doesn't spot it and invalidate it
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
-
-        val result = post(url, auth = GithubTokenHeader(token))
+        val result = post(url, auth = GithubTokenHeader(validGitHubToken))
 
         assertSuccessful(result)
 
@@ -65,7 +61,19 @@ class GithubTests : CustomConfigTests()
         startApp("auth.fine_grained=true")
 
         val response = RequestHelper().get("/reports/minimal", userEmail = "test.user@example.com")
-        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        assertThat(response.statusCode).isEqualTo(403)
+    }
+
+    @Test
+    fun `BadConfiguration errors are returned to the client`()
+    {
+        startApp("auth.github_org=hdyeiksn")
+
+       val result = khttp.post("${RequestHelper().apiBaseUrl}/login",
+               auth = GithubTokenHeader(validGitHubToken))
+
+        assertThat(result.statusCode).isEqualTo(500)
+        assertThat(result.text).contains("GitHub org hdyeiksn does not exist")
     }
 
 }

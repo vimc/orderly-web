@@ -2,5 +2,4 @@ rootProject.name = 'orderlyweb'
 include 'app',
         'databaseInterface',
         'generateDatabaseInterface',
-        'testHelpers',
-        'blackboxTests'
+        'testHelpers'

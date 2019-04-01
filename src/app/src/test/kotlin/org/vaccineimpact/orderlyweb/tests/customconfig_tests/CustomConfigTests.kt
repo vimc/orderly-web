@@ -7,14 +7,13 @@ import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
-import org.vaccineimpact.orderlyweb.test_helpers.MontaguTests
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
 
-abstract class CustomConfigTests : MontaguTests()
+abstract class CustomConfigTests : TeamcityTests()
 {
     fun startApp(customConfig: String)
     {
