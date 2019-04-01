@@ -65,7 +65,7 @@ dependencies {
 }
 
 docker {
-    baseImage = "openjdk:8u121-jre"
+    baseImage = "orderly-web-dist-base"
 }
 
 distDocker {
