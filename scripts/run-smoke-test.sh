@@ -15,7 +15,7 @@ $here/run-dependencies.sh
 docker run --rm \
     -d \
     -v $PWD/demo:/orderly \
-    -p 8081:8081 \
+    -p 8888:8888 \
     --name orderly-web \
     docker.montagu.dide.ic.ac.uk:5000/orderly-web:$git_id
 
