@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.customConfigTests.customconfig_tests
+package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
 import khttp.post

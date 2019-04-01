@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.customConfigTests.customconfig_tests
+package org.vaccineimpact.orderlyweb.customConfigTests
 
 import khttp.responses.Response
 import org.assertj.core.api.Assertions
