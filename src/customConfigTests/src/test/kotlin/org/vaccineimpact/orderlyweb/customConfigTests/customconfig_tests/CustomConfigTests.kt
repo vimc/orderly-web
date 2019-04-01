@@ -35,12 +35,8 @@ abstract class CustomConfigTests : TeamcityTests()
         println("Copying database from: ${AppConfig()["db.template"]}")
 
         val newDbFile = File(AppConfig()["db.location"])
-        println("--------------------------------------------------------")
-        println(newDbFile.absolutePath)
-        val source = File(AppConfig()["db.template"])
 
-        println("--------------------------------------------------------")
-        println(source.absolutePath)
+        val source = File(AppConfig()["db.template"])
 
         source.copyTo(newDbFile, true)
         Thread.sleep(1000)
