@@ -30,6 +30,8 @@ v1.23.0 which appends random strings to container names each time they run.
     Note that the app will redirect you to your local Montagu to login, but Montagu will not yet redirect you back to the app. 
     You can do this manually by navigating to http://localhost:8888/login after a successful Montagu login.
 
+See [auth.md](/docs/auth.md) for further details about web authentication.
+
 ### Generate test data.  
 This is done automatically by `./dev/run-dependencies.sh` above. To generate a test
 Orderly directory to develop against, run the `:app:generateTestData` gradle
