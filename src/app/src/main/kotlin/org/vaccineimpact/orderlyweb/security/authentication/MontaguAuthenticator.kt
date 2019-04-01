@@ -6,7 +6,6 @@ import org.pac4j.core.credentials.authenticator.Authenticator
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
-import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 
@@ -16,7 +15,6 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 {
     override fun validate(credentials: TokenCredentials?, context: WebContext?)
     {
-        println("-------------------- Validating Montagu token -------------------")
         if (credentials == null)
         {
             throw CredentialsException("No credentials supplied")
@@ -31,7 +29,6 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         val email = validate(token)
 
-        println("-------------------- successful validation, logging user in -------------------")
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
             this.id = email
