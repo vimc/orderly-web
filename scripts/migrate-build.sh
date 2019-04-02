@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 HERE=$(dirname $0)
 . $HERE/migrate-common.sh
@@ -8,4 +8,7 @@ HERE=$(dirname $0)
 docker build \
        --tag $COMMIT_TAG \
        --tag $BRANCH_TAG \
-       -f migrations/Dockerfile \.
+       --tag $COMMIT_TAG_PUBLIC \
+       --tag $BRANCH_TAG_PUBLIC \
+       -f migrations/Dockerfile \
+       .
