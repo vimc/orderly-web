@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -eu
+set -ex
 
 HERE=$(dirname $0)
 . $HERE/migrate-common.sh
