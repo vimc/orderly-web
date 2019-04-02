@@ -39,24 +39,27 @@ data class WebEndpoint(
     {
         val authenticationProvider = AuthenticationProvider.getConfiguredProvider()
 
-        val client = when (authenticationProvider) {
-            AuthenticationProvider.Github -> GitHubClient(AuthenticationProvider.getGithubOAuthKey(),
-                                                AuthenticationProvider.getGithubOAuthSecret())
-            else -> MontaguIndirectClient()
+        if (authenticationProvider != AuthenticationProvider.None)
+        {
+            val client = when (authenticationProvider) {
+                AuthenticationProvider.Github -> GitHubClient(AuthenticationProvider.getGithubOAuthKey(),
+                        AuthenticationProvider.getGithubOAuthSecret())
+                else -> MontaguIndirectClient()
+            }
+
+            val configFactory = WebSecurityConfigFactory(
+                    client,
+                    this.requiredPermissions.toSet())
+
+            val config = configFactory.build()
+
+            Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                    config,
+                    client.javaClass.simpleName,
+                    OrderlyWebAuthorizer::class.java.simpleName,
+                    SkipOptionsMatcher.name
+            ))
         }
-
-        val configFactory = WebSecurityConfigFactory(
-                client,
-                this.requiredPermissions.toSet())
-
-        val config = configFactory.build()
-
-        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                config,
-                client.javaClass.simpleName,
-                OrderlyWebAuthorizer::class.java.simpleName,
-                SkipOptionsMatcher.name
-        ))
     }
 
 }
