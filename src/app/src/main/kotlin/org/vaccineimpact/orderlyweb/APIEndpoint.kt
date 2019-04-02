@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb
 
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
@@ -56,7 +57,7 @@ data class APIEndpoint(
         Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,
                 configFactory.allClients(),
-                OrderlyWebAuthorizer::class.java.simpleName,
+                config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
         ))
     }

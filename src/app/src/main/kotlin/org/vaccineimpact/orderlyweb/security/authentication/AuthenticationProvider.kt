@@ -9,7 +9,7 @@ enum class AuthenticationProvider {
 
     companion object {
         fun getConfiguredProvider(): AuthenticationProvider {
-            var configuredValue = AppConfig()["app.authentication_provider"]
+            var configuredValue = AppConfig()["auth.provider"]
             return when (configuredValue.toLowerCase()) {
                 "github" -> AuthenticationProvider.Github
                 "montagu" -> AuthenticationProvider.Montagu

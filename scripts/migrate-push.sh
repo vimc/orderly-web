@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 HERE=$(dirname $0)
 . $HERE/migrate-common.sh
@@ -7,3 +7,5 @@ HERE=$(dirname $0)
 # push to the registry
 docker push $COMMIT_TAG
 docker push $BRANCH_TAG
+docker push $COMMIT_TAG_PUBLIC
+docker push $BRANCH_TAG_PUBLIC

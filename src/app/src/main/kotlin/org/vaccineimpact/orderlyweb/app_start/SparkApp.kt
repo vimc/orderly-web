@@ -11,11 +11,15 @@ import java.net.BindException
 import java.net.ServerSocket
 import kotlin.system.exitProcess
 import spark.Spark as spk
+import java.io.PrintWriter
+import java.io.StringWriter
+import java.util.*
+
 
 fun main(args: Array<String>)
 {
-    val api = OrderlyWeb()
-    api.run()
+    val app = OrderlyWeb()
+    app.run()
 }
 
 class OrderlyWeb
@@ -23,6 +27,13 @@ class OrderlyWeb
     private val apiUrlBase = "/api/v1"
 
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
+
+    fun getPropertiesAsString(prop: Properties): String
+    {
+        val writer = StringWriter()
+        prop.list(PrintWriter(writer))
+        return writer.buffer.toString()
+    }
 
     fun run()
     {
@@ -34,6 +45,9 @@ class OrderlyWeb
         staticFiles.externalLocation(File("static/public").absolutePath)
 
         waitForGoSignal()
+
+        logger.info("Using the following config")
+        logger.info(getPropertiesAsString(AppConfig.properties))
 
         setupPort()
         spk.before("*", AllowedOriginsFilter(AppConfig().getBool("allow.localhost")))
