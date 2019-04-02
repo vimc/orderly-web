@@ -10,8 +10,8 @@ ENV GIT_ID $git_id
 ENV APP_DOCKER_TAG $registry/$name
 ENV APP_DOCKER_COMMIT_TAG $registry/$name:$git_id
 ENV APP_DOCKER_BRANCH_TAG $registry/$name:$git_branch
-ENV APP_PUBLIC_COMMIT_TAG $public/$name:$git_id
-ENV APP_PUBLIC_BRANCH_TAG $public/$name:$git_branch
+ENV APP_PUBLIC_COMMIT_TAG $registry_public/$name:$git_id
+ENV APP_PUBLIC_BRANCH_TAG $registry_public/$name:$git_branch
 
 RUN mkdir -p /etc/orderly/web
 RUN touch /etc/orderly/web/go_signal
