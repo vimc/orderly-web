@@ -1,12 +1,14 @@
 package org.vaccineimpact.orderlyweb.security.authentication
 
+import org.pac4j.core.client.IndirectClient
+import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.credentials.Credentials
+import org.pac4j.oauth.client.GitHubClient
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
-enum class AuthenticationProvider {
-    Montagu,
-    Github,
-    None;
-
+class AuthenticationConfig
+{
     companion object {
         fun getConfiguredProvider(): AuthenticationProvider {
             var configuredValue = AppConfig()["auth.provider"]
@@ -18,7 +20,6 @@ enum class AuthenticationProvider {
             }
 
         }
-
 
         fun getGithubOAuthKey(): String {
             // AKA the Client ID
@@ -32,7 +33,26 @@ enum class AuthenticationProvider {
             //to make sure we don't store our production Montagu Github OAuth app secret in the repo!
             return "ef8550f711b65e0ab1457fe8470b2df03197b892"
         }
+
+        fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
+        {
+            val result =  when (getConfiguredProvider()) {
+                AuthenticationProvider.Github -> GitHubClient(getGithubOAuthKey(), getGithubOAuthSecret())
+                else -> MontaguIndirectClient()
+            }
+
+            result.callbackUrl = "${AppConfig()["app.url"]}/login"
+
+            return result
+        }
     }
+}
+
+enum class AuthenticationProvider
+{
+    Montagu,
+    Github,
+    None
 }
 
 class UnknownAuthenticationProvider(val provider: String) : Exception("Application is configured to use unknown authentication provider '$provider'")

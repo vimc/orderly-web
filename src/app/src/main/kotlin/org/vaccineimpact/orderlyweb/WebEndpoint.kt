@@ -1,8 +1,8 @@
 package org.vaccineimpact.orderlyweb
 
-import org.pac4j.oauth.client.GitHubClient
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
@@ -37,15 +37,11 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        val authenticationProvider = AuthenticationProvider.getConfiguredProvider()
+        val authenticationProvider = AuthenticationConfig.getConfiguredProvider()
 
         if (authenticationProvider != AuthenticationProvider.None)
         {
-            val client = when (authenticationProvider) {
-                AuthenticationProvider.Github -> GitHubClient(AuthenticationProvider.getGithubOAuthKey(),
-                        AuthenticationProvider.getGithubOAuthSecret())
-                else -> MontaguIndirectClient()
-            }
+            val client = AuthenticationConfig.getAuthenticationIndirectClient()
 
             val configFactory = WebSecurityConfigFactory(
                     client,
@@ -56,7 +52,7 @@ data class WebEndpoint(
             Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                     config,
                     client.javaClass.simpleName,
-                    OrderlyWebAuthorizer::class.java.simpleName,
+                    config.authorizers.map { it.key }.joinToString(","),
                     SkipOptionsMatcher.name
             ))
         }

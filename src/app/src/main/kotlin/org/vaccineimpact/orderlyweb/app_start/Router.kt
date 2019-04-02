@@ -17,6 +17,7 @@ import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
 import org.pac4j.sparkjava.CallbackRoute
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
@@ -50,7 +51,8 @@ class Router(freeMarkerConfig: Configuration)
 
     private fun mapLoginCallback()
     {
-        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
+        val client = AuthenticationConfig.getAuthenticationIndirectClient()
+        val config = WebSecurityConfigFactory(client, setOf())
                 .build()
         val loginCallback = CallbackRoute(config)
         val url = "login"
