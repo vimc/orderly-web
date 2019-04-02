@@ -24,8 +24,8 @@ class ErrorHandler
         sparkException<InvocationTargetException>(this::handleInvocationError)
         sparkException<OrderlyWebError>(this::handleError)
         sparkException<JsonSyntaxException> { e, req, res -> handleError(UnableToParseJsonError(e), req, res) }
-        sparkException<TechnicalException> { e, req, res ->
-            // pac4j throws a TechnicalException if errors are thrown during the Authentication process
+        sparkException<RuntimeException> { e, req, res ->
+            // pac4j throws a RuntimeException if errors are thrown during the Authentication process
             // If the cause is an OrderlyWebError we want that to bubble up
             if (e.cause is OrderlyWebError)
             {

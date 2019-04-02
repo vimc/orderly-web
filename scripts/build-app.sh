@@ -38,5 +38,6 @@ docker run --rm \
     -v $docker_auth_path:/root/.docker/config.json \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
+    -v $PWD/demo:/api/src/customConfigTests/demo \
     --network=host \
     orderly-web-app-build

@@ -10,7 +10,7 @@ interface Config
 
 class AppConfig : Config
 {
-    private companion object
+    companion object
     {
         val properties = Properties().apply {
             load(getResource("config.properties").openStream())
@@ -41,7 +41,7 @@ class AppConfig : Config
     }
 
     val authorizationEnabled by lazy {
-        getBool("app.auth")
+        getBool("auth.fine_grained")
     }
     
     fun getInt(key: String) = get(key).toInt()
