@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        // This is needed for gradle-docker
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+def base_image = 'docker.montagu.dide.ic.ac.uk:5000/openjdk-libsodium:master'
+if (hasProperty('libsodium_image')) {
+    base_image = libsodium_image
+}
+
+apply plugin: 'application'
+apply plugin: 'docker'
+
+mainClassName = "org.vaccineimpact.api.security.AppKt"
+
+dependencies {
+    compile project(":app")
+
+    testCompile "org.slf4j:slf4j-simple:1.7.21"
+    testCompile "khttp:khttp:0.1.0"
+    testCompile "com.beust:klaxon:0.31"
+    testCompile "junit:junit:4.12"
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "com.nhaarman:mockito-kotlin:1.3.0"
+    testCompile "org.assertj:assertj-core:3.6.2"
+    testCompile "com.beust:klaxon:0.31"
+    testCompile "com.github.fge:json-schema-validator:2.2.6"
+
+    testCompile project(":databaseInterface")
+    testCompile project(":testHelpers")
+}

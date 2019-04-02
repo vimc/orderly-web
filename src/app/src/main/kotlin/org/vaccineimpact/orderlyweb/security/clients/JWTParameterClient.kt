@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebOnetimeTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
-import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationRepository
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
 class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) : OrderlyWebTokenCredentialClient, ParameterClient(
@@ -21,7 +21,7 @@ class JWTParameterClient(helper: TokenVerifier, tokenStore: OnetimeTokenStore) :
 
     override fun clientInit()
     {
-        setAuthorizationGenerator(AuthorizationRepository())
+        setAuthorizationGenerator(OrderlyAuthorizationRepository())
         super.clientInit()
     }
 

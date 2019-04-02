@@ -1,6 +1,11 @@
 package org.vaccineimpact.orderlyweb.db
 
+import org.jooq.DSLContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PERMISSION
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP_PERMISSION
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.Instant
 
 interface UserRepository
@@ -46,4 +51,5 @@ class OrderlyUserRepository : UserRepository
             }
         }
     }
+
 }

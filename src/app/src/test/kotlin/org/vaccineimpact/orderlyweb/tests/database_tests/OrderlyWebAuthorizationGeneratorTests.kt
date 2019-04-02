@@ -8,7 +8,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -22,7 +22,7 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
             insertUser("user@email.com", "user.name")
         }
 
-        val sut = AuthorizationRepository()
+        val sut = OrderlyAuthorizationRepository()
         val result = sut.generate(mock(), mock { on { it.id } doReturn "user@email.com" })
         assertThat(result.orderlyWebPermissions).isEmpty()
     }
@@ -39,7 +39,7 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
                     addPermission = false)
         }
 
-        val sut = AuthorizationRepository()
+        val sut = OrderlyAuthorizationRepository()
         val profile = CommonProfile()
         profile.setId("user@email.com")
 
