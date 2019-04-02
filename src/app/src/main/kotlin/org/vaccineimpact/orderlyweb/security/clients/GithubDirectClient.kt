@@ -9,7 +9,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
-import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 
 class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
 {
@@ -23,6 +23,6 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), Orde
                 "token "))
 
         defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository(), GitHubClient()))
-        setAuthorizationGenerator(AuthorizationRepository())
+        setAuthorizationGenerator(OrderlyAuthorizationRepository())
     }
 }

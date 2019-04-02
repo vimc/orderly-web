@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.sql.Timestamp
 import kotlin.streams.asSequence
@@ -200,12 +201,6 @@ fun giveUserGroupPermission(groupName: String,
 
         if (addPermission)
         {
-            it.dsl.insertInto(ORDERLYWEB_PERMISSION)
-                    .set(ORDERLYWEB_PERMISSION.ID, permissionName)
-                    .onDuplicateKeyIgnore()
-                    .execute()
-
-
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.ID, lastId + 1)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION, permissionName)
