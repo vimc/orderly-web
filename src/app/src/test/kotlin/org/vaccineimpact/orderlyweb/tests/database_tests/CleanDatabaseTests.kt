@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.db.Tables
 abstract class CleanDatabaseTests : DatabaseTests()
 {
     @Before
-    fun clearDatabase()
+    fun createDatabase()
     {
         val tables = Tables::class.java
 
@@ -26,4 +26,5 @@ abstract class CleanDatabaseTests : DatabaseTests()
 
         }
     }
+
 }

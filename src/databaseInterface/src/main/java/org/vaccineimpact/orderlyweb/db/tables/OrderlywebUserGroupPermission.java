@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupPermiss
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebUserGroupPermission extends TableImpl<OrderlywebUserGroupPermissionRecord> {
 
-    private static final long serialVersionUID = 395804206;
+    private static final long serialVersionUID = -1926803151;
 
     /**
      * The reference instance of <code>orderlyweb_user_group_permission</code>
@@ -52,7 +52,7 @@ public class OrderlywebUserGroupPermission extends TableImpl<OrderlywebUserGroup
     /**
      * The column <code>orderlyweb_user_group_permission.id</code>.
      */
-    public final TableField<OrderlywebUserGroupPermissionRecord, Object> ID = createField("id", org.jooq.impl.DefaultDataType.getDefaultDataType("SERIAL"), this, "");
+    public final TableField<OrderlywebUserGroupPermissionRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * The column <code>orderlyweb_user_group_permission.user_group</code>.
