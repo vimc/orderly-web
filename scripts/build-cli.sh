@@ -10,7 +10,7 @@ git_branch=$(git symbolic-ref --short HEAD)
 docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
 
 # Make the build environment image that is shared between multiple build targets
-#./scripts/make-build-env.sh
+./scripts/make-build-env.sh
 
 # Create an image based on the shared build env that compiles and dockerises
 # the CLI
