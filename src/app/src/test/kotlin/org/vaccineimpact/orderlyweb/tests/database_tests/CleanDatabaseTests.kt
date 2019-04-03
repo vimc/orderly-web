@@ -1,29 +1,25 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import org.junit.After
+import org.jooq.Table
 import org.junit.Before
-import org.vaccineimpact.orderlyweb.db.AppConfig
-import java.io.File
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables
 
 abstract class CleanDatabaseTests: DatabaseTests()
 {
-
     @Before
-    fun createDatabase()
+    override fun setup()
     {
-        println("Looking for sqlite database at path: ${AppConfig()["db.template"]}")
-        println("Working directory: ${System.getProperty("user.dir")}")
+        super.setup()
 
-        val newDbFile = File(AppConfig()["db.location"])
-        val source = File(AppConfig()["db.template"])
+        val tables = Tables::class.java
+        val fields = tables.declaredFields
 
-        source.copyTo(newDbFile, true)
+        JooqContext(enableForeignKeyConstraints = false).use {
+            for (field in fields){
+                it.dsl.deleteFrom(field.get(null) as Table<*>)
+                        .execute()
+            }
+        }
     }
-
-    @After
-    fun dropDatabase()
-    {
-        File(AppConfig()["db.location"]).delete()
-    }
-
 }

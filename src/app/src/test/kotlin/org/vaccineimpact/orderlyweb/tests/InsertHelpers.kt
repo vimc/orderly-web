@@ -46,19 +46,9 @@ fun insertReport(name: String,
             val reportRecord = it.dsl.newRecord(REPORT)
                     .apply {
                         this.name = name
-                        this.latest = version
                     }
             reportRecord.store()
         }
-        else
-        {
-            //Update latest version of Report
-            it.dsl.update(REPORT)
-                    .set(REPORT.LATEST, version)
-                    .where(REPORT.NAME.eq(name))
-                    .execute()
-        }
-
 
         val reportVersionRecord = it.dsl.newRecord(REPORT_VERSION)
                 .apply {
@@ -73,6 +63,12 @@ fun insertReport(name: String,
                     this.connection = false
                 }
         reportVersionRecord.store()
+
+        //Update latest version of Report
+        it.dsl.update(REPORT)
+                .set(REPORT.LATEST, version)
+                .where(REPORT.NAME.eq(name))
+                .execute()
 
         //Check if we need to add changelog labels
         val labels = it.dsl.select(CHANGELOG_LABEL.ID)
@@ -181,7 +177,7 @@ fun insertUser(email: String,
                 .execute()
 
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP_USER)
-                .set(ORDERLYWEB_USER_GROUP_USER.USER, email)
+                .set(ORDERLYWEB_USER_GROUP_USER.EMAIL, email)
                 .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, email)
                 .onDuplicateKeyIgnore()
                 .execute()

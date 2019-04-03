@@ -54,14 +54,15 @@ class OrderlyAuthorizationRepository : AuthorizationGenerator<CommonProfile>, Au
 
             val permissionsForGroup = getAllPermissionsForGroup(it, userGroup)
 
-            if (!permissionsForGroup.contains(permission))
+            if (!permissionsForGroup.any { p -> p.name == permission.name })
             {
-
                 it.dsl.newRecord(ORDERLYWEB_USER_GROUP_PERMISSION).apply {
                     this.userGroup = userGroup
                     this.permission = permission.name
                 }.insert()
-
+            }
+            if (!permissionsForGroup.contains(permission))
+            {
                 val id = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
                         .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permission.name)
