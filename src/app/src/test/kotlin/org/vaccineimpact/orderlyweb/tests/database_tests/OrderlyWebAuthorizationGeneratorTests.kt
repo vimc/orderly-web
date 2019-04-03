@@ -33,6 +33,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     {
         JooqContext().use {
             insertUser("user@email.com", "user.name")
+
             insertReport("r1", "r1v1")
             insertReport("r2", "r2v1")
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Global(), addPermission = true)
@@ -40,6 +41,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                     addPermission = false)
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r2"),
                     addPermission = false)
+
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -106,4 +108,5 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         assertThat(result.orderlyWebPermissions)
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global())))
     }
+
 }
