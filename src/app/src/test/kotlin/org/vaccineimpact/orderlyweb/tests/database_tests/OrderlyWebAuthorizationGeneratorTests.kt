@@ -34,11 +34,13 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         JooqContext().use {
             insertUser("user@email.com", "user.name")
 
-            giveUserGroupPermission("user@email.com", "report.read", Scope.Global(), addPermission = true)
-            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r1"), addPermission = false)
-
             insertReport("r1", "r1v1")
             insertReport("r2", "r2v1")
+
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Global(), addPermission = true)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r1"), addPermission = false)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r2"), addPermission = false)
+
         }
 
         val sut = AuthorizationRepository()
