@@ -3,9 +3,10 @@ package org.vaccineimpact.orderlyweb.security.authentication
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.credentials.Credentials
-import org.pac4j.oauth.client.GitHubClient
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
+import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 
 class AuthenticationConfig
 {
@@ -37,11 +38,16 @@ class AuthenticationConfig
         fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
         {
             val result =  when (getConfiguredProvider()) {
-                AuthenticationProvider.Github -> GitHubClient(getGithubOAuthKey(), getGithubOAuthSecret())
+                AuthenticationProvider.Github ->
+                    {
+                        val ghc = GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
+                        return ghc
+
+                    }
                 else -> MontaguIndirectClient()
             }
 
-            result.callbackUrl = "${AppConfig()["app.url"]}/login"
+
 
             return result
         }

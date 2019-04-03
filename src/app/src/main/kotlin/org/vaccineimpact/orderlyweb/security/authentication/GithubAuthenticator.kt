@@ -21,7 +21,7 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 
 
 class GithubAuthenticator(private val userRepository: UserRepository,
-                          private val githubApiClient: GitHubClient,
+                          private val githubApiClient: GitHubClient = GitHubClient(),
                           private val appConfig: Config = AppConfig()) : Authenticator<TokenCredentials>
 {
     override fun validate(credentials: TokenCredentials?, context: WebContext)
