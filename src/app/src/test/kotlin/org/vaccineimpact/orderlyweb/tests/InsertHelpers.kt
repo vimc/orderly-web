@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests
 
-import com.nhaarman.mockito_kotlin.doNothing
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -24,9 +23,7 @@ fun insertReport(name: String,
                  published: Boolean = true,
                  date: Timestamp = Timestamp(System.currentTimeMillis()),
                  author: String = "author authorson",
-                 requester: String = "requester mcfunder",
-                 changelog: List<ChangelogWithPublicVersion> = listOf(ChangelogWithPublicVersion(version, "public", "did something great", true, version),
-                         ChangelogWithPublicVersion(version, "internal", "did something awful", false)))
+                 requester: String = "requester mcfunder")
 {
 
     JooqContext().use {
@@ -45,19 +42,9 @@ fun insertReport(name: String,
             val reportRecord = it.dsl.newRecord(REPORT)
                     .apply {
                         this.name = name
-                        this.latest = version
                     }
             reportRecord.store()
         }
-        else
-        {
-            //Update latest version of Report
-            it.dsl.update(REPORT)
-                    .set(REPORT.LATEST, version)
-                    .where(REPORT.NAME.eq(name))
-                    .execute()
-        }
-
 
         val reportVersionRecord = it.dsl.newRecord(REPORT_VERSION)
                 .apply {
@@ -73,27 +60,19 @@ fun insertReport(name: String,
                 }
         reportVersionRecord.store()
 
-        //Check if we need to add changelog labels
-        val labels = it.dsl.select(CHANGELOG_LABEL.ID)
-                .from(CHANGELOG_LABEL)
-                .fetch()
+        //Update latest version of Report
+        it.dsl.update(REPORT)
+                .set(REPORT.LATEST, version)
+                .where(REPORT.NAME.eq(name))
+                .execute()
 
-        if (labels.isEmpty())
-        {
-            val publicRecord = it.dsl.newRecord(CHANGELOG_LABEL)
-                    .apply {
-                        this.id = "public"
-                        this.public = true
-                    }
-            publicRecord.store();
+    }
 
-            val internalRecord = it.dsl.newRecord(CHANGELOG_LABEL)
-                    .apply {
-                        this.id = "internal"
-                        this.public = false
-                    }
-            internalRecord.store();
-        }
+}
+
+fun insertChangelog(changelog: List<ChangelogWithPublicVersion>)
+{
+    JooqContext().use {
 
         for (entry in changelog)
         {
@@ -109,9 +88,7 @@ fun insertReport(name: String,
                     .execute()
 
         }
-
     }
-
 }
 
 fun insertArtefact(reportVersionId: String,
@@ -136,10 +113,16 @@ fun insertArtefact(reportVersionId: String,
                 .execute()
 
         fileNames.map { f ->
+            val hash = generateRandomString()
+            it.dsl.insertInto(FILE)
+                    .set(FILE.HASH, hash)
+                    .set(FILE.SIZE, 1234)
+                    .execute()
+
             it.dsl.insertInto(FILE_ARTEFACT)
                     .set(FILE_ARTEFACT.FILENAME, f)
                     .set(FILE_ARTEFACT.ARTEFACT, lastId + 1)
-                    .set(FILE_ARTEFACT.FILE_HASH, generateRandomString())
+                    .set(FILE_ARTEFACT.FILE_HASH, hash)
                     .execute()
         }
     }
@@ -151,6 +134,13 @@ fun insertData(reportVersionId: String,
                hash: String)
 {
     JooqContext().use {
+        it.dsl.insertInto(DATA)
+                .set(DATA.HASH, hash)
+                .set(DATA.SIZE_CSV, 1234)
+                .set(DATA.SIZE_RDS, 1234)
+                .onDuplicateKeyIgnore()
+                .execute()
+
         it.dsl.insertInto(REPORT_VERSION_DATA)
                 .set(REPORT_VERSION_DATA.REPORT_VERSION, reportVersionId)
                 .set(REPORT_VERSION_DATA.NAME, name)
@@ -180,7 +170,7 @@ fun insertUser(email: String,
                 .execute()
 
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP_USER)
-                .set(ORDERLYWEB_USER_GROUP_USER.USER, email)
+                .set(ORDERLYWEB_USER_GROUP_USER.EMAIL, email)
                 .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, email)
                 .onDuplicateKeyIgnore()
                 .execute()
@@ -247,7 +237,7 @@ fun giveUserGroupPermission(groupName: String,
     }
 }
 
-private fun generateRandomString(len: Long = 10): String
+fun generateRandomString(len: Long = 10): String
 {
     val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     return java.util.Random().ints(len, 0, source.length)
@@ -259,10 +249,17 @@ private fun generateRandomString(len: Long = 10): String
 fun insertFileInput(reportVersion: String, fileName: String, purpose: FilePurpose)
 {
     JooqContext().use {
+
+        val hash = generateRandomString()
+        it.dsl.insertInto(FILE)
+                .set(FILE.HASH, hash)
+                .set(FILE.SIZE, 1234)
+                .execute()
+
         it.dsl.insertInto(FILE_INPUT)
                 .set(FILE_INPUT.FILE_PURPOSE, purpose.toString())
                 .set(FILE_INPUT.FILENAME, fileName)
-                .set(FILE_INPUT.FILE_HASH, generateRandomString())
+                .set(FILE_INPUT.FILE_HASH, hash)
                 .set(FILE_INPUT.REPORT_VERSION, reportVersion)
                 .execute()
     }

@@ -10,10 +10,11 @@ import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
+import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class RequestHelper
@@ -139,10 +140,15 @@ class RequestHelper
 
 }
 
-fun fakeReportReader(reportName: String): String
+fun fakeReportReader(reportName: String, addReport: Boolean = true): String
 {
     val email = "report.reader@email.com"
     insertUser(email, "report reader")
+
+    if (addReport)
+    {
+        insertReport(reportName, "v1")
+    }
     giveUserGroupPermission(email, "reports.read", Scope.Specific("report", reportName), addPermission = true)
     return email
 }

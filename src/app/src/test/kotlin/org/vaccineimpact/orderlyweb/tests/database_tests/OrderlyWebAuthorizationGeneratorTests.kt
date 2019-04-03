@@ -11,9 +11,10 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
-class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
+class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 {
     @Test
     fun `can get empty permission set for user`()
@@ -32,11 +33,14 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
     {
         JooqContext().use {
             insertUser("user@email.com", "user.name")
+
+            insertReport("r1", "r1v1")
+            insertReport("r2", "r2v1")
+
             giveUserGroupPermission("user@email.com", "report.read", Scope.Global(), addPermission = true)
-            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r1"),
-                    addPermission = false)
-            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r2"),
-                    addPermission = false)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r1"), addPermission = false)
+            giveUserGroupPermission("user@email.com", "report.read", Scope.Specific("report", "r2"), addPermission = false)
+
         }
 
         val sut = AuthorizationRepository()
@@ -50,4 +54,5 @@ class OrderlyWebAuthorizationGeneratorTests : CleanDatabaseTests()
                         ReifiedPermission("report.read", Scope.Specific("report", "r1")),
                         ReifiedPermission("report.read", Scope.Specific("report", "r2"))))
     }
+
 }
