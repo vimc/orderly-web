@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL
@@ -7,7 +8,8 @@ import java.io.File
 import java.sql.Connection
 import java.sql.DriverManager
 
-open class JooqContext(private val dbLocation: String = AppConfig()["db.location"]) : AutoCloseable
+open class JooqContext(private val dbLocation: String = AppConfig()["db.location"],
+                       private val enableForeignKeyConstraints: Boolean = true) : AutoCloseable
 {
     private val conn = getConnection()
     val dsl = createDSL(conn)
@@ -28,6 +30,12 @@ open class JooqContext(private val dbLocation: String = AppConfig()["db.location
 
     private fun createDSL(conn: Connection): DSLContext
     {
+        if (enableForeignKeyConstraints)
+        {
+            conn.prepareStatement("PRAGMA foreign_keys = ON;")
+                    .execute()
+        }
+
         return DSL.using(conn, SQLDialect.SQLITE)
     }
 

@@ -65,7 +65,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get empty latest changelog by name`()
     {
-        insertReport("testname", "testversion", changelog = listOf())
+        insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/latest/changelog/",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
