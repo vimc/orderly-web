@@ -3,4 +3,6 @@ dependencies {
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
     compile "khttp:khttp:0.1.0"
+
+    compile project(":databaseInterface")
 }

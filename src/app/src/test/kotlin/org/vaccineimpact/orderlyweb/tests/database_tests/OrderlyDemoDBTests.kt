@@ -21,6 +21,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_DATA
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_PACKAGE
+import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
 
 
 class OrderlyDemoDBTests : DatabaseTests()

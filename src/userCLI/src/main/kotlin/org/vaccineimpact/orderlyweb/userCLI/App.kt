@@ -10,7 +10,7 @@ fun main(args: Array<String>)
         val remainder = args.drop(1)
         when (action)
         {
-            Action.addUser -> addUser(remainder)
+            Action.addUser -> AddUser().execute(remainder)
             Action.addPermission -> addPermission(remainder)
         }
     }

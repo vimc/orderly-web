@@ -1,32 +1,66 @@
 package org.vaccineimpact.orderlyweb.userCLI.tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.userCLI.NewUser
-import org.vaccineimpact.orderlyweb.userCLI.addUser
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.userCLI.AddUser
+import org.vaccineimpact.orderlyweb.userCLI.Question
 
-class AddUserTests()
+class AddUserTests : CleanDatabaseTests()
 {
-    @Test
-    fun `can parse command line args without if-not-exists flag`()
+    private fun mockExit(code: Int): String
     {
-        val result = NewUser.fromArgs(listOf("test.user@email.com"))
-        assert(result.alwaysCreate)
-        assert(result.email == "test.user@email.com")
+        return "exited with code $code"
     }
 
     @Test
-    fun `can parse command line args with if-not-exists flag`()
+    fun `addUser adds user`()
     {
-        val result = NewUser.fromArgs(listOf("test.user@email.com", "--if-not-exists"))
-        assert(!result.alwaysCreate)
-        assert(result.email == "test.user@email.com")
+        val sut = AddUser()
+        sut.execute(listOf("test.user@email.com"))
+
+        val users = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER).fetch()
+        }
+
+        Assertions.assertThat(users.count()).isEqualTo(1)
     }
 
+    @Test
+    fun `addUser does nothing if user exists`()
+    {
+        val sut = AddUser()
+        sut.execute(listOf("test.user@email.com"))
+        sut.execute(listOf("test.user@email.com"))
+
+        val users = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER).fetch()
+        }
+
+        Assertions.assertThat(users.count()).isEqualTo(1)
+    }
 
     @Test
-    fun `addUser fails if more than 2 args`()
+    fun `addUser exits if more than 1 args`()
     {
-        val result = addUser(listOf("test.user@email.com", "more info", ""))
+        val sut = AddUser(::mockExit)
+        val result = sut.getEmailFromArgs(listOf("test.user@email.com", "more info"))
+        assertThat(result).isEqualTo("exited with code 0")
+    }
 
+    @Test
+    fun `getEmailFromArgs asks question if 0 args`()
+    {
+        val mockQuestion = mock<Question> {
+            on { it.ask() } doReturn "answer"
+        }
+        val sut = AddUser(question = mockQuestion)
+        val result = sut.getEmailFromArgs(listOf())
+        assertThat(result).isEqualTo("answer")
     }
 }

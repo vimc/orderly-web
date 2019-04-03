@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import java.time.Instant
 
 class UserRepositoryTests : CleanDatabaseTests()
