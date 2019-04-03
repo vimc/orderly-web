@@ -45,18 +45,6 @@ class MontaguAuthenticatorTests : TeamcityTests()
     }
 
     @Test
-    fun `url attribute is added to profile after successful validation`()
-    {
-
-        val sut = MontaguAuthenticator(mock(), mockMontaguAPIClient)
-
-        val credentials = TokenCredentials("token")
-        sut.validate(credentials, mock())
-
-        Assertions.assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
-    }
-
-    @Test
     fun `profile id is set to email after successful validation`()
     {
         val sut = MontaguAuthenticator(mock(), mockMontaguAPIClient)
