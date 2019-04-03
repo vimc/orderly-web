@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
-class OrderlyWebAuthorizationRepositoryTests : DatabaseTests()
+class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 {
     @Test
     fun `can get empty permission set for user`()

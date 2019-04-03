@@ -22,5 +22,4 @@ docker run --rm --entrypoint create_orderly_demo.sh \
 ./scripts/migrate-build.sh
 
 # Do the migrations
-docker run --rm -v ${PWD}/src/app/demo:/orderly
-
+docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
