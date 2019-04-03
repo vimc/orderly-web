@@ -4,7 +4,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.Zip
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.tests.database_tests.DatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
 import java.io.ByteArrayOutputStream
 
 class ZipTests : DatabaseTests()
