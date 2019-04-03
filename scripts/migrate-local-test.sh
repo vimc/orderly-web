@@ -9,7 +9,7 @@ HERE=$(dirname $0)
 
 # Create orderly demo data just so we're sure of having something to migrate against
 # This will fail if there's anything in the demo folder already
-docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master
+docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master | true
 
 docker run --rm --entrypoint create_orderly_demo.sh \
     -u ${UID} \
@@ -22,5 +22,5 @@ docker run --rm --entrypoint create_orderly_demo.sh \
 ./scripts/migrate-build.sh
 
 # Do the migrations
-docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
+docker run --rm -v ${PWD}/src/app/demo:/orderly
 

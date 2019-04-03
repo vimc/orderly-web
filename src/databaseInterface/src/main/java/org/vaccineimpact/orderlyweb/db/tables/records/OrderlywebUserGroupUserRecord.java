@@ -26,19 +26,19 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebUserGroupUserRecord extends TableRecordImpl<OrderlywebUserGroupUserRecord> implements Record2<String, String> {
 
-    private static final long serialVersionUID = 375451474;
+    private static final long serialVersionUID = 1063435565;
 
     /**
-     * Setter for <code>orderlyweb_user_group_user.user</code>.
+     * Setter for <code>orderlyweb_user_group_user.email</code>.
      */
-    public void setUser(String value) {
+    public void setEmail(String value) {
         set(0, value);
     }
 
     /**
-     * Getter for <code>orderlyweb_user_group_user.user</code>.
+     * Getter for <code>orderlyweb_user_group_user.email</code>.
      */
-    public String getUser() {
+    public String getEmail() {
         return (String) get(0);
     }
 
@@ -81,7 +81,7 @@ public class OrderlywebUserGroupUserRecord extends TableRecordImpl<OrderlywebUse
      */
     @Override
     public Field<String> field1() {
-        return OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER.USER;
+        return OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER.EMAIL;
     }
 
     /**
@@ -97,7 +97,7 @@ public class OrderlywebUserGroupUserRecord extends TableRecordImpl<OrderlywebUse
      */
     @Override
     public String value1() {
-        return getUser();
+        return getEmail();
     }
 
     /**
@@ -113,7 +113,7 @@ public class OrderlywebUserGroupUserRecord extends TableRecordImpl<OrderlywebUse
      */
     @Override
     public OrderlywebUserGroupUserRecord value1(String value) {
-        setUser(value);
+        setEmail(value);
         return this;
     }
 
@@ -150,10 +150,10 @@ public class OrderlywebUserGroupUserRecord extends TableRecordImpl<OrderlywebUse
     /**
      * Create a detached, initialised OrderlywebUserGroupUserRecord
      */
-    public OrderlywebUserGroupUserRecord(String user, String userGroup) {
+    public OrderlywebUserGroupUserRecord(String email, String userGroup) {
         super(OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER);
 
-        set(0, user);
+        set(0, email);
         set(1, userGroup);
     }
 }

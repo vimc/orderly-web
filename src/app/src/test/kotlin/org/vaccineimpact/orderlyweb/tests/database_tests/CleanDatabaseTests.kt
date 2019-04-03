@@ -7,16 +7,13 @@ import org.vaccineimpact.orderlyweb.db.Tables
 
 abstract class CleanDatabaseTests: DatabaseTests()
 {
-
     @Before
     fun clearDatabase()
     {
+        val tables = Tables::class.java
+        val fields = tables.declaredFields
 
-        val tables = Tables::class.java;
-        val fields = tables.declaredFields;
-
-        JooqContext().use {
-
+        JooqContext(enableForeignKeyConstraints = false).use {
             for (field in fields){
                 it.dsl.deleteFrom(field.get(null) as Table<*>)
                         .execute()
@@ -24,6 +21,4 @@ abstract class CleanDatabaseTests: DatabaseTests()
 
         }
     }
-
-
 }
