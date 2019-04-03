@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.tests.generateRandomString
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
@@ -42,33 +43,27 @@ class DataTests : IntegrationTest()
     @Test
     fun `gets csv data file with scoped permission`()
     {
-        var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
-
-        // remove file extension
-        demoCSV = demoCSV.substring(0, demoCSV.length - 4)
+        val hash = generateRandomString()
 
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
+        insertData("testversion", "testdata", "SELECT * FROM thing", hash)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = requestHelper.get(url, ContentTypes.binarydata, userEmail = fakeReportReader("testname"))
+        val response = requestHelper.get(url, ContentTypes.binarydata,
+                userEmail = fakeReportReader("testname"))
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoCSV.csv")
+        Assertions.assertThat(response.headers["content-disposition"])
+                .isEqualTo("attachment; filename=$hash.csv")
     }
 
     @Test
     fun `can't get csv data file if report not in scoped permissions`()
     {
-
-        var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
-
-        // remove file extension
-        demoCSV = demoCSV.substring(0, demoCSV.length - 4)
-
+        val hash = generateRandomString()
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
+        insertData("testversion", "testdata", "SELECT * FROM thing", hash)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
@@ -114,13 +109,9 @@ class DataTests : IntegrationTest()
     @Test
     fun `gets rds data file`()
     {
-        var demoRDS = File("${AppConfig()["orderly.root"]}/data/rds/").list()[0]
-
-        // remove file extension
-        demoRDS = demoRDS.substring(0, demoRDS.length - 4)
-
+        val hash = generateRandomString()
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoRDS)
+        insertData("testversion", "testdata", "SELECT * FROM thing", hash)
 
         val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
         val token = requestHelper.generateOnetimeToken(url)
@@ -128,7 +119,7 @@ class DataTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoRDS.rds")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$hash.rds")
     }
 
     @Test

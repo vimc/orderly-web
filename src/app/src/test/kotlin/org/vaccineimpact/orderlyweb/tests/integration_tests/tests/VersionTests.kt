@@ -9,6 +9,8 @@ import org.junit.runners.MethodSorters
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.tests.ChangelogWithPublicVersion
+import org.vaccineimpact.orderlyweb.tests.insertChangelog
 import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
@@ -216,6 +218,7 @@ class VersionTests : IntegrationTest()
     {
         val fakeVersion = "hf647rhj"
         insertReport("testname", "testversion")
+
         val response = requestHelper.get("/reports/testname/versions/$fakeVersion")
 
         assertJsonContentType(response)
@@ -227,6 +230,9 @@ class VersionTests : IntegrationTest()
     fun `can get version changelog by name and version`()
     {
         insertReport("testname", "testversion")
+        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
+                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
@@ -237,7 +243,7 @@ class VersionTests : IntegrationTest()
     @Test
     fun `can get empty version changelog by name and version`()
     {
-        insertReport("testname", "testversion", changelog = listOf())
+        insertReport("testname", "testversion")
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
@@ -252,6 +258,9 @@ class VersionTests : IntegrationTest()
     {
         //reader now has permission to get public changelog items for published reports which they have perms to read
         insertReport("testname", "testversion")
+        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
+                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
@@ -263,6 +272,9 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version does not belong to report`()
     {
         insertReport("testname", "testversion")
+        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
+                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+
         val response = requestHelper.get("/reports/testname/versions/notatestversion/changelog",
                 userEmail = fakeGlobalReportReader())
 
@@ -275,6 +287,9 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version is not published and user has reader permission only`()
     {
         insertReport("testname", "testversion", published = false)
+        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
+                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+
         val response = requestHelper.get("/reports/testname/versions/testversion/changelog",
                 userEmail = fakeGlobalReportReader())
 

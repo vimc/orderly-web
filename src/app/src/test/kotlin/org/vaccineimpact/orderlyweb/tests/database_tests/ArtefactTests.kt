@@ -32,8 +32,9 @@ class ArtefactTests : CleanDatabaseTests()
     @Test
     fun `getArtefactHash throws unknown object error if report does not have artefact`()
     {
-        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
         insertReport("test", "version1")
+        insertReport("test", "version2")
+        insertArtefact("version1", fileNames = listOf("summary.csv", "graph.png"))
 
         val sut = createSut()
 
