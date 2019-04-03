@@ -20,6 +20,9 @@ docker build --tag orderly-web-cli-build \
     -f cli.Dockerfile \
     .
 
+# Migrate the test db
+./scripts/migrate-test.sh
+
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
