@@ -101,7 +101,7 @@ class VersionTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "Reports")
         val data = JSONValidator.getData(response.text)
 
-        // there are 6 report versions in the test data set, plus the one we added above
+        // there are 7 report versions in the test data set, plus the one we added above
         assertThat(data.count()).isEqualTo(8)
         val names = data.map {
             it.get("name").asText()
@@ -122,9 +122,8 @@ class VersionTests : IntegrationTest()
     @Test
     fun `can get all versions with specific report reading permissions`()
     {
-        insertReport("testname", "testversion")
         val response = requestHelper.get("/versions/",
-                userEmail = fakeReportReader("testname"))
+                userEmail = fakeReportReader("html", addReport = false))
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -132,7 +131,7 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text)
 
         assertThat(data.count()).isEqualTo(1)
-        assertThat(data[0].get("name").asText()).isEqualTo("testname")
+        assertThat(data[0].get("name").asText()).isEqualTo("html")
     }
 
 

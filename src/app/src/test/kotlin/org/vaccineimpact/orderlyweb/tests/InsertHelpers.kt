@@ -138,6 +138,7 @@ fun insertData(reportVersionId: String,
                 .set(DATA.HASH, hash)
                 .set(DATA.SIZE_CSV, 1234)
                 .set(DATA.SIZE_RDS, 1234)
+                .onDuplicateKeyIgnore()
                 .execute()
 
         it.dsl.insertInto(REPORT_VERSION_DATA)
