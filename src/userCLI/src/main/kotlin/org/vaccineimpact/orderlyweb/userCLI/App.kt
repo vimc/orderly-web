@@ -32,11 +32,6 @@ fun getAction(args: Array<String>): Action
     return enumValueOf(args.first())
 }
 
-fun addUser(args: List<String>)
-{
-    println("Coming soon!")
-}
-
 fun addPermission(args: List<String>)
 {
     println("Coming soon!")
