@@ -13,7 +13,6 @@ class GithubOAuthProfileCreator(config: OAuth20Configuration, client: IndirectCl
     {
         var result = super.retrieveUserProfileFromToken(context, accessToken)
         //Make credentials consistent with those produced by MontaguAuthenticator
-        result.addAttribute("url", "*")
         result.id = result.attributes["login"] as String //TODO: THis should actually be email
         return result
     }
