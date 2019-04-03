@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -26,11 +27,11 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val fakePermissions = PermissionSet(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         val mockRepo = mock<AuthorizationRepository> {
-            on {getPermissionsForUser("user@email.com")} doReturn fakePermissions
+            on { getPermissionsForUser("user@email.com") } doReturn fakePermissions
         }
 
         val sut = OrderlyAuthorizationGenerator(mockRepo)
-        val result = sut.generate(mock(), mock { on { it.id } doReturn "user@email.com" })
+        val result = sut.generate(mock(), CommonProfile().apply { id = "user@email.com" })
         assertThat(result.orderlyWebPermissions).hasSameElementsAs(fakePermissions)
     }
 }
