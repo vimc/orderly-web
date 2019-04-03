@@ -14,17 +14,18 @@ import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 interface AuthorizationRepository
 {
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
+    fun getPermissionsForUser(email: String): PermissionSet
 }
 
-class OrderlyAuthorizationRepository : AuthorizationGenerator<CommonProfile>, AuthorizationRepository
+class OrderlyAuthorizationRepository : AuthorizationRepository
 {
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"
     private val GROUP_PERMISSION_ID = "permission_id"
 
-    override fun generate(context: WebContext?, profile: CommonProfile): CommonProfile
+    override fun getPermissionsForUser(email: String): PermissionSet
     {
-        val permissions = JooqContext().use {
+        return JooqContext().use {
 
             val abstractPermissions =
                     it.dsl.select(ORDERLYWEB_PERMISSION.ID.`as`(PERMISSION_NAME),
@@ -34,15 +35,12 @@ class OrderlyAuthorizationRepository : AuthorizationGenerator<CommonProfile>, Au
                                     ORDERLYWEB_USER_GROUP,
                                     ORDERLYWEB_USER_GROUP_USER,
                                     ORDERLYWEB_USER)
-                            .where(ORDERLYWEB_USER.EMAIL.eq(profile.id))
+                            .where(ORDERLYWEB_USER.EMAIL.eq(email))
                             .asTemporaryTable(ALL_GROUP_PERMISSIONS)
 
             val allPermissions = getAllPermissions(it, abstractPermissions)
             PermissionSet(allPermissions)
         }
-
-        profile.orderlyWebPermissions = permissions
-        return profile
     }
 
     override fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)

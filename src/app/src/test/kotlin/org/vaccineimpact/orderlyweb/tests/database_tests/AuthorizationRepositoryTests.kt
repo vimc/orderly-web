@@ -1,17 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -26,8 +22,8 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         }
 
         val sut = OrderlyAuthorizationRepository()
-        val result = sut.generate(mock(), mock { on { it.id } doReturn "user@email.com" })
-        assertThat(result.orderlyWebPermissions).isEmpty()
+        val result = sut.getPermissionsForUser("user@email.com")
+        assertThat(result).isEmpty()
     }
 
     @Test
@@ -39,22 +35,17 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             insertReport("r1", "r1v1")
             insertReport("r2", "r2v1")
 
-            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global(), addPermission = true)
-            giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"), addPermission = false)
-            giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r2"), addPermission = false)
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"))
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r2"))
 
         }
 
         val sut = OrderlyAuthorizationRepository()
 
-        val profile = CommonProfile()
-                .apply {
-                    id = "user@email.com"
-                }
+        val result = sut.getPermissionsForUser("user@email.com")
 
-        val result = sut.generate(mock(), profile)
-
-        assertThat(result.orderlyWebPermissions)
+        assertThat(result)
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r1")),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r2"))))
@@ -79,14 +70,9 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         sut.ensureUserGroupHasPermission("user@email.com",
                 ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
 
-        val profile = CommonProfile()
-                .apply {
-                    id = "user@email.com"
-                }
+        val result = sut.getPermissionsForUser("user@email.com")
 
-        val result = sut.generate(mock(), profile)
-
-        assertThat(result.orderlyWebPermissions)
+        assertThat(result)
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
                         ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")),
                         ReifiedPermission("reports.read", Scope.Specific("version", "v1"))))
@@ -97,8 +83,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     {
         JooqContext().use {
             insertUser("user@email.com", "user.name")
-            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global(),
-                    addPermission = true)
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -106,14 +91,9 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         sut.ensureUserGroupHasPermission("user@email.com",
                 ReifiedPermission("reports.read", Scope.Global()))
 
-        val profile = CommonProfile()
-                .apply {
-                    id = "user@email.com"
-                }
+        val result = sut.getPermissionsForUser("user@email.com")
 
-        val result = sut.generate(mock(), profile)
-
-        assertThat(result.orderlyWebPermissions)
+        assertThat(result)
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 

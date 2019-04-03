@@ -149,7 +149,7 @@ fun fakeReportReader(reportName: String, addReport: Boolean = true): String
     {
         insertReport(reportName, "v1")
     }
-    giveUserGroupPermission(email, "reports.read", Scope.Specific("report", reportName), addPermission = true)
+    giveUserGroupPermission(email, "reports.read", Scope.Specific("report", reportName))
     return email
 }
 
@@ -157,7 +157,7 @@ fun fakeGlobalReportReader(): String
 {
     val email = "global.report.reader@email.com"
     insertUser(email, "report reader")
-    giveUserGroupPermission(email, "reports.read", Scope.Global(), addPermission = true)
+    giveUserGroupPermission(email, "reports.read", Scope.Global())
     return email
 }
 
@@ -165,8 +165,8 @@ fun fakeGlobalReportReviewer(): String
 {
     val email = "global.report.reviewer@email.com"
     insertUser(email, "report reviewer")
-    giveUserGroupPermission(email, "reports.read", Scope.Global(), addPermission = true)
-    giveUserGroupPermission(email, "reports.review", Scope.Global(), addPermission = true)
-    giveUserGroupPermission(email, "reports.run", Scope.Global(), addPermission = true)
+    giveUserGroupPermission(email, "reports.read", Scope.Global())
+    giveUserGroupPermission(email, "reports.review", Scope.Global())
+    giveUserGroupPermission(email, "reports.run", Scope.Global())
     return email
 }
