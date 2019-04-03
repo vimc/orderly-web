@@ -1,0 +1,38 @@
+buildscript {
+    repositories {
+        // This is needed for gradle-docker
+        jcenter()
+    }
+    dependencies {
+        classpath 'se.transmode.gradle:gradle-docker:1.2'
+    }
+}
+
+apply plugin: 'application'
+apply plugin: 'docker'
+
+mainClassName = "org.vaccineimpact.orderlyweb.userCLI.AppKt"
+
+dependencies {
+    compile project(":app")
+
+    testCompile project(":databaseInterface")
+    testCompile project(":testHelpers")
+}
+
+def cli_docker_version = 'UNKNOWN'
+if (hasProperty('docker_version')) {
+    cli_docker_version = docker_version
+}
+def cli_docker_name = 'montagu-cli'
+if (hasProperty('docker_name')) {
+    cli_docker_name = docker_name
+}
+
+distDocker {
+    baseImage = "openjdk:8u121-jre"
+    dependsOn = [build]
+    push = true
+    tag = cli_docker_name
+    tagVersion = cli_docker_version
+}
