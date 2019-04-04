@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIException
-import org.vaccineimpact.orderlyweb.security.authentication.khttpMontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
+import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
 

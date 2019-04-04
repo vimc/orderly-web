@@ -37,19 +37,10 @@ class AuthenticationConfig
 
         fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
         {
-            val result =  when (getConfiguredProvider()) {
-                AuthenticationProvider.Github ->
-                    {
-                        val ghc = GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
-                        return ghc
-
-                    }
+            return  when (getConfiguredProvider()) {
+                AuthenticationProvider.Github -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
                 else -> MontaguIndirectClient()
             }
-
-
-
-            return result
         }
     }
 }

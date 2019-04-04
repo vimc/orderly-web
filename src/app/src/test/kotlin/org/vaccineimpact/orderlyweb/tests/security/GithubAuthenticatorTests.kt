@@ -16,35 +16,20 @@ import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
+import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class GithubAuthenticatorTests : TeamcityTests()
 {
     private val mockUser = User().apply {
         login = "user.name"
-        email = "email"
+        email = null
         name = "full name"
     }
 
-    private val mockTeam = Team().apply {
-        name = "teamName"
-        id = 1
-    }
-
-    private val mockAppConfig = mock<Config> {
-        on { get("auth.github_org") } doReturn "orgName"
-        on { get("auth.github_team") } doReturn "teamName"
-    }
-
-    private val mockGithubApiClient = mock<GitHubClient> {
-        on { get(argWhere { it.uri.contains("user") }) } doReturn
-                GitHubResponse(mock(), mockUser)
-        on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                GitHubResponse(mock(), listOf(mockUser))
-        on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
-                GitHubResponse(mock(), listOf(mockTeam))
-        on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
-                GitHubResponse(mock(), listOf(mockUser))
+    private val mockGithubAuthHelper = mock<GithubAuthHelper> {
+        on { getUser() } doReturn mockUser
+        on { getUserEmail() } doReturn "email"
     }
 
     private val mockUserData = mock<UserRepository>()
@@ -52,7 +37,7 @@ class GithubAuthenticatorTests : TeamcityTests()
     @Test
     fun `token validation fails if credentials are not supplied`()
     {
-        val sut = GithubAuthenticator(mock(), mock(), mockAppConfig)
+        val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         assertThatThrownBy { sut.validate(null, mock()) }
                 .isInstanceOf(CredentialsException::class.java)
@@ -60,19 +45,20 @@ class GithubAuthenticatorTests : TeamcityTests()
     }
 
     @Test
-    fun `token validation fails if token is blank`()
+    fun `token validation calls github auth helper`()
     {
-        val sut = GithubAuthenticator(mock(), mock(), mockAppConfig)
-
-        assertThatThrownBy { sut.validate(TokenCredentials(""), mock()) }
-                .isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("Token cannot be blank")
+        val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
+        sut.validate(TokenCredentials("token"), mock())
+        verify(mockGithubAuthHelper).initialise("token")
+        verify(mockGithubAuthHelper).checkGithubUserCanAuthenticate()
+        verify(mockGithubAuthHelper).getUser()
+        verify(mockGithubAuthHelper).getUserEmail()
     }
 
     @Test
     fun `url attribute is added to profile after successful validation`()
     {
-        val sut = GithubAuthenticator(mock(), mockGithubApiClient, mockAppConfig)
+        val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
@@ -83,7 +69,7 @@ class GithubAuthenticatorTests : TeamcityTests()
     @Test
     fun `profile id is set to email after successful validation`()
     {
-        val sut = GithubAuthenticator(mock(), mockGithubApiClient, mockAppConfig)
+        val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
@@ -94,138 +80,12 @@ class GithubAuthenticatorTests : TeamcityTests()
     @Test
     fun `user is added to database successful validation`()
     {
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
+        val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
 
         val credentials = TokenCredentials("token")
         sut.validate(credentials, mock())
 
         verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
-    }
-
-    @Test
-    fun `BadConfigurationError is thrown if GitHub org does not exist`()
-    {
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("nonsense") }) } doThrow RequestException(mock(), 404)
-        }
-
-        val mockAppConfig = mock<Config> {
-            on { get("auth.github_org") } doReturn "nonsense"
-            on { get("auth.github_team") } doReturn ""
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(BadConfigurationError::class.java)
-                .hasMessageContaining("GitHub org nonsense does not exist")
-
-    }
-
-    @Test
-    fun `BadConfigurationError is thrown if team does not exist`()
-    {
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.endsWith("orgs/orgName/members") }) } doReturn GitHubResponse(mock(),
-                    listOf(mockUser))
-            on { get(argWhere { it.uri.endsWith("orgs/orgName/teams") }) } doReturn GitHubResponse(mock(),
-                    listOf<Team>())
-        }
-
-        val mockAppConfig = mock<Config> {
-            on { get("auth.github_org") } doReturn "orgName"
-            on { get("auth.github_team") } doReturn "teamName"
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(BadConfigurationError::class.java)
-                .hasMessageContaining("GitHub org orgName has no team called teamName")
-    }
-
-    @Test
-    fun `CredentialsException is thrown if user does not belong to GitHub org`()
-    {
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("orgName") }) } doReturn GitHubResponse(mock(),
-                    listOf<User>())
-        }
-
-        val mockAppConfig = mock<Config> {
-            on { get("auth.github_org") } doReturn "orgName"
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("User is not a member of GitHub org orgName or token does not include read:org scope")
-    }
-
-    @Test
-    fun `CredentialsException is thrown if user does not belong to GitHub team`()
-    {
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockUser))
-            on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockTeam))
-            on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
-                    GitHubResponse(mock(), listOf<User>())
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("User is not a member of GitHub team teamName")
-    }
-
-    @Test
-    fun `CredentialsException is thrown if token does not have email scope`()
-    {
-        val userWithNullEmail = mockUser.apply { email = null }
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), userWithNullEmail)
-            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockUser))
-            on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockTeam))
-            on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(userWithNullEmail))
-            on { get(argWhere { it.uri.contains("emails") }) } doThrow RequestException(mock(), 404)
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("GitHub token must include scope user:email")
     }
 
 }

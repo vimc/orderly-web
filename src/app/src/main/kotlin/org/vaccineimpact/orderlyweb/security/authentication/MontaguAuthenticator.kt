@@ -8,6 +8,8 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.util.CommonHelper
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
 
 class MontaguAuthenticator(private val userRepository: UserRepository,
                            private val montaguClient: MontaguAPIClient

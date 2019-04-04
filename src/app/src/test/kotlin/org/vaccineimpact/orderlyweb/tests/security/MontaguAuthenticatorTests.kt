@@ -9,7 +9,7 @@ import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
-import org.vaccineimpact.orderlyweb.security.authentication.MontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
