@@ -35,7 +35,6 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         userRepository.addUser(email, user.login, user.name ?: "", UserSource.GitHub)
 
-        //val email = validate(token)
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
             this.setId(email)

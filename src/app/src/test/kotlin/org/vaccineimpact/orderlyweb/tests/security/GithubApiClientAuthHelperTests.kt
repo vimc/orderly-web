@@ -19,19 +19,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class GithubApiClientAuthHelperTests : TeamcityTests()
 {
-    private val mockGithubApiClient = mock<GitHubClient> {
-        on { get(argWhere { it.uri.contains("user") }) } doReturn
-                GitHubResponse(mock(), mockUser)
-        on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                GitHubResponse(mock(), listOf(mockUser))
-        on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
-                GitHubResponse(mock(), listOf(mockTeam))
-        on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
-                GitHubResponse(mock(), listOf(mockUser))
-        on { get(argWhere { it.uri.contains("emails") }) } doReturn
-               GitHubResponse(mock(), listOf("privateEmail"))
-    }
-
     private val mockTeam = Team().apply {
         name = "teamName"
         id = 1
@@ -46,6 +33,20 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     private val mockAppConfig = mock<Config> {
         on { get("auth.github_org") } doReturn "orgName"
         on { get("auth.github_team") } doReturn "teamName"
+    }
+
+    private val mockGithubApiClient = mock<GitHubClient> {
+        on { get(argWhere { it.uri.contains("/user/emails") }) } doReturn
+                GitHubResponse(mock(), listOf("privateEmail"))
+        on { get(argWhere { it.uri.endsWith("/user") }) } doReturn
+                GitHubResponse(mock(), mockUser)
+        on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
+                GitHubResponse(mock(), listOf(mockUser))
+        on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
+                GitHubResponse(mock(), listOf(mockTeam))
+        on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
+                GitHubResponse(mock(), listOf(mockUser))
+
     }
 
     @Test
@@ -105,7 +106,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on checkGithubUserCanAuthenticate, IllegalStateException thrown if not initialzed`()
+    fun `on checkGithubUserCanAuthenticate, IllegalStateException thrown if not initialized`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
@@ -115,7 +116,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on getUser, IllegalStateException thrown if not initialzed`()
+    fun `on getUser, IllegalStateException thrown if not initialized`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
@@ -125,7 +126,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on getUserEmail, IllegalStateException thrown if not initialzed`()
+    fun `on getUserEmail, IllegalStateException thrown if not initialized`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
@@ -137,7 +138,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     @Test
     fun `on checkGithubUserCanAuthenticate, BadConfigurationError is thrown if GitHub org does not exist`()
     {
-        val mockGithubApiClient = mock<GitHubClient> {
+        val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
             on { get(argWhere { it.uri.contains("nonsense") }) } doThrow RequestException(mock(), 404)
@@ -148,7 +149,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
             on { get("auth.github_team") } doReturn ""
         }
 
-        val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
         sut.initialise("token")
         Assertions.assertThatThrownBy {
@@ -161,7 +162,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     @Test
     fun `on checkGithubUserCanAuthenticate, BadConfigurationError is thrown if team does not exist`()
     {
-        val mockGithubApiClient = mock<GitHubClient> {
+        val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
             on { get(argWhere { it.uri.endsWith("orgs/orgName/members") }) } doReturn GitHubResponse(mock(),
@@ -175,7 +176,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
             on { get("auth.github_team") } doReturn "teamName"
         }
 
-        val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
         sut.initialise("token")
 
@@ -188,7 +189,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     @Test
     fun `on checkGithubUserCanAuthenticate, CredentialsException is thrown if user does not belong to GitHub org`()
     {
-        val mockGithubApiClient = mock<GitHubClient> {
+        val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
             on { get(argWhere { it.uri.contains("orgName") }) } doReturn GitHubResponse(mock(),
@@ -199,7 +200,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
             on { get("auth.github_org") } doReturn "orgName"
         }
 
-        val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
         sut.initialise("token")
 
@@ -212,7 +213,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     @Test
     fun `on checkGithubUserCanAuthenticate, CredentialsException is thrown if user does not belong to GitHub team`()
     {
-        val mockGithubApiClient = mock<GitHubClient> {
+        val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
             on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
@@ -223,7 +224,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
                     GitHubResponse(mock(), listOf<User>())
         }
 
-        val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
         sut.initialise("token")
 
@@ -237,7 +238,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     fun `on getUserEmail, CredentialsException is thrown if email is not public and token does not have email scope`()
     {
         val userWithNullEmail = mockUser.apply { email = null }
-        val mockGithubApiClient = mock<GitHubClient> {
+        val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), userWithNullEmail)
             on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
@@ -249,7 +250,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
             on { get(argWhere { it.uri.contains("emails") }) } doThrow RequestException(mock(), 404)
         }
 
-        val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
         sut.initialise("token")
 
