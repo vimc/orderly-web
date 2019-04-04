@@ -8,10 +8,8 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class GithubWebTests : CustomConfigTests()
 {
-    val url: String = "http://localhost:${AppConfig()["app.port"]}"
-    val loginUrl = "$url/login/"
-
-
+    val url: String = "http://localhost:${AppConfig()["app.port"]}/"
+    val loginUrl = "${url}login/"
 
     @Test
     fun `can redirect when not logged in`()
