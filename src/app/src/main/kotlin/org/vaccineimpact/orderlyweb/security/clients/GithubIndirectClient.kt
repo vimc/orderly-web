@@ -20,8 +20,3 @@ class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secre
         this.setProfileCreator(GithubOAuthProfileCreator(configuration, this, OrderlyUserRepository()))
     }
 }
-
-
-
-
-

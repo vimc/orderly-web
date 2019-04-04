@@ -10,8 +10,8 @@ import org.vaccineimpact.orderlyweb.test_helpers.GithubTokenHeader
 
 class GithubWebTests : CustomConfigTests()
 {
-    val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
-    val url = "$baseUrl/login/"
+    val url: String = "http://localhost:${AppConfig()["app.port"]}"
+    val loginUrl = "$url/login/"
 
     @Test
     fun `can redirect when not logged in`()
