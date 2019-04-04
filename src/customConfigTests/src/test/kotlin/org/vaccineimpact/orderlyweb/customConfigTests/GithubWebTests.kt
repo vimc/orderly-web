@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class GithubWebTests : CustomConfigTests()
 {
-    val url: String = "http://localhost:${AppConfig()["app.port"]}/"
+    val url: String = "http://localhost:8888/"
     val loginUrl = "${url}login/"
 
     @Test
