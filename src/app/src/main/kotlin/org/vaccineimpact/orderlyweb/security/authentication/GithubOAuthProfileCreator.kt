@@ -24,10 +24,11 @@ class GithubOAuthProfileCreator(config: OAuth20Configuration,
     {
         var result = super.retrieveUserProfileFromToken(context, accessToken)
 
-        //Make credentials consistent with those produced by MontaguAuthenticator
+        githubAuthHelper.initialise(accessToken.accessToken)
         val user = githubAuthHelper.getUser()
         val email = githubAuthHelper.getUserEmail()
 
+        //Id of the user profile is the email address
         result.id = email
 
         //Add user to repo if it doesn't already exist
