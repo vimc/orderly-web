@@ -1,11 +1,9 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import com.github.fge.jackson.JsonLoader
-import khttp.post
+import khttp.get
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.test_helpers.GithubTokenHeader
 
 
 class GithubWebTests : CustomConfigTests()
@@ -13,12 +11,14 @@ class GithubWebTests : CustomConfigTests()
     val url: String = "http://localhost:${AppConfig()["app.port"]}"
     val loginUrl = "$url/login/"
 
+
+
     @Test
     fun `can redirect when not logged in`()
     {
         startApp("auth.provider=github")
 
-        val response = post(url)
+        val response = get(url)
 
         Assertions.assertThat(response.statusCode).isEqualTo(302)
     }
