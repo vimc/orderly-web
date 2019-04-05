@@ -12,7 +12,7 @@ class GithubWebTests : CustomConfigTests()
     val loginUrl = "${url}login/"
 
     @Test
-    fun `can redirect when not logged in`()
+    fun `can redirect to Github when not logged in`()
     {
         startApp("auth.provider=github")
 
@@ -25,5 +25,18 @@ class GithubWebTests : CustomConfigTests()
         val match = "client_id=([^&]*)".toRegex().find(response.url)
         Assertions.assertThat(match!!.groups[1]!!.value).isEqualTo(AppConfig()["auth.github_key"])
 
+    }
+
+    @Test
+    fun `login with invalid code and secret fails`()
+    {
+        startApp("auth.provider=github")
+
+        //This spoofs the callback by github after user has provided valid credentials
+        val fullUrl = "${loginUrl}?code=fake&secret=fake"
+
+        val response = get(fullUrl)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
     }
 }
