@@ -4,7 +4,7 @@ import org.pac4j.http.client.direct.CookieClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
-import org.vaccineimpact.orderlyweb.security.authorization.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 
 // This client receives the token as TokenCredentials and stores the result as JwtProfile
 class JWTCookieClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, CookieClient(
@@ -14,7 +14,7 @@ class JWTCookieClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, 
 {
     override fun clientInit()
     {
-        setAuthorizationGenerator(AuthorizationRepository())
+        setAuthorizationGenerator(OrderlyAuthorizationGenerator())
         super.clientInit()
     }
 

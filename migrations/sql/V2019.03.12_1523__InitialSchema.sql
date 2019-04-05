@@ -14,9 +14,9 @@ PRIMARY KEY ("id")
 );
 
 CREATE TABLE "orderlyweb_user_group_user" (
-"user"  TEXT NOT NULL,
+"email"  TEXT NOT NULL,
 "user_group" TEXT NOT NULL,
-FOREIGN KEY ("user") REFERENCES "orderlyweb_user" ("username") ,
+FOREIGN KEY ("email") REFERENCES "orderlyweb_user" ("email") ,
 FOREIGN KEY ("user_group") REFERENCES "orderlyweb_user_group" ("id")
 );
 
@@ -26,10 +26,9 @@ PRIMARY KEY ("id")
 );
 
 CREATE TABLE "orderlyweb_user_group_permission" (
-"id" SERIAL ,
+"id" INTEGER PRIMARY KEY NOT NULL,
 "user_group" TEXT NOT NULL,
 "permission" TEXT NOT NULL,
-PRIMARY KEY ("id") ,
 FOREIGN KEY ("user_group") REFERENCES "orderlyweb_user_group" ("id") ,
 FOREIGN KEY ("permission") REFERENCES "orderlyweb_permission" ("id")
 );

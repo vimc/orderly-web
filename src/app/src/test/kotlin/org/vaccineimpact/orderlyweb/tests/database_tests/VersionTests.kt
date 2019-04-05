@@ -85,7 +85,7 @@ class VersionTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `reviewer can get unpublished verion details`()
+    fun `reviewer can get unpublished version details`()
     {
         insertReport("test", "version1", published = false)
 
