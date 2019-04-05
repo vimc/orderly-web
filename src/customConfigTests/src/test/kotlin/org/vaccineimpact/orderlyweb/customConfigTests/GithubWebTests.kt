@@ -19,9 +19,13 @@ class GithubWebTests : CustomConfigTests()
         val response = get(url, allowRedirects = false)
 
         Assertions.assertThat(response.statusCode).isEqualTo(302)
-        Assertions.assertThat(response.url).startsWith("https://github.com/login")
 
-        val match = "client_id=([^&]*)".toRegex().find(response.url)
+        val redirectUrl = response.headers["Location"]!!
+
+        //check redirecting to github login, with correct gitub app client id
+        Assertions.assertThat(redirectUrl).startsWith("https://github.com/login")
+
+        val match = "client_id=([^&]*)".toRegex().find(redirectUrl)
         Assertions.assertThat(match!!.groups[1]!!.value).isEqualTo(AppConfig()["auth.github_key"])
 
     }
@@ -36,6 +40,6 @@ class GithubWebTests : CustomConfigTests()
 
         val response = get(fullUrl, allowRedirects=false)
 
-        Assertions.assertThat(response.statusCode).isEqualTo(500)
+        Assertions.assertThat(response.statusCode).isNotEqualTo(200)
     }
 }
