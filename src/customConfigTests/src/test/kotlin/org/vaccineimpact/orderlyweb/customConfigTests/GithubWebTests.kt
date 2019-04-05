@@ -23,7 +23,7 @@ class GithubWebTests : CustomConfigTests()
         Assertions.assertThat(response.url).startsWith("https://github.com/login")
 
         val match = "client_id=([^&]*)".toRegex().find(response.url)
-        Assertions.assertThat(match!!.groups[1]).isEqualTo(AppConfig()["auth.github_key"])
+        Assertions.assertThat(match!!.groups[1]!!.value).isEqualTo(AppConfig()["auth.github_key"])
 
     }
 }
