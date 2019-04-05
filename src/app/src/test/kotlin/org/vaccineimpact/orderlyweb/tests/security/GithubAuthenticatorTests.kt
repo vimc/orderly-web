@@ -31,16 +31,20 @@ class GithubAuthenticatorTests : TeamcityTests()
         id = 1
     }
 
+    private val mockOrg = User().apply {
+        login = "orgName"
+    }
+
     private val mockAppConfig = mock<Config> {
         on { get("auth.github_org") } doReturn "orgName"
         on { get("auth.github_team") } doReturn "teamName"
     }
 
     private val mockGithubApiClient = mock<GitHubClient> {
-        on { get(argWhere { it.uri.contains("user") }) } doReturn
+        on { get(argWhere { it.uri.endsWith("user") }) } doReturn
                 GitHubResponse(mock(), mockUser)
-        on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                GitHubResponse(mock(), listOf(mockUser))
+        on { get(argWhere { it.uri.contains("user/orgs") }) } doReturn
+                GitHubResponse(mock(), listOf(mockOrg))
         on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
                 GitHubResponse(mock(), listOf(mockTeam))
         on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
@@ -100,31 +104,6 @@ class GithubAuthenticatorTests : TeamcityTests()
         sut.validate(credentials, mock())
 
         verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
-    }
-
-    @Test
-    fun `BadConfigurationError is thrown if GitHub org does not exist`()
-    {
-        val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
-                    GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("nonsense") }) } doThrow RequestException(mock(), 404)
-        }
-
-        val mockAppConfig = mock<Config> {
-            on { get("auth.github_org") } doReturn "nonsense"
-            on { get("auth.github_team") } doReturn ""
-        }
-
-        val sut = GithubAuthenticator(mockUserData, mockGithubApiClient, mockAppConfig)
-
-        val credentials = TokenCredentials("token")
-
-        assertThatThrownBy {
-            sut.validate(credentials, mock())
-        }.isInstanceOf(BadConfigurationError::class.java)
-                .hasMessageContaining("GitHub org nonsense does not exist")
-
     }
 
     @Test
