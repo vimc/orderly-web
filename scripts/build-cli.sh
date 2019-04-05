@@ -30,3 +30,4 @@ docker run --rm \
     -v $PWD/demo:/api/src/userCLI/demo \
     --network=host \
     orderly-web-cli-build
+

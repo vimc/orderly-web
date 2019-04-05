@@ -15,6 +15,7 @@ mainClassName = "org.vaccineimpact.orderlyweb.userCLI.AppKt"
 
 dependencies {
     compile project(":app")
+    compile "com.offbytwo:docopt:0.6.0.20150202"
 
     testCompile "org.assertj:assertj-core:3.6.2"
     testCompile "org.mockito:mockito-core:2.+"

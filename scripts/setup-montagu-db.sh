@@ -6,8 +6,8 @@ docker run --rm --network=$NETWORK \
                      migrate
 
 here=$(dirname $0)
-$here/cli.sh add "Test User" test.user \
+$here/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
-$here/cli.sh addRole test.user user
-$here/cli.sh addRole test.user admin
+$here/montagu-cli.sh addRole test.user user
+$here/montagu-cli.sh addRole test.user admin
