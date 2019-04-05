@@ -3,4 +3,5 @@ include 'app',
         'databaseInterface',
         'generateDatabaseInterface',
         'testHelpers',
-        'customConfigTests'
+        'customConfigTests',
+        'userCLI'
