@@ -7,8 +7,10 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.sql.Timestamp
+import kotlin.math.abs
 import kotlin.streams.asSequence
 
 data class ChangelogWithPublicVersion
@@ -179,8 +181,7 @@ fun insertUser(email: String,
 
 fun giveUserGroupPermission(groupName: String,
                             permissionName: String,
-                            scope: Scope,
-                            addPermission: Boolean)
+                            scope: Scope)
 {
     JooqContext().use {
 
@@ -188,14 +189,16 @@ fun giveUserGroupPermission(groupName: String,
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                 .singleOrNull()?.into(Int::class.java) ?: 0
 
-        if (addPermission)
+
+        var abstractId = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                .from(ORDERLYWEB_USER_GROUP_PERMISSION)
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permissionName))
+                .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
+                .fetch()
+                .singleOrNull()?.into(Int::class.java)
+
+        if (abstractId == null)
         {
-            it.dsl.insertInto(ORDERLYWEB_PERMISSION)
-                    .set(ORDERLYWEB_PERMISSION.ID, permissionName)
-                    .onDuplicateKeyIgnore()
-                    .execute()
-
-
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_PERMISSION)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.ID, lastId + 1)
                     .set(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION, permissionName)
@@ -204,7 +207,7 @@ fun giveUserGroupPermission(groupName: String,
                     .execute()
         }
 
-        val id = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+        abstractId = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                 .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permissionName))
                 .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
@@ -214,14 +217,14 @@ fun giveUserGroupPermission(groupName: String,
         if (scope is Scope.Global)
         {
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
-                    .set(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, id)
+                    .set(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, abstractId)
                     .onDuplicateKeyIgnore()
                     .execute()
         }
         if (scope.databaseScopePrefix == "report")
         {
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
-                    .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID, id)
+                    .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID, abstractId)
                     .set(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT, scope.databaseScopeId)
                     .onDuplicateKeyIgnore()
                     .execute()
@@ -229,7 +232,7 @@ fun giveUserGroupPermission(groupName: String,
         if (scope.databaseScopePrefix == "version")
         {
             it.dsl.insertInto(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
-                    .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID, id)
+                    .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID, abstractId)
                     .set(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION, scope.databaseScopeId)
                     .onDuplicateKeyIgnore()
                     .execute()
