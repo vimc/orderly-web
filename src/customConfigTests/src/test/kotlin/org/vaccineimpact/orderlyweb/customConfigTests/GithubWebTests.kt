@@ -21,7 +21,9 @@ class GithubWebTests : CustomConfigTests()
         //khttp does redirection for you so we expect the response from github, not the original 302
         Assertions.assertThat(response.statusCode).isEqualTo(200)
         Assertions.assertThat(response.url).startsWith("https://github.com/login")
-        Assertions.assertThat(response.request.params["client_id"]).isEqualTo(AppConfig()["auth.github_key"])
+
+        val match = "client_id=([^&]*)".toRegex().find(response.url)
+        Assertions.assertThat(match!!.groups[1]).isEqualTo(AppConfig()["auth.github_key"])
 
     }
 }
