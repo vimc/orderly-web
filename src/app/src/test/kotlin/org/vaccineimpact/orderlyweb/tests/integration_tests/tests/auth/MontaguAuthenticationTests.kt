@@ -40,7 +40,8 @@ class MontaguAuthenticationTests : IntegrationTest()
         //logout
         val cookie = loginResponse.headers["Set-Cookie"]
         khttp.get("${RequestHelper().webBaseUrl}/logout",
-                headers = mapOf("Cookie" to cookie!!))
+                headers = mapOf("Cookie" to cookie!!),
+                allowRedirects = false)
 
         //after logout, user should be redirected when attempt to access base url
         val response = khttp.get(RequestHelper()
