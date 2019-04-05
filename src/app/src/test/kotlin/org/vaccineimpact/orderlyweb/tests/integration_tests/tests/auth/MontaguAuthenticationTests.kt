@@ -30,4 +30,21 @@ class MontaguAuthenticationTests : IntegrationTest()
 
         Assertions.assertThat(response.statusCode).isEqualTo(200)
     }
+
+    @Test
+    fun `user can logout`()
+    {
+        //login
+        val loginResponse = RequestHelper().getWithMontaguCookie("/login")
+
+        //logout
+        val cookie = loginResponse.headers["Set-Cookie"]
+        khttp.get("${RequestHelper().webBaseUrl}/logout",
+                headers = mapOf("Cookie" to cookie!!))
+
+        //after logout, user should be redirected when attempt to access base url
+        val response = khttp.get(RequestHelper()
+                .webBaseUrl, allowRedirects = false)
+        Assertions.assertThat(response.statusCode).isEqualTo(302)
+    }
 }
