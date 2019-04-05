@@ -16,10 +16,9 @@ class GithubWebTests : CustomConfigTests()
     {
         startApp("auth.provider=github")
 
-        val response = get(url)
+        val response = get(url, allowRedirects = false)
 
-        //khttp does redirection for you so we expect the response from github, not the original 302
-        Assertions.assertThat(response.statusCode).isEqualTo(200)
+        Assertions.assertThat(response.statusCode).isEqualTo(302)
         Assertions.assertThat(response.url).startsWith("https://github.com/login")
 
         val match = "client_id=([^&]*)".toRegex().find(response.url)
@@ -35,8 +34,8 @@ class GithubWebTests : CustomConfigTests()
         //This spoofs the callback by github after user has provided valid credentials
         val fullUrl = "${loginUrl}?code=fake&secret=fake"
 
-        val response = get(fullUrl)
+        val response = get(fullUrl, allowRedirects=false)
 
-        Assertions.assertThat(response.statusCode).isNotEqualTo(200)
+        Assertions.assertThat(response.statusCode).isEqualTo(500)
     }
 }
