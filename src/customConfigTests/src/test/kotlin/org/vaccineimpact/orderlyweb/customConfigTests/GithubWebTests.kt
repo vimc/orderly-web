@@ -5,7 +5,6 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
-
 class GithubWebTests : CustomConfigTests()
 {
     val url: String = "http://localhost:${AppConfig()["app.port"]}/"
