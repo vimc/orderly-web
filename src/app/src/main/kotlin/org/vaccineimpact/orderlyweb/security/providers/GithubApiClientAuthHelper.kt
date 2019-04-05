@@ -63,7 +63,6 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         return email
     }
 
-
     override fun getUser(): User
     {
         checkInitialised()
