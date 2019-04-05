@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class GithubWebTests : CustomConfigTests()
 {
-    val url: String = "http://localhost:8888/"
+    val url: String = "http://localhost:${AppConfig()["app.port"]}/"
     val loginUrl = "${url}login/"
 
     @Test
@@ -18,8 +18,10 @@ class GithubWebTests : CustomConfigTests()
 
         val response = get(url)
 
-        Assertions.assertThat(response.url).isEqualTo("url")
-        Assertions.assertThat(response.text).isEqualTo("")
-        Assertions.assertThat(response.statusCode).isEqualTo(302)
+        //khttp does redirection for you so we expect the response from github, not the original 302
+        Assertions.assertThat(response.statusCode).isEqualTo(200)
+        Assertions.assertThat(response.url).startsWith("https://github.com/login")
+        Assertions.assertThat(response.request.params["client_id"]).isEqualTo(AppConfig()["auth.github_key"])
+
     }
 }
