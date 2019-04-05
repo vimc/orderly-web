@@ -37,6 +37,6 @@ class GithubWebTests : CustomConfigTests()
 
         val response = get(fullUrl)
 
-        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        Assertions.assertThat(response.statusCode).isNotEqualTo(200)
     }
 }
