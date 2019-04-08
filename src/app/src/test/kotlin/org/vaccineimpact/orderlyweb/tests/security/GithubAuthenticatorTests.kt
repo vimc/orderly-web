@@ -110,10 +110,10 @@ class GithubAuthenticatorTests : TeamcityTests()
     fun `BadConfigurationError is thrown if team does not exist`()
     {
         val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
+            on { get(argWhere { it.uri.endsWith("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.endsWith("orgs/orgName/members") }) } doReturn GitHubResponse(mock(),
-                    listOf(mockUser))
+            on { get(argWhere { it.uri.contains("user/orgs") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockOrg))
             on { get(argWhere { it.uri.endsWith("orgs/orgName/teams") }) } doReturn GitHubResponse(mock(),
                     listOf<Team>())
         }
@@ -161,10 +161,10 @@ class GithubAuthenticatorTests : TeamcityTests()
     fun `CredentialsException is thrown if user does not belong to GitHub team`()
     {
         val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
+            on { get(argWhere { it.uri.endsWith("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockUser))
+            on { get(argWhere { it.uri.contains("user/orgs") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockOrg))
             on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
                     GitHubResponse(mock(), listOf(mockTeam))
             on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
@@ -186,10 +186,10 @@ class GithubAuthenticatorTests : TeamcityTests()
     {
         val userWithNullEmail = mockUser.apply { email = null }
         val mockGithubApiClient = mock<GitHubClient> {
-            on { get(argWhere { it.uri.contains("user") }) } doReturn
+            on { get(argWhere { it.uri.endsWith("user") }) } doReturn
                     GitHubResponse(mock(), userWithNullEmail)
-            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockUser))
+            on { get(argWhere { it.uri.contains("user/orgs") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockOrg))
             on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
                     GitHubResponse(mock(), listOf(mockTeam))
             on { get(argWhere { it.uri.contains("teams/1/members") }) } doReturn
