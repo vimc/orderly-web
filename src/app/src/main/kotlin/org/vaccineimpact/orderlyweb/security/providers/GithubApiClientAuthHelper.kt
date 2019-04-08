@@ -13,12 +13,12 @@ import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 
 interface GithubAuthHelper
 {
-    fun initialise(token: String)
+    fun authenticate(token: String)
 
     //Checks that the Github user associated with the given token is permitted to authenticate with OrderlyWeb by
     //getting org/team membership for the user from Github API and comparing with permitted values in AppConfig.
     //Throws CredentialsException if check fails
-    fun checkGithubUserCanAuthenticate()
+    fun checkGithubUserHasOrderlyWebAccess()
 
     fun getUserEmail(): String
 
@@ -30,15 +30,15 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 {
     private var user: User? = null
 
-    override fun initialise(token: String)
+    override fun authenticate(token: String)
     {
         setClientToken(token)
         user = getGitHubUser()
     }
 
-    override fun checkGithubUserCanAuthenticate()
+    override fun checkGithubUserHasOrderlyWebAccess()
     {
-        checkInitialised()
+        checkAuthenticated()
 
         val githubOrg = appConfig["auth.github_org"]
         val teamName = appConfig["auth.github_team"]
@@ -55,7 +55,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     override fun getUserEmail(): String
     {
-        checkInitialised()
+        checkAuthenticated()
 
         // If the GitHub user has no public email set, we need to make an extra call to get it
         val email = user!!.email ?: getEmailForUser()
@@ -65,14 +65,14 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
 
     override fun getUser(): User
     {
-        checkInitialised()
+        checkAuthenticated()
         return user!!
     }
 
-    private fun checkInitialised()
+    private fun checkAuthenticated()
     {
         if (user == null)
-            throw IllegalStateException("User has not been initialized")
+            throw IllegalStateException("User has not been authenticated")
     }
 
     private fun setClientToken(token: String)

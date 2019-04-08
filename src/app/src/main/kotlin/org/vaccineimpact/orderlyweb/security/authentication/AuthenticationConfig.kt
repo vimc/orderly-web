@@ -11,15 +11,14 @@ import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 class AuthenticationConfig
 {
     companion object {
-        fun getConfiguredProvider(): AuthenticationProvider {
+
+        private fun getConfiguredProvider(): AuthenticationProvider {
             var configuredValue = AppConfig()["auth.provider"]
             return when (configuredValue.toLowerCase()) {
                 "github" -> AuthenticationProvider.Github
                 "montagu" -> AuthenticationProvider.Montagu
-                "none" -> AuthenticationProvider.None // For testing purposes, or may be instances which don't require any auth
             else -> throw UnknownAuthenticationProvider(configuredValue)
             }
-
         }
 
         fun getGithubOAuthKey(): String {
@@ -28,18 +27,14 @@ class AuthenticationConfig
         }
 
         fun getGithubOAuthSecret(): String {
-            //TODO: Making this hardcoded to the test Github OAuth account client for now, but this should be taken from the vault,
-            //not from config checked into out repo. However, it would be fine for the value to come from config
-            //which is injected during deployment (we assume that the config on the server is secure), we just need
-            //to make sure we don't store our production Montagu Github OAuth app secret in the repo!
-            return "ef8550f711b65e0ab1457fe8470b2df03197b892"
+            return AppConfig()["auth.github_secret"]
         }
 
         fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
         {
             return  when (getConfiguredProvider()) {
                 AuthenticationProvider.Github -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
-                else -> MontaguIndirectClient()
+                AuthenticationProvider.Montagu -> MontaguIndirectClient()
             }
         }
     }
@@ -48,8 +43,7 @@ class AuthenticationConfig
 enum class AuthenticationProvider
 {
     Montagu,
-    Github,
-    None
+    Github
 }
 
 class UnknownAuthenticationProvider(val provider: String) : Exception("Application is configured to use unknown authentication provider '$provider'")

@@ -3,17 +3,11 @@ package org.vaccineimpact.orderlyweb.tests.security
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.eclipse.egit.github.core.Team
 import org.eclipse.egit.github.core.User
-import org.eclipse.egit.github.core.client.GitHubClient
-import org.eclipse.egit.github.core.client.GitHubResponse
-import org.eclipse.egit.github.core.client.RequestException
 import org.junit.Test
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.UserRepository
-import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
@@ -49,8 +43,8 @@ class GithubAuthenticatorTests : TeamcityTests()
     {
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
         sut.validate(TokenCredentials("token"), mock())
-        verify(mockGithubAuthHelper).initialise("token")
-        verify(mockGithubAuthHelper).checkGithubUserCanAuthenticate()
+        verify(mockGithubAuthHelper).authenticate("token")
+        verify(mockGithubAuthHelper).checkGithubUserHasOrderlyWebAccess()
         verify(mockGithubAuthHelper).getUser()
         verify(mockGithubAuthHelper).getUserEmail()
     }

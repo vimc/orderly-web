@@ -23,8 +23,8 @@ class GithubOAuthAuthenticator(config: OAuth20Configuration,
         val token = credentials.accessToken.accessToken
 
         //Check github user is member of org/team allowed to access OrderlyWeb
-        githubAuthHelper.initialise(token)
-        githubAuthHelper.checkGithubUserCanAuthenticate()
+        githubAuthHelper.authenticate(token)
+        githubAuthHelper.checkGithubUserHasOrderlyWebAccess()
 
     }
 

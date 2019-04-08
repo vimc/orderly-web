@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
-import org.eclipse.egit.github.core.User
 import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.oauth.OAuth20Service
 import com.nhaarman.mockito_kotlin.*
@@ -42,7 +41,7 @@ class GithubOAuthAuthenticatorTests : TeamcityTests()
 
         sut.validate(mockCredentials, mock())
 
-        verify(mockGithubAuthHelper).initialise("1234567")
-        verify(mockGithubAuthHelper).checkGithubUserCanAuthenticate()
+        verify(mockGithubAuthHelper).authenticate("1234567")
+        verify(mockGithubAuthHelper).checkGithubUserHasOrderlyWebAccess()
     }
 }

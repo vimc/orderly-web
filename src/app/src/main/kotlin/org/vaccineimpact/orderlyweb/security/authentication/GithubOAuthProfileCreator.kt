@@ -24,7 +24,7 @@ class GithubOAuthProfileCreator(config: OAuth20Configuration,
     {
         var result = super.retrieveUserProfileFromToken(context, accessToken)
 
-        githubAuthHelper.initialise(accessToken.accessToken)
+        githubAuthHelper.authenticate(accessToken.accessToken)
         val user = githubAuthHelper.getUser()
         val email = githubAuthHelper.getUserEmail()
 

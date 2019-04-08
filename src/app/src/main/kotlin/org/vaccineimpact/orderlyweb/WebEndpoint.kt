@@ -37,25 +37,21 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        val authenticationProvider = AuthenticationConfig.getConfiguredProvider()
+        val client = AuthenticationConfig.getAuthenticationIndirectClient()
 
-        if (authenticationProvider != AuthenticationProvider.None)
-        {
-            val client = AuthenticationConfig.getAuthenticationIndirectClient()
+        val configFactory = WebSecurityConfigFactory(
+                client,
+                this.requiredPermissions.toSet())
 
-            val configFactory = WebSecurityConfigFactory(
-                    client,
-                    this.requiredPermissions.toSet())
+        val config = configFactory.build()
 
-            val config = configFactory.build()
+        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                config,
+                client.javaClass.simpleName,
+                config.authorizers.map { it.key }.joinToString(","),
+                SkipOptionsMatcher.name
+        ))
 
-            Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                    config,
-                    client.javaClass.simpleName,
-                    config.authorizers.map { it.key }.joinToString(","),
-                    SkipOptionsMatcher.name
-            ))
-        }
     }
 
 }

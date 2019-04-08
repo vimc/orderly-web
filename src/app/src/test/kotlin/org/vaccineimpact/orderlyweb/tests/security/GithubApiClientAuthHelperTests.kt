@@ -9,11 +9,9 @@ import org.eclipse.egit.github.core.client.GitHubResponse
 import org.eclipse.egit.github.core.client.RequestException
 import org.junit.Assert
 import org.junit.Test
-import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
-import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
@@ -54,7 +52,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
 
-        Assertions.assertThatThrownBy { sut.initialise("") }
+        Assertions.assertThatThrownBy { sut.authenticate("") }
                 .isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("Token cannot be blank")
     }
@@ -63,7 +61,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     fun `can initialise`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
-        sut.initialise("token")
+        sut.authenticate("token")
         verify(mockGithubApiClient).setOAuth2Token("token")
     }
 
@@ -72,15 +70,15 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         //default mock values should succeed
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
-        sut.initialise("token")
-        sut.checkGithubUserCanAuthenticate()
+        sut.authenticate("token")
+        sut.checkGithubUserHasOrderlyWebAccess()
     }
 
     @Test
     fun `can getUser`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
-        sut.initialise("token")
+        sut.authenticate("token")
         val result = sut.getUser()
         Assert.assertSame(mockUser, result)
     }
@@ -90,7 +88,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         mockUser.email = "publicEmail"
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
-        sut.initialise("token")
+        sut.authenticate("token")
         val result = sut.getUserEmail()
         Assert.assertEquals("publicEmail", result)
     }
@@ -100,7 +98,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         //defaults should get the sut to find null email in user so fetch details from client
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
-        sut.initialise("token")
+        sut.authenticate("token")
         val result = sut.getUserEmail()
         Assert.assertEquals("privateEmail", result)
     }
@@ -110,7 +108,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserCanAuthenticate()
+            sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("User has not been initialized")
     }
@@ -151,9 +149,9 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
-        sut.initialise("token")
+        sut.authenticate("token")
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserCanAuthenticate()
+            sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(BadConfigurationError::class.java)
                 .hasMessageContaining("GitHub org nonsense does not exist")
 
@@ -178,10 +176,10 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
-        sut.initialise("token")
+        sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserCanAuthenticate()
+            sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(BadConfigurationError::class.java)
                 .hasMessageContaining("GitHub org orgName has no team called teamName")
     }
@@ -202,10 +200,10 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
-        sut.initialise("token")
+        sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserCanAuthenticate()
+            sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub org orgName or token does not include read:org scope")
     }
@@ -226,10 +224,10 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
-        sut.initialise("token")
+        sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserCanAuthenticate()
+            sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub team teamName")
     }
@@ -252,7 +250,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
 
-        sut.initialise("token")
+        sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
             sut.getUserEmail()

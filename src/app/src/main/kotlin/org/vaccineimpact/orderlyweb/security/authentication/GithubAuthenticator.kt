@@ -27,8 +27,8 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         val token = credentials.token
 
-        githubAuthHelper.initialise(token)
-        githubAuthHelper.checkGithubUserCanAuthenticate()
+        githubAuthHelper.authenticate(token)
+        githubAuthHelper.checkGithubUserHasOrderlyWebAccess()
 
         val user = githubAuthHelper.getUser()
         val email = githubAuthHelper.getUserEmail()

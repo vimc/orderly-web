@@ -67,7 +67,7 @@ class GithubOAuthProfileCreatorTests : TeamcityTests()
 
         sut.create(mockCredentials, mock()) //This calls the overridden retrieveUserProfileFromToken method
 
-        verify(mockGithubAuthHelper).initialise("1234567")
+        verify(mockGithubAuthHelper).authenticate("1234567")
         verify(mockGithubAuthHelper).getUser()
         verify(mockGithubAuthHelper).getUserEmail()
         verify(mockUserRepo).addUser("email", "user.name", "full name", UserSource.GitHub)
