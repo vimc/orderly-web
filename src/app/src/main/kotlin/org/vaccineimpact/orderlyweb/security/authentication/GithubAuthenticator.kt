@@ -88,9 +88,21 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
     private fun currentUserBelongsToOrg(githubOrg: String): Boolean
     {
-        val userService = OrganizationService(githubApiClient)
-        val orgs = userService.getOrganizations()
-        return orgs.map{ it.login }.contains(githubOrg)
+        try
+        {
+            val userService = OrganizationService(githubApiClient)
+            val orgs = userService.getOrganizations()
+            return orgs.map{ it.login }.contains(githubOrg)
+        }
+        catch (e: RequestException)
+        {
+            if (e.status == 403)
+            {
+                throw CredentialsException("GitHub token must include scope read:org")
+            }
+            else throw e
+        }
+
     }
 
     private fun userBelongsToTeam(githubOrg: String, teamName: String, user: User): Boolean
