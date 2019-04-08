@@ -107,7 +107,6 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
     private fun getAllPermissions(db: JooqContext, abstractPermissions: TempTable): List<ReifiedPermission>
     {
-
         val globalPermissions = mapGlobalPermissions(
                 db.dsl.withTemporaryTable(abstractPermissions)
                         .select(abstractPermissions.field<String>(PERMISSION_NAME))

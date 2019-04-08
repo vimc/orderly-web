@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 
 fun addUser(options: Map<String, Any>)
 {
-    val userEmail = options["<name>"].toString()
+    val userEmail = options["<email>"].toString()
     try
     {
         if (!userExists(userEmail))
