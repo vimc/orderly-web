@@ -12,3 +12,14 @@ to the database.
 or to test locally:
 1. `./scripts/generate-test-data.sh` to create an orderly db in the top level directory
 1. `./scripts/cli.sh add-user test.user@example.com`
+
+### Add permission to user group
+
+    image=docker.montagu.dide.ic.ac.uk:5000/orderly-web-cli:master
+    docker run \
+        -v orderly_volume:/orderly \
+        $image add-permission test.user@example.com */reports.read
+
+or to test locally:
+1. `./scripts/generate-test-data.sh` to create an orderly db in the top level directory
+1. `./scripts/cli.sh add-permission test.user@example.com */reports.read`
