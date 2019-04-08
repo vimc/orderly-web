@@ -56,7 +56,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
 
         if (!githubOrg.isEmpty() && !currentUserBelongsToOrg(githubOrg))
         {
-            throw CredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
+            throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
         if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user))
         {

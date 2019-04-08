@@ -154,7 +154,7 @@ class GithubAuthenticatorTests : TeamcityTests()
         assertThatThrownBy {
             sut.validate(credentials, mock())
         }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("User is not a member of GitHub org orgName or token does not include read:org scope")
+                .hasMessageContaining("User is not a member of GitHub org orgName")
     }
 
     @Test
