@@ -17,6 +17,8 @@ import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
 import org.pac4j.sparkjava.CallbackRoute
+import org.pac4j.core.config.Config
+import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
@@ -34,7 +36,10 @@ class Router(freeMarkerConfig: Configuration)
     init
     {
         mapNotFound()
-        mapLoginCallback()
+        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
+                .build()
+        mapLoginCallback(config)
+        mapLogoutCallback(config)
     }
 
     private fun transform(x: Any) = when (x)
@@ -48,14 +53,22 @@ class Router(freeMarkerConfig: Configuration)
         urls.addAll(routeConfig.endpoints.map { mapEndpoint(it, urlBase) })
     }
 
-    private fun mapLoginCallback()
+    private fun mapLoginCallback(config: Config)
     {
-        val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf())
-                .build()
         val loginCallback = CallbackRoute(config)
         val url = "login"
         Spark.get(url, loginCallback)
         Spark.get("$url/", loginCallback)
+    }
+
+    private fun mapLogoutCallback(config: Config)
+    {
+        val logoutCallback = LogoutRoute(config)
+        logoutCallback.destroySession = true
+        logoutCallback.defaultUrl = "/"
+        val url = "logout"
+        Spark.get(url, logoutCallback)
+        Spark.get("$url/", logoutCallback)
     }
 
     private fun mapNotFound()
