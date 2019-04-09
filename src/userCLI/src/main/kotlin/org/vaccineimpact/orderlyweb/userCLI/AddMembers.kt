@@ -9,19 +9,12 @@ fun addMembers(options: Map<String, Any>)
     val emails = options["<email>"] as List<*>
     try
     {
-        val userRepo = OrderlyUserRepository()
         val authRepo = OrderlyAuthorizationRepository()
         emails.map {
             val email = it.toString()
-            if (userRepo.getUser(email) == null)
-            {
-                println("User with email '$email' does not exist; no changes made")
-            }
-            else
-            {
-                authRepo.ensureGroupHasMember(group, email)
-                println("Added user with email '$email' to user group '$group'")
-            }
+
+            authRepo.ensureGroupHasMember(group, email)
+            println("Added user with email '$email' to user group '$group'")
         }
     }
     catch (e: Exception)
