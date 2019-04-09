@@ -20,18 +20,15 @@ fun main(args: Array<String>)
     val grant = options["grant"] as Boolean
     try
     {
-        if (addUser)
+        val result = when
         {
-            addUser(options)
+            addUser -> addUser(options)
+            grant -> grantPermissions(options)
+            addGroup -> addGroup()
+            else -> ""
         }
-        else if (grant)
-        {
-            grantPermissions(options)
-        }
-        else if (addGroup)
-        {
-            addGroup()
-        }
+
+        print(result)
     }
     catch (e: Exception)
     {
@@ -40,7 +37,7 @@ fun main(args: Array<String>)
     }
 }
 
-fun addGroup()
+fun addGroup(): String
 {
-    println("Coming soon!")
+    return "Coming soon!"
 }
