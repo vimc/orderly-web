@@ -27,7 +27,7 @@ fun addUser(options: Map<String, Any>)
     }
 }
 
-private fun userExists(email: String): Boolean
+fun userExists(email: String): Boolean
 {
     JooqContext().use {
         return it.dsl.fetchOne(Tables.ORDERLYWEB_USER, Tables.ORDERLYWEB_USER.EMAIL.eq(email)) != null

@@ -9,7 +9,8 @@ OrderlyWeb User CLI
 Usage:
     app add-user <email>
     app add-group <name>
-    app add-permission <group> <permission>...
+    app add-members <group> <email>...
+    app grant <group> <permission>...
 """
 
 fun main(args: Array<String>)
@@ -17,7 +18,8 @@ fun main(args: Array<String>)
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
     val addGroup = options["add-group"] as Boolean
-    val addPermission = options["add-permission"] as Boolean
+    val addMembers = options["add-members"] as Boolean
+    val addPermission = options["grant"] as Boolean
     try
     {
         if (addUser)
@@ -26,11 +28,15 @@ fun main(args: Array<String>)
         }
         else if (addPermission)
         {
-            addPermissionToGroup(options)
+            addPermissionsToGroup(options)
         }
         else if (addGroup)
         {
-            addGroup()
+            addUserGroup(options)
+        }
+        else if (addMembers)
+        {
+            addMembers(options)
         }
     }
     catch (e: Exception)
@@ -38,9 +44,4 @@ fun main(args: Array<String>)
         println(e.message)
         exitProcess(-1)
     }
-}
-
-fun addGroup()
-{
-    println("Coming soon!")
 }

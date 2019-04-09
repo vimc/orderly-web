@@ -1,19 +1,16 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
-import org.pac4j.core.authorization.generator.AuthorizationGenerator
-import org.pac4j.core.context.WebContext
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 
 interface AuthorizationRepository
 {
     fun createUserGroup(userGroup: String)
+    fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
 }
@@ -31,6 +28,13 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     .apply {
                         this.id = userGroup
                     }.store()
+        }
+    }
+
+    override fun ensureGroupHasMember(userGroup: String, email: String)
+    {
+        JooqContext().use {
+
         }
     }
 
