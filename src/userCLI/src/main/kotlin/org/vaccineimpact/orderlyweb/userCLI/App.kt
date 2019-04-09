@@ -19,16 +19,17 @@ fun main(args: Array<String>)
     val addUser = options["add-user"] as Boolean
     val addGroup = options["add-group"] as Boolean
     val addMembers = options["add-members"] as Boolean
-    val addPermission = options["grant"] as Boolean
+    val addPermissions = options["grant"] as Boolean
+
     try
     {
         if (addUser)
         {
             addUser(options)
         }
-        else if (addPermission)
+        else if (addPermissions)
         {
-            addPermissionsToGroup(options)
+            grantPermissions(options)
         }
         else if (addGroup)
         {

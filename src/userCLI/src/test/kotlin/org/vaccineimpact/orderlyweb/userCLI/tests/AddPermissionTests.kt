@@ -7,8 +7,9 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.userCLI.addPermissionsToGroup
 import org.vaccineimpact.orderlyweb.userCLI.addUser
+import org.vaccineimpact.orderlyweb.userCLI.grantPermissions
+
 
 class AddPermissionTests : CleanDatabaseTests()
 {
@@ -17,8 +18,8 @@ class AddPermissionTests : CleanDatabaseTests()
     {
         insertReport("testreport", "v1")
         addUser(mapOf("<email>" to "test.user@email.com"))
-        addPermissionsToGroup(mapOf("<group>" to "test.user@email.com", "<permission>" to
-                listOf("*/reports.read", "report:testreport/reports.review")))
+        grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read", "report:testreport/reports.review")))
+
 
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
 
@@ -30,7 +31,7 @@ class AddPermissionTests : CleanDatabaseTests()
     @Test
     fun `addPermissionsToGroup does nothing if user group does not exist`()
     {
-        addPermissionsToGroup(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read")))
+        grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read")))
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
 
         Assertions.assertThat(permissions.count()).isEqualTo(0)
@@ -42,8 +43,8 @@ class AddPermissionTests : CleanDatabaseTests()
     {
         addUser(mapOf("<email>" to "test.user@email.com"))
 
-        addPermissionsToGroup(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/permission.read")))
-        addPermissionsToGroup(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("badlyformatted/reports.read")))
+        grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/permission.read")))
+        grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("badlyformatted/reports.read")))
 
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
 

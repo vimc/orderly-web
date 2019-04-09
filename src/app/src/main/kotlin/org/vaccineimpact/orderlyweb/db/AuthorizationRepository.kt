@@ -4,6 +4,7 @@ import org.jooq.Record
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
@@ -34,7 +35,19 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     override fun ensureGroupHasMember(userGroup: String, email: String)
     {
         JooqContext().use {
+           it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                    .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                    .singleOrNull()?: throw UnknownObjectError(userGroup, "user-group")
 
+            it.dsl.selectFrom(ORDERLYWEB_USER)
+                    .where(ORDERLYWEB_USER.EMAIL.eq(email))
+                    .singleOrNull()?: throw UnknownObjectError(email, User::class.java)
+
+            it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
+                    .apply {
+                        this.email = email
+                        this.userGroup = userGroup
+                    }.insert()
         }
     }
 

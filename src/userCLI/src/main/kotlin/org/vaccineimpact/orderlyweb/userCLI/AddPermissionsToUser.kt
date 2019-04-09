@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
-fun addPermissionsToGroup(options: Map<String, Any>)
+fun grantPermissions(options: Map<String, Any>)
 {
     val userGroup = options["<group>"].toString()
     val permissions = options["<permission>"] as List<*>
@@ -18,16 +18,17 @@ fun addPermissionsToGroup(options: Map<String, Any>)
         else
         {
             permissions.map {
+                val permission = it.toString()
                 OrderlyAuthorizationRepository().ensureUserGroupHasPermission(userGroup,
-                        ReifiedPermission.parse(it.toString()))
+                        ReifiedPermission.parse(permission))
+                println("Gave user group '$userGroup' the permission '$permission'")
             }
-
-            println("Gave user group with name '$userGroup' the permissions '${permissions.joinToString(",")}'")
         }
+
     }
     catch (e: Exception)
     {
-        println("An error occurred saving the permissions to the database:")
+        println("An error occurred saving permissions to the database:")
         println(e)
     }
 }
