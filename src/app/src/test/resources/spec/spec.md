@@ -27,7 +27,7 @@ At the moment only GitHub authentication is supported. Users who are members of 
  will be able to access the API.
  
 To authenticate with GitHub, first create a limited scope GitHub token by going [here](https://github.com/settings/tokens)
-and choosing `read:org` under section `admin:org` and `read:user` under section `user` as the only selected scopes.
+and choosing `read:user` and `user:email` under section `user` as the only selected scopes.
 
 Then make a POST request to `/login/` sending request header `Authorization: token GITHUB_TOKEN`
 

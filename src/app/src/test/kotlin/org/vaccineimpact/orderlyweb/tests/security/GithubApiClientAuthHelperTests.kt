@@ -258,4 +258,26 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
                 .hasMessageContaining("GitHub token must include scope user:email")
     }
 
+    @Test
+    fun `on check access, CredentialsException is thrown if org membership is required and token does not have read user scope`()
+    {
+        //TODO: This will need to change on merge with master, helper code has changed for mrc-203 fix
+        val customMockGithubApiClient = mock<GitHubClient> {
+            on { get(argWhere { it.uri.contains("user") }) } doReturn
+                    GitHubResponse(mock(), mockUser)
+            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockUser))
+            on { get(argWhere { it.uri.contains("teams/1/members") }) } doThrow RequestException(mock(), 404)
+        }
+
+        val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
+
+        sut.authenticate("token")
+
+        Assertions.assertThatThrownBy {
+            sut.checkGithubUserHasOrderlyWebAccess()
+        }.isInstanceOf(CredentialsException::class.java)
+
+    }
+
 }
