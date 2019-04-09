@@ -11,4 +11,4 @@ to the database.
 
 or to test locally:
 1. `./scripts/generate-test-data.sh` to create an orderly db in the top level directory
-1. `./scripts/cli.sh add-user test.user@example.com`
+1. `./scripts/test-cli.sh add-user test.user@example.com`

@@ -8,21 +8,21 @@ OrderlyWeb User CLI
 
 Usage:
     app add-user <email>
-    app add-permission <user> <permission>...
+    app grant <user> <permission>...
 """
 
 fun main(args: Array<String>)
 {
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
-    val addPermission = options["add-permission"] as Boolean
+    val addPermissions = options["grant"] as Boolean
     try
     {
         if (addUser)
         {
             addUser(options)
         }
-        else if (addPermission)
+        else if (addPermissions)
         {
             addPermission(options)
         }
