@@ -1,10 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.jooq.exception.DataAccessException
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -50,6 +53,30 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r1")),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r2"))))
+    }
+
+    @Test
+    fun `can add user group`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("testgroup")
+
+        val groups = JooqContext().use {
+            it.dsl.selectFrom(Tables.ORDERLYWEB_USER_GROUP).fetch()
+        }
+
+        Assertions.assertThat(groups.count()).isEqualTo(1)
+        Assertions.assertThat(groups.first()[Tables.ORDERLYWEB_USER_GROUP.ID]).isEqualTo("testgroup")
+    }
+
+    @Test
+    fun `cannot add duplicate user groups`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("testgroup")
+
+        assertThatThrownBy { sut.createUserGroup("testgroup") }
+                .isInstanceOf(DataAccessException::class.java)
     }
 
     @Test

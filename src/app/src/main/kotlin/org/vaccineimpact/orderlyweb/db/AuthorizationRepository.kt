@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 
 interface AuthorizationRepository
 {
+    fun createUserGroup(userGroup: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
 }
@@ -22,6 +23,16 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"
     private val GROUP_PERMISSION_ID = "permission_id"
+
+    override fun createUserGroup(userGroup: String)
+    {
+        JooqContext().use {
+            it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
+                    .apply {
+                        this.id = userGroup
+                    }.store()
+        }
+    }
 
     override fun getPermissionsForUser(email: String): PermissionSet
     {
