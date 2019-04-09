@@ -8,10 +8,28 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import java.time.Instant
 
 class UserRepositoryTests : CleanDatabaseTests()
 {
+    @Test
+    fun `can get user`()
+    {
+        val sut = OrderlyUserRepository()
+        val then = Instant.now()
+        sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.GitHub)
+
+        val result = sut.getUser("email@somewhere.com")!!
+        assertThat(result.displayName).isEqualTo("full name")
+        assertThat(result.username).isEqualTo("user.name")
+        assertThat(result.email).isEqualTo("email@somewhere.com")
+        assertThat(result.lastLoggedIn).isGreaterThanOrEqualTo(then)
+        assertThat(result.source).isEqualTo(UserSource.GitHub.toString())
+
+        val nullResult = sut.getUser("nonsense")
+        assertThat(nullResult).isNull()
+    }
 
     @Test
     fun `addUser can create new github user`()
@@ -36,7 +54,7 @@ class UserRepositoryTests : CleanDatabaseTests()
     fun `addUser adds user group`()
     {
         val sut = OrderlyUserRepository()
-        sut.addUser("email@somewhere.com","user.name", "full name", UserSource.GitHub)
+        sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.GitHub)
 
         val result = JooqContext().use {
             it.dsl.select(ORDERLYWEB_USER_GROUP.ID)

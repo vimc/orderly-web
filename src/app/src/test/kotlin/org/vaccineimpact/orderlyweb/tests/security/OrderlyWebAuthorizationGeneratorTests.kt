@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
-import org.vaccineimpact.orderlyweb.tests.database_tests.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()

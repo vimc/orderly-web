@@ -15,6 +15,11 @@ mainClassName = "org.vaccineimpact.orderlyweb.userCLI.AppKt"
 
 dependencies {
     compile project(":app")
+    compile "com.offbytwo:docopt:0.6.0.20150202"
+
+    testCompile "org.assertj:assertj-core:3.6.2"
+    testCompile "org.mockito:mockito-core:2.+"
+    testCompile "com.nhaarman:mockito-kotlin:1.3.0"
 
     testCompile project(":databaseInterface")
     testCompile project(":testHelpers")
@@ -35,4 +40,11 @@ distDocker {
     push = true
     tag = cli_docker_name
     tagVersion = cli_docker_version
+}
+
+task copyDemo(type: Copy) {
+    from '../app/demo'
+    include '*'
+    into 'demo'
+    outputs.upToDateWhen { false }
 }

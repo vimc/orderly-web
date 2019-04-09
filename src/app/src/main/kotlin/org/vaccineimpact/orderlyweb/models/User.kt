@@ -14,5 +14,6 @@ constructor(val username: String,
 
 enum class UserSource {
     Montagu,
-    GitHub
+    GitHub,
+    CLI
 }
