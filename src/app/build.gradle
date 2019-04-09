@@ -41,6 +41,7 @@ dependencies {
     compile "org.pac4j:spark-pac4j:3.0.0"
     compile "org.pac4j:pac4j-http:3.2.0"
     compile 'org.pac4j:pac4j-jwt:3.2.0'
+    compile 'org.pac4j:pac4j-oauth:3.6.1'
     compile 'commons-codec:commons-codec:1.10'
 
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"

@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.security.authentication
+package org.vaccineimpact.orderlyweb.security.providers
 
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.JsonSyntaxException

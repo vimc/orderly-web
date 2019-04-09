@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
-import org.eclipse.egit.github.core.client.GitHubClient
 import org.pac4j.core.client.DirectClient
 import org.pac4j.core.context.HttpConstants
 import org.pac4j.core.credentials.TokenCredentials
@@ -22,7 +21,7 @@ class GithubDirectClient : DirectClient<TokenCredentials, CommonProfile>(), Orde
                 HttpConstants.AUTHORIZATION_HEADER,
                 "token "))
 
-        defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository(), GitHubClient()))
+        defaultAuthenticator(GithubAuthenticator(OrderlyUserRepository()))
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
     }
 }
