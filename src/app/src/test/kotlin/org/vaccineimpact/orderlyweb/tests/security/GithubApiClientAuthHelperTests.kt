@@ -104,7 +104,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on checkGithubUserCanAuthenticate, IllegalStateException thrown if not initialized`()
+    fun `on checkGithubUserHasOrderlyWebAccess, IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
@@ -114,23 +114,23 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on getUser, IllegalStateException thrown if not initialized`()
+    fun `on getUser, IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
             sut.getUser()
         }.isInstanceOf(IllegalStateException::class.java)
-                .hasMessageContaining("User has not been initialized")
+                .hasMessageContaining("User has not been authenticated")
     }
 
     @Test
-    fun `on getUserEmail, IllegalStateException thrown if not initialized`()
+    fun `on getUserEmail, IllegalStateException thrown if not authenticated`()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
             sut.getUserEmail()
         }.isInstanceOf(IllegalStateException::class.java)
-                .hasMessageContaining("User has not been initialized")
+                .hasMessageContaining("User has not been authenticated")
     }
 
     @Test
@@ -267,6 +267,8 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
                     GitHubResponse(mock(), mockUser)
             on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
                     GitHubResponse(mock(), listOf(mockUser))
+            on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
+                    GitHubResponse(mock(), listOf(mockTeam))
             on { get(argWhere { it.uri.contains("teams/1/members") }) } doThrow RequestException(mock(), 404)
         }
 
