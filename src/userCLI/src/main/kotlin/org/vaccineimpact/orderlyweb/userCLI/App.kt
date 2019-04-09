@@ -22,26 +22,20 @@ fun main(args: Array<String>)
     val grant = options["grant"] as Boolean
     try
     {
-        if (addUser)
+        val result = when
         {
-            addUser(options)
+            addUser -> addUser(options)
+            grant -> grantPermissions(options)
+            addGroup -> addUserGroup(options)
+            addMembers -> addMembers(options)
+            else -> ""
         }
-        else if (grant)
-        {
-            grantPermissions(options)
-        }
-        else if (addGroup)
-        {
-            addUserGroup(options)
-        }
-        else if (addMembers)
-        {
-            addMembers(options)
-        }
+
+        print(result)
     }
     catch (e: Exception)
     {
         println(e.message)
-        exitProcess(-1)
+        exitProcess(1)
     }
 }

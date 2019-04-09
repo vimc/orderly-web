@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
@@ -25,6 +26,14 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     override fun createUserGroup(userGroup: String)
     {
         JooqContext().use {
+
+            if (it.dsl.selectFrom(Tables.ORDERLYWEB_USER_GROUP)
+                            .where(Tables.ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                            .singleOrNull() != null)
+            {
+                throw DuplicateKeyError(mapOf("user-group" to userGroup))
+            }
+
             it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
                     .apply {
                         this.id = userGroup
@@ -35,13 +44,13 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     override fun ensureGroupHasMember(userGroup: String, email: String)
     {
         JooqContext().use {
-           it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
                     .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
-                    .singleOrNull()?: throw UnknownObjectError(userGroup, "user-group")
+                    .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
 
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq(email))
-                    .singleOrNull()?: throw UnknownObjectError(email, User::class)
+                    .singleOrNull() ?: throw UnknownObjectError(email, User::class)
 
             it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
                     .apply {

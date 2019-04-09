@@ -8,6 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -76,7 +77,8 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         sut.createUserGroup("testgroup")
 
         assertThatThrownBy { sut.createUserGroup("testgroup") }
-                .isInstanceOf(DataAccessException::class.java)
+                .isInstanceOf(DuplicateKeyError::class.java)
+                .hasMessageContaining("An object with the id 'testgroup' already exists")
     }
 
     @Test
