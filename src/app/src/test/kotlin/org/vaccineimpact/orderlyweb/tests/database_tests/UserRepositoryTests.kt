@@ -24,7 +24,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.displayName).isEqualTo("full name")
         assertThat(result.username).isEqualTo("user.name")
         assertThat(result.email).isEqualTo("email@somewhere.com")
-        assertThat(result.lastLoggedIn).isGreaterThan(then)
+        assertThat(result.lastLoggedIn).isGreaterThanOrEqualTo(then)
         assertThat(result.source).isEqualTo(UserSource.GitHub.toString())
 
         val nullResult = sut.getUser("nonsense")
