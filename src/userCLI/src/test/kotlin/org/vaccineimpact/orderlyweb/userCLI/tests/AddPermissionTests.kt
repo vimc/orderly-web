@@ -34,14 +34,10 @@ class AddPermissionTests : CleanDatabaseTests()
     @Test
     fun `addPermissionToGroup does nothing if user group does not exist`()
     {
-        val result = grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read")))
+        assertThatThrownBy {
+            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read")))
 
-        val expected = """An error occurred saving permissions to the database:
-            | org.vaccineimpact.orderlyweb.errors.UnknownObjectError: the following problems occurred:
-            |Unknown user-group : 'test.user@email.com'
-        """.trimMargin()
-
-        assertThat(result).isEqualTo(expected)
+        }.hasMessageContaining("Unknown user-group : 'test.user@email.com'")
 
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
         assertThat(permissions.count()).isEqualTo(0)
@@ -53,11 +49,13 @@ class AddPermissionTests : CleanDatabaseTests()
     {
         addUser(mapOf("<email>" to "test.user@email.com"))
 
-        val nonExistentResult = grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/permission.read")))
-        assertThat(nonExistentResult).contains("Unknown permission : 'permission.read'")
+        assertThatThrownBy {
+            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/permission.read")))
+        }.hasMessageContaining("Unknown permission : 'permission.read'")
 
-        val badFormatResult = grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("badlyformatted/reports.read")))
-        assertThat(badFormatResult).contains("Unable to parse 'badlyformatted/reports.read' as a ReifiedPermission")
+        assertThatThrownBy {
+            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("badlyformatted/reports.read")))
+        }.hasMessageContaining("Unable to parse 'badlyformatted/reports.read' as a ReifiedPermission")
 
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
 
