@@ -114,4 +114,16 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                 .hasMessageContaining("Unknown permission : 'nonexistent.permission'")
     }
 
+    @Test
+    fun `ensureUserGroupHasPermission throws UnknownObjectError if group does not exist`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureUserGroupHasPermission("nonsense",
+                    ReifiedPermission("reports.read", Scope.Global()))
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown user-group : 'nonsense'")
+    }
+
 }

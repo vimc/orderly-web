@@ -1,18 +1,18 @@
 package org.vaccineimpact.orderlyweb.userCLI
 
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.UserSource
 
 fun addUser(options: Map<String, Any>)
 {
     val userEmail = options["<email>"].toString()
+    val userRepo = OrderlyUserRepository()
+
     try
     {
-        if (!userExists(userEmail))
+        if (userRepo.getUser(userEmail) == null)
         {
-            OrderlyUserRepository().addUser(userEmail, "unknown", "unknown", UserSource.CLI)
+            userRepo.addUser(userEmail, "unknown", "unknown", UserSource.CLI)
             println("Saved user with email '$userEmail' to the database")
         }
         else
@@ -26,12 +26,4 @@ fun addUser(options: Map<String, Any>)
         println(e)
     }
 }
-
-private fun userExists(email: String): Boolean
-{
-    JooqContext().use {
-        return it.dsl.fetchOne(Tables.ORDERLYWEB_USER, Tables.ORDERLYWEB_USER.EMAIL.eq(email)) != null
-    }
-}
-
 

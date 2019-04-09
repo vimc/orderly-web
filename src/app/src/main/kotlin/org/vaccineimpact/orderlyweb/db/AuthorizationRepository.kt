@@ -50,6 +50,10 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     .where(ORDERLYWEB_PERMISSION.ID.eq(permission.name))
                     .singleOrNull() ?: throw UnknownObjectError(permission.name, "permission")
 
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                    .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                    .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
+
             val permissionsForGroup = getAllPermissionsForGroup(it, userGroup)
 
             if (!permissionsForGroup.any { p -> p.name == permission.name })

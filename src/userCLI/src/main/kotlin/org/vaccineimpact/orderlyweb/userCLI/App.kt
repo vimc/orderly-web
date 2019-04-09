@@ -17,14 +17,14 @@ fun main(args: Array<String>)
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
     val addGroup = options["add-group"] as Boolean
-    val addPermissions = options["grant"] as Boolean
+    val grant = options["grant"] as Boolean
     try
     {
         if (addUser)
         {
             addUser(options)
         }
-        else if (addPermissions)
+        else if (grant)
         {
             grantPermissions(options)
         }
