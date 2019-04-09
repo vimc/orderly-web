@@ -110,7 +110,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         Assertions.assertThatThrownBy {
             sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(IllegalStateException::class.java)
-                .hasMessageContaining("User has not been initialized")
+                .hasMessageContaining("User has not been authenticated")
     }
 
     @Test
@@ -265,11 +265,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         val customMockGithubApiClient = mock<GitHubClient> {
             on { get(argWhere { it.uri.contains("user") }) } doReturn
                     GitHubResponse(mock(), mockUser)
-            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockUser))
-            on { get(argWhere { it.uri.contains("orgs/orgName/teams") }) } doReturn
-                    GitHubResponse(mock(), listOf(mockTeam))
-            on { get(argWhere { it.uri.contains("teams/1/members") }) } doThrow RequestException(mock(), 404)
+            on { get(argWhere { it.uri.contains("orgs/orgName/members") }) } doThrow RequestException(mock(), 404)
         }
 
         val sut = GithubApiClientAuthHelper(mockAppConfig, customMockGithubApiClient)
