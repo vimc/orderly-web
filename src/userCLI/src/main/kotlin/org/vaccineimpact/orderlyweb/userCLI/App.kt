@@ -33,7 +33,7 @@ fun main(args: Array<String>)
     catch (e: Exception)
     {
         println(e.message)
-        exitProcess(-1)
+        exitProcess(1)
     }
 }
 
