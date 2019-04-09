@@ -254,7 +254,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         Assertions.assertThatThrownBy {
             sut.checkGithubUserHasOrderlyWebAccess()
         }.isInstanceOf(CredentialsException::class.java)
-                .hasMessageContaining("GitHub token must include scope user:read")
+                .hasMessageContaining("GitHub token must include scope read:user")
 
     }
 

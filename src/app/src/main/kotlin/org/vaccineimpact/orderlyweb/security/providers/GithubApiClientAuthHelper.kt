@@ -114,7 +114,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             if (e.status == 403)
             {
-                throw CredentialsException("GitHub token must include scope user:read")
+                throw CredentialsException("GitHub token must include scope read:user")
             }
             else throw e
         }
