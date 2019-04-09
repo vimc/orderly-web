@@ -259,7 +259,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     }
 
     @Test
-    fun `on check access, CredentialsException is thrown if org membership is required and token does not have read user scope`()
+    fun `on check access, Exception is thrown if org membership is required and token does not have read user scope`()
     {
         //TODO: This will need to change on merge with master, helper code has changed for mrc-203 fix
         val customMockGithubApiClient = mock<GitHubClient> {
@@ -274,7 +274,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
 
         Assertions.assertThatThrownBy {
             sut.checkGithubUserHasOrderlyWebAccess()
-        }.isInstanceOf(CredentialsException::class.java)
+        }.isInstanceOf(BadConfigurationError::class.java)
 
     }
 
