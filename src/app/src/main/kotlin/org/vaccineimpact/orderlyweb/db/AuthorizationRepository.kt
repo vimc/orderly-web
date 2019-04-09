@@ -41,7 +41,7 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq(email))
-                    .singleOrNull()?: throw UnknownObjectError(email, User::class.java)
+                    .singleOrNull()?: throw UnknownObjectError(email, User::class)
 
             it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
                     .apply {
@@ -77,6 +77,10 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
             it.dsl.selectFrom(ORDERLYWEB_PERMISSION)
                     .where(ORDERLYWEB_PERMISSION.ID.eq(permission.name))
                     .singleOrNull() ?: throw UnknownObjectError(permission.name, "permission")
+
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                    .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                    .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
 
             val permissionsForGroup = getAllPermissionsForGroup(it, userGroup)
 
