@@ -11,7 +11,7 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.tests.ChangelogWithPublicVersion
 import org.vaccineimpact.orderlyweb.tests.insertChangelog
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader

@@ -9,7 +9,7 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ResourceTests : CleanDatabaseTests()
 {

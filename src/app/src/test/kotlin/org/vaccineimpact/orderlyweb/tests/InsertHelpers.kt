@@ -7,10 +7,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
-import java.sql.Timestamp
-import kotlin.math.abs
 import kotlin.streams.asSequence
 
 data class ChangelogWithPublicVersion
@@ -20,57 +17,6 @@ constructor(val reportVersion: String,
             val fromFile: Boolean,
             val reportVersionPublic: String? = null)
 
-fun insertReport(name: String,
-                 version: String,
-                 published: Boolean = true,
-                 date: Timestamp = Timestamp(System.currentTimeMillis()),
-                 author: String = "author authorson",
-                 requester: String = "requester mcfunder")
-{
-
-    JooqContext().use {
-
-        val displayname = "display name $name"
-
-        //Does the report already exist in the REPORT table?
-        val rows = it.dsl.select(REPORT.NAME)
-                .from(REPORT)
-                .where(REPORT.NAME.eq(name))
-                .fetch()
-
-        if (rows.isEmpty())
-        {
-
-            val reportRecord = it.dsl.newRecord(REPORT)
-                    .apply {
-                        this.name = name
-                    }
-            reportRecord.store()
-        }
-
-        val reportVersionRecord = it.dsl.newRecord(REPORT_VERSION)
-                .apply {
-                    this.id = version
-                    this.report = name
-                    this.date = date
-                    this.displayname = displayname
-                    this.description = "description $name"
-                    this.requester = requester
-                    this.author = author
-                    this.published = published
-                    this.connection = false
-                }
-        reportVersionRecord.store()
-
-        //Update latest version of Report
-        it.dsl.update(REPORT)
-                .set(REPORT.LATEST, version)
-                .where(REPORT.NAME.eq(name))
-                .execute()
-
-    }
-
-}
 
 fun insertChangelog(changelog: List<ChangelogWithPublicVersion>)
 {

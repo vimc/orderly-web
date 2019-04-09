@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
@@ -112,6 +112,18 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                     ReifiedPermission("nonexistent.permission", Scope.Global()))
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown permission : 'nonexistent.permission'")
+    }
+
+    @Test
+    fun `ensureUserGroupHasPermission throws UnknownObjectError if group does not exist`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureUserGroupHasPermission("nonsense",
+                    ReifiedPermission("reports.read", Scope.Global()))
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown user-group : 'nonsense'")
     }
 
 }

@@ -8,33 +8,36 @@ OrderlyWeb User CLI
 
 Usage:
     app add-user <email>
-    app grant <user> <permission>...
+    app add-group <name>
+    app grant <group> <permission>...
 """
 
 fun main(args: Array<String>)
 {
     val options = Docopt(doc).parse(args.toList())
     val addUser = options["add-user"] as Boolean
-    val addPermissions = options["grant"] as Boolean
+    val addGroup = options["add-group"] as Boolean
+    val grant = options["grant"] as Boolean
     try
     {
-        if (addUser)
+        val result = when
         {
-            addUser(options)
+            addUser -> addUser(options)
+            grant -> grantPermissions(options)
+            addGroup -> addGroup()
+            else -> ""
         }
-        else if (addPermissions)
-        {
-            addPermission(options)
-        }
+
+        print(result)
     }
     catch (e: Exception)
     {
         println(e.message)
-        exitProcess(-1)
+        exitProcess(1)
     }
 }
 
-fun addPermission(options: Map<String, Any>)
+fun addGroup(): String
 {
-    println("Coming soon!")
+    return "Coming soon!"
 }

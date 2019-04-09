@@ -44,6 +44,12 @@ class OrderlyUserRepository : UserRepository
                         .apply {
                             this.id = email
                         }.store()
+
+                it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_USER)
+                        .apply {
+                            this.userGroup = email
+                            this.email = email
+                        }.insert()
             }
             else
             {

@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class RequestHelper
