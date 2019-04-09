@@ -1,43 +1,43 @@
 package org.vaccineimpact.orderlyweb.userCLI
 
+import org.docopt.Docopt
 import kotlin.system.exitProcess
+
+const val doc = """
+OrderlyWeb User CLI
+
+Usage:
+    app add-user <email>
+    app add-group <name>
+    app grant <group> <permission>...
+"""
 
 fun main(args: Array<String>)
 {
-    val action = getAction(args)
+    val options = Docopt(doc).parse(args.toList())
+    val addUser = options["add-user"] as Boolean
+    val addGroup = options["add-group"] as Boolean
+    val grant = options["grant"] as Boolean
     try
     {
-        val remainder = args.drop(1)
-        when (action)
+        val result = when
         {
-            Action.addUser -> addUser(remainder)
-            Action.addPermission -> addPermission(remainder)
+            addUser -> addUser(options)
+            grant -> grantPermissions(options)
+            addGroup -> addGroup()
+            else -> ""
         }
+
+        print(result)
     }
     catch (e: Exception)
     {
         println(e.message)
-        exitProcess(-1)
+        exitProcess(1)
     }
 }
 
-fun getAction(args: Array<String>): Action
+fun addGroup(): String
 {
-    if (args.isEmpty())
-    {
-        println("An action is required. ./user.sh ACTION")
-        println("ACTION must be one of " + enumValues<Action>().joinToString())
-        exitProcess(0)
-    }
-    return enumValueOf(args.first())
-}
-
-fun addUser(args: List<String>)
-{
-    println("Coming soon!")
-}
-
-fun addPermission(args: List<String>)
-{
-    println("Coming soon!")
+    return "Coming soon!"
 }

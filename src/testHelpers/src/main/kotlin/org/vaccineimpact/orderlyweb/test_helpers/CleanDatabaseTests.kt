@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.database_tests
+package org.vaccineimpact.orderlyweb.test_helpers
 
 import org.jooq.Table
 import org.junit.Before

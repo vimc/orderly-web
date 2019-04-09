@@ -3,7 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ReportTests : CleanDatabaseTests()
 {

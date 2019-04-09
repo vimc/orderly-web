@@ -33,6 +33,7 @@ class GithubAuthenticator(private val userRepository: UserRepository,
         val user = githubAuthHelper.getUser()
         val email = githubAuthHelper.getUserEmail()
 
+
         userRepository.addUser(email, user.login, user.name ?: "", UserSource.GitHub)
 
         credentials.userProfile = CommonProfile().apply {
@@ -40,6 +41,5 @@ class GithubAuthenticator(private val userRepository: UserRepository,
             this.setId(email)
         }
     }
-
 
 }

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 
 class ReportTests : IntegrationTest()

@@ -4,14 +4,31 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import java.time.Instant
 
 class UserRepositoryTests : CleanDatabaseTests()
 {
+    @Test
+    fun `can get user`()
+    {
+        val sut = OrderlyUserRepository()
+        val then = Instant.now()
+        sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.GitHub)
+
+        val result = sut.getUser("email@somewhere.com")!!
+        assertThat(result.displayName).isEqualTo("full name")
+        assertThat(result.username).isEqualTo("user.name")
+        assertThat(result.email).isEqualTo("email@somewhere.com")
+        assertThat(result.lastLoggedIn).isGreaterThanOrEqualTo(then)
+        assertThat(result.source).isEqualTo(UserSource.GitHub.toString())
+
+        val nullResult = sut.getUser("nonsense")
+        assertThat(nullResult).isNull()
+    }
 
     @Test
     fun `addUser can create new github user`()
@@ -33,10 +50,11 @@ class UserRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `addUser adds user group`()
+    fun `addUser adds user group and adds user to group`()
     {
+        val email = "email@somewhere.com"
         val sut = OrderlyUserRepository()
-        sut.addUser("email@somewhere.com","user.name", "full name", UserSource.GitHub)
+        sut.addUser(email,"user.name", "full name", UserSource.GitHub)
 
         val result = JooqContext().use {
             it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
@@ -44,7 +62,15 @@ class UserRepositoryTests : CleanDatabaseTests()
                     .fetchOneInto(String::class.java)
         }
 
-        assertThat(result).isEqualTo("email@somewhere.com")
+        assertThat(result).isEqualTo(email)
+
+        val userResult = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .fetchOne()
+        }
+
+        assertThat(userResult[ORDERLYWEB_USER_GROUP_USER.EMAIL]).isEqualTo(email)
+        assertThat(userResult[ORDERLYWEB_USER_GROUP_USER.USER_GROUP]).isEqualTo(email)
     }
 
     @Test

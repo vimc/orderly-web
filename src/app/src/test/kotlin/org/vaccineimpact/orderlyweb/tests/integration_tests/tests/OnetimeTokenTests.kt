@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.Orderly
-import org.vaccineimpact.orderlyweb.tests.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import java.net.URLEncoder
 
 class OnetimeTokenTests : IntegrationTest()

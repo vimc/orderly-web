@@ -81,5 +81,4 @@ class GithubAuthenticatorTests : TeamcityTests()
 
         verify(mockUserData).addUser("email", "user.name", "full name", UserSource.GitHub)
     }
-
 }

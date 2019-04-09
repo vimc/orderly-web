@@ -43,9 +43,9 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         val githubOrg = appConfig["auth.github_org"]
         val teamName = appConfig["auth.github_team"]
 
-        if (!githubOrg.isEmpty() && !userBelongToOrg(githubOrg, user!!))
+        if (!githubOrg.isEmpty() && !currentUserBelongsToOrg(githubOrg))
         {
-            throw CredentialsException("User is not a member of GitHub org $githubOrg or token does not include read:org scope")
+            throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
         if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
         {
@@ -102,23 +102,23 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
     }
 
-    private fun userBelongToOrg(githubOrg: String, user: User): Boolean
+    private fun currentUserBelongsToOrg(githubOrg: String): Boolean
     {
-        val organizationService = OrganizationService(githubApiClient)
-
-        val members = try
+        try
         {
-            organizationService.getMembers(githubOrg)
+            val userService = OrganizationService(githubApiClient)
+            val orgs = userService.getOrganizations()
+            return orgs.map{ it.login }.contains(githubOrg)
         }
         catch (e: RequestException)
         {
-            if (e.status == 404)
+            if (e.status == 403)
             {
-                throw BadConfigurationError("GitHub org $githubOrg does not exist")
+                throw CredentialsException("GitHub token must include scope user:read")
             }
             else throw e
         }
-        return members.map { it.login }.contains(user.login)
+
     }
 
     private fun userBelongsToTeam(githubOrg: String, teamName: String, user: User): Boolean
@@ -131,7 +131,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
                 ?: throw BadConfigurationError("GitHub org $githubOrg has no team called $teamName")
 
         val members = teamService.getMembers(team.id)
-        return members.contains(user)
+        return members.map{ it.login }.contains(user.login)
     }
 
     private fun getEmailForUser(): String
@@ -149,6 +149,5 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
             else throw e
         }
     }
-
 
 }
