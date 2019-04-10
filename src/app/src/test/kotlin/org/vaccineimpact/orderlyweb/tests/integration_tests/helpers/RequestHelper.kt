@@ -46,18 +46,6 @@ class RequestHelper
         return get(webBaseUrl + url, headers)
     }
 
-    fun getWithMontaguCookie(
-            url: String,
-            contentType: String = "text/html"
-    ): Response
-    {
-        val token = loginWithMontagu()["access_token"]
-        val cookieName = MontaguIndirectClient.cookie
-        val headers = standardHeaders(contentType) +
-                mapOf("Cookie" to "$cookieName=$token")
-        return khttp.get(webBaseUrl + url, headers, allowRedirects = false)
-    }
-
     fun getWithCookie(
             url: String,
             contentType: String = ContentTypes.json,
@@ -124,19 +112,6 @@ class RequestHelper
 
     private fun generateToken(emailAddress: String) =
             WebTokenHelper.instance.issuer.generateBearerToken(emailAddress)
-
-    fun loginWithMontagu(): JsonObject
-    {
-        // these user login details are set up in ./dev/run-dependencies.sh
-        val auth = BasicAuthorization("test.user@example.com", "password")
-        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
-                data = mapOf("grant_type" to "client_credentials"),
-                auth = auth
-        )
-        val text = response.text
-        println(text)
-        return Parser().parse(StringBuilder(text)) as JsonObject
-    }
 
 }
 
