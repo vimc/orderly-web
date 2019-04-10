@@ -1,10 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
+import org.jooq.exception.DataAccessException
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -50,6 +54,31 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r1")),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r2"))))
+    }
+
+    @Test
+    fun `can add user group`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("testgroup")
+
+        val groups = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()
+        }
+
+        Assertions.assertThat(groups.count()).isEqualTo(1)
+        Assertions.assertThat(groups.first()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("testgroup")
+    }
+
+    @Test
+    fun `cannot add duplicate user groups`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("testgroup")
+
+        assertThatThrownBy { sut.createUserGroup("testgroup") }
+                .isInstanceOf(DuplicateKeyError::class.java)
+                .hasMessageContaining("An object with the id 'testgroup' already exists")
     }
 
     @Test
@@ -124,6 +153,76 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                     ReifiedPermission("reports.read", Scope.Global()))
         }.isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown user-group : 'nonsense'")
+    }
+
+    @Test
+    fun `can add user to group`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("somegroup")
+        JooqContext().use {
+            it.dsl.insertInto(ORDERLYWEB_USER)
+                    .set(ORDERLYWEB_USER.EMAIL, "user@email.com")
+                    .set(ORDERLYWEB_USER.USER_SOURCE, "GitHub")
+                    .set(ORDERLYWEB_USER.USERNAME, "user.name")
+                    .execute()
+        }
+        sut.ensureGroupHasMember("somegroup", "user@email.com")
+
+        val user = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("somegroup"))
+                    .single()
+        }
+
+        assertThat(user[ORDERLYWEB_USER_GROUP_USER.EMAIL]).isEqualTo("user@email.com")
+    }
+
+    @Test
+    fun `ensureGroupHasMember does nothing if user already in group`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("somegroup")
+        JooqContext().use {
+            it.dsl.insertInto(ORDERLYWEB_USER)
+                    .set(ORDERLYWEB_USER.EMAIL, "user@email.com")
+                    .set(ORDERLYWEB_USER.USER_SOURCE, "GitHub")
+                    .set(ORDERLYWEB_USER.USERNAME, "user.name")
+                    .execute()
+        }
+
+        sut.ensureGroupHasMember("somegroup", "user@email.com")
+        sut.ensureGroupHasMember("somegroup", "user@email.com")
+
+        val user = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("somegroup"))
+                    .single()
+        }
+
+        assertThat(user[ORDERLYWEB_USER_GROUP_USER.EMAIL]).isEqualTo("user@email.com")
+    }
+
+    @Test
+    fun `ensureGroupHasMember throws UnknownObjectError if group does not exist`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureGroupHasMember("nonsense", "user@email.com")
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown user-group : 'nonsense'")
+    }
+
+    @Test
+    fun `ensureGroupHasMember throws UnknownObjectError if user does not exist`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("testgroup")
+        assertThatThrownBy {
+            sut.ensureGroupHasMember("testgroup", "user@email.com")
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown user : 'user@email.com'")
     }
 
 }

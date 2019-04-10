@@ -1,18 +1,18 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
-import org.pac4j.core.authorization.generator.AuthorizationGenerator
-import org.pac4j.core.context.WebContext
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 
 interface AuthorizationRepository
 {
+    fun createUserGroup(userGroup: String)
+    fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
 }
@@ -22,6 +22,50 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"
     private val GROUP_PERMISSION_ID = "permission_id"
+
+    override fun createUserGroup(userGroup: String)
+    {
+        JooqContext().use {
+
+            if (it.dsl.selectFrom(Tables.ORDERLYWEB_USER_GROUP)
+                            .where(Tables.ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                            .singleOrNull() != null)
+            {
+                throw DuplicateKeyError(mapOf("user-group" to userGroup))
+            }
+
+            it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
+                    .apply {
+                        this.id = userGroup
+                    }.store()
+        }
+    }
+
+    override fun ensureGroupHasMember(userGroup: String, email: String)
+    {
+        JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                    .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                    .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
+
+            it.dsl.selectFrom(ORDERLYWEB_USER)
+                    .where(ORDERLYWEB_USER.EMAIL.eq(email))
+                    .singleOrNull() ?: throw UnknownObjectError(email, User::class)
+
+            val membership = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
+                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email))).singleOrNull()
+
+            if (membership == null)
+            {
+                it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
+                        .apply {
+                            this.email = email
+                            this.userGroup = userGroup
+                        }.insert()
+            }
+        }
+    }
 
     override fun getPermissionsForUser(email: String): PermissionSet
     {

@@ -17,5 +17,4 @@ fun addUser(options: Map<String, Any>): String
     {
         "User with email '$userEmail' already exists; no changes made"
     }
-
 }
