@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.userCLI.addUserGroup
 class AddUserGroupTests : CleanDatabaseTests()
 {
     @Test
-    fun `addUser adds user`()
+    fun `addUserGroup adds group`()
     {
         val result = addUserGroup(mapOf("<name>" to "funders"))
 
@@ -24,7 +24,7 @@ class AddUserGroupTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `addUser does nothing if group exists`()
+    fun `addUserGroup does nothing if group exists`()
     {
         addUserGroup(mapOf("<name>" to "funders"))
 

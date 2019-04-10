@@ -52,11 +52,18 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     .where(ORDERLYWEB_USER.EMAIL.eq(email))
                     .singleOrNull() ?: throw UnknownObjectError(email, User::class)
 
-            it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
-                    .apply {
-                        this.email = email
-                        this.userGroup = userGroup
-                    }.insert()
+            val membership = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
+                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email))).singleOrNull()
+
+            if (membership == null)
+            {
+                it.dsl.newRecord(ORDERLYWEB_USER_GROUP_USER)
+                        .apply {
+                            this.email = email
+                            this.userGroup = userGroup
+                        }.insert()
+            }
         }
     }
 

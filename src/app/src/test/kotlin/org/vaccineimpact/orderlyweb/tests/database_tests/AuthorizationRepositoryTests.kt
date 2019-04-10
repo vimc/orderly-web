@@ -168,6 +168,39 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                     .execute()
         }
         sut.ensureGroupHasMember("somegroup", "user@email.com")
+
+        val user = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("somegroup"))
+                    .single()
+        }
+
+        assertThat(user[ORDERLYWEB_USER_GROUP_USER.EMAIL]).isEqualTo("user@email.com")
+    }
+
+    @Test
+    fun `ensureGroupHasMember does nothing if user already in group`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        sut.createUserGroup("somegroup")
+        JooqContext().use {
+            it.dsl.insertInto(ORDERLYWEB_USER)
+                    .set(ORDERLYWEB_USER.EMAIL, "user@email.com")
+                    .set(ORDERLYWEB_USER.USER_SOURCE, "GitHub")
+                    .set(ORDERLYWEB_USER.USERNAME, "user.name")
+                    .execute()
+        }
+
+        sut.ensureGroupHasMember("somegroup", "user@email.com")
+        sut.ensureGroupHasMember("somegroup", "user@email.com")
+
+        val user = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("somegroup"))
+                    .single()
+        }
+
+        assertThat(user[ORDERLYWEB_USER_GROUP_USER.EMAIL]).isEqualTo("user@email.com")
     }
 
     @Test
