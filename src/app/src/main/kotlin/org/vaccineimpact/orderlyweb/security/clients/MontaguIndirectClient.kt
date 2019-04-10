@@ -21,7 +21,7 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
     {
         defaultCredentialsExtractor(CookieExtractor("montagu_jwt_token"))
         defaultRedirectActionBuilder {
-            RedirectAction.redirect(AppConfig()["montagu.url"])
+            RedirectAction.redirect("${AppConfig()["montagu.url"]}?redirectTo=${AppConfig()["app.url"]}/login")
         }
         defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), khttpMontaguAPIClient()))
     }

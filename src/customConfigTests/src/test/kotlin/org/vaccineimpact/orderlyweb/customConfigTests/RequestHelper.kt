@@ -11,8 +11,11 @@ import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 class RequestHelper
 {
-    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
-    val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
+    companion object
+    {
+        val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+        val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
+    }
 
     fun get(url: String, contentType: String = ContentTypes.json,
             userEmail: String): Response

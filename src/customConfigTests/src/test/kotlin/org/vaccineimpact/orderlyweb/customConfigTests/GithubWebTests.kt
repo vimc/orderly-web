@@ -44,8 +44,7 @@ class GithubWebTests : SeleniumTest()
 
         assertThat(header.text).isEqualTo("Something went wrong")
 
-        val response = get(url, allowRedirects = false)
-        assertThat(response.statusCode).isNotEqualTo(200)
-
+        driver.get(url)
+        assertThat(driver.currentUrl).contains("github.com")
     }
 }

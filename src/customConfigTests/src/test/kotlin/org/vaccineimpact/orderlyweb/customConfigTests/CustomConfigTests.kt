@@ -45,19 +45,18 @@ abstract class CustomConfigTests : TeamcityTests()
     @After
     fun cleanup()
     {
-    //    spark.Spark.stop()
-    //    File(AppConfig()["db.location"]).delete()
+        spark.Spark.stop()
+        File(AppConfig()["db.location"]).delete()
 
         // reset the properties
-//        AppConfig.properties.apply {
-//            load(getResource("config.properties").openStream())
-//            val global = File("/etc/orderly/web/config.properties")
-//            if (global.exists())
-//            {
-//                global.inputStream().use { load(it) }
-//            }
-//        }
-
+        AppConfig.properties.apply {
+            load(getResource("config.properties").openStream())
+            val global = File("/etc/orderly/web/config.properties")
+            if (global.exists())
+            {
+                global.inputStream().use { load(it) }
+            }
+        }
     }
 
     protected fun assertSuccessful(response: Response)
