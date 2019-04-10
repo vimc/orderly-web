@@ -45,18 +45,18 @@ abstract class CustomConfigTests : TeamcityTests()
     @After
     fun cleanup()
     {
-        spark.Spark.stop()
-        File(AppConfig()["db.location"]).delete()
+    //    spark.Spark.stop()
+    //    File(AppConfig()["db.location"]).delete()
 
         // reset the properties
-        AppConfig.properties.apply {
-            load(getResource("config.properties").openStream())
-            val global = File("/etc/orderly/web/config.properties")
-            if (global.exists())
-            {
-                global.inputStream().use { load(it) }
-            }
-        }
+//        AppConfig.properties.apply {
+//            load(getResource("config.properties").openStream())
+//            val global = File("/etc/orderly/web/config.properties")
+//            if (global.exists())
+//            {
+//                global.inputStream().use { load(it) }
+//            }
+//        }
 
     }
 
@@ -66,6 +66,11 @@ abstract class CustomConfigTests : TeamcityTests()
                 .isEqualTo(200)
 
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
+    }
+
+    protected fun assertHtmlContentType(response: Response)
+    {
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
     }
 
     private fun isPortAvailable(): Boolean

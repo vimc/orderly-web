@@ -107,7 +107,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         try
         {
             val userService = OrganizationService(githubApiClient)
-            val orgs = userService.getOrganizations()
+            val orgs = userService.organizations
             return orgs.map{ it.login }.contains(githubOrg)
         }
         catch (e: RequestException)

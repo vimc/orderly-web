@@ -33,10 +33,12 @@ class Router(freeMarkerConfig: Configuration)
     companion object
     {
         val urls: MutableList<String> = mutableListOf()
+        val apiUrlBase = "/api/v1"
     }
 
     init
     {
+        ErrorHandler.setup(freeMarkerEngine)
         mapNotFound()
 
         val client = AuthenticationConfig.getAuthenticationIndirectClient()
@@ -64,6 +66,7 @@ class Router(freeMarkerConfig: Configuration)
         val url = "login"
         Spark.get(url, loginCallback)
         Spark.get("$url/", loginCallback)
+
     }
 
     private fun mapLogoutCallback(config: Config)
@@ -79,20 +82,18 @@ class Router(freeMarkerConfig: Configuration)
     private fun mapNotFound()
     {
         notFound { req, res ->
-            val acceptHeader = req.headers("Accept")
-            if (acceptHeader.contains("text/html") || acceptHeader.contains("*/*"))
+            if (req.pathInfo().startsWith(apiUrlBase))
+            {
+                res.type("${ContentTypes.json}; charset=utf-8")
+                Serializer.instance.toJson(RouteNotFound().asResult())
+            }
+            else
             {
                 val context = DirectActionContext(req, res)
                 res.type("text/html")
                 freeMarkerEngine.render(
                         ModelAndView(AppViewModel(context), "404.ftl")
                 )
-
-            }
-            else
-            {
-                res.type("${ContentTypes.json}; charset=utf-8")
-                Serializer.instance.toJson(RouteNotFound().asResult())
             }
         }
     }

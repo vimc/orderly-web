@@ -17,21 +17,21 @@ dependencies {
 
 task copyStatic(type: Copy) {
     from '../app/static'
-    include '*'
+    include '*/**'
     into 'static'
     outputs.upToDateWhen { false }
 }
 
 task copyTemplates(type: Copy) {
     from '../app/templates'
-    include '*'
+    include '*/**'
     into 'templates'
     outputs.upToDateWhen { false }
 }
 
 task copyDemo(type: Copy) {
     from '../app/demo'
-    include '*'
+    include '*/**'
     into 'demo'
     outputs.upToDateWhen { false }
 }

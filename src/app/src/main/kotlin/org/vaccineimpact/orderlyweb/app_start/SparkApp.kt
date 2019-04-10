@@ -24,8 +24,6 @@ fun main(args: Array<String>)
 
 class OrderlyWeb
 {
-    private val apiUrlBase = "/api/v1"
-
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
     fun getPropertiesAsString(prop: Properties): String
@@ -58,10 +56,9 @@ class OrderlyWeb
         logger.info("Expecting orderly database at ${AppConfig()["db.location"]}")
 
         TokenStore.instance.setup()
-        ErrorHandler.setup()
 
         val router = Router(freeMarkerConfig)
-        router.mapEndpoints(APIRouteConfig, apiUrlBase)
+        router.mapEndpoints(APIRouteConfig, Router.apiUrlBase)
         router.mapEndpoints(WebRouteConfig, "")
     }
 

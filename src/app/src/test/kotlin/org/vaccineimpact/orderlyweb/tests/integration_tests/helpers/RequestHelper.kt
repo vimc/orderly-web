@@ -46,18 +46,6 @@ class RequestHelper
         return get(webBaseUrl + url, headers)
     }
 
-    fun getWithMontaguCookie(
-            url: String,
-            contentType: String = "text/html"
-    ): Response
-    {
-        val token = loginWithMontagu()["access_token"]
-        val cookieName = MontaguIndirectClient.cookie
-        val headers = standardHeaders(contentType) +
-                mapOf("Cookie" to "$cookieName=$token")
-        return khttp.get(webBaseUrl + url, headers, allowRedirects = false)
-    }
-
     fun getWithCookie(
             url: String,
             contentType: String = ContentTypes.json,
