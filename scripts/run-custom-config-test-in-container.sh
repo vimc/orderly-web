@@ -15,27 +15,28 @@ docker build --tag orderly-web-custom-config-tests \
 	.
 
 # Run all dependencies
-#git clone https://github.com/vimc/montagu --recursive
-#
-#function cleanup() {
-#    rm montagu -rf
-#}
+git clone https://github.com/vimc/montagu --recursive
 
-#trap cleanup EXIT
+function cleanup() {
+    rm montagu -rf
+    $here/clear-docker.sh
+}
 
-#( cd montagu && \
-#    cp settings/teamcity.json src/montagu-deploy.json && \
-#    pip3 install --quiet -r src/requirements.txt && \
-#    ./src/deploy.py
-#)
+trap cleanup EXIT
+
+( cd montagu && \
+    cp settings/teamcity.json src/montagu-deploy.json && \
+    pip3 install --quiet -r src/requirements.txt && \
+    ./src/deploy.py
+)
 export NETWORK=montagu_default
 
-$here/../scripts/montagu-cli.sh add "Test User" test.user \
+$here/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
-$here/../scripts/montagu-cli.sh addRole test.user user
+$here/montagu-cli.sh addRole test.user user
 
-#$here/../scripts/migrate-test.sh
+$here/migrate-test.sh
 
 # Run the created image
 docker run --rm \
@@ -43,4 +44,4 @@ docker run --rm \
     --network=host \
     orderly-web-custom-config-tests
 
-#( cd montagu && ./src/stop.py )
+( cd montagu && ./src/stop.py )
