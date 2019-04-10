@@ -16,7 +16,7 @@ abstract class SeleniumTest : CustomConfigTests()
     fun setup()
     {
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
-                .apply { addArguments("--headless") })
+                .apply { addArguments("--ignore-certificate-errors", "--headless")  })
         wait = WebDriverWait(driver, 10)
     }
 
