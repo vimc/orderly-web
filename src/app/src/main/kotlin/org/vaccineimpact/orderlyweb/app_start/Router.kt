@@ -66,8 +66,6 @@ class Router(freeMarkerConfig: Configuration)
         val url = "login"
         Spark.get(url, loginCallback)
         Spark.get("$url/", loginCallback)
-        Spark.get("/$url", loginCallback)
-        Spark.get("/$url/", loginCallback)
 
     }
 
