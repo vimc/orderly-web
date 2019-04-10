@@ -38,6 +38,7 @@ class Router(freeMarkerConfig: Configuration)
 
     init
     {
+        ErrorHandler.setup(freeMarkerEngine)
         mapNotFound()
 
         val client = AuthenticationConfig.getAuthenticationIndirectClient()
@@ -46,7 +47,6 @@ class Router(freeMarkerConfig: Configuration)
 
         mapLoginCallback(config)
         mapLogoutCallback(config)
-        ErrorHandler.setup(freeMarkerEngine)
     }
 
     private fun transform(x: Any) = when (x)

@@ -15,9 +15,9 @@ class WebErrorHandler(private val freeMarkerEngine: FreeMarkerEngine)
         val context = DirectActionContext(req, res)
         res.type("text/html")
         res.status(error.httpStatus)
-        freeMarkerEngine.render(
+        res.body(freeMarkerEngine.render(
                 ModelAndView(ErrorViewModel(error, context), "error.ftl")
-        )
+        ))
     }
 
     class ErrorViewModel(error: OrderlyWebError, context: DirectActionContext) : AppViewModel(context)
