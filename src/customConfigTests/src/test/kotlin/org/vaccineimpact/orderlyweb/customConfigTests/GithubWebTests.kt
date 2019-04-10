@@ -40,6 +40,6 @@ class GithubWebTests : CustomConfigTests()
         val response = get(fullUrl, allowRedirects=false)
 
         assertHtmlContentType(response)
-        Assertions.assertThat(response.statusCode).isNotEqualTo(200)
+        Assertions.assertThat(response.statusCode).isEqualTo(500)
     }
 }
