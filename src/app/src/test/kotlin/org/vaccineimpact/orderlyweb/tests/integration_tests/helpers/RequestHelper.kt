@@ -113,6 +113,19 @@ class RequestHelper
     private fun generateToken(emailAddress: String) =
             WebTokenHelper.instance.issuer.generateBearerToken(emailAddress)
 
+    fun loginWithMontagu(): JsonObject
+    {
+        // these user login details are set up in ./dev/run-dependencies.sh
+        val auth = BasicAuthorization("test.user@example.com", "password")
+        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
+                data = mapOf("grant_type" to "client_credentials"),
+                auth = auth
+        )
+        val text = response.text
+        println(text)
+        return Parser().parse(StringBuilder(text)) as JsonObject
+    }
+
 }
 
 fun fakeReportReader(reportName: String, addReport: Boolean = true): String
