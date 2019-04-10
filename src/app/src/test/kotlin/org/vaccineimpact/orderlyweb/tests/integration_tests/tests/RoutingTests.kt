@@ -34,7 +34,7 @@ class RoutingTests: IntegrationTest() {
     }
 
     @Test
-    fun `gets 404 page if accept header contains html`()
+    fun `404 returns a page for non api endpoints`()
     {
         val response = requestHelper.getWebPage("/nonsense", "text/html")
 
@@ -43,17 +43,7 @@ class RoutingTests: IntegrationTest() {
     }
 
     @Test
-    fun `gets 404 page if accept header contains *`()
-    {
-        val response = requestHelper.getWebPage("/nonsense", "*/*")
-
-        assertHtmlContentType(response)
-        Assertions.assertThat(response.statusCode).isEqualTo(404)
-    }
-
-
-    @Test
-    fun `gets json response if accept header does not contain html or *`()
+    fun `404 returns json response for api endpoints`()
     {
         val response = requestHelper.get("/nonsense")
 

@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import com.google.gson.JsonSyntaxException
+import freemarker.template.Configuration
 import org.pac4j.core.exception.TechnicalException
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -11,12 +12,15 @@ import org.vaccineimpact.orderlyweb.errors.UnableToParseJsonError
 import org.vaccineimpact.orderlyweb.errors.UnexpectedError
 import spark.Request
 import spark.Response
+import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
 import spark.Spark as spk
 
-class ErrorHandler
+class ErrorHandler(freemarkerEngine: FreeMarkerEngine)
 {
     private val logger = LoggerFactory.getLogger(ErrorHandler::class.java)
+    private val webErrorHandler = WebErrorHandler(freemarkerEngine)
+    private val apiErrorHandler = APIErrorHandler()
 
     init
     {
@@ -64,9 +68,15 @@ class ErrorHandler
     fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
-        res.body(Serializer.instance.toJson(error.asResult()))
-        res.status(error.httpStatus)
-        addDefaultResponseHeaders(res.raw(), "${ContentTypes.json}; charset=utf-8")
+
+        if (req.pathInfo().startsWith(Router.apiUrlBase))
+        {
+            apiErrorHandler.handleError(error, res)
+        }
+        else
+        {
+            webErrorHandler.handleError(error, req, res)
+        }
     }
 
     // Just a helper to let us call Spark.exception using generic type parameters
@@ -81,6 +91,6 @@ class ErrorHandler
 
     companion object
     {
-        fun setup() = ErrorHandler()
+        fun setup(freemarkerEngine: FreeMarkerEngine) = ErrorHandler(freemarkerEngine)
     }
 }
