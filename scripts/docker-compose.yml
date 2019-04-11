@@ -3,7 +3,6 @@ services:
   proxy:
     image: docker.montagu.dide.ic.ac.uk:5000/montagu-reverse-proxy-minimal:mrc-233
     ports:
-    - 8443:8443
     - 80:80
     depends_on:
     - api
