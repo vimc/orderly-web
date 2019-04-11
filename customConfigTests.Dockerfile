@@ -1,6 +1,6 @@
 FROM orderly-web-build-environment
 
-RUN ./scripts/install-chromedriver.sh
+RUN ../scripts/install-chromedriver.sh
 
 RUN mkdir -p /etc/orderly/web
 RUN touch /etc/orderly/web/go_signal
