@@ -1,15 +1,15 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
+package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class MontaguAuthenticationTests : IntegrationTest()
+class MontaguAuthenticationTests : CustomConfigTests()
 {
     @Test
     fun `user is redirected to Montagu if not logged in`()
     {
+        startApp("auth.provider=montagu")
+
         val response = khttp.get(RequestHelper()
                 .webBaseUrl, allowRedirects = false)
         Assertions.assertThat(response.statusCode).isEqualTo(302)
@@ -18,6 +18,8 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `user can login with Montagu cookie`()
     {
+        startApp("auth.provider=montagu")
+
         val loginResponse = RequestHelper()
                 .getWithMontaguCookie("/login")
 
@@ -34,6 +36,8 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `user can logout`()
     {
+        startApp("auth.provider=montagu")
+
         //login
         val loginResponse = RequestHelper().getWithMontaguCookie("/login")
 
@@ -45,7 +49,7 @@ class MontaguAuthenticationTests : IntegrationTest()
 
         //after logout, user should be redirected when attempt to access base url
         val response = khttp.get(RequestHelper().webBaseUrl,
-                headers = mapOf("Cookie" to cookie!!),
+                headers = mapOf("Cookie" to cookie),
                 allowRedirects = false)
         Assertions.assertThat(response.statusCode).isEqualTo(302)
     }

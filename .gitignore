@@ -31,3 +31,5 @@ src/app/static/node_modules
 src/app/static/public/css
 demo
 git
+src/customConfigTests/templates
+src/customConfigTests/static

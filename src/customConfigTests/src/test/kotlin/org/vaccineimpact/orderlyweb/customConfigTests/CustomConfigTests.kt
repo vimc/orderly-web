@@ -68,6 +68,11 @@ abstract class CustomConfigTests : TeamcityTests()
         Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
+    protected fun assertHtmlContentType(response: Response)
+    {
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
+    }
+
     private fun isPortAvailable(): Boolean
     {
         return try
