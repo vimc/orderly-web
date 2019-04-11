@@ -11,10 +11,12 @@
             If you think this is a mistake you should check the following steps have been taken</p>
         <ol>
             <li><a href="https://help.github.com/en/articles/requesting-organization-approval-for-oauth-apps">
-                    GitHub organization approval for ${appName} has been requested
-                </a></li>
+                GitHub organization approval for "${appName}" has been requested for
+            </a>
+            </li>
             <li><a href="https://help.github.com/en/articles/approving-oauth-apps-for-your-organization">
-                    GitHub organization approval for ${appName} has been granted</a>
+                GitHub organization approval "${appName}" has been granted
+            </a>
             </li>
         </ol>
     </#if>

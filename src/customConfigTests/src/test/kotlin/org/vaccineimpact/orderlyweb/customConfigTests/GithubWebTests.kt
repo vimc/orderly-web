@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import khttp.get
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import org.openqa.selenium.By
@@ -11,11 +10,8 @@ class GithubWebTests : SeleniumTest()
     val url: String = "http://localhost:${AppConfig()["app.port"]}/"
     val loginUrl = "${url}login/"
 
-    @Test
-    fun `can log in with Github`()
+    private fun login()
     {
-        startApp("auth.provider=github")
-
         driver.get(url)
         val loginField = driver.findElement(By.id("login_field"))
         val passwordField = driver.findElement(By.id("password"))
@@ -26,6 +22,14 @@ class GithubWebTests : SeleniumTest()
         passwordField.sendKeys(pw)
 
         driver.findElement(By.name("commit")).click()
+    }
+
+    @Test
+    fun `can log in with Github`()
+    {
+        startApp("auth.provider=github")
+
+        login()
 
         val header = driver.findElement(By.cssSelector("h1"))
         assertThat(header.text).isEqualTo("All reports")
@@ -46,5 +50,18 @@ class GithubWebTests : SeleniumTest()
 
         driver.get(url)
         assertThat(driver.currentUrl).contains("github.com")
+    }
+
+    @Test
+    fun `user sees 401 page if not in configured org`()
+    {
+        startApp("auth.provider=github\nauth.github_org=vimc")
+
+        login()
+
+        val helpText = driver.findElements(By.cssSelector("p")).first()
+        assertThat(helpText.text)
+                .contains("We have not been able to successfully identify you as a member of the app's configured Github org")
+
     }
 }
