@@ -1,5 +1,13 @@
 version: '2'
 services:
+  proxy:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-reverse-proxy-minimal:mrc-233
+    ports:
+    - 8443:8443
+    - 80:80
+    depends_on:
+    - api
+    command: 8443 localhost
   orderly_server:
     image: docker.montagu.dide.ic.ac.uk:5000/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}

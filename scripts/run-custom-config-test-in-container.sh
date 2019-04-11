@@ -14,21 +14,16 @@ docker build --tag orderly-web-custom-config-tests \
     -f customConfigTests.Dockerfile \
 	.
 
-# Run all dependencies
-git clone https://github.com/vimc/montagu --recursive
+## Run all dependencies
+export MONTAGU_ORDERLY_PATH=$PWD/git
+export ORDERLY_SERVER_USER_ID=$UID
+$here/run-dependencies.sh
 
-function cleanup() {
-    rm montagu -rf
-    $here/clear-docker.sh
+function cleanup(){
+    docker-compose -f $here/docker-compose.yml --project-name montagu down
 }
-
 trap cleanup EXIT
 
-( cd montagu && \
-    cp settings/teamcity.json src/montagu-deploy.json && \
-    pip3 install --quiet -r src/requirements.txt && \
-    ./src/deploy.py
-)
 export NETWORK=montagu_default
 
 $here/montagu-cli.sh add "Test User" test.user \
@@ -43,5 +38,3 @@ docker run --rm \
     -v $PWD/demo:/api/src/customConfigTests/demo \
     --network=host \
     orderly-web-custom-config-tests
-
-( cd montagu && ./src/stop.py )
