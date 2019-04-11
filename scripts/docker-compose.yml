@@ -7,7 +7,6 @@ services:
     - 80:80
     depends_on:
     - api
-    command: 8443 localhost
   orderly_server:
     image: docker.montagu.dide.ic.ac.uk:5000/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}
