@@ -20,9 +20,6 @@ COPY ./src/config/ /api/src/config/
 RUN echo 'docker' > config/current_user
 RUN ./gradlew
 
-# Install chromedriver
-RUN ./scripts/install-chromedriver.sh
-
 # Copy source
 COPY . /api
 
