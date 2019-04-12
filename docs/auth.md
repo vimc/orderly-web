@@ -7,8 +7,8 @@ For local development run `./dev/run-dependencies.sh` to run a partial local cop
 to log in with the test user account `test.user@example.com` and password `password`.
 
 # Authenticating with GitHub
-You should make sure that the GitHub org configured in the app config (`./config/default.properties`) has approved 3rd party access for the 
- app `TestOrderlyWeb`. This will involve:
+You should make sure that the GitHub org configured in the app config (`./config/default.properties`) has approved
+ 3rd party access for the app `TestOrderlyWeb`. This will involve:
  
 1. Running the app and logging in with a user account that has access to the configured org
 1. Requesting access from the org: https://help.github.com/en/articles/requesting-organization-approval-for-oauth-apps and

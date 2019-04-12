@@ -53,7 +53,7 @@ command line from the `src` directory with `./gradlew :app:test -i`
 
 Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
 command line from the `src` directory with `./gradlew :customConfigTests:test -i`. You will also have to 
-install chromdriver: `./scripts/install-chromdriver.sh`
+install chromedriver: `./scripts/install-chromedriver.sh`
 
 
 ## Regenerate database interface
