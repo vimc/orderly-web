@@ -11,7 +11,7 @@
             If you think this is a mistake you should check the following steps have been taken</p>
         <ol>
             <li><a href="https://help.github.com/en/articles/requesting-organization-approval-for-oauth-apps">
-                GitHub organization approval for "${appName}" has been requested for
+                GitHub organization approval for "${appName}" has been requested
             </a>
             </li>
             <li><a href="https://help.github.com/en/articles/approving-oauth-apps-for-your-organization">

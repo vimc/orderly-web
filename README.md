@@ -44,9 +44,17 @@ also a git repo, the former contains several different types of report. These
 are used for integration tests and for running locally.
 
 ### Run tests
-To run the tests, 
-1. run `./dev/run-dependencies.sh` from this directory
-2. run `./gradlew test` from the src dir
+For all tests to pass you will need to run Montagu related dependencies with
+
+        ./dev/run-dependencies.sh
+        
+Unit and integration tests are found in `src/app/src/test`. They can be run through the IDE or on the 
+command line from the `src` directory with `./gradlew :app:test -i`
+
+Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
+command line from the `src` directory with `./gradlew :customConfigTests:test -i`. You will also have to 
+install chromdriver: `./scripts/install-chromdriver.sh`
+
 
 ## Regenerate database interface
 ```
@@ -84,6 +92,7 @@ The Teamcity build:
 run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and
  build a Docker image containing the compiled app code (see steps [here](#docker-build))
 1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
+1. Runs `./scripts/run-custom-config-tests-in-container.sh`
 
 ## Docker run
 To make use of a built image, run:
