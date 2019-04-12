@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import org.vaccineimpact.orderlyweb.DirectActionContext
+import org.vaccineimpact.orderlyweb.errors.FailedLoginError
 import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
+import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 import spark.ModelAndView
 import spark.Request
@@ -15,8 +17,15 @@ class WebErrorHandler(private val freeMarkerEngine: FreeMarkerEngine)
         val context = DirectActionContext(req, res)
         res.type("text/html")
         res.status(error.httpStatus)
+
+        val template = when (error)
+        {
+            is FailedLoginError -> "401.ftl"
+            is RouteNotFound -> "404.ftl"
+            else -> "error.ftl"
+        }
         res.body(freeMarkerEngine.render(
-                ModelAndView(ErrorViewModel(error, context), "error.ftl")
+                ModelAndView(ErrorViewModel(error, context), template)
         ))
     }
 

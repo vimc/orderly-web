@@ -69,7 +69,6 @@ class ErrorHandler(freemarkerEngine: FreeMarkerEngine)
     {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
 
-        val path = req.pathInfo()
         if (req.pathInfo().startsWith(Router.apiUrlBase))
         {
             apiErrorHandler.handleError(error, res)

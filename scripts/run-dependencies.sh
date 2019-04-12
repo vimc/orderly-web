@@ -5,8 +5,6 @@ echo "using orderly path:"
 echo $MONTAGU_ORDERLY_PATH
 
 config_path=$(realpath $here/../config)
-export MONTAGU_API_VERSION=$(<$config_path/api_version)
-export MONTAGU_DB_VERSION=$(<$config_path/db_version)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 
 COMPOSE_FILE=$here/../scripts/docker-compose.yml
