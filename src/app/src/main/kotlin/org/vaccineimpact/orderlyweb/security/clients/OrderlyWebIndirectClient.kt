@@ -1,0 +1,34 @@
+package org.vaccineimpact.orderlyweb.security.clients
+
+import org.pac4j.core.client.IndirectClient
+import org.pac4j.core.credentials.TokenCredentials
+import org.pac4j.core.credentials.extractor.FormExtractor
+import org.pac4j.core.profile.CommonProfile
+import org.pac4j.core.redirect.RedirectAction
+import org.pac4j.http.client.indirect.FormClient
+import org.pac4j.http.credentials.extractor.CookieExtractor
+import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.models.ErrorInfo
+import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
+import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
+
+
+class OrderlyWebIndirectClient() : IndirectClient<TokenCredentials, CommonProfile>(){
+
+    init {
+        setCallbackUrl("/login")
+    }
+
+    override fun clientInit()
+    {
+        defaultCredentialsExtractor(CookieExtractor("montagu_jwt_token"))
+        defaultRedirectActionBuilder {
+            RedirectAction.redirect(AppConfig()["app.url"] + "/weblogin")
+        }
+
+        defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), khttpMontaguAPIClient()))
+    }
+
+
+}

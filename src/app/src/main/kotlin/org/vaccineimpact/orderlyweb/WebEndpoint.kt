@@ -7,7 +7,9 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvid
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
+import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
+import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 
 import spark.Spark
 import spark.route.HttpMethod
@@ -19,7 +21,8 @@ data class WebEndpoint(
         override val actionName: String,
         override val method: HttpMethod = HttpMethod.get,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
-        override val secure: Boolean = false
+        override val secure: Boolean = false,
+        val secureGithub: Boolean = false //TODO: organise this better, once have proved concept!
 ) : EndpointDefinition
 {
     override val transform = false
@@ -33,11 +36,38 @@ data class WebEndpoint(
         {
             addSecurityFilter(url)
         }
+        else {
+            if (secureGithub)
+            {
+                addGithubSecurityFilter(url)
+            }
+        }
     }
 
     private fun addSecurityFilter(url: String)
     {
-        val client = AuthenticationConfig.getAuthenticationIndirectClient()
+        //TODO: resurrect this in the right context!
+        //val client = AuthenticationConfig.getAuthenticationIndirectClient()
+        var client = OrderlyWebIndirectClient();
+
+        val configFactory = WebSecurityConfigFactory(
+                client,
+                this.requiredPermissions.toSet())
+
+        val config = configFactory.build()
+
+        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+                config,
+                client.javaClass.simpleName,
+                config.authorizers.map { it.key }.joinToString(","),
+                SkipOptionsMatcher.name
+        ))
+
+    }
+
+    private fun addGithubSecurityFilter(url: String)
+    {
+        val client = GithubIndirectClient(AuthenticationConfig.getGithubOAuthKey(), AuthenticationConfig.getGithubOAuthSecret())
 
         val configFactory = WebSecurityConfigFactory(
                 client,
