@@ -1,2 +1,2 @@
-
-<a href="/weblogin/github">Log in with Github</a>
+<#-- @ftlvariable name="authProvider" type="String" -->
+<a href="/weblogin/external">Log in with ${authProvider}</a>

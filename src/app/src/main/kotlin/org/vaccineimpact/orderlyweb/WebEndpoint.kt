@@ -1,5 +1,8 @@
 package org.vaccineimpact.orderlyweb
 
+import org.pac4j.core.client.IndirectClient
+import org.pac4j.core.credentials.Credentials
+import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
@@ -22,7 +25,7 @@ data class WebEndpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val secure: Boolean = false,
-        val secureGithub: Boolean = false //TODO: organise this better, once have proved concept!
+        val externalAuth: Boolean = false
 ) : EndpointDefinition
 {
     override val transform = false
@@ -34,40 +37,23 @@ data class WebEndpoint(
     {
         if (secure)
         {
-            addSecurityFilter(url)
-        }
-        else {
-            if (secureGithub)
-            {
-                addGithubSecurityFilter(url)
-            }
+           addSecurityFilter(url)
         }
     }
 
     private fun addSecurityFilter(url: String)
     {
-        //TODO: resurrect this in the right context!
-        //val client = AuthenticationConfig.getAuthenticationIndirectClient()
-        var client = OrderlyWebIndirectClient();
-
-        val configFactory = WebSecurityConfigFactory(
-                client,
-                this.requiredPermissions.toSet())
-
-        val config = configFactory.build()
-
-        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
-                config,
-                client.javaClass.simpleName,
-                config.authorizers.map { it.key }.joinToString(","),
-                SkipOptionsMatcher.name
-        ))
-
-    }
-
-    private fun addGithubSecurityFilter(url: String)
-    {
-        val client = GithubIndirectClient(AuthenticationConfig.getGithubOAuthKey(), AuthenticationConfig.getGithubOAuthSecret())
+        //The endpoints with externalAuth are those which will redirect the user to a specific external Auth provider
+        //after clicking a link on our login page. All others redirect to the login page
+        val client =
+            if (externalAuth)
+            {
+                AuthenticationConfig.getAuthenticationIndirectClient()
+            }
+            else
+            {
+                 OrderlyWebIndirectClient()
+            }
 
         val configFactory = WebSecurityConfigFactory(
                 client,
@@ -86,12 +72,12 @@ data class WebEndpoint(
 
 }
 
-fun WebEndpoint.secure(permissions: Set<String> = setOf()): WebEndpoint
+fun WebEndpoint.secure(permissions: Set<String> = setOf(), externalAuth: Boolean = false): WebEndpoint
 {
     val allPermissions = (permissions).map {
         PermissionRequirement.parse(it)
     }
-    return this.copy(requiredPermissions = allPermissions, secure = true)
+    return this.copy(requiredPermissions = allPermissions, secure = true, externalAuth = externalAuth)
 }
 
 fun WebEndpoint.post(): WebEndpoint

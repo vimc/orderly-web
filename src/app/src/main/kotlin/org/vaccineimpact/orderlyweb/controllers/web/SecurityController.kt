@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.controllers.api.Template
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.models.Report
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
 class SecurityController(actionContext: ActionContext,
@@ -13,12 +13,13 @@ class SecurityController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    class WebloginViewModel(context: ActionContext) : AppViewModel(context) //TODO: include supported auth method here
+    class WebloginViewModel(context: ActionContext, val authProvider: String) : AppViewModel(context)
 
     @Template("weblogin.ftl")
     fun weblogin(): WebloginViewModel
     {
-        return WebloginViewModel(context)
+        val authProvider = AuthenticationConfig.getConfiguredProvider().toString()
+        return WebloginViewModel(context, authProvider)
     }
 
 }

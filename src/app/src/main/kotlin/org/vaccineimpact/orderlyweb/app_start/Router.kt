@@ -22,7 +22,6 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 
 class Router(freeMarkerConfig: Configuration)

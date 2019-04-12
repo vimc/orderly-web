@@ -29,7 +29,7 @@ object WebRouteConfig : RouteConfig
             WebEndpoint("/", HomeController::class, "index")
                     .secure(),
             WebEndpoint("/weblogin", SecurityController::class, "weblogin"),
-            WebEndpoint("/weblogin/github", HomeController::class, "index", secureGithub = true) //TODO: This should redirect to requested endpoint
-
+            WebEndpoint("/weblogin/external", HomeController::class, "index") //TODO: This should redirect to requested endpoint
+                    .secure(externalAuth = true)
     )
 }

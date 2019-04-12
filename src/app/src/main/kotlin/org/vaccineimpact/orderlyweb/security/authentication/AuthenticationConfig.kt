@@ -12,7 +12,7 @@ class AuthenticationConfig
 {
     companion object {
 
-        private fun getConfiguredProvider(): AuthenticationProvider {
+        fun getConfiguredProvider(): AuthenticationProvider {
             var configuredValue = AppConfig()["auth.provider"]
             return when (configuredValue.toLowerCase()) {
                 "github" -> AuthenticationProvider.Github
