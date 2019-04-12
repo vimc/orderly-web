@@ -14,9 +14,7 @@ class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secre
     override fun clientInit()
     {
         defaultAuthenticator(GithubOAuthAuthenticator(configuration, this))
-
         super.clientInit()
-        
-        this.setProfileCreator(GithubOAuthProfileCreator(configuration, this, OrderlyUserRepository()))
+        this.profileCreator = GithubOAuthProfileCreator(configuration, this, OrderlyUserRepository())
     }
 }
