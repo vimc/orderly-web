@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.Report" -->
+<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
 <@layoutwide>
     <#macro styles>
