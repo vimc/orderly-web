@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
 import khttp.responses.Response

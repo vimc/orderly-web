@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import freemarker.ext.beans.StringModel
 import freemarker.template.SimpleHash
+import freemarker.template.SimpleSequence
 import freemarker.template.TemplateBooleanModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -12,26 +13,55 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
 import org.vaccineimpact.orderlyweb.controllers.web.HomeController.IndexViewModel
+import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.Report
+import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import java.time.Instant
 
 class TemplateObjectWrapperTests : TeamcityTests()
 {
     class TestClass(@Serialise("reportJson") val report: Report)
 
     @Test
-    fun `can wrap properties`()
+    fun `can wrap complex properties`()
     {
-        val report = Report("some report","display name", "v1")
-        val model = TestClass(report)
+        val now = Instant.now()
+        val report = ReportVersionDetails("r1",
+                "first report",
+                "v1",
+                true,
+                now,
+                "dr author",
+                "ms funder",
+                "a fake report",
+                listOf(Artefact(ArtefactFormat.DATA, "a graph", listOf("graph.png"))),
+                listOf(),
+                mapOf("hash" to "data.csv"))
+
+        val model = ReportController.ReportViewModel(report, mock())
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash
-
         val wrappedReport = (result["report"] as StringModel)
-        assertThat(wrappedReport["name"].toString()).isEqualTo("some report")
-        assertThat(wrappedReport["displayName"].toString()).isEqualTo("display name")
-        assertThat(wrappedReport["latestVersion"].toString()).isEqualTo("v1")
+
+        assertThat(wrappedReport["name"].toString()).isEqualTo("r1")
+        assertThat(wrappedReport["id"].toString()).isEqualTo("v1")
+        assertThat((wrappedReport["published"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
+        assertThat((wrappedReport["date"]).toString()).isEqualTo(now.toString())
+
+        val wrappedArtefacts = wrappedReport["artefacts"] as SimpleSequence
+        val wrappedArtefact = wrappedArtefacts[0] as StringModel
+        assertThat(wrappedArtefact["format"].toString()).isEqualTo("data")
+        assertThat(wrappedArtefact["description"].toString()).isEqualTo("a graph")
+
+        val files = wrappedArtefact["files"] as SimpleSequence
+        assertThat(files[0].toString()).isEqualTo("graph.png")
+
+        val data = wrappedReport["dataHashes"] as SimpleHash
+        assertThat(data["hash"].toString()).isEqualTo("data.csv")
     }
 
     @Test
