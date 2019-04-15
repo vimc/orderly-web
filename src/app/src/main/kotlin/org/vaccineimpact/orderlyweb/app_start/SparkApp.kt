@@ -26,7 +26,7 @@ class OrderlyWeb
 {
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
-    fun getPropertiesAsString(prop: Properties): String
+    private fun getPropertiesAsString(prop: Properties): String
     {
         val writer = StringWriter()
         prop.list(PrintWriter(writer))
@@ -37,6 +37,7 @@ class OrderlyWeb
     {
 
         val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
+        freeMarkerConfig.objectWrapper = TemplateObjectWrapper()
         freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
 
