@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 
 fun addUser(options: Map<String, Any>): String
 {
-    val userEmail = options["<email>"].toString()
+    val userEmail = options["<email>"].getStringValue()
     val userRepo = OrderlyUserRepository()
 
     return if (userRepo.getUser(userEmail) == null)

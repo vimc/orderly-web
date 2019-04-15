@@ -16,8 +16,8 @@ class AddPermissionTests : CleanDatabaseTests()
     fun `addPermissionsToGroup adds permissions to group`()
     {
         insertReport("testreport", "v1")
-        addUser(mapOf("<email>" to "test.user@email.com"))
-        val result = grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read", "report:testreport/reports.review")))
+        addUser(mapOf("<email>" to "[test.user@email.com]"))
+        val result = grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[*/reports.read]", "[report:testreport/reports.review]")))
 
         val expected = """Gave user group 'test.user@email.com' the permission '*/reports.read'
             |Gave user group 'test.user@email.com' the permission 'report:testreport/reports.review'
@@ -25,7 +25,7 @@ class AddPermissionTests : CleanDatabaseTests()
 
         assertThat(result).isEqualTo(expected)
 
-        val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
+        val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("[test.user@email.com]")
 
         assertThat(permissions).hasSameElementsAs(
                 listOf(ReifiedPermission("reports.read", Scope.Global()),
@@ -36,7 +36,7 @@ class AddPermissionTests : CleanDatabaseTests()
     fun `addPermissionsToGroup does nothing if user group does not exist`()
     {
         assertThatThrownBy {
-            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/reports.read")))
+            grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[*/reports.read]")))
 
         }.hasMessageContaining("Unknown user-group : 'test.user@email.com'")
 
@@ -48,14 +48,14 @@ class AddPermissionTests : CleanDatabaseTests()
     @Test
     fun `addPermissionsToGroup does nothing if permission does not exist or is badly formatted`()
     {
-        addUser(mapOf("<email>" to "test.user@email.com"))
+        addUser(mapOf("<email>" to "[test.user@email.com]"))
 
         assertThatThrownBy {
-            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("*/permission.read")))
+            grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[*/permission.read]")))
         }.hasMessageContaining("Unknown permission : 'permission.read'")
 
         assertThatThrownBy {
-            grantPermissions(mapOf("<group>" to "test.user@email.com", "<permission>" to listOf("badlyformatted/reports.read")))
+            grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[badlyformatted/reports.read]")))
         }.hasMessageContaining("Unable to parse 'badlyformatted/reports.read' as a ReifiedPermission")
 
         val permissions = OrderlyAuthorizationRepository().getPermissionsForUser("test.user@email.com")
