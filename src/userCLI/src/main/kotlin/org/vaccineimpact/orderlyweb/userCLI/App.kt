@@ -42,5 +42,5 @@ fun main(args: Array<String>)
 
 fun Any?.getStringValue(): String
 {
-    return this.toString().replace("\\[", "").replace("\\]","")
+    return this.toString().replace("[", "").replace("]","")
 }
