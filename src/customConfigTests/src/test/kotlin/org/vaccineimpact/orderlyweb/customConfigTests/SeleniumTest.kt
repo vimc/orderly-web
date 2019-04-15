@@ -20,7 +20,7 @@ abstract class SeleniumTest : CustomConfigTests()
     fun setup()
     {
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
-                .apply { addArguments("--ignore-certificate-errors", "--no-sandbox")  })
+                .apply { addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")  })
         wait = WebDriverWait(driver, 10)
     }
 
