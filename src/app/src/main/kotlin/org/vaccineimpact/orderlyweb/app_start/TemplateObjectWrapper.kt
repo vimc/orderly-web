@@ -5,7 +5,6 @@ import freemarker.template.DefaultObjectWrapper
 import freemarker.template.TemplateModel
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
-import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 

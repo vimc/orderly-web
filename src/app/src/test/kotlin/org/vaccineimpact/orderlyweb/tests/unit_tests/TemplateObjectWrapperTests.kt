@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
 import org.vaccineimpact.orderlyweb.controllers.web.HomeController.IndexViewModel
-import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
@@ -42,17 +41,16 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 listOf(),
                 mapOf("hash" to "data.csv"))
 
-        val model = ReportController.ReportViewModel(report, mock())
         val sut = TemplateObjectWrapper()
-        val result = sut.wrap(model) as SimpleHash
-        val wrappedReport = (result["report"] as StringModel)
+        val result = sut.wrap(report) as SimpleHash
 
-        assertThat(wrappedReport["name"].toString()).isEqualTo("r1")
-        assertThat(wrappedReport["id"].toString()).isEqualTo("v1")
-        assertThat((wrappedReport["published"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
-        assertThat((wrappedReport["date"]).toString()).isEqualTo(now.toString())
+        assertThat(result["name"].toString()).isEqualTo("r1")
+        assertThat(result["id"].toString()).isEqualTo("v1")
+        assertThat((result["published"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
+        assertThat((result["date"]).toString()).isEqualTo(now.toString())
 
-        val wrappedArtefacts = wrappedReport["artefacts"] as SimpleSequence
+        val wrappedArtefacts = result["artefacts"] as SimpleSequence
+
         val wrappedArtefact = wrappedArtefacts[0] as StringModel
         assertThat(wrappedArtefact["format"].toString()).isEqualTo("data")
         assertThat(wrappedArtefact["description"].toString()).isEqualTo("a graph")
@@ -60,7 +58,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val files = wrappedArtefact["files"] as SimpleSequence
         assertThat(files[0].toString()).isEqualTo("graph.png")
 
-        val data = wrappedReport["dataHashes"] as SimpleHash
+        val data = result["dataHashes"] as SimpleHash
         assertThat(data["hash"].toString()).isEqualTo("data.csv")
     }
 
