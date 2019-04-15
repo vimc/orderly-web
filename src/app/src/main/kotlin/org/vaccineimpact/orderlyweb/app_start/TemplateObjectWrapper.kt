@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.memberProperties
 
 class TemplateObjectWrapper : freemarker.ext.beans.BeansWrapper(Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS)
 {
@@ -14,7 +15,7 @@ class TemplateObjectWrapper : freemarker.ext.beans.BeansWrapper(Configuration.DE
 
     override fun wrap(model: Any): TemplateModel
     {
-        val properties = model::class.declaredMemberProperties
+        val properties = model::class.memberProperties
         val result = mutableMapOf<String, Any?>()
         properties.map {
             val propertyValue = it.getter.call(model)

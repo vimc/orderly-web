@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 
 class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secret) {
     init {
@@ -16,5 +17,6 @@ class GithubIndirectClient(key: String, secret: String): GitHubClient(key, secre
         defaultAuthenticator(GithubOAuthAuthenticator(configuration, this))
         super.clientInit()
         this.profileCreator = GithubOAuthProfileCreator(configuration, this, OrderlyUserRepository())
+        setAuthorizationGenerator(OrderlyAuthorizationGenerator())
     }
 }

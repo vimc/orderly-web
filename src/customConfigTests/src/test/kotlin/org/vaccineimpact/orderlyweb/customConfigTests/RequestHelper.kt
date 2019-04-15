@@ -25,31 +25,6 @@ class RequestHelper
         return get(apiBaseUrl + url, headers)
     }
 
-    fun loginWithMontagu(): JsonObject
-    {
-        // these user login details are set up in ./dev/run-dependencies.sh
-        val auth = BasicAuthorization("test.user@example.com", "password")
-        val response = khttp.post("${AppConfig()["montagu.api_url"]}/authenticate/",
-                data = mapOf("grant_type" to "client_credentials"),
-                auth = auth
-        )
-        val text = response.text
-        println(text)
-        return Parser().parse(StringBuilder(text)) as JsonObject
-    }
-
-    fun getWithMontaguCookie(
-            url: String,
-            contentType: String = "text/html"
-    ): Response
-    {
-        val token = loginWithMontagu()["access_token"]
-        val cookieName = MontaguIndirectClient.cookie
-        val headers = standardHeaders(contentType) +
-                mapOf("Cookie" to "$cookieName=$token")
-        return khttp.get(webBaseUrl + url, headers, allowRedirects = false)
-    }
-
     private fun standardHeaders(contentType: String): Map<String, String>
     {
         return mapOf(
