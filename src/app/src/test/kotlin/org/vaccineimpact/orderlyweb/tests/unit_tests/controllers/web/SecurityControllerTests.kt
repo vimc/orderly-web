@@ -41,7 +41,7 @@ class SecurityControllerTests : ControllerTest()
 
         val sut = SecurityController(mockContext)
 
-        val result = sut.weblogin()
+        sut.webloginExternal()
         verify(mockResponse).redirect("testUrl")
     }
 
