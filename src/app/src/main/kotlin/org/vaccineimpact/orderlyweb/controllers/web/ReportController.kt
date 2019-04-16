@@ -16,7 +16,7 @@ class ReportController(actionContext: ActionContext,
                           val focalArtefactUrl: String?,
                           context: ActionContext) : AppViewModel(context)
 
-    @Template("report.ftl")
+    @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
     {
         val reportName = context.params(":name")

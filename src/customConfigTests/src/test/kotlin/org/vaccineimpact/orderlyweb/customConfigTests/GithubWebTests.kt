@@ -71,12 +71,14 @@ class GithubWebTests : SeleniumTest()
     }
 
     @Test
-    fun `non report readers cannot see report page`()
+    fun `users cannot see pages they do not have permissions for`()
     {
         startApp("auth.provider=github")
         insertReport("testreport", "v1")
 
         login()
+
+        // this route requires report.read and by default the test user has no permissions
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
         assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("Page not found")
     }
