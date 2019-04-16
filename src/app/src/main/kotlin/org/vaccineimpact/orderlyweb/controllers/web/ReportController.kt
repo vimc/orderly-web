@@ -42,7 +42,7 @@ class ReportController(actionContext: ActionContext,
     fun canRenderInBrowser(fileName: String): Boolean
     {
         val ext = fileName.toLowerCase().split(".").last()
-        return arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "html")
+        return arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm")
                 .contains(ext)
     }
 }
