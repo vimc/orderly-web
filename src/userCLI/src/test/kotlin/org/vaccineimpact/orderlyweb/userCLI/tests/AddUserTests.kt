@@ -12,7 +12,7 @@ class AddUserTests : CleanDatabaseTests()
     @Test
     fun `addUser adds user`()
     {
-        val result = addUser(mapOf("<email>" to "test.user@email.com"))
+        val result = addUser(mapOf("<email>" to "[test.user@email.com]"))
 
         val users = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER).fetch()
@@ -25,10 +25,10 @@ class AddUserTests : CleanDatabaseTests()
     @Test
     fun `addUser does nothing if user exists`()
     {
-        var result = addUser(mapOf("<email>" to "test.user@email.com"))
+        var result = addUser(mapOf("<email>" to "[test.user@email.com]"))
         Assertions.assertThat(result).isEqualTo("Saved user with email 'test.user@email.com' to the database")
 
-        result = addUser(mapOf("<email>" to "test.user@email.com"))
+        result = addUser(mapOf("<email>" to "[test.user@email.com]"))
         Assertions.assertThat(result).isEqualTo("User with email 'test.user@email.com' already exists; no changes made")
 
         val users = JooqContext().use {
