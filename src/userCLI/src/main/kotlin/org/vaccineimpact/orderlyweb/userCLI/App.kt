@@ -39,3 +39,8 @@ fun main(args: Array<String>)
         exitProcess(1)
     }
 }
+
+fun Any?.getStringValue(): String
+{
+    return this.toString().replace("[", "").replace("]","")
+}
