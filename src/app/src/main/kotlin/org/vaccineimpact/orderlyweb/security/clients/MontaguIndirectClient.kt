@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
+import java.net.URLEncoder
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.profile.CommonProfile
@@ -21,7 +22,10 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
     {
         defaultCredentialsExtractor(CookieExtractor("montagu_jwt_token"))
         defaultRedirectActionBuilder {
-            RedirectAction.redirect(AppConfig()["montagu.url"])
+            val loginUrl = URLEncoder.encode(AppConfig()["app.url"] + "/login", "utf-8")
+            val montaguUrl = AppConfig()["montagu.url"]
+            val redirectUrl = "$montaguUrl?redirectTo=$loginUrl";
+            RedirectAction.redirect(redirectUrl)
         }
         defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), khttpMontaguAPIClient()))
     }
