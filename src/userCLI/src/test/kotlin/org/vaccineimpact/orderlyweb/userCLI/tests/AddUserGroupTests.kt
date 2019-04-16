@@ -12,7 +12,7 @@ class AddUserGroupTests : CleanDatabaseTests()
     @Test
     fun `addUserGroup adds group`()
     {
-        val result = addUserGroup(mapOf("<name>" to "funders"))
+        val result = addUserGroup(mapOf("<name>" to "[funders]"))
 
         val groups = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()
@@ -26,10 +26,10 @@ class AddUserGroupTests : CleanDatabaseTests()
     @Test
     fun `addUserGroup does nothing if group exists`()
     {
-        addUserGroup(mapOf("<name>" to "funders"))
+        addUserGroup(mapOf("<name>" to "[funders]"))
 
         assertThatThrownBy {
-            addUserGroup(mapOf("<name>" to "funders"))
+            addUserGroup(mapOf("<name>" to "[funders]"))
         }.hasMessageContaining("An object with the id 'funders' already exists")
 
         val groups = JooqContext().use {

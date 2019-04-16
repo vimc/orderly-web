@@ -14,10 +14,10 @@ class AddMembersTests : CleanDatabaseTests()
     @Test
     fun `addMembers adds members to group`()
     {
-        addUserGroup(mapOf("<name>" to "admin"))
-        addUser(mapOf("<email>" to "a.user@email.com"))
+        addUserGroup(mapOf("<name>" to "[admin]"))
+        addUser(mapOf("<email>" to "[a.user@email.com]"))
 
-        val result = addMembers(mapOf("<group>" to "admin", "<email>" to listOf("a.user@email.com")))
+        val result = addMembers(mapOf("<group>" to "[admin]", "<email>" to listOf("[a.user@email.com]")))
         val members = JooqContext().use {
 
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
