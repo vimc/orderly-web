@@ -13,13 +13,36 @@ class ReportController(actionContext: ActionContext,
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
     class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
+                          val focalArtefactUrl: String?,
                           context: ActionContext) : AppViewModel(context)
 
     @Template("report.ftl")
-    fun get(): ReportViewModel
+    fun getByNameAndVersion(): ReportViewModel
     {
         val reportName = context.params(":name")
         val version = context.params(":version")
-        return ReportViewModel(orderly.getDetailsByNameAndVersion(reportName, version), context)
+        val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
+        val displayName = reportDetails.displayName ?: reportDetails.name
+
+        val focalArtefact = reportDetails.artefacts.firstOrNull {
+            it.files.any { f -> canRenderInBrowser(f) }
+        }?.files?.firstOrNull { canRenderInBrowser(it) }
+
+        val focalArtefactUrl = if (focalArtefact == null)
+        {
+            null
+        }
+        else
+        {
+            "/reports/$reportName/versions/$version/artefacts/$focalArtefact?inline=true"
+        }
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, context)
+    }
+
+    fun canRenderInBrowser(fileName: String): Boolean
+    {
+        val ext = fileName.toLowerCase().split(".").last()
+        return arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "html")
+                .contains(ext)
     }
 }
