@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.controllers.api.Template
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
@@ -13,7 +12,7 @@ class SecurityController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    class WebloginViewModel(context: ActionContext, val authProvider: String, val requestedUrl: String) : AppViewModel(context)
+    class WebloginViewModel(context: ActionContext, val requestedUrl: String) : AppViewModel(context)
 
     @Template("weblogin.ftl")
     fun weblogin(): WebloginViewModel
@@ -21,9 +20,8 @@ class SecurityController(actionContext: ActionContext,
         //This action handles displaying the 'landing page' with links to the external auth providers e.g. Github
         //This is the redirect location for the OrderlyWebIndirectClient, which secures the WebEndpoints of the app
 
-        val authProvider = AuthenticationConfig.getConfiguredProvider().toString()
         val requestedUrl = context.queryParams("requestedUrl")
-        return WebloginViewModel(context, authProvider, requestedUrl?:"")
+        return WebloginViewModel(context, requestedUrl?:"")
     }
 
     fun webloginExternal()
