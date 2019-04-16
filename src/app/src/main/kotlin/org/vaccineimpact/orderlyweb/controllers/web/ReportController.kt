@@ -15,7 +15,7 @@ class ReportController(actionContext: ActionContext,
     class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                           context: ActionContext) : AppViewModel(context)
 
-    @Template("report.ftl")
+    @Template("report-page.ftl")
     fun get(): ReportViewModel
     {
         val reportName = context.params(":name")

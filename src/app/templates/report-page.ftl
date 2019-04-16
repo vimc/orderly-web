@@ -18,7 +18,7 @@
         </div>
         <div class="col-12 col-md-8 col-xl-9 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report">
-                <#include "partials/report.ftl">
+                <#include "partials/report-tab.ftl">
             </div>
             <div class="tab-pane" role="tabpanel" id="downloads">
                 <#include "partials/downloads.ftl">
