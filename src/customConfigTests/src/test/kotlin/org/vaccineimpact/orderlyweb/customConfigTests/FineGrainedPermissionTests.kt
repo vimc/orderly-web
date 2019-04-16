@@ -8,7 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.GithubTokenHeader
 
-class GithubAPITests : CustomConfigTests()
+class FineGrainedPermissionTests : CustomConfigTests()
 {
     val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
     val url = "$apiBaseUrl/login/"

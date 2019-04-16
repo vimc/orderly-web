@@ -1,4 +1,4 @@
-MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:${MONTAGU_DB_VERSION}
+MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:master
 
 docker pull ${MIGRATE_IMAGE}
 docker run --rm --network=$NETWORK \

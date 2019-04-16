@@ -1,5 +1,11 @@
 version: '2'
 services:
+  proxy:
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-reverse-proxy-minimal:mrc-233
+    ports:
+    - 80:80
+    depends_on:
+    - api
   orderly_server:
     image: docker.montagu.dide.ic.ac.uk:5000/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}
@@ -9,12 +15,12 @@ services:
     volumes:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
   api:
-    image: docker.montagu.dide.ic.ac.uk:5000/montagu-api:${MONTAGU_API_VERSION}
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-api:master
     ports:
     - "8080:8080"
     depends_on:
     - db
   db:
-    image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:${MONTAGU_DB_VERSION}
+    image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:master
     ports:
     - "5432:5432"

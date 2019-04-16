@@ -57,7 +57,6 @@ abstract class CustomConfigTests : TeamcityTests()
                 global.inputStream().use { load(it) }
             }
         }
-
     }
 
     protected fun assertSuccessful(response: Response)

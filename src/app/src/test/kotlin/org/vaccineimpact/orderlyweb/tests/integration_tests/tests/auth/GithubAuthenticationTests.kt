@@ -46,7 +46,7 @@ class GithubAuthenticationTests : IntegrationTest()
     {
         // this is a PAT for a test user who only has access to a test org with no repos
         // reversed so GitHub doesn't spot it and invalidate it
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
+        val token = "fcef1c6821f7561259ce45d4840965642607e5a4".reversed()
 
         val result = post(url, auth = GithubTokenHeader(token))
 
@@ -74,13 +74,13 @@ class GithubAuthenticationTests : IntegrationTest()
     }
 
     @Test
-    fun `authentication fails if token does not have org reading scope`()
+    fun `authentication fails if token does not have user reading scope`()
     {
         // this is a PAT for a test user who only has access to a test org with no repos
         // reversed so GitHub doesn't spot it and invalidate it
-        val tokenWithoutOrgReadingScope = "285d9b1b6620ab4dfd6c403b29451d52aa38a158".reversed()
+        val tokenWithoutUserReadingScope = "285d9b1b6620ab4dfd6c403b29451d52aa38a158".reversed()
 
-        val result = post(url, auth = GithubTokenHeader(tokenWithoutOrgReadingScope))
+        val result = post(url, auth = GithubTokenHeader(tokenWithoutUserReadingScope))
 
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",

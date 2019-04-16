@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
 open class AppViewModel(val loggedIn: Boolean, val user: String?)
 {
@@ -11,4 +12,5 @@ open class AppViewModel(val loggedIn: Boolean, val user: String?)
 
     val appName = AppConfig()["app.name"]
     val appEmail = AppConfig()["app.email"]
+    val authProvider = AuthenticationConfig.getConfiguredProvider().toString().toLowerCase()
 }

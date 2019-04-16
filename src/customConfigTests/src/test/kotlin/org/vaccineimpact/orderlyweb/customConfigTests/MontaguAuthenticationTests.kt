@@ -1,36 +1,32 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
+import org.vaccineimpact.orderlyweb.db.AppConfig
 
-class MontaguAuthenticationTests : CustomConfigTests()
+class MontaguAuthenticationTests : SeleniumTest()
 {
-    @Test
-    fun `user is redirected to Montagu if not logged in`()
+    private fun login()
     {
-        startApp("auth.provider=montagu")
+        driver.get(RequestHelper.webBaseUrl)
+        driver.findElement(By.name("email")).sendKeys("test.user@example.com")
+        driver.findElement(By.name("password")).sendKeys("password")
+        driver.findElement(By.id("login-button")).click()
 
-        val response = khttp.get(RequestHelper()
-                .webBaseUrl, allowRedirects = false)
-        Assertions.assertThat(response.statusCode).isEqualTo(302)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
     }
 
     @Test
-    fun `user can login with Montagu cookie`()
+    fun `user is directed to login with Montagu`()
     {
         startApp("auth.provider=montagu")
 
-        val loginResponse = RequestHelper()
-                .getWithMontaguCookie("/login")
+        login()
 
-        // the session cookie should now have been set
-        // so pull this out of the response and send it back
-        val cookie = loginResponse.headers["Set-Cookie"]
-
-        val response = khttp.get(RequestHelper().webBaseUrl,
-                headers = mapOf("Cookie" to cookie!!))
-
-        Assertions.assertThat(response.statusCode).isEqualTo(200)
+        val header = driver.findElement(By.cssSelector("h1"))
+        assertThat(header.text).isEqualTo("All reports")
     }
 
     @Test
@@ -38,19 +34,11 @@ class MontaguAuthenticationTests : CustomConfigTests()
     {
         startApp("auth.provider=montagu")
 
-        //login
-        val loginResponse = RequestHelper().getWithMontaguCookie("/login")
+        login()
 
-        //logout
-        val cookie = loginResponse.headers["Set-Cookie"]
-        khttp.get("${RequestHelper().webBaseUrl}/logout",
-                headers = mapOf("Cookie" to cookie!!),
-                allowRedirects = false)
+        driver.findElement(By.className("logout")).findElement(By.cssSelector("a")).click()
+        driver.get(RequestHelper.webBaseUrl)
 
-        //after logout, user should be redirected when attempt to access base url
-        val response = khttp.get(RequestHelper().webBaseUrl,
-                headers = mapOf("Cookie" to cookie),
-                allowRedirects = false)
-        Assertions.assertThat(response.statusCode).isEqualTo(302)
+        assertThat(driver.currentUrl).contains(AppConfig()["montagu.url"])
     }
 }

@@ -4,7 +4,7 @@ import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.controllers.api.Template
+import org.vaccineimpact.orderlyweb.controllers.web.Template
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
