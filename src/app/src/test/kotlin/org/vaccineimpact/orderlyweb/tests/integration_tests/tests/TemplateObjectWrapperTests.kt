@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
