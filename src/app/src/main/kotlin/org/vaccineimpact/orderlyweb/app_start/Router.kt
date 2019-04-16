@@ -4,7 +4,7 @@ import freemarker.template.Configuration
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.controllers.api.Template
+import org.vaccineimpact.orderlyweb.controllers.web.Template
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
@@ -22,7 +22,6 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 
 class Router(freeMarkerConfig: Configuration)
