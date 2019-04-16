@@ -11,10 +11,10 @@ object WebReportRouteConfig : RouteConfig
     private val readReports = setOf("report:<name>/reports.read")
     override val endpoints = listOf(
             WebEndpoint("/reports/:name/:version/",
-                    ReportController::class, "get")
+                    ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
             WebEndpoint("/reports/:name/versions/:version/artefacts/:artefact/",
-                    ArtefactController::class, "download")
+                    ArtefactController::class, "getFile")
                     .secure(readReports)
     )
 }
