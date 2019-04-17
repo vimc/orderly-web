@@ -15,6 +15,7 @@
                 </li>
             </ul>
             <hr/>
+            <publish-switch :report=report @toggle="handleToggle"></publish-switch>
         </div>
         <div class="col-12 col-md-8 col-xl-9 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report">
@@ -29,5 +30,6 @@
         <script>
             var report = ${reportJson}
         </script>
+        <script src="/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>
