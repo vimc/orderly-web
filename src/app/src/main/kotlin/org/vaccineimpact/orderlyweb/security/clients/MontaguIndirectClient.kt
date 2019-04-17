@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
+import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
 
 class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient {
@@ -24,6 +25,7 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
             RedirectAction.redirect("${AppConfig()["montagu.url"]}?redirectTo=${AppConfig()["app.url"]}/login")
         }
         defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), khttpMontaguAPIClient()))
+        setAuthorizationGenerator(OrderlyAuthorizationGenerator())
     }
 
     companion object

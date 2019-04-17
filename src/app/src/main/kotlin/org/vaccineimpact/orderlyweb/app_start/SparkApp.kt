@@ -40,6 +40,7 @@ class OrderlyWeb
         freeMarkerConfig.objectWrapper = TemplateObjectWrapper()
         freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
+        freeMarkerConfig.addAutoInclude("layouts/layoutwide.ftl")
 
         staticFiles.externalLocation(File("static/public").absolutePath)
 

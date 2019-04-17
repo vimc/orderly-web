@@ -6,10 +6,10 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 
-class OrderlyAuthorizationGenerator(private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
-    : AuthorizationGenerator<CommonProfile>
+class OrderlyAuthorizationGenerator<T : CommonProfile>(private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
+    : AuthorizationGenerator<T>
 {
-    override fun generate(context: WebContext?, profile: CommonProfile): CommonProfile
+    override fun generate(context: WebContext?, profile: T): T
     {
         val permissions = authRepo.getPermissionsForUser(profile.id)
         profile.orderlyWebPermissions = permissions

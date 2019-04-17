@@ -4,6 +4,11 @@ import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import org.openqa.selenium.By
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import kotlin.math.log
 
 class GithubWebTests : SeleniumTest()
 {
@@ -63,5 +68,18 @@ class GithubWebTests : SeleniumTest()
         assertThat(helpText.text)
                 .contains("We have not been able to successfully identify you as a member of the app's configured Github org")
 
+    }
+
+    @Test
+    fun `users cannot see pages they do not have permissions for`()
+    {
+        startApp("auth.provider=github")
+        insertReport("testreport", "v1")
+
+        login()
+
+        // this route requires report.read and by default the test user has no permissions
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
+        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("Page not found")
     }
 }
