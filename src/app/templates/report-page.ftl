@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.Report" -->
+<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
 <@layoutwide>
     <#macro styles>
@@ -17,7 +17,7 @@
             <hr/>
             <publish-switch :report=report @toggle="handleToggle"></publish-switch>
         </div>
-        <div class="col-12 col-md-8 col-xl-9 tab-content">
+        <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report">
                 <#include "partials/report-tab.ftl">
             </div>

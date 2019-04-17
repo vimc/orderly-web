@@ -20,7 +20,7 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
 
     override fun clientInit()
     {
-        defaultCredentialsExtractor(CookieExtractor("montagu_jwt_token"))
+        defaultCredentialsExtractor(CookieExtractor(cookie))
         defaultRedirectActionBuilder {
             RedirectAction.redirect("${AppConfig()["montagu.url"]}?redirectTo=${AppConfig()["app.url"]}/login")
         }
