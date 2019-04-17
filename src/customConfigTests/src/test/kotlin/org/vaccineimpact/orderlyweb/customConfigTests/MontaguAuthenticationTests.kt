@@ -26,9 +26,20 @@ class MontaguAuthenticationTests : SeleniumTest()
 
         loginWithMontagu()
 
+        //Confirm that montagu tokens are set
+        val loggedInCookies = driver.manage().cookies
+        assertThat(loggedInCookies.first{ it.name == "jwt_token" }.value).isNotEmpty()
+        assertThat(loggedInCookies.first{ it.name == "montagu_jwt_token" }.value).isNotEmpty()
+
         driver.findElement(By.className("logout")).findElement(By.cssSelector("a")).click()
         driver.get(RequestHelper.webBaseUrl)
 
         assertThat(driver.currentUrl).contains(AppConfig()["montagu.url"])
+
+        //Check that montagu token cookies were cleared to logout of Montagu as well as OrderlyWeb
+        val loggedOutCookies = driver.manage().cookies
+        assertThat(loggedOutCookies.first{ it.name == "jwt_token" }.value).isEmpty()
+        assertThat(loggedOutCookies.first{ it.name == "montagu_jwt_token" }.value).isEmpty()
+
     }
 }
