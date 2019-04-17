@@ -11,6 +11,7 @@
   "license": "MIT",
   "devDependencies": {
     "bootstrap": "^4.3.1",
+    "bootstrap-toggle": "^2.2.2",
     "gulp": "^4.0.0",
     "gulp-clean-css": "^4.0.0",
     "gulp-rename": "^1.4.0",

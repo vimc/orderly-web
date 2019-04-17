@@ -50,6 +50,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
         assertThat((result["date"]).toString()).isEqualTo(now.toString())
 
         val wrappedArtefacts = result["artefacts"] as SimpleSequence
+
         val wrappedArtefact = wrappedArtefacts[0] as StringModel
         assertThat(wrappedArtefact["format"].toString()).isEqualTo("data")
         assertThat(wrappedArtefact["description"].toString()).isEqualTo("a graph")

@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.app_start.Routing
+package org.vaccineimpact.orderlyweb.app_start.routing.api
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig

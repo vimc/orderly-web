@@ -5,7 +5,10 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
+import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 abstract class SeleniumTest : CustomConfigTests()
 {
@@ -31,6 +34,27 @@ abstract class SeleniumTest : CustomConfigTests()
     {
         //Click on the landing page link to navigate to auth provider
         driver.findElement(By.className("login-external-link")).click()
+    }
+
+    protected fun loginWithMontagu()
+    {
+        driver.get(RequestHelper.webBaseUrl)
+
+        clickOnLandingPageLink()
+
+        driver.findElement(By.name("email")).sendKeys("test.user@example.com")
+        driver.findElement(By.name("password")).sendKeys("password")
+        driver.findElement(By.id("login-button")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
+    }
+
+    protected fun logout()
+    {
+        driver.get("${RequestHelper.webBaseUrl}/logout")
+        // TODO roll this into our logout method
+        driver.findElement(By.id("logout-button")).click()
+
     }
 
 }
