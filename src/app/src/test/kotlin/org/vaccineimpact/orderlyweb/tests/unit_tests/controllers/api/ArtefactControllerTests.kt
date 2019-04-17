@@ -39,7 +39,7 @@ class ArtefactControllerTests : ControllerTest()
 
         val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
-        assertThat(sut.get()).isEqualTo(artefacts)
+        assertThat(sut.getMetaData()).isEqualTo(artefacts)
     }
 
     @Test
@@ -67,7 +67,7 @@ class ArtefactControllerTests : ControllerTest()
 
         val sut = ArtefactController(actionContext, orderly, fileSystem, mockConfig)
 
-        sut.download()
+        sut.getFile()
 
         verify(actionContext).addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testartefact\"")
     }
@@ -91,7 +91,7 @@ class ArtefactControllerTests : ControllerTest()
 
         val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
 
-        assertThatThrownBy { sut.download() }
+        assertThatThrownBy { sut.getFile() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 

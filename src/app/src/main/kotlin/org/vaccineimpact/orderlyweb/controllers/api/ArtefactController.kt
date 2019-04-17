@@ -24,12 +24,12 @@ class ArtefactController(context: ActionContext,
                     Files(),
                     AppConfig())
 
-    fun get(): Map<String, String>
+    fun getMetaData(): Map<String, String>
     {
         return orderly.getArtefactHashes(context.params(":name"), context.params(":version"))
     }
 
-    fun download(): Boolean
+    fun getFile(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")
