@@ -2,7 +2,7 @@ import Vue from 'vue';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 
-let data = {tab: "report", report: null};
+let data = {report: null};
 
 // report var should be set externally in the browser
 if (typeof report !== "undefined") {
