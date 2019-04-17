@@ -16,9 +16,9 @@ dependencies {
 }
 
 task copyStatic(type: Copy) {
-    from '../app/static'
+    from '../app/static/public'
     include '*/**'
-    into 'static'
+    into 'static/public'
     outputs.upToDateWhen { false }
 }
 

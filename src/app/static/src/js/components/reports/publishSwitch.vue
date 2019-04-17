@@ -12,7 +12,7 @@
             </span>
             </div>
         </div>
-        <div class="alert alert-danger" v-if="error.length > 0">
+        <div class="alert alert-danger mt-3" v-if="error.length > 0">
             {{error}}
         </div>
     </div>
@@ -30,7 +30,9 @@
         },
         methods: {
             publish: function () {
-                axios.post(`/v1/reports/${this.report.name}/versions/${this.report.id}/publish/`)
+                axios.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`,
+                    null,
+                    {withCredentials: true})
                     .then(() => {
                         this.$emit('toggle');
                         this.error = "";

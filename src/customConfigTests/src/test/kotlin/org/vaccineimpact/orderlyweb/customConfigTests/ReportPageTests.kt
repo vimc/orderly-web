@@ -25,11 +25,38 @@ class ReportPageTests : SeleniumTest()
                 .ensureUserGroupHasPermission("test.user@example.com",
                         ReifiedPermission("reports.read", Scope.Global()))
 
+
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl)
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
 
         assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("display name testreport")
+    }
+
+    @Test
+    fun `can publish report`()
+    {
+        startApp("auth.provider=montagu")
+        insertReport("testreport", "v1", published = false)
+
+        OrderlyAuthorizationRepository()
+                .ensureUserGroupHasPermission("test.user@example.com",
+                        ReifiedPermission("reports.read", Scope.Global()))
+
+        OrderlyAuthorizationRepository()
+                .ensureUserGroupHasPermission("test.user@example.com",
+                        ReifiedPermission("reports.review", Scope.Global()))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
+
+        val publishButton = driver.findElement(By.className("btn-published"))
+
+        assertThat(publishButton.getAttribute("class").contains("toggle-on"))
+
+        driver.findElement(By.cssSelector("[data-toggle=toggle]"))
+                .click()
+
+        assertThat(publishButton.getAttribute("class").contains("toggle-off"))
     }
 
 }

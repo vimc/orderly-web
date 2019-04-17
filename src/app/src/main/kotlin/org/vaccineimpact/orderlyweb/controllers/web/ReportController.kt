@@ -1,10 +1,13 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
 class ReportController(actionContext: ActionContext,
@@ -14,6 +17,7 @@ class ReportController(actionContext: ActionContext,
 
     class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                           val focalArtefactUrl: String?,
+                          val isAdmin: Boolean,
                           context: ActionContext) : AppViewModel(context)
 
     @Template("report-page.ftl")
@@ -36,7 +40,9 @@ class ReportController(actionContext: ActionContext,
         {
             "/reports/$reportName/versions/$version/artefacts/$focalArtefact?inline=true"
         }
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, context)
+
+        val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, isAdmin, context)
     }
 
     fun canRenderInBrowser(fileName: String): Boolean

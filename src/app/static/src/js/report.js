@@ -16,9 +16,6 @@ export const vm = new Vue({
         publishSwitch: publishSwitch
     },
     methods: {
-        switchTab: function (tabName) {
-            this.tab = tabName
-        },
         handleToggle: function() {
             this.report.published = !this.report.published
         }

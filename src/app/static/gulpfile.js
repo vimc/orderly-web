@@ -6,6 +6,7 @@ const gulp = require('gulp'),
     minify = require('gulp-clean-css'),
     webpack = require('webpack-stream'),
     through = require('through'),
+    path = require('path'),
     VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 sass.compiler = require('node-sass');
