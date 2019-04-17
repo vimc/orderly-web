@@ -7,7 +7,8 @@ const gulp = require('gulp'),
     webpack = require('webpack-stream'),
     through = require('through'),
     path = require('path'),
-    VueLoaderPlugin = require('vue-loader/lib/plugin');
+    VueLoaderPlugin = require('vue-loader/lib/plugin'),
+    webpackConfig = require('./webpack.config');
 
 sass.compiler = require('node-sass');
 
@@ -28,35 +29,7 @@ gulp.task('js', () => {
             file.named = path.basename(file.path, path.extname(file.path));
             this.queue(file);
         }))
-        .pipe(webpack({
-            output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
-            resolve: {
-                alias: {
-                    'vue$': process.env.NODE_ENV === 'production' ?
-                        'vue/dist/vue.min.js' : 'vue/dist/vue.js'
-                }
-            },
-            module: {
-                rules: [
-                    {
-                        test: /\.vue$/,
-                        loader: 'vue-loader'
-                    },
-                    {
-                        test: /\.js$/,
-                        loader: 'babel-loader',
-                        options: {
-                            presets: ['@babel/preset-env']
-                        }
-                    }
-                ]
-            },
-            plugins: [
-                // make sure to include the plugin!
-                new VueLoaderPlugin()
-            ],
-            mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
-        }))
+        .pipe(webpack(webpackConfig))
         .pipe(gulp.dest('public/js'));
 });
 

@@ -1,26 +1,15 @@
-const nodeExternals = require('webpack-node-externals');
-const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const path = require('path');
+const config = require('./webpack.common.config');
 
-module.exports = {
-    //  target: 'node', // in order to ignore built-in modules like path, fs, etc.
-    module: {
-        rules: [
-            {
-                test: /\.vue$/,
-                loader: 'vue-loader'
-            },
-            {
-                test: /\.js$/,
-                loader: 'babel-loader',
-                options: {
-                    presets: ['@babel/preset-env']
-                }
-            }
-        ]
+Object.assign({
+    output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
+    resolve: {
+        alias: {
+            'vue$': process.env.NODE_ENV === 'production' ?
+                'vue/dist/vue.min.js' : 'vue/dist/vue.js'
+        }
     },
-    plugins: [
-        // make sure to include the plugin!
-        new VueLoaderPlugin()
-    ],
-    externals: [nodeExternals()] // in order to ignore all modules in node_modules folder
-};
+    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
+}, config);
+
+module.exports = config;
