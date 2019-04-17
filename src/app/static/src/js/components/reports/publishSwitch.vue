@@ -5,9 +5,9 @@
              data-toggle="toggle"
              style="width: 109.281px; height: 38px;">
             <div class="toggle-group">
-                <label class="btn btn-published toggle-on" id="published-true">
+                <label class="btn btn-published toggle-on">
                     Published</label>
-                <label class="btn btn-internal toggle-off" id="published-false">Internal</label>
+                <label class="btn btn-internal toggle-off">Internal</label>
                 <span class="toggle-handle btn btn-default">
             </span>
             </div>

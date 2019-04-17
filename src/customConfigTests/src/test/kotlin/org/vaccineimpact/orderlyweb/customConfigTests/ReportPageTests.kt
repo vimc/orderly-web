@@ -52,13 +52,12 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
 
-        val internalLabel = driver.findElement(By.id("published-false"))
-        assertThat(internalLabel.getAttribute("class").contains("toggle-on"))
+        val toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
+        assertThat(toggleButton.getAttribute("class").contains("off")).isTrue()
 
-        driver.findElement(By.cssSelector("[data-toggle=toggle]"))
-                .click()
+        toggleButton.click()
 
-        assertThat(internalLabel.getAttribute("class").contains("toggle-off"))
+        assertThat(toggleButton.getAttribute("class").contains("on")).isTrue()
     }
 
 }
