@@ -51,7 +51,13 @@ abstract class SeleniumTest : CustomConfigTests()
 
     protected fun logout()
     {
+        //logout of Orderly Web
         driver.get("${RequestHelper.webBaseUrl}/logout")
+
+        //..which will take us to out login page - click through to Montagu
+        clickOnLandingPageLink()
+
+        //logout of Montagu
         // TODO roll this into our logout method
         driver.findElement(By.id("logout-button")).click()
 
