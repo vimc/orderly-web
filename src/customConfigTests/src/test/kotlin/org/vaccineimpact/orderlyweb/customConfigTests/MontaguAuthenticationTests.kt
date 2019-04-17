@@ -11,6 +11,9 @@ class MontaguAuthenticationTests : SeleniumTest()
     private fun login()
     {
         driver.get(RequestHelper.webBaseUrl)
+
+        clickOnLandingPageLink()
+
         driver.findElement(By.name("email")).sendKeys("test.user@example.com")
         driver.findElement(By.name("password")).sendKeys("password")
         driver.findElement(By.id("login-button")).click()

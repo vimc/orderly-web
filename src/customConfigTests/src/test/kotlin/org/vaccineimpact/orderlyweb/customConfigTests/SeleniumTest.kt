@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.junit.After
 import org.junit.Before
+import org.openqa.selenium.By
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.WebDriverWait
@@ -24,6 +25,12 @@ abstract class SeleniumTest : CustomConfigTests()
     fun tearDown()
     {
         driver.quit()
+    }
+
+    protected fun clickOnLandingPageLink()
+    {
+        //Click on the landing page link to navigate to auth provider
+        driver.findElement(By.className("login-external-link")).click()
     }
 
 }

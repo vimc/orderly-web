@@ -13,6 +13,9 @@ class GithubWebTests : SeleniumTest()
     private fun login()
     {
         driver.get(url)
+
+        clickOnLandingPageLink()
+
         val loginField = driver.findElement(By.id("login_field"))
         val passwordField = driver.findElement(By.id("password"))
         val pw = "AfakeP@s5w0rd"
@@ -49,7 +52,7 @@ class GithubWebTests : SeleniumTest()
         assertThat(header.text).isEqualTo("Something went wrong")
 
         driver.get(url)
-        assertThat(driver.currentUrl).contains("github.com")
+        assertThat(driver.currentUrl).contains(url + "weblogin")
     }
 
     @Test
