@@ -38,6 +38,9 @@ class OrderlyWebIndirectClientTests : TeamcityTests()
         val redirectActionBuilder = rabField.get(sut)
         assertThat(redirectActionBuilder is OrderlyWebIndirectClientRedirectActionBuilder).isTrue()
 
-
+        //inherited private callbackUrl field should be "/login"
+        val callbackUrlField = indirectClientClass.getDeclaredField("callbackUrl")
+        callbackUrlField.isAccessible = true
+        assertThat(callbackUrlField.get(sut)).isEqualTo("/login")
     }
 }

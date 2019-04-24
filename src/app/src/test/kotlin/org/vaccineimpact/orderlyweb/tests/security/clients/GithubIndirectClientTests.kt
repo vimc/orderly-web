@@ -5,6 +5,7 @@ import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
 import org.pac4j.core.client.BaseClient
+import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
@@ -21,7 +22,7 @@ class GithubIndirectClientTests : TeamcityTests()
         sut.init()
 
         //base class should be GithubClient
-        assertThat(sut.javaClass.superclass.`package`).isEqualTo("org.pac4j.oauth.client")
+        assertThat(sut.javaClass.superclass.`package`.name).isEqualTo("org.pac4j.oauth.client")
         assertThat(sut.javaClass.superclass.name).isEqualTo("GithubClient")
 
         //inherited private authenticator field should be GithubOAuthAuthenticator
@@ -42,6 +43,12 @@ class GithubIndirectClientTests : TeamcityTests()
         val ags = agsField.get(sut)
         Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
+
+        //inherited private callbackUrl field should be set
+        val indirectClientClass = IndirectClient::class.java
+        val callbackUrlField = indirectClientClass.getDeclaredField("callbackUrl")
+        callbackUrlField.isAccessible = true
+        assertThat(callbackUrlField.get(sut)).isEqualTo("http://localhost:8888/login")
 
     }
 }
