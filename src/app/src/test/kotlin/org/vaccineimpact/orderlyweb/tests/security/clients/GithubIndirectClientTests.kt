@@ -33,6 +33,7 @@ class GithubIndirectClientTests : TeamcityTests()
 
         //inherited protected profileCreator field should be GithubOAuthProfileCreator
         val pcField = baseClientClass.getDeclaredField("profileCreator")
+        pcField.isAccessible = true
         val profileCreator = pcField.get(sut)
         assertThat(profileCreator is GithubOAuthProfileCreator).isTrue()
 
