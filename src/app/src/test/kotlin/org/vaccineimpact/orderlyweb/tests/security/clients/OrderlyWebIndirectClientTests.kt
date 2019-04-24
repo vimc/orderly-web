@@ -1,9 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
-import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert
 import org.junit.Test
 import org.pac4j.core.client.BaseClient
 import org.pac4j.core.client.IndirectClient
@@ -13,7 +10,7 @@ import org.vaccineimpact.orderlyweb.security.clients.NeverInvokedCredentialsExtr
 import org.vaccineimpact.orderlyweb.security.clients.NeverInvokedAuthenticator
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClientRedirectActionBuilder
 
-class GithubApiClientAuthHelperTests : TeamcityTests()
+class OrderlyWebIndirectClientTests : TeamcityTests()
 {
     @Test
     fun `initialises as expected`()

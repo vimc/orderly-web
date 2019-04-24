@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.security
+package org.vaccineimpact.orderlyweb.tests.security.authentication
 
 import com.github.scribejava.core.model.OAuth2AccessToken
 import com.github.scribejava.core.oauth.OAuth20Service
