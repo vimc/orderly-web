@@ -20,7 +20,7 @@ data class APIEndpoint(
         override val allowParameterAuthentication: Boolean = false,
         override val secure: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
-        val configFactory: APISecurityConfigFactory = APISecurityConfigFactory()
+        val configFactory: APISecurityConfigFactory? = null
 
 ) : EndpointDefinition
 {
@@ -38,7 +38,8 @@ data class APIEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        var factory = configFactory.setRequiredPermissions(requiredPermissions.toSet())
+        var factory = configFactory ?: APISecurityConfigFactory()
+        factory.setRequiredPermissions(this.requiredPermissions.toSet())
 
         if (allowParameterAuthentication)
         {
@@ -54,7 +55,7 @@ data class APIEndpoint(
 
         spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,
-                configFactory.allClients(),
+                factory.allClients(),
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
         ))

@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
-open class APISecurityConfigFactory() : ConfigFactory
+open class APISecurityConfigFactory : ConfigFactory
 {
     companion object
     {
@@ -25,10 +25,9 @@ open class APISecurityConfigFactory() : ConfigFactory
 
     private var requiredPermissions: Set<PermissionRequirement>? = null
 
-    fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>) : APISecurityConfigFactory
+    fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>?)
     {
         this.requiredPermissions = requiredPermissions
-        return this
     }
 
     override fun build(vararg parameters: Any?): Config
