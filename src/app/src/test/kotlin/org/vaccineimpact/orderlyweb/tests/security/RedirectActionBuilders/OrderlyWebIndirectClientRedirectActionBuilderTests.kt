@@ -21,7 +21,7 @@ class OrderlyWebIndirectClientRedirectActionBuilderTests: TeamcityTests()
         }
 
         val action = sut.redirect(mockWebContext)
-        val expectedUrl = "http://localhost:8888?redirectTo=http%3A%2F%2Flocalhost%3A8888%2Freports%2F1"
+        val expectedUrl = "http://localhost:8888/weblogin?requestedUrl=http%3A%2F%2Flocalhost%3A8888%2Freports%2F1"
         assertThat(action.location).isEqualTo(expectedUrl)
         assertThat(action.type).isEqualTo(RedirectAction.RedirectType.REDIRECT)
     }
