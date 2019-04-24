@@ -12,9 +12,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
-class APISecurityConfigFactory(
-        private val requiredPermissions: Set<PermissionRequirement>
-) : ConfigFactory
+open class APISecurityConfigFactory() : ConfigFactory
 {
     companion object
     {
@@ -25,6 +23,14 @@ class APISecurityConfigFactory(
 
     val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
 
+    private var requiredPermissions: Set<PermissionRequirement>? = null
+
+    fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>) : APISecurityConfigFactory
+    {
+        this.requiredPermissions = requiredPermissions
+        return this
+    }
+
     override fun build(vararg parameters: Any?): Config
     {
         @Suppress("UNCHECKED_CAST")
@@ -34,7 +40,7 @@ class APISecurityConfigFactory(
 
             if (AppConfig().authorizationEnabled)
             {
-                setAuthorizer(OrderlyWebAPIAuthorizer(requiredPermissions))
+                setAuthorizer(OrderlyWebAPIAuthorizer(requiredPermissions!!))
             }
             else
             {
