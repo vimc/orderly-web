@@ -22,8 +22,7 @@ class GithubIndirectClientTests : TeamcityTests()
         sut.init()
 
         //base class should be GithubClient
-        assertThat(sut.javaClass.superclass.`package`.name).isEqualTo("org.pac4j.oauth.client")
-        assertThat(sut.javaClass.superclass.name).isEqualTo("GithubClient")
+        assertThat(sut.javaClass.superclass.name).isEqualTo("org.pac4j.oauth.client.GitHubClient")
 
         //inherited private authenticator field should be GithubOAuthAuthenticator
         val baseClientClass = BaseClient::class.java
