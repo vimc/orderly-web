@@ -1,13 +1,10 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
-import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
 import org.vaccineimpact.orderlyweb.security.externalAuthentication
-import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -21,7 +18,8 @@ data class APIEndpoint(
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val authenticateWithExternalProvider: Boolean = false,
         override val allowParameterAuthentication: Boolean = false,
-        override val secure: Boolean = false
+        override val secure: Boolean = false,
+        val spark: SparkWrapper = SparkServiceWrapper()
 
 ) : EndpointDefinition
 {
@@ -33,7 +31,7 @@ data class APIEndpoint(
         }
         if (this.contentType == ContentTypes.json)
         {
-            Spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
+            spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
         }
     }
 
@@ -54,7 +52,7 @@ data class APIEndpoint(
 
         val config = configFactory.build()
 
-        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+        spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,
                 configFactory.allClients(),
                 config.authorizers.map { it.key }.joinToString(","),

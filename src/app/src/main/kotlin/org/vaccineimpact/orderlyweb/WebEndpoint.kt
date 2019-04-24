@@ -1,20 +1,11 @@
 package org.vaccineimpact.orderlyweb
 
-import org.pac4j.core.client.IndirectClient
-import org.pac4j.core.credentials.Credentials
-import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
-import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 
-import spark.Spark
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -25,7 +16,8 @@ data class WebEndpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val secure: Boolean = false,
-        val externalAuth: Boolean = false
+        val externalAuth: Boolean = false,
+        val spark: SparkWrapper = SparkServiceWrapper()
 ) : EndpointDefinition
 {
     override val transform = false
@@ -61,7 +53,7 @@ data class WebEndpoint(
 
         val config = configFactory.build()
 
-        Spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+        spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,
                 client.javaClass.simpleName,
                 config.authorizers.map { it.key }.joinToString(","),
