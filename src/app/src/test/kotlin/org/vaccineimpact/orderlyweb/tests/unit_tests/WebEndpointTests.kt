@@ -37,7 +37,7 @@ class WebEndpointTests: TeamcityTests()
            on { build() } doReturn(mockConfig)
         }
 
-        val requiredPermission=  PermissionRequirement.parse("*/testperm")
+        val requiredPermission= PermissionRequirement.parse("*/testperm")
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
                                 secure = true, requiredPermissions = listOf(requiredPermission),
                                 externalAuth = true,
