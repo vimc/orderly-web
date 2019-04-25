@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb
 
+import org.pac4j.core.config.ConfigFactory
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
@@ -17,7 +18,8 @@ data class WebEndpoint(
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val secure: Boolean = false,
         val externalAuth: Boolean = false,
-        val spark: SparkWrapper = SparkServiceWrapper()
+        val spark: SparkWrapper = SparkServiceWrapper(),
+        val configFactory: ConfigFactory? = null
 ) : EndpointDefinition
 {
     override val transform = false
@@ -47,11 +49,11 @@ data class WebEndpoint(
                  OrderlyWebIndirectClient()
             }
 
-        val configFactory = WebSecurityConfigFactory(
+        val factory = configFactory ?: WebSecurityConfigFactory(
                 client,
                 this.requiredPermissions.toSet())
 
-        val config = configFactory.build()
+        val config = factory.build()
 
         spark.before(url, org.pac4j.sparkjava.SecurityFilter(
                 config,

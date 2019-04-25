@@ -1,14 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.ArgumentCaptor
+import org.pac4j.core.authorization.authorizer.Authorizer
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.pac4j.sparkjava.SecurityFilter
 import org.pac4j.core.config.Config
+import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import spark.Filter
@@ -50,11 +53,12 @@ class APIEndpointTests: TeamcityTests()
     fun `adds security filter if secure, both authentication flags are false`()
     {
         val mockSpark = mock<SparkWrapper>()
+        val mockAuthorizer = mock<Authorizer<CommonProfile>>()
         val mockConfig = mock<Config> {
-            on { authorizers } doReturn mapOf()
+            on { authorizers } doReturn mapOf("dummyAuthorizer" to mockAuthorizer)
         }
         val mockConfigFactory = mock<APISecurityConfigFactory> {
-            on { allClients() } doReturn("")
+            on { allClients() } doReturn("testclients")
             on { build() } doReturn(mockConfig)
         }
 
@@ -71,7 +75,7 @@ class APIEndpointTests: TeamcityTests()
 
         sut.additionalSetup("/test")
 
-        //Verify all expectedt methods were called or not called
+        //Verify all expected methods were called or not called
         verify(mockConfigFactory).setRequiredPermissions(check {
             assertThat(it.size).isEqualTo(1)
             assertThat(it.first()).isEqualTo(permissionRequirement)
@@ -83,12 +87,27 @@ class APIEndpointTests: TeamcityTests()
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
         verify(mockSpark).before(eq("/test"), capture(securityFilterArg))
 
-        //verify the security filter has been created with mockConfig
+        //verify the security filter has been created as expected
         val securityFilterClass = SecurityFilter::class.java
-        val field = securityFilterClass.getDeclaredField("config")
+        var field = securityFilterClass.getDeclaredField("config")
         field.isAccessible = true
         val config = field.get(securityFilterArg.value)
         assertThat(config).isEqualTo(mockConfig)
+
+        field = securityFilterClass.getDeclaredField("clients")
+        field.isAccessible = true
+        val clients = field.get(securityFilterArg.value)
+        assertThat(clients).isEqualTo("testclients")
+
+        field = securityFilterClass.getDeclaredField("authorizers")
+        field.isAccessible = true
+        val authorizers = field.get(securityFilterArg.value)
+        Assertions.assertThat(authorizers).isEqualTo("dummyAuthorizer")
+
+        field = securityFilterClass.getDeclaredField("matchers")
+        field.isAccessible = true
+        val matchers = field.get(securityFilterArg.value)
+        Assertions.assertThat(matchers).isEqualTo("SkipOptions")
 
         //Should not have called these methods
         verify(mockConfigFactory, times(0)).allowParameterAuthentication()
