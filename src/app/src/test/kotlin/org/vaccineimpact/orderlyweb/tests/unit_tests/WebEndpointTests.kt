@@ -9,9 +9,12 @@ import org.pac4j.core.authorization.authorizer.Authorizer
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.SecurityFilter
+import spark.route.HttpMethod
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.SparkWrapper
 import org.vaccineimpact.orderlyweb.WebEndpoint
+import org.vaccineimpact.orderlyweb.secure
+import org.vaccineimpact.orderlyweb.post
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
@@ -126,9 +129,37 @@ class WebEndpointTests: TeamcityTests()
 
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
                 spark = mockSpark, configFactory = mockConfigFactory)
+        sut.additionalSetup("/test")
 
         //verify that config factory and spark were not called
         verify(mockConfigFactory, times(0)).build()
         verify(mockSpark, times(0)).before(anyString(), any())
+    }
+
+    @Test
+    fun `can secure`()
+    {
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class)
+
+        assertThat(sut.secure).isFalse()
+        assertThat(sut.requiredPermissions.count()).isEqualTo(0)
+
+        val result = sut.secure(setOf("*/testperm"))
+
+        assertThat(result.secure).isTrue()
+        assertThat(result.requiredPermissions.count()).isEqualTo(1)
+        assertThat(result.requiredPermissions.first().name).isEqualTo("testperm")
+        assertThat(result.requiredPermissions.first().scopeRequirement.toString()).isEqualTo("*")
+    }
+
+    @Test
+    fun `can set post`()
+    {
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class)
+
+        assertThat(sut.method).isEqualTo(HttpMethod.get)
+
+        val result = sut.post()
+        assertThat(result.method).isEqualTo(HttpMethod.post)
     }
 }
