@@ -41,5 +41,8 @@ class MontaguAuthenticationTests : SeleniumTest()
         assertThat(loggedOutCookies.first{ it.name == "jwt_token" }.value).isEmpty()
         assertThat(loggedOutCookies.first{ it.name == "montagu_jwt_token" }.value).isEmpty()
 
+        //We should now be on the Montagu login page, logged out - give the proxy time to check user status with the api
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
+
     }
 }
