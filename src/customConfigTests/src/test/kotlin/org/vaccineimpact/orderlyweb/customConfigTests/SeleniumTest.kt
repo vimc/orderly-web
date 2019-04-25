@@ -8,8 +8,6 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
-import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 abstract class SeleniumTest : CustomConfigTests()
 {
@@ -60,8 +58,6 @@ abstract class SeleniumTest : CustomConfigTests()
 
         //logout of Montagu
         // TODO roll this into our logout method
-        Assertions.assertThat(driver.pageSource).isBlank() //TODO: just checking why this is different on tc!
-
         driver.findElement(By.id("logout-button")).click()
 
     }
