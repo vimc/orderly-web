@@ -2,9 +2,8 @@ package org.vaccineimpact.orderlyweb
 
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.allowParameterAuthentication
-import org.vaccineimpact.orderlyweb.security.externalAuthentication
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -38,8 +37,9 @@ data class APIEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        var factory = configFactory ?: APISecurityConfigFactory()
-        factory.setRequiredPermissions(this.requiredPermissions.toSet())
+        var factory = configFactory?:APISecurityClientsConfigFactory()
+
+        factory = factory.setRequiredPermissions(this.requiredPermissions.toSet())
 
         if (allowParameterAuthentication)
         {
