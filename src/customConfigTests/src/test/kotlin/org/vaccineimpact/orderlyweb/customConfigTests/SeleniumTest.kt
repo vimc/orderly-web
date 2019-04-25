@@ -58,6 +58,7 @@ abstract class SeleniumTest : CustomConfigTests()
 
         //logout of Montagu
         // TODO roll this into our logout method
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("logout-button")))
         driver.findElement(By.id("logout-button")).click()
 
     }
