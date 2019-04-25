@@ -26,6 +26,11 @@ trap cleanup EXIT
 
 export NETWORK=montagu_default
 
+$here/montagu-cli.sh add "Test User" test.user \
+    test.user@example.com password \
+
+$here/montagu-cli.sh addRole test.user user
+
 $here/migrate-test.sh
 
 # Run the created image
