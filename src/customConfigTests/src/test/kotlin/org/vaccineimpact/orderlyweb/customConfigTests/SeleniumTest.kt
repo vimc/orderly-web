@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
+import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.openqa.selenium.By
@@ -59,6 +60,8 @@ abstract class SeleniumTest : CustomConfigTests()
 
         //logout of Montagu
         // TODO roll this into our logout method
+        Assertions.assertThat(driver.pageSource).isBlank() //TODO: just checking why this is different on tc!
+
         driver.findElement(By.id("logout-button")).click()
 
     }
