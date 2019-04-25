@@ -29,8 +29,7 @@ class ReportPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
 
-        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("testreport")
-
+        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("display name testreport")
     }
 
 }

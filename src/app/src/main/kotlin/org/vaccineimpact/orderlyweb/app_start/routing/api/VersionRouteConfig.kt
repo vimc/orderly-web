@@ -46,12 +46,12 @@ object VersionRouteConfig : RouteConfig
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
-            APIEndpoint("/reports/:name/versions/:version/artefacts/", artefactController, "get")
+            APIEndpoint("/reports/:name/versions/:version/artefacts/", artefactController, "getMetaData")
                     .json()
                     .transform()
                     .secure(readReports),
 
-            APIEndpoint("/reports/:name/versions/:version/artefacts/:artefact/", artefactController, "download")
+            APIEndpoint("/reports/:name/versions/:version/artefacts/:artefact/", artefactController, "getFile")
                     .secure(readReports)
                     .allowParameterAuthentication(),
 
