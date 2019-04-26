@@ -64,14 +64,10 @@ class WebEndpointTests: TeamcityTests()
         val clients = field.get(securityFilter)
         assertThat(clients).isEqualTo("MontaguIndirectClient")
 
-        field = securityFilterClass.getDeclaredField("authorizers")
-        field.isAccessible = true
-        val authorizers = field.get(securityFilter)
+        val authorizers = securityFilter.authorizers
         assertThat(authorizers).isEqualTo("dummyAuthorizer")
 
-        field = securityFilterClass.getDeclaredField("matchers")
-        field.isAccessible = true
-        val matchers = field.get(securityFilter)
+        val matchers = securityFilter.matchers
         assertThat(matchers).isEqualTo("SkipOptions")
 
     }

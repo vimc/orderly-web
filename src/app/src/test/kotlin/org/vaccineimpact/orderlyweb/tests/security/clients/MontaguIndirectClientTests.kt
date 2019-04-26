@@ -22,41 +22,21 @@ class MontaguIndirectClientTests : TeamcityTests()
         val sut = MontaguIndirectClient()
         sut.init()
 
-        //inherited private credentialsExtractor field should be CookieExtractor
-        val baseClientClass = BaseClient::class.java
-        val extrField = baseClientClass.getDeclaredField("credentialsExtractor")
-        extrField.isAccessible = true
-        val extractor = extrField.get(sut)
+        val extractor = sut.credentialsExtractor
         assertThat(extractor is CookieExtractor).isTrue()
-        val cookieExtractorClass = CookieExtractor::class.java
-        val cookieNameField = cookieExtractorClass.getDeclaredField("cookieName")
-        cookieNameField.isAccessible = true
-        assertThat(cookieNameField.get(extractor)).isEqualTo("montagu_jwt_token")
+        assertThat(extractor.toString()).contains("cookieName: montagu_jwt_token")
 
-        //inherited private redirectActionBuilder field should be MontaguIndirectClientRedirectActionBuilder
-        val indirectClientClass = IndirectClient::class.java
-        val rabField = indirectClientClass.getDeclaredField("redirectActionBuilder")
-        rabField.isAccessible = true
-        val redirectActionBuilder = rabField.get(sut)
+        val redirectActionBuilder = sut.redirectActionBuilder
         assertThat(redirectActionBuilder is MontaguIndirectClientRedirectActionBuilder).isTrue()
 
-        //inherited private authenticator field should be MontaguAuthenticator
-        val authField = baseClientClass.getDeclaredField("authenticator")
-        authField.isAccessible = true
-        val authenticator = authField.get(sut)
+        val authenticator = sut.authenticator
         assertThat(authenticator is MontaguAuthenticator).isTrue()
 
-        //inherited private authorizationGenerators field should include OrderlyAuthorizationGenerator
-        val agsField = baseClientClass.getDeclaredField("authorizationGenerators")
-        agsField.isAccessible = true
-        val ags = agsField.get(sut)
+        val ags = sut.authorizationGenerators
         Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
-        //inherited private callbackUrl field should be set
-        val callbackUrlField = indirectClientClass.getDeclaredField("callbackUrl")
-        callbackUrlField.isAccessible = true
-        assertThat(callbackUrlField.get(sut)).isEqualTo("/login")
+        assertThat(sut.callbackUrl).isEqualTo("/login")
 
     }
 }

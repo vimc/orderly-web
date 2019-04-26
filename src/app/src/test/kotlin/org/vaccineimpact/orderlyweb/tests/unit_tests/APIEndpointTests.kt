@@ -89,24 +89,22 @@ class APIEndpointTests: TeamcityTests()
 
         //verify the security filter has been created as expected
         val securityFilterClass = SecurityFilter::class.java
+        val securityFilter = securityFilterArg.value
+
         var field = securityFilterClass.getDeclaredField("config")
         field.isAccessible = true
-        val config = field.get(securityFilterArg.value)
+        val config = field.get(securityFilter)
         assertThat(config).isEqualTo(mockConfig)
 
         field = securityFilterClass.getDeclaredField("clients")
         field.isAccessible = true
-        val clients = field.get(securityFilterArg.value)
+        val clients = field.get(securityFilter)
         assertThat(clients).isEqualTo("testclients")
 
-        field = securityFilterClass.getDeclaredField("authorizers")
-        field.isAccessible = true
-        val authorizers = field.get(securityFilterArg.value)
+        val authorizers = securityFilter.authorizers
         Assertions.assertThat(authorizers).isEqualTo("dummyAuthorizer")
 
-        field = securityFilterClass.getDeclaredField("matchers")
-        field.isAccessible = true
-        val matchers = field.get(securityFilterArg.value)
+        val matchers = securityFilter.matchers
         Assertions.assertThat(matchers).isEqualTo("SkipOptions")
 
         //Should not have called these methods

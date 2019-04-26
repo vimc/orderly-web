@@ -20,25 +20,15 @@ class GithubDirectClientTests : TeamcityTests()
         val sut = GithubDirectClient()
         sut.init()
 
-        //inherited private credentialsExtractor field should be HeaderExtractor
-        val baseClientClass = BaseClient::class.java
-        val extrField = baseClientClass.getDeclaredField("credentialsExtractor")
-        extrField.isAccessible = true
-        val credentialsExtractor = extrField.get(sut)
+        val credentialsExtractor = sut.credentialsExtractor
         assertThat(credentialsExtractor is HeaderExtractor).isTrue()
         assertThat((credentialsExtractor as HeaderExtractor).headerName).isEqualTo("Authorization")
         assertThat(credentialsExtractor.prefixHeader).isEqualTo("token ")
 
-        //inherited private authenticator field should be GithubAuthenticator
-        val authField = baseClientClass.getDeclaredField("authenticator")
-        authField.isAccessible = true
-        val authenticator = authField.get(sut)
+        val authenticator = sut.authenticator
         assertThat(authenticator is GithubAuthenticator).isTrue()
 
-        //inherited private authorizationGenerators field should include OrderlyAuthorizationGenerator
-        val agsField = baseClientClass.getDeclaredField("authorizationGenerators")
-        agsField.isAccessible = true
-        val ags = agsField.get(sut)
+        val ags = sut.authorizationGenerators
         Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
