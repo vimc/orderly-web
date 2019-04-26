@@ -11,6 +11,6 @@ open class AppViewModel(val loggedIn: Boolean, val user: String?)
     constructor(context: ActionContext) : this(context.userProfile)
 
     open val appName = AppConfig()["app.name"]
-    val appEmail = AppConfig()["app.email"]
+    open val appEmail = AppConfig()["app.email"]
     open val authProvider = AuthenticationConfig.getConfiguredProvider().toString().toLowerCase()
 }
