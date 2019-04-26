@@ -2,9 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.hamcrest.CoreMatchers.containsString
-import org.hamcrest.StringDescription
-import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalToIgnoringWhiteSpace
 import org.junit.Rule
@@ -29,10 +26,6 @@ class errorTests: TeamcityTests()
         }
 
         val xmlResponse = template.xmlResponseFor(mockModel)
-
-        val matcher = hasXPath("//h1/@value", equalTo("Something went wrong"))
-        val description = StringDescription()
-        matcher.describeMismatch(xmlResponse, description)
 
         assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Something went wrong")))
         assertThat(xmlResponse, hasXPath("//li[1]/text()", equalToIgnoringWhiteSpace("oops")))
