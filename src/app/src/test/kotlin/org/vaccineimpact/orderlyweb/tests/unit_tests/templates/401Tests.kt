@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.xmlmatchers.XmlMatchers
+import org.xmlmatchers.XmlMatchers.hasXPath
 
 class _401Tests: TeamcityTests()
 {
@@ -26,8 +27,8 @@ class _401Tests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//p/text()",
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
+        assertThat(xmlResponse, hasXPath("//p/text()",
                 equalToIgnoringWhiteSpace("We have not been able to successfully identify you as a Montagu user.")))
     }
 
@@ -41,18 +42,18 @@ class _401Tests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//p/text()",
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
+        assertThat(xmlResponse, hasXPath("//p/text()",
                 containsString("We have not been able to successfully identify you as a member of the app's configured Github org.")))
 
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//li[1]/a/text()",
+        assertThat(xmlResponse, hasXPath("//li[1]/a/text()",
                 equalToIgnoringWhiteSpace("GitHub organization approval for \"testApp\" has been requested")))
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//li[1]/a/@href",
+        assertThat(xmlResponse, hasXPath("//li[1]/a/@href",
                 equalTo("https://help.github.com/en/articles/requesting-organization-approval-for-oauth-apps")))
 
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//li[2]/a/text()",
+        assertThat(xmlResponse, hasXPath("//li[2]/a/text()",
                 equalToIgnoringWhiteSpace("GitHub organization approval for \"testApp\" has been granted")))
-        assertThat(xmlResponse, XmlMatchers.hasXPath("//li[2]/a/@href",
+        assertThat(xmlResponse, hasXPath("//li[2]/a/@href",
                 equalTo("https://help.github.com/en/articles/approving-oauth-apps-for-your-organization")))
     }
 }

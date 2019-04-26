@@ -12,8 +12,8 @@ class ReportController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
-                          val focalArtefactUrl: String?,
+    open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
+                          open val focalArtefactUrl: String?,
                           context: ActionContext) : AppViewModel(context)
 
     @Template("report-page.ftl")

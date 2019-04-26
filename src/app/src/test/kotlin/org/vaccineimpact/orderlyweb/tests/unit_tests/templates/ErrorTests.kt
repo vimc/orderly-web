@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.xmlmatchers.XmlMatchers.*
 
-class errorTests: TeamcityTests()
+class ErrorTests: TeamcityTests()
 {
     @get:Rule
     val template = FreemarkerTestRule("error.ftl")
