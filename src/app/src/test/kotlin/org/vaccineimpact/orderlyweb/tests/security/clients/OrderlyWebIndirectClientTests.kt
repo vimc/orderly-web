@@ -18,29 +18,15 @@ class OrderlyWebIndirectClientTests : TeamcityTests()
         val sut = OrderlyWebIndirectClient()
         sut.init()
 
-        //inherited private credentialsExtractor field should be NeverInvokedCredentialsExtractor
-        val baseClientClass = BaseClient::class.java
-        val extrField = baseClientClass.getDeclaredField("credentialsExtractor")
-        extrField.isAccessible = true
-        val credentialsExtractor = extrField.get(sut)
+        val credentialsExtractor = sut.credentialsExtractor
         assertThat(credentialsExtractor is NeverInvokedCredentialsExtractor).isTrue()
 
-        //inherited private authenticator field should be NeverInvokedAuthenticator
-        val authField = baseClientClass.getDeclaredField("authenticator")
-        authField.isAccessible = true
-        val authenticator = authField.get(sut)
+        val authenticator = sut.authenticator
         assertThat(authenticator is NeverInvokedAuthenticator).isTrue()
 
-        //inherited private redirectActionBuilder field should be OrderlyWebIndirectClientRedirectActionBuilder
-        val indirectClientClass = IndirectClient::class.java
-        val rabField = indirectClientClass.getDeclaredField("redirectActionBuilder")
-        rabField.isAccessible = true
-        val redirectActionBuilder = rabField.get(sut)
+        val redirectActionBuilder = sut.redirectActionBuilder
         assertThat(redirectActionBuilder is OrderlyWebIndirectClientRedirectActionBuilder).isTrue()
 
-        //inherited private callbackUrl field should be "/login"
-        val callbackUrlField = indirectClientClass.getDeclaredField("callbackUrl")
-        callbackUrlField.isAccessible = true
-        assertThat(callbackUrlField.get(sut)).isEqualTo("/login")
+        assertThat(sut.callbackUrl).isEqualTo("/login")
     }
 }
