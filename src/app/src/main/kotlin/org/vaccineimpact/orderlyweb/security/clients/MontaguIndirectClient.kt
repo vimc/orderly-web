@@ -15,21 +15,6 @@ import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
 
-class MontaguLogoutActionBuilder : LogoutActionBuilder<CommonProfile>
-{
-    override fun getLogoutAction(context: WebContext, currentProfile: CommonProfile, targetUrl: String?): RedirectAction
-    {
-        //logout of Montagu by resetting token cookies
-        listOf("montagu_jwt_token", "jwt_token").forEach{
-            val cookie = Cookie(it, "")
-            cookie.domain = context.serverName
-            context.addResponseCookie(cookie)
-        }
-
-        return RedirectAction.redirect(AppConfig()["app.url"])
-    }
-}
-
 class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient {
 
     init {
@@ -58,4 +43,19 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
             "Montagu bearer token not supplied in cookie '$cookie', or bearer token was invalid"
     )
 
+}
+
+class MontaguLogoutActionBuilder : LogoutActionBuilder<CommonProfile>
+{
+    override fun getLogoutAction(context: WebContext, currentProfile: CommonProfile, targetUrl: String?): RedirectAction
+    {
+        //logout of Montagu by resetting token cookies
+        listOf("montagu_jwt_token", "jwt_token").forEach{
+            val cookie = Cookie(it, "")
+            cookie.domain = context.serverName
+            context.addResponseCookie(cookie)
+        }
+
+        return RedirectAction.redirect(AppConfig()["app.url"])
+    }
 }
