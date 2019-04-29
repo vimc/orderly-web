@@ -33,7 +33,7 @@ class ZipTests : IntegrationTest()
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=testname/testversion.zip")
         } finally
         {
             deleteArchiveFolder("testname", "testversion")
@@ -53,7 +53,7 @@ class ZipTests : IntegrationTest()
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=testname/testversion.zip")
         } finally
         {
             deleteArchiveFolder("testname", "testversion")
@@ -74,7 +74,7 @@ class ZipTests : IntegrationTest()
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
+            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=testname/testversion.zip")
         } finally
         {
             deleteArchiveFolder("testname", "testversion")

@@ -80,7 +80,7 @@ class DataController(context: ActionContext,
 
         val response = context.getSparkResponse().raw()
 
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+        context.addResponseHeader("Content-Disposition", "attachment; fileName=$filename")
         context.addDefaultResponseHeaders(contentType)
 
         files.writeFileToOutputStream(absoluteFilePath, response.outputStream)

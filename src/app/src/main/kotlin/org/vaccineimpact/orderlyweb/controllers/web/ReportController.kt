@@ -4,6 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
@@ -14,7 +15,12 @@ class ReportController(actionContext: ActionContext,
 
     class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                           val focalArtefactUrl: String?,
+                          val artefacts: List<ArtefactViewModel>,
                           context: ActionContext) : AppViewModel(context)
+
+    class ArtefactViewModel(val artefact: Artefact, val files: List<ArtefactFileViewModel>, val inlineArtefactFigure: String?)
+
+    class ArtefactFileViewModel(val fileName: String, val url: String)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
@@ -34,15 +40,51 @@ class ReportController(actionContext: ActionContext,
         }
         else
         {
-            "/reports/$reportName/versions/$version/artefacts/$focalArtefact?inline=true"
+            buildArtefactFileUrl(reportName, version, focalArtefact, true)
         }
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, context)
+
+        val artefacts = reportDetails.artefacts.map{ ArtefactViewModel(it,
+                it.files.map{filename -> ArtefactFileViewModel(filename,
+                        buildArtefactFileUrl(reportName, version, filename, false)) },
+            getArtefactInlineFigure(reportName, version, it.files))}
+
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, artefacts,  context)
+    }
+
+    fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inlineIfPossible: Boolean) : String
+    {
+        val canRender = inlineIfPossible && canRenderInBrowser(fileName)
+        val inlineParam = if (canRender) "?inline=true" else ""
+        return "/reports/$reportName/versions/$reportVersion/artefacts/$fileName$inlineParam"
     }
 
     fun canRenderInBrowser(fileName: String): Boolean
     {
+        return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
+    }
+
+    fun isImage(fileName: String): Boolean
+    {
+        return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf"))
+    }
+
+    fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
+    {
         val ext = fileName.toLowerCase().split(".").last()
-        return arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm")
-                .contains(ext)
+        return extensions.contains(ext)
+    }
+
+    fun getArtefactInlineFigure(reportName: String, reportVersion: String, files: List<String>): String?
+    {
+        //reproducing existing reportle behaviour, but we may want to extend this
+        // show the first file inline if it is an image
+        return if (files.count() > 0 && isImage(files[0]))
+        {
+            buildArtefactFileUrl(reportName, reportVersion, files[0], true)
+        }
+        else
+        {
+            null
+        }
     }
 }

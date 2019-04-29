@@ -45,7 +45,7 @@ class ResourceTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/meta/data.csv\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"use_resource/$version/meta/data.csv\"")
 
     }
 
@@ -61,7 +61,7 @@ class ResourceTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/a resource with spaces.csv\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"spaces/$version/a resource with spaces.csv\"")
 
     }
 

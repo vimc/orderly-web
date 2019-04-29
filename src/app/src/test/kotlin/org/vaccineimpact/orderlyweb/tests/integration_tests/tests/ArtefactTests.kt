@@ -47,7 +47,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"other/$publishedVersion/graph.png\"")
     }
 
     @Test
@@ -60,7 +60,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"other/$publishedVersion/graph.png\"")
     }
 
     @Test
@@ -73,7 +73,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"other/$publishedVersion/graph.png\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"other/$publishedVersion/graph.png\"")
     }
 
     @Test
@@ -86,7 +86,7 @@ class ArtefactTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"spaces/$version/a graph with spaces.png\"")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=\"spaces/$version/a graph with spaces.png\"")
     }
 
     @Test
