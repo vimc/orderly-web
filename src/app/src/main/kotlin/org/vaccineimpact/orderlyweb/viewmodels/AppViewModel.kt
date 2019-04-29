@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
-open class AppViewModel(val loggedIn: Boolean, val user: String?)
+open class AppViewModel(open val loggedIn: Boolean, open val user: String?)
 {
     constructor(userProfile: CommonProfile?) : this(userProfile != null, userProfile?.id)
     constructor(context: ActionContext) : this(context.userProfile)
