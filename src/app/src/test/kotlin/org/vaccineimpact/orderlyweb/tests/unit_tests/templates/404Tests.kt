@@ -9,7 +9,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
-import org.xmlmatchers.XmlMatchers
 import org.xmlmatchers.XmlMatchers.hasXPath
 
 class _404Tests: TeamcityTests()
@@ -46,5 +45,3 @@ class _404Tests: TeamcityTests()
                 equalToIgnoringWhiteSpace("mailto:test@test.com")))
     }
 }
-
-

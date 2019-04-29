@@ -22,8 +22,6 @@ class ReportPageTests: TeamcityTests()
     val template = FreemarkerTestRule("report-page.ftl",
             includeTemplates = listOf("layouts/layoutwide.ftl"))
 
-
-
     private val testReport = ReportVersionDetails(name = "r1",
             displayName = "r1 display",
             id = "r1-v1",
@@ -96,5 +94,3 @@ class ReportPageTests: TeamcityTests()
 
     }
 }
-
-

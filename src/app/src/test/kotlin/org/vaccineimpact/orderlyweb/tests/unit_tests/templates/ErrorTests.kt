@@ -32,5 +32,3 @@ class ErrorTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("//li[2]/text()", equalToIgnoringWhiteSpace("try again")))
     }
 }
-
-

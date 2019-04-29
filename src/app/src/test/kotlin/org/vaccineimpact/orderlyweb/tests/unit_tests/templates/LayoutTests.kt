@@ -77,7 +77,3 @@ class LayoutTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("//div[@class='container-fluid pt-5']/div[@class='row']/div[@id='content']"))
     }
 }
-
-
-
-

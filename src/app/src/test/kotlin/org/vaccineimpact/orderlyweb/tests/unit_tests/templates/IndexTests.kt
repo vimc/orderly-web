@@ -40,5 +40,3 @@ class IndexTests: TeamcityTests()
 
     }
 }
-
-
