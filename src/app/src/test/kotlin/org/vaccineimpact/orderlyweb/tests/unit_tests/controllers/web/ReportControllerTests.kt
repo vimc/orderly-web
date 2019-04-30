@@ -180,6 +180,38 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `resources have expected urls`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails.copy(resources = listOf("resource1.Rmd", "subdir/resource2.Rmd"))
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.resources.count()).isEqualTo(2)
+        assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
+        assertThat(result.resources[0].url).isEqualTo("/reports/r1/versions/v1/resources/resource1.Rmd")
+        assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
+        assertThat(result.resources[1].url).isEqualTo("/reports/r1/versions/v1/resources/subdir%2Fresource2.Rmd")
+    }
+
+    @Test
+    fun `zipFile has expected url`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.zipFile.name).isEqualTo("r1-v1.zip")
+        assertThat(result.zipFile.url).isEqualTo("/reports/r1/versions/v1/all/")
+    }
+
+    @Test
     fun `images can render in browser`()
     {
         val sut = ReportController(actionContext, mock())
