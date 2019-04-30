@@ -19,6 +19,7 @@ class ReportController(actionContext: ActionContext,
                           val artefacts: List<ArtefactViewModel>,
                           val dataLinks: List<InputDataViewModel>,
                           val resources: List<DownloadableFileViewModel>,
+                          val zipFile: DownloadableFileViewModel,
                           context: ActionContext) : AppViewModel(context)
 
     class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
@@ -62,49 +63,62 @@ class ReportController(actionContext: ActionContext,
         val resources = reportDetails.resources.map{DownloadableFileViewModel(it,
                 buildResourceUrl(reportName, version, it))}
 
+        val zipFile = DownloadableFileViewModel("$reportName-$version.zip", buildZipFileUrl(reportName, version))
+
         return ReportViewModel(reportDetails.copy(displayName = displayName),
                 focalArtefactUrl,
                 artefacts,
                 dataLinks,
                 resources,
+                zipFile,
                 context)
     }
 
-    fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean) : String
+    private fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean) : String
     {
         val inlineParam = if (inline) "?inline=true" else ""
-        return "/reports/$reportName/versions/$reportVersion/artefacts/$fileName$inlineParam"
+        return "${baseReportUrl(reportName, reportVersion)}artefacts/$fileName$inlineParam"
     }
 
-    fun buildDataFileUrl(type: String, dataHash: String): String
+    private fun buildDataFileUrl(type: String, dataHash: String): String
     {
-        val encodedHash = URLEncoder.encode(dataHash)
+        val encodedHash = URLEncoder.encode(dataHash, "UTF-8")
         return "/data/$type/$encodedHash"
     }
 
-    fun buildResourceUrl(reportName:String, reportVersion: String, resourceName: String): String
+    private fun buildResourceUrl(reportName:String, reportVersion: String, resourceName: String): String
     {
-        val encodedResourceName = URLEncoder.encode(resourceName)
-        return "/reports/$reportName/versions/$reportVersion/resources/$encodedResourceName"
+        val encodedResourceName = URLEncoder.encode(resourceName, "UTF-8")
+        return "${baseReportUrl(reportName, reportVersion)}resources/$encodedResourceName"
     }
 
-    fun canRenderInBrowser(fileName: String): Boolean
+    private fun buildZipFileUrl(reportName: String, reportVersion: String): String
+    {
+        return "${baseReportUrl(reportName, reportVersion)}all/"
+    }
+
+    private fun baseReportUrl(reportName: String, reportVersion: String): String
+    {
+        return "/reports/$reportName/versions/$reportVersion/"
+    }
+
+    private fun canRenderInBrowser(fileName: String): Boolean
     {
         return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
     }
 
-    fun isImage(fileName: String): Boolean
+    private fun isImage(fileName: String): Boolean
     {
         return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf"))
     }
 
-    fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
+    private fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
     {
         val ext = fileName.toLowerCase().split(".").last()
         return extensions.contains(ext)
     }
 
-    fun getArtefactInlineFigure(reportName: String, reportVersion: String, files: List<String>): String?
+    private fun getArtefactInlineFigure(reportName: String, reportVersion: String, files: List<String>): String?
     {
         //reproducing existing reportle behaviour - show the first file inline if it is an image
         return if (files.count() > 0 && isImage(files[0]))

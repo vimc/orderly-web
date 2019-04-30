@@ -2,6 +2,7 @@
 <#-- @ftlvariable name="artefacts" type="List<org.vaccineimpact.orderlyweb.controllers.web.ArtefactViewModel>" -->
 <#-- @ftlvariable name="dataLinks" type="List<org.vaccineimpact.orderlyweb.controllers.web.InputDataModel>" -->
 <#-- @ftlvariable name="resources" type="List<org.vaccineimpact.orderlyweb.controllers.web.DownloadableFileViewModel>" -->
+<#-- @ftlvariable name="zipFile" type="org.vaccineimpact.orderlyweb.controllers.web.DownloadableFileViewModel" -->
 
 <#import "../macros/file-download-link.ftl" as file_download_link>
 
@@ -52,3 +53,7 @@
       </div>
     </div>
 </#if>
+
+<div class="mb-5 mt-5">
+    <div><@file_download_link.render file=zipFile class="button" iconColor="#ffffff" /></div>
+</div>
