@@ -6,7 +6,7 @@
 
 <#import "../macros/file-download-link.ftl" as file_download_link>
 
-<h2>Downloads</h2>
+<#include "report-title.ftl">
 
 <#list artefacts as artefact>
     <div class="mb-2 card">

@@ -6,8 +6,8 @@
     </#macro>
     <div class="row">
         <div class="col-12 col-md-4 col-xl-3 sidebar">
-            <ul class="list-unstyled mb-0">
-                <li class="nav-item">
+            <ul class="nav flex-column">
+                <li class="nav-item ">
                     <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
                 </li>
                 <li class="nav-item">
@@ -31,6 +31,6 @@
         </script>
         <!-- TODO: Include this using gulp once merged with mrc-231 - just need it to make the tabs work -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
     </#macro>
 </@layoutwide>
