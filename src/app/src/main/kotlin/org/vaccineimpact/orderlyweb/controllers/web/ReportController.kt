@@ -18,13 +18,14 @@ class ReportController(actionContext: ActionContext,
                           val focalArtefactUrl: String?,
                           val artefacts: List<ArtefactViewModel>,
                           val dataLinks: List<InputDataViewModel>,
+                          val resources: List<DownloadableFileViewModel>,
                           context: ActionContext) : AppViewModel(context)
 
     class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
 
     class InputDataViewModel(val key: String, val csv: DownloadableFileViewModel, val rds: DownloadableFileViewModel)
 
-    class DownloadableFileViewModel(val fileName: String, val url: String)
+    class DownloadableFileViewModel(val name: String, val url: String)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
@@ -58,8 +59,15 @@ class ReportController(actionContext: ActionContext,
                 DownloadableFileViewModel("rds", buildDataFileUrl("rds", it.value))
         ) }
 
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, artefacts,
-                dataLinks, context)
+        val resources = reportDetails.resources.map{DownloadableFileViewModel(it,
+                buildResourceUrl(reportName, version, it))}
+
+        return ReportViewModel(reportDetails.copy(displayName = displayName),
+                focalArtefactUrl,
+                artefacts,
+                dataLinks,
+                resources,
+                context)
     }
 
     fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean) : String
@@ -72,6 +80,12 @@ class ReportController(actionContext: ActionContext,
     {
         val encodedHash = URLEncoder.encode(dataHash)
         return "/data/$type/$encodedHash"
+    }
+
+    fun buildResourceUrl(reportName:String, reportVersion: String, resourceName: String): String
+    {
+        val encodedResourceName = URLEncoder.encode(resourceName)
+        return "/reports/$reportName/versions/$reportVersion/resources/$encodedResourceName"
     }
 
     fun canRenderInBrowser(fileName: String): Boolean
@@ -92,8 +106,7 @@ class ReportController(actionContext: ActionContext,
 
     fun getArtefactInlineFigure(reportName: String, reportVersion: String, files: List<String>): String?
     {
-        //reproducing existing reportle behaviour, but we may want to extend this
-        // show the first file inline if it is an image
+        //reproducing existing reportle behaviour - show the first file inline if it is an image
         return if (files.count() > 0 && isImage(files[0]))
         {
             buildArtefactFileUrl(reportName, reportVersion, files[0], true)

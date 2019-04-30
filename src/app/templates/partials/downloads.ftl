@@ -1,6 +1,7 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="artefacts" type="List<org.vaccineimpact.orderlyweb.controllers.web.ArtefactViewModel>" -->
 <#-- @ftlvariable name="dataLinks" type="List<org.vaccineimpact.orderlyweb.controllers.web.InputDataModel>" -->
+<#-- @ftlvariable name="resources" type="List<org.vaccineimpact.orderlyweb.controllers.web.DownloadableFileViewModel>" -->
 
 <#import "../macros/file-download-link.ftl" as file_download_link>
 
@@ -41,3 +42,13 @@
     </div>
 </#if>
 
+<#if resources?has_content>
+    <div class="mb-2 card">
+      <div class="card-header">Resources</div>
+      <div class="card-body">
+        <#list resources as resource>
+            <div><@file_download_link.render file=resource /></div>
+        </#list>
+      </div>
+    </div>
+</#if>
