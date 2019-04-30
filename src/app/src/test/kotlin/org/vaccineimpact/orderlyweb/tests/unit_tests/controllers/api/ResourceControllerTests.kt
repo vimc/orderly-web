@@ -70,7 +70,7 @@ class ResourceControllerTests : ControllerTest()
 
         sut.download()
 
-        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; fileName=\"testname/testversion/testresource\"")
+        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testresource\"")
     }
 
     @Test

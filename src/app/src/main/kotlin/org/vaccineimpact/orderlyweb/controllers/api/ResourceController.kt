@@ -41,7 +41,7 @@ class ResourceController(context: ActionContext,
         if (!files.fileExists(absoluteFilePath))
             throw OrderlyFileNotFoundError(resourcename)
 
-        context.addResponseHeader("Content-Disposition", "attachment; fileName=\"$filename\"")
+        context.addResponseHeader("Content-Disposition", "attachment; filename=\"$filename\"")
         context.addDefaultResponseHeaders(ContentTypes.binarydata)
 
         val response = context.getSparkResponse().raw()

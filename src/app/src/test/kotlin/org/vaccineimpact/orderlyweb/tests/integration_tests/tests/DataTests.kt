@@ -55,7 +55,7 @@ class DataTests : IntegrationTest()
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
         Assertions.assertThat(response.headers["content-disposition"])
-                .isEqualTo("attachment; fileName=$demoCSV.csv")
+                .isEqualTo("attachment; filename=$demoCSV.csv")
     }
 
     @Test
@@ -123,7 +123,7 @@ class DataTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=$demoRDS.rds")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoRDS.rds")
     }
 
     @Test
@@ -141,7 +141,7 @@ class DataTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=$demoCSV.csv")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoCSV.csv")
     }
 
     @Test
@@ -159,7 +159,7 @@ class DataTests : IntegrationTest()
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
-        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; fileName=$demoRDS.rds")
+        Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=$demoRDS.rds")
     }
 
 }

@@ -69,7 +69,7 @@ class ArtefactControllerTests : ControllerTest()
 
         sut.getFile()
 
-        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; fileName=\"testname/testversion/testartefact\"")
+        verify(actionContext).addResponseHeader("Content-Disposition", "attachment; filename=\"testname/testversion/testartefact\"")
     }
 
     @Test

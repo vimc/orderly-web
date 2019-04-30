@@ -52,7 +52,7 @@ class VersionController(context: ActionContext,
         val response = context.getSparkResponse().raw()
 
         context.addDefaultResponseHeaders(ContentTypes.zip)
-        context.addResponseHeader("Content-Disposition", "attachment; fileName=$name/$version.zip")
+        context.addResponseHeader("Content-Disposition", "attachment; filename=$name/$version.zip")
 
         val folderName = File("${this.config["orderly.root"]}archive/$name/$version/").absolutePath
 
