@@ -52,7 +52,7 @@ class ReportController(actionContext: ActionContext,
         val artefacts = reportDetails.artefacts.map{ ArtefactViewModel(it,
                 it.files.map{filename -> DownloadableFileViewModel(filename,
                         buildArtefactFileUrl(reportName, version, filename, false)) },
-            getArtefactInlineFigure(reportName, version, it.files))}
+                getArtefactInlineFigure(reportName, version, it.files))}
 
         val dataLinks = reportDetails.dataHashes.map{ InputDataViewModel(
                 it.key,
