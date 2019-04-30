@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
+import java.net.URLEncoder
 
 class ReportController(actionContext: ActionContext,
                        private val orderly: OrderlyClient) : Controller(actionContext)
@@ -16,11 +17,14 @@ class ReportController(actionContext: ActionContext,
     class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                           val focalArtefactUrl: String?,
                           val artefacts: List<ArtefactViewModel>,
+                          val dataLinks: List<InputDataViewModel>,
                           context: ActionContext) : AppViewModel(context)
 
-    class ArtefactViewModel(val artefact: Artefact, val files: List<ArtefactFileViewModel>, val inlineArtefactFigure: String?)
+    class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
 
-    class ArtefactFileViewModel(val fileName: String, val url: String)
+    class InputDataViewModel(val key: String, val csv: DownloadableFileViewModel, val rds: DownloadableFileViewModel)
+
+    class DownloadableFileViewModel(val fileName: String, val url: String)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
@@ -44,18 +48,30 @@ class ReportController(actionContext: ActionContext,
         }
 
         val artefacts = reportDetails.artefacts.map{ ArtefactViewModel(it,
-                it.files.map{filename -> ArtefactFileViewModel(filename,
+                it.files.map{filename -> DownloadableFileViewModel(filename,
                         buildArtefactFileUrl(reportName, version, filename, false)) },
             getArtefactInlineFigure(reportName, version, it.files))}
 
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, artefacts,  context)
+        val dataLinks = reportDetails.dataHashes.map{ InputDataViewModel(
+                it.key,
+                DownloadableFileViewModel("csv", buildDataFileUrl("csv", it.value)),
+                DownloadableFileViewModel("rds", buildDataFileUrl("rds", it.value))
+        ) }
+
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, artefacts,
+                dataLinks, context)
     }
 
-    fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inlineIfPossible: Boolean) : String
+    fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean) : String
     {
-        val canRender = inlineIfPossible && canRenderInBrowser(fileName)
-        val inlineParam = if (canRender) "?inline=true" else ""
+        val inlineParam = if (inline) "?inline=true" else ""
         return "/reports/$reportName/versions/$reportVersion/artefacts/$fileName$inlineParam"
+    }
+
+    fun buildDataFileUrl(type: String, dataHash: String): String
+    {
+        val encodedHash = URLEncoder.encode(dataHash)
+        return "/data/$type/$encodedHash"
     }
 
     fun canRenderInBrowser(fileName: String): Boolean
