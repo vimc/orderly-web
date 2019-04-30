@@ -102,7 +102,7 @@ class ReportController(actionContext: ActionContext,
         return "/reports/$reportName/versions/$reportVersion/"
     }
 
-    private fun canRenderInBrowser(fileName: String): Boolean
+    fun canRenderInBrowser(fileName: String): Boolean
     {
         return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
     }
