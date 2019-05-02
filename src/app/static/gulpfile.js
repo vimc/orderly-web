@@ -7,7 +7,6 @@ const gulp = require('gulp'),
     webpack = require('webpack-stream'),
     through = require('through'),
     path = require('path'),
-    VueLoaderPlugin = require('vue-loader/lib/plugin'),
     webpackConfig = require('./webpack.config');
 
 sass.compiler = require('node-sass');

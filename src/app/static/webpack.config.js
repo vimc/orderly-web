@@ -1,7 +1,7 @@
 const path = require('path');
 const config = require('./webpack.common.config');
 
-Object.assign({
+module.exports = Object.assign({
     output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
     resolve: {
         alias: {
@@ -11,5 +11,3 @@ Object.assign({
     },
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
 }, config);
-
-module.exports = config;
