@@ -18,7 +18,7 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class ReportPageTests: TeamcityTests()
 {
-    @get:Rule
+    @get:ClassRule
     val template = FreemarkerTestRule("report-page.ftl",
             includeTemplates = listOf("layouts/layoutwide.ftl"))
 

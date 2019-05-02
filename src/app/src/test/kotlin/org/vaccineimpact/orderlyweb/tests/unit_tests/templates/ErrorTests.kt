@@ -14,7 +14,7 @@ import org.xmlmatchers.XmlMatchers.*
 
 class ErrorTests: TeamcityTests()
 {
-    @get:Rule
+    @get:ClassRule
     val template = FreemarkerTestRule("error.ftl")
 
     @Test

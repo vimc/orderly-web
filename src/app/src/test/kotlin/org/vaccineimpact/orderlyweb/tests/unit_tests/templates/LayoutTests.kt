@@ -14,7 +14,7 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class LayoutTests: TeamcityTests()
 {
-    @get:Rule
+    @get:ClassRule
     //test the layout part of the home page
     val template = FreemarkerTestRule("index.ftl")
 

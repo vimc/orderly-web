@@ -13,7 +13,7 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class _401Tests: TeamcityTests()
 {
-    @get:Rule
+    @get:ClassRule
     val template = FreemarkerTestRule("401.ftl")
 
     @Test

@@ -14,7 +14,7 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class IndexTests: TeamcityTests()
 {
-    @get:Rule
+    @get:ClassRule
     val template = FreemarkerTestRule("index.ftl")
 
     @Test
