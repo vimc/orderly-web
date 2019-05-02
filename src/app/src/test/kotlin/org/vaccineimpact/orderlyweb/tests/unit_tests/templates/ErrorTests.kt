@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalToIgnoringWhiteSpace
-import org.junit.Rule
+import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
@@ -14,8 +14,12 @@ import org.xmlmatchers.XmlMatchers.*
 
 class ErrorTests: TeamcityTests()
 {
-    @get:ClassRule
-    val template = FreemarkerTestRule("error.ftl")
+    companion object
+    {
+        @ClassRule
+        @JvmField
+        val template = FreemarkerTestRule("error.ftl")
+    }
 
     @Test
     fun `renders correctly`()

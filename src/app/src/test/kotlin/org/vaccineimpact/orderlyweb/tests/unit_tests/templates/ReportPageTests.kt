@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.Rule
+import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
@@ -18,9 +18,13 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class ReportPageTests: TeamcityTests()
 {
-    @get:ClassRule
-    val template = FreemarkerTestRule("report-page.ftl",
-            includeTemplates = listOf("layouts/layoutwide.ftl"))
+    companion object
+    {
+        @ClassRule
+        @JvmField
+        val template = FreemarkerTestRule("report-page.ftl",
+                includeTemplates = listOf("layouts/layoutwide.ftl"))
+    }
 
     private val testReport = ReportVersionDetails(name = "r1",
             displayName = "r1 display",

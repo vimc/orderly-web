@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.junit.Rule
+import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -13,8 +13,12 @@ import org.xmlmatchers.XmlMatchers.hasXPath
 
 class _404Tests: TeamcityTests()
 {
-    @get:ClassRule
-    val template = FreemarkerTestRule("404.ftl")
+    companion object
+    {
+        @ClassRule
+        @JvmField
+        val template = FreemarkerTestRule("404.ftl")
+    }
 
     @Test
     fun `renders correctly`()
