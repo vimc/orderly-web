@@ -56,7 +56,7 @@ abstract class SeleniumTest : CustomConfigTests()
         //..which will take us to out login page - click through to Montagu
         clickOnLandingPageLink()
 
-        //we should be logged out of Montagu automatically
+        //Should have automatically logged out from Montagu
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
 
     }
