@@ -3,10 +3,14 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 
 class ReportPageTests : SeleniumTest()
 {
@@ -25,7 +29,6 @@ class ReportPageTests : SeleniumTest()
                 .ensureUserGroupHasPermission("test.user@example.com",
                         ReifiedPermission("reports.read", Scope.Global()))
 
-
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
 
@@ -36,28 +39,34 @@ class ReportPageTests : SeleniumTest()
     fun `can publish report`()
     {
         startApp("auth.provider=montagu")
-        insertReport("testreport", "v1", published = false)
+        val unpublishedVersion = JooqContext().use {
+
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.PUBLISHED.eq(false))
+                    .fetchAny()
+        }
+
+        val versionId = unpublishedVersion[REPORT_VERSION.ID]
+        val reportName = unpublishedVersion[REPORT_VERSION.REPORT]
+
+        JooqContext().use {
+            insertUserAndGroup(it, "test.user@example.com")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.review")
+        }
 
         loginWithMontagu()
-        logout()
+        driver.get(RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/")
 
-        OrderlyAuthorizationRepository()
-                .ensureUserGroupHasPermission("test.user@example.com",
-                        ReifiedPermission("reports.read", Scope.Global()))
-
-        OrderlyAuthorizationRepository()
-                .ensureUserGroupHasPermission("test.user@example.com",
-                        ReifiedPermission("reports.review", Scope.Global()))
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
-
-        val toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
+        var toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
         assertThat(toggleButton.getAttribute("class").contains("off")).isTrue()
 
         toggleButton.click()
 
-        assertThat(toggleButton.getAttribute("class").contains("on")).isTrue()
+        Thread.sleep(500)
+        toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
+        assertThat(toggleButton.getAttribute("class").contains("off")).isFalse()
     }
 
     // TODO replace with unit test
@@ -67,9 +76,10 @@ class ReportPageTests : SeleniumTest()
         startApp("auth.provider=montagu")
         insertReport("testreport", "v1", published = false)
 
-        OrderlyAuthorizationRepository()
-                .ensureUserGroupHasPermission("test.user@example.com",
-                        ReifiedPermission("reports.read", Scope.Global()))
+        JooqContext().use {
+            insertUserAndGroup(it, "test.user@example.com")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
+        }
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")

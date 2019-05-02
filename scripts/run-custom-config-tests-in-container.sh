@@ -30,6 +30,6 @@ $here/migrate-test.sh
 
 # Run the created image
 docker run --rm \
-    -v $PWD/demo:/api/src/customConfigTests/demo \
+    -v $PWD/git:/api/src/customConfigTests/git \
     --network=host \
     orderly-web-custom-config-tests

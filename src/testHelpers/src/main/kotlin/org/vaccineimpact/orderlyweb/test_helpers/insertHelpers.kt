@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.test_helpers
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import java.sql.Timestamp
+import java.time.Instant
 
 fun insertReport(name: String,
                  version: String,
@@ -54,5 +55,47 @@ fun insertReport(name: String,
 
     }
 
+}
+
+fun insertUserAndGroup(db: JooqContext, email: String)
+{
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER)
+            .apply {
+                this.username = email
+                this.displayName = email
+                this.email = email
+                this.userSource = "github"
+                this.lastLoggedIn = Instant.now().toString()
+            }.store()
+
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
+            .apply {
+                this.id = email
+            }.store()
+
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_USER)
+            .apply {
+                this.userGroup = email
+                this.email = email
+            }.insert()
+}
+
+fun giveUserGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
+{
+
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply {
+        this.userGroup = userGroup
+        this.permission = permissionName
+    }.insert()
+
+    val id = db.dsl.select(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+            .from(Tables.ORDERLYWEB_USER_GROUP_PERMISSION)
+            .where(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permissionName)
+                    .and(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup)))
+            .fetchOneInto(Int::class.java)
+
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION).apply {
+        this.id = id
+    }.insert()
 }
 
