@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="publish-switch">
         <div v-on:click="publish"
              v-bind:class="['toggle', 'btn', {'btn-published':report.published}, {'off':!report.published}]"
              data-toggle="toggle"

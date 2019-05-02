@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly

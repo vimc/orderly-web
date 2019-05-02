@@ -10,6 +10,8 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.Instant
 
@@ -103,6 +105,40 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.png?inline=true")
+    }
+
+    @Test
+    fun `report reviewers are admins`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails
+        }
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn "v1"
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+        }
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isAdmin).isTrue()
+    }
+
+    @Test
+    fun `non report reviewers are not admins`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails
+        }
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn "v1"
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+        }
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isAdmin).isFalse()
     }
 
     @Test

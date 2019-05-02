@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
 
 import com.github.fge.jackson.JsonLoader
 import khttp.options
