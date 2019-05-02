@@ -43,8 +43,8 @@ abstract class SeleniumTest : CustomConfigTests()
     protected fun logout()
     {
         driver.get("${RequestHelper.webBaseUrl}/logout")
-        // TODO roll this into our logout method
-        driver.findElement(By.id("logout-button")).click()
+        //Should have automatically logged out from Montagu
+        driver.findElement(By.id("login-button")).click()
     }
 
 }
