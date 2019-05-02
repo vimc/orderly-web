@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClientRedirectActionBuilder
+import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class MontaguIndirectClientTests : TeamcityTests()
@@ -37,6 +38,8 @@ class MontaguIndirectClientTests : TeamcityTests()
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("/login")
+
+        assertThat(sut.logoutActionBuilder is MontaguLogoutActionBuilder).isTrue()
 
     }
 }
