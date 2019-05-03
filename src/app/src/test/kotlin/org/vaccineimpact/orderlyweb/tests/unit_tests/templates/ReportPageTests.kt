@@ -39,9 +39,14 @@ class ReportPageTests: TeamcityTests()
 
     // Mock the wrapper serialization in the real model class
     private open class TestReportViewModel(open val reportJson: String,
-                                      report: ReportVersionDetails,
-                                      focalArtefactUrl: String?,
-                                      context: ActionContext) : ReportController.ReportViewModel(report, focalArtefactUrl, context)
+                                           report: ReportVersionDetails,
+                                           focalArtefactUrl: String?,
+                                           artefacts: List<ReportController.ArtefactViewModel>,
+                                           dataLinks: List<ReportController.InputDataViewModel>,
+                                           resources: List<ReportController.DownloadableFileViewModel>,
+                                           zipFile: ReportController.DownloadableFileViewModel,
+                                           context: ActionContext) :
+            ReportController.ReportViewModel(report, focalArtefactUrl, artefacts, dataLinks, resources, zipFile,  context)
 
     private val mockModel = mock<TestReportViewModel> {
         on { appName } doReturn "testApp"
