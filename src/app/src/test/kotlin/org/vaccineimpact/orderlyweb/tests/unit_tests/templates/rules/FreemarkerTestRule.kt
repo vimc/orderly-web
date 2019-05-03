@@ -7,6 +7,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage
 import freemarker.template.Configuration
 import freemarker.template.Template
 import freemarker.template.TemplateExceptionHandler
+import khttp.options
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -26,7 +27,14 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
     companion object
     {
         const val anyUrl = "http://localhost"
-        val anyWindow = WebClient().currentWindow
+        fun getWebClient(): WebClient
+        {
+            val client = WebClient()
+            client.isThrowExceptionOnScriptError = false
+            return client
+        }
+
+        val anyWindow = getWebClient().currentWindow
     }
 
     private var template: Template? = null
