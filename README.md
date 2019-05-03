@@ -37,7 +37,6 @@ v1.23.0 which appends random strings to container names each time they run.
    - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`    
 
 See [auth.md](/docs/auth.md) for further details about web authentication.
-See [auth.md](/docs/auth.md) for further details about web authentication.
 
 ### Generate test data.  
 This is done automatically by `./dev/run-dependencies.sh` above. To generate a test
