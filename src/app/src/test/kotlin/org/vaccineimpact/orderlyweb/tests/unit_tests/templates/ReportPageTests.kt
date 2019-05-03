@@ -8,6 +8,7 @@ import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
@@ -37,6 +38,28 @@ class ReportPageTests: TeamcityTests()
             resources = listOf(),
             dataHashes = mapOf())
 
+    private val testArtefactViewModels = listOf(
+            ReportController.ArtefactViewModel(
+                    mock<Artefact>{
+                        on {description} doReturn "artefact1"
+                    },
+                    listOf(
+                            ReportController.DownloadableFileViewModel("a1file1.png", "http://a1file1"),
+                            ReportController.DownloadableFileViewModel("a1file2.pdf", "http://a1file2")
+                    ),
+                    "inlinesrc.png"
+                ),
+            ReportController.ArtefactViewModel(
+                    mock<Artefact>{
+                        on {description} doReturn "artefact2"
+                    },
+                    listOf(
+                            ReportController.DownloadableFileViewModel("a2file1.xls", "http://a2file1")
+                    ),
+                    null
+            )
+    )
+
     // Mock the wrapper serialization in the real model class
     private open class TestReportViewModel(open val reportJson: String,
                                            report: ReportVersionDetails,
@@ -53,6 +76,7 @@ class ReportPageTests: TeamcityTests()
         on { report } doReturn testReport
         on { reportJson } doReturn "{}"
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+        on { artefacts } doReturn testArtefactViewModels
     }
 
     @Test
@@ -99,6 +123,14 @@ class ReportPageTests: TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h2/text()",
                 equalToCompressingWhiteSpace("Downloads")))
+
+        //artefacts
+
+        //dataLinks
+
+        //resources
+
+        //zipeFile
 
     }
 }
