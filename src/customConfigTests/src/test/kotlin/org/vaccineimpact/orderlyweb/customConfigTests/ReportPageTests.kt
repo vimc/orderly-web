@@ -69,23 +69,4 @@ class ReportPageTests : SeleniumTest()
         assertThat(toggleButton.getAttribute("class").contains("off")).isFalse()
     }
 
-    // TODO replace with unit test
-    @Test
-    fun `report readers do not see publish switch`()
-    {
-        startApp("auth.provider=montagu")
-        insertReport("testreport", "v1", published = false)
-
-        JooqContext().use {
-            insertUserAndGroup(it, "test.user@example.com")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
-        }
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
-
-        val publishSwitch = driver.findElements(By.cssSelector("#publish-switch"))
-        assertThat(publishSwitch.count()).isEqualTo(0)
-    }
-
 }

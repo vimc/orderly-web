@@ -10,7 +10,7 @@ if (typeof report !== "undefined") {
 }
 
 export const vm = new Vue({
-    el: '#vueApp',
+    el: '#publishSwitchVueApp',
     data: data,
     components: {
         publishSwitch: publishSwitch

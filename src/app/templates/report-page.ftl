@@ -17,7 +17,7 @@
             </ul>
             <hr/>
             <#if isAdmin>
-                <div id="vueApp">
+                <div id="publishSwitchVueApp">
                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                 </div>
             </#if>
