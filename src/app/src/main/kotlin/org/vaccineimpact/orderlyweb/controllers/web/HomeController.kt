@@ -12,7 +12,7 @@ class HomeController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    class IndexViewModel(context: ActionContext, val reports: List<Report>) : AppViewModel(context)
+    open class IndexViewModel(context: ActionContext, open val reports: List<Report>) : AppViewModel(context)
 
     @Template("index.ftl")
     fun index(): IndexViewModel

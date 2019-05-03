@@ -14,7 +14,7 @@ class ReportController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
+    open class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                           val focalArtefactUrl: String?,
                           val artefacts: List<ArtefactViewModel>,
                           val dataLinks: List<InputDataViewModel>,

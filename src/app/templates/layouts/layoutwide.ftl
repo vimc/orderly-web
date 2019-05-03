@@ -2,7 +2,7 @@
     <#include "../partials/header.ftl">
     <div class="container-fluid pt-5">
         <div class="row">
-            <div class="col-12">
+            <div id="content" class="col-12">
                 <#nested>
             </div>
         </div>

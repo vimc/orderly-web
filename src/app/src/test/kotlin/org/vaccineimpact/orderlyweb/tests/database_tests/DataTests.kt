@@ -23,7 +23,7 @@ class DataTests : CleanDatabaseTests()
 
         val hash = "07dffb00305279935544238b39d7b14b"
         insertReport("test", "version1")
-        insertData("version1", "data.csv", "SELECT * FROM THING", hash)
+        insertData("version1", "data.csv", "SELECT * FROM THING", "testdb", hash)
 
         val sut = createSut()
 
@@ -37,7 +37,7 @@ class DataTests : CleanDatabaseTests()
     {
         val hash = "07dffb00305279935544238b39d7b14b"
         insertReport("test", "version1")
-        insertData("version1", "data2.rds", "SELECT * FROM THING", hash)
+        insertData("version1", "data2.rds", "SELECT * FROM THING", "testdb", hash)
 
         val sut = createSut()
 
@@ -49,7 +49,7 @@ class DataTests : CleanDatabaseTests()
     fun `can get data hash for report`()
     {
         insertReport("test", "version1")
-        insertData("version1", "data.csv", "SELECT * FROM THING", "07dffb00305279935544238b39d7b14b")
+        insertData("version1", "data.csv", "SELECT * FROM THING", "testdb", "07dffb00305279935544238b39d7b14b")
 
         val sut = createSut()
 

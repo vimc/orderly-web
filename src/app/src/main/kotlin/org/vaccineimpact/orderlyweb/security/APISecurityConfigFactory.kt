@@ -12,9 +12,16 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
-class APISecurityConfigFactory(
-        private val requiredPermissions: Set<PermissionRequirement>
-) : ConfigFactory
+interface APISecurityConfigFactory : ConfigFactory
+{
+    fun allClients(): String
+    fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>): APISecurityConfigFactory
+    fun allowParameterAuthentication(): APISecurityConfigFactory
+    fun externalAuthentication(): APISecurityConfigFactory
+}
+
+
+class APISecurityClientsConfigFactory : APISecurityConfigFactory
 {
     companion object
     {
@@ -23,7 +30,9 @@ class APISecurityConfigFactory(
         val githubDirectClient = GithubDirectClient()
     }
 
-    val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
+    private val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
+
+    private var requiredPermissions: Set<PermissionRequirement>? = null
 
     override fun build(vararg parameters: Any?): Config
     {
@@ -34,7 +43,7 @@ class APISecurityConfigFactory(
 
             if (AppConfig().authorizationEnabled)
             {
-                setAuthorizer(OrderlyWebAPIAuthorizer(requiredPermissions))
+                setAuthorizer(OrderlyWebAPIAuthorizer(requiredPermissions!!))
             }
             else
             {
@@ -43,20 +52,30 @@ class APISecurityConfigFactory(
         }
     }
 
-    fun allClients() = allClients.joinToString { it::class.java.simpleName }
+    override fun allClients(): String
+    {
+        return allClients.joinToString { it::class.java.simpleName }
+    }
+
+    override fun setRequiredPermissions(requiredPermissions: Set<PermissionRequirement>): APISecurityConfigFactory
+    {
+        this.requiredPermissions = requiredPermissions
+        return this
+    }
+
+    override fun allowParameterAuthentication(): APISecurityConfigFactory
+    {
+        allClients.add(APISecurityClientsConfigFactory.parameterClient)
+        return this
+    }
+
+    override fun externalAuthentication(): APISecurityConfigFactory
+    {
+        allClients.clear()
+        // TODO add Montagu direct client and use if configured to do so
+        allClients.add(APISecurityClientsConfigFactory.githubDirectClient)
+        return this
+    }
 
 }
 
-fun APISecurityConfigFactory.allowParameterAuthentication(): APISecurityConfigFactory
-{
-    this.allClients.add(APISecurityConfigFactory.parameterClient)
-    return this
-}
-
-fun APISecurityConfigFactory.externalAuthentication(): APISecurityConfigFactory
-{
-    this.allClients.clear()
-    // TODO add Montagu direct client and use if configured to do so
-    this.allClients.add(APISecurityConfigFactory.githubDirectClient)
-    return this
-}
