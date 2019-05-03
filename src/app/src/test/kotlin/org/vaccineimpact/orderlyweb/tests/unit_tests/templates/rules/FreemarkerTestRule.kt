@@ -1,24 +1,22 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules
 
-import com.gargoylesoftware.htmlunit.html.HtmlPage
+import com.gargoylesoftware.htmlunit.StringWebResponse
+import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HTMLParser
+import com.gargoylesoftware.htmlunit.html.HtmlPage
 import freemarker.template.Configuration
 import freemarker.template.Template
 import freemarker.template.TemplateExceptionHandler
-import freemarker.template.Version
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
+import org.vaccineimpact.orderlyweb.app_start.buildFreemarkerConfig
+import org.xmlmatchers.transform.XmlConverters.the
 import java.io.File
 import java.io.StringWriter
 import java.io.Writer
-import java.lang.IllegalStateException
 import java.net.URL
-import java.util.*
 import javax.xml.transform.Source
-import org.xmlmatchers.transform.XmlConverters.the
-import com.gargoylesoftware.htmlunit.StringWebResponse
-import com.gargoylesoftware.htmlunit.WebClient
 
 
 //This is a simplified kotlinised version of this: https://github.com/Todderz/freemarker-unit-test
@@ -58,15 +56,8 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
 
     private fun configureTemplateLoader(): Configuration
     {
-        val config = Configuration(Configuration.VERSION_2_3_26)
-        config.setDirectoryForTemplateLoading(File(templatePath))
-        config.defaultEncoding = "UTF-8"
-        config.locale = Locale.UK
+        val config = buildFreemarkerConfig(File(templatePath))
         config.templateExceptionHandler = TemplateExceptionHandler.RETHROW_HANDLER
-
-        //Assume we should include standard layout file
-        config.addAutoInclude("layouts/layout.ftl")
-        config.addAutoInclude("layouts/layoutwide.ftl")
 
         return config
     }
