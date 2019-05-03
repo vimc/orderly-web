@@ -22,6 +22,19 @@ fun main(args: Array<String>)
     app.run()
 }
 
+fun buildFreemarkerConfig(templateDirectory: File): Configuration
+{
+    val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
+    freeMarkerConfig.defaultEncoding = "UTF-8"
+    freeMarkerConfig.locale = Locale.UK
+    freeMarkerConfig.objectWrapper = TemplateObjectWrapper()
+    freeMarkerConfig.setDirectoryForTemplateLoading(templateDirectory)
+    freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
+    freeMarkerConfig.addAutoInclude("layouts/layoutwide.ftl")
+
+    return freeMarkerConfig
+}
+
 class OrderlyWeb
 {
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
@@ -35,14 +48,7 @@ class OrderlyWeb
 
     fun run()
     {
-
-        val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
-        freeMarkerConfig.defaultEncoding = "UTF-8"
-        freeMarkerConfig.locale = Locale.UK
-        freeMarkerConfig.objectWrapper = TemplateObjectWrapper()
-        freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
-        freeMarkerConfig.addAutoInclude("layouts/layout.ftl")
-        freeMarkerConfig.addAutoInclude("layouts/layoutwide.ftl")
+        val freeMarkerConfig = buildFreemarkerConfig(File("templates").absoluteFile)
 
         staticFiles.externalLocation(File("static/public").absolutePath)
 
