@@ -60,8 +60,9 @@ Unit and integration tests are found in `src/app/src/test`. They can be run thro
 command line from the `src` directory with `./gradlew :app:test -i`
 
 Selenium tests are found in `src/customConfigTests/src/test`. They can be run through the IDE or on the 
-command line from the `src` directory with `./gradlew :customConfigTests:test -i`. You will also have to 
-install chromedriver: `./scripts/install-chromedriver.sh`
+command line from the `src` directory with `./gradlew :customConfigTests:test -i`. You will have to run 
+`./gradlew :customConfigTests:copyDemo` first.
+You will also have to install chromedriver: `./scripts/install-chromedriver.sh` 
 
 
 ## Regenerate database interface

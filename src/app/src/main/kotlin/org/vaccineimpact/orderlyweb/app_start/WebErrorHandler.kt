@@ -29,8 +29,8 @@ class WebErrorHandler(private val freeMarkerEngine: FreeMarkerEngine)
         ))
     }
 
-    class ErrorViewModel(error: OrderlyWebError, context: DirectActionContext) : AppViewModel(context)
+    open class ErrorViewModel(error: OrderlyWebError, context: DirectActionContext) : AppViewModel(context)
     {
-        val errors = error.problems
+        open val errors = error.problems
     }
 }

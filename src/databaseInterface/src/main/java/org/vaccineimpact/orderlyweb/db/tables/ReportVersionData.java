@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionDataRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReportVersionData extends TableImpl<ReportVersionDataRecord> {
 
-    private static final long serialVersionUID = 1038168284;
+    private static final long serialVersionUID = 1980737171;
 
     /**
      * The reference instance of <code>report_version_data</code>
@@ -65,9 +65,14 @@ public class ReportVersionData extends TableImpl<ReportVersionDataRecord> {
     public final TableField<ReportVersionDataRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>report_version_data.sql</code>.
+     * The column <code>report_version_data.database</code>.
      */
-    public final TableField<ReportVersionDataRecord, String> SQL = createField("sql", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<ReportVersionDataRecord, String> DATABASE = createField("database", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+
+    /**
+     * The column <code>report_version_data.query</code>.
+     */
+    public final TableField<ReportVersionDataRecord, String> QUERY = createField("query", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>report_version_data.hash</code>.

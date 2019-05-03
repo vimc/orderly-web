@@ -22,6 +22,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 
 
 class Router(freeMarkerConfig: Configuration)
@@ -73,6 +74,13 @@ class Router(freeMarkerConfig: Configuration)
         val logoutCallback = LogoutRoute(config)
         logoutCallback.destroySession = true
         logoutCallback.defaultUrl = "/"
+
+        if (AuthenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu)
+        {
+            //we should log out of Montagu when we log out of OrderlyWeb
+            logoutCallback.centralLogout = true
+        }
+
         val url = "logout"
         Spark.get(url, logoutCallback)
         Spark.get("$url/", logoutCallback)

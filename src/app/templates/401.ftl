@@ -15,7 +15,7 @@
             </a>
             </li>
             <li><a href="https://help.github.com/en/articles/approving-oauth-apps-for-your-organization">
-                GitHub organization approval "${appName}" has been granted
+                GitHub organization approval for "${appName}" has been granted
             </a>
             </li>
         </ol>

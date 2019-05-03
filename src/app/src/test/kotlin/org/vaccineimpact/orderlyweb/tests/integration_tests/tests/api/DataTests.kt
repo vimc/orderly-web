@@ -17,7 +17,7 @@ class DataTests : IntegrationTest()
     fun `gets dict of data names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", "123456")
+        insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", "123456")
         val response = requestHelper.get("/reports/testname/versions/testversion/data/",
                 userEmail = fakeReportReader("testname"))
 
@@ -47,7 +47,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
+        insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
@@ -66,7 +66,7 @@ class DataTests : IntegrationTest()
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
 
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoCSV)
+        insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = requestHelper.get(url, ContentTypes.binarydata,
@@ -97,7 +97,7 @@ class DataTests : IntegrationTest()
         val fakedata = "64328fyhdkjs"
         val fakehash = "07dffb00305279935544238b39d7b14b"
         insertReport("testname", "testversion")
-        insertData("testversion", fakedata, "SELECT * FROM thing", fakehash)
+        insertData("testversion", fakedata, "SELECT * FROM thing", "testdb", fakehash)
         val url = "/reports/testname/versions/testversion/data/$fakedata/"
         val token = requestHelper.generateOnetimeToken(url)
 
@@ -116,7 +116,7 @@ class DataTests : IntegrationTest()
         demoRDS = demoRDS.substring(0, demoRDS.length - 4)
 
         insertReport("testname", "testversion")
-        insertData("testversion", "testdata", "SELECT * FROM thing", demoRDS)
+        insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoRDS)
 
         val url = "/reports/testname/versions/testversion/data/testdata/?type=rds"
         val token = requestHelper.generateOnetimeToken(url)

@@ -15,10 +15,11 @@ class ReportController(actionContext: ActionContext,
     constructor(actionContext: ActionContext) : this(actionContext,
             Orderly(actionContext.hasPermission(ReifiedPermission("reports.review", Scope.Global()))))
 
-    class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
-                          val focalArtefactUrl: String?,
-                          val isAdmin: Boolean,
-                          context: ActionContext) : AppViewModel(context)
+
+    open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
+                               open val focalArtefactUrl: String?,
+                               open val isAdmin: Boolean,
+                               context: ActionContext) : AppViewModel(context)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
