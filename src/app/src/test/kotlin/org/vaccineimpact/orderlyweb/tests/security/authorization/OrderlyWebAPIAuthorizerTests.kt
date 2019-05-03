@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.security
+package org.vaccineimpact.orderlyweb.tests.security.authorization
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock

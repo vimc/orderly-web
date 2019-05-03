@@ -12,7 +12,9 @@ class AuthenticationConfig
     companion object {
 
         fun getConfiguredProvider(): AuthenticationProvider {
+
             val configuredValue = AppConfig()["auth.provider"]
+
             return when (configuredValue.toLowerCase()) {
                 "github" -> AuthenticationProvider.Github
                 "montagu" -> AuthenticationProvider.Montagu
