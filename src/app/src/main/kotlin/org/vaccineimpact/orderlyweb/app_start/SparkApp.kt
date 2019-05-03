@@ -37,6 +37,8 @@ class OrderlyWeb
     {
 
         val freeMarkerConfig = Configuration(Configuration.VERSION_2_3_26)
+        freeMarkerConfig.defaultEncoding = "UTF-8"
+        freeMarkerConfig.locale = Locale.UK
         freeMarkerConfig.objectWrapper = TemplateObjectWrapper()
         freeMarkerConfig.setDirectoryForTemplateLoading(File("templates").absoluteFile)
         freeMarkerConfig.addAutoInclude("layouts/layout.ftl")

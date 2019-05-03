@@ -34,7 +34,7 @@ class LayoutTests: TeamcityTests()
         val xmlResponse = template.xmlResponseFor(mockModel)
 
         //header
-        assertThat(xmlResponse, hasXPath("//head/title", equalToIgnoringWhiteSpace("testApp")))
+        assertThat(xmlResponse, hasXPath("//head/title", equalToCompressingWhiteSpace("testApp")))
         assertThat(xmlResponse, hasXPath("//header/a/@href", equalTo("/")))
         assertThat(xmlResponse, hasXPath("//header/a/img/@src", equalTo("/img/logo.png")))
         assertThat(xmlResponse, hasXPath("//header/a/img/@alt", equalTo("testApp")))
@@ -42,7 +42,7 @@ class LayoutTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("//header/div[@class='site-title']/a/@href",
                 equalTo("/")))
         assertThat(xmlResponse, hasXPath("//header/div[@class='site-title']/a/text()",
-                equalToIgnoringWhiteSpace("testApp")))
+                equalToCompressingWhiteSpace("testApp")))
 
         assertThat(xmlResponse, not(hasXPath("//header/div[@class='logout']"))) //should not show logged in view
 
@@ -63,19 +63,19 @@ class LayoutTests: TeamcityTests()
         val xmlResponse = template.xmlResponseFor(mockModel)
 
         //header
-        assertThat(xmlResponse, hasXPath("//head/title", equalToIgnoringWhiteSpace("testApp")))
+        assertThat(xmlResponse, hasXPath("//head/title", equalToCompressingWhiteSpace("testApp")))
         assertThat(xmlResponse, hasXPath("//header/a/@href", equalTo("/")))
         assertThat(xmlResponse, hasXPath("//header/a/img/@src", equalTo("/img/logo.png")))
 
         assertThat(xmlResponse, hasXPath("//header/div[@class='site-title']/a/text()",
-                equalToIgnoringWhiteSpace("testApp")))
+                equalToCompressingWhiteSpace("testApp")))
 
         assertThat(xmlResponse, hasXPath("//header/div[@class='logout']/span/text()",
-                equalToIgnoringWhiteSpace("Logged in as testUser |")))
+                equalToCompressingWhiteSpace("Logged in as testUser |")))
         assertThat(xmlResponse, hasXPath("//header/div[@class='logout']/span/a/@href",
                 equalTo("/logout")))
         assertThat(xmlResponse, hasXPath("//header/div[@class='logout']/span/a/text()",
-                equalToIgnoringWhiteSpace("Logout")))
+                equalToCompressingWhiteSpace("Logout")))
 
         //content
         assertThat(xmlResponse, hasXPath("//div[@class='container-fluid pt-5']/div[@class='row']/div[@id='content']"))

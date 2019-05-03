@@ -30,22 +30,22 @@ class _404Tests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Page not found")))
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Page not found")))
         assertThat(xmlResponse, hasXPath("//li[1]/text()",
-                equalToIgnoringWhiteSpace("Click back in your browser to return to the previous page")))
+                equalToCompressingWhiteSpace("Click back in your browser to return to the previous page")))
 
         assertThat(xmlResponse, hasXPath("//li[2]/text()",
-                equalToIgnoringWhiteSpace("Return to")))
+                equalToCompressingWhiteSpace("Return to")))
         assertThat(xmlResponse, hasXPath("//li[2]/a/text()",
-                equalToIgnoringWhiteSpace("the main menu")))
+                equalToCompressingWhiteSpace("the main menu")))
         assertThat(xmlResponse, hasXPath("//li[2]/a/@href",
-                equalToIgnoringWhiteSpace("/reports")))
+                equalToCompressingWhiteSpace("/reports")))
 
         assertThat(xmlResponse, hasXPath("//li[3]/text()",
-                equalToIgnoringWhiteSpace("If you are sure this page should exist, please")))
+                equalToCompressingWhiteSpace("If you are sure this page should exist, please")))
         assertThat(xmlResponse, hasXPath("//li[3]/a/text()",
-                equalToIgnoringWhiteSpace("let us know")))
+                equalToCompressingWhiteSpace("let us know")))
         assertThat(xmlResponse, hasXPath("//li[3]/a/@href",
-                equalToIgnoringWhiteSpace("mailto:test@test.com")))
+                equalToCompressingWhiteSpace("mailto:test@test.com")))
     }
 }

@@ -32,14 +32,14 @@ class IndexTests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("All reports")))
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("All reports")))
 
         assertThat(xmlResponse, hasXPath("//div[@id='content']/a[1]/text()",
-                equalToIgnoringWhiteSpace("r1")))
+                equalToCompressingWhiteSpace("r1")))
         assertThat(xmlResponse, hasXPath("//div[@id='content']/a[1]/@href", equalTo("reports/r1/v1")))
 
         assertThat(xmlResponse, hasXPath("//div[@id='content']/a[2]/text()",
-                equalToIgnoringWhiteSpace("r2")))
+                equalToCompressingWhiteSpace("r2")))
         assertThat(xmlResponse, hasXPath("//div[@id='content']/a[2]/@href", equalTo("reports/r2/v2")))
 
     }

@@ -30,9 +30,9 @@ class _401Tests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Login failed")))
         assertThat(xmlResponse, hasXPath("//p/text()",
-                equalToIgnoringWhiteSpace("We have not been able to successfully identify you as a Montagu user.")))
+                equalToCompressingWhiteSpace("We have not been able to successfully identify you as a Montagu user.")))
     }
 
     @Test
@@ -45,17 +45,17 @@ class _401Tests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Login failed")))
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Login failed")))
         assertThat(xmlResponse, hasXPath("//p/text()",
                 containsString("We have not been able to successfully identify you as a member of the app's configured Github org.")))
 
         assertThat(xmlResponse, hasXPath("//li[1]/a/text()",
-                equalToIgnoringWhiteSpace("GitHub organization approval for \"testApp\" has been requested")))
+                equalToCompressingWhiteSpace("GitHub organization approval for \"testApp\" has been requested")))
         assertThat(xmlResponse, hasXPath("//li[1]/a/@href",
                 equalTo("https://help.github.com/en/articles/requesting-organization-approval-for-oauth-apps")))
 
         assertThat(xmlResponse, hasXPath("//li[2]/a/text()",
-                equalToIgnoringWhiteSpace("GitHub organization approval for \"testApp\" has been granted")))
+                equalToCompressingWhiteSpace("GitHub organization approval for \"testApp\" has been granted")))
         assertThat(xmlResponse, hasXPath("//li[2]/a/@href",
                 equalTo("https://help.github.com/en/articles/approving-oauth-apps-for-your-organization")))
     }

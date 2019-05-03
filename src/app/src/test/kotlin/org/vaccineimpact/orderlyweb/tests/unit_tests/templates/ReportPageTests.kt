@@ -22,8 +22,7 @@ class ReportPageTests: TeamcityTests()
     {
         @ClassRule
         @JvmField
-        val template = FreemarkerTestRule("report-page.ftl",
-                includeTemplates = listOf("layouts/layoutwide.ftl"))
+        val template = FreemarkerTestRule("report-page.ftl")
     }
 
     private val testReport = ReportVersionDetails(name = "r1",
@@ -57,10 +56,10 @@ class ReportPageTests: TeamcityTests()
         val xmlResponse = template.xmlResponseFor(mockModel)
 
         assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][1]/a[@role='tab']/text()",
-                equalToIgnoringWhiteSpace("Report")))
+                equalToCompressingWhiteSpace("Report")))
 
         assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][2]/a[@role='tab']/text()",
-                equalToIgnoringWhiteSpace("Downloads")))
+                equalToCompressingWhiteSpace("Downloads")))
 
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report']"))
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads']"))
@@ -76,13 +75,13 @@ class ReportPageTests: TeamcityTests()
         val xPathRoot = "//div[@id='report']"
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
-                equalToIgnoringWhiteSpace("r1 display")))
+                equalToCompressingWhiteSpace("r1 display")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/p[1]/text()",
-                equalToIgnoringWhiteSpace("r1-v1")))
+                equalToCompressingWhiteSpace("r1-v1")))
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/iframe/@src", equalTo("/testFocalArtefactUrl")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/text()",
-                equalToIgnoringWhiteSpace("View fullscreen")))
+                equalToCompressingWhiteSpace("View fullscreen")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/@href", equalTo("/testFocalArtefactUrl")))
     }
 
@@ -94,7 +93,7 @@ class ReportPageTests: TeamcityTests()
         val xPathRoot = "//div[@id='downloads']"
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h2/text()",
-                equalToIgnoringWhiteSpace("Downloads")))
+                equalToCompressingWhiteSpace("Downloads")))
 
     }
 }

@@ -23,8 +23,7 @@ import com.gargoylesoftware.htmlunit.WebClient
 
 //This is a simplified kotlinised version of this: https://github.com/Todderz/freemarker-unit-test
 
-class FreemarkerTestRule(val templateName: String, val templatePath: String = "templates",
-                         val includeTemplates: List<String> = listOf()) : TestRule
+class FreemarkerTestRule(val templateName: String, val templatePath: String = "templates") : TestRule
 {
     companion object
     {
@@ -59,21 +58,15 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
 
     private fun configureTemplateLoader(): Configuration
     {
-        val config = Configuration()
+        val config = Configuration(Configuration.VERSION_2_3_26)
         config.setDirectoryForTemplateLoading(File(templatePath))
-        config.incompatibleImprovements = Version(2, 3, 20)
         config.defaultEncoding = "UTF-8"
         config.locale = Locale.UK
         config.templateExceptionHandler = TemplateExceptionHandler.RETHROW_HANDLER
 
         //Assume we should include standard layout file
         config.addAutoInclude("layouts/layout.ftl")
-
-        //..and also include any others requested
-        for(include in includeTemplates)
-        {
-            config.addAutoInclude(include)
-        }
+        config.addAutoInclude("layouts/layoutwide.ftl")
 
         return config
     }

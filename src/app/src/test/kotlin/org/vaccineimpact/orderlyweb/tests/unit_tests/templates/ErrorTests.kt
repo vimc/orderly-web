@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalToIgnoringWhiteSpace
+import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
@@ -31,8 +31,8 @@ class ErrorTests: TeamcityTests()
 
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        assertThat(xmlResponse, hasXPath("//h1/text()", equalToIgnoringWhiteSpace("Something went wrong")))
-        assertThat(xmlResponse, hasXPath("//li[1]/text()", equalToIgnoringWhiteSpace("oops")))
-        assertThat(xmlResponse, hasXPath("//li[2]/text()", equalToIgnoringWhiteSpace("try again")))
+        assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Something went wrong")))
+        assertThat(xmlResponse, hasXPath("//li[1]/text()", equalToCompressingWhiteSpace("oops")))
+        assertThat(xmlResponse, hasXPath("//li[2]/text()", equalToCompressingWhiteSpace("try again")))
     }
 }
