@@ -78,7 +78,8 @@ fun insertArtefact(reportVersionId: String,
 
 fun insertData(reportVersionId: String,
                name: String,
-               sql: String,
+               query: String,
+               database: String,
                hash: String)
 {
     JooqContext().use {
@@ -92,7 +93,8 @@ fun insertData(reportVersionId: String,
         it.dsl.insertInto(REPORT_VERSION_DATA)
                 .set(REPORT_VERSION_DATA.REPORT_VERSION, reportVersionId)
                 .set(REPORT_VERSION_DATA.NAME, name)
-                .set(REPORT_VERSION_DATA.SQL, sql)
+                .set(REPORT_VERSION_DATA.QUERY, query)
+                .set(REPORT_VERSION_DATA.DATABASE, database)
                 .set(REPORT_VERSION_DATA.HASH, hash)
                 .execute()
     }

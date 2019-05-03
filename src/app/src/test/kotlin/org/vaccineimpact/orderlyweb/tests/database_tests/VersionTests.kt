@@ -28,7 +28,7 @@ class VersionTests : CleanDatabaseTests()
         insertFileInput("version1", "file.csv", FilePurpose.RESOURCE)
         insertFileInput("version1", "graph.png", FilePurpose.RESOURCE)
 
-        insertData("version1", "dat", "some sql", "somehash")
+        insertData("version1", "dat", "some sql", "testdb",  "somehash")
 
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, fileNames = listOf("artefactfile.csv"))

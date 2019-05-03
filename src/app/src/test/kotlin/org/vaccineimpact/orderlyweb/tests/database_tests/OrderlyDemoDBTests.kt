@@ -332,7 +332,8 @@ class OrderlyDemoDBTests : DatabaseTests()
                 assertThat(r.id).isGreaterThan(0)
                 assertThat(r.reportVersion).isNotBlank()
                 assertThat(r.name).isNotBlank()
-                assertThat(r.sql).isNotBlank()
+                assertThat(r.query).isNotBlank()
+                assertThat(r.database).isNotBlank()
                 assertThat(r.hash).isNotBlank()
             }
 
