@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
+import org.jsoup
+import org.jsoup.Jsoup
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -124,7 +126,12 @@ class ReportPageTests : TeamcityTests()
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
 
+        val stringResponse = template.stringResponseFor(mockModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
+
         //artefacts
+        //val artefactElements = doc.select()
+
 
         //dataLinks
 
