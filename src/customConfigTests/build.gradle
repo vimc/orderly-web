@@ -16,9 +16,9 @@ dependencies {
 }
 
 task copyStatic(type: Copy) {
-    from '../app/static'
+    from '../app/static/public'
     include '*/**'
-    into 'static'
+    into 'static/public'
     outputs.upToDateWhen { false }
 }
 
@@ -35,6 +35,15 @@ task copyDemo(type: Copy) {
     into 'demo'
     outputs.upToDateWhen { false }
 }
+
+task copyGitDemo(type: Copy) {
+    from '../app/git'
+    include '*/**'
+    into 'git'
+    outputs.upToDateWhen { false }
+}
+
+copyDemo.dependsOn 'copyGitDemo'
 
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'

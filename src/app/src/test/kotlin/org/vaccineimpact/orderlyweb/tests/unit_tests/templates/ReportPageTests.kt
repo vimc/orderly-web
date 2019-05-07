@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.ClassRule
@@ -11,12 +12,12 @@ import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
-import java.sql.Timestamp
 import org.xmlmatchers.XmlMatchers.hasXPath
+import java.sql.Timestamp
 
 //This will also test the partials which the report-page template includes
 
-class ReportPageTests: TeamcityTests()
+class ReportPageTests : TeamcityTests()
 {
     companion object
     {
@@ -39,14 +40,17 @@ class ReportPageTests: TeamcityTests()
 
     // Mock the wrapper serialization in the real model class
     private open class TestReportViewModel(open val reportJson: String,
-                                      report: ReportVersionDetails,
-                                      focalArtefactUrl: String?,
-                                      context: ActionContext) : ReportController.ReportViewModel(report, focalArtefactUrl, context)
+                                           report: ReportVersionDetails,
+                                           focalArtefactUrl: String?,
+                                           isAdmin: Boolean,
+                                           context: ActionContext) :
+            ReportController.ReportViewModel(report, focalArtefactUrl, isAdmin, context)
 
     private val mockModel = mock<TestReportViewModel> {
         on { appName } doReturn "testApp"
         on { report } doReturn testReport
         on { reportJson } doReturn "{}"
+        on { isAdmin } doReturn false
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
     }
 
@@ -64,8 +68,6 @@ class ReportPageTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report']"))
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads']"))
     }
-
-
 
     @Test
     fun `renders report tab correctly`()
@@ -95,5 +97,39 @@ class ReportPageTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("$xPathRoot/h2/text()",
                 equalToCompressingWhiteSpace("Downloads")))
 
+    }
+
+    @Test
+    fun `admins see publish switch`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn true
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
+        Assertions.assertThat(publishSwitch).isNotNull()
+    }
+
+    @Test
+    fun `non admins do not see publish switch`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn false
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
+        Assertions.assertThat(publishSwitch).isNull()
     }
 }

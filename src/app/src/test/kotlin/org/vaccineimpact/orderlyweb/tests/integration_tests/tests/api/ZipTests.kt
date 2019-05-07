@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.tests.deleteArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipInputStream
 

@@ -5,16 +5,21 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
 class ReportController(actionContext: ActionContext,
                        private val orderly: OrderlyClient) : Controller(actionContext)
 {
-    constructor(actionContext: ActionContext) : this(actionContext, Orderly())
+    constructor(actionContext: ActionContext) : this(actionContext,
+            Orderly(actionContext.hasPermission(ReifiedPermission("reports.review", Scope.Global()))))
+
 
     open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
-                          open val focalArtefactUrl: String?,
-                          context: ActionContext) : AppViewModel(context)
+                               open val focalArtefactUrl: String?,
+                               open val isAdmin: Boolean,
+                               context: ActionContext) : AppViewModel(context)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportViewModel
@@ -36,7 +41,9 @@ class ReportController(actionContext: ActionContext,
         {
             "/reports/$reportName/versions/$version/artefacts/$focalArtefact?inline=true"
         }
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, context)
+
+        val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, isAdmin, context)
     }
 
     fun canRenderInBrowser(fileName: String): Boolean

@@ -17,13 +17,13 @@ data class WebEndpoint(
         override val method: HttpMethod = HttpMethod.get,
         override val requiredPermissions: List<PermissionRequirement> = listOf(),
         override val secure: Boolean = false,
+        override val contentType: String = ContentTypes.html,
         val externalAuth: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
         val configFactory: ConfigFactory? = null
 ) : EndpointDefinition
 {
     override val transform = false
-    override val contentType = ContentTypes.html
     override val allowParameterAuthentication = false
     override val authenticateWithExternalProvider: Boolean = true
 
@@ -77,4 +77,9 @@ fun WebEndpoint.secure(permissions: Set<String> = setOf(), externalAuth: Boolean
 fun WebEndpoint.post(): WebEndpoint
 {
     return this.copy(method = HttpMethod.post)
+}
+
+fun WebEndpoint.json(): WebEndpoint
+{
+    return this.copy(contentType = ContentTypes.json)
 }

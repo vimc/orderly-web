@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.auth
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy

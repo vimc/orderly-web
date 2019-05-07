@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import org.assertj.core.api.Assertions
@@ -15,6 +15,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class VersionTests : IntegrationTest()

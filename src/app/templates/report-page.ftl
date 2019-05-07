@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
+<#-- @ftlvariable name="isAdmin" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="/css/report-page.min.css"/>
@@ -15,6 +16,11 @@
                 </li>
             </ul>
             <hr/>
+            <#if isAdmin>
+                <div id="publishSwitchVueApp">
+                    <publish-switch :report=report @toggle="handleToggle"></publish-switch>
+                </div>
+            </#if>
         </div>
         <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report">
@@ -29,5 +35,6 @@
         <script>
             var report = ${reportJson}
         </script>
+        <script src="/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>
