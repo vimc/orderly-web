@@ -31,7 +31,6 @@
     "jsdom-global": "^3.0.2",
     "mocha": "^6.1.4",
     "mocha-webpack": "^1.1.0",
-    "npm": "^6.9.0",
     "through": "^2.3.8",
     "vue": "^2.6.8",
     "vue-loader": "^15.7.0",
