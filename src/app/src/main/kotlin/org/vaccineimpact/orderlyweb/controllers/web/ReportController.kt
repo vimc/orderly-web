@@ -14,12 +14,12 @@ class ReportController(actionContext: ActionContext,
 {
     constructor(actionContext: ActionContext) : this(actionContext, Orderly())
 
-    open class ReportViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
-                          val focalArtefactUrl: String?,
-                          val artefacts: List<ArtefactViewModel>,
-                          val dataLinks: List<InputDataViewModel>,
-                          val resources: List<DownloadableFileViewModel>,
-                          val zipFile: DownloadableFileViewModel,
+    open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
+                          open val focalArtefactUrl: String?,
+                          open val artefacts: List<ArtefactViewModel>,
+                          open val dataLinks: List<InputDataViewModel>,
+                          open val resources: List<DownloadableFileViewModel>,
+                          open val zipFile: DownloadableFileViewModel,
                           context: ActionContext) : AppViewModel(context)
 
     class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)

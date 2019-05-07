@@ -9,6 +9,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
@@ -40,9 +41,7 @@ class ReportPageTests: TeamcityTests()
 
     private val testArtefactViewModels = listOf(
             ReportController.ArtefactViewModel(
-                    mock<Artefact>{
-                        on {description} doReturn "artefact1"
-                    },
+                    Artefact(ArtefactFormat.DATA, "artefact1", listOf()),
                     listOf(
                             ReportController.DownloadableFileViewModel("a1file1.png", "http://a1file1"),
                             ReportController.DownloadableFileViewModel("a1file2.pdf", "http://a1file2")
@@ -50,9 +49,7 @@ class ReportPageTests: TeamcityTests()
                     "inlinesrc.png"
                 ),
             ReportController.ArtefactViewModel(
-                    mock<Artefact>{
-                        on {description} doReturn "artefact2"
-                    },
+                    Artefact(ArtefactFormat.DATA, "artefact2", listOf()),
                     listOf(
                             ReportController.DownloadableFileViewModel("a2file1.xls", "http://a2file1")
                     ),
@@ -77,6 +74,7 @@ class ReportPageTests: TeamcityTests()
         on { reportJson } doReturn "{}"
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         on { artefacts } doReturn testArtefactViewModels
+        on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
     }
 
     @Test

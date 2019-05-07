@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules
 
+import com.gargoylesoftware.htmlunit.BrowserVersion
 import com.gargoylesoftware.htmlunit.StringWebResponse
 import com.gargoylesoftware.htmlunit.WebClient
 import com.gargoylesoftware.htmlunit.html.HTMLParser
@@ -26,7 +27,9 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
     companion object
     {
         const val anyUrl = "http://localhost"
-        val anyWindow = WebClient().currentWindow
+        val version = BrowserVersion.FIREFOX_3
+        val client = WebClient(version)
+        val anyWindow = client.currentWindow
     }
 
     private var template: Template? = null
