@@ -29,6 +29,7 @@ test-data\.sql
 src/*/out/*
 src/app/static/node_modules
 src/app/static/public/css
+src/app/static/public/js
 demo
 git
 src/customConfigTests/templates

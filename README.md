@@ -29,6 +29,14 @@ v1.23.0 which appends random strings to container names each time they run.
    clone the [reverse proxy](https://github.com/vimc/montagu-proxy) and run it in dev mode (see https://github.com/vimc/montagu-proxy#build-and-run-locally).
     Note that the app will redirect you to your local Montagu to login, but Montagu will not yet redirect you back to the app. 
     You can do this manually by navigating to http://localhost:8888/login after a successful Montagu login.
+1. If you want to manually test any functionality which requires interaction with the orderly server (e.g. publish or 
+   run report), you will need the application to use the database in the `/git` subdirectory of `/src/app`, not the 
+   default `/demo` subdirectory. This will give you access to the git test data, which only has the 'minimal' report, 
+   not the full demo test data. 
+   
+   To achieve this, make the following changes before running `/dev/run-dependencies.sh` and the app:
+   - In `/dev/cli.sh'` replace `docker run -v $PWD/src/app/demo:/orderly $image "$@"` with `docker run -v $PWD/src/app/git:/orderly $image "$@"`
+   - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`    
 
 See [auth.md](/docs/auth.md) for further details about web authentication.
 

@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
+<#-- @ftlvariable name="isAdmin" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="/css/report-page.min.css"/>
@@ -7,7 +8,7 @@
     <div class="row">
         <div class="col-12 col-md-4 col-xl-3 sidebar">
             <ul class="nav flex-column">
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
                 </li>
                 <li class="nav-item">
@@ -15,6 +16,11 @@
                 </li>
             </ul>
             <hr/>
+            <#if isAdmin>
+                <div id="publishSwitchVueApp">
+                    <publish-switch :report=report @toggle="handleToggle"></publish-switch>
+                </div>
+            </#if>
         </div>
         <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report-tab">
@@ -29,8 +35,6 @@
         <script>
             var report = ${reportJson}
         </script>
-        <!-- TODO: Include this using gulp once merged with mrc-231 - just need it to make the tabs work -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+        <script src="/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>

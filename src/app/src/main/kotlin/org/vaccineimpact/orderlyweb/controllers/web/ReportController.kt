@@ -6,21 +6,27 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 import java.net.URLEncoder
 
 class ReportController(actionContext: ActionContext,
                        private val orderly: OrderlyClient) : Controller(actionContext)
 {
-    constructor(actionContext: ActionContext) : this(actionContext, Orderly())
+    constructor(actionContext: ActionContext) : this(actionContext,
+            Orderly(actionContext.hasPermission(ReifiedPermission("reports.review", Scope.Global()))))
+
 
     open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
                           open val focalArtefactUrl: String?,
+                          open val isAdmin: Boolean,
                           open val artefacts: List<ArtefactViewModel>,
                           open val dataLinks: List<InputDataViewModel>,
                           open val resources: List<DownloadableFileViewModel>,
                           open val zipFile: DownloadableFileViewModel,
                           context: ActionContext) : AppViewModel(context)
+
 
     class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
 
@@ -49,6 +55,7 @@ class ReportController(actionContext: ActionContext,
             buildArtefactFileUrl(reportName, version, focalArtefact, true)
         }
 
+
         val artefacts = reportDetails.artefacts.map{ ArtefactViewModel(it,
                 it.files.map{filename -> DownloadableFileViewModel(filename,
                         buildArtefactFileUrl(reportName, version, filename, false)) },
@@ -65,8 +72,12 @@ class ReportController(actionContext: ActionContext,
 
         val zipFile = DownloadableFileViewModel("$reportName-$version.zip", buildZipFileUrl(reportName, version))
 
+
+        val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+
         return ReportViewModel(reportDetails.copy(displayName = displayName),
                 focalArtefactUrl,
+                isAdmin,
                 artefacts,
                 dataLinks,
                 resources,

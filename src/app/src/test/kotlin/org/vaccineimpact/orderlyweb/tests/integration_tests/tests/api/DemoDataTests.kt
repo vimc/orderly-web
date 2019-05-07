@@ -1,10 +1,11 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class DemoDataTests : IntegrationTest()
 {

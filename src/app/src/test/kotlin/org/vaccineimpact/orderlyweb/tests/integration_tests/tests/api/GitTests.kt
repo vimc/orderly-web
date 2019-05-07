@@ -1,8 +1,8 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
+package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class GitTests : IntegrationTest()
 {

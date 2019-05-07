@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.ClassRule
@@ -13,12 +14,12 @@ import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
-import java.sql.Timestamp
 import org.xmlmatchers.XmlMatchers.hasXPath
+import java.sql.Timestamp
 
 //This will also test the partials which the report-page template includes
 
-class ReportPageTests: TeamcityTests()
+class ReportPageTests : TeamcityTests()
 {
     companion object
     {
@@ -61,17 +62,20 @@ class ReportPageTests: TeamcityTests()
     private open class TestReportViewModel(open val reportJson: String,
                                            report: ReportVersionDetails,
                                            focalArtefactUrl: String?,
+                                           isAdmin: Boolean,
                                            artefacts: List<ReportController.ArtefactViewModel>,
                                            dataLinks: List<ReportController.InputDataViewModel>,
                                            resources: List<ReportController.DownloadableFileViewModel>,
                                            zipFile: ReportController.DownloadableFileViewModel,
                                            context: ActionContext) :
-            ReportController.ReportViewModel(report, focalArtefactUrl, artefacts, dataLinks, resources, zipFile,  context)
+            ReportController.ReportViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile,  context)
+
 
     private val mockModel = mock<TestReportViewModel> {
         on { appName } doReturn "testApp"
         on { report } doReturn testReport
         on { reportJson } doReturn "{}"
+        on { isAdmin } doReturn false
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         on { artefacts } doReturn testArtefactViewModels
         on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
@@ -88,18 +92,16 @@ class ReportPageTests: TeamcityTests()
         assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][2]/a[@role='tab']/text()",
                 equalToCompressingWhiteSpace("Downloads")))
 
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report']"))
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads']"))
+        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report-tab']"))
+        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads-tab']"))
     }
-
-
 
     @Test
     fun `renders report tab correctly`()
     {
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        val xPathRoot = "//div[@id='report']"
+        val xPathRoot = "//div[@id='report-tab']"
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
@@ -117,10 +119,10 @@ class ReportPageTests: TeamcityTests()
     {
         val xmlResponse = template.xmlResponseFor(mockModel)
 
-        val xPathRoot = "//div[@id='downloads']"
+        val xPathRoot = "//div[@id='downloads-tab']"
 
-        assertThat(xmlResponse, hasXPath("$xPathRoot/h2/text()",
-                equalToCompressingWhiteSpace("Downloads")))
+        assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
+                equalToCompressingWhiteSpace("r1 display")))
 
         //artefacts
 
@@ -130,5 +132,41 @@ class ReportPageTests: TeamcityTests()
 
         //zipeFile
 
+    }
+
+    @Test
+    fun `admins see publish switch`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn true
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
+        Assertions.assertThat(publishSwitch).isNotNull()
+    }
+
+    @Test
+    fun `non admins do not see publish switch`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn false
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
+        Assertions.assertThat(publishSwitch).isNull()
     }
 }
