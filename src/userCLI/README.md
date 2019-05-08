@@ -14,13 +14,13 @@ or to test locally:
 1. `./scripts/test-cli.sh <command>`
 
 ### Commands
-#### Add user
+#### Add users
 
-    add-user test.user@example.com
+    add-users test.user@example.com another.user@email.com
 
-#### Add group
+#### Add groups
 
-    add-group admin
+    add-groups admin funder developer
 
 #### Add members to group
 

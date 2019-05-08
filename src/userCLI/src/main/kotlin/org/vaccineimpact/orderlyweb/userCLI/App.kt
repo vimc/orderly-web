@@ -7,8 +7,8 @@ const val doc = """
 OrderlyWeb User CLI
 
 Usage:
-    app add-user <email>
-    app add-group <name>
+    app add-users <email>...
+    app add-groups <name>...
     app add-members <group> <email>...
     app grant <group> <permission>...
 """
@@ -16,17 +16,17 @@ Usage:
 fun main(args: Array<String>)
 {
     val options = Docopt(doc).parse(args.toList())
-    val addUser = options["add-user"] as Boolean
-    val addGroup = options["add-group"] as Boolean
+    val addUser = options["add-users"] as Boolean
+    val addGroup = options["add-groups"] as Boolean
     val addMembers = options["add-members"] as Boolean
     val grant = options["grant"] as Boolean
     try
     {
         val result = when
         {
-            addUser -> addUser(options)
+            addUser -> addUsers(options)
             grant -> grantPermissions(options)
-            addGroup -> addUserGroup(options)
+            addGroup -> addUserGroups(options)
             addMembers -> addMembers(options)
             else -> ""
         }

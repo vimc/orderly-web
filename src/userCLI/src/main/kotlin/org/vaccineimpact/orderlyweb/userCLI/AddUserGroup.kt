@@ -2,10 +2,13 @@ package org.vaccineimpact.orderlyweb.userCLI
 
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 
-fun addUserGroup(options: Map<String, Any>): String
+fun addUserGroups(options: Map<String, Any>): String
 {
-    val groupName = options["<name>"].getStringValue()
+    val groupNames = options["<name>"] as List<*>
 
-    OrderlyAuthorizationRepository().createUserGroup(groupName)
-    return "Saved user group '$groupName' to the database"
+    return groupNames.joinToString("\n") {
+        val groupName = it.getStringValue()
+        OrderlyAuthorizationRepository().createUserGroup(groupName)
+        "Saved user group '$groupName' to the database"
+    }
 }

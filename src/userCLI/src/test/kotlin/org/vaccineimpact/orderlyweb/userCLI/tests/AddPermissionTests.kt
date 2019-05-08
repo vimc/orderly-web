@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.userCLI.addUser
+import org.vaccineimpact.orderlyweb.userCLI.addUsers
 import org.vaccineimpact.orderlyweb.userCLI.grantPermissions
 
 class AddPermissionTests : CleanDatabaseTests()
@@ -16,7 +16,7 @@ class AddPermissionTests : CleanDatabaseTests()
     fun `addPermissionsToGroup adds permissions to group`()
     {
         insertReport("testreport", "v1")
-        addUser(mapOf("<email>" to "[test.user@email.com]"))
+        addUsers(mapOf("<email>" to listOf("[test.user@email.com]")))
         val result = grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[*/reports.read]", "[report:testreport/reports.review]")))
 
         val expected = """Gave user group 'test.user@email.com' the permission '*/reports.read'
@@ -48,7 +48,7 @@ class AddPermissionTests : CleanDatabaseTests()
     @Test
     fun `addPermissionsToGroup does nothing if permission does not exist or is badly formatted`()
     {
-        addUser(mapOf("<email>" to "[test.user@email.com]"))
+        addUsers(mapOf("<email>" to listOf("[test.user@email.com]")))
 
         assertThatThrownBy {
             grantPermissions(mapOf("<group>" to "[test.user@email.com]", "<permission>" to listOf("[*/permission.read]")))

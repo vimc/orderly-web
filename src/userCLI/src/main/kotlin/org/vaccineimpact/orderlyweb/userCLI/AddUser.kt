@@ -3,18 +3,21 @@ package org.vaccineimpact.orderlyweb.userCLI
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 
-fun addUser(options: Map<String, Any>): String
+fun addUsers(options: Map<String, Any>): String
 {
-    val userEmail = options["<email>"].getStringValue()
+    val userEmails = options["<email>"] as List<*>
     val userRepo = OrderlyUserRepository()
 
-    return if (userRepo.getUser(userEmail) == null)
-    {
-        userRepo.addUser(userEmail, "unknown", "unknown", UserSource.CLI)
-        "Saved user with email '$userEmail' to the database"
-    }
-    else
-    {
-        "User with email '$userEmail' already exists; no changes made"
+    return userEmails.joinToString("\n") {
+        val email = it.getStringValue()
+        if (userRepo.getUser(email) == null)
+        {
+            userRepo.addUser(email, "unknown", "unknown", UserSource.CLI)
+            "Saved user with email '$email' to the database"
+        }
+        else
+        {
+            "User with email '$email' already exists; no changes made"
+        }
     }
 }
