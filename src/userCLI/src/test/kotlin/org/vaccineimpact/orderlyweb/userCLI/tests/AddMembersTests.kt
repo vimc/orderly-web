@@ -12,8 +12,8 @@ class AddMembersTests : CleanDatabaseTests()
     @Test
     fun `addMembers adds members to group`()
     {
-        addUserGroups(mapOf("<name>" to "[admin]"))
-        addUsers(mapOf("<email>" to "[a.user@email.com]"))
+        addUserGroups(mapOf("<name>" to listOf("[admin]")))
+        addUsers(mapOf("<email>" to listOf("[a.user@email.com]")))
 
         val result = addMembers(mapOf("<group>" to "[admin]", "<email>" to listOf("[a.user@email.com]")))
         val members = JooqContext().use {
