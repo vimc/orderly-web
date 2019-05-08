@@ -132,7 +132,7 @@ class ZipTests : IntegrationTest()
                 userEmail = fakeGlobalReportReader())
 
         val entries = getZipEntries(response)
-        Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv")
+        Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv", "$version/README.md")
     }
 
     @Test
@@ -158,7 +158,8 @@ class ZipTests : IntegrationTest()
                 "$version/orderly_published.yml",
                 "$version/orderly_run.rds",
                 "$version/orderly_run.yml",
-                "$version/script.R")
+                "$version/script.R",
+                "$version/README.md")
     }
 
     private fun getZipEntries(response: khttp.responses.Response): MutableList<String>

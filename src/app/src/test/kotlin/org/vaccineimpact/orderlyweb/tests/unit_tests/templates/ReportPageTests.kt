@@ -157,7 +157,7 @@ class ReportPageTests : TeamcityTests()
         val artefact2FileLinks = artefactEl2.select(".card-body div a")
         Assertions.assertThat(artefact2FileLinks.count()).isEqualTo(1)
         Assertions.assertThat(artefact2FileLinks[0].attr("href")).isEqualTo("http://a2file1")
-        Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a1file1.xls")
+        Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a2file1.xls")
 
         //dataLinks
 
