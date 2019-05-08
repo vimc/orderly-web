@@ -57,5 +57,5 @@
 </#if>
 
 <div class="mb-5 mt-5">
-    <div><@file_download_link.render file=zipFile class="button" iconColor="#ffffff" /></div>
+    <div id="zip-file"><@file_download_link.render file=zipFile class="button" iconColor="#ffffff" /></div>
 </div>

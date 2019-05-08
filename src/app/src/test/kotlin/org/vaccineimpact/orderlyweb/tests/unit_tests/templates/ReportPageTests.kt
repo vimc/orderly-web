@@ -242,15 +242,16 @@ class ReportPageTests : TeamcityTests()
         Assertions.assertThat(resourceLinks[1].attr("href")).isEqualTo("http://resource2/csv")
         Assertions.assertThat(resourceLinks[1].text()).isEqualTo("resource2.csv")
         Assertions.assertThat(resourceLinks[1].select("span.download-icon").count()).isEqualTo(1)
-
-        //zipFile
-
     }
 
     @Test
     fun `renders zipfile correctly`()
     {
+        val stringResponse = template.stringResponseFor(mockModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
 
+        val zipFileEl = jsoupDoc.select("#zip-file")
+        val zipFileLink = zipFileEl.select("")
     }
 
     @Test
