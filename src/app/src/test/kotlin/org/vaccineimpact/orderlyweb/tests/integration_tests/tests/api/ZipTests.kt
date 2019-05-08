@@ -133,7 +133,6 @@ class ZipTests : IntegrationTest()
 
         val entries = getZipEntries(response)
         Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv", "$version/README.md")
-
     }
 
     @Test
@@ -152,7 +151,6 @@ class ZipTests : IntegrationTest()
 
         val entries = getZipEntries(response)
 
-        Assertions.assertThat(entries.count()).isEqualTo(1) //deliberately failing test as something really odd going on on TC
         Assertions.assertThat(entries).containsOnly(
                 "$version/mygraph.png",
                 "$version/meta/data.csv",
@@ -162,7 +160,6 @@ class ZipTests : IntegrationTest()
                 "$version/orderly_run.yml",
                 "$version/script.R",
                 "$version/README.md")
-
     }
 
     private fun getZipEntries(response: khttp.responses.Response): MutableList<String>

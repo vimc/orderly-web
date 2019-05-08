@@ -251,7 +251,10 @@ class ReportPageTests : TeamcityTests()
         val jsoupDoc = Jsoup.parse(stringResponse)
 
         val zipFileEl = jsoupDoc.select("#zip-file")
-        val zipFileLink = zipFileEl.select("")
+        val zipFileLink = zipFileEl.select("a")
+        Assertions.assertThat(zipFileLink.attr("href")).isEqualTo("http://zipFileUrl")
+        Assertions.assertThat(zipFileLink.text()).isEqualTo("resource1.csv")
+        Assertions.assertThat(zipFileLink.select("span.download-icon").count()).isEqualTo(1)
     }
 
     @Test
