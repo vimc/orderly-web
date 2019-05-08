@@ -68,6 +68,11 @@ class ReportPageTests : TeamcityTests()
                     ReportController.DownloadableFileViewModel("key2.rds", "http://key2/rds"))
     )
 
+    private val testResources = listOf(
+            ReportController.DownloadableFileViewModel("resource1.csv", "http://resource1/csv"),
+            ReportController.DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
+    )
+
     // Mock the wrapper serialization in the real model class
     private open class TestReportViewModel(open val reportJson: String,
                                            report: ReportVersionDetails,
@@ -229,7 +234,22 @@ class ReportPageTests : TeamcityTests()
         val resourcesEl = jsoupDoc.select("#resources")
         Assertions.assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
 
+        val resourceLinks = resourcesEl.select(".card-body div a")
+        Assertions.assertThat(resourceLinks.count()).isEqualTo(2)
+        Assertions.assertThat(resourceLinks[0].attr("href")).isEqualTo("http://resource1/csv")
+        Assertions.assertThat(resourceLinks[0].text()).isEqualTo("resource1.csv")
+        Assertions.assertThat(resourceLinks[0].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(resourceLinks[1].attr("href")).isEqualTo("http://resource2/csv")
+        Assertions.assertThat(resourceLinks[1].text()).isEqualTo("resource2.csv")
+        Assertions.assertThat(resourceLinks[1].select("span.download-icon").count()).isEqualTo(1)
+
         //zipFile
+
+    }
+
+    @Test
+    fun `renders zipfile correctly`()
+    {
 
     }
 
@@ -242,7 +262,7 @@ class ReportPageTests : TeamcityTests()
             on { reportJson } doReturn "{}"
             on { isAdmin } doReturn false
             on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-            on { resources } doReturn listOf<ReportController.InputDataViewModel>()
+            on { resources } doReturn listOf<ReportController.DownloadableFileViewModel>()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
