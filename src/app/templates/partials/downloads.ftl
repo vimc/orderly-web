@@ -8,21 +8,23 @@
 
 <#include "report-title.ftl">
 
-<#list artefacts as artefact>
-    <div class="mb-2 card">
-        <div class="card-header">${artefact.artefact.description}</div>
-        <div class="card-body">
-            <#if artefact.inlineArtefactFigure??>
-                <img src="${artefact.inlineArtefactFigure}" class="border border-dark p-3 col-12 col-lg-8">
-            </#if>
+<div id="artefacts">
+    <#list artefacts as artefact>
+        <div class="mb-2 card">
+            <div class="card-header">${artefact.artefact.description}</div>
+            <div class="card-body">
+                <#if artefact.inlineArtefactFigure??>
+                    <img src="${artefact.inlineArtefactFigure}" class="border border-dark p-3 col-12 col-lg-8">
+                </#if>
 
-            <!-- links -->
-            <#list artefact.files as file>
-                <div><@file_download_link.render file=file /></div>
-            </#list>
+                <!-- links -->
+                <#list artefact.files as file>
+                    <div><@file_download_link.render file=file /></div>
+                </#list>
+            </div>
         </div>
-    </div>
-</#list>
+    </#list>
+</div>
 
 <#if dataLinks?has_content>
      <div class="mb-2 card">

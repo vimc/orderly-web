@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.jsoup
 import org.jsoup.Jsoup
 import org.junit.ClassRule
 import org.junit.Test
@@ -117,8 +116,7 @@ class ReportPageTests : TeamcityTests()
     }
 
     @Test
-    fun `renders download tab correctly`()
-    {
+    fun `renders download tab title correctly`() {
         val xmlResponse = template.xmlResponseFor(mockModel)
 
         val xPathRoot = "//div[@id='downloads-tab']"
@@ -126,12 +124,40 @@ class ReportPageTests : TeamcityTests()
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
 
+    }
+
+    @Test
+    fun `renders download table artefacts correctly`()
+    {
         val stringResponse = template.stringResponseFor(mockModel)
         val jsoupDoc = Jsoup.parse(stringResponse)
 
         //artefacts
-        //val artefactElements = doc.select()
+        val artefactsEl = jsoupDoc.select("#artefacts")
+        val artefactCards = artefactsEl.select(".card")
+        Assertions.assertThat(artefactCards.count()).isEqualTo(2)
 
+        val artefactEl1 = artefactCards[0]
+        Assertions.assertThat(artefactEl1.select(".card-header").text()).isEqualTo("artefact1")
+        Assertions.assertThat(artefactEl1.select("img").attr("src")).isEqualTo("inlinesrc.png")
+        val artefact1FileLinks = artefactEl1.select(".card-body div a")
+
+        Assertions.assertThat(artefact1FileLinks.count()).isEqualTo(2)
+        Assertions.assertThat(artefact1FileLinks[0].attr("href")).isEqualTo("http://a1file1")
+        Assertions.assertThat(artefact1FileLinks[0].text()).isEqualTo("a1file1.png")
+        Assertions.assertThat(artefact1FileLinks[0].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(artefact1FileLinks[1].attr("href")).isEqualTo("http://a1file2")
+        Assertions.assertThat(artefact1FileLinks[1].text()).isEqualTo("a1file2.pdf")
+        Assertions.assertThat(artefact1FileLinks[1].select("span.download-icon").count()).isEqualTo(1)
+
+
+        val artefactEl2 = artefactCards[1]
+        Assertions.assertThat(artefactEl2.select(".card-header").text()).isEqualTo("artefact2")
+        Assertions.assertThat(artefactEl2.select("img").count()).isEqualTo(0)
+        val artefact2FileLinks = artefactEl2.select(".card-body div a")
+        Assertions.assertThat(artefact2FileLinks.count()).isEqualTo(1)
+        Assertions.assertThat(artefact2FileLinks[0].attr("href")).isEqualTo("http://a2file1")
+        Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a1file1.xls")
 
         //dataLinks
 
