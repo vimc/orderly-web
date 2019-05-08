@@ -59,6 +59,15 @@ class ReportPageTests : TeamcityTests()
             )
     )
 
+    private val testDataLinks = listOf(
+            ReportController.InputDataViewModel("key1",
+                    ReportController.DownloadableFileViewModel("key1.csv", "http://key1/csv"),
+                    ReportController.DownloadableFileViewModel("key1.rds", "http://key1/rds")),
+            ReportController.InputDataViewModel("key2",
+                    ReportController.DownloadableFileViewModel("key2.csv", "http://key2/csv"),
+                    ReportController.DownloadableFileViewModel("key2.rds", "http://key2/rds"))
+    )
+
     // Mock the wrapper serialization in the real model class
     private open class TestReportViewModel(open val reportJson: String,
                                            report: ReportVersionDetails,
@@ -79,6 +88,7 @@ class ReportPageTests : TeamcityTests()
         on { isAdmin } doReturn false
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         on { artefacts } doReturn testArtefactViewModels
+        on { dataLinks } doReturn testDataLinks
         on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
     }
 
@@ -127,12 +137,11 @@ class ReportPageTests : TeamcityTests()
     }
 
     @Test
-    fun `renders download table artefacts correctly`()
+    fun `renders download tab artefacts correctly`()
     {
         val stringResponse = template.stringResponseFor(mockModel)
         val jsoupDoc = Jsoup.parse(stringResponse)
 
-        //artefacts
         val artefactsEl = jsoupDoc.select("#artefacts")
         val artefactCards = artefactsEl.select(".card")
         Assertions.assertThat(artefactCards.count()).isEqualTo(2)
@@ -158,13 +167,64 @@ class ReportPageTests : TeamcityTests()
         Assertions.assertThat(artefact2FileLinks.count()).isEqualTo(1)
         Assertions.assertThat(artefact2FileLinks[0].attr("href")).isEqualTo("http://a2file1")
         Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a2file1.xls")
+    }
 
-        //dataLinks
+    @Test
+    fun `renders download tab data links correctly`()
+    {
+        val stringResponse = template.stringResponseFor(mockModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
+
+        val linksEl = jsoupDoc.select("#data-links")
+        Assertions.assertThat(linksEl.select(".card-header").text()).isEqualTo("Input data to the report")
+
+        val linkRows = linksEl.select(".row")
+        Assertions.assertThat(linkRows.count()).isEqualTo(2)
+
+        val linkRow1 = linkRows[0]
+        Assertions.assertThat(linkRow1.select(".data-link-key").text()).isEqualTo("key1")
+        val linkRow1Csv = linkRow1.select("ul li")[0]
+        Assertions.assertThat(linkRow1Csv.select("a").attr("href")).isEqualTo("http://key1/csv")
+        Assertions.assertThat(linkRow1Csv.select("a").text()).isEqualTo("key1.csv")
+        val linkRow1Rds = linkRow1.select("ul li")[1]
+        Assertions.assertThat(linkRow1Rds.select("a").attr("href")).isEqualTo("http://key1/rds")
+        Assertions.assertThat(linkRow1Rds.select("a").text()).isEqualTo("key1.rds")
+
+        val linkRow2 = linkRows[1]
+        Assertions.assertThat(linkRow2.select(".data-link-key").text()).isEqualTo("key2")
+        val linkRow2Csv = linkRow2.select("ul li")[0]
+        Assertions.assertThat(linkRow2Csv.select("a").attr("href")).isEqualTo("http://key2/csv")
+        Assertions.assertThat(linkRow2Csv.select("a").text()).isEqualTo("key2.csv")
+        val linkRow2Rds = linkRow2.select("ul li")[1]
+        Assertions.assertThat(linkRow2Rds.select("a").attr("href")).isEqualTo("http://key2/rds")
+        Assertions.assertThat(linkRow2Rds.select("a").text()).isEqualTo("key2.rds")
+
+        //Does not render datalinks if none
 
         //resources
 
-        //zipeFile
+        //zipFile
 
+    }
+
+    @Test
+    fun `does not render download tab data links if none in model`()
+    {
+        val testModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn false
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { dataLinks } doReturn listOf<ReportController.InputDataViewModel>()
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
+        }
+
+        val stringResponse = template.stringResponseFor(mockModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
+
+        val linksEl = jsoupDoc.select("#data-links")
+        Assertions.assertThat(linksEl.count()).isEqualTo(0)
     }
 
     @Test

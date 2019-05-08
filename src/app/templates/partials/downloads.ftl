@@ -27,12 +27,12 @@
 </div>
 
 <#if dataLinks?has_content>
-     <div class="mb-2 card">
+     <div id="data-links" class="mb-2 card">
         <div class="card-header">Input data to the report</div>
         <div class="card-body">
             <#list dataLinks as dataLink>
                 <div class="row">
-                    <div class="col-12 col-md-3">${dataLink.key}</div>
+                    <div class="data-link-key col-12 col-md-3">${dataLink.key}</div>
                     <div class="col-12 col-md-9">
                         <ul>
                             <li><@file_download_link.render file=dataLink.csv /></li>
