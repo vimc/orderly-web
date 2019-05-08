@@ -94,6 +94,7 @@ class ReportPageTests : TeamcityTests()
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         on { artefacts } doReturn testArtefactViewModels
         on { dataLinks } doReturn testDataLinks
+        on { resources } doReturn testResources
         on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
     }
 

@@ -11,7 +11,7 @@
                 <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
                 </li>
-                <li class="nav-item ">
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#downloads-tab" role="tab">Downloads</a>
                 </li>
             </ul>
