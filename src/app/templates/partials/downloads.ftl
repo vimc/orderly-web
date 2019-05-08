@@ -46,7 +46,7 @@
 </#if>
 
 <#if resources?has_content>
-    <div class="mb-2 card">
+    <div id="resources" class="mb-2 card">
       <div class="card-header">Resources</div>
       <div class="card-body">
         <#list resources as resource>

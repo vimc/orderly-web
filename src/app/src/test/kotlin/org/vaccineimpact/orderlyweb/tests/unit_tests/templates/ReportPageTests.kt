@@ -198,13 +198,6 @@ class ReportPageTests : TeamcityTests()
         val linkRow2Rds = linkRow2.select("ul li")[1]
         Assertions.assertThat(linkRow2Rds.select("a").attr("href")).isEqualTo("http://key2/rds")
         Assertions.assertThat(linkRow2Rds.select("a").text()).isEqualTo("key2.rds")
-
-        //Does not render datalinks if none
-
-        //resources
-
-        //zipFile
-
     }
 
     @Test
@@ -220,11 +213,44 @@ class ReportPageTests : TeamcityTests()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
-        val stringResponse = template.stringResponseFor(mockModel)
+        val stringResponse = template.stringResponseFor(testModel)
         val jsoupDoc = Jsoup.parse(stringResponse)
 
         val linksEl = jsoupDoc.select("#data-links")
         Assertions.assertThat(linksEl.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `renders resources correctly`()
+    {
+        val stringResponse = template.stringResponseFor(mockModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
+
+        val resourcesEl = jsoupDoc.select("#resources")
+        Assertions.assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
+
+        //zipFile
+
+    }
+
+    @Test
+    fun `does not render download tab resources if none in model`()
+    {
+        val testModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn false
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { resources } doReturn listOf<ReportController.InputDataViewModel>()
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
+        }
+
+        val stringResponse = template.stringResponseFor(testModel)
+        val jsoupDoc = Jsoup.parse(stringResponse)
+
+        val resourcesEl = jsoupDoc.select("#resources")
+        Assertions.assertThat(resourcesEl.count()).isEqualTo(0)
     }
 
     @Test
