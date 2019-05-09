@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.openqa.selenium.By
@@ -8,11 +7,7 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
-import org.vaccineimpact.orderlyweb.models.UserSource
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+
 
 abstract class SeleniumTest : CustomConfigTests()
 {
