@@ -27,4 +27,4 @@ COPY . /api
 RUN npm install --prefix=/api/src/app/static
 RUN ./gradlew :app:compileFrontEnd
 
-docker build --tag orderly-web-dist-base --file dist.Dockerfile .
+RUN docker build --tag orderly-web-dist-base --file dist.Dockerfile .
