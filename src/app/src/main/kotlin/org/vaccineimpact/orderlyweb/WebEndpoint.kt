@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 
 import spark.route.HttpMethod
@@ -20,7 +21,8 @@ data class WebEndpoint(
         override val contentType: String = ContentTypes.html,
         val externalAuth: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
-        val configFactory: ConfigFactory? = null
+        val configFactory: ConfigFactory? = null,
+        val authenticationConfig: AuthenticationConfig = AuthenticationConfig()
 ) : EndpointDefinition
 {
     override val transform = false
@@ -31,23 +33,30 @@ data class WebEndpoint(
     {
         if (secure)
         {
-           addSecurityFilter(url)
+            addSecurityFilter(url)
         }
     }
 
     private fun addSecurityFilter(url: String)
     {
-        //The endpoints with externalAuth are those which will redirect the user to a specific external Auth provider
-        //after clicking a link on our login page. All others redirect to the login page
+
         val client =
-            if (externalAuth)
-            {
-                AuthenticationConfig.getAuthenticationIndirectClient()
-            }
-            else
-            {
-                 OrderlyWebIndirectClient()
-            }
+                if (externalAuth)
+                {
+                    //The endpoints with externalAuth are those which will redirect the user to a specific external Auth provider
+                    //after clicking a link on our login page.
+                    authenticationConfig.getAuthenticationIndirectClient()
+                }
+                else
+                {
+                    //Redirect to our login page, or to an external login provider if OrderlyWeb actions should be fully
+                    //synchronised with external login provider, and login page should not be seen (Montagu only)
+                    val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
+                    if (synchronisedAuth)
+                        authenticationConfig.getAuthenticationIndirectClient()
+                    else
+                        OrderlyWebIndirectClient()
+                }
 
         val factory = configFactory ?: WebSecurityConfigFactory(
                 client,
