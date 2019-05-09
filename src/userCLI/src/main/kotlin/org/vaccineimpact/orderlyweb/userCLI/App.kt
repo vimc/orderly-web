@@ -35,7 +35,7 @@ fun main(args: Array<String>)
     }
     catch (e: Exception)
     {
-        println(e.message)
+        System.err.println(e.message)
         exitProcess(1)
     }
 }
