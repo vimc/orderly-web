@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
-import org.jsoup.Jsoup
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -145,8 +144,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders download tab artefacts correctly`()
     {
-        val stringResponse = template.stringResponseFor(mockModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val artefactsEl = jsoupDoc.select("#artefacts")
         val artefactCards = artefactsEl.select(".card")
@@ -178,8 +176,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders download tab data links correctly`()
     {
-        val stringResponse = template.stringResponseFor(mockModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         Assertions.assertThat(linksEl.select(".card-header").text()).isEqualTo("Input data to the report")
@@ -219,8 +216,7 @@ class ReportPageTests : TeamcityTests()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
-        val stringResponse = template.stringResponseFor(testModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         Assertions.assertThat(linksEl.count()).isEqualTo(0)
@@ -229,8 +225,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders resources correctly`()
     {
-        val stringResponse = template.stringResponseFor(mockModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         Assertions.assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
@@ -248,8 +243,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders zipfile correctly`()
     {
-        val stringResponse = template.stringResponseFor(mockModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val zipFileEl = jsoupDoc.select("#zip-file")
         val zipFileLink = zipFileEl.select("a")
@@ -271,8 +265,7 @@ class ReportPageTests : TeamcityTests()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
-        val stringResponse = template.stringResponseFor(testModel)
-        val jsoupDoc = Jsoup.parse(stringResponse)
+        val jsoupDoc = template.jsoupDocFor(mockModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         Assertions.assertThat(resourcesEl.count()).isEqualTo(0)
