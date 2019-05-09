@@ -25,3 +25,6 @@ COPY . /api
 
 # Install front-end dependencies
 RUN npm install --prefix=/api/src/app/static
+RUN ./gradlew :app:compileFrontEnd
+
+docker build --tag orderly-web-dist-base --file dist.Dockerfile .
