@@ -4,7 +4,7 @@ to the database.
 
 ### Usage
 
-    image=docker.montagu.dide.ic.ac.uk:5000/orderly-web-cli:master
+    image=docker.montagu.dide.ic.ac.uk:5000/orderly-web-user-cli:master
     docker run \
         -v orderly_volume:/orderly \
         $image <command>
