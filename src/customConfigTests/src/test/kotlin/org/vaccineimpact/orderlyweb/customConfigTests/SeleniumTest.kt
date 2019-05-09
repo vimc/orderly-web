@@ -62,17 +62,4 @@ abstract class SeleniumTest : CustomConfigTests()
 
     }
 
-    protected fun addUserWithPermissions(permissions: List<ReifiedPermission>, email: String = "test.user@example.com")
-    {
-        val userRepo = OrderlyUserRepository()
-        userRepo.addUser(email, email, email, UserSource.CLI)
-
-        val authRepo = OrderlyAuthorizationRepository()
-
-        authRepo.ensureGroupHasMember(email, email)
-        for(permission in permissions) {
-            authRepo.ensureUserGroupHasPermission(email, permission)
-        }
-    }
-
 }
