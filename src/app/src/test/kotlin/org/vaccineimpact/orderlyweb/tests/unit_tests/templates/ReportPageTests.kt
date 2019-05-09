@@ -216,7 +216,7 @@ class ReportPageTests : TeamcityTests()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         Assertions.assertThat(linksEl.count()).isEqualTo(0)
@@ -265,7 +265,7 @@ class ReportPageTests : TeamcityTests()
             on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         Assertions.assertThat(resourcesEl.count()).isEqualTo(0)
