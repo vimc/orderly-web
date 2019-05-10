@@ -6,7 +6,8 @@
   "scripts": {
     "build": "NODE_ENV=production gulp build",
     "js": "NODE_ENV=development gulp js",
-    "test": "mocha-webpack --reporter mocha-teamcity-reporter --webpack-config webpack.test.config.js --require src/tests/setup.js src/tests/*.js"
+    "test": "mocha-webpack --webpack-config webpack.test.config.js --require src/tests/setup.js src/tests/*.js",
+    "test-teamcity": "mocha-webpack --reporter mocha-teamcity-reporter --webpack-config webpack.test.config.js --require src/tests/setup.js src/tests/*.js"
   },
   "author": "",
   "license": "MIT",
