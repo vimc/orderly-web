@@ -103,6 +103,9 @@ run tests (for this purpose also running an Orderly Server image with the `git` 
 1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
 1. Runs `./scripts/run-custom-config-tests-in-container.sh`
 
+For more explanation including a diagram that explains the relationship between the various docker images, 
+see [build.md](/docs/build.md)
+
 ## Docker run
 To make use of a built image, run:
 
