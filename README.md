@@ -66,7 +66,7 @@ command line from the `src` directory with `./gradlew :customConfigTests:test -i
 You will also have to install chromedriver: `./scripts/install-chromedriver.sh` 
 
 Javascript tests are in `src/app/static/src/tests` and can be run from the `static` directory
-with `npm run test`
+with `npm test`
 
 ### Regenerate database interface
 ```
