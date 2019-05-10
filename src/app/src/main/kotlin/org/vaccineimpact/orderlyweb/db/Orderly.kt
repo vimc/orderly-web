@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import java.sql.Timestamp
 
-class Orderly(isReviewer: Boolean = false) : OrderlyClient
+class Orderly(val isReviewer: Boolean = false) : OrderlyClient
 {
     override fun getArtefacts(report: String, version: String): List<Artefact>
     {
