@@ -44,14 +44,14 @@ data class WebEndpoint(
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
 
         val client =
-                if (externalAuth || synchronisedAuth)
-                {
-                    authenticationConfig.getAuthenticationIndirectClient()
-                }
-                else
-                {
-                    OrderlyWebIndirectClient()
-                }
+            if (externalAuth || synchronisedAuth)
+            {
+                authenticationConfig.getAuthenticationIndirectClient()
+            }
+            else
+            {
+                OrderlyWebIndirectClient()
+            }
 
         val factory = configFactory ?: WebSecurityConfigFactory(
                 client,
