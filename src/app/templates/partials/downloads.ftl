@@ -14,7 +14,7 @@
             <div class="card-header">${artefact.artefact.description}</div>
             <div class="card-body">
                 <#if artefact.inlineArtefactFigure??>
-                    <img src="${artefact.inlineArtefactFigure}" class="border border-dark p-3 col-12 col-lg-8">
+                    <img src="${artefact.inlineArtefactFigure}" class="border border-dark p-3 col-12 col-lg-8 mb-2">
                 </#if>
 
                 <!-- links -->

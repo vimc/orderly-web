@@ -30,11 +30,13 @@ class RequestHelper
     private val parser = JsonParser()
 
     fun get(url: String, contentType: String = ContentTypes.json,
-            userEmail: String = fakeGlobalReportReader()): Response
+            userEmail: String = fakeGlobalReportReader(),
+            useWebBaseUrl: Boolean = false): Response
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(apiBaseUrl + url, headers)
+        val base = if (useWebBaseUrl) webBaseUrl else apiBaseUrl
+        return get(base + url, headers)
     }
 
     fun getWebPage(
@@ -56,7 +58,7 @@ class RequestHelper
         val cookieName = JWTCookieClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$token")
-        return get(apiBaseUrl + url, headers)
+        return get( apiBaseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
@@ -156,5 +158,12 @@ fun fakeGlobalReportReviewer(): String
     giveUserGroupPermission(email, "reports.read", Scope.Global())
     giveUserGroupPermission(email, "reports.review", Scope.Global())
     giveUserGroupPermission(email, "reports.run", Scope.Global())
+    return email
+}
+
+fun fakeNoPermssionsUser(): String
+{
+    val email = "no.permissions@email.com"
+    insertUser(email, "no permissions")
     return email
 }

@@ -5,10 +5,12 @@ import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.*
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
 import java.io.File
 
@@ -86,5 +88,25 @@ abstract class IntegrationTest : TeamcityTests()
     protected fun assertHtmlContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
+    }
+
+    protected fun assertUrlSecured(url: String,
+        contentType: String,
+        useWebBaseUrl: Boolean = true,
+        emailWithPermissions: String = fakeGlobalReportReader(),
+        emailWithoutPermissions: String = fakeNoPermssionsUser())
+    {
+        //Check that a GET endpoint returns 403 when access is attempted by user without required permissions,
+        // and non-403 response when access is attempted by user with permissions
+
+        var response = requestHelper.get(url, userEmail = emailWithPermissions,
+                useWebBaseUrl = useWebBaseUrl, contentType = contentType)
+
+        Assertions.assertThat(response.statusCode).isNotEqualTo(403)
+
+        response = requestHelper.get(url, userEmail = emailWithoutPermissions,
+                useWebBaseUrl = useWebBaseUrl, contentType = contentType)
+
+        Assertions.assertThat(response.statusCode).isEqualTo(403)
     }
 }
