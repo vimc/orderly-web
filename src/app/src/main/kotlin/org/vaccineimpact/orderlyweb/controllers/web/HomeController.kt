@@ -7,10 +7,12 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
-class HomeController(actionContext: ActionContext,
-                     private val orderly: OrderlyClient) : Controller(actionContext)
+class HomeController: OrderlyDataController
 {
-    constructor(actionContext: ActionContext) : this(actionContext, Orderly())
+    constructor(actionContext: ActionContext,
+                orderly: OrderlyClient): super(actionContext, orderly)
+
+    constructor(actionContext: ActionContext): super(actionContext)
 
     open class IndexViewModel(context: ActionContext, open val reports: List<Report>) : AppViewModel(context)
 
