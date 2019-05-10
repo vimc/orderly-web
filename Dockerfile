@@ -27,3 +27,5 @@ COPY . /api
 COPY dist.Dockerfile /api/src/
 RUN npm install --prefix=/api/src/app/static
 RUN ./gradlew :app:compileFrontEnd
+
+RUN npm test --prefix=/api/src/app/static
