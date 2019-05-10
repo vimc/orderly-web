@@ -9,12 +9,12 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 
-class ReportController(actionContext: ActionContext,
-                       private val orderly: OrderlyClient) : Controller(actionContext)
+class ReportController: OrderlyDataController
 {
-    constructor(actionContext: ActionContext) : this(actionContext,
-            Orderly(actionContext.hasPermission(ReifiedPermission("reports.review", Scope.Global()))))
+    constructor(actionContext: ActionContext,
+                orderly: OrderlyClient): super(actionContext, orderly)
 
+    constructor(actionContext: ActionContext): super(actionContext)
 
     open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
                                open val focalArtefactUrl: String?,
