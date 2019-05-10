@@ -39,23 +39,18 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
+        //If Montagu Auth, OrderlyWeb auth should be fully synchronised with the external login provider, and login
+        //page should not be seen
+        val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
 
         val client =
-                if (externalAuth)
+                if (externalAuth || synchronisedAuth)
                 {
-                    //The endpoints with externalAuth are those which will redirect the user to a specific external Auth provider
-                    //after clicking a link on our login page.
                     authenticationConfig.getAuthenticationIndirectClient()
                 }
                 else
                 {
-                    //Redirect to our login page, or to an external login provider if OrderlyWeb actions should be fully
-                    //synchronised with external login provider, and login page should not be seen (Montagu only)
-                    val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
-                    if (synchronisedAuth)
-                        authenticationConfig.getAuthenticationIndirectClient()
-                    else
-                        OrderlyWebIndirectClient()
+                    OrderlyWebIndirectClient()
                 }
 
         val factory = configFactory ?: WebSecurityConfigFactory(
