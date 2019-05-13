@@ -9,17 +9,17 @@ class RoutingTests: IntegrationTest() {
     @Test
     fun `can get url with or without trailing slash`()
     {
-        var response = requestHelper.get("/reports/")
+        var response = apiRequestHelper.get("/reports/")
         assertSuccessful(response)
 
-        response = requestHelper.get("/reports")
+        response = apiRequestHelper.get("/reports")
         assertSuccessful(response)
     }
 
     @Test
     fun `can get static files`()
     {
-        val response = requestHelper.getWebPage("/css/style.css", "text/css")
+        val response = webRequestHelper.getWebPage("/css/style.css", "text/css")
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/css")
     }
@@ -27,7 +27,7 @@ class RoutingTests: IntegrationTest() {
     @Test
     fun `can get API index`()
     {
-        val response = requestHelper.get("/")
+        val response = apiRequestHelper.get("/")
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
@@ -36,7 +36,7 @@ class RoutingTests: IntegrationTest() {
     @Test
     fun `404 returns a page for non api endpoints`()
     {
-        val response = requestHelper.getWebPage("/nonsense", "text/html")
+        val response = webRequestHelper.getWebPage("/nonsense", "text/html")
 
         assertHtmlContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -45,7 +45,7 @@ class RoutingTests: IntegrationTest() {
     @Test
     fun `404 returns json response for api endpoints`()
     {
-        val response = requestHelper.get("/nonsense")
+        val response = apiRequestHelper.get("/nonsense")
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

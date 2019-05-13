@@ -25,7 +25,7 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = requestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
+        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
                 userEmail = fakeGlobalReportReviewer())
 
         // we don't care whether this is successful or not, just whether the user is authorized
@@ -45,7 +45,7 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = requestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
+        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
                 userEmail = fakeGlobalReportReader())
 
         assertThat(response.statusCode).isEqualTo(403)
@@ -56,7 +56,7 @@ class VersionTests : IntegrationTest()
     {
         var url = getAnyResourceUrl()
 
-        val response = requestHelper.post(url, mapOf(), userEmail = fakeGlobalReportReader())
+        val response = apiRequestHelper.post(url, mapOf(), userEmail = fakeGlobalReportReader())
 
         assertThat(response.statusCode).isEqualTo(200)
 
@@ -67,7 +67,7 @@ class VersionTests : IntegrationTest()
     {
         var url = getAnyResourceUrl()
 
-        val response = requestHelper.post(url, mapOf(), userEmail = "no@permissions.com")
+        val response = apiRequestHelper.post(url, mapOf(), userEmail = "no@permissions.com")
 
         assertThat(response.statusCode).isEqualTo(403)
     }
@@ -85,7 +85,7 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = requestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
+        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
                 userEmail = fakeGlobalReportReader())
 
         assertThat(response.statusCode).isEqualTo(200)
@@ -104,7 +104,7 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = requestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
+        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
                 userEmail = "no@permissions.com")
 
         assertThat(response.statusCode).isEqualTo(403)

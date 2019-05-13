@@ -10,10 +10,10 @@ object WebDataRouteConfig : RouteConfig
     private val controller = DataController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
-            WebEndpoint("/data/csv/:id/", controller, "downloadCSV", contentType = ContentTypes.csv)
+            WebEndpoint("/data/csv/:id/", controller, "downloadCSV")
                     .secure(readReports),
 
-            WebEndpoint("/data/rds/:id/", controller, "downloadRDS", contentType = ContentTypes.binarydata)
+            WebEndpoint("/data/rds/:id/", controller, "downloadRDS")
                     .secure(readReports)
     )
 }

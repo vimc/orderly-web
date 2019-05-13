@@ -20,7 +20,8 @@ class DataTests : IntegrationTest()
     {
         val dataHash = getAnyEncodedDataHash()
 
-        assertUrlSecured("/data/csv/$dataHash/", contentType = ContentTypes.csv)
+        assertWebUrlSecured("/data/csv/$dataHash/", "reports.read",
+                 expectedFailureCode = 403)
     }
 
 
@@ -29,7 +30,8 @@ class DataTests : IntegrationTest()
     {
         val dataHash = getAnyEncodedDataHash()
 
-        assertUrlSecured("/data/rds/$dataHash/", contentType = ContentTypes.binarydata)
+        assertWebUrlSecured("/data/rds/$dataHash/", "reports.read",
+                 expectedFailureCode = 403)
     }
 
     private fun getAnyEncodedDataHash() : String
