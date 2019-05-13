@@ -24,4 +24,8 @@ RUN ./gradlew
 COPY . /api
 
 # Install front-end dependencies
+COPY dist.Dockerfile /api/src/
 RUN npm install --prefix=/api/src/app/static
+RUN ./gradlew :app:compileFrontEnd
+
+RUN npm run test-teamcity --prefix=/api/src/app/static
