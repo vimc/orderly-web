@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
@@ -64,9 +65,8 @@ class ReportPageTests : SeleniumTest()
 
         toggleButton.click()
 
-        Thread.sleep(500)
-        toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
-        assertThat(toggleButton.getAttribute("class").contains("off")).isFalse()
+        wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.cssSelector("[data-toggle='toggle'][class='toggle btn btn-published']")))
     }
 
 }
