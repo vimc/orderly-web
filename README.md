@@ -10,6 +10,7 @@ System requirements:
 * **Docker Compose version 1.21.0:** This is version installed on the servers. There was a breaking change in 
 v1.23.0 which appends random strings to container names each time they run.
 * **Vault**
+* **node 8**  https://nodejs.org/en/
 
 1. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
@@ -64,8 +65,10 @@ command line from the `src` directory with `./gradlew :customConfigTests:test -i
 `./gradlew :customConfigTests:copyDemo` first.
 You will also have to install chromedriver: `./scripts/install-chromedriver.sh` 
 
+Javascript tests are in `src/app/static/src/tests` and can be run from the `static` directory
+with `npm test`
 
-## Regenerate database interface
+### Regenerate database interface
 ```
 cd src
 # Make sure you have a fresh copy of the db
@@ -91,7 +94,7 @@ and to push the image locally you will need to pass your docker login informatio
   
     ./scripts/build-app.sh /home/{user}/.docker/config.json
  
-## Teamcity
+### Teamcity
 The Teamcity build:
 1. Pulls in artifacts `demo` and `git` from the Orderly container build.
 1. Runs `./scripts/migrate-build.sh` to build the migrations image.
@@ -103,6 +106,9 @@ run tests (for this purpose also running an Orderly Server image with the `git` 
 1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
 1. Runs `./scripts/run-custom-config-tests-in-container.sh`
 
+For more explanation including a diagram that explains the relationship between the various docker images, 
+see [build.md](/docs/build.md)
+
 ## Docker run
 To make use of a built image, run:
 
@@ -111,6 +117,8 @@ To make use of a built image, run:
 
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
 
+### User CLI
+See [/src/userCLI/README.md](/src/userCLI/README.md)
 
 ## OrderlyWeb database schema
 
