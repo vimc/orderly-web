@@ -1,0 +1,75 @@
+package org.vaccineimpact.orderlyweb.tests.integration_tests
+
+import org.assertj.core.api.Assertions
+import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.removePermission
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHelper
+
+class WebPermissionChecker(private val url: String,
+                           private val allRequiredPermissions: Set<ReifiedPermission>,
+                           private val contentType: String = ContentTypes.html)
+{
+
+    private val testUserEmail = "test.user@example.com"
+    private val webRequestHelper = WebRequestHelper()
+    private val authRepo = OrderlyAuthorizationRepository()
+
+    fun checkPermissionIsRequired(
+            permission: ReifiedPermission
+    )
+    {
+        val assertionText = "Expected permission '$permission' to be required for $url"
+        val limitedPermissions = allRequiredPermissions - permission
+        removePermission(testUserEmail, permission.name, permission.scope.databaseScopePrefix?: "")
+
+        println("Checking that permission '$permission' is required for $url")
+        checkThesePermissionsAreInsufficient(limitedPermissions, assertionText)
+
+        if (permission.scope is Scope.Specific)
+        {
+            val scope = permission.scope as Scope.Specific
+
+            println("Checking that same permission with different scope will not satisfy the requirement")
+            val badPermission = ReifiedPermission(permission.name, Scope.Specific(scope.databaseScopePrefix, "bad-id"))
+            checkThesePermissionsAreInsufficient(limitedPermissions + badPermission, assertionText)
+
+            println("Checking that same permission with the global scope WILL satisfy the requirement")
+            val betterPermission = ReifiedPermission(permission.name, Scope.Global())
+            checkThesePermissionsAreSufficient(limitedPermissions + betterPermission,
+                    "Expected to be able to substitute '$betterPermission' in place of '$permission' for $url")
+        }
+    }
+
+    private fun checkThesePermissionsAreInsufficient(
+            permissions: Set<ReifiedPermission>,
+            assertionText: String
+    )
+    {
+        webRequestHelper.getWebPage("/logout")
+        permissions.forEach {
+            authRepo.ensureUserGroupHasPermission(testUserEmail, it)
+        }
+        val response = webRequestHelper.loginWithMontaguAndGet(url, contentType)
+        Assertions.assertThat(response.statusCode)
+                .withFailMessage(assertionText)
+                .isEqualTo(404) // we return 404s for unauthorized users
+
+    }
+
+    private fun checkThesePermissionsAreSufficient(permissions: Set<ReifiedPermission>,
+                                                   assertionText: String)
+    {
+        webRequestHelper.getWebPage("/logout")
+        permissions.map {
+            authRepo.ensureUserGroupHasPermission(testUserEmail, it)
+        }
+        val response = webRequestHelper.loginWithMontaguAndGet(url, contentType)
+        Assertions.assertThat(response.statusCode)
+                .withFailMessage(assertionText)
+                .isEqualTo(200)
+
+    }
+}

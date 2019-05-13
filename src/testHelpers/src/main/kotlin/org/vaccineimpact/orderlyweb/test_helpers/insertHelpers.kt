@@ -5,6 +5,44 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import java.sql.Timestamp
 import java.time.Instant
 
+fun removePermission(email: String, permissionName: String, scopePrefix: String)
+{
+    JooqContext().use {
+
+        val permissionID = it.dsl.select(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                .from(Tables.ORDERLYWEB_USER_GROUP_PERMISSION)
+                .join(Tables.ORDERLYWEB_PERMISSION)
+                .on(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(Tables.ORDERLYWEB_PERMISSION.ID))
+                .join(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                .on(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.eq(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID))
+                .where(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(email))
+                .and(Tables.ORDERLYWEB_PERMISSION.ID.eq(permissionName))
+                .fetchAny(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+
+        if (permissionID != null)
+        {
+
+            when (scopePrefix)
+            {
+                "report" -> it.dsl.deleteFrom(Tables.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                        .where(Tables.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(permissionID))
+                        .execute()
+                "version" -> it.dsl.deleteFrom(Tables.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
+                        .where(Tables.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.eq(permissionID))
+                        .execute()
+                else -> it.dsl.deleteFrom(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                        .where(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.eq(permissionID))
+                        .execute()
+            }
+
+            it.dsl.deleteFrom(Tables.ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .where(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(permissionID))
+                    .execute()
+
+        }
+    }
+}
+
 fun insertReport(name: String,
                  version: String,
                  published: Boolean = true,

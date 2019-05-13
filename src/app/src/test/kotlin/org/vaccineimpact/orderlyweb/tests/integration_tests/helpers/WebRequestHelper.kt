@@ -1,21 +1,8 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
-import com.github.salomonbrys.kotson.get
-import com.google.gson.JsonParser
 import khttp.responses.Response
-import khttp.structures.authorization.BasicAuthorization
-import org.assertj.core.api.Assertions
-import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class WebRequestHelper: RequestHelper()
 {
@@ -25,8 +12,6 @@ class WebRequestHelper: RequestHelper()
     }
 
     val webBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
-
-    val SESSION_COOKIE_NAME = "JSESSIONID"
 
     fun getWebPage(
             url: String,
@@ -53,8 +38,7 @@ class WebRequestHelper: RequestHelper()
     {
         val montaguToken = loginWithMontagu()["access_token"] as String
         val loginResponse = getWithMontaguCookie("/login/", montaguToken)
-        val sessionCookie = loginResponse.cookies[SESSION_COOKIE_NAME]!!
-        return "montagu_jwt_token=$montaguToken; $SESSION_COOKIE_NAME=$sessionCookie"
+        return loginResponse.headers["Set-Cookie"].toString()
     }
 
     fun getWithSessionCookie(url: String,
@@ -62,8 +46,13 @@ class WebRequestHelper: RequestHelper()
                          contentType: String = "text/html"): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
-
         return khttp.get(webBaseUrl + url, headers)
+    }
+
+    fun loginWithMontaguAndGet(url: String, contentType: String = "text/html"): Response
+    {
+        val sessionCookie = webLoginWithMontagu()
+        return getWithSessionCookie(url, sessionCookie, contentType)
     }
 
 }

@@ -1,16 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.insertData
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
-import java.io.File
 import java.net.URLEncoder
 
 class DataTests : IntegrationTest()
@@ -19,9 +14,7 @@ class DataTests : IntegrationTest()
     fun `only report readers can get csv data`()
     {
         val dataHash = getAnyEncodedDataHash()
-
-        assertWebUrlSecured("/data/csv/$dataHash/", "reports.read",
-                 expectedFailureCode = 403)
+        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
 
@@ -29,9 +22,7 @@ class DataTests : IntegrationTest()
     fun `only report readers can get rds data`()
     {
         val dataHash = getAnyEncodedDataHash()
-
-        assertWebUrlSecured("/data/rds/$dataHash/", "reports.read",
-                 expectedFailureCode = 403)
+        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
     private fun getAnyEncodedDataHash() : String
