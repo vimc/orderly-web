@@ -15,6 +15,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
+import spark.route.HttpMethod
 import java.io.File
 
 abstract class IntegrationTest : TeamcityTests()
@@ -98,9 +99,10 @@ abstract class IntegrationTest : TeamcityTests()
     }
 
     protected fun assertWebUrlSecured(url: String, requiredPermissions: Set<ReifiedPermission>,
-                                 contentType: String = ContentTypes.html)
+                                 contentType: String = ContentTypes.html,
+                                 method: HttpMethod = HttpMethod.get)
     {
-        val checker = WebPermissionChecker(url, requiredPermissions, contentType)
+        val checker = WebPermissionChecker(url, requiredPermissions, contentType, method)
         for (permission in requiredPermissions)
         {
             checker.checkPermissionIsRequired(permission)

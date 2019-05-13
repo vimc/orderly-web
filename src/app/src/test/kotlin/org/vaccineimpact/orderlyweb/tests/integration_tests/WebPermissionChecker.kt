@@ -7,10 +7,12 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.removePermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHelper
+import spark.route.HttpMethod
 
 class WebPermissionChecker(private val url: String,
                            private val allRequiredPermissions: Set<ReifiedPermission>,
-                           private val contentType: String = ContentTypes.html)
+                           private val contentType: String = ContentTypes.html,
+                           private val method: HttpMethod = HttpMethod.get)
 {
 
     private val testUserEmail = "test.user@example.com"
@@ -52,7 +54,7 @@ class WebPermissionChecker(private val url: String,
         permissions.forEach {
             authRepo.ensureUserGroupHasPermission(testUserEmail, it)
         }
-        val response = webRequestHelper.loginWithMontaguAndGet(url, contentType)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, contentType, method)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(404) // we return 404s for unauthorized users
@@ -66,7 +68,7 @@ class WebPermissionChecker(private val url: String,
         permissions.map {
             authRepo.ensureUserGroupHasPermission(testUserEmail, it)
         }
-        val response = webRequestHelper.loginWithMontaguAndGet(url, contentType)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, contentType, method)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(200)

@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
+import spark.route.HttpMethod
 
 class WebRequestHelper: RequestHelper()
 {
@@ -41,18 +42,25 @@ class WebRequestHelper: RequestHelper()
         return loginResponse.headers["Set-Cookie"].toString()
     }
 
-    fun getWithSessionCookie(url: String,
+    fun requestWithSessionCookie(url: String,
                          cookies: String,
-                         contentType: String = "text/html"): Response
+                         contentType: String = "text/html",
+                         method: HttpMethod = HttpMethod.get): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
-        return khttp.get(webBaseUrl + url, headers)
+        val fullUrl = webBaseUrl + url
+        when (method)
+        {
+            HttpMethod.get -> return khttp.get(fullUrl, headers)
+            HttpMethod.post -> return khttp.post(fullUrl, headers)
+        }
     }
 
-    fun loginWithMontaguAndGet(url: String, contentType: String = "text/html"): Response
+    fun loginWithMontaguAndMakeRequest(url: String, contentType: String = "text/html",
+                                       method: HttpMethod = HttpMethod.get): Response
     {
         val sessionCookie = webLoginWithMontagu()
-        return getWithSessionCookie(url, sessionCookie, contentType)
+        return requestWithSessionCookie(url, sessionCookie, contentType, method)
     }
 
 }

@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -14,7 +15,8 @@ class DataTests : IntegrationTest()
     fun `only report readers can get csv data`()
     {
         val dataHash = getAnyEncodedDataHash()
-        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())),
+                contentType = ContentTypes.csv)
     }
 
 
@@ -22,7 +24,8 @@ class DataTests : IntegrationTest()
     fun `only report readers can get rds data`()
     {
         val dataHash = getAnyEncodedDataHash()
-        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertWebUrlSecured("/data/csv/$dataHash/", setOf(ReifiedPermission("reports.read", Scope.Global())),
+                contentType = ContentTypes.binarydata)
     }
 
     private fun getAnyEncodedDataHash() : String

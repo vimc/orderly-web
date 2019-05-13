@@ -6,14 +6,17 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.joinPath
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class VersionTests : IntegrationTest()
 {
     @Test
-    fun `report reviewers have permission to publish report version`()
+    fun `only report reviewers can publish report version`()
     {
         val version = JooqContext("git/orderly.sqlite").use {
 
@@ -25,55 +28,23 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
-                userEmail = fakeGlobalReportReviewer())
+        val url = "/reports/$reportName/versions/$versionId/publish/"
 
-        // we don't care whether this is successful or not, just whether the user is authorized
-        assertThat(response.statusCode).isNotEqualTo(403)
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post)
     }
 
-    @Test
-    fun `non report reviewers do not have permission to publish report version`()
-    {
-        val version = JooqContext("git/orderly.sqlite").use {
-
-            it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
-                    .from(Tables.REPORT_VERSION)
-                    .fetchAny()
-        }
-
-        val versionId = version[Tables.REPORT_VERSION.ID]
-        val reportName = version[Tables.REPORT_VERSION.REPORT]
-
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/", mapOf(),
-                userEmail = fakeGlobalReportReader())
-
-        assertThat(response.statusCode).isEqualTo(403)
-    }
 
     @Test
-    fun `report readers can get resource`()
+    fun `only report readers can get resource`()
     {
         var url = getAnyResourceUrl()
 
-        val response = apiRequestHelper.post(url, mapOf(), userEmail = fakeGlobalReportReader())
-
-        assertThat(response.statusCode).isEqualTo(200)
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())))
 
     }
 
     @Test
-    fun `non report readers cannot get resource`()
-    {
-        var url = getAnyResourceUrl()
-
-        val response = apiRequestHelper.post(url, mapOf(), userEmail = "no@permissions.com")
-
-        assertThat(response.statusCode).isEqualTo(403)
-    }
-
-    @Test
-    fun `report readers can get zip file`()
+    fun `only report readers can get zip file`()
     {
         val version = JooqContext("git/orderly.sqlite").use {
 
@@ -85,30 +56,11 @@ class VersionTests : IntegrationTest()
         val versionId = version[Tables.REPORT_VERSION.ID]
         val reportName = version[Tables.REPORT_VERSION.REPORT]
 
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
-                userEmail = fakeGlobalReportReader())
+        val url = "/reports/$reportName/versions/$versionId/all/"
 
-        assertThat(response.statusCode).isEqualTo(200)
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
-    @Test
-    fun `non report readers cannot get zip file`()
-    {
-        val version = JooqContext("git/orderly.sqlite").use {
-
-            it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
-                    .from(Tables.REPORT_VERSION)
-                    .fetchAny()
-        }
-
-        val versionId = version[Tables.REPORT_VERSION.ID]
-        val reportName = version[Tables.REPORT_VERSION.REPORT]
-
-        val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/all/", mapOf(),
-                userEmail = "no@permissions.com")
-
-        assertThat(response.statusCode).isEqualTo(403)
-    }
 
     private fun getAnyResourceUrl(): String
     {
@@ -116,7 +68,8 @@ class VersionTests : IntegrationTest()
 
             it.dsl.select(Tables.FILE_INPUT.FILENAME, Tables.FILE_INPUT.REPORT_VERSION, Tables.REPORT_VERSION.REPORT)
                     .from(Tables.FILE_INPUT)
-                    .joinPath(Tables.REPORT_VERSION)
+                    .join(Tables.REPORT_VERSION)
+                    .on(Tables.FILE_INPUT.REPORT_VERSION.eq(Tables.REPORT_VERSION.ID))
                     .fetchAny()
         }
 
