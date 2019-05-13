@@ -5,32 +5,35 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.userCLI.addUserGroup
+import org.vaccineimpact.orderlyweb.userCLI.addUserGroups
 
 class AddUserGroupTests : CleanDatabaseTests()
 {
     @Test
-    fun `addUserGroup adds group`()
+    fun `addUserGroups adds groups`()
     {
-        val result = addUserGroup(mapOf("<name>" to "[funders]"))
+        val result = addUserGroups(mapOf("<name>" to listOf("[funders]", "[admin]")))
 
         val groups = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()
         }
 
-        assertThat(result).isEqualTo("Saved user group 'funders' to the database")
-        assertThat(groups.count()).isEqualTo(1)
+        assertThat(result).isEqualTo("""Saved user group 'funders' to the database
+            |Saved user group 'admin' to the database
+        """.trimMargin())
+        assertThat(groups.count()).isEqualTo(2)
         assertThat(groups.first()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("funders")
+        assertThat(groups.last()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("admin")
     }
 
     @Test
-    fun `addUserGroup does nothing if group exists`()
+    fun `addUserGroups does nothing if group exists`()
     {
-        addUserGroup(mapOf("<name>" to "[funders]"))
+        val result = addUserGroups(mapOf("<name>" to listOf("[funders]", "[funders]")))
 
-        assertThatThrownBy {
-            addUserGroup(mapOf("<name>" to "[funders]"))
-        }.hasMessageContaining("An object with the id 'funders' already exists")
+        assertThat(result).isEqualTo("""Saved user group 'funders' to the database
+            |User group 'funders' already exists; no changes made
+        """.trimMargin())
 
         val groups = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER_GROUP).fetch()

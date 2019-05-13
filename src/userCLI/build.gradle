@@ -29,7 +29,7 @@ def cli_docker_version = 'UNKNOWN'
 if (hasProperty('docker_version')) {
     cli_docker_version = docker_version
 }
-def cli_docker_name = 'montagu-cli'
+def cli_docker_name = 'orderly-web-user-cli'
 if (hasProperty('docker_name')) {
     cli_docker_name = docker_name
 }
