@@ -15,22 +15,23 @@ object WebVersionRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/reports/:name/versions/:version/artefacts/:artefact/",
-                    ArtefactController::class, "getFile")
-                    .secure(WebVersionRouteConfig.readReports),
+                    ArtefactController::class, "getFile", contentType = ContentTypes.binarydata)
+                    .secure(readReports),
             WebEndpoint("/reports/:name/versions/:version/resources/:resource/",
-                    ResourceController::class, "download")
-                    .secure(WebVersionRouteConfig.readReports),
+                    ResourceController::class, "download", contentType = ContentTypes.binarydata)
+                    .secure(readReports),
             WebEndpoint("/reports/:name/versions/:version/all/",
-                    VersionController::class, "getZippedByNameAndVersion")
-                    .secure(WebVersionRouteConfig.readReports),
+                    VersionController::class, "getZippedByNameAndVersion", contentType = ContentTypes.binarydata)
+                    .secure(readReports),
             WebEndpoint("/reports/:name/versions/:version/publish/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "publish",
                     method = HttpMethod.post)
                     .json()
-                    .secure(WebVersionRouteConfig.reviewReports),
+                    .secure(reviewReports),
             WebEndpoint("/reports/:name/versions/:version/data/:data/",
-                    org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData")
-                    .secure(WebVersionRouteConfig.readReports)
+                    org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
+                    contentType = ContentTypes.binarydata)
+                    .secure(readReports)
 
     )
 

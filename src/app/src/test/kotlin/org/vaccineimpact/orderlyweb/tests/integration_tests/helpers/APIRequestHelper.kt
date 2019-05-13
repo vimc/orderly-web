@@ -1,30 +1,20 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import com.github.salomonbrys.kotson.get
 import com.google.gson.JsonParser
 import khttp.responses.Response
-import khttp.structures.authorization.BasicAuthorization
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class APIRequestHelper: RequestHelper()
 {
-    init
-    {
-        CertificateHelper.disableCertificateValidation()
-    }
-
-    val apiBaseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+    override val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
 
     private val parser = JsonParser()
 
@@ -33,20 +23,7 @@ class APIRequestHelper: RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(apiBaseUrl + url, headers)
-    }
-
-    fun getWithCookie(
-            url: String,
-            contentType: String = ContentTypes.json,
-            userEmail: String = fakeGlobalReportReader()
-    ): Response
-    {
-        val token = generateToken(userEmail)
-        val cookieName = JWTCookieClient.cookie
-        val headers = standardHeaders(contentType) +
-                mapOf("Cookie" to "$cookieName=$token")
-        return get( apiBaseUrl + url, headers)
+        return get(baseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
@@ -54,7 +31,7 @@ class APIRequestHelper: RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return khttp.post(apiBaseUrl + url, headers, json = body)
+        return khttp.post(baseUrl + url, headers, json = body)
     }
 
     fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
@@ -72,19 +49,19 @@ class APIRequestHelper: RequestHelper()
     {
         val token = "faketoken"
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(apiBaseUrl + url, headers)
+        return get(baseUrl + url, headers)
     }
 
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
         val token = generateToken("bademail@gmail.com")
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(apiBaseUrl + url, headers)
+        return get(baseUrl + url, headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
     {
-        return get(apiBaseUrl + url, standardHeaders(contentType))
+        return get(baseUrl + url, standardHeaders(contentType))
     }
 
     private fun Map<String, String>.withAuthorizationHeader(token: String) = this +
@@ -123,12 +100,5 @@ fun fakeGlobalReportReviewer(): String
     giveUserGroupPermission(email, "reports.read", Scope.Global())
     giveUserGroupPermission(email, "reports.review", Scope.Global())
     giveUserGroupPermission(email, "reports.run", Scope.Global())
-    return email
-}
-
-fun fakeNoPermssionsUser(): String
-{
-    val email = "no.permissions@email.com"
-    insertUser(email, "no permissions")
     return email
 }

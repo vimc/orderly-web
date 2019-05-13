@@ -109,13 +109,11 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
             }
             if (!permissionsForGroup.contains(permission))
             {
-                val ids = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                val id = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
                         .from(ORDERLYWEB_USER_GROUP_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(permission.name)
                                 .and(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup)))
-                        .fetchInto(Int::class.java)
-
-                val id = ids[0]
+                        .fetchOneInto(Int::class.java)
 
                 when (permission.scope)
                 {

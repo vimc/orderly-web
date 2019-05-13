@@ -1,14 +1,15 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import java.net.URLEncoder
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
+import java.net.URLEncoder
 
 class VersionTests : IntegrationTest()
 {
@@ -17,41 +18,46 @@ class VersionTests : IntegrationTest()
     {
         val version = JooqContext("git/orderly.sqlite").use {
 
-            it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
-                    .from(Tables.REPORT_VERSION)
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
                     .fetchAny()
         }
 
-        val versionId = version[Tables.REPORT_VERSION.ID]
-        val reportName = version[Tables.REPORT_VERSION.REPORT]
+        val versionId = version[REPORT_VERSION.ID]
+        val reportName = version[REPORT_VERSION.REPORT]
 
         val url = "/reports/$reportName/versions/$versionId/publish/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post)
     }
 
-
     @Test
     fun `only report readers can get resource`()
     {
-        var url = getAnyResourceUrl()
+        val url = getAnyResourceUrl()
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
+    }
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())))
-
+    @Test
+    fun `only report readers can get artefact`()
+    {
+        val url = getAnyArtefactUrl()
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
     }
 
     @Test
     fun `only report readers can get zip file`()
     {
-        val version = JooqContext("git/orderly.sqlite").use {
+        val version = JooqContext().use {
 
-            it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
-                    .from(Tables.REPORT_VERSION)
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val versionId = version[Tables.REPORT_VERSION.ID]
-        val reportName = version[Tables.REPORT_VERSION.REPORT]
+        val versionId = version[REPORT_VERSION.ID]
+        val reportName = version[REPORT_VERSION.REPORT]
 
         val url = "/reports/$reportName/versions/$versionId/all/"
 
@@ -66,7 +72,6 @@ class VersionTests : IntegrationTest()
                 contentType = ContentTypes.csv)
     }
 
-
     @Test
     fun `only report readers can get rds data`()
     {
@@ -75,41 +80,62 @@ class VersionTests : IntegrationTest()
                 contentType = ContentTypes.binarydata)
     }
 
-    private fun getAnyDataUrl() : String
+    private fun getAnyDataUrl(): String
     {
-        val data =  JooqContext("demo/orderly.sqlite").use {
+        val data = JooqContext().use {
 
-            it.dsl.select(Tables.REPORT_VERSION_DATA.NAME, Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION_DATA.REPORT_VERSION)
-                    .from(Tables.REPORT_VERSION_DATA)
-                    .join(Tables.REPORT_VERSION)
-                    .on(Tables.REPORT_VERSION_DATA.REPORT_VERSION.eq(Tables.REPORT_VERSION.ID))
+            it.dsl.select(REPORT_VERSION_DATA.NAME, REPORT_VERSION.REPORT, REPORT_VERSION_DATA.REPORT_VERSION)
+                    .from(REPORT_VERSION_DATA)
+                    .join(REPORT_VERSION)
+                    .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                    .where(REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val report = data[Tables.REPORT_VERSION.REPORT]
-        val version = data[Tables.REPORT_VERSION_DATA.REPORT_VERSION]
-        val name = URLEncoder.encode(data[Tables.REPORT_VERSION_DATA.NAME], "UTF-8")
+        val report = data[REPORT_VERSION.REPORT]
+        val version = data[REPORT_VERSION_DATA.REPORT_VERSION]
+        val name = URLEncoder.encode(data[REPORT_VERSION_DATA.NAME], "UTF-8")
 
         return "/reports/$report/versions/$version/data/$name/"
     }
 
-
     private fun getAnyResourceUrl(): String
     {
-        val resource = JooqContext("git/orderly.sqlite").use {
+        val resource = JooqContext().use {
 
-            it.dsl.select(Tables.FILE_INPUT.FILENAME, Tables.FILE_INPUT.REPORT_VERSION, Tables.REPORT_VERSION.REPORT)
-                    .from(Tables.FILE_INPUT)
-                    .join(Tables.REPORT_VERSION)
-                    .on(Tables.FILE_INPUT.REPORT_VERSION.eq(Tables.REPORT_VERSION.ID))
+            it.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.REPORT_VERSION, REPORT_VERSION.REPORT)
+                    .from(FILE_INPUT)
+                    .join(REPORT_VERSION)
+                    .on(FILE_INPUT.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                    .where(REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val report = resource[Tables.REPORT_VERSION.REPORT]
-        val version = resource[Tables.FILE_INPUT.REPORT_VERSION]
-        val fileName = resource[Tables.FILE_INPUT.FILENAME]
+        val report = resource[REPORT_VERSION.REPORT]
+        val version = resource[FILE_INPUT.REPORT_VERSION]
+        val fileName = resource[FILE_INPUT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
 
         return "/reports/$report/versions/$version/resources/$encodedFileName/"
+    }
+
+    private fun getAnyArtefactUrl(): String
+    {
+        val resource = JooqContext().use {
+
+            it.dsl.select(FILE_ARTEFACT.FILENAME, REPORT_VERSION_ARTEFACT.REPORT_VERSION, REPORT_VERSION.REPORT)
+                    .fromJoinPath(FILE_ARTEFACT, REPORT_VERSION_ARTEFACT)
+                    .join(REPORT_VERSION)
+                    .on(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(REPORT_VERSION.ID))
+                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .fetchAny()
+        }
+
+        val report = resource[REPORT_VERSION.REPORT]
+        val version = resource[REPORT_VERSION_ARTEFACT.REPORT_VERSION]
+        val fileName = resource[FILE_ARTEFACT.FILENAME]
+        val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
+
+        return "/reports/$report/versions/$version/artefacts/$encodedFileName/"
     }
 }

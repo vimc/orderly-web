@@ -108,5 +108,5 @@ class GithubAuthenticationTests : IntegrationTest()
         }
     }
 
-    val url = "${APIRequestHelper().apiBaseUrl}/login/"
+    val url = "${APIRequestHelper().baseUrl}/login/"
 }
