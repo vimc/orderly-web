@@ -8,14 +8,17 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.FilePurpose
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class VersionPageTests : IntegrationTest()
 {
+    private val readReports = setOf(ReifiedPermission("reports.read", Scope.Global()))
     @Test
     fun `artefacts can be downloaded`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu()
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
         val page = Jsoup.parse(response.text)
 
@@ -29,7 +32,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `data can be downloaded`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu()
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
         val page = Jsoup.parse(response.text)
 
@@ -43,7 +46,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `resources can be downloaded`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu()
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
         val page = Jsoup.parse(response.text)
 
@@ -57,7 +60,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `zip file can be downloaded`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu()
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
         val page = Jsoup.parse(response.text)
 

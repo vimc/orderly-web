@@ -22,10 +22,8 @@ abstract class IntegrationTest : TeamcityTests()
 {
     val apiRequestHelper = APIRequestHelper()
     val webRequestHelper = WebRequestHelper()
-    val testUserEmail = "test.user@example.com"
 
     val JSONValidator = JSONValidator()
-    private val authRepo = OrderlyAuthorizationRepository()
 
     companion object
     {
