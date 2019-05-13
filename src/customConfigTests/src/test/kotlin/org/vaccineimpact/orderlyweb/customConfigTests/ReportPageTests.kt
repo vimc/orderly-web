@@ -67,7 +67,6 @@ class ReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.cssSelector("[data-toggle='toggle'][class='toggle btn btn-published']")))
-
     }
 
     @Test

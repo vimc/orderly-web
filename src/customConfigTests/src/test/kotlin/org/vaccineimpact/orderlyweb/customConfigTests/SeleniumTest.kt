@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.openqa.selenium.By
@@ -13,6 +12,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+
 
 abstract class SeleniumTest : CustomConfigTests()
 {
@@ -44,8 +44,7 @@ abstract class SeleniumTest : CustomConfigTests()
     {
         driver.get(RequestHelper.webBaseUrl)
 
-        clickOnLandingPageLink()
-
+        //We should not hit the landing page for Montagu login, but be taken straight to Montagu
         driver.findElement(By.name("email")).sendKeys("test.user@example.com")
         driver.findElement(By.name("password")).sendKeys("password")
         driver.findElement(By.id("login-button")).click()
@@ -57,9 +56,6 @@ abstract class SeleniumTest : CustomConfigTests()
     {
         //logout of Orderly Web
         driver.get("${RequestHelper.webBaseUrl}/logout")
-
-        //..which will take us to out login page - click through to Montagu
-        clickOnLandingPageLink()
 
         //Should have automatically logged out from Montagu
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))

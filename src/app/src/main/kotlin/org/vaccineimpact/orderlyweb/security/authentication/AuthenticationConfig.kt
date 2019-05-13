@@ -7,38 +7,37 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 
-class AuthenticationConfig
+open class AuthenticationConfig
 {
-    companion object {
 
-        fun getConfiguredProvider(): AuthenticationProvider {
+    open fun getConfiguredProvider(): AuthenticationProvider {
 
-            val configuredValue = AppConfig()["auth.provider"]
+        val configuredValue = AppConfig()["auth.provider"]
 
-            return when (configuredValue.toLowerCase()) {
-                "github" -> AuthenticationProvider.Github
-                "montagu" -> AuthenticationProvider.Montagu
+        return when (configuredValue.toLowerCase()) {
+            "github" -> AuthenticationProvider.Github
+            "montagu" -> AuthenticationProvider.Montagu
             else -> throw UnknownAuthenticationProvider(configuredValue)
-            }
-        }
-
-        private fun getGithubOAuthKey(): String {
-            // AKA the Client ID
-            return AppConfig()["auth.github_key"]
-        }
-
-        private fun getGithubOAuthSecret(): String {
-            return AppConfig()["auth.github_secret"]
-        }
-
-        fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
-        {
-            return  when (getConfiguredProvider()) {
-                AuthenticationProvider.Github -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
-                AuthenticationProvider.Montagu -> MontaguIndirectClient()
-            }
         }
     }
+
+    private fun getGithubOAuthKey(): String {
+        // AKA the Client ID
+        return AppConfig()["auth.github_key"]
+    }
+
+    private fun getGithubOAuthSecret(): String {
+        return AppConfig()["auth.github_secret"]
+    }
+
+    fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
+    {
+        return  when (getConfiguredProvider()) {
+            AuthenticationProvider.Github -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
+            AuthenticationProvider.Montagu -> MontaguIndirectClient()
+        }
+    }
+
 }
 
 enum class AuthenticationProvider
