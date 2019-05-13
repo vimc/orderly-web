@@ -4,6 +4,7 @@ import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import spark.route.HttpMethod
+import java.lang.IllegalArgumentException
 
 class WebRequestHelper: RequestHelper()
 {
@@ -49,11 +50,14 @@ class WebRequestHelper: RequestHelper()
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
         val fullUrl = webBaseUrl + url
-        when (method)
+        val result = when (method)
         {
-            HttpMethod.get -> return khttp.get(fullUrl, headers)
-            HttpMethod.post -> return khttp.post(fullUrl, headers)
+            HttpMethod.get -> khttp.get(fullUrl, headers)
+            HttpMethod.post -> khttp.post(fullUrl, headers)
+            else -> throw IllegalArgumentException("Method not supported")
         }
+
+        return result
     }
 
     fun loginWithMontaguAndMakeRequest(url: String, contentType: String = "text/html",
