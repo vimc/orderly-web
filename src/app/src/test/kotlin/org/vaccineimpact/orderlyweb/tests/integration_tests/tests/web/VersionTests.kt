@@ -1,15 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import java.net.URLEncoder
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
@@ -59,6 +56,41 @@ class VersionTests : IntegrationTest()
         val url = "/reports/$reportName/versions/$versionId/all/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())))
+    }
+
+    @Test
+    fun `only report readers can get csv data`()
+    {
+        val url = getAnyDataUrl() + "?type=csv"
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
+                contentType = ContentTypes.csv)
+    }
+
+
+    @Test
+    fun `only report readers can get rds data`()
+    {
+        val url = getAnyDataUrl() + "?type=rds"
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
+                contentType = ContentTypes.binarydata)
+    }
+
+    private fun getAnyDataUrl() : String
+    {
+        val data =  JooqContext("demo/orderly.sqlite").use {
+
+            it.dsl.select(Tables.REPORT_VERSION_DATA.NAME, Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION_DATA.REPORT_VERSION)
+                    .from(Tables.REPORT_VERSION_DATA)
+                    .join(Tables.REPORT_VERSION)
+                    .on(Tables.REPORT_VERSION_DATA.REPORT_VERSION.eq(Tables.REPORT_VERSION.ID))
+                    .fetchAny()
+        }
+
+        val report = data[Tables.REPORT_VERSION.REPORT]
+        val version = data[Tables.REPORT_VERSION_DATA.REPORT_VERSION]
+        val name = URLEncoder.encode(data[Tables.REPORT_VERSION_DATA.NAME], "UTF-8")
+
+        return "/reports/$report/versions/$version/data/$name/"
     }
 
 

@@ -63,8 +63,8 @@ class ReportController(actionContext: ActionContext,
 
         val dataLinks = reportDetails.dataHashes.map{ InputDataViewModel(
                 it.key,
-                DownloadableFileViewModel("csv", buildDataFileUrl("csv", it.value)),
-                DownloadableFileViewModel("rds", buildDataFileUrl("rds", it.value))
+                DownloadableFileViewModel("csv", buildDataFileUrl(reportName, version,"csv", it.key)),
+                DownloadableFileViewModel("rds", buildDataFileUrl(reportName, version,"rds", it.key))
         ) }
 
         val resources = reportDetails.resources.map{DownloadableFileViewModel(it,
@@ -91,10 +91,10 @@ class ReportController(actionContext: ActionContext,
         return "${baseReportUrl(reportName, reportVersion)}artefacts/$fileName$inlineParam"
     }
 
-    private fun buildDataFileUrl(type: String, dataHash: String): String
+    private fun buildDataFileUrl(reportName: String, reportVersion:String, type: String, dataHash: String): String
     {
         val encodedHash = URLEncoder.encode(dataHash, "UTF-8")
-        return "/data/$type/$encodedHash"
+        return "${baseReportUrl(reportName, reportVersion)}data/$encodedHash/?type=$type"
     }
 
     private fun buildResourceUrl(reportName:String, reportVersion: String, resourceName: String): String

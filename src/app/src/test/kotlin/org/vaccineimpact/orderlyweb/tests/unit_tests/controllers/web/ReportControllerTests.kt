@@ -170,15 +170,15 @@ class ReportControllerTests : TeamcityTests()
 
         assertThat(result.dataLinks[0].key).isEqualTo("data1")
         assertThat(result.dataLinks[0].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[0].csv.url).isEqualTo("/data/csv/1234%2F567")
+        assertThat(result.dataLinks[0].csv.url).isEqualTo("/reports/r1/versions/v1/data/data1/?type=csv")
         assertThat(result.dataLinks[0].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[0].rds.url).isEqualTo("/data/rds/1234%2F567")
+        assertThat(result.dataLinks[0].rds.url).isEqualTo("/reports/r1/versions/v1/data/data1/?type=rds")
 
         assertThat(result.dataLinks[1].key).isEqualTo("data2")
         assertThat(result.dataLinks[1].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[1].csv.url).isEqualTo("/data/csv/987%26654")
+        assertThat(result.dataLinks[1].csv.url).isEqualTo("/reports/r1/versions/v1/data/data2/?type=csv")
         assertThat(result.dataLinks[1].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[1].rds.url).isEqualTo("/data/rds/987%26654")
+        assertThat(result.dataLinks[1].rds.url).isEqualTo("/reports/r1/versions/v1/data/data2/?type=rds")
     }
 
     @Test
