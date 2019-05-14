@@ -3,17 +3,18 @@ import {describe} from "mocha";
 import axios from "axios";
 import {mount} from '@vue/test-utils'
 import MockAdapter from "axios-mock-adapter";
-import PublishSwitch from "../js/components/reports/publishSwitch.vue"
+import PublishSwitch from "../js/components/reports/publishSwitch.vue";
+import RunReport from "../js/components/reports/runReport.vue"
 
 describe('report page', () => {
 
+    const mockAxios = new MockAdapter(axios);
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
+
     describe("publishSwitch", () => {
-
-        const mockAxios = new MockAdapter(axios);
-
-        beforeEach(() => {
-            mockAxios.reset();
-        });
 
         it('shows switch as off when report is unpublished', () => {
 
@@ -94,5 +95,22 @@ describe('report page', () => {
 
         })
     });
+
+    describe("runReport", () => {
+        it('shows run button only when no run status', () => {
+
+            const wrapper = mount(RunReport, {
+                propsData: {
+                    report: {
+                        name: "name1",
+                    }
+                }
+            });
+
+            expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
+            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find("#run-report-status").exists()).to.be.false;
+        });
+    })
 
 });

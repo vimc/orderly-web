@@ -3,7 +3,7 @@
         <label class="font-weight-bold">Run</label>
         <div>
             <div>Run this report to create a new version.</div>
-            <div v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
+            <div id="run-report-confirm" v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
                 <div class="modal-main px-3 py-3">
                     <div class="mb-2 font-weight-bold">Confirm run report</div>
                     <div class="mb-2">Are you sure you want to run this report?</div>
@@ -15,7 +15,7 @@
             </div>
         </div>
         <button v-on:click="confirmRun" class="btn mt-2" type="submit">Run report</button>
-        <div v-if="runningStatus" class="text-secondary mt-2">
+        <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
             <div v-if="newVersionFromRun">
                 New version: <a v-bind:href="`/reports/${report.name}/${newVersionFromRun}`">{{newVersionDisplayName}}</a>
