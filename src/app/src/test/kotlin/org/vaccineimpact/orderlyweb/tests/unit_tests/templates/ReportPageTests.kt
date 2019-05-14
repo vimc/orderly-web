@@ -109,6 +109,7 @@ class ReportPageTests : TeamcityTests()
             on { report } doReturn testReport
             on { reportJson } doReturn "{}"
             on { isAdmin } doReturn true
+            on { isRunner } doReturn false
             on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         }
 
@@ -126,6 +127,7 @@ class ReportPageTests : TeamcityTests()
             on { report } doReturn testReport
             on { reportJson } doReturn "{}"
             on { isAdmin } doReturn false
+            on { isRunner } doReturn false
             on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
         }
 
@@ -133,5 +135,41 @@ class ReportPageTests : TeamcityTests()
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
         Assertions.assertThat(publishSwitch).isNull()
+    }
+
+    @Test
+    fun `runners see run report`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn true
+            on { isRunner } doReturn true
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("runReportVueApp")
+        Assertions.assertThat(runReport).isNotNull()
+    }
+
+    @Test
+    fun `non runners do not see run report`()
+    {
+        val mockModel = mock<TestReportViewModel> {
+            on { appName } doReturn "testApp"
+            on { report } doReturn testReport
+            on { reportJson } doReturn "{}"
+            on { isAdmin } doReturn true
+            on { isRunner } doReturn false
+            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+        }
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("runReportVueApp")
+        Assertions.assertThat(runReport).isNull()
     }
 }
