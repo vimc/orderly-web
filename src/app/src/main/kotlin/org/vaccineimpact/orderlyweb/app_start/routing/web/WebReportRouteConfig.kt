@@ -29,6 +29,10 @@ object WebReportRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "run",
                     method = HttpMethod.post)
                     .json()
+                    .secure(runReports),
+            WebEndpoint("/reports/:key/status/",
+                    org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
+                    .json()
                     .secure(runReports)
     )
 }
