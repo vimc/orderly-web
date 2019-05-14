@@ -12,6 +12,7 @@ object WebReportRouteConfig : RouteConfig
 {
     private val readReports = setOf("report:<name>/reports.read")
     private val reviewReports = setOf("*/reports.review")
+    private val runReports = setOf("*/reports.run")
     override val endpoints = listOf(
             WebEndpoint("/reports/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
@@ -23,6 +24,11 @@ object WebReportRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "publish",
                     method = HttpMethod.post)
                     .json()
-                    .secure(reviewReports)
+                    .secure(reviewReports),
+            WebEndpoint("/reports/:name/run/",
+                    org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "run",
+                    method = HttpMethod.post)
+                    .json()
+                    .secure(runReports)
     )
 }

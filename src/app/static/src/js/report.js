@@ -1,6 +1,7 @@
 import Vue from 'vue';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
+import runReport from './components/reports/runReport.vue'
 
 let data = {report: null};
 
@@ -9,7 +10,7 @@ if (typeof report !== "undefined") {
     data.report = report;
 }
 
-export const vm = new Vue({
+export const publishVm = new Vue({
     el: '#publishSwitchVueApp',
     data: data,
     components: {
@@ -19,5 +20,13 @@ export const vm = new Vue({
         handleToggle: function() {
             this.report.published = !this.report.published
         }
+    }
+});
+
+export const runVm  = new Vue({
+    el: '#runReportVueApp',
+    data: data,
+    components: {
+        runReport: runReport
     }
 });

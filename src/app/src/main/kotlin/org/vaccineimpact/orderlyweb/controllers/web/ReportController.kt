@@ -19,6 +19,7 @@ class ReportController: OrderlyDataController
     open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
                                open val focalArtefactUrl: String?,
                                open val isAdmin: Boolean,
+                               open val isRunner: Boolean,
                                context: ActionContext) : AppViewModel(context)
 
     @Template("report-page.ftl")
@@ -43,7 +44,8 @@ class ReportController: OrderlyDataController
         }
 
         val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
-        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, isAdmin, context)
+        val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+        return ReportViewModel(reportDetails.copy(displayName = displayName), focalArtefactUrl, isAdmin, isRunner, context)
     }
 
     fun canRenderInBrowser(fileName: String): Boolean
