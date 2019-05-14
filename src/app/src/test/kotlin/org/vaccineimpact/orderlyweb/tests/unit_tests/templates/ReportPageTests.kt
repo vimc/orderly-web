@@ -43,14 +43,16 @@ class ReportPageTests : TeamcityTests()
                                            report: ReportVersionDetails,
                                            focalArtefactUrl: String?,
                                            isAdmin: Boolean,
+                                           isRunner: Boolean,
                                            context: ActionContext) :
-            ReportController.ReportViewModel(report, focalArtefactUrl, isAdmin, context)
+            ReportController.ReportViewModel(report, focalArtefactUrl, isAdmin, isRunner, context)
 
     private val mockModel = mock<TestReportViewModel> {
         on { appName } doReturn "testApp"
         on { report } doReturn testReport
         on { reportJson } doReturn "{}"
         on { isAdmin } doReturn false
+        on { isRunner } doReturn false
         on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
     }
 
