@@ -15,6 +15,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 class VersionPageTests : IntegrationTest()
 {
     private val readReports = setOf(ReifiedPermission("reports.read", Scope.Global()))
+
     @Test
     fun `artefacts can be downloaded`()
     {

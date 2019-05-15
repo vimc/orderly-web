@@ -1,41 +1,22 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.*
 import java.net.URLEncoder
 
-class ReportController: OrderlyDataController
+class ReportController : OrderlyDataController
 {
     constructor(actionContext: ActionContext,
-                orderly: OrderlyClient): super(actionContext, orderly)
+                orderly: OrderlyClient) : super(actionContext, orderly)
 
-    constructor(actionContext: ActionContext): super(actionContext)
-
-    open class ReportViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
-                          open val focalArtefactUrl: String?,
-                          open val isAdmin: Boolean,
-                          open val artefacts: List<ArtefactViewModel>,
-                          open val dataLinks: List<InputDataViewModel>,
-                          open val resources: List<DownloadableFileViewModel>,
-                          open val zipFile: DownloadableFileViewModel,
-                          context: ActionContext) : AppViewModel(context)
-
-
-    class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
-
-    class InputDataViewModel(val key: String, val csv: DownloadableFileViewModel, val rds: DownloadableFileViewModel)
-
-    class DownloadableFileViewModel(val name: String, val url: String)
+    constructor(actionContext: ActionContext) : super(actionContext)
 
     @Template("report-page.ftl")
-    fun getByNameAndVersion(): ReportViewModel
+    fun getByNameAndVersion(): ReportVersionPageViewModel
     {
         val reportName = context.params(":name")
         val version = context.params(":version")
@@ -56,26 +37,33 @@ class ReportController: OrderlyDataController
         }
 
 
-        val artefacts = reportDetails.artefacts.map{ ArtefactViewModel(it,
-                it.files.map{filename -> DownloadableFileViewModel(filename,
-                        buildArtefactFileUrl(reportName, version, filename, false)) },
-                getArtefactInlineFigure(reportName, version, it.files))}
+        val artefacts = reportDetails.artefacts.map {
+            ArtefactViewModel(it,
+                    it.files.map { filename ->
+                        DownloadableFileViewModel(filename,
+                                buildArtefactFileUrl(reportName, version, filename, false))
+                    },
+                    getArtefactInlineFigure(reportName, version, it.files))
+        }
 
-        val dataLinks = reportDetails.dataHashes.map{ InputDataViewModel(
-                it.key,
-                DownloadableFileViewModel("csv", buildDataFileUrl(reportName, version,"csv", it.key)),
-                DownloadableFileViewModel("rds", buildDataFileUrl(reportName, version,"rds", it.key))
-        ) }
+        val dataLinks = reportDetails.dataHashes.map {
+            InputDataViewModel(
+                    it.key,
+                    DownloadableFileViewModel("csv", buildDataFileUrl(reportName, version, "csv", it.key)),
+                    DownloadableFileViewModel("rds", buildDataFileUrl(reportName, version, "rds", it.key))
+            )
+        }
 
-        val resources = reportDetails.resources.map{DownloadableFileViewModel(it,
-                buildResourceUrl(reportName, version, it))}
+        val resources = reportDetails.resources.map {
+            DownloadableFileViewModel(it,
+                    buildResourceUrl(reportName, version, it))
+        }
 
         val zipFile = DownloadableFileViewModel("$reportName-$version.zip", buildZipFileUrl(reportName, version))
 
-
         val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
 
-        return ReportViewModel(reportDetails.copy(displayName = displayName),
+        return ReportVersionPageViewModel(reportDetails.copy(displayName = displayName),
                 focalArtefactUrl,
                 isAdmin,
                 artefacts,
@@ -85,19 +73,19 @@ class ReportController: OrderlyDataController
                 context)
     }
 
-    private fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean) : String
+    private fun buildArtefactFileUrl(reportName: String, reportVersion: String, fileName: String, inline: Boolean): String
     {
         val inlineParam = if (inline) "?inline=true" else ""
         return "${baseReportUrl(reportName, reportVersion)}artefacts/$fileName$inlineParam"
     }
 
-    private fun buildDataFileUrl(reportName: String, reportVersion:String, type: String, dataHash: String): String
+    private fun buildDataFileUrl(reportName: String, reportVersion: String, type: String, dataHash: String): String
     {
         val encodedHash = URLEncoder.encode(dataHash, "UTF-8")
         return "${baseReportUrl(reportName, reportVersion)}data/$encodedHash/?type=$type"
     }
 
-    private fun buildResourceUrl(reportName:String, reportVersion: String, resourceName: String): String
+    private fun buildResourceUrl(reportName: String, reportVersion: String, resourceName: String): String
     {
         val encodedResourceName = URLEncoder.encode(resourceName, "UTF-8")
         return "${baseReportUrl(reportName, reportVersion)}resources/$encodedResourceName"

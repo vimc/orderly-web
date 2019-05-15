@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.db
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import org.jooq.DSLContext
 import org.jooq.SQLDialect
 import org.jooq.impl.DSL

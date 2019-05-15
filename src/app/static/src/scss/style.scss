@@ -2,19 +2,11 @@ $success: #28a75e;
 @import "partials/variables";
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
-$table-border-color: $gray-700;
-$published-color: #868ED3;
-$internal-color: darken($warning, 10%);
-$montagu-header-bg-color: $gray-100;
-$montagu-header-color: $body-color;
-$montagu-breadcrumb-bg-color: $gray-100;
-$montagu-breadcrumb-color: $success;
-$montagu-table-border-color: $gray-300;
-
 @import "partials/buttons";
 @import "partials/fonts";
 @import "partials/page";
 @import "partials/logout";
+@import "partials/nav";
 
 html, body {
   height: 100%

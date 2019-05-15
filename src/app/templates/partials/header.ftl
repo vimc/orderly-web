@@ -24,3 +24,4 @@
     </div>
     </#if>
 </header>
+<#include "breadcrumbs.ftl">

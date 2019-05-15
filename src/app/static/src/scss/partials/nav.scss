@@ -1,0 +1,27 @@
+@import "variables";
+
+.breadcrumb-navbar {
+  background-color: $breadcrumb-bg-color;
+  padding: 2px 5px 5px 16px;
+  color: $breadcrumb-color;
+
+  .breadcrumb-nav-item {
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+    margin: 0 5px 0 0;
+
+    a {
+      color: $breadcrumb-color !important;
+    }
+  }
+
+  .breadcrumb-nav-item :before {
+    content: " » ";
+  }
+
+  a .breadcrumb-nav-item  {
+    color: black;
+  }
+}
+

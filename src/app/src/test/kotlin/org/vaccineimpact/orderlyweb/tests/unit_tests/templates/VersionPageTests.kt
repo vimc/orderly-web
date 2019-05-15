@@ -1,25 +1,28 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
-import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.*
+import org.hamcrest.Matchers.equalTo
+import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.vaccineimpact.orderlyweb.viewmodels.ArtefactViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.InputDataViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.xmlmatchers.XmlMatchers.hasXPath
 import java.sql.Timestamp
 
 //This will also test the partials which the report-page template includes
 
-class ReportPageTests : TeamcityTests()
+class VersionPageTests : TeamcityTests()
 {
     companion object
     {
@@ -41,66 +44,65 @@ class ReportPageTests : TeamcityTests()
             dataHashes = mapOf())
 
     private val testArtefactViewModels = listOf(
-            ReportController.ArtefactViewModel(
+            ArtefactViewModel(
                     Artefact(ArtefactFormat.DATA, "artefact1", listOf()),
                     listOf(
-                            ReportController.DownloadableFileViewModel("a1file1.png", "http://a1file1"),
-                            ReportController.DownloadableFileViewModel("a1file2.pdf", "http://a1file2")
+                            DownloadableFileViewModel("a1file1.png", "http://a1file1"),
+                            DownloadableFileViewModel("a1file2.pdf", "http://a1file2")
                     ),
                     "inlinesrc.png"
-                ),
-            ReportController.ArtefactViewModel(
+            ),
+            ArtefactViewModel(
                     Artefact(ArtefactFormat.DATA, "artefact2", listOf()),
                     listOf(
-                            ReportController.DownloadableFileViewModel("a2file1.xls", "http://a2file1")
+                            DownloadableFileViewModel("a2file1.xls", "http://a2file1")
                     ),
                     null
             )
     )
 
     private val testDataLinks = listOf(
-            ReportController.InputDataViewModel("key1",
-                    ReportController.DownloadableFileViewModel("key1.csv", "http://key1/csv"),
-                    ReportController.DownloadableFileViewModel("key1.rds", "http://key1/rds")),
-            ReportController.InputDataViewModel("key2",
-                    ReportController.DownloadableFileViewModel("key2.csv", "http://key2/csv"),
-                    ReportController.DownloadableFileViewModel("key2.rds", "http://key2/rds"))
+            InputDataViewModel("key1",
+                    DownloadableFileViewModel("key1.csv", "http://key1/csv"),
+                    DownloadableFileViewModel("key1.rds", "http://key1/rds")),
+            InputDataViewModel("key2",
+                    DownloadableFileViewModel("key2.csv", "http://key2/csv"),
+                    DownloadableFileViewModel("key2.rds", "http://key2/rds"))
     )
 
     private val testResources = listOf(
-            ReportController.DownloadableFileViewModel("resource1.csv", "http://resource1/csv"),
-            ReportController.DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
+            DownloadableFileViewModel("resource1.csv", "http://resource1/csv"),
+            DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
     )
 
-    // Mock the wrapper serialization in the real model class
-    private open class TestReportViewModel(open val reportJson: String,
-                                           report: ReportVersionDetails,
-                                           focalArtefactUrl: String?,
-                                           isAdmin: Boolean,
-                                           artefacts: List<ReportController.ArtefactViewModel>,
-                                           dataLinks: List<ReportController.InputDataViewModel>,
-                                           resources: List<ReportController.DownloadableFileViewModel>,
-                                           zipFile: ReportController.DownloadableFileViewModel,
-                                           context: ActionContext) :
-            ReportController.ReportViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile,  context)
+    data class TestReportViewModel(
+            val reportJson: String,
+            override val report: ReportVersionDetails,
+            override val focalArtefactUrl: String?,
+            override val isAdmin: Boolean,
+            override val artefacts: List<ArtefactViewModel>,
+            override val dataLinks: List<InputDataViewModel>,
+            override val resources: List<DownloadableFileViewModel>,
+            override val zipFile: DownloadableFileViewModel,
+            val context: ActionContext) :
+            ReportVersionPageViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile, context)
 
-
-    private val mockModel = mock<TestReportViewModel> {
-        on { appName } doReturn "testApp"
-        on { report } doReturn testReport
-        on { reportJson } doReturn "{}"
-        on { isAdmin } doReturn false
-        on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-        on { artefacts } doReturn testArtefactViewModels
-        on { dataLinks } doReturn testDataLinks
-        on { resources } doReturn testResources
-        on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
-    }
+    private val testModel = TestReportViewModel(
+            "{}",
+            testReport,
+            "/testFocalArtefactUrl",
+            false,
+            testArtefactViewModels,
+            testDataLinks,
+            testResources,
+            DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            mock()
+    )
 
     @Test
     fun `renders outline correctly`()
     {
-        val xmlResponse = template.xmlResponseFor(mockModel)
+        val xmlResponse = template.xmlResponseFor(testModel)
 
         assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][1]/a[@role='tab']/text()",
                 equalToCompressingWhiteSpace("Report")))
@@ -113,9 +115,22 @@ class ReportPageTests : TeamcityTests()
     }
 
     @Test
+    fun `renders breadcrumbs correctly`()
+    {
+        val doc = template.jsoupDocFor(testModel)
+        val breadCrumbs = doc.select(".breadcrumb-item")
+
+        Assertions.assertThat(breadCrumbs.count()).isEqualTo(2)
+        Assertions.assertThat(breadCrumbs.first().child(0).text()).isEqualTo("Main menu")
+        Assertions.assertThat(breadCrumbs.first().child(0).attr("href")).isEqualTo("/")
+        Assertions.assertThat(breadCrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
+        Assertions.assertThat(breadCrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
+    }
+
+    @Test
     fun `renders report tab correctly`()
     {
-        val xmlResponse = template.xmlResponseFor(mockModel)
+        val xmlResponse = template.xmlResponseFor(testModel)
 
         val xPathRoot = "//div[@id='report-tab']"
 
@@ -131,8 +146,9 @@ class ReportPageTests : TeamcityTests()
     }
 
     @Test
-    fun `renders download tab title correctly`() {
-        val xmlResponse = template.xmlResponseFor(mockModel)
+    fun `renders download tab title correctly`()
+    {
+        val xmlResponse = template.xmlResponseFor(testModel)
 
         val xPathRoot = "//div[@id='downloads-tab']"
 
@@ -144,7 +160,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders download tab artefacts correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val artefactsEl = jsoupDoc.select("#artefacts")
         val artefactCards = artefactsEl.select(".card")
@@ -176,7 +192,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders download tab data links correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val linksEl = jsoupDoc.select("#data-links")
         Assertions.assertThat(linksEl.select(".card-header").text()).isEqualTo("Input data to the report")
@@ -206,15 +222,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `does not render download tab data links if none in model`()
     {
-        val testModel = mock<TestReportViewModel> {
-            on { appName } doReturn "testApp"
-            on { report } doReturn testReport
-            on { reportJson } doReturn "{}"
-            on { isAdmin } doReturn false
-            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-            on { dataLinks } doReturn listOf<ReportController.InputDataViewModel>()
-            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
-        }
+        val testModel = testModel.copy(dataLinks = listOf())
 
         val jsoupDoc = template.jsoupDocFor(testModel)
 
@@ -225,7 +233,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders resources correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
         Assertions.assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
@@ -243,7 +251,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `renders zipfile correctly`()
     {
-        val jsoupDoc = template.jsoupDocFor(mockModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
 
         val zipFileEl = jsoupDoc.select("#zip-file")
         val zipFileLink = zipFileEl.select("a")
@@ -255,16 +263,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `does not render download tab resources if none in model`()
     {
-        val testModel = mock<TestReportViewModel> {
-            on { appName } doReturn "testApp"
-            on { report } doReturn testReport
-            on { reportJson } doReturn "{}"
-            on { isAdmin } doReturn false
-            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-            on { resources } doReturn listOf<ReportController.DownloadableFileViewModel>()
-            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
-        }
-
+        val testModel = testModel.copy(resources = listOf())
         val jsoupDoc = template.jsoupDocFor(testModel)
 
         val resourcesEl = jsoupDoc.select("#resources")
@@ -274,14 +273,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `admins see publish switch`()
     {
-        val mockModel = mock<TestReportViewModel> {
-            on { appName } doReturn "testApp"
-            on { report } doReturn testReport
-            on { reportJson } doReturn "{}"
-            on { isAdmin } doReturn true
-            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
-        }
+        val mockModel = testModel.copy(isAdmin = true)
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
@@ -292,14 +284,7 @@ class ReportPageTests : TeamcityTests()
     @Test
     fun `non admins do not see publish switch`()
     {
-        val mockModel = mock<TestReportViewModel> {
-            on { appName } doReturn "testApp"
-            on { report } doReturn testReport
-            on { reportJson } doReturn "{}"
-            on { isAdmin } doReturn false
-            on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
-            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
-        }
+        val mockModel = testModel.copy(isAdmin = false)
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 

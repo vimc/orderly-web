@@ -3,6 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import spark.route.HttpMethod
@@ -11,6 +13,7 @@ class WebRequestHelper : RequestHelper()
 {
     override val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}"
     val authRepo = OrderlyAuthorizationRepository()
+    val userRepo = OrderlyUserRepository()
 
     fun getWebPage(
             url: String,
@@ -28,20 +31,22 @@ class WebRequestHelper : RequestHelper()
         return requestWithSessionCookie(url, sessionCookie, contentType, method)
     }
 
-    private fun getWithMontaguCookie(
+    fun getWithMontaguCookie(
             url: String,
             montaguToken: String,
-            contentType: String = "text/html"
+            contentType: String = "text/html",
+            allowRedirects: Boolean = false
     ): Response
     {
         val cookieName = MontaguIndirectClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$montaguToken")
-        return khttp.get(baseUrl + url, headers, allowRedirects = false)
+        return khttp.get(baseUrl + url, headers, allowRedirects = allowRedirects)
     }
 
     fun webLoginWithMontagu(withPermissions: Set<ReifiedPermission> = setOf()): String
     {
+        userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
         withPermissions.forEach{
             authRepo.ensureUserGroupHasPermission(MontaguTestUser, it)
         }

@@ -3,17 +3,18 @@ package org.vaccineimpact.orderlyweb.controllers.web
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.BreadCrumb
 
 class SecurityController(actionContext: ActionContext) : Controller(actionContext)
 {
-    class WebloginViewModel(context: ActionContext, val requestedUrl: String) : AppViewModel(context)
+    class WebloginViewModel(context: ActionContext, val requestedUrl: String) :
+            AppViewModel(context, listOf(BreadCrumb("Login", "/")))
 
     @Template("weblogin.ftl")
     fun weblogin(): WebloginViewModel
     {
         //This action handles displaying the 'landing page' with links to the external auth providers e.g. Github
         //This is the redirect location for the OrderlyWebIndirectClient, which secures the WebEndpoints of the app
-
         val requestedUrl = context.queryParams("requestedUrl")
         return WebloginViewModel(context, requestedUrl?:"")
     }

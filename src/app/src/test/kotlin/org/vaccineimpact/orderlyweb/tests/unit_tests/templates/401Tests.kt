@@ -6,9 +6,9 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.app_start.WebErrorHandler
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.vaccineimpact.orderlyweb.viewmodels.FailedLoginViewModel
 import org.xmlmatchers.XmlMatchers.hasXPath
 
 class _401Tests: TeamcityTests()
@@ -23,7 +23,7 @@ class _401Tests: TeamcityTests()
     @Test
     fun `renders correctly for Montagu auth`()
     {
-        val mockModel = mock<WebErrorHandler.ErrorViewModel> {
+        val mockModel = mock<FailedLoginViewModel> {
             on { appName } doReturn "testApp"
             on { authProvider } doReturn "montagu"
         }
@@ -38,7 +38,7 @@ class _401Tests: TeamcityTests()
     @Test
     fun `renders correctly for Github auth`()
     {
-        val mockModel = mock<WebErrorHandler.ErrorViewModel> {
+        val mockModel = mock<FailedLoginViewModel> {
             on { appName } doReturn "testApp"
             on { authProvider } doReturn "github"
         }
