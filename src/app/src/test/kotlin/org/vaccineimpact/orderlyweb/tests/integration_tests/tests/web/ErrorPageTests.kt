@@ -10,10 +10,14 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class ErrorPageTests : IntegrationTest()
 {
+    private val readReports = setOf(ReifiedPermission("reports.read", Scope.Global()))
+
     @Test
     fun `404 page details are correct`()
     {
@@ -66,7 +70,8 @@ class ErrorPageTests : IntegrationTest()
             Pair(report[REPORT_VERSION.REPORT], report[REPORT_VERSION.ID])
         }
 
-        val result = webRequestHelper.loginWithMontaguAndMakeRequest("/reports/$report/$version/")
+        val result = webRequestHelper.loginWithMontaguAndMakeRequest("/reports/$report/$version/",
+                readReports)
 
         assertThat(result.statusCode).isEqualTo(500)
         val doc = Jsoup.parse(result.text)

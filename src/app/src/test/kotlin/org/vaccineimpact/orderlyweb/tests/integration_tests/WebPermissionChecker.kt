@@ -51,10 +51,8 @@ class WebPermissionChecker(private val url: String,
     )
     {
         webRequestHelper.getWebPage("/logout")
-        permissions.forEach {
-            authRepo.ensureUserGroupHasPermission(testUserEmail, it)
-        }
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, contentType, method)
+
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(404) // we return 404s for unauthorized users
@@ -65,10 +63,8 @@ class WebPermissionChecker(private val url: String,
                                                    assertionText: String)
     {
         webRequestHelper.getWebPage("/logout")
-        permissions.map {
-            authRepo.ensureUserGroupHasPermission(testUserEmail, it)
-        }
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, contentType, method)
+
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(200)
