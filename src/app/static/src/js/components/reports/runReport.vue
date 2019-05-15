@@ -76,8 +76,9 @@
                     .catch(() => {
                         this.dismissRunStatus();
                         this.runningStatus = "Error when running report";
-                    }).finally(() => {
-                    this.updateSessionStorage();
+                    })
+                    .finally(() => {
+                        this.updateSessionStorage();
                 });
             },
             startPolling: function () {

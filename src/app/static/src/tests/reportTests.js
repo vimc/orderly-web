@@ -108,8 +108,12 @@ describe('report page', () => {
             }
         };
 
+        var sessionStubGetRunningReportStatus;
+        var sessionStubSetRunningReportStatus;
+        var sessionStubRemoveRunningReportStatus;
+
         beforeEach(() => {
-            sinon.stub(session, "getRunningReportStatus").callsFake(() => {
+            sessionStubGetRunningReportStatus = sinon.stub(session, "getRunningReportStatus").callsFake(() => {
                     return {
                         runningStatus: null,
                         runningKey: null,
@@ -118,8 +122,8 @@ describe('report page', () => {
                     }
                 }
             );
-            sinon.stub(session, "setRunningReportStatus");
-            sinon.stub(session, "removeRunningReportStatus");
+            sessionStubSetRunningReportStatus = sinon.stub(session, "setRunningReportStatus");
+            sessionStubRemoveRunningReportStatus = sinon.stub(session, "removeRunningReportStatus");
         });
 
         afterEach(() => {
@@ -279,6 +283,14 @@ describe('report page', () => {
                 //should also hide modal
                 expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
 
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
+                expect(storedStatus.runningKey).to.eq("");
+                expect(storedStatus.runningStatus).to.eq("Error when running report");
+                expect(storedStatus.newVersionFromRun).to.eq("");
+                expect(storedStatus.newVersionDisplayName).to.eq("");
+
                 done();
             });
 
@@ -311,6 +323,14 @@ describe('report page', () => {
                 //should also hide modal
                 expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
 
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
+                expect(storedStatus.runningKey).to.eq("some_key");
+                expect(storedStatus.runningStatus).to.eq("Run started");
+                expect(storedStatus.newVersionFromRun).to.eq("");
+                expect(storedStatus.newVersionDisplayName).to.eq("");
+
                 done();
             });
         });
@@ -332,6 +352,8 @@ describe('report page', () => {
             expect(wrapper.find("#run-report-status").exists()).to.eq(false);
             expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
 
+            //Also expect status in session to have been cleared
+            expect(sessionStubRemoveRunningReportStatus.getCall(0).args[0]).eq("name1");
         });
 
         it('updates status and stops polling when run update request returns success status', (done) => {
@@ -363,6 +385,14 @@ describe('report page', () => {
 
                 //expect key to have been set and polling timer to have been cleared
                 expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
+                expect(storedStatus.runningKey).to.eq("some_key");
+                expect(storedStatus.runningStatus).to.eq("success");
+                expect(storedStatus.newVersionFromRun).to.eq("20190514-160954-fc295f38");
+                expect(storedStatus.newVersionDisplayName).to.eq("Tue May 14 2019, 16:09");
 
                 done();
             }, 1800);
@@ -396,6 +426,14 @@ describe('report page', () => {
 
                 //expect key to have been set and polling timer to have been cleared
                 expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
+                expect(storedStatus.runningKey).to.eq("some_key");
+                expect(storedStatus.runningStatus).to.eq("error");
+                expect(storedStatus.newVersionFromRun).to.eq("");
+                expect(storedStatus.newVersionDisplayName).to.eq("");
 
                 done();
             }, 1800);
@@ -432,6 +470,14 @@ describe('report page', () => {
                 //expect key to have been set and polling timer to have been cleared
                 expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
 
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
+                expect(storedStatus.runningKey).to.eq("some_key");
+                expect(storedStatus.runningStatus).to.eq("still going");
+                expect(storedStatus.newVersionFromRun).to.eq("");
+                expect(storedStatus.newVersionDisplayName).to.eq("");
+
                 done();
             }, 1800);
         });
@@ -466,12 +512,46 @@ describe('report page', () => {
                 //expect key to have been set and polling timer to have been cleared
                 expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
 
+                //expect status in session to have been set
+                expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+                const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
+                expect(storedStatus.runningKey).to.eq("some_key");
+                expect(storedStatus.runningStatus).to.eq("Error when fetching report status");
+                expect(storedStatus.newVersionFromRun).to.eq("");
+                expect(storedStatus.newVersionDisplayName).to.eq("");
+
                 done();
             }, 1800);
         });
 
-    });
+        it('initialises data from session storage', () => {
+            session.getRunningReportStatus.restore();
+            sinon.stub(session, "getRunningReportStatus").callsFake(() => {
+                    return {
+                        runningStatus: "storedStatus",
+                        runningKey: "storedKey",
+                        newVersionFromRun: "storedNewVersion",
+                        newVersionDisplayName: "storedVersionDisplayName"
+                    }
+                }
+            );
 
+            const wrapper = mount(RunReport, runReportProps);
+
+            expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
+            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find("#run-report-status").text()).to.contain("Running status: storedStatus");
+
+            expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: storedVersionDisplayName");
+            expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/storedNewVersion");
+            expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
+
+            expect(wrapper.vm.$data["runningKey"]).to.eq("storedKey");
+            expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+
+        });
+
+    });
 
 
 });
