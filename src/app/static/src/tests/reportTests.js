@@ -1,10 +1,12 @@
 import {expect} from "chai";
 import {describe} from "mocha";
 import axios from "axios";
-import {mount} from '@vue/test-utils'
+import {mount} from '@vue/test-utils';
 import MockAdapter from "axios-mock-adapter";
+import * as sinon from "sinon";
 import PublishSwitch from "../js/components/reports/publishSwitch.vue";
 import RunReport from "../js/components/reports/runReport.vue"
+import {session} from "../js/session";
 
 describe('report page', () => {
 
@@ -105,6 +107,26 @@ describe('report page', () => {
                 }
             }
         };
+
+        beforeEach(() => {
+            sinon.stub(session, "getRunningReportStatus").callsFake(() => {
+                    return {
+                        runningStatus: null,
+                        runningKey: null,
+                        newVersionFromRun: null,
+                        newVersionDisplayName: null
+                    }
+                }
+            );
+            sinon.stub(session, "setRunningReportStatus");
+            sinon.stub(session, "removeRunningReportStatus");
+        });
+
+        afterEach(() => {
+            session.getRunningReportStatus.restore();
+            session.setRunningReportStatus.restore();
+            session.removeRunningReportStatus.restore();
+        });
 
         it('shows run button only when no run status', () => {
 
