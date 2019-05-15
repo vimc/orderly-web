@@ -2,14 +2,10 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.BreadCrumb
+import org.vaccineimpact.orderlyweb.viewmodels.WebloginViewModel
 
 class SecurityController(actionContext: ActionContext) : Controller(actionContext)
 {
-    class WebloginViewModel(context: ActionContext, val requestedUrl: String) :
-            AppViewModel(context, listOf(BreadCrumb("Login", "/")))
-
     @Template("weblogin.ftl")
     fun weblogin(): WebloginViewModel
     {
