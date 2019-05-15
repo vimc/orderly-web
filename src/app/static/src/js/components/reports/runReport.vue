@@ -17,10 +17,10 @@
         <button v-on:click="confirmRun" class="btn mt-2" type="submit">Run report</button>
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
-            <div v-if="newVersionFromRun">
+            <div v-if="newVersionFromRun" id="run-report-new-version">
                 New version: <a v-bind:href="`/reports/${report.name}/${newVersionFromRun}`">{{newVersionDisplayName}}</a>
             </div>
-            <div v-on:click="dismissRunStatus" class="dismiss-link btn btn-link p-0">Dismiss</div>
+            <div v-on:click="dismissRunStatus" id="run-report-dismiss" class="btn btn-link p-0">Dismiss</div>
         </div>
     </div>
 </template>
@@ -50,7 +50,8 @@
             },
             run: function () {
                 this.showModal = false;
-                axios.post(`/reports/${this.report.name}/run/`,
+                const url = `/reports/${this.report.name}/run/`;
+                axios.post(url,
                     null,
                     {withCredentials: true})
                     .then((response) => {
@@ -60,8 +61,8 @@
                         this.startPolling();
                     })
                     .catch(() => {
-                        this.runningStatus = "Error when running report";
                         this.dismissRunStatus();
+                        this.runningStatus = "Error when running report";
                     });
             },
             startPolling: function() {
@@ -101,6 +102,7 @@
                 this.runningKey = "";
                 this.runningStatus = "";
                 this.newVersionFromRun = "";
+                this.newVersionDisplayName = "";
             }
         }
     };
