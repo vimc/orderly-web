@@ -14,8 +14,8 @@ open class AppViewModel(open val loggedIn: Boolean,
     constructor(userProfile: CommonProfile?, breadcrumbs: List<BreadCrumb>) :
             this(userProfile != null, userProfile?.id, breadcrumbs)
 
-    constructor(context: ActionContext, breadcrumbs: List<BreadCrumb>) :
-            this(context.userProfile, breadcrumbs)
+    constructor(context: ActionContext, vararg breadcrumbs: BreadCrumb) :
+            this(context.userProfile, breadcrumbs.toList())
 
     open val appName = AppConfig()["app.name"]
     open val appEmail = AppConfig()["app.email"]

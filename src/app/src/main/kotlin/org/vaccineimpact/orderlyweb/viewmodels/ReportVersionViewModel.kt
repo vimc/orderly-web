@@ -12,8 +12,14 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
                                       open val dataLinks: List<InputDataViewModel>,
                                       open val resources: List<DownloadableFileViewModel>,
                                       open val zipFile: DownloadableFileViewModel,
-                                      context: ActionContext) : AppViewModel(context,
-        IndexBreadCrumbs + BreadCrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/"))
+                                      context: ActionContext) :
+        AppViewModel(context, IndexViewModel.breadCrumb, breadCrumb(report))
+{
+    companion object
+    {
+        fun breadCrumb(report: ReportVersionDetails) = BreadCrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
+    }
+}
 
 data class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
 
