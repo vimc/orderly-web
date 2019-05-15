@@ -312,6 +312,144 @@ describe('report page', () => {
 
         });
 
+        it('updates status and stops polling when run update request returns success status', (done) => {
+            const wrapper = mount(RunReport, runReportProps);
+
+            //mock endpoint initially called to run the report
+            mockAxios.onPost('/reports/name1/run/')
+                .reply(200, {"data": {"key": "some_key"}});
+
+            //mock endpoint which is polled
+            mockAxios.onGet('/reports/some_key/status/')
+                .reply(200, {"data": {"status": "success", "version": "20190514-160954-fc295f38"}});
+
+            wrapper.setData({
+                showModal: true,
+                pollingTimer: null,
+                runningKey: "",
+                runningStatus: "",
+                newVersionFromRun: "",
+                newVersionDisplayName: ""
+            });
+
+            wrapper.find("#confirm-run-btn").trigger("click");
+
+            setTimeout(()  => {
+                expect(wrapper.find('#run-report-status').text()).to.contain("Running status: success");
+                expect(wrapper.find('#run-report-new-version a').text()).to.eq("Tue May 14 2019, 16:09");
+                expect(wrapper.find('#run-report-new-version a').attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
+
+                //expect key to have been set and polling timer to have been cleared
+                expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+
+                done();
+            }, 1800);
+        });
+
+        it('updates status and stops polling when run update request returns error status', (done) => {
+            const wrapper = mount(RunReport, runReportProps);
+
+            //mock endpoint initially called to run the report
+            mockAxios.onPost('/reports/name1/run/')
+                .reply(200, {"data": {"key": "some_key"}});
+
+            //mock endpoint which is polled
+            mockAxios.onGet('/reports/some_key/status/')
+                .reply(200, {"data": {"status": "error", "version": ""}});
+
+            wrapper.setData({
+                showModal: true,
+                pollingTimer: null,
+                runningKey: "",
+                runningStatus: "",
+                newVersionFromRun: "",
+                newVersionDisplayName: ""
+            });
+
+            wrapper.find("#confirm-run-btn").trigger("click");
+
+            setTimeout(()  => {
+                expect(wrapper.find('#run-report-status').text()).to.contain("Running status: error");
+                expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
+
+                //expect key to have been set and polling timer to have been cleared
+                expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+
+                done();
+            }, 1800);
+
+        });
+
+        it('updates status and continues polling when run update request returns non-complete status', (done) => {
+           //ie any status other than 'success' or 'error'
+            const wrapper = mount(RunReport, runReportProps);
+
+            //mock endpoint initially called to run the report
+            mockAxios.onPost('/reports/name1/run/')
+                .reply(200, {"data": {"key": "some_key"}});
+
+            //mock endpoint which is polled
+            mockAxios.onGet('/reports/some_key/status/')
+                .reply(200, {"data": {"status": "still going", "version": ""}});
+
+            wrapper.setData({
+                showModal: true,
+                pollingTimer: null,
+                runningKey: "",
+                runningStatus: "",
+                newVersionFromRun: "",
+                newVersionDisplayName: ""
+            });
+
+            wrapper.find("#confirm-run-btn").trigger("click");
+
+            setTimeout(()  => {
+                expect(wrapper.find('#run-report-status').text()).to.contain("Running status: still going");
+                expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
+
+                //expect key to have been set and polling timer to have been cleared
+                expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+
+                done();
+            }, 1800);
+        });
+
+        it('updates status and continues polling when run update request fails', (done) => {
+
+            const wrapper = mount(RunReport, runReportProps);
+
+            //mock endpoint initially called to run the report
+            mockAxios.onPost('/reports/name1/run/')
+                .reply(200, {"data": {"key": "some_key"}});
+
+            //mock endpoint which is polled
+            mockAxios.onGet('/reports/some_key/status/')
+                .reply(500);
+
+            wrapper.setData({
+                showModal: true,
+                pollingTimer: null,
+                runningKey: "",
+                runningStatus: "",
+                newVersionFromRun: "",
+                newVersionDisplayName: ""
+            });
+
+            wrapper.find("#confirm-run-btn").trigger("click");
+
+            setTimeout(()  => {
+                expect(wrapper.find('#run-report-status').text()).to.contain("Running status: Error when fetching report status");
+                expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
+
+                //expect key to have been set and polling timer to have been cleared
+                expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+
+                done();
+            }, 1800);
+        });
+
     });
+
+
 
 });

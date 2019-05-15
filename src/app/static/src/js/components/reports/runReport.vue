@@ -80,8 +80,8 @@
                                                              reportVersionToLongTimestamp(this.newVersionFromRun) :
                                                              "";
 
-                                if (this.runningStatus === "success") {
-                                    //Run has completed
+                                if (this.runningStatus === "success" || this.runningStatus === "error") {
+                                    //Run has completed, successfully or not
                                     this.stopPolling();
                                 }
                             })
@@ -89,7 +89,7 @@
                                 this.runningStatus = "Error when fetching report status";
                             });
                     },
-                    2000);
+                    1500);
             },
             stopPolling: function() {
                 if (this.pollingTimer) {
