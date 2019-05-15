@@ -29,10 +29,6 @@ class LayoutTests : TeamcityTests()
         val testModel = IndexViewModel(mock(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
-        val breadCrumbs = doc.select(".breadcrumb-item")
-        assertThat(breadCrumbs.count()).isEqualTo(1)
-        assertThat(breadCrumbs.first().selectFirst("a").text()).isEqualTo("Main menu")
-        assertThat(breadCrumbs.first().selectFirst("a").attr("href")).isEqualTo("/")
 
         assertHeaderRenderedCorrectly(doc)
 
@@ -52,11 +48,6 @@ class LayoutTests : TeamcityTests()
         val testModel = IndexViewModel(mockContext, listOf())
 
         val doc = template.jsoupDocFor(testModel)
-
-        val breadCrumbs = doc.select(".breadcrumb-item")
-        assertThat(breadCrumbs.count()).isEqualTo(1)
-        assertThat(breadCrumbs.first().selectFirst("a").text()).isEqualTo("Main menu")
-        assertThat(breadCrumbs.first().selectFirst("a").attr("href")).isEqualTo("/")
 
         assertHeaderRenderedCorrectly(doc)
 
