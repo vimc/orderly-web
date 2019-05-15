@@ -18,7 +18,7 @@ class ArtefactTests : IntegrationTest()
     fun `gets dict of artefact names to hashes with report scoped permission`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
+        val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
                 userEmail = fakeReportReader("testname"))
 
 
@@ -31,7 +31,7 @@ class ArtefactTests : IntegrationTest()
     fun `cant get artefacts dict if report not within report reading scope`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/artefacts/",
+        val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
                 userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
@@ -43,8 +43,8 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
@@ -57,7 +57,7 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val response = requestHelper.get(url, ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
@@ -70,7 +70,7 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png"
-        val response = requestHelper.get(url, ContentTypes.binarydata)
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
@@ -83,7 +83,7 @@ class ArtefactTests : IntegrationTest()
         val version = File("${AppConfig()["orderly.root"]}/archive/spaces/").list()[0]
 
         val url = "/reports/spaces/versions/$version/artefacts/a+graph+with+spaces.png"
-        val response = requestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
@@ -96,7 +96,7 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val response = requestHelper.get(url, ContentTypes.binarydata,
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
                 userEmail = fakeReportReader("other"))
 
         assertSuccessful(response)
@@ -108,7 +108,7 @@ class ArtefactTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val response = requestHelper.get(url, ContentTypes.binarydata,
+        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
                 userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "other")
@@ -120,8 +120,8 @@ class ArtefactTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakeartefact = "hf647rhj"
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -133,11 +133,11 @@ class ArtefactTests : IntegrationTest()
     {
         val fakeartefact = "64328fyhdkjs.csv"
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact/"
-        val token = requestHelper.generateOnetimeToken(url)
+        val token = apiRequestHelper.generateOnetimeToken(url)
 
         insertReport("testname", "testversion")
         insertArtefact("testversion", fileNames = listOf(fakeartefact))
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

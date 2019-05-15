@@ -60,13 +60,64 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/")
 
-        var toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
+        val toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
         assertThat(toggleButton.getAttribute("class").contains("off")).isTrue()
 
         toggleButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(
                 By.cssSelector("[data-toggle='toggle'][class='toggle btn btn-published']")))
+    }
+
+    @Test
+    fun `can change tabs`()
+    {
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        insertReport("testreport", "v1")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
+
+        //Confirm that we've started on the Report tab
+        confirmTabActive("report-tab", true)
+        confirmTabActive("downloads-tab", false)
+
+        //Change to Downloads tab
+        val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads-tab']"))
+        downloadsLink.click()
+        Thread.sleep(500)
+        confirmTabActive("report-tab", false)
+        confirmTabActive("downloads-tab", true)
+
+        //And back to Report
+        val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
+        reportLink.click()
+        Thread.sleep(500)
+        confirmTabActive("report-tab", true)
+        confirmTabActive("downloads-tab", false)
+
+    }
+
+    private fun confirmTabActive(tabId: String, active: Boolean)
+    {
+        val tabLink = driver.findElement(By.cssSelector("a[href='#${tabId}']"))
+        var expectedLinkClass = "nav-link"
+        if (active)
+        {
+            expectedLinkClass += " active"
+        }
+        assertThat(tabLink.getAttribute("class")).isEqualTo(expectedLinkClass)
+
+        val tabPane = driver.findElement(By.id(tabId))
+        var expectedPaneClass = "tab-pane"
+        if (active)
+        {
+            expectedPaneClass += " active"
+        }
+        assertThat(tabPane.getAttribute("class")).isEqualTo(expectedPaneClass)
     }
 
 }

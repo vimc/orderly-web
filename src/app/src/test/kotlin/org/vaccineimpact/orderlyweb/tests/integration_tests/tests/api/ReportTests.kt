@@ -13,7 +13,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `can get reports`()
     {
-        val response = requestHelper.get("/reports/")
+        val response = apiRequestHelper.get("/reports/")
 
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -23,7 +23,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = requestHelper.post("/reports/minimal/run/", mapOf(),
+        val response = apiRequestHelper.post("/reports/minimal/run/", mapOf(),
                 userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
@@ -34,7 +34,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = requestHelper.get("/reports/agronomic_seahorse/status/",
+        val response = apiRequestHelper.get("/reports/agronomic_seahorse/status/",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -45,7 +45,7 @@ class ReportTests : IntegrationTest()
     fun `gets 404 if report name doesnt exist`()
     {
         val fakeName = "hjagyugs"
-        val response = requestHelper.get("/reports/$fakeName")
+        val response = apiRequestHelper.get("/reports/$fakeName")
 
         assertJsonContentType(response)
         assertThat(response.statusCode).isEqualTo(404)
@@ -56,7 +56,7 @@ class ReportTests : IntegrationTest()
     fun `can get latest changelog by name`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/latest/changelog/",
+        val response = apiRequestHelper.get("/reports/testname/latest/changelog/",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -67,7 +67,7 @@ class ReportTests : IntegrationTest()
     fun `can get empty latest changelog by name`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/latest/changelog/",
+        val response = apiRequestHelper.get("/reports/testname/latest/changelog/",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -80,7 +80,7 @@ class ReportTests : IntegrationTest()
     fun `can get latest changelog if reader permissions only`()
     {
         //This report has been published so we should be able to see it, though it has no log items
-       val response = requestHelper.get("/reports/other/latest/changelog",
+       val response = apiRequestHelper.get("/reports/other/latest/changelog",
                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
@@ -94,7 +94,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `get latest changelog returns 404 if report does not exist`()
     {
-        val response = requestHelper.get("/reports/testname/latest/changelog",
+        val response = apiRequestHelper.get("/reports/testname/latest/changelog",
                 userEmail = fakeGlobalReportReviewer())
 
         assertThat(response.statusCode).isEqualTo(404)

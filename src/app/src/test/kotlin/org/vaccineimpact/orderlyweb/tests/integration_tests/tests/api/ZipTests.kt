@@ -29,8 +29,8 @@ class ZipTests : IntegrationTest()
         try
         {
             val url = "/reports/testname/versions/testversion/all/"
-            val token = requestHelper.generateOnetimeToken(url)
-            val response = requestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
+            val token = apiRequestHelper.generateOnetimeToken(url)
+            val response = apiRequestHelper.getNoAuth("$url?access_token=$token", contentType = ContentTypes.zip)
 
             assertSuccessful(response)
             assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -49,7 +49,7 @@ class ZipTests : IntegrationTest()
 
         try
         {
-            val response = requestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
+            val response = apiRequestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
                     userEmail = fakeReportReader("testname"))
 
             assertSuccessful(response)
@@ -70,7 +70,7 @@ class ZipTests : IntegrationTest()
 
         try
         {
-            val response = requestHelper.get("/reports/testname/versions/testversion/all/",
+            val response = apiRequestHelper.get("/reports/testname/versions/testversion/all/",
                     contentType = ContentTypes.zip)
 
             assertSuccessful(response)
@@ -86,7 +86,7 @@ class ZipTests : IntegrationTest()
     fun `get zip returns 401 if access token is missing`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
+        val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
@@ -96,7 +96,7 @@ class ZipTests : IntegrationTest()
     fun `get zip returns 403 if report not in scoped report reading permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/all",
+        val response = apiRequestHelper.get("/reports/testname/versions/testversion/all",
                 contentType = ContentTypes.zip,  userEmail = "user@email.com")
 
         Assertions.assertThat(response.statusCode).isEqualTo(403)
@@ -108,7 +108,7 @@ class ZipTests : IntegrationTest()
     @Test
     fun `get zip returns 404 if report version does not exist`()
     {
-        val response = requestHelper.get("/reports/notaname/versions/notareport/all",
+        val response = apiRequestHelper.get("/reports/notaname/versions/notareport/all",
                 contentType = ContentTypes.zip)
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -128,7 +128,7 @@ class ZipTests : IntegrationTest()
                     .fetchInto(String::class.java)
                     .first()
         }
-        val response = requestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
+        val response = apiRequestHelper.get("/reports/use_resource/versions/$version/all/", contentType = ContentTypes.zip,
                 userEmail = fakeGlobalReportReader())
 
         val entries = getZipEntries(response)
@@ -145,7 +145,7 @@ class ZipTests : IntegrationTest()
                     .fetchInto(String::class.java)
                     .first()
         }
-        val response = requestHelper.get("/reports/use_resource/versions/$version/all/",
+        val response = apiRequestHelper.get("/reports/use_resource/versions/$version/all/",
                 contentType = ContentTypes.zip,
                 userEmail = fakeGlobalReportReviewer())
 

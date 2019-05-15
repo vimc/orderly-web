@@ -2,6 +2,8 @@ import Vue from 'vue';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 
+export const bootstrap = require("bootstrap");
+
 let data = {report: null};
 
 // report var should be set externally in the browser

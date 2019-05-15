@@ -7,6 +7,11 @@ import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 
 abstract class SeleniumTest : CustomConfigTests()
@@ -55,6 +60,19 @@ abstract class SeleniumTest : CustomConfigTests()
         //Should have automatically logged out from Montagu
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("login-button")))
 
+    }
+
+    protected fun addUserWithPermissions(permissions: List<ReifiedPermission>, email: String = "test.user@example.com")
+    {
+        val userRepo = OrderlyUserRepository()
+        userRepo.addUser(email, email, email, UserSource.CLI)
+
+        val authRepo = OrderlyAuthorizationRepository()
+
+        authRepo.ensureGroupHasMember(email, email)
+        for(permission in permissions) {
+            authRepo.ensureUserGroupHasPermission(email, permission)
+        }
     }
 
 }

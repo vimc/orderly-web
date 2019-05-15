@@ -64,6 +64,7 @@ dependencies {
     testCompile "com.beust:klaxon:0.31"
     testCompile "net.sourceforge.htmlunit:htmlunit:2.4"
     testCompile "org.xmlmatchers:xml-matchers:0.10"
+    testCompile "org.jsoup:jsoup:1.11.3"
     testImplementation "org.hamcrest:hamcrest:2.1"
     testCompile project(":testHelpers")
 }

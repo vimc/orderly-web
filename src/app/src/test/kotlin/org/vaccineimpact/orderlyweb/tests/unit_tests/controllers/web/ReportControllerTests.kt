@@ -109,6 +109,110 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `artefacts have expected urls`()
+    {
+        val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")),
+                Artefact(ArtefactFormat.DATA, "desc", listOf("another.csv", "suitable.png")))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails.copy(artefacts = artefacts)
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.artefacts.count()).isEqualTo(2)
+
+        assertThat(result.artefacts[0].artefact).isEqualTo(artefacts[0])
+        assertThat(result.artefacts[0].files.count()).isEqualTo(1)
+        assertThat(result.artefacts[0].files[0].name).isEqualTo("unsuitable.csv")
+        assertThat(result.artefacts[0].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/unsuitable.csv")
+
+        assertThat(result.artefacts[1].artefact).isEqualTo(artefacts[1])
+        assertThat(result.artefacts[1].files.count()).isEqualTo(2)
+        assertThat(result.artefacts[1].files[0].name).isEqualTo("another.csv")
+        assertThat(result.artefacts[1].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/another.csv")
+        assertThat(result.artefacts[1].files[1].name).isEqualTo("suitable.png")
+        assertThat(result.artefacts[1].files[1].url).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.png")
+    }
+
+    @Test
+    fun `artefacts have expected inline figures`()
+    {
+        //Expect only the first file in an artefact to be considered for inline figure
+        val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv", "suitable.png")),
+                Artefact(ArtefactFormat.DATA, "desc", listOf("suitable.jpg", "another.csv")))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails.copy(artefacts = artefacts)
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
+        assertThat(result.artefacts[1].inlineArtefactFigure).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.jpg?inline=true")
+    }
+
+    @Test
+    fun `dataLinks have expected urls`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails.copy(dataHashes = mapOf("data1" to "1234/567", "data2" to "987&654"))
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.dataLinks.count()).isEqualTo(2)
+
+        assertThat(result.dataLinks[0].key).isEqualTo("data1")
+        assertThat(result.dataLinks[0].csv.name).isEqualTo("csv")
+        assertThat(result.dataLinks[0].csv.url).isEqualTo("/reports/r1/versions/v1/data/data1/?type=csv")
+        assertThat(result.dataLinks[0].rds.name).isEqualTo("rds")
+        assertThat(result.dataLinks[0].rds.url).isEqualTo("/reports/r1/versions/v1/data/data1/?type=rds")
+
+        assertThat(result.dataLinks[1].key).isEqualTo("data2")
+        assertThat(result.dataLinks[1].csv.name).isEqualTo("csv")
+        assertThat(result.dataLinks[1].csv.url).isEqualTo("/reports/r1/versions/v1/data/data2/?type=csv")
+        assertThat(result.dataLinks[1].rds.name).isEqualTo("rds")
+        assertThat(result.dataLinks[1].rds.url).isEqualTo("/reports/r1/versions/v1/data/data2/?type=rds")
+    }
+
+    @Test
+    fun `resources have expected urls`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                    mockReportDetails.copy(resources = listOf("resource1.Rmd", "subdir/resource2.Rmd"))
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.resources.count()).isEqualTo(2)
+        assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
+        assertThat(result.resources[0].url).isEqualTo("/reports/r1/versions/v1/resources/resource1.Rmd")
+        assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
+        assertThat(result.resources[1].url).isEqualTo("/reports/r1/versions/v1/resources/subdir%2Fresource2.Rmd")
+    }
+
+    @Test
+    fun `zipFile has expected url`() {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
+        }
+
+        val sut = ReportController(actionContext, orderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.zipFile.name).isEqualTo("r1-v1.zip")
+        assertThat(result.zipFile.url).isEqualTo("/reports/r1/versions/v1/all/")
+    }
+
     fun `report reviewers are admins`()
     {
         val orderly = mock<OrderlyClient> {

@@ -18,7 +18,7 @@ class ResourceTests : IntegrationTest()
     fun `gets dict of resource names to hashes with scoped report reading permission`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/resources",
+        val response = apiRequestHelper.get("/reports/testname/versions/testversion/resources",
                 userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
@@ -28,7 +28,7 @@ class ResourceTests : IntegrationTest()
     fun `can't get dict of resource names to hashes if report not in scoped permissions`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/reports/testname/versions/testversion/resources",
+        val response = apiRequestHelper.get("/reports/testname/versions/testversion/resources",
                 userEmail = fakeReportReader("testname"))
 
         assertJsonContentType(response)
@@ -41,8 +41,8 @@ class ResourceTests : IntegrationTest()
 
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -58,7 +58,7 @@ class ResourceTests : IntegrationTest()
         val resourceEncoded = "a+resource+with+spaces.csv"
         val url = "/reports/spaces/versions/$version/resources/$resourceEncoded/"
 
-        val response = requestHelper.get(url,  ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get(url,  ContentTypes.binarydata, userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
@@ -73,8 +73,8 @@ class ResourceTests : IntegrationTest()
 
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
-        val token = requestHelper.generateOnetimeToken(url, fakeReportReader("badereportname"))
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url, fakeReportReader("badereportname"))
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertUnauthorized(response, "use_resource")
     }
@@ -85,8 +85,8 @@ class ResourceTests : IntegrationTest()
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
         val url = "/reports/testname/versions/testversion/resources/$fakeresource/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
@@ -98,7 +98,7 @@ class ResourceTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
         val fakeresource = "hf647rhj"
-        val response = requestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/", ContentTypes.binarydata)
+        val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/", ContentTypes.binarydata)
 
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
@@ -112,8 +112,8 @@ class ResourceTests : IntegrationTest()
         insertFileInput("testversion", "resource.csv", FilePurpose.RESOURCE)
 
         val url = "/reports/testname/versions/testversion/resources/resource.csv/"
-        val token = requestHelper.generateOnetimeToken(url)
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)

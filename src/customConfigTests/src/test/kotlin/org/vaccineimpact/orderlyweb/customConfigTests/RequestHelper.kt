@@ -1,13 +1,9 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.Parser
 import khttp.responses.Response
-import khttp.structures.authorization.BasicAuthorization
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 
 class RequestHelper
 {
