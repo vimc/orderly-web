@@ -31,7 +31,7 @@ class GithubIndirectClientTests : TeamcityTests()
         assertThat(profileCreator is GithubOAuthProfileCreator).isTrue()
 
         val ags = sut.authorizationGenerators
-        Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
+        Assertions.assertThat(ags.count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("http://localhost:8888/login")
