@@ -98,12 +98,17 @@ class ReportPageTests : SeleniumTest()
         val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
         runButton.click()
 
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
+        driver.findElement(By.cssSelector("#confirm-run-btn")).click()
+
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
 
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
         val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
+
+        assertThat(savedStatusText.contains("Running status: success")).isTrue()
 
         //Check state is saved to session - navigate away from page and back again
         driver.get(RequestHelper.webBaseUrl)
