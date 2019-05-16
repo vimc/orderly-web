@@ -70,6 +70,50 @@ class ReportPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can run report`()
+    {
+        startApp("auth.provider=montagu")
+
+        val versionRecord = JooqContext().use {
+
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .fetchAny()
+        }
+
+        val versionId = versionRecord[REPORT_VERSION.ID]
+        val reportName = versionRecord[REPORT_VERSION.REPORT]
+
+        JooqContext().use {
+            insertUserAndGroup(it, "test.user@example.com")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGlobalPermission(it, "test.user@example.com", "reports.run")
+        }
+
+        loginWithMontagu()
+        val versionUrl = RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/"
+        driver.get(versionUrl)
+
+        val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
+        runButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
+
+        val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
+        val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
+
+        //Check state is saved to session - navigate away from page and back again
+        driver.get(RequestHelper.webBaseUrl)
+        driver.get(versionUrl)
+
+        assertThat(driver.findElement(By.cssSelector("#run-report-status")).text).isEqualTo(savedStatusText)
+        assertThat(driver.findElement(By.cssSelector("#run-report-new-version")).text).isEqualTo(savedNewVersionText)
+    }
+
+    @Test
     fun `can change tabs`()
     {
         startApp("auth.provider=montagu")
