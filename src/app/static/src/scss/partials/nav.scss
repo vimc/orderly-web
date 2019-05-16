@@ -1,11 +1,11 @@
 @import "variables";
 
-.breadcrumb-navbar {
+.breadcrumbs {
   background-color: $breadcrumb-bg-color;
   padding: 2px 5px 5px 16px;
   color: $breadcrumb-color;
 
-  .breadcrumb-nav-item {
+  .breadcrumb-item {
     font-weight: bold;
     font-size: 13px;
     display: inline-block;
@@ -16,12 +16,9 @@
     }
   }
 
-  .breadcrumb-nav-item :before {
+  .breadcrumb-item :before {
     content: " » ";
   }
 
-  a .breadcrumb-nav-item  {
-    color: black;
-  }
 }
 
