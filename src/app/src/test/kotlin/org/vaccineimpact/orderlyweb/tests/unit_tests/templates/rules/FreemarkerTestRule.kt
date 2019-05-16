@@ -13,7 +13,6 @@ import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
 import org.vaccineimpact.orderlyweb.app_start.buildFreemarkerConfig
-import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.ReportPageTests
 import org.xmlmatchers.transform.XmlConverters.the
 import java.io.File
 import java.io.StringWriter
@@ -103,7 +102,7 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
 
     fun jsoupDocFor(dataModel: Any): Document
     {
-        val stringResponse = ReportPageTests.template.stringResponseFor(dataModel)
+        val stringResponse = stringResponseFor(dataModel)
         return Jsoup.parse(stringResponse)
     }
 }
