@@ -553,5 +553,4 @@ describe('report page', () => {
 
     });
 
-
 });

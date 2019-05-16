@@ -9,15 +9,15 @@ export const session = function(){
    const RUNNING_REPORT_STATUS_KEYS = [RUNNING_STATUS, RUNNING_KEY, NEW_VERSION_FROM_RUN, NEW_VERSION_DISPLAY_NAME];
 
    function getItem(key) {
-       return sessionStorage.getItem(key);
+       return window.sessionStorage.getItem(key);
    }
 
    function setItem(key, value) {
-       sessionStorage.setItem(key, value);
+       window.sessionStorage.setItem(key, value);
    }
 
    function removeItem(key) {
-       sessionStorage.removeItem(key);
+       window.sessionStorage.removeItem(key);
    }
 
     function buildStorageKey(reportName, valueKey) {
