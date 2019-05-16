@@ -320,6 +320,7 @@ class ReportPageTests : TeamcityTests()
             on { isAdmin } doReturn true
             on { isRunner } doReturn true
             on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
@@ -338,6 +339,7 @@ class ReportPageTests : TeamcityTests()
             on { isAdmin } doReturn true
             on { isRunner } doReturn false
             on { focalArtefactUrl } doReturn "/testFocalArtefactUrl"
+            on { zipFile } doReturn ReportController.DownloadableFileViewModel("zipFileName", "http://zipFileUrl")
         }
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
