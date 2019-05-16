@@ -49,7 +49,7 @@ class khttpMontaguAPIClient : MontaguAPIClient
         return try
         {
             val result = serializer.fromJson<MontaguAPIClient.Result>(jsonAsString)
-            if (result.data != null)
+            if (result.data.toString().isNotEmpty())
             {
                 result.copy(data = serializer.fromJson<MontaguAPIClient.UserDetails>(serializer.toJson(result.data)))
             }

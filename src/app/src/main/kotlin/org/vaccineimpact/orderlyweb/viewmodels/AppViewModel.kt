@@ -5,10 +5,17 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
-open class AppViewModel(open val loggedIn: Boolean, open val user: String?)
+class Breadcrumb(val name: String, val url: String?)
+
+open class AppViewModel(open val loggedIn: Boolean,
+                        open val user: String?,
+                        open val breadcrumbs: List<Breadcrumb>)
 {
-    constructor(userProfile: CommonProfile?) : this(userProfile != null, userProfile?.id)
-    constructor(context: ActionContext) : this(context.userProfile)
+    constructor(userProfile: CommonProfile?, breadcrumbs: List<Breadcrumb>) :
+            this(userProfile != null, userProfile?.id, breadcrumbs)
+
+    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb) :
+            this(context.userProfile, breadcrumbs.toList())
 
     open val appName = AppConfig()["app.name"]
     open val appEmail = AppConfig()["app.email"]

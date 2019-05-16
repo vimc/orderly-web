@@ -1,11 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.security.clients
 
 import org.assertj.core.api.Assertions
-import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Test
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
-import org.pac4j.core.client.BaseClient
-import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
@@ -31,7 +29,8 @@ class GithubIndirectClientTests : TeamcityTests()
         assertThat(profileCreator is GithubOAuthProfileCreator).isTrue()
 
         val ags = sut.authorizationGenerators
-        Assertions.assertThat(ags.count()).isEqualTo(1)
+        @Suppress("UNCHECKED_CAST")
+        Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
         assertThat(ags[0] is OrderlyAuthorizationGenerator).isTrue()
 
         assertThat(sut.callbackUrl).isEqualTo("http://localhost:8888/login")
