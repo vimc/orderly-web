@@ -108,7 +108,7 @@ class ReportPageTests : SeleniumTest()
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
         val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
 
-        assertThat(savedStatusText.contains("Running status: success")).isTrue()
+        assertThat(savedStatusText).isEqualTo("Running status: success")
 
         //Check state is saved to session - navigate away from page and back again
         driver.get(RequestHelper.webBaseUrl)
