@@ -13,11 +13,11 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
                                       open val resources: List<DownloadableFileViewModel>,
                                       open val zipFile: DownloadableFileViewModel,
                                       context: ActionContext) :
-        AppViewModel(context, IndexViewModel.breadCrumb, breadCrumb(report))
+        AppViewModel(context, IndexViewModel.breadcrumb, breadcrumb(report))
 {
     companion object
     {
-        fun breadCrumb(report: ReportVersionDetails) = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
+        fun breadcrumb(report: ReportVersionDetails) = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
     }
 }
 

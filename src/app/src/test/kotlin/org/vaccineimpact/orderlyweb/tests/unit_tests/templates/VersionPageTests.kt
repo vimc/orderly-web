@@ -118,13 +118,13 @@ class VersionPageTests : TeamcityTests()
     fun `renders breadcrumbs correctly`()
     {
         val doc = template.jsoupDocFor(testModel)
-        val breadCrumbs = doc.select(".breadcrumb-item")
+        val breadcrumbs = doc.select(".crumb-item")
 
-        Assertions.assertThat(breadCrumbs.count()).isEqualTo(2)
-        Assertions.assertThat(breadCrumbs.first().child(0).text()).isEqualTo("Main menu")
-        Assertions.assertThat(breadCrumbs.first().child(0).attr("href")).isEqualTo("/")
-        Assertions.assertThat(breadCrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
-        Assertions.assertThat(breadCrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
+        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
+        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("Main menu")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("/")
+        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
+        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
     }
 
     @Test

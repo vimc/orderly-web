@@ -5,7 +5,7 @@
   padding: 2px 5px 5px 16px;
   color: $breadcrumb-color;
 
-  .breadcrumb-item {
+  .crumb-item {
     font-weight: bold;
     font-size: 13px;
     display: inline-block;
@@ -14,14 +14,15 @@
     span {
       color: $body-color;
     }
-    
+
     a {
       color: $breadcrumb-color !important;
     }
   }
 
-  .breadcrumb-item :before {
+  .crumb-item ::before {
     content: " » ";
   }
+
 }
 

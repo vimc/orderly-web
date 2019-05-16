@@ -28,7 +28,7 @@ class _500Tests: TeamcityTests()
         assertThat(doc.selectFirst("h1").text()).isEqualTo("Something went wrong")
         assertThat(doc.selectFirst("li").text()).isEqualTo("TEST")
 
-        val breadcrumbs = doc.select(".breadcrumb-item")
+        val breadcrumbs = doc.select(".crumb-item")
         assertThat(breadcrumbs.count()).isEqualTo(1)
         assertThat(breadcrumbs.first().text()).isEqualTo("Something went wrong")
         assertThat(breadcrumbs.first().child(0).`is`("span"))
