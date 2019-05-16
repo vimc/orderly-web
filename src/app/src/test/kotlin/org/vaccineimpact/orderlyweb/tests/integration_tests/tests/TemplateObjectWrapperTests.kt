@@ -12,13 +12,13 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
-import org.vaccineimpact.orderlyweb.controllers.web.HomeController.IndexViewModel
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 
 class TemplateObjectWrapperTests : TeamcityTests()

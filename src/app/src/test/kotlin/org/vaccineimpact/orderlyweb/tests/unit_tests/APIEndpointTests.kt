@@ -166,7 +166,6 @@ class APIEndpointTests: TeamcityTests()
     fun `does not add security filter if not secure`()
     {
         val set = setOf("help")
-        val aclass = set::class.java
 
         val mockSpark = mock<SparkWrapper>()
         val sut = APIEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
