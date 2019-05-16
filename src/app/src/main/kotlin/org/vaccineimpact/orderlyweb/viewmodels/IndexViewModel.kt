@@ -8,6 +8,6 @@ open class IndexViewModel(context: ActionContext,
 {
     companion object
     {
-        val breadCrumb = BreadCrumb("Main menu", "/")
+        val breadCrumb = Breadcrumb("Main menu", "/")
     }
 }

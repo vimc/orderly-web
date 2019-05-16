@@ -17,7 +17,7 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
 {
     companion object
     {
-        fun breadCrumb(report: ReportVersionDetails) = BreadCrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
+        fun breadCrumb(report: ReportVersionDetails) = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
     }
 }
 
