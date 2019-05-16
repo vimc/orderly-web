@@ -105,10 +105,12 @@ class ReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
 
+        Thread.sleep(200) //race condition on updating both text values
+
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
         val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
 
-        assertThat(savedStatusText).isEqualTo("Running status: success")
+        assertThat(savedStatusText).contains("Running status: success")
 
         //Check state is saved to session - navigate away from page and back again
         driver.get(RequestHelper.webBaseUrl)
@@ -116,6 +118,7 @@ class ReportPageTests : SeleniumTest()
 
         assertThat(driver.findElement(By.cssSelector("#run-report-status")).text).isEqualTo(savedStatusText)
         assertThat(driver.findElement(By.cssSelector("#run-report-new-version")).text).isEqualTo(savedNewVersionText)
+
     }
 
     @Test
