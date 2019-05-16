@@ -11,6 +11,10 @@
     display: inline-block;
     margin: 0 5px 0 0;
 
+    span {
+      color: $body-color;
+    }
+    
     a {
       color: $breadcrumb-color !important;
     }
@@ -19,6 +23,5 @@
   .breadcrumb-item :before {
     content: " » ";
   }
-
 }
 
