@@ -26,12 +26,13 @@ class RouterTests : TeamcityTests()
 
     object TestRouteConfig : RouteConfig
     {
-        override val endpoints = listOf(APIEndpoint("/first/url", Controller::class, "action"),
-                APIEndpoint("/second/url/", Controller::class, "action"))
+        override val endpoints = listOf(
+                APIEndpoint("/first/url", Controller::class, "action", transform = true),
+                APIEndpoint("/second/url/", Controller::class, "action", transform = false)
+        )
     }
 
     val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
-
 
     @Test
     fun `maps endpoints with and without trailing slashes`()
@@ -54,6 +55,17 @@ class RouterTests : TeamcityTests()
             verify(mockSparkWrapper).map(eq(it), any(), any(), any(), anyOrNull())
             verify(mockSparkWrapper).map(eq(it.dropLast(1)), any(), any(), any(), anyOrNull())
         }
+    }
+
+    @Test
+    fun `only adds response transformer if endpoint should be transformed`()
+    {
+        sut.mapEndpoints(TestRouteConfig, "urlBase")
+        val transformedUrl = "urlBase/first/url/"
+        val untransformedUrl = "urlBase/second/url/"
+
+        verify(mockSparkWrapper).map(eq(transformedUrl), any(), any(), any(), notNull())
+        verify(mockSparkWrapper).map(eq(untransformedUrl), any(), any(), any(), isNull())
     }
 
     @Test
