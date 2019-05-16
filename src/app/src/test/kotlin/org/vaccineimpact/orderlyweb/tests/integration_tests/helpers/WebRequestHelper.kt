@@ -24,29 +24,32 @@ class WebRequestHelper : RequestHelper()
         return get(baseUrl + url, headers)
     }
 
-    fun loginWithMontaguAndMakeRequest(url: String, contentType: String = "text/html",
+    fun loginWithMontaguAndMakeRequest(url: String,
+                                       withPermissions: Set<ReifiedPermission>,
+                                       contentType: String = "text/html",
                                        method: HttpMethod = HttpMethod.get): Response
     {
-        val sessionCookie = webLoginWithMontagu()
+        val sessionCookie = webLoginWithMontagu(withPermissions)
         return requestWithSessionCookie(url, sessionCookie, contentType, method)
     }
 
-    private fun getWithMontaguCookie(
+    fun getWithMontaguCookie(
             url: String,
             montaguToken: String,
-            contentType: String = "text/html"
+            contentType: String = "text/html",
+            allowRedirects: Boolean = false
     ): Response
     {
         val cookieName = MontaguIndirectClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$montaguToken")
-        return khttp.get(baseUrl + url, headers, allowRedirects = false)
+        return khttp.get(baseUrl + url, headers, allowRedirects = allowRedirects)
     }
 
     fun webLoginWithMontagu(withPermissions: Set<ReifiedPermission> = setOf()): String
     {
         userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
-        withPermissions.forEach{
+        withPermissions.forEach {
             authRepo.ensureUserGroupHasPermission(MontaguTestUser, it)
         }
         val montaguToken = loginWithMontagu()["access_token"] as String

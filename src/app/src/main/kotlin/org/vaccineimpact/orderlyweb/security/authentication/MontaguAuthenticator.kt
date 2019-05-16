@@ -38,17 +38,15 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
     private fun validate(token: String): String
     {
-        val user = montaguClient.getUserDetails(token)
-
-        try
+        val user = try
         {
-            userRepository.addUser(user.email, user.username, user.displayName ?: "", UserSource.Montagu)
+            montaguClient.getUserDetails(token)
         }
         catch (e: MontaguAPIException)
         {
             throw CredentialsException("Montagu authentication failed with status ${e.status} and message ${e.message}")
         }
-
+        userRepository.addUser(user.email, user.username, user.displayName ?: "", UserSource.Montagu)
         return user.email
     }
 

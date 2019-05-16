@@ -23,6 +23,7 @@ import org.pac4j.core.config.Config
 import org.pac4j.sparkjava.LogoutRoute
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
+import org.vaccineimpact.orderlyweb.viewmodels.PageNotFoundViewModel
 
 
 class Router(freeMarkerConfig: Configuration, val authenticationConfig: AuthenticationConfig = AuthenticationConfig())
@@ -99,7 +100,7 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
                 val context = DirectActionContext(req, res)
                 res.type("text/html")
                 freeMarkerEngine.render(
-                        ModelAndView(AppViewModel(context), "404.ftl")
+                        ModelAndView(PageNotFoundViewModel(context), "404.ftl")
                 )
             }
         }

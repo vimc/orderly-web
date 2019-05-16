@@ -13,7 +13,10 @@ import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
-import org.vaccineimpact.orderlyweb.viewmodels.*
+import org.vaccineimpact.orderlyweb.viewmodels.ArtefactViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.InputDataViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.xmlmatchers.XmlMatchers.hasXPath
 import java.sql.Timestamp
 
@@ -82,7 +85,7 @@ class VersionPageTests : TeamcityTests()
             override val resources: List<DownloadableFileViewModel>,
             override val zipFile: DownloadableFileViewModel,
             val context: ActionContext) :
-            ReportVersionViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile, context)
+            ReportVersionPageViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile, context)
 
     private val testModel = TestReportViewModel(
             "{}",
@@ -109,6 +112,19 @@ class VersionPageTests : TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report-tab']"))
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads-tab']"))
+    }
+
+    @Test
+    fun `renders breadcrumbs correctly`()
+    {
+        val doc = template.jsoupDocFor(testModel)
+        val breadcrumbs = doc.select(".crumb-item")
+
+        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
+        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("Main menu")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("/")
+        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
+        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
     }
 
     @Test

@@ -1,0 +1,28 @@
+@import "variables";
+
+.breadcrumbs {
+  background-color: $breadcrumb-bg-color;
+  padding: 2px 5px 5px 16px;
+  color: $breadcrumb-color;
+
+  .crumb-item {
+    font-weight: bold;
+    font-size: 13px;
+    display: inline-block;
+    margin: 0 5px 0 0;
+
+    span {
+      color: $body-color;
+    }
+
+    a {
+      color: $breadcrumb-color !important;
+    }
+  }
+
+  .crumb-item ::before {
+    content: " » ";
+  }
+
+}
+
