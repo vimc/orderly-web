@@ -16,7 +16,7 @@ class OnetimeTokenTests : IntegrationTest()
     fun `gets one time token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper.get("/onetime_token/?url=test")
+        val response = apiRequestHelper.get("/onetime_token/?url=test")
 
         assertJsonContentType(response)
         assertSuccessful(response)
@@ -29,10 +29,10 @@ class OnetimeTokenTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 
-        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
+        val tokenReponse = apiRequestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
 
-        val response = requestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")
@@ -46,10 +46,10 @@ class OnetimeTokenTests : IntegrationTest()
         val publishedVersion = Orderly().getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/?query=whatever"
 
-        val tokenReponse = requestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
+        val tokenReponse = apiRequestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
         val token = JsonLoader.fromString(tokenReponse.text)["data"].textValue()
 
-        val response = requestHelper.getNoAuth("$url&access_token=$token", ContentTypes.binarydata)
+        val response = apiRequestHelper.getNoAuth("$url&access_token=$token", ContentTypes.binarydata)
 
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("image/png")

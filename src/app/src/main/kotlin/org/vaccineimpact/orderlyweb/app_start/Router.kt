@@ -25,7 +25,7 @@ import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 
 
-class Router(freeMarkerConfig: Configuration)
+class Router(freeMarkerConfig: Configuration, val authenticationConfig: AuthenticationConfig = AuthenticationConfig())
 {
     private val logger = LoggerFactory.getLogger(Router::class.java)
     private val freeMarkerEngine = FreeMarkerEngine(freeMarkerConfig)
@@ -41,7 +41,7 @@ class Router(freeMarkerConfig: Configuration)
         ErrorHandler.setup(freeMarkerEngine)
         mapNotFound()
 
-        val client = AuthenticationConfig.getAuthenticationIndirectClient()
+        val client = authenticationConfig.getAuthenticationIndirectClient()
         val config = WebSecurityConfigFactory(client, setOf())
                 .build()
 
@@ -75,7 +75,7 @@ class Router(freeMarkerConfig: Configuration)
         logoutCallback.destroySession = true
         logoutCallback.defaultUrl = "/"
 
-        if (AuthenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu)
+        if (authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu)
         {
             //we should log out of Montagu when we log out of OrderlyWeb
             logoutCallback.centralLogout = true

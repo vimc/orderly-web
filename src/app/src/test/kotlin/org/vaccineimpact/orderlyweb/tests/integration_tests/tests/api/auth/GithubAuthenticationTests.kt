@@ -6,7 +6,7 @@ import khttp.post
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.GithubTokenHeader
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class GithubAuthenticationTests : IntegrationTest()
@@ -108,5 +108,5 @@ class GithubAuthenticationTests : IntegrationTest()
         }
     }
 
-    val url = "${RequestHelper().apiBaseUrl}/login/"
+    val url = "${APIRequestHelper().baseUrl}/login/"
 }

@@ -5,16 +5,24 @@ import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.validators.JSONValidator
+import spark.route.HttpMethod
 import java.io.File
 
 abstract class IntegrationTest : TeamcityTests()
 {
-    val requestHelper = RequestHelper()
+    val apiRequestHelper = APIRequestHelper()
+    val webRequestHelper = WebRequestHelper()
+
     val JSONValidator = JSONValidator()
 
     companion object
@@ -86,5 +94,16 @@ abstract class IntegrationTest : TeamcityTests()
     protected fun assertHtmlContentType(response: Response)
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
+    }
+
+    protected fun assertWebUrlSecured(url: String, requiredPermissions: Set<ReifiedPermission>,
+                                 contentType: String = ContentTypes.html,
+                                 method: HttpMethod = HttpMethod.get)
+    {
+        val checker = WebPermissionChecker(url, requiredPermissions, contentType, method)
+        for (permission in requiredPermissions)
+        {
+            checker.checkPermissionIsRequired(permission)
+        }
     }
 }

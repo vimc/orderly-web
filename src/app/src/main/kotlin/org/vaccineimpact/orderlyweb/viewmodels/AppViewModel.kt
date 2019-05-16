@@ -12,5 +12,5 @@ open class AppViewModel(open val loggedIn: Boolean, open val user: String?)
 
     open val appName = AppConfig()["app.name"]
     open val appEmail = AppConfig()["app.email"]
-    open val authProvider = AuthenticationConfig.getConfiguredProvider().toString().toLowerCase()
+    open val authProvider = AuthenticationConfig().getConfiguredProvider().toString().toLowerCase()
 }

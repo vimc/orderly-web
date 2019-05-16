@@ -6,7 +6,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
 import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 
 class MontaguAPIClientTests : TeamcityTests()
 {
@@ -39,6 +39,6 @@ class MontaguAPIClientTests : TeamcityTests()
         Assertions.assertThat(result.email).isEqualTo("test.user@example.com")
     }
 
-    private fun login() = RequestHelper().loginWithMontagu()
+    private fun login() = APIRequestHelper().loginWithMontagu()
 
 }

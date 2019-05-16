@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 
 import spark.route.HttpMethod
@@ -20,7 +21,8 @@ data class WebEndpoint(
         override val contentType: String = ContentTypes.html,
         val externalAuth: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
-        val configFactory: ConfigFactory? = null
+        val configFactory: ConfigFactory? = null,
+        val authenticationConfig: AuthenticationConfig = AuthenticationConfig()
 ) : EndpointDefinition
 {
     override val transform = false
@@ -31,22 +33,24 @@ data class WebEndpoint(
     {
         if (secure)
         {
-           addSecurityFilter(url)
+            addSecurityFilter(url)
         }
     }
 
     private fun addSecurityFilter(url: String)
     {
-        //The endpoints with externalAuth are those which will redirect the user to a specific external Auth provider
-        //after clicking a link on our login page. All others redirect to the login page
+        //If Montagu Auth, OrderlyWeb auth should be fully synchronised with the external login provider, and login
+        //page should not be seen
+        val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
+
         val client =
-            if (externalAuth)
+            if (externalAuth || synchronisedAuth)
             {
-                AuthenticationConfig.getAuthenticationIndirectClient()
+                authenticationConfig.getAuthenticationIndirectClient()
             }
             else
             {
-                 OrderlyWebIndirectClient()
+                OrderlyWebIndirectClient()
             }
 
         val factory = configFactory ?: WebSecurityConfigFactory(

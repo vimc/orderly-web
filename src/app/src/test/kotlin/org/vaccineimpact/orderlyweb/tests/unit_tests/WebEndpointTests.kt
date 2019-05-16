@@ -18,6 +18,8 @@ import org.vaccineimpact.orderlyweb.post
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class WebEndpointTests: TeamcityTests()
@@ -34,14 +36,14 @@ class WebEndpointTests: TeamcityTests()
             on { authorizers } doReturn mapOf("dummyAuthorizer" to mockAuthorizer)
         }
         val mockConfigFactory = mock<APISecurityConfigFactory> {
-           on { build() } doReturn(mockConfig)
+            on { build() } doReturn(mockConfig)
         }
 
         val requiredPermission= PermissionRequirement.parse("*/testperm")
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
-                                secure = true, requiredPermissions = listOf(requiredPermission),
-                                externalAuth = true,
-                                spark = mockSpark, configFactory = mockConfigFactory)
+                secure = true, requiredPermissions = listOf(requiredPermission),
+                externalAuth = true,
+                spark = mockSpark, configFactory = mockConfigFactory)
 
         sut.additionalSetup("/test")
 
@@ -73,7 +75,7 @@ class WebEndpointTests: TeamcityTests()
     }
 
     @Test
-    fun `adds security filter if secure, not external auth`()
+    fun `adds security filter if secure, not external auth, with Montagu auth`()
     {
 
         val mockSpark = mock<SparkWrapper>()
@@ -88,6 +90,50 @@ class WebEndpointTests: TeamcityTests()
         val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
                 secure = true, requiredPermissions = listOf(requiredPermission),
                 spark = mockSpark, configFactory = mockConfigFactory)
+
+        sut.additionalSetup("/test")
+
+        //Verify all expected methods were called
+        verify(mockConfigFactory).build()
+
+        //verify the security filter has been created as expected
+        val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
+        verify(mockSpark).before(eq("/test"), capture(securityFilterArg))
+        val securityFilter = securityFilterArg.value
+
+        val securityFilterClass = SecurityFilter::class.java
+        var field = securityFilterClass.getDeclaredField("config")
+        field.isAccessible = true
+        val config = field.get(securityFilter)
+        assertThat(config).isEqualTo(mockConfig)
+
+        field = securityFilterClass.getDeclaredField("clients")
+        field.isAccessible = true
+        val clients = field.get(securityFilter)
+        assertThat(clients).isEqualTo("MontaguIndirectClient")
+
+    }
+
+    @Test
+    fun `adds security filter if secure, not external auth, with Github auth`()
+    {
+
+        val mockSpark = mock<SparkWrapper>()
+        val mockConfig = mock<Config> {
+            on { authorizers } doReturn mapOf()
+        }
+        val mockConfigFactory = mock<APISecurityConfigFactory> {
+            on { build() } doReturn(mockConfig)
+        }
+
+        val mockAuthConfig = mock<AuthenticationConfig>{
+            on { getConfiguredProvider() } doReturn AuthenticationProvider.Github
+        }
+
+        val requiredPermission=  PermissionRequirement.parse("*/testperm")
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
+                secure = true, requiredPermissions = listOf(requiredPermission),
+                spark = mockSpark, configFactory = mockConfigFactory, authenticationConfig = mockAuthConfig)
 
         sut.additionalSetup("/test")
 

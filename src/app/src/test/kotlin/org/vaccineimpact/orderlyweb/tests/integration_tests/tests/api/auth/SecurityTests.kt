@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.RequestHelper
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -19,7 +19,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 401 if token missing`()
     {
 
-        val response = RequestHelper().getNoAuth("/reports/")
+        val response = APIRequestHelper().getNoAuth("/reports/")
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -31,7 +31,7 @@ class SecurityTests : IntegrationTest()
     fun `returns 401 if token not valid`()
     {
 
-        val response = RequestHelper().getWrongAuth("/reports/")
+        val response = APIRequestHelper().getWrongAuth("/reports/")
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
@@ -43,7 +43,7 @@ class SecurityTests : IntegrationTest()
     @Test
     fun `returns 403 if missing permissions`()
     {
-        val response = RequestHelper().getWrongPermissions("/reports/")
+        val response = APIRequestHelper().getWrongPermissions("/reports/")
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(403)
@@ -58,9 +58,9 @@ class SecurityTests : IntegrationTest()
     fun `returns 403 if missing permissions with access token`()
     {
         val url = "/reports/testname/versions/testversion/artefacts/someartefact/"
-        val token = requestHelper.generateOnetimeToken(url, fakeReportReader("wrongreport"))
+        val token = apiRequestHelper.generateOnetimeToken(url, fakeReportReader("wrongreport"))
 
-        val response = requestHelper
+        val response = apiRequestHelper
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/someartefact/?access_token=$token",
                         ContentTypes.binarydata)
 
@@ -76,9 +76,9 @@ class SecurityTests : IntegrationTest()
     {
         insertReport("testname", "testversion")
 
-        val token = requestHelper
+        val token = apiRequestHelper
                 .generateOnetimeToken("/reports/testname/versions/testversion/artefacts/someartefact/")
-        val response = requestHelper
+        val response = apiRequestHelper
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/someotherartefact/?access_token=$token",
                         ContentTypes.binarydata)
 
@@ -94,7 +94,7 @@ class SecurityTests : IntegrationTest()
     fun `return 401 if invalid access token`()
     {
         insertReport("testname", "testversion")
-        val response = requestHelper
+        val response = apiRequestHelper
                 .getNoAuth("/reports/testname/versions/testversion/artefacts/fakeartefact/?access_token=42678iwek",
                         ContentTypes.binarydata)
 
@@ -111,7 +111,7 @@ class SecurityTests : IntegrationTest()
         val url = "/reports/testname/versions/testversion/artefacts/6943yhks/"
         val token = WebTokenHelper.instance.issuer
                 .generateOnetimeActionToken(fakeGlobalReportReviewer(), url)
-        val response = requestHelper
+        val response = apiRequestHelper
                 .getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)
@@ -126,7 +126,7 @@ class SecurityTests : IntegrationTest()
         val fakeartefact = "hf647rhj"
 
         val url = "/reports/testname/versions/testversion/artefacts/$fakeartefact"
-        val response = requestHelper.getNoAuth("$url/", ContentTypes.binarydata)
+        val response = apiRequestHelper.getNoAuth("$url/", ContentTypes.binarydata)
 
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)

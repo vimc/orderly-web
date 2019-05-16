@@ -34,6 +34,7 @@
     "mocha-teamcity-reporter": "^3.0.0",
     "mocha-webpack": "^1.1.0",
     "sinon": "^7.3.2",
+    "popper.js": "^1.14.7",
     "through": "^2.3.8",
     "vue": "^2.6.8",
     "vue-loader": "^15.7.0",
