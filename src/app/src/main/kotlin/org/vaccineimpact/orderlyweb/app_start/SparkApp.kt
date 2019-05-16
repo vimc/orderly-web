@@ -5,7 +5,9 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import spark.Spark.staticFiles
+import spark.template.freemarker.FreeMarkerEngine
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket

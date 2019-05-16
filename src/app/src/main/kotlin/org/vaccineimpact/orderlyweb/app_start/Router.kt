@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import freemarker.template.Configuration
+import org.pac4j.sparkjava.CallbackRoute
+import org.pac4j.sparkjava.LogoutRoute
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -8,46 +10,44 @@ import org.vaccineimpact.orderlyweb.controllers.web.Template
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
-import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
+import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import spark.ModelAndView
 import spark.Route
 import spark.Spark
 import spark.Spark.notFound
+import spark.TemplateEngine
 import spark.route.HttpMethod
 import spark.template.freemarker.FreeMarkerEngine
 import java.lang.reflect.InvocationTargetException
-import org.pac4j.sparkjava.CallbackRoute
-
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.pac4j.core.config.Config
-import org.pac4j.sparkjava.LogoutRoute
-import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
-import org.vaccineimpact.orderlyweb.viewmodels.PageNotFoundViewModel
 
 
-class Router(freeMarkerConfig: Configuration, val authenticationConfig: AuthenticationConfig = AuthenticationConfig())
+class Router(private val templateEngine: TemplateEngine,
+             private val actionResolver: ActionResolver,
+             private val authenticationController: AuthenticationRouteBuilder)
 {
+    constructor(templateEngine: TemplateEngine) :
+            this(templateEngine, ActionResolver(templateEngine), AuthenticationRouteBuilder(AuthenticationConfig()))
+
+    constructor(freeMarkerConfig: Configuration) :
+            this(FreeMarkerEngine(freeMarkerConfig))
+
     private val logger = LoggerFactory.getLogger(Router::class.java)
-    private val freeMarkerEngine = FreeMarkerEngine(freeMarkerConfig)
 
     companion object
     {
         val urls: MutableList<String> = mutableListOf()
-        val apiUrlBase = "/api/v1"
+        const val apiUrlBase = "/api/v1"
     }
 
     init
     {
-        ErrorHandler.setup(freeMarkerEngine)
+        ErrorHandler.setup(templateEngine)
         mapNotFound()
 
-        val client = authenticationConfig.getAuthenticationIndirectClient()
-        val config = WebSecurityConfigFactory(client, setOf())
-                .build()
-
-        mapLoginCallback(config)
-        mapLogoutCallback(config)
+        mapLoginCallback()
+        mapLogoutCallback()
     }
 
     private fun transform(x: Any) = when (x)
@@ -61,27 +61,18 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
         urls.addAll(routeConfig.endpoints.map { mapEndpoint(it, urlBase) })
     }
 
-    private fun mapLoginCallback(config: Config)
+    private fun mapLoginCallback()
     {
-        val loginCallback = CallbackRoute(config)
+        val loginCallback = authenticationController.loginRoute()
         val url = "login"
         Spark.get(url, loginCallback)
         Spark.get("$url/", loginCallback)
 
     }
 
-    private fun mapLogoutCallback(config: Config)
+    private fun mapLogoutCallback()
     {
-        val logoutCallback = LogoutRoute(config)
-        logoutCallback.destroySession = true
-        logoutCallback.defaultUrl = "/"
-
-        if (authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu)
-        {
-            //we should log out of Montagu when we log out of OrderlyWeb
-            logoutCallback.centralLogout = true
-        }
-
+        val logoutCallback = authenticationController.logoutRoute()
         val url = "logout"
         Spark.get(url, logoutCallback)
         Spark.get("$url/", logoutCallback)
@@ -89,20 +80,8 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
 
     private fun mapNotFound()
     {
-        notFound { req, res ->
-            if (req.pathInfo().startsWith(apiUrlBase))
-            {
-                res.type("${ContentTypes.json}; charset=utf-8")
-                Serializer.instance.toJson(RouteNotFound().asResult())
-            }
-            else
-            {
-                val context = DirectActionContext(req, res)
-                res.type("text/html")
-                freeMarkerEngine.render(
-                        ModelAndView(PageNotFoundViewModel(context), "404.ftl")
-                )
-            }
+        notFound { _, _ ->
+            throw RouteNotFound()
         }
     }
 
@@ -111,7 +90,14 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
         val fullUrl = urlBase + endpoint.urlFragment
         logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
         mapUrl(fullUrl, endpoint)
-        mapUrl(fullUrl.dropLast(1), endpoint)
+        if (fullUrl.last() == '/')
+        {
+            mapUrl(fullUrl.dropLast(1), endpoint)
+        }
+        else
+        {
+            mapUrl("$fullUrl/", endpoint)
+        }
         return fullUrl
     }
 
@@ -146,10 +132,38 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
 
     private fun getWrappedRoute(endpoint: EndpointDefinition): Route
     {
-        return Route { req, res -> invokeControllerAction(endpoint, DirectActionContext(req, res)) }
+        return Route { req, res -> actionResolver.invokeControllerAction(endpoint, DirectActionContext(req, res)) }
+    }
+}
+
+class AuthenticationRouteBuilder(private val authenticationConfig: AuthenticationConfig)
+{
+    private val client = authenticationConfig.getAuthenticationIndirectClient()
+    private val securityConfig = WebSecurityConfigFactory(client, setOf())
+            .build()
+
+    fun logoutRoute(): LogoutRoute
+    {
+        val synchroniseLogout = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
+        return LogoutRoute(securityConfig)
+                .apply {
+                    destroySession = true
+                    defaultUrl = "/"
+                    centralLogout = synchroniseLogout
+                }
     }
 
-    private fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any?
+    fun loginRoute(): CallbackRoute
+    {
+        return CallbackRoute(securityConfig)
+    }
+}
+
+class ActionResolver(private val templateEngine: TemplateEngine)
+{
+    private val logger = LoggerFactory.getLogger(ActionResolver::class.java)
+
+    fun invokeControllerAction(endpoint: EndpointDefinition, context: ActionContext): Any?
     {
         val controllerType = endpoint.controller.java
         val actionName = endpoint.actionName
@@ -165,7 +179,7 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
             val model = action.invoke(controller)
             if (templateName != null)
             {
-                freeMarkerEngine.render(
+                templateEngine.render(
                         ModelAndView(model, templateName)
                 )
             }
@@ -196,5 +210,4 @@ class Router(freeMarkerConfig: Configuration, val authenticationConfig: Authenti
         }
         return constructor.newInstance(context) as Controller
     }
-
 }
