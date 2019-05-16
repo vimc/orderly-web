@@ -32,7 +32,6 @@ class Router(private val actionResolver: ActionResolver,
 
     companion object
     {
-        val urls: MutableList<String> = mutableListOf()
         const val apiUrlBase = "/api/v1"
     }
 
@@ -43,9 +42,9 @@ class Router(private val actionResolver: ActionResolver,
         mapLogoutCallback()
     }
 
-    fun mapEndpoints(routeConfig: RouteConfig, urlBase: String)
+    fun mapEndpoints(routeConfig: RouteConfig, urlBase: String): List<String>
     {
-        urls.addAll(routeConfig.endpoints.map { mapEndpoint(it, urlBase) })
+        return routeConfig.endpoints.map { mapEndpoint(it, urlBase) }
     }
 
     private fun mapLoginCallback()
@@ -68,6 +67,7 @@ class Router(private val actionResolver: ActionResolver,
     {
         notFound { req, res ->
             errorHandler.handleError(RouteNotFound(), req, res)
+            res.body()
         }
     }
 

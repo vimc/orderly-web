@@ -32,15 +32,13 @@ class RouterTests : TeamcityTests()
         )
     }
 
-    val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
-
     @Test
     fun `maps endpoints with and without trailing slashes`()
     {
-        sut.mapEndpoints(TestRouteConfig, "urlBase")
-        sut.mapEndpoints(TestRouteConfig, "anotherBase")
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
 
-        val endpoints = Router.urls
+        val urls = sut.mapEndpoints(TestRouteConfig, "urlBase").toMutableList()
+        urls.addAll(sut.mapEndpoints(TestRouteConfig, "anotherBase"))
 
         val expected = listOf(
                 "urlBase/first/url/",
@@ -49,7 +47,7 @@ class RouterTests : TeamcityTests()
                 "anotherBase/second/url/"
         )
 
-        assertThat(endpoints).hasSameElementsAs(expected)
+        assertThat(urls).hasSameElementsAs(expected)
 
         expected.forEach {
             verify(mockSparkWrapper).map(eq(it), any(), any(), any(), anyOrNull())
@@ -60,6 +58,8 @@ class RouterTests : TeamcityTests()
     @Test
     fun `only adds response transformer if endpoint should be transformed`()
     {
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+
         sut.mapEndpoints(TestRouteConfig, "urlBase")
         val transformedUrl = "urlBase/first/url/"
         val untransformedUrl = "urlBase/second/url/"
@@ -71,6 +71,8 @@ class RouterTests : TeamcityTests()
     @Test
     fun `maps logout route with and without trailing slash`()
     {
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+
         verify(mockSparkWrapper).mapGet(eq("logout"), any())
         verify(mockSparkWrapper).mapGet(eq("logout/"), any())
     }
@@ -78,6 +80,8 @@ class RouterTests : TeamcityTests()
     @Test
     fun `maps login route with and without trailing slash`()
     {
+        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+
         verify(mockSparkWrapper).mapGet(eq("login"), any())
         verify(mockSparkWrapper).mapGet(eq("login/"), any())
     }
