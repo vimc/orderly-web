@@ -7,13 +7,13 @@ import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
 import spark.Spark.staticFiles
 import java.io.File
-import java.net.BindException
-import java.net.ServerSocket
-import kotlin.system.exitProcess
-import spark.Spark as spk
 import java.io.PrintWriter
 import java.io.StringWriter
+import java.net.BindException
+import java.net.ServerSocket
 import java.util.*
+import kotlin.system.exitProcess
+import spark.Spark as spk
 
 
 fun main(args: Array<String>)
@@ -37,6 +37,11 @@ fun buildFreemarkerConfig(templateDirectory: File): Configuration
 
 class OrderlyWeb
 {
+    companion object
+    {
+        val urls: MutableList<String> = mutableListOf()
+    }
+
     private val logger = LoggerFactory.getLogger(OrderlyWeb::class.java)
 
     private fun getPropertiesAsString(prop: Properties): String
@@ -68,8 +73,12 @@ class OrderlyWeb
         TokenStore.instance.setup()
 
         val router = Router(freeMarkerConfig)
-        router.mapEndpoints(APIRouteConfig, Router.apiUrlBase)
-        router.mapEndpoints(WebRouteConfig, "")
+
+        val apiUrls = router.mapEndpoints(APIRouteConfig, Router.apiUrlBase)
+        val webUrls = router.mapEndpoints(WebRouteConfig, "")
+
+        urls.addAll(apiUrls)
+        urls.addAll(webUrls)
     }
 
     private fun setupPort()
