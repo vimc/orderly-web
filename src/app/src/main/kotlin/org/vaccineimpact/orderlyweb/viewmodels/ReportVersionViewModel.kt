@@ -9,17 +9,36 @@ import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
-open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: ReportVersionDetails,
-                                      open val focalArtefactUrl: String?,
-                                      open val isAdmin: Boolean,
-                                      open val artefacts: List<ArtefactViewModel>,
-                                      open val dataLinks: List<InputDataViewModel>,
-                                      open val resources: List<DownloadableFileViewModel>,
-                                      open val zipFile: DownloadableFileViewModel,
-                                      override val breadcrumbs: List<Breadcrumb>,
-                                      context: ActionContext) :
-        AppViewModel(context)
+data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
+                                      val focalArtefactUrl: String?,
+                                      val isAdmin: Boolean,
+                                      val artefacts: List<ArtefactViewModel>,
+                                      val dataLinks: List<InputDataViewModel>,
+                                      val resources: List<DownloadableFileViewModel>,
+                                      val zipFile: DownloadableFileViewModel,
+                                      val defaultViewModel: DefaultViewModel) :
+        AppViewModel by defaultViewModel
 {
+    constructor(report: ReportVersionDetails,
+                focalArtefactUrl: String?,
+                isAdmin: Boolean,
+                artefacts: List<ArtefactViewModel>,
+                dataLinks: List<InputDataViewModel>,
+                resources: List<DownloadableFileViewModel>,
+                zipFile: DownloadableFileViewModel,
+                breadcrumbs: List<Breadcrumb>,
+                loggedIn: Boolean,
+                appName: String) :
+
+            this(report,
+                    focalArtefactUrl,
+                    isAdmin,
+                    artefacts,
+                    dataLinks,
+                    resources,
+                    zipFile,
+                    DefaultViewModel(loggedIn, appName, breadcrumbs))
+
     companion object
     {
         fun build(report: ReportVersionDetails, context: ActionContext): ReportVersionPageViewModel
@@ -50,9 +69,7 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
             val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val displayName = report.displayName ?: report.name
 
-            val breadcrumbs = listOf(IndexViewModel.breadcrumb,
-                    Breadcrumb("${report.name} (${report.id})", fileViewModelBuilder.baseUrl))
-
+            val breadcrumb = Breadcrumb("${report.name} (${report.id})", fileViewModelBuilder.baseUrl)
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
                     isAdmin,
@@ -60,8 +77,7 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
-                    breadcrumbs,
-                    context)
+                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
         private fun getFocalArtefactUrl(builder: ReportFileViewModelBuilder, artefacts: List<Artefact>): String?

@@ -72,29 +72,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
     )
 
-    data class TestReportViewModel(
-            val reportJson: String,
-            override val report: ReportVersionDetails,
-            override val focalArtefactUrl: String?,
-            override val isAdmin: Boolean,
-            override val artefacts: List<ArtefactViewModel>,
-            override val dataLinks: List<InputDataViewModel>,
-            override val resources: List<DownloadableFileViewModel>,
-            override val zipFile: DownloadableFileViewModel,
-            override val breadcrumbs: List<Breadcrumb>,
-            val context: ActionContext) :
-            ReportVersionPageViewModel(report,
-                    focalArtefactUrl,
-                    isAdmin,
-                    artefacts,
-                    dataLinks,
-                    resources,
-                    zipFile,
-                    breadcrumbs,
-                    context)
-
-    private val testModel = TestReportViewModel(
-            "{}",
+    private val testModel = ReportVersionPageViewModel(
             testReport,
             "/testFocalArtefactUrl",
             false,
@@ -102,9 +80,9 @@ class VersionPageTests : TeamcityTests()
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-            listOf(),
-            mock()
-    )
+            listOf(Breadcrumb("name", "url")),
+            true,
+            "appName")
 
     @Test
     fun `renders outline correctly`()
@@ -124,7 +102,7 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders breadcrumbs correctly`()
     {
-        val doc = template.jsoupDocFor(testModel.copy(breadcrumbs = listOf(Breadcrumb("name", "url"))))
+        val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
 
         Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
@@ -159,7 +137,6 @@ class VersionPageTests : TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
-
     }
 
     @Test
