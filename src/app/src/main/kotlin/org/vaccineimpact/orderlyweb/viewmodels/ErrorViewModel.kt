@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 
-open class ErrorViewModel(appViewModel: AppViewModel) : AppViewModel by appViewModel
+data class ErrorViewModel(val appViewModel: AppViewModel) : AppViewModel by appViewModel
 {
     constructor(pageName: String, context: ActionContext) :
             this(DefaultViewModel(context, IndexViewModel.breadcrumb, Breadcrumb(pageName, null)))
