@@ -5,9 +5,9 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
-class Breadcrumb(val name: String, val url: String?)
+data class Breadcrumb(val name: String, val url: String?)
 
-class DefaultViewModel(override val loggedIn: Boolean,
+data class DefaultViewModel(override val loggedIn: Boolean,
                        override val user: String?,
                        override val breadcrumbs: List<Breadcrumb>) : AppViewModel
 {

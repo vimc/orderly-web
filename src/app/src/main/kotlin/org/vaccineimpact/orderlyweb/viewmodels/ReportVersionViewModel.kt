@@ -16,8 +16,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
                                       val zipFile: DownloadableFileViewModel,
-                                      val defaultViewModel: DefaultViewModel) :
-        AppViewModel by defaultViewModel
+                                      val appViewModel: AppViewModel) :
+        AppViewModel by appViewModel
 {
     constructor(report: ReportVersionDetails,
                 focalArtefactUrl: String?,
