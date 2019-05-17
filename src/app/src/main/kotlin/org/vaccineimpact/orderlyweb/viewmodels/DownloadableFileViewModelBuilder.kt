@@ -3,56 +3,40 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.encodeFilename
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 
-class DownloadableFileViewModelBuilder
+class DownloadableFileViewModelBuilder(private val report: ReportVersionDetails)
 {
-    private var report: ReportVersionDetails? = null
-    private var fileName: String = ""
     private var inline: Boolean = false
 
-    private fun baseUrl(): String
+    private val baseUrl = "/reports/${report.name}/versions/${report.id}/"
+
+    fun buildArtefactFileViewModel(fileName: String): DownloadableFileViewModel
     {
-        if (report == null || fileName.isEmpty())
-        {
-            throw IllegalStateException("You must specify a report and a filename before calling this method")
-        }
-        return "/reports/${report!!.name}/versions/${report!!.id}/"
+        val encodedFileName = encodeFilename(fileName)
+        return DownloadableFileViewModel(fileName,
+                "$baseUrl/artefacts/$encodedFileName?inline=$inline")
     }
 
-    fun buildArtefactFileViewModel(): DownloadableFileViewModel
+    fun buildResourceFileViewModel(fileName: String): DownloadableFileViewModel
     {
-        return DownloadableFileViewModel(fileName, "${baseUrl()}/artefacts/$fileName?inline=$inline")
-    }
-
-    fun buildResourceFileViewModel(): DownloadableFileViewModel
-    {
-        return DownloadableFileViewModel(fileName, "${baseUrl()}/resources/$fileName?inline=$inline")
+        val encodedFileName = encodeFilename(fileName)
+        return DownloadableFileViewModel(fileName
+                , "$baseUrl/resources/$encodedFileName?inline=$inline")
     }
 
     fun buildZipFileViewModel(): DownloadableFileViewModel
     {
-        return DownloadableFileViewModel(fileName, "${baseUrl()}/all/")
+        return DownloadableFileViewModel("${report.name}-${report.id}.zip", "$baseUrl/all/")
     }
 
-    fun buildDataFileViewModel(type: String): DownloadableFileViewModel
+    fun buildDataFileViewModel(fileName: String, type: String): DownloadableFileViewModel
     {
-        return DownloadableFileViewModel(fileName, "${baseUrl()}/data/$fileName?type=$type")
-    }
-
-    fun withReport(report: ReportVersionDetails): DownloadableFileViewModelBuilder
-    {
-        this.report = report
-        return this
+        val encodedFileName = encodeFilename(fileName)
+        return DownloadableFileViewModel(type, "$baseUrl/data/$encodedFileName?type=$type")
     }
 
     fun inline(): DownloadableFileViewModelBuilder
     {
         this.inline = true
-        return this
-    }
-
-    fun withFileName(fileName: String): DownloadableFileViewModelBuilder
-    {
-        this.fileName = encodeFilename(fileName)
         return this
     }
 }
