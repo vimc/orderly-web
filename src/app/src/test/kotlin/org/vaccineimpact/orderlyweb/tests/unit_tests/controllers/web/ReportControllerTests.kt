@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -78,9 +77,10 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `focalArtefactUrl is null if no suitable artefact`()
+    fun `focalArtefactUrl is null if first artefact is not suitable`()
     {
-        val unsuitableArtefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")))
+        val unsuitableArtefacts = listOf(Artefact(ArtefactFormat.DATA, "desc",
+                listOf("unsuitable.csv", "suitable.png")))
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
                     mockReportDetails.copy(artefacts = unsuitableArtefacts)
@@ -93,10 +93,11 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `focalArtefactUrl is url of first suitable artefact`()
+    fun `focalArtefactUrl is url of first artefact if suitable`()
     {
-        val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")),
-                Artefact(ArtefactFormat.DATA, "desc", listOf("another.csv", "suitable.png")))
+        val artefacts = listOf(Artefact(ArtefactFormat.DATA,
+                "desc", listOf("subdir/suitable.png", "another.csv")),
+                Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
@@ -106,14 +107,14 @@ class ReportControllerTests : TeamcityTests()
         val sut = ReportController(actionContext, orderly)
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.focalArtefactUrl).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.png?inline=true")
+        assertThat(result.focalArtefactUrl).isEqualTo("/reports/r1/versions/v1/artefacts/subdir%3Asuitable.png?inline=true")
     }
 
     @Test
     fun `artefacts have expected urls`()
     {
         val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")),
-                Artefact(ArtefactFormat.DATA, "desc", listOf("another.csv", "suitable.png")))
+                Artefact(ArtefactFormat.DATA, "desc", listOf("subdir/another.csv", "suitable.png")))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
@@ -128,14 +129,14 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.artefacts[0].artefact).isEqualTo(artefacts[0])
         assertThat(result.artefacts[0].files.count()).isEqualTo(1)
         assertThat(result.artefacts[0].files[0].name).isEqualTo("unsuitable.csv")
-        assertThat(result.artefacts[0].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/unsuitable.csv")
+        assertThat(result.artefacts[0].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/unsuitable.csv?inline=false")
 
         assertThat(result.artefacts[1].artefact).isEqualTo(artefacts[1])
         assertThat(result.artefacts[1].files.count()).isEqualTo(2)
-        assertThat(result.artefacts[1].files[0].name).isEqualTo("another.csv")
-        assertThat(result.artefacts[1].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/another.csv")
+        assertThat(result.artefacts[1].files[0].name).isEqualTo("subdir/another.csv")
+        assertThat(result.artefacts[1].files[0].url).isEqualTo("/reports/r1/versions/v1/artefacts/subdir%3Aanother.csv?inline=false")
         assertThat(result.artefacts[1].files[1].name).isEqualTo("suitable.png")
-        assertThat(result.artefacts[1].files[1].url).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.png")
+        assertThat(result.artefacts[1].files[1].url).isEqualTo("/reports/r1/versions/v1/artefacts/suitable.png?inline=false")
     }
 
     @Test
@@ -198,11 +199,12 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
         assertThat(result.resources[0].url).isEqualTo("/reports/r1/versions/v1/resources/resource1.Rmd")
         assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
-        assertThat(result.resources[1].url).isEqualTo("/reports/r1/versions/v1/resources/subdir%2Fresource2.Rmd")
+        assertThat(result.resources[1].url).isEqualTo("/reports/r1/versions/v1/resources/subdir%3Aresource2.Rmd")
     }
 
     @Test
-    fun `zipFile has expected url`() {
+    fun `zipFile has expected url`()
+    {
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
         }
@@ -214,6 +216,7 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.zipFile.url).isEqualTo("/reports/r1/versions/v1/all/")
     }
 
+    @Test
     fun `report reviewers are admins`()
     {
         val orderly = mock<OrderlyClient> {
@@ -248,46 +251,10 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `images can render in browser`()
-    {
-        val png = canRenderInBrowser("test.png")
-        val gif = canRenderInBrowser("test.gif")
-        val jpeg = canRenderInBrowser("test.jpeg")
-        val jpg = canRenderInBrowser("test.jpg")
-        val JPG = canRenderInBrowser("test.JPG")
-        val svg = canRenderInBrowser("test.svg")
-
-        assertThat(png).isTrue()
-        assertThat(gif).isTrue()
-        assertThat(jpg).isTrue()
-        assertThat(jpeg).isTrue()
-        assertThat(JPG).isTrue()
-        assertThat(svg).isTrue()
-    }
-
-    @Test
-    fun `html can render in browser`()
-    {
-        val html = canRenderInBrowser("test.html")
-        val htm = canRenderInBrowser("test.htm")
-
-        assertThat(html).isTrue()
-        assertThat(htm).isTrue()
-    }
-
-    @Test
-    fun `pdf can render in browser`()
-    {
-         val pdf = canRenderInBrowser("test.pdf")
-
-        assertThat(pdf).isTrue()
-    }
-
-    @Test
     fun `initialises Orderly correctly when user is reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global()))} doReturn true
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
 
         val sut = ReportController(mockContext)
@@ -299,7 +266,7 @@ class ReportControllerTests : TeamcityTests()
     fun `initialises Orderly correctly when user is not reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global()))} doReturn false
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
         }
 
         val sut = ReportController(mockContext)

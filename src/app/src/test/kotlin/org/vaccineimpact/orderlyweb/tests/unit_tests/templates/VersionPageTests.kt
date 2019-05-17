@@ -13,10 +13,7 @@ import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
-import org.vaccineimpact.orderlyweb.viewmodels.ArtefactViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.InputDataViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.*
 import org.xmlmatchers.XmlMatchers.hasXPath
 import java.sql.Timestamp
 
@@ -84,8 +81,17 @@ class VersionPageTests : TeamcityTests()
             override val dataLinks: List<InputDataViewModel>,
             override val resources: List<DownloadableFileViewModel>,
             override val zipFile: DownloadableFileViewModel,
+            override val breadcrumbs: List<Breadcrumb>,
             val context: ActionContext) :
-            ReportVersionPageViewModel(report, focalArtefactUrl, isAdmin, artefacts, dataLinks, resources, zipFile, context)
+            ReportVersionPageViewModel(report,
+                    focalArtefactUrl,
+                    isAdmin,
+                    artefacts,
+                    dataLinks,
+                    resources,
+                    zipFile,
+                    breadcrumbs,
+                    context)
 
     private val testModel = TestReportViewModel(
             "{}",
@@ -96,6 +102,7 @@ class VersionPageTests : TeamcityTests()
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            listOf(),
             mock()
     )
 
@@ -117,14 +124,12 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders breadcrumbs correctly`()
     {
-        val doc = template.jsoupDocFor(testModel)
+        val doc = template.jsoupDocFor(testModel.copy(breadcrumbs = listOf(Breadcrumb("name", "url"))))
         val breadcrumbs = doc.select(".crumb-item")
 
-        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
-        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("Main menu")
-        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("/")
-        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
-        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
+        Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
+        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("name")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("url")
     }
 
     @Test

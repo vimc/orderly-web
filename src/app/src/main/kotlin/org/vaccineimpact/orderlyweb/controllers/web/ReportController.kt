@@ -1,20 +1,15 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionViewModelBuilder
 
-class ReportController(context: ActionContext,
-                       val orderly: OrderlyClient,
-                       private val viewModelBuilder: ReportVersionViewModelBuilder = ReportVersionViewModelBuilder()) : Controller(context)
+class ReportController : OrderlyDataController
 {
-    constructor(context: ActionContext) :
-            this(context, Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))), ReportVersionViewModelBuilder())
+    constructor (context: ActionContext, orderly: OrderlyClient) :
+            super(context, orderly)
+
+    constructor(context: ActionContext) : super(context)
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportVersionPageViewModel
@@ -22,6 +17,6 @@ class ReportController(context: ActionContext,
         val reportName = context.params(":name")
         val version = context.params(":version")
         val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
-        return viewModelBuilder.build(reportDetails, context)
+        return ReportVersionPageViewModel.build(reportDetails, context)
     }
 }

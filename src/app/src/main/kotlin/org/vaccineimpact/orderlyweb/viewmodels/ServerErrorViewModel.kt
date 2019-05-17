@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 
 open class ServerErrorViewModel(error: OrderlyWebError,
                                 context: ActionContext) :
-        AppViewModel(context, IndexViewModel.breadcrumb, Breadcrumb("Something went wrong", null))
+        DefaultViewModel(context, IndexViewModel.breadcrumb, Breadcrumb("Something went wrong", null))
 {
     open val errors = error.problems
 }

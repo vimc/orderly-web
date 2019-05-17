@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.Report
 
 open class IndexViewModel(context: ActionContext,
-                          open val reports: List<Report>) : AppViewModel(context, this.breadcrumb)
+                          open val reports: List<Report>) : DefaultViewModel(context, this.breadcrumb)
 {
     companion object
     {
