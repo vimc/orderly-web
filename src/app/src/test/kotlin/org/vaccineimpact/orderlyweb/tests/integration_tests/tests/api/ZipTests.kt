@@ -157,7 +157,6 @@ class ZipTests : IntegrationTest()
                 "$version/orderly.yml",
                 "$version/orderly_published.yml",
                 "$version/orderly_run.rds",
-                "$version/orderly_run.yml",
                 "$version/script.R",
                 "$version/README.md")
     }
