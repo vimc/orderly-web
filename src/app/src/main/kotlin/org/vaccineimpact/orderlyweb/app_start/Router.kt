@@ -28,7 +28,6 @@ class Router(private val actionResolver: ActionResolver,
             this(FreeMarkerEngine(freeMarkerConfig))
 
     private val logger = LoggerFactory.getLogger(Router::class.java)
-    private val responseTransformer = OrderlyWebResponseTransformer()
 
     companion object
     {
@@ -93,7 +92,7 @@ class Router(private val actionResolver: ActionResolver,
         val contentType = endpoint.contentType
         when (endpoint.transform)
         {
-            true -> sparkWrapper.map(fullUrl, endpoint.method, contentType, route, responseTransformer)
+            true -> sparkWrapper.map(fullUrl, endpoint.method, contentType, route, ResponseTransformer(this::transform))
             false -> sparkWrapper.map(fullUrl, endpoint.method, contentType, route)
         }
 
@@ -104,11 +103,8 @@ class Router(private val actionResolver: ActionResolver,
     {
         return Route { req, res -> actionResolver.invokeControllerAction(endpoint, DirectActionContext(req, res)) }
     }
-}
 
-class OrderlyWebResponseTransformer : ResponseTransformer
-{
-    override fun render(model: Any) = when (model)
+    private fun transform(model: Any) = when (model)
     {
         is AuthenticationResponse -> Serializer.instance.gson.toJson(model)!!
         else -> Serializer.instance.toResult(model)
