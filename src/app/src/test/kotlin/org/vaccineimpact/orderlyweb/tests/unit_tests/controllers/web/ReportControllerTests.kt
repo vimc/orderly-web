@@ -30,19 +30,20 @@ class ReportControllerTests : TeamcityTests()
             listOf(),
             mapOf())
 
-    private val actionContext = mock<ActionContext> {
+    private val mockActionContext = mock<ActionContext> {
         on { this.params(":name") } doReturn "r1"
         on { this.params(":version") } doReturn "v1"
+    }
+
+    val mockOrderly = mock<OrderlyClient> {
+        on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
+                mockReportDetails
     }
 
     @Test
     fun `getByNameAndVersion returns display name if not present`()
     {
-        val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
-        }
-
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report).isEqualTo(mockReportDetails)
@@ -51,13 +52,12 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `getByNameAndVersion uses name for display name if not present`()
     {
-
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
                     mockReportDetails.copy(displayName = null)
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
@@ -66,11 +66,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `focalArtefactUrl is null if no artefacts`()
     {
-        val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
-        }
-
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -81,12 +77,13 @@ class ReportControllerTests : TeamcityTests()
     {
         val unsuitableArtefacts = listOf(Artefact(ArtefactFormat.DATA, "desc",
                 listOf("unsuitable.csv", "suitable.png")))
+
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
                     mockReportDetails.copy(artefacts = unsuitableArtefacts)
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -104,7 +101,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isEqualTo("/reports/r1/versions/v1/artefacts/subdir%3Asuitable.png?inline=true")
@@ -121,7 +118,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts.count()).isEqualTo(2)
@@ -151,7 +148,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
@@ -166,7 +163,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(dataHashes = mapOf("data1" to "1234/567", "data2" to "987&654"))
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.dataLinks.count()).isEqualTo(2)
@@ -192,7 +189,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(resources = listOf("resource1.Rmd", "subdir/resource2.Rmd"))
         }
 
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.resources.count()).isEqualTo(2)
@@ -205,11 +202,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `zipFile has expected url`()
     {
-        val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn mockReportDetails
-        }
-
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.zipFile.name).isEqualTo("r1-v1.zip")
@@ -219,16 +212,12 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `report reviewers are admins`()
     {
-        val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
-                    mockReportDetails
-        }
         val actionContext = mock<ActionContext> {
             on { this.params(":name") } doReturn "r1"
             on { this.params(":version") } doReturn "v1"
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isAdmin).isTrue()
     }
@@ -236,18 +225,29 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `non report reviewers are not admins`()
     {
-        val orderly = mock<OrderlyClient> {
-            on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
-                    mockReportDetails
-        }
         val actionContext = mock<ActionContext> {
             on { this.params(":name") } doReturn "r1"
             on { this.params(":version") } doReturn "v1"
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
         }
-        val sut = ReportController(actionContext, orderly)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isAdmin).isFalse()
+    }
+
+    @Test
+    fun `creates correct breadcrumbs`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly)
+
+        val breadcrumbs = sut.getByNameAndVersion().breadcrumbs
+        assertThat(breadcrumbs.count()).isEqualTo(2)
+
+        assertThat(breadcrumbs.first().name).isEqualTo("Main menu")
+        assertThat(breadcrumbs.first().url).isEqualTo("/")
+
+        assertThat(breadcrumbs[1].name).isEqualTo("r1 (v1)")
+        assertThat(breadcrumbs[1].url).isEqualTo("/reports/r1/v1/")
     }
 
     @Test

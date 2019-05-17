@@ -69,7 +69,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val displayName = report.displayName ?: report.name
 
-            val breadcrumb = Breadcrumb("${report.name} (${report.id})", fileViewModelBuilder.baseUrl)
+            val breadcrumb = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
+
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
                     isAdmin,
