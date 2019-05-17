@@ -5,6 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -249,13 +250,12 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `images can render in browser`()
     {
-        val sut = ReportController(actionContext, mock())
-        val png = sut.canRenderInBrowser("test.png")
-        val gif = sut.canRenderInBrowser("test.gif")
-        val jpeg = sut.canRenderInBrowser("test.jpeg")
-        val jpg = sut.canRenderInBrowser("test.jpg")
-        val JPG = sut.canRenderInBrowser("test.JPG")
-        val svg = sut.canRenderInBrowser("test.svg")
+        val png = canRenderInBrowser("test.png")
+        val gif = canRenderInBrowser("test.gif")
+        val jpeg = canRenderInBrowser("test.jpeg")
+        val jpg = canRenderInBrowser("test.jpg")
+        val JPG = canRenderInBrowser("test.JPG")
+        val svg = canRenderInBrowser("test.svg")
 
         assertThat(png).isTrue()
         assertThat(gif).isTrue()
@@ -268,9 +268,8 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `html can render in browser`()
     {
-        val sut = ReportController(actionContext, mock())
-        val html = sut.canRenderInBrowser("test.html")
-        val htm = sut.canRenderInBrowser("test.htm")
+        val html = canRenderInBrowser("test.html")
+        val htm = canRenderInBrowser("test.htm")
 
         assertThat(html).isTrue()
         assertThat(htm).isTrue()
@@ -279,8 +278,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `pdf can render in browser`()
     {
-        val sut = ReportController(actionContext, mock())
-        val pdf = sut.canRenderInBrowser("test.pdf")
+         val pdf = canRenderInBrowser("test.pdf")
 
         assertThat(pdf).isTrue()
     }

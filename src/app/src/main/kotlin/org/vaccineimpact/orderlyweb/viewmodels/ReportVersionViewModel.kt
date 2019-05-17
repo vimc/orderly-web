@@ -2,6 +2,8 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.encodeFilename
+import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 
@@ -21,9 +23,13 @@ open class ReportVersionPageViewModel(@Serialise("reportJson") open val report: 
     }
 }
 
-data class ArtefactViewModel(val artefact: Artefact, val files: List<DownloadableFileViewModel>, val inlineArtefactFigure: String?)
+data class ArtefactViewModel(val artefact: Artefact,
+                             val files: List<DownloadableFileViewModel>,
+                             val inlineArtefactFigure: String?)
 
-data class InputDataViewModel(val key: String, val csv: DownloadableFileViewModel, val rds: DownloadableFileViewModel)
+data class InputDataViewModel(val key: String,
+                              val csv: DownloadableFileViewModel,
+                              val rds: DownloadableFileViewModel)
 
 data class DownloadableFileViewModel(val name: String, val url: String)
 
