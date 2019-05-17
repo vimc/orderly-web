@@ -1,15 +1,29 @@
 package org.vaccineimpact.orderlyweb
 
+import org.vaccineimpact.orderlyweb.errors.UnsupportedValueException
 import spark.Filter
+import spark.ResponseTransformer
+import spark.Route
 import spark.Spark
+import spark.route.HttpMethod
 
 //Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use instead
-interface SparkWrapper {
+interface SparkWrapper
+{
     fun before(path: String, filter: Filter)
     fun after(path: String, acceptType: String, vararg filters: Filter)
+    fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
+            transformer: ResponseTransformer? = null)
+    fun mapGet(fullUrl: String, route: Route)
 }
 
-class SparkServiceWrapper : SparkWrapper {
+class SparkServiceWrapper : SparkWrapper
+{
+    override fun mapGet(fullUrl: String, route: Route)
+    {
+        Spark.get(fullUrl, route)
+    }
+
     override fun before(path: String, filter: Filter)
     {
         Spark.before(path, filter)
@@ -20,4 +34,29 @@ class SparkServiceWrapper : SparkWrapper {
         Spark.after(path, acceptType, *filters)
     }
 
+    override fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route, transformer: ResponseTransformer?)
+    {
+        when (transformer)
+        {
+            null -> when (method)
+            {
+                HttpMethod.get -> Spark.get(fullUrl, acceptType, route)
+                HttpMethod.post -> Spark.post(fullUrl, acceptType, route)
+                HttpMethod.put -> Spark.put(fullUrl, acceptType, route)
+                HttpMethod.patch -> Spark.patch(fullUrl, acceptType, route)
+                HttpMethod.delete -> Spark.delete(fullUrl, acceptType, route)
+                else -> throw UnsupportedValueException(method)
+            }
+            else ->
+                when (method)
+                {
+                    HttpMethod.get -> Spark.get(fullUrl, acceptType, route, transformer)
+                    HttpMethod.post -> Spark.post(fullUrl, acceptType, route, transformer)
+                    HttpMethod.put -> Spark.put(fullUrl, acceptType, route, transformer)
+                    HttpMethod.patch -> Spark.patch(fullUrl, acceptType, route, transformer)
+                    HttpMethod.delete -> Spark.delete(fullUrl, acceptType, route, transformer)
+                    else -> throw UnsupportedValueException(method)
+                }
+        }
+    }
 }

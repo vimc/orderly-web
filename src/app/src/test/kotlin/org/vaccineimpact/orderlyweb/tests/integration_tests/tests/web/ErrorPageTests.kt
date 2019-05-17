@@ -24,7 +24,6 @@ class ErrorPageTests : IntegrationTest()
         val response = webRequestHelper.getWebPage("/nonsense", "text/html")
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
-
         val doc = Jsoup.parse(response.text)
         assertBreadcrumbWithNoLink(doc, "Page not found")
 
@@ -83,6 +82,7 @@ class ErrorPageTests : IntegrationTest()
 
     private fun assertBreadcrumbWithNoLink(doc: Document, expectedText: String)
     {
+
         val breadcrumbs = doc.select(".crumb-item")
         assertThat(breadcrumbs.count())
                 .withFailMessage("Expected 2 breadcrumbs but found ${breadcrumbs.count()}")

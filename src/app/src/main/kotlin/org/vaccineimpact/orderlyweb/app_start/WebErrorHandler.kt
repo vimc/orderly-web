@@ -10,9 +10,9 @@ import org.vaccineimpact.orderlyweb.viewmodels.ServerErrorViewModel
 import spark.ModelAndView
 import spark.Request
 import spark.Response
-import spark.template.freemarker.FreeMarkerEngine
+import spark.TemplateEngine
 
-class WebErrorHandler(private val freeMarkerEngine: FreeMarkerEngine)
+class WebErrorHandler(private val templateEngine: TemplateEngine)
 {
     fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
@@ -32,6 +32,6 @@ class WebErrorHandler(private val freeMarkerEngine: FreeMarkerEngine)
                 ModelAndView(ServerErrorViewModel(error, context), "500.ftl")
         }
 
-        res.body(freeMarkerEngine.render(modelAndView))
+        res.body(templateEngine.render(modelAndView))
     }
 }
