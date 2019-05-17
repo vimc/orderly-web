@@ -11,6 +11,6 @@ class FileTests {
     fun `can getListOfFiles`()
     {
         val files = Files().getAllFilesInFolder("${AppConfig()["orderly.root"]}archive/use_resource")
-        Assertions.assertThat(files.count()).isEqualTo(8)
+        Assertions.assertThat(files.count()).isEqualTo(7)
     }
 }
