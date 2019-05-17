@@ -9,7 +9,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.ServerErrorViewModel
 
-class _500Tests: TeamcityTests()
+class _500Tests : TeamcityTests()
 {
     companion object
     {
@@ -28,10 +28,12 @@ class _500Tests: TeamcityTests()
         assertThat(doc.selectFirst("h1").text()).isEqualTo("Something went wrong")
         assertThat(doc.selectFirst("li").text()).isEqualTo("TEST")
 
-        val breadcrumbs = doc.select(".breadcrumb-item")
-        assertThat(breadcrumbs.count()).isEqualTo(1)
-        assertThat(breadcrumbs.first().text()).isEqualTo("Something went wrong")
-        assertThat(breadcrumbs.first().child(0).`is`("span"))
+        val breadcrumbs = doc.select(".crumb-item")
+        assertThat(breadcrumbs.count())
+                .withFailMessage("Expected 2 breadcrumbs but found ${breadcrumbs.count()}")
+                .isEqualTo(2)
+        assertThat(breadcrumbs.last().text()).isEqualTo("Something went wrong")
+        assertThat(breadcrumbs.last().child(0).`is`("span"))
                 .withFailMessage("Expected breadcrumb with null url to be a span").isTrue()
     }
 }

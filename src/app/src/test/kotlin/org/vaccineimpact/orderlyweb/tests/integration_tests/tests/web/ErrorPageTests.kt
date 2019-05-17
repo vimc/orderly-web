@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -13,6 +12,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class ErrorPageTests : IntegrationTest()
 {
@@ -25,7 +25,7 @@ class ErrorPageTests : IntegrationTest()
 
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         val doc = Jsoup.parse(response.text)
-        assertOneBreadcrumbWithNoLink(doc, "Page not found")
+        assertBreadcrumbWithNoLink(doc, "Page not found")
 
         assertThat(doc.selectFirst("h1").text()).isEqualTo("Page not found")
         assertThat(doc.selectFirst("li").text()).isEqualTo("Click back in your browser to return to the previous page")
@@ -50,7 +50,7 @@ class ErrorPageTests : IntegrationTest()
         assertThat(doc.selectFirst("h1").text()).isEqualTo("Login failed")
         assertThat(doc.selectFirst("p").text()).isEqualTo("We have not been able to successfully identify you as a Montagu user.")
 
-        assertOneBreadcrumbWithNoLink(doc, "Login failed")
+        assertBreadcrumbWithNoLink(doc, "Login failed")
     }
 
     @Test
@@ -77,17 +77,19 @@ class ErrorPageTests : IntegrationTest()
         assertThat(doc.selectFirst("h1").text()).isEqualTo("Something went wrong")
         assertThat(doc.selectFirst("li").text()).contains("An unexpected error occurred. Please contact support")
 
-        assertOneBreadcrumbWithNoLink(doc, "Something went wrong")
+        assertBreadcrumbWithNoLink(doc, "Something went wrong")
     }
 
-    private fun assertOneBreadcrumbWithNoLink(doc: Document, expectedText: String)
+    private fun assertBreadcrumbWithNoLink(doc: Document, expectedText: String)
     {
-        val breadCrumbs = doc.select(".breadcrumb-item")
-        assertThat(breadCrumbs.count())
-                .withFailMessage("Expected 1 breadcrumb but found ${breadCrumbs.count()}")
-                .isEqualTo(1)
-        assertThat(breadCrumbs.first().text()).isEqualTo(expectedText)
-        assertThat(breadCrumbs.first().child(0).`is`("span"))
+
+        val breadcrumbs = doc.select(".crumb-item")
+        assertThat(breadcrumbs.count())
+                .withFailMessage("Expected 2 breadcrumbs but found ${breadcrumbs.count()}")
+                .isEqualTo(2)
+        assertThat(breadcrumbs.first().text()).isEqualTo(IndexViewModel.breadcrumb.name)
+        assertThat(breadcrumbs.last().text()).isEqualTo(expectedText)
+        assertThat(breadcrumbs.last().child(0).`is`("span"))
                 .withFailMessage("Expected breadcrumb with null url to be a span").isTrue()
 
     }

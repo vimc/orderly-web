@@ -4,10 +4,10 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.Report
 
 open class IndexViewModel(context: ActionContext,
-                          open val reports: List<Report>) : AppViewModel(context, this.breadCrumb)
+                          open val reports: List<Report>) : AppViewModel(context, this.breadcrumb)
 {
     companion object
     {
-        val breadCrumb = BreadCrumb("Main menu", "/")
+        val breadcrumb = Breadcrumb("Main menu", "/")
     }
 }
