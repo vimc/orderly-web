@@ -154,7 +154,7 @@ describe("runReport", () => {
         });
     });
 
-    it('updates status when run request fails', (done) => {
+    it('updates status and stops polling when run request fails', (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         mockAxios.onPost('/reports/name1/run/')
@@ -168,6 +168,7 @@ describe("runReport", () => {
 
         setTimeout(()  => {
             expect(wrapper.find('#run-report-status').text()).to.contain("Running status: Error when running report");
+            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
 
             //should also hide modal
             expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
@@ -181,7 +182,6 @@ describe("runReport", () => {
 
             done();
         });
-
     });
 
     it('updates status and starts polling when run request is successful', (done) => {
@@ -344,7 +344,7 @@ describe("runReport", () => {
         }, 1800);
     });
 
-    it('updates status and continues polling when run update request fails', (done) => {
+    it('updates status and stops polling when run update request fails', (done) => {
 
         const wrapper = mount(RunReport, runReportProps);
 
@@ -367,13 +367,14 @@ describe("runReport", () => {
             expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
 
             //expect key to have been set and polling timer to have been cleared
-            expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
 
             //expect status in session to have been set
             expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("Error when fetching report status");
+            expect(storedStatus.newVersionFromRun).to.eq("");
             expect(storedStatus.newVersionFromRun).to.eq("");
 
             done();

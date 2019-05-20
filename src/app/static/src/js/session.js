@@ -4,9 +4,8 @@ export const session = function () {
     const RUNNING_STATUS = "runningStatus";
     const RUNNING_KEY = "runningKey";
     const NEW_VERSION_FROM_RUN = "newVersionFromRun";
-    const NEW_VERSION_DISPLAY_NAME = "newVersionDisplayName";
 
-    const RUNNING_REPORT_STATUS_KEYS = [RUNNING_STATUS, RUNNING_KEY, NEW_VERSION_FROM_RUN, NEW_VERSION_DISPLAY_NAME];
+    const RUNNING_REPORT_STATUS_KEYS = [RUNNING_STATUS, RUNNING_KEY, NEW_VERSION_FROM_RUN];
 
     function getItem(key) {
         return window.sessionStorage.getItem(key);

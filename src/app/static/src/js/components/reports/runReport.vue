@@ -62,7 +62,7 @@
                 return this.newVersionFromRun ? reportVersionToLongTimestamp(this.newVersionFromRun) : "";
             },
             runHasCompleted: function () {
-                return this.runningStatus === "success" || this.runningStatus === "error";
+                return this.runningStatus && (this.runningStatus === "success" || this.runningStatus.toLowerCase().indexOf("error") > -1);
             }
         },
         watch: {
@@ -88,10 +88,10 @@
 
                         this.startPolling();
                     })
-                    .catch((e) => {
+                    .catch(({response}) => {
                         this.dismissRunStatus();
                         this.runningStatus = "Error when running report";
-                        console.log(e);
+                        console.log(response.data);
                     })
                     .finally(() => {
                         this.updateSessionStorage();
@@ -108,9 +108,10 @@
                                 this.runningStatus = data.data.status;
                                 this.newVersionFromRun = data.data.version;
                             })
-                            .catch((e) => {
+                            .catch(({response}) => {
+                                this.stopPolling();
                                 this.runningStatus = "Error when fetching report status";
-                                console.log(e)
+                                console.log(response.data)
                             })
                             .finally(() => {
                                 this.updateSessionStorage();

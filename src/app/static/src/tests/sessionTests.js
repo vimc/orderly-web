@@ -24,7 +24,6 @@ describe('session', () => {
         expect(result.runningStatus).to.eq("value for runningReportStatus_report1_runningStatus");
         expect(result.runningKey).to.eq("value for runningReportStatus_report1_runningKey");
         expect(result.newVersionFromRun).to.eq("value for runningReportStatus_report1_newVersionFromRun");
-        expect(result.newVersionDisplayName).to.eq("value for runningReportStatus_report1_newVersionDisplayName");
     });
 
     it('sets running report status in local storage', () => {
@@ -52,8 +51,6 @@ describe('session', () => {
         expect(spySetStorage.getCall(2).args[0]).to.eql("runningReportStatus_report1_newVersionFromRun");
         expect(spySetStorage.getCall(2).args[1]).to.eql("v1");
 
-        expect(spySetStorage.getCall(3).args[0]).to.eql("runningReportStatus_report1_newVersionDisplayName");
-        expect(spySetStorage.getCall(3).args[1]).to.eql("Version One");
     });
 
     it('removes running report status from local storage', () => {
@@ -71,7 +68,6 @@ describe('session', () => {
 
         expect(spyRemoveStorage.getCall(2).args[0]).to.eql("runningReportStatus_report1_newVersionFromRun");
 
-        expect(spyRemoveStorage.getCall(3).args[0]).to.eql("runningReportStatus_report1_newVersionDisplayName");
     });
 
 });
