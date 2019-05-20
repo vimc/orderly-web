@@ -84,7 +84,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
-                    versions.map { versionTimestamp(report.name, report.id, it) },
+                    versions.map { versionTimestamp(report.name, report.id, it) }.sortedByDescending { it.date },
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
