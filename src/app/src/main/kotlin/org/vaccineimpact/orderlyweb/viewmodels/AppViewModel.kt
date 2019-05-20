@@ -5,11 +5,11 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 
-class Breadcrumb(val name: String, val url: String?)
+data class Breadcrumb(val name: String, val url: String?)
 
-open class AppViewModel(open val loggedIn: Boolean,
-                        open val user: String?,
-                        open val breadcrumbs: List<Breadcrumb>)
+data class DefaultViewModel(override val loggedIn: Boolean,
+                       override val user: String?,
+                       override val breadcrumbs: List<Breadcrumb>) : AppViewModel
 {
     constructor(userProfile: CommonProfile?, breadcrumbs: List<Breadcrumb>) :
             this(userProfile != null, userProfile?.id, breadcrumbs)
@@ -17,7 +17,26 @@ open class AppViewModel(open val loggedIn: Boolean,
     constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb) :
             this(context.userProfile, breadcrumbs.toList())
 
-    open val appName = AppConfig()["app.name"]
-    open val appEmail = AppConfig()["app.email"]
-    open val authProvider = AuthenticationConfig().getConfiguredProvider().toString().toLowerCase()
+    override val appName = AppConfig()["app.name"]
+    override val appEmail = AppConfig()["app.email"]
+    override val authProvider = AuthenticationConfig().getConfiguredProvider().toString().toLowerCase()
+
+    init
+    {
+        if (!breadcrumbs.any())
+        {
+            throw Exception("All ViewModel classes must have at least one breadcrumb")
+        }
+    }
 }
+
+interface AppViewModel
+{
+    val loggedIn: Boolean
+    val user: String?
+    val breadcrumbs: List<Breadcrumb>
+    val appName: String
+    val appEmail: String
+    val authProvider: String
+}
+

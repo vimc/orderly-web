@@ -4,8 +4,7 @@ import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.errors.FailedLoginError
 import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
-import org.vaccineimpact.orderlyweb.viewmodels.FailedLoginViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.PageNotFoundViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ErrorViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ServerErrorViewModel
 import spark.ModelAndView
 import spark.Request
@@ -23,10 +22,10 @@ class WebErrorHandler(private val templateEngine: TemplateEngine)
         val modelAndView = when (error)
         {
             is RouteNotFound ->
-                ModelAndView(PageNotFoundViewModel(context), "404.ftl")
+                ModelAndView(ErrorViewModel("Page not found", context), "404.ftl")
 
             is FailedLoginError ->
-                ModelAndView(FailedLoginViewModel(context), "401.ftl")
+                ModelAndView(ErrorViewModel("Login failed", context), "401.ftl")
 
             else ->
                 ModelAndView(ServerErrorViewModel(error, context), "500.ftl")
