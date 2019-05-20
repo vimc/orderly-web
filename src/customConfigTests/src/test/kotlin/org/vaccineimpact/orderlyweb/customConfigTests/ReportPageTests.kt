@@ -80,7 +80,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
 
         //Confirm that we've started on the Report tab
         confirmTabActive("report-tab", true)
