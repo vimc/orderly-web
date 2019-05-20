@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import java.time.Instant
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
@@ -16,6 +17,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
                                       val zipFile: DownloadableFileViewModel,
+                                      val versions: List<VersionPickerViewModel>,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -26,6 +28,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 dataLinks: List<InputDataViewModel>,
                 resources: List<DownloadableFileViewModel>,
                 zipFile: DownloadableFileViewModel,
+                versions: List<VersionPickerViewModel>,
                 breadcrumbs: List<Breadcrumb>,
                 loggedIn: Boolean,
                 appName: String) :
@@ -37,11 +40,12 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataLinks,
                     resources,
                     zipFile,
+                    versions,
                     DefaultViewModel(loggedIn, appName, breadcrumbs))
 
     companion object
     {
-        fun build(report: ReportVersionDetails, context: ActionContext): ReportVersionPageViewModel
+        fun build(report: ReportVersionDetails, versions: List<String>, context: ActionContext): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report)
 
@@ -78,6 +82,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
+                    versions.map { versionTimestamp(it) },
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
@@ -141,8 +146,20 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             }
         }
 
+        private fun versionTimestamp(id: String): VersionPickerViewModel
+        {
+            val regex = Regex("/(d{4})(d{2})(d{2})-(d{2})(d{2})(d{2})-([0-9a-f]{8})/")
+            val match = regex.matchEntire(id)
+                    ?.groupValues!!
+
+            return VersionPickerViewModel(id,
+                    Instant.parse("${match[0]}-${match[1]}-${match[2]}T${match[3]}:${match[4]}:${match[5]}").toString())
+        }
+
     }
 }
+
+data class VersionPickerViewModel(val id: String, val date: String)
 
 data class ArtefactViewModel(val artefact: Artefact,
                              val files: List<DownloadableFileViewModel>,

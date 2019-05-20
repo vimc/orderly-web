@@ -35,13 +35,15 @@ class ReportControllerTests : TeamcityTests()
         on { this.params(":version") } doReturn "v1"
     }
 
-    val mockOrderly = mock<OrderlyClient> {
+    private val mockOrderly = mock<OrderlyClient> {
         on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
                 mockReportDetails
+        on { this.getReportsByName("r1") } doReturn
+                listOf("20170101-123015-1234abcd", "20170101-123000-1234abcd")
     }
 
     @Test
-    fun `getByNameAndVersion returns display name if not present`()
+    fun `getByNameAndVersion uses display name if present`()
     {
         val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
@@ -61,6 +63,16 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
+    }
+
+    @Test
+    fun `builds report version picker viewmodels`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.versions[0].id).isEqualTo("20170101-123000-1234abcd")
+        assertThat(result.versions[0].date).isEqualTo("2017, 0, 1, 12, 30, 15")
     }
 
     @Test
