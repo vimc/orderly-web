@@ -39,7 +39,7 @@ class ReportControllerTests : TeamcityTests()
         on { this.getDetailsByNameAndVersion("r1", "v1") } doReturn
                 mockReportDetails
         on { this.getReportsByName("r1") } doReturn
-                listOf("20170101-123015-1234abcd", "20170101-123000-1234abcd")
+                listOf("20170103-143015-1234abcd", "20170104-091500-1234dcba")
     }
 
     @Test
@@ -71,8 +71,11 @@ class ReportControllerTests : TeamcityTests()
         val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.versions[0].id).isEqualTo("20170101-123000-1234abcd")
-        assertThat(result.versions[0].date).isEqualTo("2017, 0, 1, 12, 30, 15")
+        assertThat(result.versions[0].url).isEqualTo("/reports/r1/20170103-143015-1234abcd")
+        assertThat(result.versions[0].date).isEqualTo("Tue Jan 03 2017, 14:30")
+
+        assertThat(result.versions[1].url).isEqualTo("/reports/r1/20170104-091500-1234dcba")
+        assertThat(result.versions[1].date).isEqualTo("Wed Jan 04 2017, 09:15")
     }
 
     @Test

@@ -8,7 +8,9 @@ import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import java.time.Instant
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
@@ -82,7 +84,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
-                    versions.map { versionTimestamp(it) },
+                    versions.map { versionTimestamp(report.name, report.id, it) },
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
@@ -146,20 +148,24 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             }
         }
 
-        private fun versionTimestamp(id: String): VersionPickerViewModel
+        private fun versionTimestamp(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
         {
-            val regex = Regex("/(d{4})(d{2})(d{2})-(d{2})(d{2})(d{2})-([0-9a-f]{8})/")
+            val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
             val match = regex.matchEntire(id)
-                    ?.groupValues!!
+                    ?.groupValues ?: throw Exception("Badly formatted report id $id")
 
-            return VersionPickerViewModel(id,
-                    Instant.parse("${match[0]}-${match[1]}-${match[2]}T${match[3]}:${match[4]}:${match[5]}").toString())
+            val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
+
+            val date = LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
+
+            return VersionPickerViewModel("/reports/$reportName/$id", formatter.format(date),
+                    selected = id == currentVersion)
         }
 
     }
 }
 
-data class VersionPickerViewModel(val id: String, val date: String)
+data class VersionPickerViewModel(val url: String, val date: String, val selected: Boolean)
 
 data class ArtefactViewModel(val artefact: Artefact,
                              val files: List<DownloadableFileViewModel>,
