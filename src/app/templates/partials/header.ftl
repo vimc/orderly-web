@@ -12,7 +12,7 @@
 </head>
     <body>
 <header class="header">
-    <a href="/">
+    <a href="/" class="home-link">
         <img src="/img/logo.png" class="pl-md-1 logo" height="75" alt="${appName}"/>
     </a>
     <div class="site-title">
