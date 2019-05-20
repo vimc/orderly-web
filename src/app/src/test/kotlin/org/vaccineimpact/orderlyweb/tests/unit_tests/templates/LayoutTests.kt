@@ -29,6 +29,7 @@ class LayoutTests : TeamcityTests()
         val testModel = IndexViewModel(mock(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
+
         assertHeaderRenderedCorrectly(doc)
 
         assertThat(doc.select(".logout").count()).isEqualTo(0) //should not show logged in view
@@ -47,6 +48,7 @@ class LayoutTests : TeamcityTests()
         val testModel = IndexViewModel(mockContext, listOf())
 
         val doc = template.jsoupDocFor(testModel)
+
         assertHeaderRenderedCorrectly(doc)
 
         assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")

@@ -1,25 +1,20 @@
 package org.vaccineimpact.orderlyweb.app_start
 
 import com.google.gson.JsonSyntaxException
-import freemarker.template.Configuration
-import org.pac4j.core.exception.TechnicalException
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.Serializer
-import org.vaccineimpact.orderlyweb.addDefaultResponseHeaders
 import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import org.vaccineimpact.orderlyweb.errors.UnableToParseJsonError
 import org.vaccineimpact.orderlyweb.errors.UnexpectedError
 import spark.Request
 import spark.Response
-import spark.template.freemarker.FreeMarkerEngine
+import spark.TemplateEngine
 import java.lang.reflect.InvocationTargetException
 import spark.Spark as spk
 
-class ErrorHandler(freemarkerEngine: FreeMarkerEngine)
+class ErrorHandler(templateEngine: TemplateEngine)
 {
     private val logger = LoggerFactory.getLogger(ErrorHandler::class.java)
-    private val webErrorHandler = WebErrorHandler(freemarkerEngine)
+    private val webErrorHandler = WebErrorHandler(templateEngine)
     private val apiErrorHandler = APIErrorHandler()
 
     init
@@ -91,6 +86,6 @@ class ErrorHandler(freemarkerEngine: FreeMarkerEngine)
 
     companion object
     {
-        fun setup(freemarkerEngine: FreeMarkerEngine) = ErrorHandler(freemarkerEngine)
+        fun setup(templateEngine: TemplateEngine) = ErrorHandler(templateEngine)
     }
 }

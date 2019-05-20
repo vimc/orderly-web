@@ -3,7 +3,7 @@
 @import "partials/sidebar";
 
 .changelog-header tr th {
-  background-color: $montagu-header-bg-color;
+  background-color: $theme-header-bg-color;
 }
 
 .changelog-label {
@@ -26,7 +26,7 @@
   }
 
   &.no-badge {
-    border-top: 1px solid $montagu-table-border-color;
+    border-top: 1px solid $theme-table-border-color;
     padding-bottom: 5px;
   }
 
@@ -47,7 +47,7 @@
 
 td, th {
   border-width: 1px !important;
-  border-color: $montagu-table-border-color !important;
+  border-color: $theme-table-border-color !important;
 
   &.changelog-date {
     min-width: 120px;

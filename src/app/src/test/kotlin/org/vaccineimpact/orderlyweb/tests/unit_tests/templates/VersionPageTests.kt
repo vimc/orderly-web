@@ -83,12 +83,14 @@ class VersionPageTests : TeamcityTests()
             override val resources: List<DownloadableFileViewModel>,
             override val zipFile: DownloadableFileViewModel,
             val context: ActionContext) :
-            ReportVersionViewModel(report, focalArtefactUrl, isAdmin, isRunner, artefacts, dataLinks, resources, zipFile, context)
+            ReportVersionPageViewModel(report, focalArtefactUrl, isAdmin, isRunner, artefacts, dataLinks, resources, zipFile, context)
+
 
     private val testModel = TestReportViewModel(
             "{}",
             testReport,
             "/testFocalArtefactUrl",
+            false,
             false,
             testArtefactViewModels,
             testDataLinks,
@@ -110,6 +112,19 @@ class VersionPageTests : TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report-tab']"))
         assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads-tab']"))
+    }
+
+    @Test
+    fun `renders breadcrumbs correctly`()
+    {
+        val doc = template.jsoupDocFor(testModel)
+        val breadcrumbs = doc.select(".crumb-item")
+
+        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
+        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("Main menu")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("/")
+        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
+        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
     }
 
     @Test

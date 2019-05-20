@@ -7,7 +7,10 @@
 @import "../../../node_modules/bootstrap/scss/variables";
 
 $table-border-color: $gray-700;
-$montagu-header-bg-color: rgb(38, 50, 122);
-$montagu-header-color: white;
-$montagu-breadcrumb-bg-color: rgb(200, 200, 200);
-$montagu-breadcrumb-color: $blue;
+$published-color: #868ED3;
+$internal-color: darken($warning, 10%);
+$theme-header-bg-color: $gray-100;
+$theme-header-color: $body-color;
+$breadcrumb-bg-color: $gray-100;
+$breadcrumb-color: $success;
+$theme-table-border-color: $gray-300;

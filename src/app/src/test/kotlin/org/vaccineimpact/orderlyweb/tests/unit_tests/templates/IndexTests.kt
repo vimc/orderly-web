@@ -25,6 +25,10 @@ class IndexTests : TeamcityTests()
                 Report("r2", "r2 display", "v2")))
 
         val doc = template.jsoupDocFor(testModel)
+        val breadcrumbs = doc.select(".crumb-item")
+        assertThat(breadcrumbs.count()).isEqualTo(1)
+        assertThat(breadcrumbs.first().selectFirst("a").text()).isEqualTo("Main menu")
+        assertThat(breadcrumbs.first().selectFirst("a").attr("href")).isEqualTo("/")
 
         assertThat(doc.select("h1").text()).isEqualTo("All reports")
         assertThat(doc.selectFirst("#content a").attr("href")).isEqualTo("reports/r1/v1")
