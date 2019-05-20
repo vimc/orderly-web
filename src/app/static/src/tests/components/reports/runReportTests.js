@@ -29,8 +29,7 @@ describe("runReport", () => {
                 return {
                     runningStatus: null,
                     runningKey: null,
-                    newVersionFromRun: null,
-                    newVersionDisplayName: null
+                    newVersionFromRun: null
                 }
             }
         );
@@ -61,8 +60,7 @@ describe("runReport", () => {
             pollingTimer: null,
             runningKey: "some_key",
             runningStatus: "some_status",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            newVersionFromRun: ""
         });
 
         expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
@@ -81,16 +79,15 @@ describe("runReport", () => {
             pollingTimer: null,
             runningKey: "some_key",
             runningStatus: "some_status",
-            newVersionFromRun: "new_version",
-            newVersionDisplayName: "A new version"
+            newVersionFromRun: "20190514-160954-fc295f38"
         });
 
         expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
         expect(wrapper.find("#run-report-status").text()).to.contain("Running status: some_status");
 
-        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: A new version");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/new_version");
+        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: Tue May 14 2019, 16:09");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
         expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
     });
 
@@ -98,12 +95,7 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
@@ -126,12 +118,7 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -152,12 +139,7 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#cancel-run-btn").trigger("click");
@@ -179,12 +161,7 @@ describe("runReport", () => {
             .reply(500);
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -200,8 +177,7 @@ describe("runReport", () => {
             const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
             expect(storedStatus.runningKey).to.eq("");
             expect(storedStatus.runningStatus).to.eq("Error when running report");
-            expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionDisplayName).to.eq("");
+            expect(storedStatus.newVersionFromRun).to.eq(null);
 
             done();
         });
@@ -215,12 +191,7 @@ describe("runReport", () => {
             .reply(200, {"data": {"key": "some_key"}});
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -240,8 +211,6 @@ describe("runReport", () => {
             const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("Run started");
-            expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionDisplayName).to.eq("");
 
             done();
         });
@@ -255,8 +224,7 @@ describe("runReport", () => {
             pollingTimer: setTimeout(()=>{}),
             runningKey: "some_key",
             runningStatus: "running_status",
-            newVersionFromRun: "new_version",
-            newVersionDisplayName: "A new version"
+            newVersionFromRun: "20190514-160954-fc295f38"
         });
 
         wrapper.find("#run-report-dismiss").trigger("click");
@@ -280,12 +248,7 @@ describe("runReport", () => {
             .reply(200, {"data": {"status": "success", "version": "20190514-160954-fc295f38"}});
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -304,7 +267,6 @@ describe("runReport", () => {
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("success");
             expect(storedStatus.newVersionFromRun).to.eq("20190514-160954-fc295f38");
-            expect(storedStatus.newVersionDisplayName).to.eq("Tue May 14 2019, 16:09");
 
             done();
         }, 1800);
@@ -322,12 +284,7 @@ describe("runReport", () => {
             .reply(200, {"data": {"status": "error", "version": ""}});
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -345,7 +302,6 @@ describe("runReport", () => {
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("error");
             expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionDisplayName).to.eq("");
 
             done();
         }, 1800);
@@ -365,12 +321,7 @@ describe("runReport", () => {
             .reply(200, {"data": {"status": "still going", "version": ""}});
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -388,7 +339,6 @@ describe("runReport", () => {
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("still going");
             expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionDisplayName).to.eq("");
 
             done();
         }, 1800);
@@ -407,12 +357,7 @@ describe("runReport", () => {
             .reply(500);
 
         wrapper.setData({
-            showModal: true,
-            pollingTimer: null,
-            runningKey: "",
-            runningStatus: "",
-            newVersionFromRun: "",
-            newVersionDisplayName: ""
+            showModal: true
         });
 
         wrapper.find("#confirm-run-btn").trigger("click");
@@ -430,7 +375,6 @@ describe("runReport", () => {
             expect(storedStatus.runningKey).to.eq("some_key");
             expect(storedStatus.runningStatus).to.eq("Error when fetching report status");
             expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionDisplayName).to.eq("");
 
             done();
         }, 1800);
@@ -442,8 +386,7 @@ describe("runReport", () => {
                 return {
                     runningStatus: "storedStatus",
                     runningKey: "storedKey",
-                    newVersionFromRun: "storedNewVersion",
-                    newVersionDisplayName: "storedVersionDisplayName"
+                    newVersionFromRun: "20190514-160954-fc295f38"
                 }
             }
         );
@@ -454,8 +397,8 @@ describe("runReport", () => {
         expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
         expect(wrapper.find("#run-report-status").text()).to.contain("Running status: storedStatus");
 
-        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: storedVersionDisplayName");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/storedNewVersion");
+        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: Tue May 14 2019, 16:09");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
         expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
 
         expect(wrapper.vm.$data["runningKey"]).to.eq("storedKey");

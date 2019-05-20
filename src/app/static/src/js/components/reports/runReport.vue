@@ -3,7 +3,8 @@
         <label class="font-weight-bold">Run</label>
         <div>
             <div>Run this report to create a new version.</div>
-            <div id="run-report-confirm" v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
+            <div id="run-report-confirm"
+                 v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
                 <div class="modal-main px-3 py-3">
                     <div class="mb-2 font-weight-bold">Confirm run report</div>
                     <div class="mb-2">Are you sure you want to run this report?</div>
@@ -18,7 +19,8 @@
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
             <div v-if="newVersionFromRun" id="run-report-new-version">
-                New version: <a v-bind:href="`/reports/${report.name}/${newVersionFromRun}`">{{newVersionDisplayName}}</a>
+                New version: <a
+                    v-bind:href="`/reports/${report.name}/${newVersionFromRun}`">{{newVersionDisplayName}}</a>
             </div>
             <div v-on:click="dismissRunStatus" id="run-report-dismiss" class="btn btn-link p-0">Dismiss</div>
         </div>
@@ -28,31 +30,46 @@
 <script>
     import {reportVersionToLongTimestamp} from "../../helpers";
     import {session} from "../../session";
-    import axios from "axios";
+    import {api} from "../../api"
+
+    const initialState = {
+        showModal: false,
+        pollingTimer: null,
+        runningKey: "",
+        runningStatus: "",
+        newVersionFromRun: null
+    };
+
     export default {
         name: 'runReport',
         props: ['report'],
         data() {
             return {
-                showModal: false,
-                pollingTimer: null,
-                runningKey: "",
-                runningStatus: "",
-                newVersionFromRun: "",
-                newVersionDisplayName: ""
+                ...initialState
             }
         },
         mounted() {
             //check if we already have a runningStatusReport for this report in the session, and start monitoring it
             const existingStatus = session.getRunningReportStatus(this.report.name);
+            Object.assign(this, existingStatus);
 
-            this.runningStatus = existingStatus.runningStatus;
-            this.runningKey = existingStatus.runningKey;
-            this.newVersionFromRun = existingStatus.newVersionFromRun;
-            this.newVersionDisplayName = existingStatus.newVersionDisplayName;
-
-            if (this.runningStatus && !this.runHasCompleted()) {
+            if (this.runningStatus && !this.runHasCompleted) {
                 this.startPolling();
+            }
+        },
+        computed: {
+            newVersionDisplayName: function () {
+                return this.newVersionFromRun ? reportVersionToLongTimestamp(this.newVersionFromRun) : "";
+            },
+            runHasCompleted: function () {
+                return this.runningStatus === "success" || this.runningStatus === "error";
+            }
+        },
+        watch: {
+            runningStatus: function() {
+                if (this.runHasCompleted) {
+                    this.stopPolling();
+                }
             }
         },
         methods: {
@@ -64,22 +81,21 @@
             },
             run: function () {
                 this.showModal = false;
-                axios.post(`/reports/${this.report.name}/run/`,
-                    null,
-                    {withCredentials: true})
-                    .then((response) => {
-                        this.runningKey = response.data.data.key;
+                api.post(`/reports/${this.report.name}/run/`)
+                    .then(({data}) => {
+                        this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
 
                         this.startPolling();
                     })
-                    .catch(() => {
+                    .catch((e) => {
                         this.dismissRunStatus();
                         this.runningStatus = "Error when running report";
+                        console.log(e);
                     })
                     .finally(() => {
                         this.updateSessionStorage();
-                });
+                    });
             },
             startPolling: function () {
                 if (this.pollingTimer) {
@@ -87,31 +103,20 @@
                 }
 
                 this.pollingTimer = setInterval(() => {
-                        axios.get(`/reports/${this.runningKey}/status/`,
-                            {withCredentials: true})
-                            .then((response) => {
-                                this.runningStatus = response.data.data.status;
-                                this.newVersionFromRun = response.data.data.version;
-                                this.newVersionDisplayName = this.newVersionFromRun ?
-                                    reportVersionToLongTimestamp(this.newVersionFromRun) :
-                                    "";
-
-                                if (this.runHasCompleted()) {
-                                    //Run has completed, successfully or not
-                                    this.stopPolling();
-                                }
+                        api.get(`/reports/${this.runningKey}/status/`)
+                            .then(({data}) => {
+                                this.runningStatus = data.data.status;
+                                this.newVersionFromRun = data.data.version;
                             })
-                            .catch(() => {
+                            .catch((e) => {
                                 this.runningStatus = "Error when fetching report status";
+                                console.log(e)
                             })
                             .finally(() => {
                                 this.updateSessionStorage();
                             });
                     },
                     1500);
-            },
-            runHasCompleted: function () {
-                return this.runningStatus === "success" || this.runningStatus === "error";
             },
             stopPolling: function () {
                 if (this.pollingTimer) {
@@ -121,22 +126,13 @@
             },
             dismissRunStatus: function () {
                 this.stopPolling();
-                this.runningKey = "";
-                this.runningStatus = "";
-                this.newVersionFromRun = "";
-                this.newVersionDisplayName = "";
+                Object.assign(this, initialState);
                 this.updateSessionStorage();
             },
             updateSessionStorage: function () {
                 if (this.runningStatus) {
-                    session.setRunningReportStatus(this.report.name, {
-                        runningStatus: this.runningStatus,
-                        runningKey: this.runningKey,
-                        newVersionFromRun: this.newVersionFromRun,
-                        newVersionDisplayName: this.newVersionDisplayName
-                    });
-                }
-                else {
+                    session.setRunningReportStatus(this.report.name, this);
+                } else {
                     session.removeRunningReportStatus(this.report.name);
                 }
             }

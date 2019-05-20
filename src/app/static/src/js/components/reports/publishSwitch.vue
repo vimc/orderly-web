@@ -19,7 +19,8 @@
 </template>
 
 <script>
-    import axios from "axios";
+    import {api} from "../../api";
+
      export default {
         name: 'publishSwitch',
         props: ['report'],
@@ -30,9 +31,7 @@
         },
         methods: {
             publish: function () {
-                axios.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`,
-                    null,
-                    {withCredentials: true})
+                api.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`)
                     .then(() => {
                         this.$emit('toggle');
                         this.error = "";
