@@ -32,6 +32,7 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
         fun getWebClient(): WebClient
         {
             val client = WebClient()
+            client.isThrowExceptionOnFailingStatusCode = false
             client.isThrowExceptionOnScriptError = false
             return client
         }

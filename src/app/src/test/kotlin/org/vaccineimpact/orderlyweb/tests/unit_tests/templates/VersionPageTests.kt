@@ -1,13 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
@@ -72,22 +70,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
     )
 
-    data class TestReportViewModel(
-            val reportJson: String,
-            override val report: ReportVersionDetails,
-            override val focalArtefactUrl: String?,
-            override val isAdmin: Boolean,
-            override val isRunner: Boolean,
-            override val artefacts: List<ArtefactViewModel>,
-            override val dataLinks: List<InputDataViewModel>,
-            override val resources: List<DownloadableFileViewModel>,
-            override val zipFile: DownloadableFileViewModel,
-            val context: ActionContext) :
-            ReportVersionPageViewModel(report, focalArtefactUrl, isAdmin, isRunner, artefacts, dataLinks, resources, zipFile, context)
-
-
-    private val testModel = TestReportViewModel(
-            "{}",
+    private val testModel = ReportVersionPageViewModel(
             testReport,
             "/testFocalArtefactUrl",
             false,
@@ -96,8 +79,9 @@ class VersionPageTests : TeamcityTests()
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-            mock()
-    )
+            listOf(Breadcrumb("name", "url")),
+            true,
+            "appName")
 
     @Test
     fun `renders outline correctly`()
@@ -120,11 +104,9 @@ class VersionPageTests : TeamcityTests()
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
 
-        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
-        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("Main menu")
-        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("/")
-        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("r1 (r1-v1)")
-        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/reports/r1/r1-v1/")
+        Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
+        Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("name")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("url")
     }
 
     @Test
@@ -154,7 +136,6 @@ class VersionPageTests : TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
-
     }
 
     @Test
