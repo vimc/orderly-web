@@ -77,7 +77,7 @@ class ReportPageTests : SeleniumTest()
 
         addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
-        insertReport("testreport", "0170103-143015-1234abcd")
+        insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/v1/")
