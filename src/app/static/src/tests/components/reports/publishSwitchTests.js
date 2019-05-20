@@ -58,7 +58,7 @@ describe("publishSwitch", () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).to.eq(1);
             expect(wrapper.emitted().toggle).to.not.eq(undefined);
-            expect(wrapper.find(".alert.alert-danger").exists()).to.be.false;
+            expect(wrapper.find(".text-danger").exists()).to.eq(false);
             done();
         });
 
@@ -83,7 +83,7 @@ describe("publishSwitch", () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).to.eq(1);
             expect(wrapper.emitted().toggle).to.eq(undefined);
-            expect(wrapper.find(".alert.alert-danger").text()).to.eq("Could not toggle status");
+            expect(wrapper.find(".text-danger").text()).to.eq("Error: could not toggle status");
             done();
         });
 
