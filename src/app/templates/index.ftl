@@ -8,11 +8,12 @@
     <thead>
     <tr>
         <th></th>
+        <th>Path</th>
+        <th>Key</th>
+        <th>Parent</th>
         <th>Name</th>
         <th>Id</th>
         <th>Status</th>
-        <th>Author</th>
-        <th>Requester</th></tr>
     </thead>
 </table>
 </@layout>
@@ -20,5 +21,5 @@
         <script>
             var reports = ${reportsJson}
         </script>
-<script src="/js/index.bundle.js"></script>
+<script src="/js/treetable.bundle.js"></script>
 </#macro>
