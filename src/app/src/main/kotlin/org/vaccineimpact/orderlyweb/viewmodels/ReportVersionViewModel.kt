@@ -8,6 +8,9 @@ import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
@@ -16,6 +19,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
                                       val zipFile: DownloadableFileViewModel,
+                                      val versions: List<VersionPickerViewModel>,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -26,6 +30,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 dataLinks: List<InputDataViewModel>,
                 resources: List<DownloadableFileViewModel>,
                 zipFile: DownloadableFileViewModel,
+                versions: List<VersionPickerViewModel>,
                 breadcrumbs: List<Breadcrumb>,
                 loggedIn: Boolean,
                 appName: String) :
@@ -37,11 +42,12 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataLinks,
                     resources,
                     zipFile,
+                    versions,
                     DefaultViewModel(loggedIn, appName, breadcrumbs))
 
     companion object
     {
-        fun build(report: ReportVersionDetails, context: ActionContext): ReportVersionPageViewModel
+        fun build(report: ReportVersionDetails, versions: List<String>, context: ActionContext): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report)
 
@@ -78,6 +84,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
+                    versions.map { versionTimestamp(report.name, report.id, it) }.sortedByDescending { it.date },
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
@@ -141,8 +148,24 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             }
         }
 
+        private fun versionTimestamp(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
+        {
+            val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
+            val match = regex.matchEntire(id)
+                    ?.groupValues ?: throw Exception("Badly formatted report id $id")
+
+            val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
+
+            val date = LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
+
+            return VersionPickerViewModel("/reports/$reportName/$id", formatter.format(date),
+                    selected = id == currentVersion)
+        }
+
     }
 }
+
+data class VersionPickerViewModel(val url: String, val date: String, val selected: Boolean)
 
 data class ArtefactViewModel(val artefact: Artefact,
                              val files: List<DownloadableFileViewModel>,

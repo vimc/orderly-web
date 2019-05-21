@@ -1,13 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
@@ -80,6 +78,7 @@ class VersionPageTests : TeamcityTests()
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            listOf(),
             listOf(Breadcrumb("name", "url")),
             true,
             "appName")
@@ -108,6 +107,20 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
         Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("name")
         Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("url")
+    }
+
+    @Test
+    fun `renders version switcher option with correct selected attribute`()
+    {
+        val fakeVersions = listOf(VersionPickerViewModel("/", "Tue Jan 03 2017, 14:30", false),
+                VersionPickerViewModel("/", "Mon Jan 02 2017, 12:30", true))
+
+        val doc = template.jsoupDocFor(testModel.copy(versions = fakeVersions))
+        val options = doc.select ("#report-version-switcher option")
+
+        Assertions.assertThat(options.count()).isEqualTo(2)
+        Assertions.assertThat(options[0].hasAttr("selected")).isEqualTo(false)
+        Assertions.assertThat(options[1].hasAttr("selected")).isEqualTo(true)
     }
 
     @Test
