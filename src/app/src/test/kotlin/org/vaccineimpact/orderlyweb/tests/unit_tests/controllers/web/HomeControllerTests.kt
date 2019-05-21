@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.controllers.web.HomeController
+import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -20,7 +20,7 @@ class HomeControllerTests : TeamcityTests()
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global()))} doReturn true
         }
 
-        val sut = HomeController(mockContext)
+        val sut = IndexController(mockContext)
 
         assertThat((sut.orderly as Orderly).isReviewer).isTrue()
     }
@@ -32,7 +32,7 @@ class HomeControllerTests : TeamcityTests()
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global()))} doReturn false
         }
 
-        val sut = HomeController(mockContext)
+        val sut = IndexController(mockContext)
 
         assertThat((sut.orderly as Orderly).isReviewer).isFalse()
     }
