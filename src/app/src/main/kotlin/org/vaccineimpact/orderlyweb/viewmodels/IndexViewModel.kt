@@ -22,8 +22,9 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val reportRows = reports.groupBy { it.name }
                     .flatMap {
                         val parentId = i + 1
+                        val latestVersion = it.value[0].latestVersion
                         i += 1
-                        listOf(ReportRowViewModel(parentId, 0, 0, it.key, null, null, null, null, null)) +
+                        listOf(ReportRowViewModel(parentId, 0, 0, it.key, latestVersion, null, null, null, null)) +
                                 it.value.map { v -> i += 1; mapVersion(v, i, parentId) }
                     }
 

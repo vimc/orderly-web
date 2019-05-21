@@ -21,5 +21,5 @@
         <script>
             var reports = ${reportsJson}
         </script>
-<script src="/js/treetable.bundle.js"></script>
+<script src="/js/index.bundle.js"></script>
 </#macro>

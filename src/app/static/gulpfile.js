@@ -23,7 +23,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('js', () => {
-    return gulp.src('src/js/*.js')
+    return gulp.src('src/js/pages/*.js')
         .pipe(through(function (file) {
             file.named = path.basename(file.path, path.extname(file.path));
             this.queue(file);

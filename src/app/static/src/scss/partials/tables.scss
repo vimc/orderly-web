@@ -14,6 +14,11 @@
   }
 }
 
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  background: none !important;
+  border-color: transparent !important;
+}
+
 .details-control:not(.level-1) {
 
   .expander {

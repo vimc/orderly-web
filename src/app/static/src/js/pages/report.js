@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-import publishSwitch from './components/reports/publishSwitch.vue'
+import publishSwitch from '../components/reports/publishSwitch.vue'
 
 export const bootstrap = require("bootstrap");
 
