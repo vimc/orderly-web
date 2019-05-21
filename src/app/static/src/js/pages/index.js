@@ -10,7 +10,7 @@ $(document).ready(function () {
 
     function buildIdCell(data, type, full) {
         if (!data) return '';
-        if (full["parent"] === 0){
+        if (full["parent"] === 0) {
             return '';
         }
         return `<a href="/reports/${full['name']}/${data}/">${data}</a>`;
@@ -30,15 +30,25 @@ $(document).ready(function () {
 
     const dt = $('#reports-table').treeTable({
         "data": reports,
-        "columns": [{
-            "data": "name"
-        }, {
-            "data": "id",
-            "render": buildIdCell
-        }, {
-            "data": "published",
-            "render": buildStatusCell
-        }],
+        "columns": [
+            {
+                "data": "name"
+            },
+            {
+                "data": "id",
+                "render": buildIdCell
+            },
+            {
+                "data": "published",
+                "render": buildStatusCell
+            },
+            {
+                "data": "author"
+            },
+            {
+                "data": "requester"
+            }
+        ],
         "order": [
             [4, 'asc']
         ],

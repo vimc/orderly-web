@@ -49,9 +49,6 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
     }
 }
 
-//{"DT_RowId": "2","level": 1,"key": "2","parent": 1,"name": "Nelenil Adam","value": 5
-
-
 data class ReportRowViewModel(val key: Int,
                               val level: Int,
                               val parent: Int,

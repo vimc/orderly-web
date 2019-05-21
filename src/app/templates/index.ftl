@@ -14,6 +14,9 @@
         <th>Name</th>
         <th>Id</th>
         <th>Status</th>
+        <th>Author</th>
+        <th>Requester</th>
+    </tr>
     </thead>
 </table>
 </@layout>
