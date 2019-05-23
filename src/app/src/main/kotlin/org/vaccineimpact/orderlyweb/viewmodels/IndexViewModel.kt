@@ -3,15 +3,18 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>, val appViewModel: AppViewModel)
+data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>, val isReviewer: Boolean,
+                          val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
-    constructor(context: ActionContext, reports: List<ReportRowViewModel>)
-            : this(reports, DefaultViewModel(context, IndexViewModel.breadcrumb))
+    constructor(context: ActionContext, reports: List<ReportRowViewModel>, isReviewer: Boolean)
+            : this(reports, isReviewer, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -32,7 +35,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 children + parent
             }
 
-            return IndexViewModel(context, reportRows)
+            return IndexViewModel(context, reportRows,
+                    context.hasPermission(ReifiedPermission("reports.review", Scope.Global())))
         }
     }
 }

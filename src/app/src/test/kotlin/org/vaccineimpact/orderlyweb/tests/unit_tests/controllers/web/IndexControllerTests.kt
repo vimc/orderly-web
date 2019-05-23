@@ -15,7 +15,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
 import java.time.Instant
 
-class HomeControllerTests : TeamcityTests()
+class IndexControllerTests : TeamcityTests()
 {
     @Test
     fun `initialises Orderly correctly when user is reviewer`()
@@ -70,6 +70,30 @@ class HomeControllerTests : TeamcityTests()
             assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
         }
 
+    }
+
+    @Test
+    fun `isReviewer is true when report reviewing permission is present in the context`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+        }
+
+        val sut = IndexController(mockContext, mock())
+        val result = sut.index()
+        assertThat(result.isReviewer).isTrue()
+    }
+
+    @Test
+    fun `isReviewer is false when report reviewing permission is not present in the context`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+        }
+
+        val sut = IndexController(mockContext, mock())
+        val result = sut.index()
+        assertThat(result.isReviewer).isFalse()
     }
 
 }
