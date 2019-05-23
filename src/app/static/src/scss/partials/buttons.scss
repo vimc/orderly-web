@@ -1,12 +1,7 @@
 button, .button {
-  @include button-variant(rgb(0, 173, 239), rgb(200, 200, 200));
+  @include button-variant($btn-primary-color, darken($btn-primary-color, 10%));
   @include button-size(5px, 20px, 1em, 1.5em,  0);
-  font-weight: bold;
-  @extend .d-inline-block;
-  @extend .align-top;
-  border: 2px outset buttonface;
-  border-image: initial;
-  text-decoration: none !important;
+  @extend .btn
 }
 
 button[type=submit], button.submit, .button.submit {
@@ -19,7 +14,7 @@ button:disabled, .button.disabled {
   -webkit-box-shadow: none;
   box-shadow: none;
   opacity: .65;
-  @include button-variant(#d4d4d4, #d4d4d4);
+  @include button-variant($gray-400, $gray-400);
 }
 
 .arrowDown:before {
