@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
+import java.util.regex.Pattern
 
 class ReportPageTests : SeleniumTest()
 {
@@ -101,11 +102,8 @@ class ReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
         driver.findElement(By.cssSelector("#confirm-run-btn")).click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
-
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
-
-        Thread.sleep(200) //race condition on updating both text values
+        wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*success.*")))
 
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
         val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
@@ -175,7 +173,8 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read"
+                , Scope.Global())))
 
         insertReport("testreport", "v1")
 
