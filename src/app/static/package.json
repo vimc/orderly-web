@@ -6,8 +6,8 @@
   "scripts": {
     "build": "NODE_ENV=production gulp build",
     "js": "NODE_ENV=development gulp js",
-    "test": "mocha-webpack --webpack-config webpack.test.config.js --require src/tests/setup.js src/tests/*.js",
-    "test-teamcity": "mocha-webpack --reporter mocha-teamcity-reporter --webpack-config webpack.test.config.js --require src/tests/setup.js src/tests/*.js"
+    "test": "mocha-webpack --webpack-config webpack.test.config.js --require src/tests/setup.js --recursive 'src/tests/**/*.js'",
+    "test-teamcity": "mocha-webpack --reporter mocha-teamcity-reporter --webpack-config webpack.test.config.js --require src/tests/setup.js --recursive 'src/tests/**/*.js'"
   },
   "author": "",
   "license": "MIT",
@@ -33,6 +33,7 @@
     "mocha": "^6.1.4",
     "mocha-teamcity-reporter": "^3.0.0",
     "mocha-webpack": "^1.1.0",
+    "sinon": "^7.3.2",
     "popper.js": "^1.14.7",
     "through": "^2.3.8",
     "vue": "^2.6.8",

@@ -37,8 +37,8 @@ class ReportControllerTests : TeamcityTests()
     }
 
     private val mockOrderly = mock<OrderlyClient> {
-        on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
-                mockReportDetails
+
+        on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
         on { this.getReportsByName("r1") } doReturn
                 listOf(versionId, "20170104-091500-1234dcba")
     }
@@ -262,6 +262,33 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
         assertThat(result.isAdmin).isFalse()
     }
+
+    @Test
+    fun `users with report running permissions are report runners`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn true
+        }
+        val sut = ReportController(actionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isRunner).isTrue()
+    }
+
+    @Test
+    fun `users without report running permissions are not report runners`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn false
+        }
+        val sut = ReportController(actionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isRunner).isFalse()
+    }
+
 
     @Test
     fun `creates correct breadcrumbs`()

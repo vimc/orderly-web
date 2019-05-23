@@ -74,6 +74,7 @@ class VersionPageTests : TeamcityTests()
             testReport,
             "/testFocalArtefactUrl",
             false,
+            false,
             testArtefactViewModels,
             testDataLinks,
             testResources,
@@ -281,9 +282,32 @@ class VersionPageTests : TeamcityTests()
     {
         val mockModel = testModel.copy(isAdmin = false)
 
+
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
         Assertions.assertThat(publishSwitch).isNull()
+    }
+
+    @Test
+    fun `runners see run report`()
+    {
+        val mockModel = testModel.copy(isRunner = true)
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("runReportVueApp")
+        Assertions.assertThat(runReport).isNotNull()
+    }
+
+    @Test
+    fun `non runners do not see run report`()
+    {
+        val mockModel = testModel.copy(isRunner = false)
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("runReportVueApp")
+        Assertions.assertThat(runReport).isNull()
     }
 }

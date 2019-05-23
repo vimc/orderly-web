@@ -15,6 +15,7 @@ import java.time.format.DateTimeFormatter
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
                                       val isAdmin: Boolean,
+                                      val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
@@ -26,6 +27,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
     constructor(report: ReportVersionDetails,
                 focalArtefactUrl: String?,
                 isAdmin: Boolean,
+                isRunner: Boolean,
                 artefacts: List<ArtefactViewModel>,
                 dataLinks: List<InputDataViewModel>,
                 resources: List<DownloadableFileViewModel>,
@@ -38,6 +40,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             this(report,
                     focalArtefactUrl,
                     isAdmin,
+                    isRunner,
                     artefacts,
                     dataLinks,
                     resources,
@@ -73,6 +76,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     .buildZipFileViewModel()
 
             val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+            val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+
             val displayName = report.displayName ?: report.name
 
             val breadcrumb = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
@@ -80,6 +85,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
                     isAdmin,
+                    isRunner,
                     artefactViewModels,
                     dataViewModels,
                     resourceViewModels,
