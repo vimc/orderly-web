@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
-class HomeController: OrderlyDataController
+class IndexController: OrderlyDataController
 {
     constructor(actionContext: ActionContext,
                 orderly: OrderlyClient): super(actionContext, orderly)
@@ -14,6 +14,6 @@ class HomeController: OrderlyDataController
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
-        return IndexViewModel(context, orderly.getAllReports())
+        return IndexViewModel.build(orderly.getAllReportVersions(), context)
     }
 }
