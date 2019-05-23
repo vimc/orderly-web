@@ -35,12 +35,11 @@ class GithubWebTests : SeleniumTest()
     @Test
     fun `can log in with Github`()
     {
-        startApp("auth.provider=github")
+        startApp("auth.provider=github\nauth.fine_grained=false")
         login()
 
-        // user has no perms, so will see a 404
         val header = driver.findElement(By.cssSelector("h1"))
-        assertThat(header.text).isEqualTo("Page not found")
+        assertThat(header.text).isEqualTo("Find a report")
     }
 
     @Test
