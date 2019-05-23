@@ -152,7 +152,7 @@ class ReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
 
-        Thread.sleep(200) //race condition on updating both text values
+        Thread.sleep(200)
 
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
         val savedNewVersionText = driver.findElements(By.cssSelector("#run-report-new-version"))
