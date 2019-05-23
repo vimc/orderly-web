@@ -17,7 +17,8 @@ class ReportController : OrderlyDataController
         val reportName = context.params(":name")
         val version = context.params(":version")
         val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
-        return ReportVersionPageViewModel.build(reportDetails, context)
+        val versions = orderly.getReportsByName(reportName)
+        return ReportVersionPageViewModel.build(reportDetails, versions, context)
 
     }
 }

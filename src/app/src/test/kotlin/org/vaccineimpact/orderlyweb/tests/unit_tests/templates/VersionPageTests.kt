@@ -79,6 +79,7 @@ class VersionPageTests : TeamcityTests()
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            listOf(),
             listOf(Breadcrumb("name", "url")),
             true,
             "appName")
@@ -107,6 +108,20 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
         Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("name")
         Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("url")
+    }
+
+    @Test
+    fun `renders version switcher option with correct selected attribute`()
+    {
+        val fakeVersions = listOf(VersionPickerViewModel("/", "Tue Jan 03 2017, 14:30", false),
+                VersionPickerViewModel("/", "Mon Jan 02 2017, 12:30", true))
+
+        val doc = template.jsoupDocFor(testModel.copy(versions = fakeVersions))
+        val options = doc.select ("#report-version-switcher option")
+
+        Assertions.assertThat(options.count()).isEqualTo(2)
+        Assertions.assertThat(options[0].hasAttr("selected")).isEqualTo(false)
+        Assertions.assertThat(options[1].hasAttr("selected")).isEqualTo(true)
     }
 
     @Test

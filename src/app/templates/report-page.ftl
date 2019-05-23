@@ -16,6 +16,7 @@
                 </li>
             </ul>
             <hr/>
+            <#include "partials/version-picker.ftl">
             <#if isAdmin>
                 <div id="publishSwitchVueApp">
                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
