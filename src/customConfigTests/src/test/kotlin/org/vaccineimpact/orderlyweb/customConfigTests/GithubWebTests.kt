@@ -40,7 +40,7 @@ class GithubWebTests : SeleniumTest()
         login()
 
         val header = driver.findElement(By.cssSelector("h1"))
-        assertThat(header.text).isEqualTo("All reports")
+        assertThat(header.text).isEqualTo("Find a report")
     }
 
     @Test
