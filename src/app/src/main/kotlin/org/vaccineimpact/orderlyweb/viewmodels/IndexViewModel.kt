@@ -19,12 +19,13 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
         fun build(reports: List<ReportVersion>, context: ActionContext): IndexViewModel
         {
             var i = 0
+
             val reportRows = reports.groupBy { it.name }
                     .flatMap {
                         val parentId = i + 1
                         val latestVersion = it.value[0].latestVersion
                         i += 1
-                        listOf(ReportRowViewModel(parentId, 0, 0, it.key, latestVersion, null, null, null, null)) +
+                        listOf(ReportRowViewModel(parentId, 0, it.key, latestVersion, it.value.count(), null, null, null)) +
                                 it.value.map { v -> i += 1; mapVersion(v, i, parentId) }
                     }
 
@@ -35,13 +36,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
         private fun mapVersion(reportVersion: ReportVersion, index: Int, parent: Int): ReportRowViewModel
         {
-            val dateString = formatter.format(reportVersion.date.atZone(ZoneId.systemDefault()))
             return ReportRowViewModel(index,
-                    1,
                     parent,
                     reportVersion.name,
                     reportVersion.id,
-                    dateString,
+                    null,
                     reportVersion.published,
                     reportVersion.author,
                     reportVersion.requester)
@@ -49,12 +48,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
     }
 }
 
-data class ReportRowViewModel(val key: Int,
-                              val level: Int,
-                              val parent: Int,
+data class ReportRowViewModel(val ttKey: Int,
+                              val ttParent: Int,
                               val name: String,
-                              val id: String?,
-                              val date: String?,
+                              val id: String,
+                              val numVersions: Int?,
                               val published: Boolean?,
                               val author: String?,
                               val requester: String?)

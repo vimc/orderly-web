@@ -2,21 +2,30 @@ const $ = window.$ = window.jQuery = require("jquery");
 require('datatables.net');
 require('datatables.net-dt');
 require('datatables.net-bs4');
-import treeTable from '../treeTable'
-
-treeTable(jQuery);
+require("@reside-ic/tree-table");
 
 $(document).ready(function () {
 
     function buildIdCell(data, type, full) {
         if (!data) return '';
-        if (full["parent"] === 0) {
+        if (full["tt_parent"] === 0) {
             return '';
         }
         return `<a href="/reports/${full['name']}/${data}/">${data}</a>`;
     }
 
-    function buildStatusCell(data, type, full) {
+    function buildNameCell(data, type, full) {
+        if (!data) return '';
+        if (full["tt_parent"] > 0) {
+            return '';
+        }
+        const versionText = full.num_versions > 1 ? "versions" : "versions";
+        return `<span>${data}</span><br/>
+<span class="text-muted">${full.num_versions} ${versionText}: </span>
+<a href="/reports/${full['name']}/${full.id}/">view latest</a>`;
+    }
+
+    function buildStatusCell(data) {
         if (data == null) {
             return '';
         }
@@ -30,9 +39,11 @@ $(document).ready(function () {
 
     const dt = $('#reports-table').treeTable({
         "data": reports,
+        "collapsed": true,
         "columns": [
             {
-                "data": "name"
+                "data": "name",
+                "render": buildNameCell
             },
             {
                 "data": "id",
@@ -50,7 +61,7 @@ $(document).ready(function () {
             }
         ],
         "order": [
-            [4, 'asc']
+            [1, 'asc']
         ],
         "lengthMenu": [10, 25, 50, 75, 100],
         "pageLength": 50

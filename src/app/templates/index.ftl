@@ -7,10 +7,6 @@
 <table id="reports-table" style="width: 100%" class="stripe responsive">
     <thead>
     <tr>
-        <th></th>
-        <th>Path</th>
-        <th>Key</th>
-        <th>Parent</th>
         <th>Name</th>
         <th>Id</th>
         <th>Status</th>
