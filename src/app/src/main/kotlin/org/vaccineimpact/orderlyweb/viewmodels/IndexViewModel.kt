@@ -3,6 +3,8 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.ReportVersion
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>, val appViewModel: AppViewModel)
@@ -60,7 +62,7 @@ data class ReportRowViewModel(val ttKey: Int,
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
         {
-            val dateString = formatter.format(version.date)
+            val dateString = formatter.format(LocalDateTime.ofInstant(version.date, ZoneId.of("UTC")))
 
             return ReportRowViewModel(key,
                     parent.ttKey,
