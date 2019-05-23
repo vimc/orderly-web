@@ -268,7 +268,7 @@ class ReportControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn "v1"
+            on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn true
         }
         val sut = ReportController(actionContext, mockOrderly)
@@ -281,7 +281,7 @@ class ReportControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn "v1"
+            on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn false
         }
         val sut = ReportController(actionContext, mockOrderly)
