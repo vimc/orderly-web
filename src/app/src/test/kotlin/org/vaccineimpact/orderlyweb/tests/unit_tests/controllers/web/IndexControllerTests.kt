@@ -48,7 +48,7 @@ class IndexControllerTests : TeamcityTests()
         val requester = "funder mcfunderson"
         val date = Instant.parse("2019-05-23T12:31:00.613Z")
         val fakeReports = listOf(ReportVersion("r1", "r1 display name", "v1", "v2", true, date, author, requester),
-                ReportVersion("r1", "r1 display name", "v2", "v2", false, date, author, requester),
+                ReportVersion("r1", null, "v2", "v2", false, date, author, requester),
                 ReportVersion("r2", null, "r2v1", "r2v1", true, date, "another author", "another requester"))
 
         val mockOrderly = mock<OrderlyClient> {
