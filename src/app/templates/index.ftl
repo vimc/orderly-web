@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="reportsJson" type="kotlin.collections.List<org.vaccineimpact.orderlyweb.models.Report>" -->
+<#-- @ftlvariable name="reportsJson" type="String" -->
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
 <@layout>
     <h1>Find a report</h1>

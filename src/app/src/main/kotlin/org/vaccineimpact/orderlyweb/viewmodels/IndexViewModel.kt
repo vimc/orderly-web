@@ -44,6 +44,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 data class ReportRowViewModel(val ttKey: Int,
                               val ttParent: Int,
                               val name: String,
+                              val displayName: String,
                               val id: String?,
                               val latestVersion: String,
                               val date: String?,
@@ -61,7 +62,9 @@ data class ReportRowViewModel(val ttKey: Int,
             val referenceVersion = versions.sortedByDescending { it.date }.first()
             val latestVersion = referenceVersion.latestVersion
             val numVersions = versions.count()
-            return ReportRowViewModel(key, 0, referenceVersion.name, null, latestVersion, null, numVersions, null, null, null)
+            val displayName = referenceVersion.displayName?: referenceVersion.name
+            return ReportRowViewModel(key, 0, referenceVersion.name, displayName,
+                    null, latestVersion, null, numVersions, null, null, null)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
@@ -71,6 +74,7 @@ data class ReportRowViewModel(val ttKey: Int,
             return ReportRowViewModel(key,
                     parent.ttKey,
                     version.name,
+                    parent.displayName,
                     version.id,
                     parent.latestVersion,
                     dateString,
