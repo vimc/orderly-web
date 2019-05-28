@@ -55,7 +55,7 @@ data class ReportRowViewModel(val ttKey: Int,
 {
     companion object
     {
-        private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
+        private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy")
 
         fun buildParent(key: Int, versions: List<ReportVersion>): ReportRowViewModel
         {
