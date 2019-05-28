@@ -12,14 +12,15 @@
             </span>
             </div>
         </div>
-        <div class="alert alert-danger mt-3" v-if="error.length > 0">
+        <div class="text-danger mt-3" v-if="error.length > 0">
             {{error}}
         </div>
     </div>
 </template>
 
 <script>
-    import axios from "axios";
+    import {api} from "../../api";
+
      export default {
         name: 'publishSwitch',
         props: ['report'],
@@ -30,15 +31,13 @@
         },
         methods: {
             publish: function () {
-                axios.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`,
-                    null,
-                    {withCredentials: true})
+                api.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`)
                     .then(() => {
                         this.$emit('toggle');
                         this.error = "";
                     })
                     .catch(() => {
-                        this.error = "Could not toggle status";
+                        this.error = "Error: could not toggle status";
                     });
             }
         }

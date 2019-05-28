@@ -22,6 +22,11 @@
                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                 </div>
             </#if>
+            <#if isRunner>
+                <div id="runReportVueApp">
+                    <run-report :report=report ></run-report>
+                </div>
+            </#if>
         </div>
         <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active" role="tabpanel" id="report-tab">
