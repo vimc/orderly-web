@@ -59,10 +59,10 @@ class IndexControllerTests : TeamcityTests()
         val result = sut.index().reports.sortedBy { it.ttKey }
 
         val expected = listOf(ReportRowViewModel(1, 0, "r1", "r1 display name", null, "v2", null, 2, null, null, null),
-                ReportRowViewModel(2, 1, "r1", "r1 display name", "v1", "v2", "Thu May 23 2019, 12:31", 2, true, author, requester),
-                ReportRowViewModel(3, 1, "r1", "r1 display name", "v2", "v2", "Thu May 23 2019, 12:31", 2, false, author, requester),
+                ReportRowViewModel(2, 1, "r1", "r1 display name", "v1", "v2", "Thu May 23 2019", 2, true, author, requester),
+                ReportRowViewModel(3, 1, "r1", "r1 display name", "v2", "v2", "Thu May 23 2019", 2, false, author, requester),
                 ReportRowViewModel(4, 0, "r2", "r2", null, "r2v1", null, 1, null, null, null),
-                ReportRowViewModel(5, 4, "r2", "r2", "r2v1", "r2v1", "Thu May 23 2019, 12:31", 1, true, "another author", "another requester")
+                ReportRowViewModel(5, 4, "r2", "r2", "r2v1", "r2v1", "Thu May 23 2019", 1, true, "another author", "another requester")
         )
 
         assertThat(result.count()).isEqualTo(5)
