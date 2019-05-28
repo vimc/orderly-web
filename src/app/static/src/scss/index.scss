@@ -18,4 +18,30 @@ $border-color: rgba(0, 0, 0, 0.125);
       border-left: 0;
     }
   }
+
+  .expander:after {
+    content: '';
+  }
+}
+
+.dataTables_length {
+  float: left;
+}
+
+.dataTables_paginate {
+  float: right;
+
+  .page-item.active .page-link {
+    background-color: $theme-blue !important;
+    border-color: $theme-blue !important;
+    -webkit-border-radius: $btn-border-radius;
+    -moz-border-radius: $btn-border-radius;
+    border-radius: $btn-border-radius;
+  }
+
+  .pagination {
+    -webkit-border-radius: $btn-border-radius;
+    -moz-border-radius: $btn-border-radius;
+    border-radius: $btn-border-radius;
+  }
 }
