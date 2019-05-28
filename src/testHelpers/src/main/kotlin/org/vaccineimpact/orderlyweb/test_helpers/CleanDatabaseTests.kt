@@ -20,8 +20,11 @@ abstract class CleanDatabaseTests : DatabaseTests()
         JooqContext(enableForeignKeyConstraints = false).use {
             for (field in fields)
             {
-                it.dsl.deleteFrom(field.get(null) as Table<*>)
-                        .execute()
+                if (!field.isSynthetic)
+                {
+                    it.dsl.deleteFrom(field.get(null) as Table<*>)
+                            .execute()
+                }
             }
 
         }

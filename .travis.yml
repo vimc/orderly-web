@@ -1,10 +1,31 @@
-language: node_js
-node_js:
-- 10
-before_script:
-- npm install codecov -g
-- npm install --prefix=src/app/static
-- npm run build --prefix=src/app/static
-script: npm test --prefix=src/app/static
-after_success:
-- codecov -f src/app/static/coverage/*.json
+matrix:
+  include:
+    - language: node_js
+      node_js:
+      - 10
+      before_script:
+      - npm install codecov -g
+      - npm install --prefix=src/app/static
+      - npm run build --prefix=src/app/static
+      script: npm test --prefix=src/app/static
+      after_success:
+      - codecov -f src/app/static/coverage/*.json
+    - language: java
+      jdk:
+      - oraclejdk8
+      before_install:
+      - docker pull vimc/orderly.server:master
+      - docker pull vimc/montagu-reverse-proxy-minimal:master
+      - docker pull vimc/orderlyweb-migrate:master
+      - docker pull vimc/montagu-api:master
+      - docker pull vimc/montagu-db:master
+      - docker pull vimc/montagu-migrate:master
+      install: ./src/gradlew -p src
+      before_script:
+      - ./travis/run-dependencies.sh
+      script:
+      - ./src/gradlew -p src :app:test
+      after_success:
+      - ./travis/send-codecov.sh
+      services:
+      - docker
