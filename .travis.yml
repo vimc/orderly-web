@@ -3,6 +3,7 @@ matrix:
     - language: node_js
       node_js:
       - 10
+      cache: npm
       before_script:
       - npm install codecov -g
       - npm install --prefix=src/app/static
@@ -11,6 +12,14 @@ matrix:
       after_success:
       - codecov -f src/app/static/coverage/*.json
     - language: java
+      before_cache:
+      - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+          directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $HOME/src/app/static/node_modules
       jdk:
       - oraclejdk8
       before_install:
@@ -24,6 +33,7 @@ matrix:
       - npm install --prefix ./src/app/static
       - ./src/gradlew -p src
       before_script:
+      - sudo touch /etc/orderly/web/go_signal
       - ./travis/run-dependencies.sh
       script:
       - ./src/gradlew -p src :app:test
