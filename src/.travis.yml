@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+- 10
+before_script:
+- npm install codecov -g
+- npm install --prefix=src/app/static
+- npm run build
+script: npm test --prefix=src/app/static
+after_success:
+- codecov -f src/app/static/coverage/*.json
