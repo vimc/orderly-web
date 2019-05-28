@@ -33,7 +33,7 @@ matrix:
       - npm install --prefix ./src/app/static
       - ./src/gradlew -p src
       before_script:
-      - sudo touch /etc/orderly/web/go_signal
+      - sudo mkdir -p /etc/orderly/web/ && sudo touch /etc/orderly/web/go_signal
       - ./travis/run-dependencies.sh
       script:
       - ./src/gradlew -p src :app:test
