@@ -29,6 +29,7 @@ matrix:
       - docker pull vimc/montagu-api:master
       - docker pull vimc/montagu-db:master
       - docker pull vimc/montagu-migrate:master
+      - docker pull vimc/montagu-cli:master
       install:
       - npm install --prefix ./src/app/static
       - ./src/gradlew -p src
