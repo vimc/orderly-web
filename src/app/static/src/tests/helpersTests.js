@@ -1,6 +1,6 @@
 import {expect} from "chai";
 import {describe} from "mocha";
-import {reportVersionToLongTimestamp, longDate} from "../js/helpers";
+import {reportVersionToLongTimestamp, longDate} from "../js/utils/helpers";
 
 describe('helpers', () => {
     describe('reportVersionToLongTimestamp', () => {

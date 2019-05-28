@@ -1,7 +1,7 @@
 import {expect} from "chai";
 import {describe} from "mocha";
 import * as sinon from "sinon";
-import {session} from "../js/session";
+import {session} from "../js/utils/session";
 
 describe('session', () => {
 
