@@ -6,7 +6,7 @@ $here/../src/gradlew -p src :generateTestData
 
 docker network create montagu
 
-docker run -d --network=montagu --name db -p 5432:5432 vimc/montagu-db:master
+docker run -d --network=montagu --name db vimc/montagu-db:master
 docker run -d --network=montagu --name api -p 8080:8080 vimc/montagu-api:master
 docker run -d --network=montagu --volume $PWD/src/app/git:/orderly --user $UID -p 8321:8321 vimc/orderly.server:master /orderly
 docker run -d --network=montagu -p 80:80 vimc/montagu-reverse-proxy-minimal:master

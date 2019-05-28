@@ -39,6 +39,7 @@ matrix:
       script:
       - ./src/gradlew -p src :app:test
       after_success:
+      - ./src/gradlew -p src :app:jacocoTestReport
       - ./travis/send-codecov.sh
       services:
       - docker

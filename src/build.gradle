@@ -88,12 +88,6 @@ subprojects {
         }
     }
 
-    jacoco {
-        toolVersion = "0.8.2"
-    }
-
-    test.finalizedBy(jacocoTestReport)
-
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/main/resources'
         include '*'
