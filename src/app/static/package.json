@@ -6,27 +6,9 @@
   "scripts": {
     "build": "NODE_ENV=production gulp build",
     "js": "NODE_ENV=development gulp js",
-    "test": "jest",
-    "test-teamcity": "jest"
+    "test": "jest -c jest.config.js"
   },
-  "jest": {
-    "testResultsProcessor": "jest-teamcity-reporter",
-    "setupFilesAfterEnv": [
-      "<rootDir>/src/tests/setup.js"
-    ],
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "vue"
-    ],
-    "transform": {
-      ".*\\.(vue)$": "vue-jest",
-      "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
-    },
-    "coverageDirectory": "./coverage/",
-    "collectCoverage": true
-  },
-  "author": "",
+  "author": "RESIDE-IC",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.3.4",
