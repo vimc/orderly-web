@@ -13,13 +13,8 @@ docker run -d --network=montagu -p 80:80 vimc/montagu-reverse-proxy-minimal:mast
 
 docker exec db montagu-wait.sh
 
-docker run --rm --network=montagu vimc/montagu-migrate:master migrate
-docker run --network=montagu vimc/montagu-cli:master add "Test User" test.user \
-    test.user@example.com password
-
-docker run --network=montagu vimc/montagu-cli:master addRole test.user user
-
-docker run --network=montagu vimc/montagu-cli:master addRole test.user admin
+export NETWORK=montagu
+$here/../scripts/setup-montagu-db.sh
 
 docker exec api mkdir -p /etc/montagu/api
 docker exec api touch /etc/montagu/api/go_signal
