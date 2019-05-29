@@ -36,8 +36,10 @@ matrix:
       before_script:
       - sudo mkdir -p /etc/orderly/web/ && sudo touch /etc/orderly/web/go_signal
       - ./travis/run-dependencies.sh
+      - ./src/gradlew -p src :customConfigTests:copyDemo
       script:
       - ./src/gradlew -p src :app:test
+      - ./src/gradlew -p src :customConfigTests:test
       after_success:
       - ./src/gradlew -p src :app:jacocoTestReport
       - ./travis/send-codecov.sh
