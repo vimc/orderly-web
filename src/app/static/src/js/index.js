@@ -7,5 +7,6 @@ require('datatables.net-bs4');
 require("@reside-ic/tree-table");
 
 $(document).ready(function () {
-    $('#reports-table').treeTable(options);
+    const isReviewer = typeof canReview !== "undefined";
+    $('#reports-table').treeTable(options(isReviewer), reports);
 });

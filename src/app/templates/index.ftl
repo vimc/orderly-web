@@ -23,7 +23,7 @@
         <script type="text/javascript">
             var reports = ${reportsJson}
            <#if isReviewer>
-                 var isReviewer = true;
+                 var canReview = true;
            </#if>
         </script>
     <script type="text/javascript" src="js/index.bundle.js"></script>

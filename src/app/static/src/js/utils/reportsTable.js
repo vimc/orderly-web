@@ -1,30 +1,30 @@
 function buildIdCell(data, type, full) {
-    if (!data) return '';
-    if (full["tt_parent"] === 0) {
+    if (! data || full["tt_parent"] === 0) {
         return '';
     }
-    return `<a href="/reports/${full['name']}/${data}/">
+    return `<a href="/reports/${full["name"]}/${data}/">
 <div>
-${full.date}
+${full["date"]}
 </div>
 <div class="small">(${data})</div></a>`;
 }
 
 function buildNameCell(data, type, full) {
-    if (!data) return '';
-    if (full["tt_parent"] > 0) {
+    if (!data || full["tt_parent"] > 0) {
         return '';
     }
-    const versionText = full.num_versions > 1 ? "versions" : "version";
-    return `<span>${data}</span><br/>
-<span class="text-muted">${full.num_versions} ${versionText}: </span>
-<a href="/reports/${full['name']}/${full.id}/">view latest</a>`;
+    const versionText = full["num_versions"] > 1 ? "versions" : "version";
+    return `<div><span>${full["display_name"]}</span><br/>
+<span class="text-muted">${full["num_versions"]} ${versionText}: </span>
+<a href="/reports/${full['name']}/${full["latest_version"]}/">view latest</a></div>`;
 }
 
-function buildStatusCell(data) {
-    if (data == null) {
+function buildStatusCell(data, type, full) {
+
+    if (data == null || full["tt_parent"] === 0) {
         return '';
     }
+
     if (data) {
         return '<span class="badge-published badge float-left">published</span>'
     }
@@ -33,38 +33,39 @@ function buildStatusCell(data) {
     }
 }
 
-let cols = [
-    {
-        "data": "name",
-        "render": buildNameCell
+export const options = (isReviewer, reports) => {
+
+    let cols = [
+        {
+            "data": "name",
+            "render": buildNameCell
+        },
+        {
+            "data": "id",
+            "render": buildIdCell
+        }];
+    if (isReviewer) {
+        cols.push({
+            "data": "published",
+            "render": buildStatusCell
+        })
+    }
+    cols = cols.concat([{
+        "data": "author"
     },
-    {
-        "data": "id",
-        "render": buildIdCell
-    }];
-if (isReviewer) {
-    cols.push({
-        "data": "published",
-        "render": buildStatusCell
-    })
-}
-cols = cols.concat([{
-    "data": "author"
-},
-    {
-        "data": "requester"
-    }]);
+        {
+            "data": "requester"
+        }]);
 
-const isReviewer = typeof isReviewer !== "undefined";
-
-export const options = {
-    "dom": '<"top"f>rt<"bottom"lp><"clear">',
-    "data": reports,
-    "collapsed": true,
-    "columns": cols,
-    "order": [
-        [1, 'asc']
-    ],
-    "lengthMenu": [10, 25, 50, 75, 100],
-    "pageLength": 50
+    return {
+        "dom": '<"top"f>rt<"bottom"lp><"clear">',
+        "data": reports,
+        "collapsed": true,
+        "columns": cols,
+        "order": [
+            [1, 'asc']
+        ],
+        "lengthMenu": [10, 25, 50, 75, 100],
+        "pageLength": 50
+    }
 };
