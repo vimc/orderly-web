@@ -19,7 +19,8 @@ class GithubWebTests : SeleniumTest()
 
         val loginField = driver.findElement(By.id("login_field"))
         val passwordField = driver.findElement(By.id("password"))
-        val pw = "notarealpw"
+
+        val pw = "notarealpassword"
         val username = "notarealuser"
 
         loginField.sendKeys(username)

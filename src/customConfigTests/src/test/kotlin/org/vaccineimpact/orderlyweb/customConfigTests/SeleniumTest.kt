@@ -1,20 +1,10 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import io.specto.hoverfly.junit.core.HoverflyConfig
-import io.specto.hoverfly.junit.core.HoverflyConfig.configs
 import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
-import io.specto.hoverfly.junit.core.SimulationSource
-import io.specto.hoverfly.junit.core.SimulationSource.classpath
-import io.specto.hoverfly.junit.dsl.HoverflyDsl.service
-import io.specto.hoverfly.junit.dsl.ResponseBuilder
-import io.specto.hoverfly.junit.dsl.ResponseCreators
-import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers
-import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any
 import io.specto.hoverfly.junit.rule.HoverflyRule
 import org.junit.After
 import org.junit.Before
 import org.junit.ClassRule
-import org.junit.Rule
 import org.openqa.selenium.By
 import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
