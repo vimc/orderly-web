@@ -1,4 +1,5 @@
 import {options} from "../js/utils/reportsTable"
+
 const $ = require('jquery');
 
 describe("reportsTable", () => {
@@ -13,6 +14,12 @@ describe("reportsTable", () => {
         const cols = options(false, []).columns;
         expect(cols.length).toBe(4);
         expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "author", "requester"])
+    });
+
+    it("is ordered by version desc", () => {
+        const opts = options(false, []);
+        expect(opts.order).toStrictEqual([[2, "desc"]]);
+        expect(opts.columns[1].data).toBe("id");
     });
 
     describe("name cell", () => {
@@ -80,9 +87,39 @@ describe("reportsTable", () => {
             }));
 
             expect($result.attr("href")).toBe("/reports/r1/some-id/");
-            expect($($result.find("div")[0]).text()).toBeIgnoringWhitespace("human friendly date");
-            expect($($result.find("div.small")[0]).text()).toBeIgnoringWhitespace("(some-id)");
+            expect($result.find("span:not(.badge)").text()).toBeIgnoringWhitespace("human friendly date");
+            expect($result.find("div.small").text()).toBeIgnoringWhitespace("(some-id)");
         });
+
+        it("contains latest badge if version is latest", () => {
+            const versionColDefinition = options(false, []).columns[1];
+            const $result = $(versionColDefinition.render("v1", null, {
+                tt_parent: 1,
+                name: "r1",
+                date: "human friendly date",
+                latest_version: "v1"
+            }));
+
+            const $badge = $result.find(".badge");
+            expect($badge.text()).toBe("latest");
+            expect($badge.attr("class")).toBe("badge-info badge float-right");
+        });
+
+
+        it("contains out-dated badge if version is out-dated", () => {
+            const versionColDefinition = options(false, []).columns[1];
+            const $result = $(versionColDefinition.render("v1", null, {
+                tt_parent: 1,
+                name: "r1",
+                date: "human friendly date",
+                latest_version: "v2"
+            }));
+
+            const $badge = $result.find(".badge");
+            expect($badge.text()).toBe("out-dated");
+            expect($badge.attr("class")).toBe("badge-light badge float-right");
+        });
+
     });
 
     describe("status cell", () => {

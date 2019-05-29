@@ -1,12 +1,23 @@
+function buildVersionBadge(data, full) {
+    if (data === full["latest_version"]) {
+        return '<span class="badge-info badge float-right">latest</span>'
+    }
+    else {
+        return '<span class="badge-light badge float-right">out-dated</span>'
+    }
+}
+
 function buildIdCell(data, type, full) {
-    if (! data || full["tt_parent"] === 0) {
+    if (!data || full["tt_parent"] === 0) {
         return '';
     }
     return `<a href="/reports/${full["name"]}/${data}/">
-<div>
-${full["date"]}
-</div>
-<div class="small">(${data})</div></a>`;
+                <div>
+                <span>${full["date"]}</span>
+                ${buildVersionBadge(data, full)}
+                </div>
+                <div class="small">(${data})</div>
+            </a>`;
 }
 
 function buildNameCell(data, type, full) {
@@ -14,9 +25,11 @@ function buildNameCell(data, type, full) {
         return '';
     }
     const versionText = full["num_versions"] > 1 ? "versions" : "version";
-    return `<div><span>${full["display_name"]}</span><br/>
-<span class="text-muted">${full["num_versions"]} ${versionText}: </span>
-<a href="/reports/${full['name']}/${full["latest_version"]}/">view latest</a></div>`;
+    return `<div>
+                <span>${full["display_name"]}</span><br/>
+                <span class="text-muted">${full["num_versions"]} ${versionText}: </span>
+                <a href="/reports/${full['name']}/${full["latest_version"]}/">view latest</a>
+            </div>`;
 }
 
 function buildStatusCell(data, type, full) {
@@ -63,7 +76,7 @@ export const options = (isReviewer, reports) => {
         "collapsed": true,
         "columns": cols,
         "order": [
-            [1, 'asc']
+            [2, 'desc']
         ],
         "lengthMenu": [10, 25, 50, 75, 100],
         "pageLength": 50
