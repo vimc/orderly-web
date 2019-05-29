@@ -62,8 +62,8 @@
             "value" : "1"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -152,8 +152,8 @@
             "value" : "1"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -229,8 +229,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -308,8 +308,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -387,8 +387,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -466,8 +466,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -545,8 +545,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -624,8 +624,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -703,8 +703,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -913,8 +913,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -998,8 +998,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1096,8 +1096,8 @@
             "value" : "1"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1198,8 +1198,8 @@
             "value" : "1"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1276,8 +1276,8 @@
             "value" : "https://github.com/"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/74.0.3729.169 Safari/537.36"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1355,8 +1355,8 @@
             "value" : "application/x-www-form-urlencoded"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Java/1.8.0_212"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1424,8 +1424,8 @@
             "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "GitHubJava/2.1.5"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1509,8 +1509,8 @@
             "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "GitHubJava/2.1.5"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
@@ -1584,8 +1584,8 @@
             "value" : "keep-alive"
           } ],
           "User-Agent" : [ {
-            "matcher" : "exact",
-            "value" : "Java/1.8.0_212"
+            "matcher" : "regex",
+            "value" : ".*"
           } ]
         }
       },
