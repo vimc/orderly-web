@@ -23,7 +23,7 @@ matrix:
           - $HOME/.gradle/wrapper/
           - $HOME/src/app/static/node_modules
       jdk:
-      - oraclejdk8
+      - openjdk8
       before_install:
       - docker pull vimc/orderly.server:master
       - docker pull vimc/montagu-reverse-proxy-minimal:master
