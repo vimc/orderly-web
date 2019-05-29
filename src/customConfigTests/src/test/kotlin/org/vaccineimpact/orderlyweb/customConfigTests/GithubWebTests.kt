@@ -1,14 +1,10 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import kotlin.math.log
 
 class GithubWebTests : SeleniumTest()
 {
@@ -23,8 +19,8 @@ class GithubWebTests : SeleniumTest()
 
         val loginField = driver.findElement(By.id("login_field"))
         val passwordField = driver.findElement(By.id("password"))
-        val pw = "AfakeP@s5w0rd"
-        val username = "vimc-auth-test-user"
+        val pw = "notarealpassword"
+        val username = "notarealuser"
 
         loginField.sendKeys(username)
         passwordField.sendKeys(pw)
