@@ -1,5 +1,3 @@
-import {expect} from "chai";
-import {describe} from "mocha";
 import {mount} from '@vue/test-utils';
 import {mockAxios} from "../../mockAxios";
 import * as sinon from "sinon";
@@ -47,9 +45,9 @@ describe("runReport", () => {
 
         const wrapper = mount(RunReport, runReportProps);
 
-        expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
-        expect(wrapper.find("#run-report-status").exists()).to.eq(false);
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").exists()).toBe(false);
     });
 
     it('shows status', () => {
@@ -63,12 +61,12 @@ describe("runReport", () => {
             newVersionFromRun: ""
         });
 
-        expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
-        expect(wrapper.find("#run-report-status").text()).to.contain("Running status: some_status");
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
 
-        expect(wrapper.find("#run-report-new-version").exists()).to.eq(false);
-        expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
+        expect(wrapper.find("#run-report-new-version").exists()).toBe(false);
+        expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
     it('shows new version', () => {
@@ -82,13 +80,13 @@ describe("runReport", () => {
             newVersionFromRun: "20190514-160954-fc295f38"
         });
 
-        expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
-        expect(wrapper.find("#run-report-status").text()).to.contain("Running status: some_status");
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
 
-        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: Tue May 14 2019, 16:09");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
-        expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
+        expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
+        expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
     it('shows modal', () => {
@@ -98,9 +96,9 @@ describe("runReport", () => {
             showModal: true
         });
 
-        expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-show");
-        expect(wrapper.find("#run-report-status").exists()).to.eq(false);
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-show");
+        expect(wrapper.find("#run-report-status").exists()).toBe(false);
 
 
     });
@@ -110,7 +108,7 @@ describe("runReport", () => {
 
         wrapper.find('button[type="submit"]').trigger("click");
 
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-show");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-show");
 
     });
 
@@ -124,11 +122,11 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(mockAxios.history.post.length).to.eq(1);
-            expect(mockAxios.history.post[0].url).to.eq("/reports/name1/run/");
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe("/reports/name1/run/");
 
             //should also hide modal
-            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
 
             done();
         });
@@ -145,10 +143,10 @@ describe("runReport", () => {
         wrapper.find("#cancel-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(mockAxios.history.post.length).to.eq(0);
+            expect(mockAxios.history.post.length).toBe(0);
 
             //should also hide modal
-            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
 
             done();
         });
@@ -167,18 +165,18 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: Error when running report");
-            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: Error when running report");
+            expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
 
             //should also hide modal
-            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
-            expect(storedStatus.runningKey).to.eq("");
-            expect(storedStatus.runningStatus).to.eq("Error when running report");
-            expect(storedStatus.newVersionFromRun).to.eq(null);
+            expect(storedStatus.runningKey).toBe("");
+            expect(storedStatus.runningStatus).toBe("Error when running report");
+            expect(storedStatus.newVersionFromRun).toBe(null);
 
             done();
         });
@@ -197,20 +195,20 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: Run started");
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: Run started");
 
             //expect key to have been set and polling timer to have been created
-            expect(wrapper.vm.$data["runningKey"]).to.eq("some_key");
-            expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+            expect(wrapper.vm.$data["runningKey"]).toBe("some_key");
+            expect(wrapper.vm.$data["pollingTimer"]).not.toBeNull();
 
             //should also hide modal
-            expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
+            expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(0).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(0).args[1];
-            expect(storedStatus.runningKey).to.eq("some_key");
-            expect(storedStatus.runningStatus).to.eq("Run started");
+            expect(storedStatus.runningKey).toBe("some_key");
+            expect(storedStatus.runningStatus).toBe("Run started");
 
             done();
         });
@@ -229,11 +227,11 @@ describe("runReport", () => {
 
         wrapper.find("#run-report-dismiss").trigger("click");
 
-        expect(wrapper.find("#run-report-status").exists()).to.eq(false);
-        expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+        expect(wrapper.find("#run-report-status").exists()).toBe(false);
+        expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
 
         //Also expect status in session to have been cleared
-        expect(sessionStubRemoveRunningReportStatus.getCall(0).args[0]).eq("name1");
+        expect(sessionStubRemoveRunningReportStatus.getCall(0).args[0]).toBe("name1");
     });
 
     it('updates status and stops polling when run update request returns success status', (done) => {
@@ -254,19 +252,19 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: success");
-            expect(wrapper.find('#run-report-new-version a').text()).to.eq("Tue May 14 2019, 16:09");
-            expect(wrapper.find('#run-report-new-version a').attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: success");
+            expect(wrapper.find('#run-report-new-version a').text()).toBe("Tue May 14 2019, 16:09");
+            expect(wrapper.find('#run-report-new-version a').attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
 
             //expect key to have been set and polling timer to have been cleared
-            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+            expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
-            expect(storedStatus.runningKey).to.eq("some_key");
-            expect(storedStatus.runningStatus).to.eq("success");
-            expect(storedStatus.newVersionFromRun).to.eq("20190514-160954-fc295f38");
+            expect(storedStatus.runningKey).toBe("some_key");
+            expect(storedStatus.runningStatus).toBe("success");
+            expect(storedStatus.newVersionFromRun).toBe("20190514-160954-fc295f38");
 
             done();
         }, 1800);
@@ -290,18 +288,18 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: error");
-            expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: error");
+            expect(wrapper.find('#run-report-new-version').exists()).toBe(false);
 
             //expect key to have been set and polling timer to have been cleared
-            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+            expect(wrapper.vm.$data["pollingTimer"]).toBe(null);
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
-            expect(storedStatus.runningKey).to.eq("some_key");
-            expect(storedStatus.runningStatus).to.eq("error");
-            expect(storedStatus.newVersionFromRun).to.eq("");
+            expect(storedStatus.runningKey).toBe("some_key");
+            expect(storedStatus.runningStatus).toBe("error");
+            expect(storedStatus.newVersionFromRun).toBe("");
 
             done();
         }, 1800);
@@ -327,18 +325,16 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: still going");
-            expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
-
-            //expect key to have been set and polling timer to have been cleared
-            expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: still going");
+            expect(wrapper.find('#run-report-new-version').exists()).toBe(false);
+            expect(wrapper.vm.$data["pollingTimer"]).not.toBeNull();
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
-            expect(storedStatus.runningKey).to.eq("some_key");
-            expect(storedStatus.runningStatus).to.eq("still going");
-            expect(storedStatus.newVersionFromRun).to.eq("");
+            expect(storedStatus.runningKey).toBe("some_key");
+            expect(storedStatus.runningStatus).toBe("still going");
+            expect(storedStatus.newVersionFromRun).toBe("");
 
             done();
         }, 1800);
@@ -363,19 +359,19 @@ describe("runReport", () => {
         wrapper.find("#confirm-run-btn").trigger("click");
 
         setTimeout(()  => {
-            expect(wrapper.find('#run-report-status').text()).to.contain("Running status: Error when fetching report status");
-            expect(wrapper.find('#run-report-new-version').exists()).to.eq(false);
+            expect(wrapper.find('#run-report-status').text()).toContain("Running status: Error when fetching report status");
+            expect(wrapper.find('#run-report-new-version').exists()).toBe(false);
 
             //expect key to have been set and polling timer to have been cleared
-            expect(wrapper.vm.$data["pollingTimer"]).to.eq(null);
+            expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
 
             //expect status in session to have been set
-            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).eq("name1");
+            expect(sessionStubSetRunningReportStatus.getCall(1).args[0]).toBe("name1");
             const storedStatus = sessionStubSetRunningReportStatus.getCall(1).args[1];
-            expect(storedStatus.runningKey).to.eq("some_key");
-            expect(storedStatus.runningStatus).to.eq("Error when fetching report status");
-            expect(storedStatus.newVersionFromRun).to.eq("");
-            expect(storedStatus.newVersionFromRun).to.eq("");
+            expect(storedStatus.runningKey).toBe("some_key");
+            expect(storedStatus.runningStatus).toBe("Error when fetching report status");
+            expect(storedStatus.newVersionFromRun).toBe("");
+            expect(storedStatus.newVersionFromRun).toBe("");
 
             done();
         }, 1800);
@@ -394,16 +390,16 @@ describe("runReport", () => {
 
         const wrapper = mount(RunReport, runReportProps);
 
-        expect(wrapper.find('button[type="submit"]').text()).to.eq("Run report");
-        expect(wrapper.find('#run-report-confirm').classes()).to.contain("modal-hide");
-        expect(wrapper.find("#run-report-status").text()).to.contain("Running status: storedStatus");
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: storedStatus");
 
-        expect(wrapper.find("#run-report-new-version").text()).to.eq("New version: Tue May 14 2019, 16:09");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).to.eq("/reports/name1/20190514-160954-fc295f38");
-        expect(wrapper.find("#run-report-dismiss").text()).to.eq("Dismiss");
+        expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
+        expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
 
-        expect(wrapper.vm.$data["runningKey"]).to.eq("storedKey");
-        expect(wrapper.vm.$data["pollingTimer"]).to.not.eq(null);
+        expect(wrapper.vm.$data["runningKey"]).toBe("storedKey");
+        expect(wrapper.vm.$data["pollingTimer"]).not.toBeNull();
 
     });
 

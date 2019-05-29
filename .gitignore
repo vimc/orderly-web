@@ -2,6 +2,7 @@
 */config/current_user
 .~lock*
 .idea
+.gradle
 src/*/build/*
 src/.gradle
 src/.idea/.name
@@ -34,3 +35,5 @@ demo
 git
 src/customConfigTests/templates
 src/customConfigTests/static
+src/app/static/coverage
+**/*/coverage

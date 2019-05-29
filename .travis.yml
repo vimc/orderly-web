@@ -1,0 +1,50 @@
+matrix:
+  include:
+    - language: node_js
+      node_js:
+      - 10
+      cache: npm
+      before_script:
+      - npm install codecov -g
+      - npm install --prefix=src/app/static
+      - npm run build --prefix=src/app/static
+      script: npm test --prefix=src/app/static
+      after_success:
+      - codecov -f src/app/static/coverage/*.json
+    - language: java
+      addons:
+          chrome: stable
+      before_cache:
+      - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
+      - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
+      cache:
+          directories:
+          - $HOME/.gradle/caches/
+          - $HOME/.gradle/wrapper/
+          - $HOME/src/app/static/node_modules
+      jdk:
+      - oraclejdk8
+      before_install:
+      - docker pull vimc/orderly.server:master
+      - docker pull vimc/montagu-reverse-proxy-minimal:master
+      - docker pull vimc/orderlyweb-migrate:master
+      - docker pull vimc/montagu-api:master
+      - docker pull vimc/montagu-db:master
+      - docker pull vimc/montagu-migrate:master
+      - docker pull vimc/montagu-cli:master
+      install:
+      - npm install --prefix ./src/app/static
+      - sudo ./scripts/install-chromedriver.sh
+      - ./src/gradlew -p src
+      before_script:
+      - sudo mkdir -p /etc/orderly/web/ && sudo touch /etc/orderly/web/go_signal
+      - ./travis/run-dependencies.sh
+      - ./src/gradlew -p src :customConfigTests:copyDemo
+      script:
+      - ./src/gradlew -p src :app:test
+      - ./src/gradlew -p src :customConfigTests:test
+      after_success:
+      - ./src/gradlew -p src :app:jacocoTestReport
+      - ./travis/send-codecov.sh
+      services:
+      - docker
