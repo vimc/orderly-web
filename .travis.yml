@@ -4,7 +4,7 @@ matrix:
       node_js:
       - 10
       cache: npm
-      before_script:
+      install:
       - npm install codecov -g
       - npm install --prefix=src/app/static
       - npm run build --prefix=src/app/static
@@ -34,6 +34,7 @@ matrix:
       - docker pull vimc/montagu-cli:master
       install:
       - npm install --prefix ./src/app/static
+      - npm install codecov -g
       - sudo ./scripts/install-chromedriver.sh
       - ./src/gradlew -p src
       before_script:
@@ -45,6 +46,6 @@ matrix:
       - ./src/gradlew -p src :customConfigTests:test
       after_success:
       - ./src/gradlew -p src :app:jacocoTestReport
-      - ./travis/send-codecov.sh
+      - codecov -f src/app/coverage/test/*.xml
       services:
       - docker
