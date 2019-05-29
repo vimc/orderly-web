@@ -18,27 +18,6 @@ import java.util.regex.Pattern
 class ReportPageTests : SeleniumTest()
 {
     @Test
-    fun `only report readers can see report page`()
-    {
-        startApp("auth.provider=montagu")
-        insertReport("testreport", "20170103-143015-1234abcd")
-        loginWithMontagu()
-
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
-        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("Page not found")
-
-        logout()
-        OrderlyAuthorizationRepository()
-                .ensureUserGroupHasPermission("test.user@example.com",
-                        ReifiedPermission("reports.read", Scope.Global()))
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
-
-        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("display name testreport")
-    }
-
-    @Test
     fun `can publish report`()
     {
         startApp("auth.provider=montagu")

@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 class IndexPageTests : IntegrationTest()
 {
     @Test
-    fun `report readers can get index page`()
+    fun `only report readers can get index page`()
     {
         assertWebUrlSecured("/", setOf(ReifiedPermission("reports.read", Scope.Global())))
     }

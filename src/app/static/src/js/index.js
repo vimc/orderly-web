@@ -8,5 +8,18 @@ require("@reside-ic/tree-table");
 
 $(document).ready(function () {
     const isReviewer = typeof canReview !== "undefined";
-    $('#reports-table').treeTable(options(isReviewer), reports);
+    const $table = $('#reports-table');
+    $table.treeTable(options(isReviewer, reports));
+
+    $('#expand').on("click", () => {
+        $table.data("treeTable")
+            .expandAllRows()
+            .redraw()    ;
+    });
+
+    $('#collapse').on("click", () => {
+        $table.data("treeTable")
+            .collapseAllRows()
+            .redraw()    ;
+    })
 });
