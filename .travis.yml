@@ -12,6 +12,8 @@ matrix:
       after_success:
       - codecov -f src/app/static/coverage/*.json
     - language: java
+      addons:
+          chrome: stable
       before_cache:
       - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
       - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
@@ -32,6 +34,7 @@ matrix:
       - docker pull vimc/montagu-cli:master
       install:
       - npm install --prefix ./src/app/static
+      - sudo ./scripts/install-chromedriver.sh
       - ./src/gradlew -p src
       before_script:
       - sudo mkdir -p /etc/orderly/web/ && sudo touch /etc/orderly/web/go_signal
