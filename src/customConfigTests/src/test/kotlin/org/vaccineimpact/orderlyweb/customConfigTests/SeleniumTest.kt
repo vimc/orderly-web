@@ -1,30 +1,60 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
+import io.specto.hoverfly.junit.core.HoverflyConfig
+import io.specto.hoverfly.junit.core.HoverflyConfig.configs
+import io.specto.hoverfly.junit.core.HoverflyConfig.localConfigs
+import io.specto.hoverfly.junit.core.SimulationSource
+import io.specto.hoverfly.junit.core.SimulationSource.classpath
+import io.specto.hoverfly.junit.dsl.HoverflyDsl.service
+import io.specto.hoverfly.junit.dsl.ResponseBuilder
+import io.specto.hoverfly.junit.dsl.ResponseCreators
+import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers
+import io.specto.hoverfly.junit.dsl.matchers.HoverflyMatchers.any
+import io.specto.hoverfly.junit.rule.HoverflyRule
 import org.junit.After
 import org.junit.Before
+import org.junit.ClassRule
+import org.junit.Rule
 import org.openqa.selenium.By
+import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
 import org.openqa.selenium.chrome.ChromeDriver
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import java.util.concurrent.TimeUnit
 
 
 abstract class SeleniumTest : CustomConfigTests()
 {
     protected lateinit var driver: WebDriver
-
     protected lateinit var wait: WebDriverWait
+
+    companion object
+    {
+        @JvmField
+        @ClassRule
+        var hoverflyRule = HoverflyRule.inCaptureOrSimulationMode("github-oauth2-login.json",
+                localConfigs().captureAllHeaders())
+    }
 
     @Before
     fun setup()
     {
+        val proxy = Proxy()
+        proxy.noProxy = "localhost"
+        proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort
+        proxy.sslProxy = "localhost:" + hoverflyRule.proxyPort
+
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
-                .apply { addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")  })
+                .apply {
+                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")
+                    setProxy(proxy)
+                })
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)
         wait = WebDriverWait(driver, 10)
     }
 
@@ -70,7 +100,8 @@ abstract class SeleniumTest : CustomConfigTests()
         val authRepo = OrderlyAuthorizationRepository()
 
         authRepo.ensureGroupHasMember(email, email)
-        for(permission in permissions) {
+        for (permission in permissions)
+        {
             authRepo.ensureUserGroupHasPermission(email, permission)
         }
     }
