@@ -13,9 +13,10 @@
 .changelog-item {
   padding-right: 5px;
   padding-top: 5px;
+  padding-bottom: 5px;
   margin-top: -2px;
 
-  &.published {
+  &.public {
     border-top: 1px solid $published-color;
     border-right: 1px solid $published-color;
   }
