@@ -96,8 +96,9 @@ class VersionPageTests : TeamcityTests()
         assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][2]/a[@role='tab']/text()",
                 equalToCompressingWhiteSpace("Downloads")))
 
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active' and @id='report-tab']"))
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane' and @id='downloads-tab']"))
+        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active pt-4 pt-md-1' and @id='report-tab']"))
+        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane pt-4 pt-md-1' and @id='downloads-tab']"))
+        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane pt-4 pt-md-1' and @id='changelog-tab']"))
     }
 
     @Test
