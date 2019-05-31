@@ -152,7 +152,6 @@ describe("reportsTable", () => {
         });
     });
 
-
     describe("requester cell", () => {
         it("is empty for parent rows", () => {
             const requesterCol = options(false, []).columns[3];

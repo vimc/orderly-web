@@ -50,8 +50,8 @@ data class ReportRowViewModel(val ttKey: Int,
                               val date: String?,
                               val numVersions: Int,
                               val published: Boolean?,
-                              val author: String,
-                              val requester: String)
+                              val author: String?,
+                              val requester: String?)
 {
     companion object
     {
@@ -62,10 +62,8 @@ data class ReportRowViewModel(val ttKey: Int,
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
-            val authors = versions.map {it.author}.distinct().joinToString(",")
-            val requesters = versions.map { it.requester }.distinct().joinToString(",")
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, authors, requesters)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, null, null)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel

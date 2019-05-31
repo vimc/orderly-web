@@ -72,8 +72,8 @@ class IndexControllerTests : TeamcityTests()
                 name = "r1",
                 displayName = "r1 display name",
                 date = null,
-                author = "author1",
-                requester = "requester1",
+                author = null,
+                requester = null,
                 latestVersion = "v2",
                 id = "v2",
                 published = null,
@@ -83,12 +83,13 @@ class IndexControllerTests : TeamcityTests()
                 ttKey = 2,
                 ttParent = 1,
                 published = false,
+                author = "author1",
+                requester = "requester1",
                 date = "Fri May 24 2019"
         )
 
-        val r1v2Expected = r1Expected.copy(
+        val r1v2Expected = r1v1Expected.copy(
                 ttKey = 3,
-                ttParent = 1,
                 date = "Thu May 23 2019",
                 id = "v1",
                 published = true)
@@ -100,8 +101,8 @@ class IndexControllerTests : TeamcityTests()
                         name = "r2",
                         displayName = "r2",
                         date = null,
-                        author = "another author",
-                        requester = "another requester",
+                        author = null,
+                        requester = null,
                         latestVersion = "r2v1",
                         id = "r2v1",
                         published = null,
@@ -112,45 +113,15 @@ class IndexControllerTests : TeamcityTests()
                         ttKey = 5,
                         ttParent = 4,
                         date = "Tue May 21 2019",
-                        published = true)
+                        published = true,
+                        author = "another author",
+                        requester = "another requester")
 
         val expected = listOf(r1Expected, r1v1Expected, r1v2Expected, r2Expected, r2v1Expected)
         assertThat(result.count()).isEqualTo(5)
         (0..4).map {
             assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
         }
-    }
-
-    @Test
-    fun `parent rows get all distinct authors and requesters from all versions`()
-    {
-        val v1Date = Instant.parse("2019-05-23T12:31:00.613Z")
-
-        // distinct case
-        val v1 = ReportVersion("r1", null, "v1", "v2", true, v1Date, "author1", "requester1")
-        val v2 = ReportVersion("r1", null, "v2", "v2", false, v1Date.plus(Duration.ofDays(1)), "author2", "requester2")
-
-        var mockOrderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn listOf(v1, v2)
-        }
-        var sut = IndexController(mock(), mockOrderly)
-
-        var result = sut.index().reports.sortedBy { it.ttKey }
-
-        assertThat(result[0].author).isEqualTo("author1,author2")
-        assertThat(result[0].requester).isEqualTo("requester1,requester2")
-
-        // non-distinct case
-        val v3 = v2.copy(author = "author1", requester = "requester1")
-        mockOrderly = mock {
-            on { this.getAllReportVersions() } doReturn listOf(v1, v3)
-        }
-        sut = IndexController(mock(), mockOrderly)
-
-        result = sut.index().reports.sortedBy { it.ttKey }
-
-        assertThat(result[0].author).isEqualTo("author1")
-        assertThat(result[0].requester).isEqualTo("requester1")
     }
 
     @Test
