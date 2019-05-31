@@ -59,7 +59,7 @@ select.form-control {
   white-space: pre-line;
 }
 
-.badge-published {
+.badge-published, .badge-public {
   background-color: $published-color;
   color: white;
 }
