@@ -135,6 +135,12 @@ describe("reportsTable", () => {
     });
 
     describe("author cell", () => {
+
+        it("is not orderable", () => {
+            const requesterCol = options(false, []).columns[2];
+            expect(requesterCol.orderable).toBe(false);
+        });
+
         it("is empty for parent rows", () => {
             const authorCol = options(false, []).columns[2];
             expect(authorCol.data).toBe("author");
@@ -153,6 +159,12 @@ describe("reportsTable", () => {
     });
 
     describe("requester cell", () => {
+
+        it("is not orderable", () => {
+            const requesterCol = options(false, []).columns[3];
+            expect(requesterCol.orderable).toBe(false);
+        });
+
         it("is empty for parent rows", () => {
             const requesterCol = options(false, []).columns[3];
             expect(requesterCol.data).toBe("requester");
