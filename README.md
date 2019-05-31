@@ -1,5 +1,8 @@
 # OrderlyWeb
 
+[![Build Status](https://travis-ci.com/vimc/orderly-web.svg?branch=master)](https://travis-ci.com/vimc/orderly-web)
+[![codecov.io](https://codecov.io/github/vimc/orderly-web/coverage.svg?branch=master)](https://codecov.io/github/vimc/orderly-web?branch=master)
+
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
 ## Developing

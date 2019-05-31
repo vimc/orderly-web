@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ORDERLY_IMAGE=docker.montagu.dide.ic.ac.uk:5000/orderly:master
+ORDERLY_IMAGE=vimc/orderly:master
 
 rm demo -rf
 rm git -rf
@@ -14,7 +14,7 @@ docker run --rm \
     $ORDERLY_IMAGE \
     "."
 
-MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/orderlyweb-migrate:master
+MIGRATE_IMAGE=vimc/orderlyweb-migrate:master
 
 docker pull $MIGRATE_IMAGE
 

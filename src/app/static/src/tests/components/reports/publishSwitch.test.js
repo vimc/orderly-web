@@ -1,5 +1,3 @@
-import {expect} from "chai";
-import {describe} from "mocha";
 import {mount} from '@vue/test-utils';
 import {mockAxios} from "../../mockAxios";
 import PublishSwitch from "../../../js/components/reports/publishSwitch.vue";
@@ -22,7 +20,7 @@ describe("publishSwitch", () => {
             }
         });
 
-        expect(wrapper.find('[data-toggle="toggle"]').classes()).to.contain("off");
+        expect(wrapper.find('[data-toggle="toggle"]').classes()).toContain("off");
     });
 
     it('shows switch as on when report is published', () => {
@@ -37,7 +35,7 @@ describe("publishSwitch", () => {
             }
         });
 
-        expect(wrapper.find('[data-toggle="toggle"]').classes()).not.to.contain("off");
+        expect(wrapper.find('[data-toggle="toggle"]').classes()).not.toContain("off");
     });
 
     it('emits toggle event after successful publish toggle', (done) => {
@@ -56,9 +54,9 @@ describe("publishSwitch", () => {
 
         wrapper.find('[data-toggle="toggle"]').trigger("click");
         setTimeout(() => {
-            expect(mockAxios.history.post.length).to.eq(1);
-            expect(wrapper.emitted().toggle).to.not.eq(undefined);
-            expect(wrapper.find(".text-danger").exists()).to.eq(false);
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(wrapper.emitted().toggle).toBeDefined();
+            expect(wrapper.find(".text-danger").exists()).toBe(false);
             done();
         });
 
@@ -81,9 +79,9 @@ describe("publishSwitch", () => {
         wrapper.find('[data-toggle="toggle"]').trigger("click");
 
         setTimeout(() => {
-            expect(mockAxios.history.post.length).to.eq(1);
-            expect(wrapper.emitted().toggle).to.eq(undefined);
-            expect(wrapper.find(".text-danger").text()).to.eq("Error: could not toggle status");
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(wrapper.emitted().toggle).toBeUndefined();
+            expect(wrapper.find(".text-danger").text()).toBe("Error: could not toggle status");
             done();
         });
 
