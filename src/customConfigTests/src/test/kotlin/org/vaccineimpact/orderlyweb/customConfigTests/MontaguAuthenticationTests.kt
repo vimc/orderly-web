@@ -5,6 +5,8 @@ import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 class MontaguAuthenticationTests : SeleniumTest()
 {
@@ -12,11 +14,12 @@ class MontaguAuthenticationTests : SeleniumTest()
     fun `user is directed to login with Montagu`()
     {
         startApp("auth.provider=montagu")
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         loginWithMontagu()
 
         val header = driver.findElement(By.cssSelector("h1"))
-        assertThat(header.text).isEqualTo("All reports")
+        assertThat(header.text).isEqualTo("Find a report")
     }
 
     @Test

@@ -1,7 +1,23 @@
-<#-- @ftlvariable name="reports" type="kotlin.collections.List<org.vaccineimpact.orderlyweb.models.Report>" -->
+<#-- @ftlvariable name="reportsJson" type="String" -->
+<#-- @ftlvariable name="isReviewer" type="Boolean" -->
 <@layout>
-    <h1>All reports</h1>
-    <#list reports as report>
-        <a href="reports/${report.name}/${report.latestVersion}">${report.name}</a>
-    </#list>
+    <h1>Find a report</h1>
+    <table id="reports-table">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Id</th>
+            <#if isReviewer>
+                <th>Status</th>
+            </#if>
+            <th>Author</th>
+            <th>Requester</th>
+        </tr>
+        </thead>
+    </table>
+    <#macro scripts>
+        <script>
+            var report = ${reportsJson}
+        </script>
+    </#macro>
 </@layout>
