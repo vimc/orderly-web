@@ -206,7 +206,7 @@ class ReportPageTests : SeleniumTest()
         var expectedLinkClasses = arrayOf("nav-link")
         if (active)
         {
-            expectedLinkClasses += " active"
+            expectedLinkClasses += "active"
         }
         val actualLinkClasses = tabLink.getAttribute("class").split(" ")
         expectedLinkClasses.map {
@@ -217,7 +217,7 @@ class ReportPageTests : SeleniumTest()
         var expectedPaneClasses = arrayOf("tab-pane")
         if (active)
         {
-            expectedPaneClasses += " active"
+            expectedPaneClasses += "active"
         }
         val actualPaneClasses = tabPane.getAttribute("class").split(" ")
         expectedPaneClasses.map {

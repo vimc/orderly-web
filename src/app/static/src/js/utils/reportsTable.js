@@ -73,11 +73,13 @@ export const options = (isReviewer, reports) => {
     cols = cols.concat([
         {
             "data": "author",
-            "render": buildBasicCell
+            "render": buildBasicCell,
+            "orderable": false
         },
         {
             "data": "requester",
-            "render": buildBasicCell
+            "render": buildBasicCell,
+            "orderable": false
         }]);
 
     return {
