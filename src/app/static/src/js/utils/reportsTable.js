@@ -1,3 +1,10 @@
+function buildBasicCell(data, type, full) {
+    if (full["tt_parent"] === 0) {
+        return '';
+    }
+    return data
+}
+
 function buildVersionBadge(data, full) {
     if (data === full["latest_version"]) {
         return '<span class="badge-info badge float-right">latest</span>'
@@ -8,7 +15,7 @@ function buildVersionBadge(data, full) {
 }
 
 function buildIdCell(data, type, full) {
-    if (!data || full["tt_parent"] === 0) {
+    if (full["tt_parent"] === 0) {
         return '';
     }
     return `<a href="/reports/${full["name"]}/${data}/">
@@ -21,7 +28,7 @@ function buildIdCell(data, type, full) {
 }
 
 function buildNameCell(data, type, full) {
-    if (!data || full["tt_parent"] > 0) {
+    if (full["tt_parent"] > 0) {
         return '';
     }
     const versionText = full["num_versions"] > 1 ? "versions" : "version";
@@ -34,7 +41,7 @@ function buildNameCell(data, type, full) {
 
 function buildStatusCell(data, type, full) {
 
-    if (data == null || full["tt_parent"] === 0) {
+    if (full["tt_parent"] === 0) {
         return '';
     }
 
@@ -63,11 +70,14 @@ export const options = (isReviewer, reports) => {
             "render": buildStatusCell
         })
     }
-    cols = cols.concat([{
-        "data": "author"
-    },
+    cols = cols.concat([
         {
-            "data": "requester"
+            "data": "author",
+            "render": buildBasicCell
+        },
+        {
+            "data": "requester",
+            "render": buildBasicCell
         }]);
 
     return {

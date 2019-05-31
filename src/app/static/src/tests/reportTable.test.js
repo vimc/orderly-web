@@ -24,12 +24,6 @@ describe("reportsTable", () => {
 
     describe("name cell", () => {
 
-        it("is empty if data is null", () => {
-            const nameCol = options(false, []).columns[0];
-            const $result = $(nameCol.render(null));
-            expect($result.text()).toBe("")
-        });
-
         it("contains display name for parent", () => {
             const nameCol = options(false, []).columns[0];
             const $result = $(nameCol.render("r1", null, {display_name: "report name", tt_parent: 0}));
@@ -65,12 +59,6 @@ describe("reportsTable", () => {
     });
 
     describe("version cell", () => {
-
-        it("is empty if data is null", () => {
-            const versionColDefinition = options(false, []).columns[1];
-            const $result = $(versionColDefinition.render(null));
-            expect($result.text()).toBe("")
-        });
 
         it("is empty for parent rows", () => {
             const versionColDefinition = options(false, []).columns[1];
@@ -124,12 +112,6 @@ describe("reportsTable", () => {
 
     describe("status cell", () => {
 
-        it("is empty if data is null", () => {
-            const statusCol = options(true, []).columns[2];
-            const $result = $(statusCol.render(null));
-            expect($result.text()).toBe("")
-        });
-
         it("is empty for parent rows", () => {
             const statusCol = options(true, []).columns[2];
             const result = statusCol.render("some-id", null, {tt_parent: 0});
@@ -151,6 +133,43 @@ describe("reportsTable", () => {
         });
 
     });
+
+    describe("author cell", () => {
+        it("is empty for parent rows", () => {
+            const authorCol = options(false, []).columns[2];
+            expect(authorCol.data).toBe("author");
+
+            const result = authorCol.render("author", null, {tt_parent: 0});
+            expect(result).toBe("");
+        });
+
+        it("shows author for child row", () => {
+            const authorCol = options(false, []).columns[2];
+            expect(authorCol.data).toBe("author");
+
+            const result = authorCol.render("author", null, {tt_parent: 1});
+            expect(result).toBe("author");
+        });
+    });
+
+
+    describe("requester cell", () => {
+        it("is empty for parent rows", () => {
+            const requesterCol = options(false, []).columns[3];
+            expect(requesterCol.data).toBe("requester");
+
+            const result = requesterCol.render("requester", null, {tt_parent: 0});
+            expect(result).toBe("");
+        });
+
+        it("shows author for child row", () => {
+            const requesterCol = options(false, []).columns[3];
+            expect(requesterCol.data).toBe("requester");
+
+            const result = requesterCol.render("requester", null, {tt_parent: 1});
+            expect(result).toBe("requester");
+        });
+    })
 
 
 });

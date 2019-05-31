@@ -1,5 +1,6 @@
 *.pyc
 */config/current_user
+*/config/users/alex.properties
 .~lock*
 .idea
 .gradle
@@ -37,4 +38,3 @@ src/customConfigTests/templates
 src/customConfigTests/static
 src/app/static/coverage
 **/*/coverage
-src/config/uses/alex.properties
