@@ -32,8 +32,8 @@ $border-color: rgba(0, 0, 0, 0.125);
   float: right;
 
   .page-item.active .page-link {
-    background-color: $theme-blue !important;
-    border-color: $theme-blue !important;
+    background-color: $theme-primary !important;
+    border-color: $theme-primary !important;
     -webkit-border-radius: $btn-border-radius;
     -moz-border-radius: $btn-border-radius;
     border-radius: $btn-border-radius;
