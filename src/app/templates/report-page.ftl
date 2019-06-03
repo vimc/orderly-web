@@ -26,6 +26,11 @@
                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                 </div>
             </#if>
+            <#if isUsersManager>
+                <div id="reportReadersList" class="pt-3">
+                    <report-readers-list :report=report></report-readers-list>
+                </div>
+            </#if>
             <#if isRunner>
                 <div id="runReportVueApp">
                     <run-report :report=report></run-report>

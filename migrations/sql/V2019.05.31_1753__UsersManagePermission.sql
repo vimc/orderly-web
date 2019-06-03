@@ -1,0 +1,1 @@
+INSERT INTO "orderlyweb_permission" VALUES ("users.manage")

@@ -17,6 +17,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val focalArtefactUrl: String?,
                                       val isAdmin: Boolean,
                                       val isRunner: Boolean,
+                                      val isUsersManager: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
@@ -30,6 +31,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 focalArtefactUrl: String?,
                 isAdmin: Boolean,
                 isRunner: Boolean,
+                isUsersManager: Boolean,
                 artefacts: List<ArtefactViewModel>,
                 dataLinks: List<InputDataViewModel>,
                 resources: List<DownloadableFileViewModel>,
@@ -44,6 +46,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     focalArtefactUrl,
                     isAdmin,
                     isRunner,
+                    isUsersManager,
                     artefacts,
                     dataLinks,
                     resources,
@@ -84,6 +87,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+            val isUsersManager = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
 
             val displayName = report.displayName ?: report.name
 
@@ -97,6 +101,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     focalArtefactUrl,
                     isAdmin,
                     isRunner,
+                    isUsersManager,
                     artefactViewModels,
                     dataViewModels,
                     resourceViewModels,
