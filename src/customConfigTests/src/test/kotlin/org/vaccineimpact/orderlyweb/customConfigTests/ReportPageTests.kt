@@ -237,7 +237,10 @@ class ReportPageTests : SeleniumTest()
         {
             expectedPaneClass += " active"
         }
-        assertThat(tabPane.getAttribute("class")).contains(expectedPaneClass)
+
+        expectedPaneClass.split(" ").map {
+            assertThat(tabPane.getAttribute("class")).contains(it)
+        }
     }
 
 }
