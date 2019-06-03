@@ -225,4 +225,35 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
                 .hasMessageContaining("Unknown user : 'user@email.com'")
     }
 
+    @Test
+    fun `getReportReaders gets all users and scopes which can read report`()
+    {
+        JooqContext().use {
+            insertUser("global.reader@email.com", "global.reader.name")
+            giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+
+            insertUser("scoped.reader@email.com", "scoped.reader.name")
+            giveUserGroupPermission("scoped.reader@email.com", "reports.read", Scope.Specific("report", "report1"))
+
+            insertUser("another.scoped.reader@email.com", "scoped.reader.name")
+            giveUserGroupPermission("another.scoped.reader@email.com", "reports.read", Scope.Specific("report", "report2"))
+
+            insertUser("non.reader@email.com", "non.reader.name")
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+
+        assertThat(result.count()).isEqualTo(2)
+
+        assertThat(result.firstKey().username).isEqualTo("global.reader.name")
+        val globalScope = result[result.firstKey()]!!
+        assertThat(globalScope).isInstanceOf(Scope.Global::class.java)
+
+        assertThat(result.lastKey().username).isEqualTo("scoped.reader.name")
+        val reportScope = result[result.lastKey()]!!
+        assertThat(reportScope).isInstanceOf(Scope.Specific::class.java)
+        assertThat(reportScope.value).isEqualTo("report:report1")
+    }
+
 }

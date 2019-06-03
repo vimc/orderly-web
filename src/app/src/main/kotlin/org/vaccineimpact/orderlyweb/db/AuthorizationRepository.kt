@@ -15,9 +15,10 @@ interface AuthorizationRepository
     fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
+    fun getReportReaders(reportName: String): Map<User, Scope>
 }
 
-class OrderlyAuthorizationRepository : AuthorizationRepository
+open class OrderlyAuthorizationRepository : AuthorizationRepository
 {
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"
@@ -138,6 +139,37 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
             }
         }
 
+    }
+
+    override fun getReportReaders(reportName: String): Map<User, Scope>
+    {
+        //Returns all users which can read the report, along with their report read scope (global or report-specific)
+        JooqContext().use {
+            val result = it.dsl.select(ORDERLYWEB_USER.USERNAME, ORDERLYWEB_USER.DISPLAY_NAME, ORDERLYWEB_USER.EMAIL,
+                    ORDERLYWEB_USER.USER_SOURCE, ORDERLYWEB_USER.LAST_LOGGED_IN,
+                    ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID)
+                    .from(ORDERLYWEB_USER)
+                    .join(ORDERLYWEB_USER_GROUP)
+                    .on(ORDERLYWEB_USER.EMAIL.eq(ORDERLYWEB_USER_GROUP.ID))
+                    .join(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+                    .leftJoin(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID))
+                    .leftJoin(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID))
+                    .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq("reports.read"))
+                    .and(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.isNotNull.or(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(reportName)))
+                    .fetch()
+
+            return result.map{
+                it.into(User::class.java) to
+                        if (it[ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID] != null)
+                            Scope.Global()
+                        else
+                            Scope.Specific("report", reportName)
+            }.toMap()
+
+        }
     }
 
     private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>

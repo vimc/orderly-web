@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -62,7 +62,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                   versions: List<String>,
                   changelog: List<Changelog>,
                   context: ActionContext,
-                  userRepo: UserRepository): ReportVersionPageViewModel
+                  authRepo: AuthorizationRepository): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report)
 
@@ -94,7 +94,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             var reportReaders : List<ReportReaderViewModel> = listOf()
             if (isUsersManager)
             {
-                val users = userRepo.getReportReaders(report.name)
+                val users = authRepo.getReportReaders(report.name)
                 reportReaders = users.map{ ReportReaderViewModel.build(it.key, it.value) }
             }
 
