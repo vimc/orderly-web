@@ -1,6 +1,7 @@
 <#-- @ftlvariable name="appName" type="String" -->
 <#-- @ftlvariable name="loggedIn" type="Boolean" -->
 <#-- @ftlvariable name="user" type="String" -->
+<#-- @ftlvariable name="logo" type="String" -->
 <head>
     <#if styles??>
         <@styles></@styles>
@@ -13,7 +14,7 @@
     <body>
 <header class="header">
     <a href="/" class="home-link">
-        <img src="/img/logo.png" class="pl-md-1 logo" height="75" alt="${appName}"/>
+        <img src="/img/${logo}" class="pl-md-1 logo" height="75" alt="${appName}"/>
     </a>
     <div class="site-title">
         <a href="/">

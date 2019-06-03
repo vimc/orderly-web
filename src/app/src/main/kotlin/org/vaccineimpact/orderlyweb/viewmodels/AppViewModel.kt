@@ -20,6 +20,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     override val appName = AppConfig()["app.name"]
     override val appEmail = AppConfig()["app.email"]
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString().toLowerCase()
+    override val logo = AppConfig()["app.logo"]
 
     init
     {
@@ -38,5 +39,6 @@ interface AppViewModel
     val appName: String
     val appEmail: String
     val authProvider: String
+    val logo: String
 }
 
