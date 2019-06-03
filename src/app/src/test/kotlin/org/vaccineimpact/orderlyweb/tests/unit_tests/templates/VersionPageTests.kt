@@ -75,6 +75,7 @@ class VersionPageTests : TeamcityTests()
             "/testFocalArtefactUrl",
             false,
             false,
+            false,
             testArtefactViewModels,
             testDataLinks,
             testResources,
