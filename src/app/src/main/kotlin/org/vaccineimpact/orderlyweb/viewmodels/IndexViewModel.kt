@@ -45,10 +45,10 @@ data class ReportRowViewModel(val ttKey: Int,
                               val ttParent: Int,
                               val name: String,
                               val displayName: String,
-                              val id: String?,
+                              val id: String,
                               val latestVersion: String,
                               val date: String?,
-                              val numVersions: Int?,
+                              val numVersions: Int,
                               val published: Boolean?,
                               val author: String?,
                               val requester: String?)
@@ -63,7 +63,7 @@ data class ReportRowViewModel(val ttKey: Int,
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    null, latestVersion.id, null, numVersions, null, null, null)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, null, null)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel

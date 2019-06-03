@@ -17,6 +17,12 @@ class VersionPageTests : IntegrationTest()
     private val readReports = setOf(ReifiedPermission("reports.read", Scope.Global()))
 
     @Test
+    fun `only report readers can see report version page`()
+    {
+        assertWebUrlSecured(getAnyReportPageUrl(), setOf(ReifiedPermission("reports.read", Scope.Global())))
+    }
+
+    @Test
     fun `artefacts can be downloaded`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)

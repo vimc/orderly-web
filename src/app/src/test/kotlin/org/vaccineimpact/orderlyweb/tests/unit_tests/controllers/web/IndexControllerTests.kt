@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
+import java.time.Duration
 import java.time.Instant
 
 class IndexControllerTests : TeamcityTests()
@@ -44,11 +45,19 @@ class IndexControllerTests : TeamcityTests()
     @Test
     fun `builds report rows`()
     {
-        val author = "dr authorson"
-        val requester = "funder mcfunderson"
-        val fakeReports = listOf(ReportVersion("r1", null, "v1", "v2", true, Instant.parse("2019-05-23T12:31:00.613Z"), author, requester),
-                ReportVersion("r1", "r1 display name", "v2", "v2", false, Instant.parse("2019-05-24T12:31:00.613Z"), author, requester),
-                ReportVersion("r2", null, "r2v1", "r2v1", true, Instant.parse("2019-05-23T12:31:00.613Z"), "another author", "another requester"))
+        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
+
+        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r1v2 = r1v1.copy(
+                id = "v2",
+                displayName = "r1 display name",
+                published = false,
+                date = someDate.plus(Duration.ofDays(1)))
+
+        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
+                "another author", "another requester")
+
+        val fakeReports = listOf(r1v1, r1v2, r2v1)
 
         val mockOrderly = mock<OrderlyClient> {
             on { this.getAllReportVersions() } doReturn fakeReports
@@ -57,18 +66,62 @@ class IndexControllerTests : TeamcityTests()
 
         val result = sut.index().reports.sortedBy { it.ttKey }
 
-        val expected = listOf(ReportRowViewModel(1, 0, "r1", "r1 display name", null, "v2", null, 2, null, null, null),
-                ReportRowViewModel(2, 1, "r1", "r1 display name", "v2", "v2", "Fri May 24 2019", 2, false, author, requester),
-                ReportRowViewModel(3, 1, "r1", "r1 display name", "v1", "v2", "Thu May 23 2019", 2, true, author, requester),
-                ReportRowViewModel(4, 0, "r2", "r2", null, "r2v1", null, 1, null, null, null),
-                ReportRowViewModel(5, 4, "r2", "r2", "r2v1", "r2v1", "Thu May 23 2019", 1, true, "another author", "another requester")
+        val r1Expected = ReportRowViewModel(
+                ttKey = 1,
+                ttParent = 0,
+                name = "r1",
+                displayName = "r1 display name",
+                date = null,
+                author = null,
+                requester = null,
+                latestVersion = "v2",
+                id = "v2",
+                published = null,
+                numVersions = 2)
+
+        val r1v1Expected = r1Expected.copy(
+                ttKey = 2,
+                ttParent = 1,
+                published = false,
+                author = "author1",
+                requester = "requester1",
+                date = "Fri May 24 2019"
         )
 
+        val r1v2Expected = r1v1Expected.copy(
+                ttKey = 3,
+                date = "Thu May 23 2019",
+                id = "v1",
+                published = true)
+
+        val r2Expected =
+                ReportRowViewModel(
+                        ttKey = 4,
+                        ttParent = 0,
+                        name = "r2",
+                        displayName = "r2",
+                        date = null,
+                        author = null,
+                        requester = null,
+                        latestVersion = "r2v1",
+                        id = "r2v1",
+                        published = null,
+                        numVersions = 1)
+
+        val r2v1Expected =
+                r2Expected.copy(
+                        ttKey = 5,
+                        ttParent = 4,
+                        date = "Tue May 21 2019",
+                        published = true,
+                        author = "another author",
+                        requester = "another requester")
+
+        val expected = listOf(r1Expected, r1v1Expected, r1v2Expected, r2Expected, r2v1Expected)
         assertThat(result.count()).isEqualTo(5)
         (0..4).map {
             assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
         }
-
     }
 
     @Test
