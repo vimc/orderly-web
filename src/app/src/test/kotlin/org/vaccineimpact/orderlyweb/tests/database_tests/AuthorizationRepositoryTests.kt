@@ -229,6 +229,9 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     fun `getReportReaders gets all users and scopes which can read report`()
     {
         JooqContext().use {
+            insertReport("report1", "version1")
+            insertReport("report2", "version2")
+
             insertUser("global.reader@email.com", "global.reader.name")
             giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
 
