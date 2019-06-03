@@ -223,7 +223,6 @@ class ReportPageTests : SeleniumTest()
         expectedPaneClasses.map {
             assertThat(actualPaneClasses).contains(it)
         }
-
     }
 
 }
