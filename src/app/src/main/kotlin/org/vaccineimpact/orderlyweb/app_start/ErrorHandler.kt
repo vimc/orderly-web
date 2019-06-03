@@ -83,9 +83,4 @@ class ErrorHandler(templateEngine: TemplateEngine)
             handler(e as TException, req, res)
         }
     }
-
-    companion object
-    {
-        fun setup(templateEngine: TemplateEngine) = ErrorHandler(templateEngine)
-    }
 }

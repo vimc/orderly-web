@@ -2,7 +2,7 @@ import {mount} from '@vue/test-utils';
 import {mockAxios} from "../../mockAxios";
 import * as sinon from "sinon";
 import RunReport from "../../../js/components/reports/runReport.vue"
-import {session} from "../../../js/session";
+import {session} from "../../../js/utils/session";
 
 describe("runReport", () => {
 

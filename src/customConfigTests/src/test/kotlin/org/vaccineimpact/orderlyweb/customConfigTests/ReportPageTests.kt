@@ -18,27 +18,6 @@ import java.util.regex.Pattern
 class ReportPageTests : SeleniumTest()
 {
     @Test
-    fun `only report readers can see report page`()
-    {
-        startApp("auth.provider=montagu")
-        insertReport("testreport", "20170103-143015-1234abcd")
-        loginWithMontagu()
-
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
-        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("Page not found")
-
-        logout()
-        OrderlyAuthorizationRepository()
-                .ensureUserGroupHasPermission("test.user@example.com",
-                        ReifiedPermission("reports.read", Scope.Global()))
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
-
-        assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("display name testreport")
-    }
-
-    @Test
     fun `can publish report`()
     {
         startApp("auth.provider=montagu")
@@ -224,23 +203,27 @@ class ReportPageTests : SeleniumTest()
     private fun confirmTabActive(tabId: String, active: Boolean)
     {
         val tabLink = driver.findElement(By.cssSelector("a[href='#${tabId}']"))
-        var expectedLinkClass = "nav-link"
+        var expectedLinkClasses = arrayOf("nav-link")
         if (active)
         {
-            expectedLinkClass += " active"
+            expectedLinkClasses += "active"
         }
-        assertThat(tabLink.getAttribute("class")).isEqualTo(expectedLinkClass)
+        val actualLinkClasses = tabLink.getAttribute("class").split(" ")
+        expectedLinkClasses.map {
+            assertThat(actualLinkClasses).contains(it)
+        }
 
         val tabPane = driver.findElement(By.id(tabId))
-        var expectedPaneClass = "tab-pane"
+        var expectedPaneClasses = arrayOf("tab-pane")
         if (active)
         {
-            expectedPaneClass += " active"
+            expectedPaneClasses += "active"
+        }
+        val actualPaneClasses = tabPane.getAttribute("class").split(" ")
+        expectedPaneClasses.map {
+            assertThat(actualPaneClasses).contains(it)
         }
 
-        expectedPaneClass.split(" ").map {
-            assertThat(tabPane.getAttribute("class")).contains(it)
-        }
     }
 
 }
