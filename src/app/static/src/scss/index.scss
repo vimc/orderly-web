@@ -1,0 +1,47 @@
+@import "style";
+@import "../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css";
+@import "../../node_modules/@reside-ic/tree-table/tree-table.css";
+
+$border-color: rgba(0, 0, 0, 0.125);
+#reports-table {
+  border: 1px solid $border-color;
+  td {
+    border-color: $border-color;;
+  }
+
+  th {
+    border-bottom: 0;
+    border-top: 0;
+    border-left: 1px solid $border-color;
+
+    &:nth-child(0), &:nth-child(2) {
+      border-left: 0;
+    }
+  }
+
+  .expander:after {
+    content: '';
+  }
+}
+
+.dataTables_length {
+  float: left;
+}
+
+.dataTables_paginate {
+  float: right;
+
+  .page-item.active .page-link {
+    background-color: $theme-primary !important;
+    border-color: $theme-primary !important;
+    -webkit-border-radius: $btn-border-radius;
+    -moz-border-radius: $btn-border-radius;
+    border-radius: $btn-border-radius;
+  }
+
+  .pagination {
+    -webkit-border-radius: $btn-border-radius;
+    -moz-border-radius: $btn-border-radius;
+    border-radius: $btn-border-radius;
+  }
+}

@@ -1,4 +1,4 @@
-import {session} from "../js/session";
+import {session} from "../js/utils/session";
 
 describe('session', () => {
 

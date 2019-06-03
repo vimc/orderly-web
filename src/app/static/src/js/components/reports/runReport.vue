@@ -28,9 +28,9 @@
 </template>
 
 <script>
-    import {reportVersionToLongTimestamp} from "../../helpers";
-    import {session} from "../../session";
-    import {api} from "../../api"
+    import {reportVersionToLongTimestamp} from "../../utils/helpers";
+    import {session} from "../../utils/session";
+    import {api} from "../../utils/api"
 
     const initialState = {
         showModal: false,
