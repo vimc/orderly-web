@@ -3,11 +3,9 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.isImage
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -24,6 +22,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val zipFile: DownloadableFileViewModel,
                                       val versions: List<VersionPickerViewModel>,
                                       val changelog: List<ChangelogViewModel>,
+                                      @Serialise("reportReadersJson") val reportReaders: List<ReportReaderViewModel>,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -38,6 +37,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 zipFile: DownloadableFileViewModel,
                 versions: List<VersionPickerViewModel>,
                 changelog: List<ChangelogViewModel>,
+                reportReaders: List<ReportReaderViewModel>,
                 breadcrumbs: List<Breadcrumb>,
                 loggedIn: Boolean,
                 appName: String) :
@@ -53,6 +53,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     zipFile,
                     versions,
                     changelog,
+                    reportReaders,
                     DefaultViewModel(loggedIn, appName, breadcrumbs))
 
     companion object
@@ -60,7 +61,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         fun build(report: ReportVersionDetails,
                   versions: List<String>,
                   changelog: List<Changelog>,
-                  context: ActionContext): ReportVersionPageViewModel
+                  context: ActionContext,
+                  userRepo: UserRepository): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report)
 
@@ -89,6 +91,13 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
             val isUsersManager = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
 
+            var reportReaders : List<ReportReaderViewModel> = listOf()
+            if (isUsersManager)
+            {
+                val users = userRepo.getReportReaders(report.name)
+                reportReaders = users.map{ ReportReaderViewModel.build(it.key, it.value) }
+            }
+
             val displayName = report.displayName ?: report.name
 
             val breadcrumb = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
@@ -108,6 +117,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     zipFile,
                     versions.map { buildVersionPickerViewModel(report.name, report.id, it) }.sortedByDescending { it.date },
                     changelogViewModel.sortedByDescending { it.date },
+                    reportReaders,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
@@ -218,3 +228,20 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
 }
 
 data class ChangelogItemViewModel(val label: String, val value: String)
+
+data class ReportReaderViewModel(val username: String, val displayName: String, val canRemove: Boolean)
+{
+    companion object
+    {
+        fun build(user: User, scope: Scope): ReportReaderViewModel
+        {
+            val canRemove = scope is Scope.Specific
+            val displayName = if (user.displayName == "unknown")
+                user.username
+            else
+                user.displayName
+
+            return ReportReaderViewModel(user.username, displayName, canRemove)
+        }
+    }
+}

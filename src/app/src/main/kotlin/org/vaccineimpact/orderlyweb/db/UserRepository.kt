@@ -69,21 +69,23 @@ class OrderlyUserRepository : UserRepository
     {
         //Returns all users which can read the report, along with their report read scope (global or report-specific)
         JooqContext().use {
-            val records = it.dsl.select(ORDERLYWEB_USER.USERNAME, ORDERLYWEB_USER.DISPLAY_NAME, ORDERLYWEB_USER.EMAIL,
+            val result = it.dsl.select(ORDERLYWEB_USER.USERNAME, ORDERLYWEB_USER.DISPLAY_NAME, ORDERLYWEB_USER.EMAIL,
                             ORDERLYWEB_USER.USER_SOURCE, ORDERLYWEB_USER.LAST_LOGGED_IN,
                             ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID, ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID)
                     .from(ORDERLYWEB_USER)
                     .join(ORDERLYWEB_USER_GROUP)
                     .on(ORDERLYWEB_USER.EMAIL.eq(ORDERLYWEB_USER_GROUP.ID))
-                    .joinPath(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .join(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
                     .leftJoin(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
                     .on(ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID))
                     .leftJoin(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
                     .on(ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID))
                     .where(ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq("reports.read"))
                     .and(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.isNotNull.or(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(reportName)))
+                    .fetch()
 
-            return records.map{
+            return result.map{
                 it.into(User::class.java) to
                         if (it[ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID] != null)
                             Scope.Global()

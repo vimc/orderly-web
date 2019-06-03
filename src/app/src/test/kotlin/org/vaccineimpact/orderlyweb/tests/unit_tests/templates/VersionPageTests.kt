@@ -82,6 +82,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
             listOf(),
             listOf(),
+            listOf(),
             listOf(Breadcrumb("name", "url")),
             true,
             "appName")

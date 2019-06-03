@@ -1,6 +1,14 @@
 <template>
     <div id="report-readers-list">
-       Report readers for {{ report.name }}
+        <label class="font-weight-bold">Report readers</label>
+        <div>
+            <ul class="list-unstyled report-readers">
+                <li v-for="reader in readers">
+                    <span>{{reader.display_name}}</span>
+                    <div class="text-muted small" style="margin-top: -1rem">{{reader.username}}</div>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -8,7 +16,7 @@
 
     export default {
         name: 'reportReadersList',
-        props: ['report'],
+        props: ['report', 'readers'],
         data() {
             return {
                 error: ""
