@@ -27,7 +27,7 @@
                 </div>
             </#if>
             <#if isUsersManager>
-                <div id="reportReadersList" class="pt-3">
+                <div id="reportReadersListVueApp" class="pt-3">
                     <report-readers-list :report=report></report-readers-list>
                 </div>
             </#if>
