@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -119,6 +118,66 @@ class ReportControllerTests : TeamcityTests()
         expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal"),
                 ChangelogItemViewModel("public", "something public"))
         assertThat(result.changelog[2].entries).hasSameElementsAs(expectedEntries)
+    }
+
+    @Test
+    fun `builds report reader viewmodels`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
+        }
+
+        val reportReaders = mapOf(
+                User("scoped.reader",
+                        "unknown",
+                        "scoped.reader@email.com",
+                        "test",
+                        Instant.now()) to Scope.Specific("report", "r1"),
+                User("global.reader",
+                        "Global Reader",
+                        "global.reader@email.com",
+                        "test",
+                        Instant.now()) to Scope.Global()
+
+        )
+
+        val authRepo = mock<OrderlyAuthorizationRepository>{
+            on { this.getReportReaders("r1")} doReturn(reportReaders)
+        }
+        val sut = ReportController(actionContext, mockOrderly, authRepo)
+        val result = sut.getByNameAndVersion().reportReaders
+
+        assertThat(result.count()).isEqualTo(2)
+
+        assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by username
+        assertThat(result[0].displayName).isEqualTo("Global Reader")
+        assertThat(result[0].canRemove).isFalse()
+
+        assertThat(result[1].username).isEqualTo("scoped.reader")
+        assertThat(result[1].displayName).isEqualTo("scoped.reader")
+        assertThat(result[1].canRemove).isTrue()
+    }
+
+    @Test
+    fun `does not build report reader viewmodels if user is not user manager`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn false
+        }
+
+
+        val authRepo = mock<OrderlyAuthorizationRepository>()
+
+        val sut = ReportController(actionContext, mockOrderly, authRepo)
+        val result = sut.getByNameAndVersion().reportReaders
+
+        assertThat(result.count()).isEqualTo(0)
+
+        verify(authRepo, times(0)).getReportReaders(any())
     }
 
     @Test
@@ -330,6 +389,31 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.isRunner).isFalse()
     }
 
+    @Test
+    fun `users with users manage permission are user managers`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
+        }
+        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isUsersManager).isTrue()
+    }
+
+    @Test
+    fun `users without users manage permission are not user managers`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+            on { this.params(":version") } doReturn versionId
+            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn false
+        }
+        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.isUsersManager).isFalse()
+    }
 
     @Test
     fun `creates correct breadcrumbs`()

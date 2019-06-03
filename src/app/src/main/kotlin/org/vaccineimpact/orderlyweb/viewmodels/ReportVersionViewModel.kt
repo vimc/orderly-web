@@ -95,7 +95,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             if (isUsersManager)
             {
                 val users = authRepo.getReportReaders(report.name)
-                reportReaders = users.map{ ReportReaderViewModel.build(it.key, it.value) }
+                reportReaders = users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.username }
             }
 
             val displayName = report.displayName ?: report.name
