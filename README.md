@@ -1,5 +1,8 @@
 # OrderlyWeb
 
+[![Build Status](https://travis-ci.com/vimc/orderly-web.svg?branch=master)](https://travis-ci.com/vimc/orderly-web)
+[![codecov.io](https://codecov.io/github/vimc/orderly-web/coverage.svg?branch=master)](https://codecov.io/github/vimc/orderly-web?branch=master)
+
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
 ## Developing
@@ -105,6 +108,9 @@ run tests (for this purpose also running an Orderly Server image with the `git` 
  build a Docker image containing the compiled app code (see steps [here](#docker-build))
 1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
 1. Runs `./scripts/run-custom-config-tests-in-container.sh`
+1. Runs `./scripts/build-css-generator.sh` which creates a docker image that can compile the 
+front-end sass to css - for usage during deployment to create custom style overrides 
+(see [this deploy config](https://github.com/vimc/orderly-web-deploy/blob/d0691f6b84e590d09c50b15310a08fceabb7db98/config/customcss/orderly-web.yml))
 
 For more explanation including a diagram that explains the relationship between the various docker images, 
 see [build.md](/docs/build.md)

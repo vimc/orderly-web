@@ -64,6 +64,7 @@ task runLocalTests(dependsOn: [":app:generateTestData", ":app:test"]) {
 
 subprojects {
     apply plugin: 'kotlin'
+    apply plugin: 'jacoco'
 
     repositories {
         mavenCentral()
@@ -73,6 +74,18 @@ subprojects {
 
     dependencies {
         compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    }
+
+    jacoco {
+        toolVersion = "0.8.3"
+        reportsDir = file("$projectDir/coverage")
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            csv.enabled = false
+        }
     }
 
     task copyConfig(type: Copy, dependsOn: ':loadPropertiesTask') {

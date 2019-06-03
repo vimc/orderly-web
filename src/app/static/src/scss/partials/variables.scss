@@ -9,11 +9,14 @@
 $table-border-color: $gray-700;
 $published-color: #868ED3;
 $internal-color: darken($warning, 10%);
-$theme-blue: rgba(86, 153, 251, 1);
+$theme-primary: rgba(86, 153, 251, 1);
 $theme-header-bg-color: $gray-100;
 $theme-header-color: $body-color;
 $breadcrumb-bg-color: $gray-100;
-$breadcrumb-color: $theme-blue;
+$breadcrumb-color: $theme-primary;
 $theme-table-border-color: $gray-300;
 $btn-border-radius: 0;
-$btn-primary-color: $theme-blue;
+$btn-primary-color: $theme-primary;
+
+// optional user overrides passed during deployment
+@import "user-variables";

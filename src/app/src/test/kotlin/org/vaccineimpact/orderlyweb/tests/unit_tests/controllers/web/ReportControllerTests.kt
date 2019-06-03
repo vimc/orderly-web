@@ -8,12 +8,10 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.ChangelogItemViewModel
 import java.time.Instant
 
 class ReportControllerTests : TeamcityTests()
@@ -31,6 +29,11 @@ class ReportControllerTests : TeamcityTests()
             listOf(),
             mapOf())
 
+    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
+            Changelog("20160103-143015-1234abcd", "public", "something public", true),
+            Changelog("20170103-143015-1234abcd", "internal", "something internal in 2017", true),
+            Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true))
+
     private val mockActionContext = mock<ActionContext> {
         on { this.params(":name") } doReturn "r1"
         on { this.params(":version") } doReturn versionId
@@ -41,6 +44,7 @@ class ReportControllerTests : TeamcityTests()
         on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
         on { this.getReportsByName("r1") } doReturn
                 listOf(versionId, "20170104-091500-1234dcba")
+        on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
     }
 
     @Test
@@ -89,6 +93,42 @@ class ReportControllerTests : TeamcityTests()
 
         assertThat(result.versions[0].date).isEqualTo("Wed Jan 04 2017, 09:15")
         assertThat(result.versions[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
+    }
+
+
+    @Test
+    fun `builds changelog viewmodels`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.changelog.count()).isEqualTo(3)
+        assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
+        assertThat(result.changelog[0].version).isEqualTo("20180103-143015-1234abcd")
+        var expectedEntries = listOf(ChangelogItemViewModel("public", "something public in 2018"))
+        assertThat(result.changelog[0].entries).hasSameElementsAs(expectedEntries)
+
+        assertThat(result.changelog[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
+        assertThat(result.changelog[1].version).isEqualTo("20170103-143015-1234abcd")
+        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal in 2017"))
+        assertThat(result.changelog[1].entries).hasSameElementsAs(expectedEntries)
+
+        assertThat(result.changelog[2].date).isEqualTo("Sun Jan 03 2016, 14:30")
+        assertThat(result.changelog[2].version).isEqualTo("20160103-143015-1234abcd")
+        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal"),
+                ChangelogItemViewModel("public", "something public"))
+        assertThat(result.changelog[2].entries).hasSameElementsAs(expectedEntries)
+    }
+
+    @Test
+    fun `changelogs are ordered by date descending`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
+        assertThat(result.changelog[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
+        assertThat(result.changelog[2].date).isEqualTo("Sun Jan 03 2016, 14:30")
     }
 
     @Test

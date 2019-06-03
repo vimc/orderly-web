@@ -20,8 +20,12 @@ abstract class CleanDatabaseTests : DatabaseTests()
         JooqContext(enableForeignKeyConstraints = false).use {
             for (field in fields)
             {
-                it.dsl.deleteFrom(field.get(null) as Table<*>)
-                        .execute()
+                // jacoco code coverage plugin adds synthetic fields which we can't access here
+                if (!field.isSynthetic)
+                {
+                    it.dsl.deleteFrom(field.get(null) as Table<*>)
+                            .execute()
+                }
             }
 
         }

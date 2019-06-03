@@ -1,4 +1,4 @@
-MIGRATE_IMAGE=docker.montagu.dide.ic.ac.uk:5000/montagu-migrate:master
+MIGRATE_IMAGE=vimc/montagu-migrate:master
 
 docker pull ${MIGRATE_IMAGE}
 docker run --rm --network=$NETWORK \
