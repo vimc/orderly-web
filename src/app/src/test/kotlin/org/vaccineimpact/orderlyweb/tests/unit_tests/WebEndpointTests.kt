@@ -15,6 +15,7 @@ import org.vaccineimpact.orderlyweb.SparkWrapper
 import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.secure
 import org.vaccineimpact.orderlyweb.post
+import org.vaccineimpact.orderlyweb.transform
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
@@ -203,5 +204,16 @@ class WebEndpointTests: TeamcityTests()
 
         val result = sut.post()
         assertThat(result.method).isEqualTo(HttpMethod.post)
+    }
+
+    @Test
+    fun `can set transform`()
+    {
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class)
+
+        assertThat(sut.transform).isFalse()
+
+        val result = sut.transform()
+        assertThat(result.transform).isTrue()
     }
 }

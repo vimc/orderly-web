@@ -1,14 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
@@ -19,8 +18,6 @@ import java.time.Instant
 
 class UserControllerTests : TeamcityTests()
 {
-    private val mockAuthRepo = mock<OrderlyAuthorizationRepository>{}
-
     @Test
     fun `gets report readers`()
     {
@@ -78,10 +75,10 @@ class UserControllerTests : TeamcityTests()
 
         assertThat(result).isEqualTo("OK")
 
-        val permissionCaptor = ArgumentCaptor.forClass(ReifiedPermission::class.java)
-        verify(authRepo).ensureUserGroupHasPermission("user1@example.com", permissionCaptor.capture())
-        val permission = permissionCaptor.value
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission>  = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupHasPermission(eq("user1@example.com"), capture(permissionCaptor))
 
+        val permission = permissionCaptor.value
         assertThat(permission.name).isEqualTo("test.permission")
         assertThat(permission.scope.value).isEqualTo("report:report1")
     }
