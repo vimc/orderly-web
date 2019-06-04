@@ -45,12 +45,10 @@ class ReportControllerTests : TeamcityTests()
         on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
     }
 
-    private val mockAuthRepo = mock<OrderlyAuthorizationRepository>{}
-
     @Test
     fun `getByNameAndVersion uses display name if present`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report).isEqualTo(mockReportDetails)
@@ -64,7 +62,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(displayName = null)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
@@ -73,7 +71,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `builds report version picker viewmodels`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.versions[1].url).isEqualTo("/reports/r1/20170103-143015-1234abcd")
@@ -88,7 +86,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `report version picker options are ordered by date descending`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.versions[0].date).isEqualTo("Wed Jan 04 2017, 09:15")
@@ -99,7 +97,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `builds changelog viewmodels`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.changelog.count()).isEqualTo(3)
@@ -121,69 +119,9 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `builds report reader viewmodels`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
-        }
-
-        val reportReaders = mapOf(
-                User("scoped.reader",
-                        "unknown",
-                        "scoped.reader@email.com",
-                        "test",
-                        Instant.now()) to Scope.Specific("report", "r1"),
-                User("global.reader",
-                        "Global Reader",
-                        "global.reader@email.com",
-                        "test",
-                        Instant.now()) to Scope.Global()
-
-        )
-
-        val authRepo = mock<OrderlyAuthorizationRepository>{
-            on { this.getReportReaders("r1")} doReturn(reportReaders)
-        }
-        val sut = ReportController(actionContext, mockOrderly, authRepo)
-        val result = sut.getByNameAndVersion().reportReaders
-
-        assertThat(result.count()).isEqualTo(2)
-
-        assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by username
-        assertThat(result[0].displayName).isEqualTo("Global Reader")
-        assertThat(result[0].canRemove).isFalse()
-
-        assertThat(result[1].username).isEqualTo("scoped.reader")
-        assertThat(result[1].displayName).isEqualTo("scoped.reader")
-        assertThat(result[1].canRemove).isTrue()
-    }
-
-    @Test
-    fun `does not build report reader viewmodels if user is not user manager`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn false
-        }
-
-
-        val authRepo = mock<OrderlyAuthorizationRepository>()
-
-        val sut = ReportController(actionContext, mockOrderly, authRepo)
-        val result = sut.getByNameAndVersion().reportReaders
-
-        assertThat(result.count()).isEqualTo(0)
-
-        verify(authRepo, times(0)).getReportReaders(any())
-    }
-
-    @Test
     fun `changelogs are ordered by date descending`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
@@ -194,7 +132,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `focalArtefactUrl is null if no artefacts`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -211,7 +149,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = unsuitableArtefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -229,7 +167,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isEqualTo("/reports/r1/versions/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
@@ -246,7 +184,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts.count()).isEqualTo(2)
@@ -276,7 +214,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
@@ -291,7 +229,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(dataHashes = mapOf("data1" to "1234/567", "data2" to "987&654"))
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.dataLinks.count()).isEqualTo(2)
@@ -317,7 +255,7 @@ class ReportControllerTests : TeamcityTests()
                     mockReportDetails.copy(resources = listOf("resource1.Rmd", "subdir/resource2.Rmd"))
         }
 
-        val sut = ReportController(mockActionContext, orderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.resources.count()).isEqualTo(2)
@@ -330,7 +268,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `zipFile has expected url`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
         assertThat(result.zipFile.name).isEqualTo("r1-$versionId.zip")
@@ -345,7 +283,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isAdmin).isTrue()
     }
@@ -358,7 +296,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isAdmin).isFalse()
     }
@@ -371,7 +309,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn true
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isRunner).isTrue()
     }
@@ -384,7 +322,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn false
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isRunner).isFalse()
     }
@@ -397,7 +335,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isUsersManager).isTrue()
     }
@@ -410,7 +348,7 @@ class ReportControllerTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn false
         }
-        val sut = ReportController(actionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
         assertThat(result.isUsersManager).isFalse()
     }
@@ -418,7 +356,7 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `creates correct breadcrumbs`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mockAuthRepo)
+        val sut = ReportController(mockActionContext, mockOrderly)
 
         val breadcrumbs = sut.getByNameAndVersion().breadcrumbs
         assertThat(breadcrumbs.count()).isEqualTo(2)

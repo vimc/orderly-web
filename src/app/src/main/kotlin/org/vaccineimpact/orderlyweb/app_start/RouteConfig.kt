@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.routing.api.*
 import org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig
 import org.vaccineimpact.orderlyweb.app_start.routing.web.WebReportRouteConfig
+import org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.SecurityController
 import org.vaccineimpact.orderlyweb.secure
@@ -35,6 +36,7 @@ object WebRouteConfig : RouteConfig
                     .secure(externalAuth = true)
             ) +
             WebReportRouteConfig.endpoints +
-            WebVersionRouteConfig.endpoints
+            WebVersionRouteConfig.endpoints +
+            WebUserRouteConfig.endpoints
 
 }

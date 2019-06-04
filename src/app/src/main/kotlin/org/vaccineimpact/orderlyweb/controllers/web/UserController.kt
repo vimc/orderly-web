@@ -7,13 +7,16 @@ import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
 
-class UserGroupController(context: ActionContext,
-                          val authRepo : AuthorizationRepository = OrderlyAuthorizationRepository()) : Controller(context)
+class UserController(context: ActionContext,
+                     val authRepo : AuthorizationRepository) : Controller(context)
 {
-    fun associatePermission()
+    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
+
+    fun associatePermission(): String
     {
-        val userGroupId = userGroupId()
+        val userEmail = userEmail()
         val postData = context.postData()
         val associatePermission = AssociatePermission(
                 postData["action"]!!,
@@ -22,13 +25,26 @@ class UserGroupController(context: ActionContext,
                 postData["scope_id"]
         )
 
+        //TODO: Add check that this is a user and not a group
+
         val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
 
         if (associatePermission.action == "add")
-            authRepo.ensureUserGroupHasPermission(userGroupId, permission)
+        {
+            authRepo.ensureUserGroupHasPermission(userEmail, permission)
+            return okayResponse()
+        }
         else
             throw IllegalArgumentException("Unknown action type")
     }
 
-    private fun userGroupId(): String = context.params(":user-group-id")
+    fun getReportReaders(): List<ReportReaderViewModel>
+    {
+        val report = report()
+        val users = authRepo.getReportReaders(report)
+        return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.username }
+    }
+
+    private fun userEmail(): String = context.params(":email")
+    private fun report(): String = context.params(":report")
 }

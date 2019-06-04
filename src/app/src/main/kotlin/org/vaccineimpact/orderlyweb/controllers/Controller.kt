@@ -15,6 +15,8 @@ abstract class Controller(val context: ActionContext)
         return response.text
     }
 
+    protected fun okayResponse() = "OK"
+
     protected val reportReadingScopes by lazy {
         context.permissions
                 .filter { it.name == "reports.read" }
