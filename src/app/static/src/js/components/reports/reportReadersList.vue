@@ -46,7 +46,7 @@
                     scope_id: this.report.name
                 };
 
-                api.post(`/users/${encodeURI(this.add_email)}/actions/associate-permission/`, data)
+                api.post(`/users/${encodeURIComponent(this.add_email)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.refreshReaders();
                         this.add_email = "";
@@ -62,7 +62,7 @@
                         this.readers = data.data
                 })
                     .catch(() => {
-                    this.error = "Error: could not refresh list of readers";
+                    this.error = "Error: could not fetch list of readers";
                 })
             }
         }

@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
+import java.net.URLDecoder
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
@@ -45,6 +46,6 @@ class UserController(context: ActionContext,
         return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.username }
     }
 
-    private fun userEmail(): String = context.params(":email")
+    private fun userEmail(): String = URLDecoder.decode(context.params(":email"))
     private fun report(): String = context.params(":report")
 }
