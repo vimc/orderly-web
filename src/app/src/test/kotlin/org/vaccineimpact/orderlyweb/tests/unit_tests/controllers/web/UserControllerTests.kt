@@ -2,14 +2,19 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import java.lang.IllegalArgumentException
 import java.time.Instant
 
 class UserControllerTests : TeamcityTests()
@@ -17,7 +22,7 @@ class UserControllerTests : TeamcityTests()
     private val mockAuthRepo = mock<OrderlyAuthorizationRepository>{}
 
     @Test
-    fun `builds report reader viewmodels`()
+    fun `gets report readers`()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":report") } doReturn "r1"
@@ -52,6 +57,52 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[1].username).isEqualTo("scoped.reader")
         assertThat(result[1].displayName).isEqualTo("scoped.reader")
         assertThat(result[1].canRemove).isTrue()
+    }
+
+    @Test
+    fun `adds permission to user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.postData() } doReturn mapOf(
+                    "action" to "add",
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val sut = UserController(actionContext, authRepo)
+        val result = sut.associatePermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupHasPermission("user1@example.com", permissionCaptor.capture())
+        val permission = permissionCaptor.value
+
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `throws exception if associate permission with unknown action`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.postData() } doReturn mapOf(
+                    "action" to "addx",
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val sut = UserController(actionContext, authRepo)
+        assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
+
     }
 
 }

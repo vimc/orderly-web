@@ -46,6 +46,6 @@ class UserController(context: ActionContext,
         return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.username }
     }
 
-    private fun userEmail(): String = URLDecoder.decode(context.params(":email"))
+    private fun userEmail(): String = URLDecoder.decode(context.params(":email"), "UTF-8")
     private fun report(): String = context.params(":report")
 }
