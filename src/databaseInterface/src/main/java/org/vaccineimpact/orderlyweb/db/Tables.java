@@ -9,6 +9,7 @@ import javax.annotation.Generated;
 import org.vaccineimpact.orderlyweb.db.tables.ArtefactFormat;
 import org.vaccineimpact.orderlyweb.db.tables.Changelog;
 import org.vaccineimpact.orderlyweb.db.tables.ChangelogLabel;
+import org.vaccineimpact.orderlyweb.db.tables.CustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.Data;
 import org.vaccineimpact.orderlyweb.db.tables.Depends;
 import org.vaccineimpact.orderlyweb.db.tables.File;
@@ -22,6 +23,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermissionAll;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
@@ -30,6 +32,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
@@ -62,6 +65,11 @@ public class Tables {
      * The table <code>changelog_label</code>.
      */
     public static final ChangelogLabel CHANGELOG_LABEL = org.vaccineimpact.orderlyweb.db.tables.ChangelogLabel.CHANGELOG_LABEL;
+
+    /**
+     * The table <code>custom_fields</code>.
+     */
+    public static final CustomFields CUSTOM_FIELDS = org.vaccineimpact.orderlyweb.db.tables.CustomFields.CUSTOM_FIELDS;
 
     /**
      * The table <code>data</code>.
@@ -129,6 +137,11 @@ public class Tables {
     public static final OrderlywebUserGroupPermission ORDERLYWEB_USER_GROUP_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION;
 
     /**
+     * The table <code>orderlyweb_user_group_permission_all</code>.
+     */
+    public static final OrderlywebUserGroupPermissionAll ORDERLYWEB_USER_GROUP_PERMISSION_ALL = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermissionAll.ORDERLYWEB_USER_GROUP_PERMISSION_ALL;
+
+    /**
      * The table <code>orderlyweb_user_group_report_permission</code>.
      */
     public static final OrderlywebUserGroupReportPermission ORDERLYWEB_USER_GROUP_REPORT_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION;
@@ -167,6 +180,11 @@ public class Tables {
      * The table <code>report_version_artefact</code>.
      */
     public static final ReportVersionArtefact REPORT_VERSION_ARTEFACT = org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact.REPORT_VERSION_ARTEFACT;
+
+    /**
+     * The table <code>report_version_custom_fields</code>.
+     */
+    public static final ReportVersionCustomFields REPORT_VERSION_CUSTOM_FIELDS = org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS;
 
     /**
      * The table <code>report_version_data</code>.
