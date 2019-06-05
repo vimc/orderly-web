@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import java.io.File
+import java.time.Instant
 import kotlin.streams.asSequence
 
 data class ChangelogWithPublicVersion
@@ -111,6 +112,7 @@ fun insertUser(email: String,
                 .set(ORDERLYWEB_USER.USERNAME, name)
                 .set(ORDERLYWEB_USER.DISPLAY_NAME, name)
                 .set(ORDERLYWEB_USER.USER_SOURCE, "github")
+                .set(ORDERLYWEB_USER.LAST_LOGGED_IN, Instant.now().toString())
                 .onDuplicateKeyIgnore()
                 .execute()
 

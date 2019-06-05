@@ -1,8 +1,7 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER
-import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserRecord
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserSource
 import java.time.Instant

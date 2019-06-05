@@ -16,6 +16,7 @@ import org.jooq.impl.SchemaImpl;
 import org.vaccineimpact.orderlyweb.db.tables.ArtefactFormat;
 import org.vaccineimpact.orderlyweb.db.tables.Changelog;
 import org.vaccineimpact.orderlyweb.db.tables.ChangelogLabel;
+import org.vaccineimpact.orderlyweb.db.tables.CustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.Data;
 import org.vaccineimpact.orderlyweb.db.tables.Depends;
 import org.vaccineimpact.orderlyweb.db.tables.File;
@@ -29,6 +30,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermissionAll;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
@@ -37,6 +39,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
@@ -55,7 +58,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -1932861830;
+    private static final long serialVersionUID = -1857287285;
 
     /**
      * The reference instance of <code></code>
@@ -76,6 +79,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>changelog_label</code>.
      */
     public final ChangelogLabel CHANGELOG_LABEL = org.vaccineimpact.orderlyweb.db.tables.ChangelogLabel.CHANGELOG_LABEL;
+
+    /**
+     * The table <code>custom_fields</code>.
+     */
+    public final CustomFields CUSTOM_FIELDS = org.vaccineimpact.orderlyweb.db.tables.CustomFields.CUSTOM_FIELDS;
 
     /**
      * The table <code>data</code>.
@@ -143,6 +151,11 @@ public class DefaultSchema extends SchemaImpl {
     public final OrderlywebUserGroupPermission ORDERLYWEB_USER_GROUP_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION;
 
     /**
+     * The table <code>orderlyweb_user_group_permission_all</code>.
+     */
+    public final OrderlywebUserGroupPermissionAll ORDERLYWEB_USER_GROUP_PERMISSION_ALL = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermissionAll.ORDERLYWEB_USER_GROUP_PERMISSION_ALL;
+
+    /**
      * The table <code>orderlyweb_user_group_report_permission</code>.
      */
     public final OrderlywebUserGroupReportPermission ORDERLYWEB_USER_GROUP_REPORT_PERMISSION = org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION;
@@ -181,6 +194,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>report_version_artefact</code>.
      */
     public final ReportVersionArtefact REPORT_VERSION_ARTEFACT = org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact.REPORT_VERSION_ARTEFACT;
+
+    /**
+     * The table <code>report_version_custom_fields</code>.
+     */
+    public final ReportVersionCustomFields REPORT_VERSION_CUSTOM_FIELDS = org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS;
 
     /**
      * The table <code>report_version_data</code>.
@@ -225,6 +243,7 @@ public class DefaultSchema extends SchemaImpl {
             ArtefactFormat.ARTEFACT_FORMAT,
             Changelog.CHANGELOG,
             ChangelogLabel.CHANGELOG_LABEL,
+            CustomFields.CUSTOM_FIELDS,
             Data.DATA,
             Depends.DEPENDS,
             File.FILE,
@@ -238,6 +257,7 @@ public class DefaultSchema extends SchemaImpl {
             OrderlywebUserGroup.ORDERLYWEB_USER_GROUP,
             OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION,
             OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION,
+            OrderlywebUserGroupPermissionAll.ORDERLYWEB_USER_GROUP_PERMISSION_ALL,
             OrderlywebUserGroupReportPermission.ORDERLYWEB_USER_GROUP_REPORT_PERMISSION,
             OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER,
             OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION,
@@ -246,6 +266,7 @@ public class DefaultSchema extends SchemaImpl {
             Report.REPORT,
             ReportVersion.REPORT_VERSION,
             ReportVersionArtefact.REPORT_VERSION_ARTEFACT,
+            ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS,
             ReportVersionData.REPORT_VERSION_DATA,
             ReportVersionPackage.REPORT_VERSION_PACKAGE,
             ReportVersionView.REPORT_VERSION_VIEW);

@@ -75,10 +75,12 @@ class VersionPageTests : TeamcityTests()
             "/testFocalArtefactUrl",
             false,
             false,
+            false,
             testArtefactViewModels,
             testDataLinks,
             testResources,
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            listOf(),
             listOf(),
             listOf(),
             listOf(Breadcrumb("name", "url")),
@@ -357,5 +359,27 @@ class VersionPageTests : TeamcityTests()
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
         Assertions.assertThat(runReport).isNull()
+    }
+
+    @Test
+    fun `user managers see report readers`()
+    {
+        val mockModel = testModel.copy(isUsersManager = true)
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
+        Assertions.assertThat(reportReaders).isNotNull()
+    }
+
+    @Test
+    fun `non user managers do not see report readers`()
+    {
+        val mockModel = testModel.copy(isUsersManager = false)
+
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
+        Assertions.assertThat(reportReaders).isNull()
     }
 }

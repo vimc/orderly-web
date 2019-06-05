@@ -26,6 +26,11 @@
                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                 </div>
             </#if>
+            <#if isUsersManager>
+                <div id="reportReadersListVueApp" class="pt-3">
+                    <report-readers-list :report=report :readers=readers></report-readers-list>
+                </div>
+            </#if>
             <#if isRunner>
                 <div id="runReportVueApp">
                     <run-report :report=report></run-report>
@@ -47,7 +52,8 @@
     </div>
     <#macro scripts>
         <script>
-            var report = ${reportJson}
+            var report = ${reportJson};
+            var readers = ${reportReadersJson};
         </script>
         <script src="/js/report.bundle.js"></script>
     </#macro>

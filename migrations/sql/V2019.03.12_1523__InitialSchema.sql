@@ -52,3 +52,18 @@ CREATE TABLE "orderlyweb_user_group_global_permission" (
 FOREIGN KEY ("id") REFERENCES "orderlyweb_user_group_permission" ("id")
 );
 
+CREATE VIEW "orderlyweb_user_group_permission_all"
+AS
+SELECT abstract.*, scoped.scope_prefix, scoped.scope_id
+FROM orderlyweb_user_group_permission as abstract
+INNER JOIN
+  (SELECT id, '*' AS scope_prefix, NULL AS scope_id
+    FROM orderlyweb_user_group_global_permission
+  UNION
+  SELECT id, 'report' AS scope_prefix, report AS scope_id
+  FROM orderlyweb_user_group_report_permission
+  UNION
+  SELECT id, 'version' AS scope_prefix, version AS scope_id
+  FROM orderlyweb_user_group_version_permission) AS scoped
+on abstract.id = scoped.id;
+

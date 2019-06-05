@@ -15,6 +15,7 @@ interface AuthorizationRepository
     fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
+    fun getReportReaders(reportName: String): Map<User, Scope>
 }
 
 class OrderlyAuthorizationRepository : AuthorizationRepository
@@ -139,6 +140,48 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
         }
 
     }
+
+    override fun getReportReaders(reportName: String): Map<User, Scope>
+    {
+        //Returns all users which can read the report, along with their report read scope (global or report-specific)
+        JooqContext().use {
+            val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,
+                    ORDERLYWEB_USER.DISPLAY_NAME,
+                    ORDERLYWEB_USER.EMAIL,
+                    ORDERLYWEB_USER.USER_SOURCE,
+                    ORDERLYWEB_USER.LAST_LOGGED_IN,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+
+                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                            ORDERLYWEB_USER_GROUP_USER,
+                            ORDERLYWEB_USER)
+
+                    .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+
+                    .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
+                    .and(permissionIsGlobal().or(permissionIsScopedToReport(reportName)))
+
+                    .orderBy(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.desc())
+                    .fetch()
+
+            //associateBy chooses the last value for each key, so should get the global perm if user has both global and report
+            return result.associateBy(
+                    { it.into(User::class.java) },
+                    { if (it[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] == "*")
+                        Scope.Global()
+                      else
+                        Scope.Specific("report", reportName) }
+            )
+
+        }
+    }
+
+    private fun permissionIsGlobal() = ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.eq("*")
+    private fun permissionIsScopedToReport(report: String) =
+        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.eq("report").
+            and(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID.eq(report))
 
     private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>
     {

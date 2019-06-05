@@ -71,7 +71,7 @@ class RouterTests : TeamcityTests()
     @Test
     fun `maps logout route with and without trailing slash`()
     {
-        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
 
         verify(mockSparkWrapper).mapGet(eq("logout"), any())
         verify(mockSparkWrapper).mapGet(eq("logout/"), any())
@@ -80,7 +80,7 @@ class RouterTests : TeamcityTests()
     @Test
     fun `maps login route with and without trailing slash`()
     {
-        val sut = Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
+        Router(mockActionResolver, mockAuthRouteBuilder, mockSparkWrapper, mockErrorHandler)
 
         verify(mockSparkWrapper).mapGet(eq("login"), any())
         verify(mockSparkWrapper).mapGet(eq("login/"), any())

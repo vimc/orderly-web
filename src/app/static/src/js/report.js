@@ -3,6 +3,7 @@ import $ from 'jquery';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
+import reportReadersList from './components/reports/reportReadersList.vue'
 
 export const bootstrap = require("bootstrap");
 
@@ -34,6 +35,15 @@ $(document).ready(() => {
             data: data,
             components: {
                 runReport: runReport
+            }
+        });
+    }
+    if ($('#reportReadersListVueApp').length > 0) {
+        new Vue({
+            el: '#reportReadersListVueApp',
+            data: data,
+            components: {
+                reportReadersList: reportReadersList
             }
         });
     }
