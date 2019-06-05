@@ -9,7 +9,7 @@
                 </div>
             </div>
             <ul class="list-unstyled report-readers">
-                <li v-for="reader in readers">
+                <li v-for="reader in readers" v-bind:id="reader.username">
                     <span>{{reader.display_name}}</span>
                     <div class="text-muted small" style="margin-top: -1rem">{{reader.username}}</div>
                 </li>

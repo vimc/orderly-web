@@ -200,6 +200,57 @@ class ReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("p.small.text-muted")).text).isEqualTo("20170103-143015-1234abcd")
     }
 
+    @Test
+    fun `can view report readers`()
+    {
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("users.manage", Scope.Global())))
+        addUserWithPermissions(listOf(), "no.perms@example.com")
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170104-091500-1234abcd")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
+        val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        assertThat(listItems.count()).isEqualTo(1)
+        assertThat(listItems[0].findElement(By.cssSelector("span")).text).isEqualTo("test.user")
+        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("test.user")
+    }
+
+    @Test
+    fun `can add report readers`()
+    {
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("users.manage", Scope.Global())))
+        addUserWithPermissions(listOf(), "no.perms@example.com")
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170104-091500-1234abcd")
+
+        //let existing readers load first
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
+
+        val addReaderInput = driver.findElement(By.cssSelector("#reportReadersListVueApp input"))
+        addReaderInput.sendKeys("no.perms@example.com")
+        val addReaderButton = driver.findElement(By.cssSelector("#reportReadersListVueApp button"))
+        addReaderButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("#reportReadersListVueApp #no.perms@example.com")))
+
+        val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        assertThat(listItems.count()).isEqualTo(2)
+        assertThat(listItems[1].findElement(By.cssSelector("span")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[1].findElement(By.cssSelector("span")).text).isEqualTo("test.user")
+        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("test.user")
+    }
+
     private fun confirmTabActive(tabId: String, active: Boolean)
     {
         val tabLink = driver.findElement(By.cssSelector("a[href='#${tabId}']"))
