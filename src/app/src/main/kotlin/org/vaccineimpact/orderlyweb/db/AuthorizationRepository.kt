@@ -161,13 +161,13 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     .and(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.isNotNull.or(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(reportName)))
                     .fetch()
 
-            return result.map{
-                it.into(User::class.java) to
-                        if (it[ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID] != null)
-                            Scope.Global()
+            return result.associateBy(
+                    { it.into(User::class.java) },
+                    { if (it[ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID] != null)
+                        Scope.Global()
                         else
-                            Scope.Specific("report", reportName)
-            }.toMap()
+                            Scope.Specific("report", reportName) }
+            )
 
         }
     }
