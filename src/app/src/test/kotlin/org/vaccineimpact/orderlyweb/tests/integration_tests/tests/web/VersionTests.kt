@@ -138,4 +138,6 @@ class VersionTests : IntegrationTest()
 
         return "/reports/$report/versions/$version/artefacts/$encodedFileName/"
     }
+
+
 }
