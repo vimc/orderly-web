@@ -26,10 +26,10 @@ describe("reportReadersList", () => {
         expect(listItems.length).toBe(2);
 
         expect(listItems.at(0).find('span').text()).toBe("User One");
-        expect(listItems.at(0).find('div').text()).toBe("user1");
+        expect(listItems.at(0).find('div').text()).toBe("user1@example.com");
 
         expect(listItems.at(1).find('span').text()).toBe("User Two");
-        expect(listItems.at(1).find('div').text()).toBe("user2");
+        expect(listItems.at(1).find('div').text()).toBe("user2@example.com");
     }
 
     it('renders data', () => {
