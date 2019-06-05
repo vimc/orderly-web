@@ -5,19 +5,30 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
 
 class UserController(context: ActionContext,
-                     val authRepo : AuthorizationRepository) : Controller(context)
+                     val authRepo : AuthorizationRepository,
+                     val userRepo: UserRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
+    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(), OrderlyUserRepository())
 
     fun associatePermission(): String
     {
         val userEmail = userEmail()
+
+        //check that this is a user and not a group
+        if (userRepo.getUser(userEmail) == null)
+        {
+            throw UnknownObjectError(userEmail, "user")
+        }
+
         val postData = context.postData()
         val associatePermission = AssociatePermission(
                 postData["action"]!!,
@@ -25,8 +36,6 @@ class UserController(context: ActionContext,
                 postData["scope_prefix"],
                 postData["scope_id"]
         )
-
-        //TODO: Add check that this is a user and not a group
 
         val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
 

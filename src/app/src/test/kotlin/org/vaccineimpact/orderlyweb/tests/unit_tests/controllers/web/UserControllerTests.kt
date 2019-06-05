@@ -9,6 +9,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -39,10 +41,12 @@ class UserControllerTests : TeamcityTests()
 
         )
 
+        val userRepo = mock<OrderlyUserRepository>()
+
         val authRepo = mock<OrderlyAuthorizationRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, authRepo, userRepo)
         val result = sut.getReportReaders()
 
         assertThat(result.count()).isEqualTo(2)
@@ -69,8 +73,16 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
+        val userRepo = mock<OrderlyUserRepository> {
+            on { this.getUser("user1@example.com") } doReturn User("user.1",
+                    "User One",
+                    "user1@example.com",
+                    "test",
+                    Instant.now())
+        }
+
         val authRepo = mock<OrderlyAuthorizationRepository>()
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, authRepo, userRepo)
         val result = sut.associatePermission()
 
         assertThat(result).isEqualTo("OK")
@@ -81,6 +93,27 @@ class UserControllerTests : TeamcityTests()
         val permission = permissionCaptor.value
         assertThat(permission.name).isEqualTo("test.permission")
         assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `throws exception if associate permission for non-user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.postData() } doReturn mapOf(
+                    "action" to "add",
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val userRepo = mock<OrderlyUserRepository> {
+        }
+
+        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val sut = UserController(actionContext, authRepo, userRepo)
+        assertThatThrownBy{ sut.associatePermission() }.isInstanceOf(UnknownObjectError::class.java)
     }
 
     @Test
@@ -96,8 +129,16 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
+        val userRepo = mock<OrderlyUserRepository> {
+            on { this.getUser("user1@example.com") } doReturn User("user.1",
+                    "User One",
+                    "user1@example.com",
+                    "test",
+                    Instant.now())
+        }
+
         val authRepo = mock<OrderlyAuthorizationRepository>()
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, authRepo, userRepo)
         assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
 
     }
