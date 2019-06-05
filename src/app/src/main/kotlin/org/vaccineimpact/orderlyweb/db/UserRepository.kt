@@ -12,7 +12,7 @@ interface UserRepository
     fun getUser(email: String): User?
 }
 
-open class OrderlyUserRepository : UserRepository
+class OrderlyUserRepository : UserRepository
 {
     override fun getUser(email: String): User?
     {

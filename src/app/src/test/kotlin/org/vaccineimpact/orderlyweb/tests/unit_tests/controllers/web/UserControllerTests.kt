@@ -8,8 +8,7 @@ import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
@@ -41,9 +40,9 @@ class UserControllerTests : TeamcityTests()
 
         )
 
-        val userRepo = mock<OrderlyUserRepository>()
+        val userRepo = mock<UserRepository>()
 
-        val authRepo = mock<OrderlyAuthorizationRepository>{
+        val authRepo = mock<AuthorizationRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
         val sut = UserController(actionContext, authRepo, userRepo)
@@ -73,7 +72,7 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
-        val userRepo = mock<OrderlyUserRepository> {
+        val userRepo = mock<UserRepository> {
             on { this.getUser("user1@example.com") } doReturn User("user.1",
                     "User One",
                     "user1@example.com",
@@ -81,7 +80,7 @@ class UserControllerTests : TeamcityTests()
                     Instant.now())
         }
 
-        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val authRepo = mock<AuthorizationRepository>()
         val sut = UserController(actionContext, authRepo, userRepo)
         val result = sut.associatePermission()
 
@@ -108,10 +107,10 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
-        val userRepo = mock<OrderlyUserRepository> {
+        val userRepo = mock<UserRepository> {
         }
 
-        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val authRepo = mock<AuthorizationRepository>()
         val sut = UserController(actionContext, authRepo, userRepo)
         assertThatThrownBy{ sut.associatePermission() }.isInstanceOf(UnknownObjectError::class.java)
     }
@@ -129,7 +128,7 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
-        val userRepo = mock<OrderlyUserRepository> {
+        val userRepo = mock<UserRepository> {
             on { this.getUser("user1@example.com") } doReturn User("user.1",
                     "User One",
                     "user1@example.com",
@@ -137,7 +136,7 @@ class UserControllerTests : TeamcityTests()
                     Instant.now())
         }
 
-        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val authRepo = mock<AuthorizationRepository>()
         val sut = UserController(actionContext, authRepo, userRepo)
         assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
 
