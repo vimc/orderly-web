@@ -153,9 +153,9 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
 
-                    .from(ORDERLYWEB_USER)
-                    .join(ORDERLYWEB_USER_GROUP)
-                    .on(ORDERLYWEB_USER.EMAIL.eq(ORDERLYWEB_USER_GROUP.ID))
+                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                            ORDERLYWEB_USER_GROUP_USER,
+                            ORDERLYWEB_USER)
 
                     .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                     .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
