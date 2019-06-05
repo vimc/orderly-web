@@ -205,13 +205,16 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(ReifiedPermission("users.manage", Scope.Global())))
+        addUserWithPermissions(listOf(
+                ReifiedPermission("users.manage", Scope.Global()),
+                ReifiedPermission("reports.read", Scope.Global())
+        ))
         addUserWithPermissions(listOf(), "no.perms@example.com")
 
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170104-091500-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
@@ -225,13 +228,16 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(ReifiedPermission("users.manage", Scope.Global())))
+        addUserWithPermissions(listOf(
+                ReifiedPermission("users.manage", Scope.Global()),
+                ReifiedPermission("reports.read", Scope.Global())
+        ))
         addUserWithPermissions(listOf(), "no.perms@example.com")
 
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170104-091500-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
 
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
