@@ -45,7 +45,7 @@ class ReportControllerTests : TeamcityTests()
         on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
     }
 
-    private val mockAuthRepo = mock<OrderlyAuthorizationRepository>{}
+    private val mockAuthRepo = mock<AuthorizationRepository>{}
 
     @Test
     fun `getByNameAndVersion uses display name if present`()
@@ -143,7 +143,7 @@ class ReportControllerTests : TeamcityTests()
 
         )
 
-        val authRepo = mock<OrderlyAuthorizationRepository>{
+        val authRepo = mock<AuthorizationRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
         val sut = ReportController(actionContext, mockOrderly, authRepo)
@@ -170,7 +170,7 @@ class ReportControllerTests : TeamcityTests()
         }
 
 
-        val authRepo = mock<OrderlyAuthorizationRepository>()
+        val authRepo = mock<AuthorizationRepository>()
 
         val sut = ReportController(actionContext, mockOrderly, authRepo)
         val result = sut.getByNameAndVersion().reportReaders

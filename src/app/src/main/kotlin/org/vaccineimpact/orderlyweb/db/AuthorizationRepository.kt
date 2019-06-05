@@ -18,7 +18,7 @@ interface AuthorizationRepository
     fun getReportReaders(reportName: String): Map<User, Scope>
 }
 
-open class OrderlyAuthorizationRepository : AuthorizationRepository
+class OrderlyAuthorizationRepository : AuthorizationRepository
 {
     private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
     private val PERMISSION_NAME = "permission_name"
