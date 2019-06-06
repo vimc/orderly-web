@@ -39,13 +39,14 @@ class UserController(context: ActionContext,
 
         val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
 
-        if (associatePermission.action == "add")
+        when (associatePermission.action)
         {
-            authRepo.ensureUserGroupHasPermission(userEmail, permission)
-            return okayResponse()
+            "add" -> authRepo.ensureUserGroupHasPermission(userEmail, permission)
+            "remove" -> authRepo.ensureUserGroupDoesNotHavePermission(userEmail, permission)
+            else -> throw IllegalArgumentException("Unknown action type")
         }
-        else
-            throw IllegalArgumentException("Unknown action type")
+
+        return okayResponse()
     }
 
     fun getReportReaders(): List<ReportReaderViewModel>
