@@ -20,10 +20,6 @@ interface AuthorizationRepository
 
 class OrderlyAuthorizationRepository : AuthorizationRepository
 {
-    private val ALL_GROUP_PERMISSIONS = "all_group_permissions"
-    private val PERMISSION_NAME = "permission_name"
-    private val GROUP_PERMISSION_ID = "permission_id"
-
     override fun createUserGroup(userGroup: String)
     {
         JooqContext().use {
@@ -70,21 +66,22 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
     override fun getPermissionsForUser(email: String): PermissionSet
     {
-        return JooqContext().use {
+        JooqContext().use{
+            val perms = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                            ORDERLYWEB_USER_GROUP_USER,
+                            ORDERLYWEB_USER)
 
-            val abstractPermissions =
-                    it.dsl.select(ORDERLYWEB_PERMISSION.ID.`as`(PERMISSION_NAME),
-                            ORDERLYWEB_USER_GROUP_PERMISSION.ID.`as`(GROUP_PERMISSION_ID))
-                            .fromJoinPath(ORDERLYWEB_PERMISSION,
-                                    ORDERLYWEB_USER_GROUP_PERMISSION,
-                                    ORDERLYWEB_USER_GROUP,
-                                    ORDERLYWEB_USER_GROUP_USER,
-                                    ORDERLYWEB_USER)
-                            .where(ORDERLYWEB_USER.EMAIL.eq(email))
-                            .asTemporaryTable(ALL_GROUP_PERMISSIONS)
+                    .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                    .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
 
-            val allPermissions = getAllPermissions(it, abstractPermissions)
-            PermissionSet(allPermissions)
+                    .where(ORDERLYWEB_USER.EMAIL.eq(email))
+                    .fetch()
+                    .map{ r -> mapPermission(r) }
+
+            return PermissionSet(perms)
         }
     }
 
@@ -169,10 +166,7 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
             //associateBy chooses the last value for each key, so should get the global perm if user has both global and report
             return result.associateBy(
                     { it.into(User::class.java) },
-                    { if (it[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] == "*")
-                        Scope.Global()
-                      else
-                        Scope.Specific("report", reportName) }
+                    { mapScope(it) }
             )
 
         }
@@ -185,75 +179,27 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
     private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>
     {
-        val abstractPermissions =
-                db.dsl.select(ORDERLYWEB_PERMISSION.ID.`as`(PERMISSION_NAME),
-                        ORDERLYWEB_USER_GROUP_PERMISSION.ID.`as`(GROUP_PERMISSION_ID))
-                        .fromJoinPath(ORDERLYWEB_PERMISSION,
-                                ORDERLYWEB_USER_GROUP_PERMISSION)
-                        .where(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup))
-                        .asTemporaryTable(ALL_GROUP_PERMISSIONS)
-
-        return getAllPermissions(db, abstractPermissions)
+            return db.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                    .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                    .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(userGroup))
+                    .fetch()
+                    .map{ r -> mapPermission(r) }
     }
 
-    private fun getAllPermissions(db: JooqContext, abstractPermissions: TempTable): List<ReifiedPermission>
+    private fun mapPermission(dbPermission: Record): ReifiedPermission
     {
-        val globalPermissions = mapGlobalPermissions(
-                db.dsl.withTemporaryTable(abstractPermissions)
-                        .select(abstractPermissions.field<String>(PERMISSION_NAME))
-                        .from(abstractPermissions.tableName)
-                        .join(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
-                        .on(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID
-                                .eq(abstractPermissions.field(GROUP_PERMISSION_ID)))
-                        .fetch()
-        )
-
-        val reportPermissions = mapReportPermissions(
-                db.dsl.withTemporaryTable(abstractPermissions)
-                        .select(abstractPermissions.field<String>(PERMISSION_NAME),
-                                ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT)
-                        .from(abstractPermissions.tableName)
-                        .join(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
-                        .on(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID
-                                .eq(abstractPermissions.field(GROUP_PERMISSION_ID)))
-                        .fetch()
-        )
-
-        val versionPermissions = mapVersionPermissions(
-                db.dsl.withTemporaryTable(abstractPermissions)
-                        .select(abstractPermissions.field<String>(PERMISSION_NAME),
-                                ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION)
-                        .from(abstractPermissions.tableName)
-                        .join(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
-                        .on(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID
-                                .eq(abstractPermissions.field(GROUP_PERMISSION_ID)))
-                        .fetch()
-        )
-
-        return globalPermissions + reportPermissions + versionPermissions
+        return ReifiedPermission(dbPermission[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION], mapScope(dbPermission))
     }
 
-    private fun mapGlobalPermissions(permissionNames: List<Record>): List<ReifiedPermission>
+    private fun mapScope(dbScope: Record): Scope
     {
-        return permissionNames.map {
-            ReifiedPermission(it[PERMISSION_NAME].toString(), Scope.Global())
-        }
-    }
-
-    private fun mapReportPermissions(permissions: List<Record>): List<ReifiedPermission>
-    {
-        return permissions.map {
-            ReifiedPermission(it[PERMISSION_NAME].toString(),
-                    Scope.Specific("report", it[ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT]))
-        }
-    }
-
-    private fun mapVersionPermissions(permissions: List<Record>): List<ReifiedPermission>
-    {
-        return permissions.map {
-            ReifiedPermission(it[PERMISSION_NAME].toString(),
-                    Scope.Specific("version", it[ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION]))
-        }
+        return if (dbScope[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] == "*")
+            Scope.Global()
+        else
+            Scope.Specific(dbScope[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX] as String,
+                    dbScope[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID])
     }
 
 }
