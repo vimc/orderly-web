@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.models
 
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
-import org.vaccineimpact.orderlyweb.models.permissions.RoleAssignment
 
 sealed class Scope  (val value: String)
 {
@@ -54,19 +53,6 @@ sealed class Scope  (val value: String)
             {
                 val parts = rawScope.split(':')
                 return Specific(parts[0], parts[1])
-            }
-        }
-
-        fun parse(role: RoleAssignment): Scope
-        {
-            if (role.scopePrefix.isNullOrEmpty())
-            {
-                return Scope.Global()
-            }
-            else
-            {
-
-                return Scope.Specific(role.scopePrefix!!, role.scopeId!!)
             }
         }
 
