@@ -159,11 +159,11 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                         {
                             permission.scope.databaseScopePrefix == "report" ->
                                     it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
-                                    .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(idToDelete))
-                                    .and(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(permission.scope.databaseScopeId))
-                                    .execute()
+                                        .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(idToDelete))
+                                        .and(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.REPORT.eq(permission.scope.databaseScopeId))
+                                        .execute()
                             permission.scope.databaseScopePrefix == "version" ->
-                                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
+                                    it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
                                         .where(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.eq(idToDelete))
                                         .and(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION.eq(permission.scope.databaseScopeId))
                                         .execute()

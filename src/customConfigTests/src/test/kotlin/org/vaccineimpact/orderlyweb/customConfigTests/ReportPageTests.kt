@@ -293,7 +293,7 @@ class ReportPageTests : SeleniumTest()
         assertThat(listItems.count()).isEqualTo(1)
         assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("test.user@example.com")
         assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
-        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
+        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
     }
 
     private fun confirmTabActive(tabId: String, active: Boolean)
