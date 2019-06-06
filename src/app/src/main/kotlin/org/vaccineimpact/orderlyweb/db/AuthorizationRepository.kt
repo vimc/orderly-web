@@ -14,6 +14,7 @@ interface AuthorizationRepository
     fun createUserGroup(userGroup: String)
     fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
+    fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
     fun getReportReaders(reportName: String): Map<User, Scope>
 }
@@ -88,13 +89,9 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
     override fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     {
         JooqContext().use {
-            it.dsl.selectFrom(ORDERLYWEB_PERMISSION)
-                    .where(ORDERLYWEB_PERMISSION.ID.eq(permission.name))
-                    .singleOrNull() ?: throw UnknownObjectError(permission.name, "permission")
 
-            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
-                    .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
-                    .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
+            checkPermissionExists(it, permission.name)
+            checkUserGroupExists(it, userGroup)
 
             val permissionsForGroup = getAllPermissionsForGroup(it, userGroup)
 
@@ -138,6 +135,55 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
     }
 
+    override fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
+    {
+        JooqContext().use {
+            checkPermissionExists(it, permission.name)
+            checkUserGroupExists(it, userGroup)
+
+            //delete the permission if exists
+            val allPermissionRecordsForGroup = getAllPermissionRecordsForGroup(it, userGroup)
+            val permissionRecordToDelete = allPermissionRecordsForGroup.firstOrNull{ mapPermission(it) == permission }
+            if (permissionRecordToDelete != null)
+            {
+                val idToDelete = permissionRecordToDelete[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID]
+                when (permission.scope)
+                {
+                    is Scope.Global ->
+                        it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                                .where(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.eq(idToDelete))
+                                .execute()
+
+                    is Scope.Specific ->
+                        when
+                        {
+                            permission.scope.databaseScopePrefix == "report" ->
+                                    it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                                    .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(idToDelete))
+                                    .execute()
+                            permission.scope.databaseScopePrefix == "version" ->
+                                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                                        .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.eq(idToDelete))
+                                        .execute()
+                            else -> throw UnknownObjectError(permission.scope.databaseScopePrefix, "permission-scope")
+                        }
+                }
+
+                //check if the abstract permission should be deleted too - was there only one of these permissions for the user group?
+                val thisPermCount = allPermissionRecordsForGroup.count{
+                    it[ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION] == permission.name }
+
+                if (thisPermCount == 1)
+                {
+                    it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_PERMISSION)
+                            .where(ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(idToDelete))
+                            .execute()
+                }
+            }
+
+        }
+    }
+
     override fun getReportReaders(reportName: String): Map<User, Scope>
     {
         //Returns all users which can read the report, along with their report read scope (global or report-specific)
@@ -172,19 +218,39 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
         }
     }
 
+    private fun checkPermissionExists(db: JooqContext, permission: String)
+    {
+        db.dsl.selectFrom(ORDERLYWEB_PERMISSION)
+                .where(ORDERLYWEB_PERMISSION.ID.eq(permission))
+                .singleOrNull() ?: throw UnknownObjectError(permission, "permission")
+    }
+
+    private fun checkUserGroupExists(db: JooqContext, userGroup: String)
+    {
+        db.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                .singleOrNull() ?: throw UnknownObjectError(userGroup, "user-group")
+    }
+
     private fun permissionIsGlobal() = ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.eq("*")
     private fun permissionIsScopedToReport(report: String) =
         ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.eq("report").
             and(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID.eq(report))
 
+    private fun getAllPermissionRecordsForGroup(db: JooqContext, userGroup: String): List<Record>
+    {
+        return db.dsl.select( ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(userGroup))
+                .fetch()
+    }
+
     private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>
     {
-            return db.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
-                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
-                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
-                    .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
-                    .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(userGroup))
-                    .fetch()
+            return getAllPermissionRecordsForGroup(db, userGroup)
                     .map{ r -> mapPermission(r) }
     }
 
