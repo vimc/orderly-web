@@ -197,7 +197,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         assertThat(result)
                 .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")),
                         ReifiedPermission("reports.read", Scope.Specific("version", "v2"))))
     }
 
