@@ -274,7 +274,7 @@ class ReportPageTests : SeleniumTest()
                 ReifiedPermission("reports.read", Scope.Global())
         ))
         addUserWithPermissions(listOf(
-                ReifiedPermission("report.read", Scope.Specific("report", "testreport"))
+                ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))
         ), "read.perms@example.com")
 
         loginWithMontagu()
