@@ -64,7 +64,7 @@ class ErrorHandler(templateEngine: TemplateEngine)
     {
         logger.warn("For request ${req.uri()}, a ${error::class.simpleName} occurred with the following problems: ${error.problems}")
 
-        if (req.pathInfo().startsWith(Router.apiUrlBase))
+        if (req.pathInfo().startsWith(Router.apiUrlBase) || req.headers("Accept").contains("application/json"))
         {
             apiErrorHandler.handleError(error, res)
         }

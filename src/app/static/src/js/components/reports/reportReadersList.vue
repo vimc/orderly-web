@@ -52,8 +52,8 @@
                         this.add_email = "";
                         this.error = "";
                     })
-                    .catch(() => {
-                        this.error = "Error: could not add reader";
+                    .catch((error) => {
+                        this.handleError(error, "could not add reader");
                     });
             },
             refreshReaders: function() {
@@ -61,9 +61,12 @@
                     .then(({data}) => {
                         this.readers = data.data
                 })
-                    .catch(() => {
-                    this.error = "Error: could not fetch list of readers";
+                    .catch((error) => {
+                        this.handleError(error, "could not fetch list of readers");
                 })
+            },
+            handleError: function(error, defaultMessage) {
+               this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
             }
         }
     };
