@@ -11,11 +11,11 @@ import spark.TemplateEngine
 import java.lang.reflect.InvocationTargetException
 import spark.Spark as spk
 
-class ErrorHandler(templateEngine: TemplateEngine)
+class ErrorHandler(templateEngine: TemplateEngine,
+                   private val webErrorHandler: ResponseErrorHandler = WebResponseErrorHandler(templateEngine),
+                   private val apiErrorHandler: ResponseErrorHandler = APIResponseErrorHandler())
 {
     private val logger = LoggerFactory.getLogger(ErrorHandler::class.java)
-    private val webErrorHandler = WebErrorHandler(templateEngine)
-    private val apiErrorHandler = APIErrorHandler()
 
     init
     {
@@ -66,7 +66,7 @@ class ErrorHandler(templateEngine: TemplateEngine)
 
         if (req.pathInfo().startsWith(Router.apiUrlBase) || req.headers("Accept").contains("application/json"))
         {
-            apiErrorHandler.handleError(error, res)
+            apiErrorHandler.handleError(error, req, res)
         }
         else
         {

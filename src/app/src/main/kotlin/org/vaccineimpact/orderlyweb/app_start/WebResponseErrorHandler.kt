@@ -11,9 +11,9 @@ import spark.Request
 import spark.Response
 import spark.TemplateEngine
 
-class WebErrorHandler(private val templateEngine: TemplateEngine)
+class WebResponseErrorHandler(private val templateEngine: TemplateEngine): ResponseErrorHandler
 {
-    fun handleError(error: OrderlyWebError, req: Request, res: Response)
+    override fun handleError(error: OrderlyWebError, req: Request, res: Response)
     {
         val context = DirectActionContext(req, res)
         res.type("text/html")

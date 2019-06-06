@@ -77,7 +77,7 @@ describe("reportReadersList", () => {
         });
     });
 
-    it('shows error when fetching readers', (done) => {
+    it('shows default error when fetching readers', (done) => {
         mockAxios.onGet('/users/report-readers/report1/')
             .reply(500);
 
@@ -96,6 +96,30 @@ describe("reportReadersList", () => {
             expect(listItems.length).toBe(0);
 
             expect(wrapper.find('.text-danger').text()).toBe("Error: could not fetch list of readers");
+
+            done();
+        });
+    });
+
+    it('shows error from response if available when fetching readers', (done) => {
+        mockAxios.onGet('/users/report-readers/report1/')
+            .reply(404, {"errors": [{"message": "test error message"}]});
+
+        const wrapper = mount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(1);
+
+            const listItems = wrapper.findAll('li');
+            expect(listItems.length).toBe(0);
+
+            expect(wrapper.find('.text-danger').text()).toBe("Error: test error message");
 
             done();
         });
@@ -139,7 +163,7 @@ describe("reportReadersList", () => {
 
     });
 
-    it('add reader shows error and does not refresh reader list', (done) => {
+    it('add reader shows default error and does not refresh reader list', (done) => {
         mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
             .reply(500);
 
@@ -166,5 +190,34 @@ describe("reportReadersList", () => {
             done();
         });
     });
+
+    it('shows error from response if available on add reader', (done) => {
+        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+            .reply(500, {"errors": [{"message": "test add reader error message"}]});
+
+        mockAxios.onGet('/users/report-readers/report1/')
+            .reply(200, {"data": reportReaders});
+
+        const wrapper = mount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        wrapper.find('input').setValue('user1@example.com');
+        wrapper.find('button').trigger('click');
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.get.length).toBe(1); //Initial fetch only
+
+            expect(wrapper.find('.text-danger').text()).toBe("Error: test add reader error message");
+
+            done();
+        });
+    });
+
 
 });
