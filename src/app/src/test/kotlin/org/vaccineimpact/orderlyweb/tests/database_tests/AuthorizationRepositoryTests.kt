@@ -156,6 +156,103 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `can remove permissions from user group`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+            insertReport("fakereport", "v1")
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+
+        //Add permissions - as tested above
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.review", Scope.Global()))
+
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Global()))
+
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")))
+
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
+
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v2")))
+
+
+
+        //..then remove some
+        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
+                ReifiedPermission("reports.review", Scope.Global()))
+
+        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")))
+
+        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("version", "v1")))
+
+
+        val result = sut.getPermissionsForUser("user@email.com")
+
+        assertThat(result)
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
+                        ReifiedPermission("reports.read", Scope.Specific("report", "fakereport")),
+                        ReifiedPermission("reports.read", Scope.Specific("version", "v2"))))
+    }
+
+    @Test
+    fun `ensureUserGroupDoesNotHavePermission does nothing if user does not already have permission`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+
+        sut.ensureUserGroupHasPermission("user@email.com",
+                ReifiedPermission("reports.read", Scope.Global()))
+
+        sut.ensureUserGroupDoesNotHavePermission("user@email.com",
+                ReifiedPermission("reports.review", Scope.Global()))
+
+        val result = sut.getPermissionsForUser("user@email.com")
+
+        assertThat(result)
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global())))
+    }
+
+    @Test
+    fun `ensureUserGroupDoesNotHavePermission throws UnknownObjectError if permission does not exist`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureUserGroupDoesNotHavePermission("user@email.com",
+                    ReifiedPermission("nonexistent.permission", Scope.Global()))
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown permission : 'nonexistent.permission'")
+    }
+
+    @Test
+    fun `ensureUserGroupDoesNotHavePermission throws UnknownObjectError if group does not exist`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureUserGroupDoesNotHavePermission("nonsense",
+                    ReifiedPermission("reports.read", Scope.Global()))
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown user-group : 'nonsense'")
+    }
+
+    @Test
     fun `can add user to group`()
     {
         val sut = OrderlyAuthorizationRepository()
