@@ -19,6 +19,14 @@ import java.time.Instant
 
 class UserControllerTests : TeamcityTests()
 {
+    private val mockUserRepo = mock<UserRepository> {
+    on { this.getUser("user1@example.com") } doReturn User("user.1",
+            "User One",
+            "user1@example.com",
+            "test",
+            Instant.now())
+}
+
     @Test
     fun `gets report readers`()
     {
@@ -72,22 +80,41 @@ class UserControllerTests : TeamcityTests()
             )
         }
 
-        val userRepo = mock<UserRepository> {
-            on { this.getUser("user1@example.com") } doReturn User("user.1",
-                    "User One",
-                    "user1@example.com",
-                    "test",
-                    Instant.now())
-        }
-
         val authRepo = mock<AuthorizationRepository>()
-        val sut = UserController(actionContext, authRepo, userRepo)
+        val sut = UserController(actionContext, authRepo, mockUserRepo)
         val result = sut.associatePermission()
 
         assertThat(result).isEqualTo("OK")
 
         val permissionCaptor: ArgumentCaptor<ReifiedPermission>  = ArgumentCaptor.forClass(ReifiedPermission::class.java)
         verify(authRepo).ensureUserGroupHasPermission(eq("user1@example.com"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `removes permission from user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.postData() } doReturn mapOf(
+                    "action" to "remove",
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserController(actionContext, authRepo, mockUserRepo)
+        val result = sut.associatePermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission>  = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("user1@example.com"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
         assertThat(permission.name).isEqualTo("test.permission")

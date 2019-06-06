@@ -161,6 +161,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         JooqContext().use {
             insertUser("user@email.com", "user.name")
             insertReport("fakereport", "v1")
+            insertReport("fakereport2", "v2")
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -180,8 +181,6 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 
         sut.ensureUserGroupHasPermission("user@email.com",
                 ReifiedPermission("reports.read", Scope.Specific("version", "v2")))
-
-
 
         //..then remove some
         sut.ensureUserGroupDoesNotHavePermission("user@email.com",
