@@ -27,4 +27,3 @@ function padZero(number) {
     // This always sticks a zero on the front and then takes the last two digits
     return ('0' + number).slice(-2);
 }
-
