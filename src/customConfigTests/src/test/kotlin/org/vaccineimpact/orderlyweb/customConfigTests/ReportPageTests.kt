@@ -1,8 +1,10 @@
+
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -180,6 +182,29 @@ class ReportPageTests : SeleniumTest()
         confirmTabActive("downloads-tab", false)
 
     }
+
+    @Test
+    fun `can toggle side nav in mobile view`()
+    {
+        startApp("auth.provider=montagu")
+
+        driver.manage().window().size = Dimension(300, 500)
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
+
+        val sidebar = driver.findElement(By.id("sidebar"))
+        assertThat(sidebar.isDisplayed).isFalse()
+
+        driver.findElement(By.cssSelector("[data-toggle=collapse]")).click()
+        wait.until(ExpectedConditions.visibilityOf(sidebar))
+        assertThat(sidebar.isDisplayed).isTrue()
+    }
+
 
     @Test
     fun `can switch version`()
