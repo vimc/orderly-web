@@ -11,7 +11,7 @@
                         <div class="text-muted small">Updated: ${pinnedReport.date}</div>
                     </div>
                     <div class="card-body">
-                        <a class="button pinned-report-link" target="_blank" download="" href="#">
+                        <a class="button pinned-report-link" target="_blank" download="" href="${pinnedReport.zipFile.url}">
                             Download latest
                             <@download_icon.render fill="#fff" />
                         </a>

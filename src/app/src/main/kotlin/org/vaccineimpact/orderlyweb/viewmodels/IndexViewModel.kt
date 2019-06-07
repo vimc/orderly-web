@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -104,16 +105,24 @@ data class ReportRowViewModel(val ttKey: Int,
     }
 }
 
-data class PinnedReportViewModel(val name: String, val version: String, val displayName: String, val date: String?)
+data class PinnedReportViewModel(val name: String,
+                                 val version: String,
+                                 val displayName: String,
+                                 val date: String?,
+                                 val zipFile: DownloadableFileViewModel)
 {
     companion object
     {
         fun buildList(versions: List<ReportVersion>): List<PinnedReportViewModel>
         {
-            return versions.map{ PinnedReportViewModel(it.name,
-                    it.id,
-                    it.displayName?:it.name,
-                    IndexViewDateFormatter.format(it.date))
+            return versions.map{
+
+                val reportFileViewModelBuilder = ReportFileViewModelBuilder(it.name, it.id)
+                PinnedReportViewModel(it.name,
+                        it.id,
+                        it.displayName?:it.name,
+                        IndexViewDateFormatter.format(it.date),
+                        reportFileViewModelBuilder.buildZipFileViewModel())
             }
         }
     }
