@@ -221,7 +221,7 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0].name).isEqualTo("test3")
         assertThat(results[0].id).isEqualTo("test3_1_pub")
-        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].name).isEqualTo("test1")
         assertThat(results[1].id).isEqualTo("test1_2_pub")
     }
 
