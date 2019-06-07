@@ -141,7 +141,6 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
             checkPermissionExists(it, permission.name)
             checkUserGroupExists(it, userGroup)
 
-            //delete the permission if exists
             val allPermissionRecordsForGroup = getAllPermissionRecordsForGroup(it, userGroup)
             val permissionRecordToDelete = allPermissionRecordsForGroup.firstOrNull{ mapPermission(it) == permission }
             if (permissionRecordToDelete != null)

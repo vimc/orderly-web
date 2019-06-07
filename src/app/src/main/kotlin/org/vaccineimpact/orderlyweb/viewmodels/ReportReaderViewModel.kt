@@ -10,12 +10,22 @@ data class ReportReaderViewModel(val email: String, val username: String, val di
         fun build(user: User, scope: Scope): ReportReaderViewModel
         {
             val canRemove = scope is Scope.Specific
-            val displayName = if (user.displayName == "unknown")
-                user.username
-            else
+            val displayName = if
+                (isNotEmptyOrUnknown(user.displayName))
                 user.displayName
+            else if (isNotEmptyOrUnknown(user.username))
+                user.username
+
+            else
+                user.email
 
             return ReportReaderViewModel(user.email, user.username, displayName, canRemove)
         }
+
+        private fun isNotEmptyOrUnknown(value: String): Boolean
+        {
+            return !(value.isEmpty() || value == "unknown")
+        }
+
     }
 }
