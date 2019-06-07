@@ -26,7 +26,7 @@ class LayoutTests : TeamcityTests()
     @Test
     fun `renders correctly when not logged in`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -45,7 +45,7 @@ class LayoutTests : TeamcityTests()
             }
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), true)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
 

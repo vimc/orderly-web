@@ -61,6 +61,34 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
         }
     }
 
+    override fun getGlobalPinnedReports(): List<ReportVersion>
+    {
+        JooqContext().use {
+
+            //TODO: Join against pinned reports table
+
+            // create a temp table containing the latest version ID for each report name
+            val latestVersionForEachReport = getLatestVersionsForReports(it)
+
+            return it.dsl.withTemporaryTable(latestVersionForEachReport)
+                    .select(REPORT_VERSION.REPORT.`as`("name"),
+                            REPORT_VERSION.DISPLAYNAME,
+                            REPORT_VERSION.ID,
+                            REPORT_VERSION.PUBLISHED,
+                            REPORT_VERSION.DATE,
+                            REPORT_VERSION.AUTHOR,
+                            REPORT_VERSION.REQUESTER,
+                            latestVersionForEachReport.field<String>("latestVersion")
+                    )
+                    .from(REPORT_VERSION)
+                    .join(latestVersionForEachReport.tableName)
+                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+                    .where(shouldIncludeReportVersion)
+                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
+                    .fetchInto(ReportVersion::class.java)
+        }
+    }
+
     override fun getAllReports(): List<Report>
     {
         JooqContext().use {

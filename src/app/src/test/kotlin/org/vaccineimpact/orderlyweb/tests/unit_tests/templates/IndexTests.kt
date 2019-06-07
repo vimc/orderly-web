@@ -20,7 +20,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), false)
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -35,7 +35,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `reviewers can see the status column`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select("th").count()).isEqualTo(5)
@@ -49,7 +49,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `non-reviewers cannot see the status column`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), false)
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select("th").count()).isEqualTo(4)

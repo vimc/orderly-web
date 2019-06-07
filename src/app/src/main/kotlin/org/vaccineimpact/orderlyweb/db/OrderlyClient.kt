@@ -10,6 +10,8 @@ interface OrderlyClient
 
     fun getAllReportVersions(): List<ReportVersion>
 
+    fun getGlobalPinnedReports(): List<ReportVersion>
+
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
 
