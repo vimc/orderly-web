@@ -108,7 +108,7 @@ data class ReportRowViewModel(val ttKey: Int,
 data class PinnedReportViewModel(val name: String,
                                  val version: String,
                                  val displayName: String,
-                                 val date: String?,
+                                 val date: String,
                                  val zipFile: DownloadableFileViewModel)
 {
     companion object

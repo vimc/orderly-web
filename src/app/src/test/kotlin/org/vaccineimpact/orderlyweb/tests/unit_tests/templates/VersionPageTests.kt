@@ -135,7 +135,7 @@ class VersionPageTests : TeamcityTests()
 
         val xPathRoot = "//div[@id='report-tab']"
 
-        assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
+        assertThat(xmlResponse, hasXPath("$xPathRoot/h1.reports-list/text()",
                 equalToCompressingWhiteSpace("r1 display")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/p[1]/text()",
                 equalToCompressingWhiteSpace("r1-v1")))

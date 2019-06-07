@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="/css/index.min.css"/>
     </#macro>
 <#include "partials/pinned-reports.ftl">
-<h1 class="h3 mb-3">Find a report</h1>
+<h1 class="h3 mb-3 reports-list">Find a report</h1>
 <div class="helper-text text-muted mb-2">Click on a column heading to sort by that field. Hold shift to multi-sort.
 </div>
 <div role="group" class="mb-3 btn-group">
