@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
@@ -194,5 +195,63 @@ class VersionTests : CleanDatabaseTests()
         Assertions.assertThat(results[6].name).isEqualTo("test3")
         Assertions.assertThat(results[6].id).isEqualTo("test3versionunpublished")
         Assertions.assertThat(results[6].latestVersion).isEqualTo("test3versionunpublished")
+    }
+
+    @Test
+    fun `reader can get latest published versions of pinned reports`()
+    {
+        insertReport("test", "test_1_pub")
+        insertReport("test", "test_2_pub")
+        insertReport("test", "test_3_unpub", published = false)
+
+        insertReport("test2", "test2_1_pub")
+
+        insertReport("test3", "test3_1_pub")
+
+        insertReport("test4", "test4_1_unpub", published = false)
+
+        insertGlobalPinnedReport("test4", 0)
+        insertGlobalPinnedReport("test3", 1)
+        insertGlobalPinnedReport("test", 2)
+
+        val sut = Orderly(isReviewer = false)
+
+        val results = sut.getGlobalPinnedReports()
+
+        assertThat(results.count()).isEqualTo(2)
+        assertThat(results[0].name).isEqualTo("test3")
+        assertThat(results[0].id).isEqualTo("test3_1_pub")
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("test_2_pub")
+    }
+
+    @Test
+    fun `reviewer can get latest published and unpublished versions of pinned reports`()
+    {
+        insertReport("test", "test_1_pub")
+        insertReport("test", "test_2_pub")
+        insertReport("test", "test_3_unpub", published = false)
+
+        insertReport("test2", "test2_1_pub")
+
+        insertReport("test3", "test3_1_pub")
+
+        insertReport("test4", "test4_1_unpub", published = false)
+
+        insertGlobalPinnedReport("test4", 0)
+        insertGlobalPinnedReport("test3", 1)
+        insertGlobalPinnedReport("test", 2)
+
+        val sut = Orderly(isReviewer = true)
+
+        val results = sut.getGlobalPinnedReports()
+
+        assertThat(results.count()).isEqualTo(3)
+        assertThat(results[0].name).isEqualTo("test4")
+        assertThat(results[0].id).isEqualTo("test4_1_unpub")
+        assertThat(results[1].name).isEqualTo("test3")
+        assertThat(results[1].id).isEqualTo("test3_1_pub")
+        assertThat(results[2].name).isEqualTo("test")
+        assertThat(results[2].id).isEqualTo("test_3_unpub")
     }
 }

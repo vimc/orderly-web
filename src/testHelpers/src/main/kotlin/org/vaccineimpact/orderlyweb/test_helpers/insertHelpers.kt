@@ -118,6 +118,17 @@ fun insertUserAndGroup(db: JooqContext, email: String)
             }.insert()
 }
 
+fun insertGlobalPinnedReport(reportName: String, ordering: Int)
+{
+    JooqContext().use {
+        it.dsl.newRecord(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                .apply {
+                    this.report = reportName
+                    this.ordering = ordering
+                }.insert()
+    }
+}
+
 fun giveUserGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
 {
 
