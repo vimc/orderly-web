@@ -1,8 +1,6 @@
 package org.vaccineimpact.orderlyweb.models
 
-import org.vaccineimpact.orderlyweb.models.permissions.AssociateRole
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedRole
-import org.vaccineimpact.orderlyweb.models.permissions.RoleAssignment
+import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 
 sealed class Scope  (val value: String)
 {
@@ -58,29 +56,16 @@ sealed class Scope  (val value: String)
             }
         }
 
-        fun parse(role: RoleAssignment): Scope
+        fun parse(associatePermission: AssociatePermission): Scope
         {
-            if (role.scopePrefix.isNullOrEmpty())
+            if (associatePermission.scopePrefix.isNullOrEmpty())
             {
                 return Scope.Global()
             }
             else
             {
 
-                return Scope.Specific(role.scopePrefix!!, role.scopeId!!)
-            }
-        }
-
-        fun parse(role: AssociateRole): Scope
-        {
-            if (role.scopePrefix.isNullOrEmpty())
-            {
-                return Scope.Global()
-            }
-            else
-            {
-
-                return Scope.Specific(role.scopePrefix!!, role.scopeId!!)
+                return Scope.Specific(associatePermission.scopePrefix!!, associatePermission.scopeId!!)
             }
         }
 
