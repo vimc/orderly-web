@@ -36,7 +36,7 @@ class UserControllerTests : TeamcityTests()
 
         val reportReaders = mapOf(
                 User("scoped.reader",
-                        "unknown",
+                        "Scoped Reader",
                         "scoped.reader@email.com",
                         "test",
                         Instant.now()) to Scope.Specific("report", "r1"),
@@ -62,9 +62,56 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[0].displayName).isEqualTo("Global Reader")
         assertThat(result[0].canRemove).isFalse()
 
-        assertThat(result[1].username).isEqualTo("scoped.reader")
-        assertThat(result[1].displayName).isEqualTo("scoped.reader")
+        assertThat(result[1].username).isEqualTo("Scoped Reader")
+        assertThat(result[1].displayName).isEqualTo("Scoped Reader")
         assertThat(result[1].canRemove).isTrue()
+    }
+
+    @Test
+    fun `gets report readers with fallback display names`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":report") } doReturn "r1"
+        }
+
+        val reportReaders = mapOf(
+                User("r1username",
+                        "",
+                        "r1@email.com",
+                        "test",
+                        Instant.now()) to Scope.Global(),
+                User("r2username",
+                        "unknown",
+                        "r2@email.com",
+                        "test",
+                        Instant.now()) to Scope.Global(),
+                User("",
+                        "",
+                        "r3@email.com",
+                        "test",
+                        Instant.now()) to Scope.Global(),
+                User("unknown",
+                        "unknown",
+                        "r4@email.com",
+                        "test",
+                        Instant.now()) to Scope.Global()
+
+        )
+
+        val userRepo = mock<UserRepository>()
+
+        val authRepo = mock<AuthorizationRepository>{
+            on { this.getReportReaders("r1")} doReturn(reportReaders)
+        }
+        val sut = UserController(actionContext, authRepo, userRepo)
+        val result = sut.getReportReaders()
+
+        assertThat(result.count()).isEqualTo(4)
+
+        assertThat(result[0].displayName).isEqualTo("r1username")
+        assertThat(result[1].displayName).isEqualTo("r2username")
+        assertThat(result[2].displayName).isEqualTo("r3@email.com")
+        assertThat(result[3].displayName).isEqualTo("r4@email.com")
     }
 
     @Test

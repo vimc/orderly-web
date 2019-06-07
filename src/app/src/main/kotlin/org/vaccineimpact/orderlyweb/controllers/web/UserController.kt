@@ -53,7 +53,7 @@ class UserController(context: ActionContext,
     {
         val report = report()
         val users = authRepo.getReportReaders(report)
-        return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.username }
+        return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.displayName}
     }
 
     private fun userEmail(): String = URLDecoder.decode(context.params(":email"), "UTF-8")
