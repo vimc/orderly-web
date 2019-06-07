@@ -83,7 +83,7 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
                     .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .join(ORDERLYWEB_PINNED_REPORT_GLOBAL)
                     .on(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.eq(REPORT_VERSION.REPORT))
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
+                    .orderBy(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING)
                     .fetchInto(ReportVersion::class.java)
         }
     }

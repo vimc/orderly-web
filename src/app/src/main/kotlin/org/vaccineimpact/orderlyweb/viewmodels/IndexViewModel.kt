@@ -104,13 +104,17 @@ data class ReportRowViewModel(val ttKey: Int,
     }
 }
 
-data class PinnedReportViewModel(val name: String, val version: String, val date: String?)
+data class PinnedReportViewModel(val name: String, val version: String, val displayName: String, val date: String?)
 {
     companion object
     {
         fun buildList(versions: List<ReportVersion>): List<PinnedReportViewModel>
         {
-            return versions.map{ PinnedReportViewModel(it.name, it.id, IndexViewDateFormatter.format(it.date)) }
+            return versions.map{ PinnedReportViewModel(it.name,
+                    it.id,
+                    it.displayName?:it.name,
+                    IndexViewDateFormatter.format(it.date))
+            }
         }
     }
 }
