@@ -85,7 +85,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash
         assertThat(result["appName"].toString()).isEqualTo("Reporting portal")
-        assertThat(result["authProvider"].toString()).isEqualTo("montagu")
+        assertThat(result["authProvider"].toString()).isEqualTo("Montagu")
         assertThat(result["appEmail"].toString()).isEqualTo("montagu-help@imperial.ac.uk")
         assertThat(result["user"].toString()).isEqualTo("user.name")
         assertThat((result["loggedIn"] as TemplateBooleanModel).asBoolean).isEqualTo(true)

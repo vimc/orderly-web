@@ -25,7 +25,7 @@ class _401Tests: TeamcityTests()
     {
         val mockModel = mock<AppViewModel> {
             on { appName } doReturn "testApp"
-            on { authProvider } doReturn "montagu"
+            on { authProvider } doReturn "Montagu"
             on { logo } doReturn "logo.png"
         }
 
@@ -41,7 +41,7 @@ class _401Tests: TeamcityTests()
     {
         val mockModel = mock<AppViewModel> {
             on { appName } doReturn "testApp"
-            on { authProvider } doReturn "github"
+            on { authProvider } doReturn "GitHub"
             on { logo } doReturn "logo.png"
         }
 
