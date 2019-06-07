@@ -200,9 +200,9 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reader can get latest published versions of pinned reports`()
     {
-        insertReport("test", "test_1_pub")
-        insertReport("test", "test_2_pub")
-        insertReport("test", "test_3_unpub", published = false)
+        insertReport("test1", "test1_1_pub")
+        insertReport("test1", "test1_2_pub")
+        insertReport("test1", "test1_3_unpub", published = false)
 
         insertReport("test2", "test2_1_pub")
 
@@ -212,7 +212,7 @@ class VersionTests : CleanDatabaseTests()
 
         insertGlobalPinnedReport("test4", 0)
         insertGlobalPinnedReport("test3", 1)
-        insertGlobalPinnedReport("test", 2)
+        insertGlobalPinnedReport("test1", 2)
 
         val sut = Orderly(isReviewer = false)
 
@@ -222,15 +222,15 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results[0].name).isEqualTo("test3")
         assertThat(results[0].id).isEqualTo("test3_1_pub")
         assertThat(results[1].name).isEqualTo("test")
-        assertThat(results[1].id).isEqualTo("test_2_pub")
+        assertThat(results[1].id).isEqualTo("test1_2_pub")
     }
 
     @Test
     fun `reviewer can get latest published and unpublished versions of pinned reports`()
     {
-        insertReport("test", "test_1_pub")
-        insertReport("test", "test_2_pub")
-        insertReport("test", "test_3_unpub", published = false)
+        insertReport("test1", "test1_1_pub")
+        insertReport("test1", "test1_2_pub")
+        insertReport("test1", "test1_3_unpub", published = false)
 
         insertReport("test2", "test2_1_pub")
 
@@ -240,7 +240,7 @@ class VersionTests : CleanDatabaseTests()
 
         insertGlobalPinnedReport("test4", 0)
         insertGlobalPinnedReport("test3", 1)
-        insertGlobalPinnedReport("test", 2)
+        insertGlobalPinnedReport("test1", 2)
 
         val sut = Orderly(isReviewer = true)
 
@@ -251,7 +251,7 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results[0].id).isEqualTo("test4_1_unpub")
         assertThat(results[1].name).isEqualTo("test3")
         assertThat(results[1].id).isEqualTo("test3_1_pub")
-        assertThat(results[2].name).isEqualTo("test")
-        assertThat(results[2].id).isEqualTo("test_3_unpub")
+        assertThat(results[2].name).isEqualTo("test1")
+        assertThat(results[2].id).isEqualTo("test1_3_unpub")
     }
 }
