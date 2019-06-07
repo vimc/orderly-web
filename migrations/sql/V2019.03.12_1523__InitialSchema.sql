@@ -52,6 +52,12 @@ CREATE TABLE "orderlyweb_user_group_global_permission" (
 FOREIGN KEY ("id") REFERENCES "orderlyweb_user_group_permission" ("id")
 );
 
+CREATE TABLE "orderlyweb_pinned_report_global" (
+"ordering" INTEGER NOT NULL UNIQUE,
+"report" TEXT NOT NULL UNIQUE,
+FOREIGN KEY ("report") REFERENCES "report" ("name")
+);
+
 CREATE VIEW "orderlyweb_user_group_permission_all"
 AS
 SELECT abstract.*, scoped.scope_prefix, scoped.scope_id
