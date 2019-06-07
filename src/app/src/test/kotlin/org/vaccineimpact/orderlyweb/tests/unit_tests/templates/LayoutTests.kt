@@ -64,7 +64,7 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.select("title").text()).isEqualTo(appName)
         assertThat(doc.select("header a").attr("href")).isEqualTo("/")
-        assertThat(doc.select("header a img").attr("src")).isEqualTo("/img/logo.png")
+        assertThat(doc.select("header a img").attr("src")).isEqualTo("/img/logo/logo.png")
         assertThat(doc.select("header a img").attr("alt")).isEqualTo(appName)
 
         assertThat(doc.select(".site-title a").attr("href")).isEqualTo("/")
