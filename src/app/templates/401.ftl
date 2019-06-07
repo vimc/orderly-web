@@ -3,10 +3,10 @@
 <#-- @ftlvariable name="authProvider" type="String" -->
 <@layout>
     <h1>Login failed</h1>
-    <#if authProvider == "montagu">
+    <#if authProvider.toLowerCase() == "montagu">
         <p>We have not been able to successfully identify you as a Montagu user.</p>
     </#if>
-    <#if authProvider == "github">
+    <#if authProvider.toLowerCase() == "github">
         <p>We have not been able to successfully identify you as a member of the app's configured Github org.
             If you think this is a mistake you should check the following steps have been taken</p>
         <ol>

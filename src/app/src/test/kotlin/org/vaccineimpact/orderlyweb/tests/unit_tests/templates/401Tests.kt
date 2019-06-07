@@ -49,7 +49,7 @@ class _401Tests: TeamcityTests()
 
         assertThat(xmlResponse, hasXPath("//h1/text()", equalToCompressingWhiteSpace("Login failed")))
         assertThat(xmlResponse, hasXPath("//p/text()",
-                containsString("We have not been able to successfully identify you as a member of the app's configured Github org.")))
+                containsString("We have not been able to successfully identify you as a member of the app's configured GitHub org.")))
 
         assertThat(xmlResponse, hasXPath("//li[1]/a/text()",
                 equalToCompressingWhiteSpace("GitHub organization approval for \"testApp\" has been requested")))

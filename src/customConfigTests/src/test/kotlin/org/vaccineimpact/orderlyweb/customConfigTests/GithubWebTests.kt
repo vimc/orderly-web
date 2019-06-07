@@ -65,7 +65,7 @@ class GithubWebTests : SeleniumTest()
 
         val helpText = driver.findElements(By.cssSelector("p")).first()
         assertThat(helpText.text)
-                .contains("We have not been able to successfully identify you as a member of the app's configured Github org")
+                .contains("We have not been able to successfully identify you as a member of the app's configured GitHub org")
 
     }
 

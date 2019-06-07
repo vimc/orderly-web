@@ -15,7 +15,7 @@ open class AuthenticationConfig
         val configuredValue = AppConfig()["auth.provider"]
 
         return when (configuredValue.toLowerCase()) {
-            "github" -> AuthenticationProvider.Github
+            "github" -> AuthenticationProvider.GitHub
             "montagu" -> AuthenticationProvider.Montagu
             else -> throw UnknownAuthenticationProvider(configuredValue)
         }
@@ -33,7 +33,7 @@ open class AuthenticationConfig
     fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
     {
         return  when (getConfiguredProvider()) {
-            AuthenticationProvider.Github -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
+            AuthenticationProvider.GitHub -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
             AuthenticationProvider.Montagu -> MontaguIndirectClient()
         }
     }
@@ -43,7 +43,7 @@ open class AuthenticationConfig
 enum class AuthenticationProvider
 {
     Montagu,
-    Github
+    GitHub
 }
 
 class UnknownAuthenticationProvider(val provider: String) : Exception("Application is configured to use unknown authentication provider '$provider'")

@@ -15,7 +15,7 @@ class AuthenticationRouteBuilderTests : TeamcityTests()
     fun `creates GitHub logout callback`()
     {
         val mockAuthConfig = mock<AuthenticationConfig>() {
-            on { getConfiguredProvider() } doReturn AuthenticationProvider.Github
+            on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
         }
         val sut = OrderlyAuthenticationRouteBuilder(mockAuthConfig)
         val result = sut.logout()
