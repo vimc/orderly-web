@@ -15,7 +15,6 @@
                     <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                         <ul class="list-unstyled mb-0">
                             <li class="nav-item">
-                            <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
                             </li>
                             <li class="nav-item">
@@ -61,9 +60,9 @@
         </div>
     </div>
     <#macro scripts>
-        <script>
+        <script type="text/javascript">
             var report = ${reportJson};
         </script>
-        <script src="/js/report.bundle.js"></script>
+        <script type="text/javascript" src="/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>
