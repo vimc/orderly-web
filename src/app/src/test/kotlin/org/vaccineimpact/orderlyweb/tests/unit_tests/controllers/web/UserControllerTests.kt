@@ -62,7 +62,7 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[0].displayName).isEqualTo("Global Reader")
         assertThat(result[0].canRemove).isFalse()
 
-        assertThat(result[1].username).isEqualTo("Scoped Reader")
+        assertThat(result[1].username).isEqualTo("scoped.reader")
         assertThat(result[1].displayName).isEqualTo("Scoped Reader")
         assertThat(result[1].canRemove).isTrue()
     }
