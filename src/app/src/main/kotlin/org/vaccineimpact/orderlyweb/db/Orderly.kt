@@ -65,9 +65,7 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
     {
         JooqContext().use {
 
-            //TODO: Join against pinned reports table
-
-            // create a temp table containing the latest version ID for each report name
+            // create a temp table containing the latest visible version ID for each report name
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             return it.dsl.withTemporaryTable(latestVersionForEachReport)
@@ -82,8 +80,9 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
                     )
                     .from(REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .where(shouldIncludeReportVersion)
+                    .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .join(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                    .on(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.eq(REPORT_VERSION.REPORT))
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                     .fetchInto(ReportVersion::class.java)
         }
