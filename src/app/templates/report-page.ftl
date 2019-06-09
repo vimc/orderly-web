@@ -13,7 +13,7 @@
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
-                        <ul class="list-unstyled mb-0">
+                        <ul class="nav flex-column list-unstyled mb-0">
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
                             </li>
