@@ -45,3 +45,9 @@ $border-color: rgba(0, 0, 0, 0.125);
     border-radius: $btn-border-radius;
   }
 }
+
+.pinned-report-link {
+  margin: 0 auto;
+  width: 204px;
+  display: block !important;
+}

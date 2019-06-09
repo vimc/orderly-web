@@ -59,7 +59,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                   changelog: List<Changelog>,
                   context: ActionContext): ReportVersionPageViewModel
         {
-            val fileViewModelBuilder = ReportFileViewModelBuilder(report)
+            val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
 
             val artefactViewModels = report.artefacts.map {
                 buildArtefact(fileViewModelBuilder, it)

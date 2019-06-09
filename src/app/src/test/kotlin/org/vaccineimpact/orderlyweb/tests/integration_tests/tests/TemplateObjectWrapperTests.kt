@@ -80,7 +80,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
         }
-        val model = IndexViewModel(mockContext, listOf(), true)
+        val model = IndexViewModel(mockContext, listOf(), listOf(), true)
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash
@@ -91,5 +91,6 @@ class TemplateObjectWrapperTests : TeamcityTests()
         assertThat((result["loggedIn"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
         assertThat((result["isReviewer"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
         assertThat((result["reports"])).isNotNull()
+        assertThat((result["pinnedReports"])).isNotNull()
     }
 }
