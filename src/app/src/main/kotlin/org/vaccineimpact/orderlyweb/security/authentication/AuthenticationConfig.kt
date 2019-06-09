@@ -4,15 +4,16 @@ import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.credentials.Credentials
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 
-open class AuthenticationConfig
+open class AuthenticationConfig(val appConfig: Config = AppConfig())
 {
 
     open fun getConfiguredProvider(): AuthenticationProvider {
 
-        val configuredValue = AppConfig()["auth.provider"]
+        val configuredValue = appConfig["auth.provider"]
 
         return when (configuredValue.toLowerCase()) {
             "github" -> AuthenticationProvider.GitHub
@@ -23,11 +24,11 @@ open class AuthenticationConfig
 
     private fun getGithubOAuthKey(): String {
         // AKA the Client ID
-        return AppConfig()["auth.github_key"]
+        return appConfig["auth.github_key"]
     }
 
     private fun getGithubOAuthSecret(): String {
-        return AppConfig()["auth.github_secret"]
+        return appConfig["auth.github_secret"]
     }
 
     fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
