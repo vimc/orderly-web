@@ -10,7 +10,8 @@
             </div>
             <ul class="list-unstyled report-readers">
                 <li v-for="reader in readers" v-bind:id="reader.username">
-                    <span>{{reader.display_name}}</span>
+                    <span class="reader-display-name">{{reader.display_name}}</span>
+                    <span v-if="reader.can_remove" v-on:click="remove(reader.email)" class="remove-reader d-inline-block ml-2 large">×</span>
                     <div class="text-muted small" style="margin-top: -1rem">{{reader.email}}</div>
                 </li>
             </ul>
@@ -38,23 +39,11 @@
             this.refreshReaders();
         },
         methods: {
-            add: function () {
-                const data = {
-                    name: "reports.read",
-                    action: "add",
-                    scope_prefix: "report",
-                    scope_id: this.report.name
-                };
-
-                api.post(`/users/${encodeURIComponent(this.add_email)}/actions/associate-permission/`, data)
-                    .then(() => {
-                        this.refreshReaders();
-                        this.add_email = "";
-                        this.error = "";
-                    })
-                    .catch((error) => {
-                        this.handleError(error, "could not add reader");
-                    });
+            add: function() {
+                this.postAssociatePermissionAction("add", this.add_email);
+            },
+            remove: function(email) {
+                this.postAssociatePermissionAction("remove", email);
             },
             refreshReaders: function() {
                 api.get(`/users/report-readers/${this.report.name}/`)
@@ -67,6 +56,24 @@
             },
             handleError: function(error, defaultMessage) {
                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
+            },
+            postAssociatePermissionAction: function(action, email)  {
+                const data = {
+                    name: "reports.read",
+                    action: action,
+                    scope_prefix: "report",
+                    scope_id: this.report.name
+                };
+
+                api.post(`/users/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+                    .then(() => {
+                        this.refreshReaders();
+                        this.add_email = "";
+                        this.error = "";
+                    })
+                    .catch((error) => {
+                        this.handleError(error, `could not ${action} reader`);
+                    });
             }
         }
     };
