@@ -57,7 +57,7 @@ abstract class SeleniumTest : CustomConfigTests()
     protected fun clickOnLandingPageLink()
     {
         //Click on the landing page link to navigate to auth provider
-        driver.findElement(By.className("login-external-link")).click()
+        driver.findElement(By.className("btn-xl")).click()
     }
 
     protected fun loginWithMontagu()
