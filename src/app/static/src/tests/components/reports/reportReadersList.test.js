@@ -12,12 +12,14 @@ describe("reportReadersList", () => {
         {
             email: "user1@example.com",
             username: "user1",
-            display_name: "User One"
+            display_name: "User One",
+            can_remove: true
         },
         {
             email: "user2@example.com",
             username: "user2",
-            display_name: "User Two"
+            display_name: "User Two",
+            can_remove: false
         }
     ];
 
@@ -25,11 +27,13 @@ describe("reportReadersList", () => {
         const listItems = wrapper.findAll('li');
         expect(listItems.length).toBe(2);
 
-        expect(listItems.at(0).find('span').text()).toBe("User One");
+        expect(listItems.at(0).find('span.reader-display-name').text()).toBe("User One");
         expect(listItems.at(0).find('div').text()).toBe("user1@example.com");
+        expect(listItems.at(0).findAll('span.remove-reader').length).toBe(1);
 
-        expect(listItems.at(1).find('span').text()).toBe("User Two");
+        expect(listItems.at(1).find('span.reader-display-name').text()).toBe("User Two");
         expect(listItems.at(1).find('div').text()).toBe("user2@example.com");
+        expect(listItems.at(1).findAll('span.remove-reader').length).toBe(0);
     }
 
     it('renders data', () => {
@@ -163,6 +167,45 @@ describe("reportReadersList", () => {
 
     });
 
+    it('remove reader calls associate permission endpoint and refreshes list of readers', (done) => {
+
+        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+            .reply(200);
+
+        mockAxios.onGet('/users/report-readers/report1/')
+            .reply(200, {"data": reportReaders});
+
+        const wrapper = mount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        setTimeout(() => {
+            wrapper.find('span.remove-reader').trigger('click');
+
+            setTimeout(() => {
+                expect(wrapper.findAll('.text-danger').length).toBe(0);
+
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.get.length).toBe(2); //Initial fetch and after removedreader
+
+                const postData = JSON.parse(mockAxios.history.post[0].data);
+                expect(postData.name).toBe("reports.read");
+                expect(postData.action).toBe("remove");
+                expect(postData.scope_prefix).toBe("report");
+                expect(postData.scope_id).toBe("report1");
+
+                expectWrapperToHaveRenderedReaders(wrapper);
+
+                done();
+            });
+        });
+
+    });
+
     it('add reader shows default error and does not refresh reader list', (done) => {
         mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
             .reply(500);
@@ -188,6 +231,35 @@ describe("reportReadersList", () => {
             expect(wrapper.find('.text-danger').text()).toBe("Error: could not add reader");
 
             done();
+        });
+    });
+
+    it('remove reader shows default error and does not refresh reader list', (done) => {
+        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+            .reply(500);
+
+        mockAxios.onGet('/users/report-readers/report1/')
+            .reply(200, {"data": reportReaders});
+
+        const wrapper = mount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        setTimeout(() => {
+            wrapper.find('span.remove-reader').trigger('click');
+
+            setTimeout(() => {
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.get.length).toBe(1); //Initial fetch only
+
+                expect(wrapper.find('.text-danger').text()).toBe("Error: could not remove reader");
+
+                done();
+            });
         });
     });
 
@@ -219,5 +291,33 @@ describe("reportReadersList", () => {
         });
     });
 
+    it('shows error from response if available on remove reader', (done) => {
+        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+            .reply(500, {"errors": [{"message": "test remove reader error message"}]});
+
+        mockAxios.onGet('/users/report-readers/report1/')
+            .reply(200, {"data": reportReaders});
+
+        const wrapper = mount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        setTimeout( () => {
+            wrapper.find('span.remove-reader').trigger('click');
+
+            setTimeout(() => {
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.get.length).toBe(1); //Initial fetch only
+
+                expect(wrapper.find('.text-danger').text()).toBe("Error: test remove reader error message");
+
+                done();
+            });
+        });
+    });
 
 });

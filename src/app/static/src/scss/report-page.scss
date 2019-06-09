@@ -46,6 +46,16 @@
   display: block !important;
 }
 
+.remove-reader {
+  cursor: pointer;
+  color: $danger;
+}
+
+.remove-reader:hover {
+  color: darken($danger, 10%);
+  text-decoration: underline;
+}
+
 td, th {
   border-width: 1px !important;
   border-color: $theme-table-border-color !important;
