@@ -89,17 +89,15 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders outline correctly`()
     {
-        val xmlResponse = template.xmlResponseFor(testModel)
+        val doc = template.jsoupDocFor(testModel)
 
-        assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][1]/a[@role='tab']/text()",
-                equalToCompressingWhiteSpace("Report")))
+        Assertions.assertThat(doc.select(".nav-item")[0].text()).isEqualTo("Report")
+        Assertions.assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Downloads")
+        Assertions.assertThat(doc.select(".nav-item")[2].text()).isEqualTo("Changelog")
 
-        assertThat(xmlResponse, hasXPath("//li[@class='nav-item'][2]/a[@role='tab']/text()",
-                equalToCompressingWhiteSpace("Downloads")))
-
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane active pt-4 pt-md-1' and @id='report-tab']"))
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane pt-4 pt-md-1' and @id='downloads-tab']"))
-        assertThat(xmlResponse, hasXPath("//div[@class='tab-pane pt-4 pt-md-1' and @id='changelog-tab']"))
+        Assertions.assertThat(doc.selectFirst("#report-tab").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#downloads-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#changelog-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
     }
 
     @Test

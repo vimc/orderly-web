@@ -8,6 +8,10 @@ $success: #28a75e;
 @import "partials/logout";
 @import "partials/nav";
 
+html {
+  overflow-y: scroll;
+}
+
 html, body {
   height: 100%
 }

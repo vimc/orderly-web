@@ -15,8 +15,8 @@ interface GithubAuthHelper
 {
     fun authenticate(token: String)
 
-    //Checks that the Github user associated with the given token is permitted to authenticate with OrderlyWeb by
-    //getting org/team membership for the user from Github API and comparing with permitted values in AppConfig.
+    //Checks that the GitHub user associated with the given token is permitted to authenticate with OrderlyWeb by
+    //getting org/team membership for the user from GitHub API and comparing with permitted values in AppConfig.
     //Throws CredentialsException if check fails
     fun checkGithubUserHasOrderlyWebAccess()
 

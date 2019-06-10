@@ -128,7 +128,7 @@ class WebEndpointTests: TeamcityTests()
         }
 
         val mockAuthConfig = mock<AuthenticationConfig>{
-            on { getConfiguredProvider() } doReturn AuthenticationProvider.Github
+            on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
         }
 
         val requiredPermission=  PermissionRequirement.parse("*/testperm")
