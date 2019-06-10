@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.app_start.OrderlyAuthenticationRouteBuilder
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class AuthenticationRouteBuilderTests : TeamcityTests()
@@ -33,6 +34,7 @@ class AuthenticationRouteBuilderTests : TeamcityTests()
     {
         val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getConfiguredProvider() } doReturn AuthenticationProvider.Montagu
+            on { getAuthenticationIndirectClient() } doReturn MontaguIndirectClient()
         }
         val sut = OrderlyAuthenticationRouteBuilder(mockAuthConfig)
         val result = sut.logout()
