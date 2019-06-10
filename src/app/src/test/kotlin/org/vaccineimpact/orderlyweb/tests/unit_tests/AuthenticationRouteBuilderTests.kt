@@ -7,6 +7,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.OrderlyAuthenticationRouteBuilder
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
+import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class AuthenticationRouteBuilderTests : TeamcityTests()
@@ -16,6 +17,7 @@ class AuthenticationRouteBuilderTests : TeamcityTests()
     {
         val mockAuthConfig = mock<AuthenticationConfig>() {
             on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
+            on { getAuthenticationIndirectClient() } doReturn GithubIndirectClient("fakekey", "fakesecret")
         }
         val sut = OrderlyAuthenticationRouteBuilder(mockAuthConfig)
         val result = sut.logout()

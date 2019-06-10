@@ -31,7 +31,7 @@ open class AuthenticationConfig(val appConfig: Config = AppConfig())
         return appConfig["auth.github_secret"]
     }
 
-    fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
+    open fun getAuthenticationIndirectClient() : IndirectClient<out Credentials, out CommonProfile>
     {
         return  when (getConfiguredProvider()) {
             AuthenticationProvider.GitHub -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
