@@ -9,6 +9,8 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.authentication.UnknownAuthenticationProvider
+import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
+import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class AuthenticationConfigTests : TeamcityTests()
@@ -51,5 +53,31 @@ class AuthenticationConfigTests : TeamcityTests()
 
         assertThatThrownBy { sut.getConfiguredProvider() }
                 .isInstanceOf(UnknownAuthenticationProvider::class.java)
+    }
+
+    @Test
+    fun `getAuthenticationIndirectClient returns Montagu client if provider is Montagu`()
+    {
+        val fakeConfig = mock<Config> {
+            on { get("auth.provider") } doReturn "montagu"
+        }
+        val sut = AuthenticationConfig(fakeConfig)
+        val result = sut.getAuthenticationIndirectClient()
+
+        assertThat(result is MontaguIndirectClient).isTrue()
+    }
+
+    @Test
+    fun `getAuthenticationIndirectClient returns GitHub client if provider is GitHub`()
+    {
+        val fakeConfig = mock<Config> {
+            on { get("auth.provider") } doReturn "github"
+            on { get("auth.github_key") } doReturn "key"
+            on { get("auth.github_secret") } doReturn "secret"
+        }
+        val sut = AuthenticationConfig(fakeConfig)
+        val result = sut.getAuthenticationIndirectClient()
+
+        assertThat(result is GithubIndirectClient).isTrue()
     }
 }
