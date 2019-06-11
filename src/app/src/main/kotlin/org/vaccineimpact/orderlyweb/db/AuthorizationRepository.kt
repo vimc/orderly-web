@@ -16,7 +16,7 @@ interface AuthorizationRepository
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
-    fun getReportReaders(reportName: String): Map<User, Scope>
+    fun getReportReaders(reportName: String): Map<User, List<ReifiedPermission>>
 }
 
 class OrderlyAuthorizationRepository : AuthorizationRepository
@@ -132,7 +132,6 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                 }
             }
         }
-
     }
 
     override fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
@@ -185,9 +184,10 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
         }
     }
 
-    override fun getReportReaders(reportName: String): Map<User, Scope>
+    override fun getReportReaders(reportName: String): Map<User, List<ReifiedPermission>>
     {
-        //Returns all users which can read the report, along with their report read scope (global or report-specific)
+        //Returns all users which can read the report, along with the set of all relevant permissions
+        // (global or report-specific, and the user groups from which they are derived)
         JooqContext().use {
             val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,
                     ORDERLYWEB_USER.DISPLAY_NAME,
@@ -207,15 +207,10 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
                     .and(permissionIsGlobal().or(permissionIsScopedToReport(reportName)))
 
-                    .orderBy(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX.desc())
                     .fetch()
 
-            //associateBy chooses the last value for each key, so should get the global perm if user has both global and report
-            return result.associateBy(
-                    { it.into(User::class.java) },
-                    { mapScope(it) }
-            )
-
+            return result.map{ it.into(User::class.java) to mapPermission(it) }
+                    .groupBy({ it.first }, {it.second})
         }
     }
 

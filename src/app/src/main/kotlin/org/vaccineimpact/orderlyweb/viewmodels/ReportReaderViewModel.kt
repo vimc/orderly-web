@@ -2,13 +2,17 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 data class ReportReaderViewModel(val email: String, val username: String, val displayName: String, val canRemove: Boolean)
 {
     companion object
     {
-        fun build(user: User, scope: Scope): ReportReaderViewModel
+        fun build(user: User, permissions: List<ReifiedPermission>): ReportReaderViewModel
         {
+            //the report reader can only be removed if they only have read permission for this report which is scoped to
+            //the report (not global) and do not have permission through belonging to a user group other than their
+            //identity group
             val canRemove = scope is Scope.Specific
             val displayName = when
             {
