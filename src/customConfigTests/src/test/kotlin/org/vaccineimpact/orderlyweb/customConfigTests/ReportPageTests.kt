@@ -230,23 +230,31 @@ class ReportPageTests : SeleniumTest()
     {
         startApp("auth.provider=montagu")
 
+        insertReport("testreport", "20170103-143015-1234abcd")
+
         addUserWithPermissions(listOf(
                 ReifiedPermission("users.manage", Scope.Global()),
                 ReifiedPermission("reports.read", Scope.Global())
         ))
         addUserWithPermissions(listOf(), "no.perms@example.com")
 
-        insertReport("testreport", "20170103-143015-1234abcd")
+        addUserWithPermissions(listOf(), "user.with.group.perm@example.com")
+        addUserGroupWithPermissions("test-group", listOf("user.with.group.perm@example.com"),
+                listOf(ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))))
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
-        assertThat(listItems.count()).isEqualTo(1)
+        assertThat(listItems.count()).isEqualTo(2)
         assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("test.user@example.com")
         assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
         assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
+
+        assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("user.with.group.perm@example.com")
+        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("user.with.group.perm@example.com")
+        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
     }
 
     @Test
@@ -270,6 +278,46 @@ class ReportPageTests : SeleniumTest()
 
         val addReaderInput = driver.findElement(By.cssSelector("#reportReadersListVueApp input"))
         addReaderInput.sendKeys("no.perms@example.com")
+        val addReaderButton = driver.findElement(By.cssSelector("#reportReadersListVueApp button"))
+        addReaderButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.perms@example.com']")))
+
+        val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        assertThat(listItems.count()).isEqualTo(2)
+
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
+
+        assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("test.user@example.com")
+        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
+        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can add report readers through user group`()
+    {
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global()),
+                ReifiedPermission("users.manage", Scope.Global())
+        ))
+
+        addUserWithPermissions(listOf(), "no.perms@example.com")
+        addUserGroupWithPermissions("test-group", listOf("no.perms@example.com"), listOf())
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
+
+        //let existing readers load first
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
+
+        val addReaderInput = driver.findElement(By.cssSelector("#reportReadersListVueApp input"))
+        addReaderInput.sendKeys("test-group")
         val addReaderButton = driver.findElement(By.cssSelector("#reportReadersListVueApp button"))
         addReaderButton.click()
 

@@ -96,4 +96,15 @@ abstract class SeleniumTest : CustomConfigTests()
         }
     }
 
+    protected fun addUserGroupWithPermissions(userGroupId: String, members: List<String>, permissions: List<ReifiedPermission>)
+    {
+        val authRepo = OrderlyAuthorizationRepository()
+
+        authRepo.createUserGroup(userGroupId)
+        members.forEach { authRepo.ensureGroupHasMember(userGroupId, it) }
+
+        permissions.forEach{ authRepo.ensureUserGroupHasPermission(userGroupId, it) }
+
+    }
+
 }
