@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 
 interface AuthorizationRepository
 {
@@ -16,7 +17,7 @@ interface AuthorizationRepository
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
-    fun getReportReaders(reportName: String): Map<User, List<ReifiedPermission>>
+    fun getReportReaders(reportName: String): Map<User, List<UserGroupPermission>>
 }
 
 class OrderlyAuthorizationRepository : AuthorizationRepository
@@ -184,7 +185,7 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
         }
     }
 
-    override fun getReportReaders(reportName: String): Map<User, List<ReifiedPermission>>
+    override fun getReportReaders(reportName: String): Map<User, List<UserGroupPermission>>
     {
         //Returns all users which can read the report, along with the set of all relevant permissions
         // (global or report-specific, and the user groups from which they are derived)
@@ -209,7 +210,7 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
 
                     .fetch()
 
-            return result.map{ it.into(User::class.java) to mapPermission(it) }
+            return result.map{ it.into(User::class.java) to UserGroupPermission(it[ORDERLYWEB_USER_GROUP.ID], mapPermission(it)) }
                     .groupBy({ it.first }, {it.second})
         }
     }
