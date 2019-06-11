@@ -14,40 +14,9 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
 
 class UserController(context: ActionContext,
-                     val authRepo : AuthorizationRepository,
-                     val userRepo: UserRepository) : Controller(context)
+                     val authRepo : AuthorizationRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(), OrderlyUserRepository())
-
-    fun associatePermission(): String
-    {
-        val userEmail = userEmail()
-
-        //check that this is a user and not a group
-        if (userRepo.getUser(userEmail) == null)
-        {
-            throw UnknownObjectError(userEmail, "user")
-        }
-
-        val postData = context.postData()
-        val associatePermission = AssociatePermission(
-                postData["action"]!!,
-                postData["name"]!!,
-                postData["scope_prefix"],
-                postData["scope_id"]
-        )
-
-        val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
-
-        when (associatePermission.action)
-        {
-            "add" -> authRepo.ensureUserGroupHasPermission(userEmail, permission)
-            "remove" -> authRepo.ensureUserGroupDoesNotHavePermission(userEmail, permission)
-            else -> throw IllegalArgumentException("Unknown action type")
-        }
-
-        return okayResponse()
-    }
+    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
 
     fun getReportReaders(): List<ReportReaderViewModel>
     {
@@ -56,6 +25,5 @@ class UserController(context: ActionContext,
         return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.displayName}
     }
 
-    private fun userEmail(): String = URLDecoder.decode(context.params(":email"), "UTF-8")
     private fun report(): String = context.params(":report")
 }
