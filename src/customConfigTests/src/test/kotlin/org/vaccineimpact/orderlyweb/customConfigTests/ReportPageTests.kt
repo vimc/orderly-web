@@ -278,7 +278,7 @@ class ReportPageTests : SeleniumTest()
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
         assertThat(listItems.count()).isEqualTo(2)
 
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.perms@example.com")
         assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
         assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
 
