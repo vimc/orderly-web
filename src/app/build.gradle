@@ -83,7 +83,7 @@ distDocker {
 // creates folder at app/demo with up to date orderly test data
 task generateTestData() {
     doLast {
-        String image = "docker.montagu.dide.ic.ac.uk:5000/orderly:vimc-2696"
+        String image = "vimc/orderly:vimc-2696"
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
 
@@ -96,7 +96,7 @@ task generateTestData() {
             commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
         
-        String owMigrateImage = "vimc/orderlyweb-migrate:mrc-281"
+        String owMigrateImage = "vimc/orderlyweb-migrate:master"
         println("Pulling " + owMigrateImage)
         exec {
             commandLine 'docker', 'pull', owMigrateImage
