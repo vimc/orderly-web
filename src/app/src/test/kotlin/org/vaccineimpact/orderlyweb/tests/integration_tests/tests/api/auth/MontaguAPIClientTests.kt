@@ -37,6 +37,7 @@ class MontaguAPIClientTests : TeamcityTests()
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
         Assertions.assertThat(result.email).isEqualTo("test.user@example.com")
+        Assertions.assertThat(result.name).isEqualTo("Test User")
     }
 
     private fun login() = APIRequestHelper().loginWithMontagu()

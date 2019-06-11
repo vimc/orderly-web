@@ -10,7 +10,7 @@ interface MontaguAPIClient
 {
     fun getUserDetails(token: String): UserDetails
 
-    data class UserDetails(val email: String, val username: String, val displayName: String?)
+    data class UserDetails(val email: String, val username: String, val name: String?)
 
     // The following are identical to orderlyweb.models.Result, orderlyweb.models.ResultStatus,
     // and orderlyweb.models.ErrorInfo but in principle they need not be and should either spec

@@ -22,7 +22,8 @@ class UserController(context: ActionContext,
     {
         val report = report()
         val users = authRepo.getReportReaders(report)
-        return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.displayName}
+        return users.map { ReportReaderViewModel.build(it.key, it.value) }
+                .sortedBy { it.displayName.toLowerCase() }
     }
 
     private fun report(): String = context.params(":report")

@@ -54,6 +54,7 @@ class OrderlyUserRepository : UserRepository
             {
                 it.dsl.update(Tables.ORDERLYWEB_USER)
                         .set(Tables.ORDERLYWEB_USER.USERNAME, username)
+                        .set(Tables.ORDERLYWEB_USER.DISPLAY_NAME, displayName)
                         .set(Tables.ORDERLYWEB_USER.USER_SOURCE, source.toString())
                         .set(Tables.ORDERLYWEB_USER.LAST_LOGGED_IN, now)
                         .where(Tables.ORDERLYWEB_USER.EMAIL.eq(email))
