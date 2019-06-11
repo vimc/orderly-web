@@ -6,7 +6,7 @@ import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.tests.ChangelogWithPublicVersion
+import org.vaccineimpact.orderlyweb.tests.InsertableChangelog
 import org.vaccineimpact.orderlyweb.tests.insertChangelog
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
@@ -21,8 +21,21 @@ class OrderlychangelogTests : CleanDatabaseTests()
     fun `reviewer can get all changelog for report version`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(ChangelogWithPublicVersion("version1", "public", "did something great", true),
-                ChangelogWithPublicVersion("version1", "internal", "did something awful", false)))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "zz_id1",
+                        "version1",
+                        "public",
+                        "did something great",
+                        true,
+                        1),
+                InsertableChangelog(
+                        "id2",
+                        "version1",
+                        "internal",
+                        "did something awful",
+                        false,
+                        2)))
 
         val sut = createSut(true)
 
@@ -39,8 +52,23 @@ class OrderlychangelogTests : CleanDatabaseTests()
     fun `reader can get public changelog for report version`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(ChangelogWithPublicVersion("version1", "public", "did something great", true, "version1"),
-                ChangelogWithPublicVersion("version1", "internal", "did something awful", false, "version1")))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "zz_id1",
+                        "version1",
+                        "public",
+                        "did something great",
+                        true,
+                        1,
+                        "version1"),
+                InsertableChangelog(
+                        "id2",
+                        "version1",
+                        "internal",
+                        "did something awful",
+                        false,
+                        2,
+                        "version1")))
 
         val sut = createSut(false)
 
@@ -106,8 +134,20 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         insertReport("anothertest", "anotherversion1")
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true),
-                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false)))
+                InsertableChangelog(
+                        "id7",
+                        "anotherversion1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        7),
+                InsertableChangelog(
+                        "id8",
+                        "anotherversion1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        8)))
 
         val sut = createSut(true)
 
@@ -123,8 +163,20 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         insertReport("anothertest", "anotherversion1")
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true),
-                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false)))
+                InsertableChangelog(
+                        "id7",
+                        "anotherversion1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        7),
+                InsertableChangelog(
+                        "id8",
+                        "anotherversion1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        8)))
 
         val sut = createSut(false)
 
@@ -218,8 +270,22 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         insertReport("anothertest", "anotherversion1")
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true, "anotherversion1"),
-                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false, "anotherversion1")))
+                InsertableChangelog(
+                        "id7",
+                        "anotherversion1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        7,
+                        "anotherversion1"),
+                InsertableChangelog(
+                        "id8",
+                        "anotherversion1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        8,
+                        "anotherversion1")))
 
         val sut = createSut(true)
 
@@ -235,8 +301,22 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         insertReport("anothertest", "anotherversion1")
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("anotherversion1", "public", "did something great v1", true, "anotherversion1"),
-                ChangelogWithPublicVersion("anotherversion1", "internal", "did something awful v1", false, "anotherversion1")))
+                InsertableChangelog(
+                        "id7",
+                        "anotherversion1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        7,
+                        "anotherversion1"),
+                InsertableChangelog(
+                        "id8",
+                        "anotherversion1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        8,
+                        "anotherversion1")))
 
         val sut = createSut(false)
 
@@ -258,20 +338,76 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertReport("test", "v4", published = false)
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("v1", "public", "did something great v1", true, reportVersionPublic = "v2"),
-                ChangelogWithPublicVersion("v1", "internal", "did something awful v1", false, reportVersionPublic = "v2")))
+                InsertableChangelog(
+                        "id1",
+                        "v1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        1,
+                        reportVersionPublic = "v2"),
+                InsertableChangelog(
+                        "id2",
+                        "v1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        2,
+                        reportVersionPublic = "v2")))
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("v2", "public", "did something great v2", true, reportVersionPublic = "v2"),
-                ChangelogWithPublicVersion("v2", "internal", "did something awful v2", false, reportVersionPublic = "v2")))
+                InsertableChangelog(
+                        "id3",
+                        "v2",
+                        "public",
+                        "did something great v2",
+                        true,
+                        3,
+                        reportVersionPublic = "v2"),
+                InsertableChangelog(
+                        "id4",
+                        "v2",
+                        "internal",
+                        "did something awful v2",
+                        false,
+                        4,
+                        reportVersionPublic = "v2")))
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("v3", "public", "did something great v3", true, reportVersionPublic = "v3"),
-                ChangelogWithPublicVersion("v3", "internal", "did something awful v3", false, reportVersionPublic = "v3")))
+                InsertableChangelog(
+                        "id5",
+                        "v3",
+                        "public",
+                        "did something great v3",
+                        true,
+                        5,
+                        reportVersionPublic = "v3"),
+                InsertableChangelog(
+                        "id6",
+                        "v3",
+                        "internal",
+                        "did something awful v3",
+                        false,
+                        6,
+                        reportVersionPublic = "v3")))
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("v4", "public", "did something great v4", true, reportVersionPublic = null),
-                ChangelogWithPublicVersion("v4", "internal", "did something awful v4", false, reportVersionPublic = null)))
+                InsertableChangelog(
+                        "id7",
+                        "v4",
+                        "public",
+                        "did something great v4",
+                        true,
+                        7,
+                        reportVersionPublic = null),
+                InsertableChangelog(
+                        "id8",
+                        "v4",
+                        "internal",
+                        "did something awful v4",
+                        false,
+                        8,
+                        reportVersionPublic = null)))
 
         val sut = createSut(false)
 
@@ -291,16 +427,58 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertReport("test", "version3")
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("version1", "public", "did something great v1", true, null),
-                ChangelogWithPublicVersion("version1", "internal", "did something awful v1", false, null)))
+                InsertableChangelog(
+                        "id1",
+                        "version1",
+                        "public",
+                        "did something great v1",
+                        true,
+                        1,
+                        null),
+                InsertableChangelog(
+                        "id2",
+                        "version1",
+                        "internal",
+                        "did something awful v1",
+                        false,
+                        2,
+                        null)))
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("version2", "public", "did something great v2", true, "version3")))
+                InsertableChangelog(
+                        "id3",
+                        "version2",
+                        "public",
+                        "did something great v2",
+                        true,
+                        3,
+                        "version3")))
 
         insertChangelog(listOf(
-                ChangelogWithPublicVersion("version3", "public", "did something great v3", true, "version3"),
-                ChangelogWithPublicVersion("version3", "internal", "did something awful v3", false, "version3"),
-                ChangelogWithPublicVersion("version3", "internal", "everything is broken", false, "version3")))
+                InsertableChangelog(
+                        "id4",
+                        "version3",
+                        "public",
+                        "did something great v3",
+                        true,
+                        4,
+                        "version3"),
+                InsertableChangelog(
+                        "id5",
+                        "version3",
+                        "internal",
+                        "did something awful v3",
+                        false,
+                        5,
+                        "version3"),
+                InsertableChangelog(
+                        "id6",
+                        "version3",
+                        "internal",
+                        "everything is broken",
+                        false,
+                        6,
+                        "version3")))
 
     }
 

@@ -11,15 +11,17 @@ import java.io.File
 import java.time.Instant
 import kotlin.streams.asSequence
 
-data class ChangelogWithPublicVersion
-constructor(val reportVersion: String,
+data class InsertableChangelog
+constructor(val id: String,
+            val reportVersion: String,
             val label: String,
             val value: String,
             val fromFile: Boolean,
+            val ordering: Int,
             val reportVersionPublic: String? = null)
 
 
-fun insertChangelog(changelog: List<ChangelogWithPublicVersion>)
+fun insertChangelog(changelog: List<InsertableChangelog>)
 {
     JooqContext().use {
 
@@ -29,10 +31,12 @@ fun insertChangelog(changelog: List<ChangelogWithPublicVersion>)
             //non-nullable id property. We want to specify no id, because this is an auto-incrementing field in the db,
             //but this would throw an error in ChangeRecord.
             it.dsl.insertInto(CHANGELOG)
+                    .set(CHANGELOG.ID, entry.id)
                     .set(CHANGELOG.LABEL, entry.label)
                     .set(CHANGELOG.VALUE, entry.value)
                     .set(CHANGELOG.FROM_FILE, entry.fromFile)
                     .set(CHANGELOG.REPORT_VERSION, entry.reportVersion)
+                    .set(CHANGELOG.ORDERING, entry.ordering)
                     .set(CHANGELOG.REPORT_VERSION_PUBLIC, entry.reportVersionPublic)
                     .execute()
 
