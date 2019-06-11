@@ -9,7 +9,7 @@ import org.junit.runners.MethodSorters
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
-import org.vaccineimpact.orderlyweb.tests.ChangelogWithPublicVersion
+import org.vaccineimpact.orderlyweb.tests.InsertableChangelog
 import org.vaccineimpact.orderlyweb.tests.insertChangelog
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
@@ -230,8 +230,21 @@ class VersionTests : IntegrationTest()
     fun `can get version changelog by name and version`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
-                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "id1",
+                        "testversion",
+                        "internal",
+                        "did something awful",
+                        false,
+                        1),
+                InsertableChangelog(
+                        "id2",
+                        "testversion",
+                        "public",
+                        "did something great",
+                        true,
+                        2)))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
@@ -258,8 +271,21 @@ class VersionTests : IntegrationTest()
     {
         //reader now has permission to get public changelog items for published reports which they have perms to read
         insertReport("testname", "testversion")
-        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
-                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "id1",
+                        "testversion",
+                        "internal",
+                        "did something awful",
+                        false,
+                        1),
+                InsertableChangelog(
+                        "id2",
+                        "testversion",
+                        "public",
+                        "did something great",
+                        true,
+                        2)))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
@@ -272,8 +298,21 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version does not belong to report`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
-                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "id1",
+                        "testversion",
+                        "internal",
+                        "did something awful",
+                        false,
+                        1),
+                InsertableChangelog(
+                        "id2",
+                        "testversion",
+                        "public",
+                        "did something great",
+                        true,
+                        2)))
 
         val response = apiRequestHelper.get("/reports/testname/versions/notatestversion/changelog",
                 userEmail = fakeGlobalReportReader())
@@ -287,8 +326,21 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version is not published and user has reader permission only`()
     {
         insertReport("testname", "testversion", published = false)
-        insertChangelog(listOf(ChangelogWithPublicVersion("testversion", "internal", "did something awful", false),
-                ChangelogWithPublicVersion("testversion", "public", "did something great", true)))
+        insertChangelog(listOf(
+                InsertableChangelog(
+                        "id1",
+                        "testversion",
+                        "internal",
+                        "did something awful",
+                        false,
+                        1),
+                InsertableChangelog(
+                        "id2",
+                        "testversion",
+                        "public",
+                        "did something great",
+                        true,
+                        2)))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog",
                 userEmail = fakeGlobalReportReader())
