@@ -21,7 +21,7 @@ class UserGroupControllerTests : TeamcityTests()
     fun `adds permission to user group`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1%40example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "add",
                     "name" to "test.permission",
@@ -48,7 +48,7 @@ class UserGroupControllerTests : TeamcityTests()
     fun `removes permission from user group`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1%40example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "remove",
                     "name" to "test.permission",
@@ -75,21 +75,13 @@ class UserGroupControllerTests : TeamcityTests()
     fun `throws exception if associate permission with unknown action`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":email") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1%40example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "addx",
                     "name" to "test.permission",
                     "scope_prefix" to "report",
                     "scope_id" to "report1"
             )
-        }
-
-        val userRepo = mock<UserRepository> {
-            on { this.getUser("user1@example.com") } doReturn User("user.1",
-                    "User One",
-                    "user1@example.com",
-                    "test",
-                    Instant.now())
         }
 
         val authRepo = mock<AuthorizationRepository>()

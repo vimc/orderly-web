@@ -3,7 +3,7 @@
         <label class="font-weight-bold">Report readers</label>
         <div>
             <div class="input-group mb-3">
-                <input v-model="add_email" class="form-control form-control-sm" type="text" placeholder="user email or user group id" value />
+                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="user email or user group id" value />
                 <div class="input-group-append">
                     <button v-on:click="add" type="submit" class="btn btn-sm">Add reader</button>
                 </div>
@@ -68,7 +68,7 @@
                 api.post(`/user-groups/${encodeURIComponent(user)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.refreshReaders();
-                        this.add_email = "";
+                        this.add_user = "";
                         this.error = "";
                     })
                     .catch((error) => {

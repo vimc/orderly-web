@@ -38,6 +38,5 @@ class UserGroupController(context: ActionContext,
         return okayResponse()
     }
 
-
     private fun userGroupId(): String = URLDecoder.decode(context.params(":user-group-id"), "UTF-8")
 }

@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.routing.api.*
 import org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig
 import org.vaccineimpact.orderlyweb.app_start.routing.web.WebReportRouteConfig
+import org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserGroupRouteConfig
 import org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.SecurityController
@@ -37,6 +38,7 @@ object WebRouteConfig : RouteConfig
             ) +
             WebReportRouteConfig.endpoints +
             WebVersionRouteConfig.endpoints +
-            WebUserRouteConfig.endpoints
+            WebUserRouteConfig.endpoints +
+            WebUserGroupRouteConfig.endpoints
 
 }
