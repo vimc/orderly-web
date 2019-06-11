@@ -46,7 +46,7 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
         {
             throw CredentialsException("Montagu authentication failed with status ${e.status} and message ${e.message}")
         }
-        userRepository.addUser(user.email, user.username, user.displayName ?: "", UserSource.Montagu)
+        userRepository.addUser(user.email, user.username, user.name ?: "", UserSource.Montagu)
         return user.email
     }
 
