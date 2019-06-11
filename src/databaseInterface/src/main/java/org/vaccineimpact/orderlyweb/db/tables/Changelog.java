@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class Changelog extends TableImpl<ChangelogRecord> {
 
-    private static final long serialVersionUID = -270545310;
+    private static final long serialVersionUID = -1808959522;
 
     /**
      * The reference instance of <code>changelog</code>
@@ -52,7 +52,7 @@ public class Changelog extends TableImpl<ChangelogRecord> {
     /**
      * The column <code>changelog.id</code>.
      */
-    public final TableField<ChangelogRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER, this, "");
+    public final TableField<ChangelogRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>changelog.report_version</code>.
@@ -78,6 +78,11 @@ public class Changelog extends TableImpl<ChangelogRecord> {
      * The column <code>changelog.from_file</code>.
      */
     public final TableField<ChangelogRecord, Boolean> FROM_FILE = createField("from_file", org.jooq.impl.SQLDataType.BOOLEAN.nullable(false), this, "");
+
+    /**
+     * The column <code>changelog.ordering</code>.
+     */
+    public final TableField<ChangelogRecord, Integer> ORDERING = createField("ordering", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
 
     /**
      * Create a <code>changelog</code> table reference

@@ -1,13 +1,12 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.encodeFilename
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 
-class ReportFileViewModelBuilder(private val report: ReportVersionDetails)
+class ReportFileViewModelBuilder(private val reportName: String, private val reportVersion: String)
 {
     private var inline: Boolean = false
 
-    val baseUrl = "/reports/${report.name}/versions/${report.id}/"
+    val baseUrl = "/reports/${reportName}/versions/${reportVersion}/"
 
     fun buildArtefactFileViewModel(fileName: String): DownloadableFileViewModel
     {
@@ -25,7 +24,7 @@ class ReportFileViewModelBuilder(private val report: ReportVersionDetails)
 
     fun buildZipFileViewModel(): DownloadableFileViewModel
     {
-        return DownloadableFileViewModel("${report.name}-${report.id}.zip", "${baseUrl}all/")
+        return DownloadableFileViewModel("${reportName}-${reportVersion}.zip", "${baseUrl}all/")
     }
 
     fun buildDataFileViewModel(fileName: String, type: String): DownloadableFileViewModel

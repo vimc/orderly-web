@@ -9,7 +9,7 @@ class SecurityController(actionContext: ActionContext) : Controller(actionContex
     @Template("weblogin.ftl")
     fun weblogin(): WebloginViewModel
     {
-        //This action handles displaying the 'landing page' with links to the external auth providers e.g. Github
+        //This action handles displaying the 'landing page' with links to the external auth providers e.g. GitHub
         //This is the redirect location for the OrderlyWebIndirectClient, which secures the WebEndpoints of the app
         val requestedUrl = context.queryParams("requestedUrl")
         return WebloginViewModel(context, requestedUrl?:"")

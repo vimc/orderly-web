@@ -14,6 +14,7 @@ class IndexController: OrderlyDataController
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
-        return IndexViewModel.build(orderly.getAllReportVersions(), context)
+        return IndexViewModel.build(orderly.getAllReportVersions(),
+                orderly.getGlobalPinnedReports(), context)
     }
 }

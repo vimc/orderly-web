@@ -12,6 +12,8 @@ import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
 import java.time.Duration
 import java.time.Instant
@@ -123,6 +125,41 @@ class IndexControllerTests : TeamcityTests()
             assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
         }
     }
+
+    @Test
+    fun `builds pinned versions`()
+    {
+        val someDate = Instant.parse("2019-06-07T12:31:00.613Z")
+
+        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r1v2 = r1v1.copy(
+                name = "r2",
+                id = "v2",
+                displayName = "r2 display name",
+                date = someDate.plus(Duration.ofDays(1)))
+
+        val fakeReports = listOf(r1v1, r1v2)
+
+        val mockOrderly = mock<OrderlyClient> {
+            on { this.getGlobalPinnedReports() } doReturn fakeReports
+        }
+        val sut = IndexController(mock(), mockOrderly)
+
+        val result = sut.index().pinnedReports
+
+        val expected = listOf(
+                PinnedReportViewModel("r1", "v1", "r1", "Fri Jun 07 2019",
+                        DownloadableFileViewModel("r1-v1.zip", "/reports/r1/versions/v1/all/")),
+                PinnedReportViewModel("r2", "v2", "r2 display name", "Sat Jun 08 2019",
+                        DownloadableFileViewModel("r2-v2.zip", "/reports/r2/versions/v2/all/"))
+        )
+
+        assertThat(result.count()).isEqualTo(2)
+        (0..1).map {
+            assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
+        }
+    }
+
 
     @Test
     fun `isReviewer is true when report reviewing permission is present in the context`()
