@@ -413,7 +413,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         permissions = result[result.firstKey()]!!
         assertThat(permissions.count()).isEqualTo(1)
         assertThat(permissions[0].userGroup).isEqualTo("global.readers")
-        assertThat(permissions[0].permission).isInstanceOf(Scope.Global::class.java)
+        assertThat(permissions[0].permission.scope).isInstanceOf(Scope.Global::class.java)
 
         result.remove(result.firstKey())
         assertThat(result.firstKey().username).isEqualTo("report1 reader")
