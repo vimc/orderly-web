@@ -120,14 +120,30 @@ fun insertUser(email: String,
                 .onDuplicateKeyIgnore()
                 .execute()
 
+
+    }
+
+    insertUserGroup(email)
+
+    giveUserGroupMember(email, email)
+}
+
+fun insertUserGroup(id: String)
+{
+    JooqContext().use {
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP)
-                .set(ORDERLYWEB_USER_GROUP.ID, email)
+                .set(ORDERLYWEB_USER_GROUP.ID, id)
                 .onDuplicateKeyIgnore()
                 .execute()
+    }
+}
 
+fun giveUserGroupMember(groupName: String, userEmail: String)
+{
+    JooqContext().use {
         it.dsl.insertInto(ORDERLYWEB_USER_GROUP_USER)
-                .set(ORDERLYWEB_USER_GROUP_USER.EMAIL, email)
-                .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, email)
+                .set(ORDERLYWEB_USER_GROUP_USER.EMAIL, userEmail)
+                .set(ORDERLYWEB_USER_GROUP_USER.USER_GROUP, groupName)
                 .onDuplicateKeyIgnore()
                 .execute()
     }
