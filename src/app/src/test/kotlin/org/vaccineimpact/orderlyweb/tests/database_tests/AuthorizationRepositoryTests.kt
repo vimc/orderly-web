@@ -358,7 +358,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         assertThat(result.lastKey().username).isEqualTo("scoped.reader.name")
         val reportUserPermissions = result[result.lastKey()]!!
         assertThat(reportUserPermissions.count()).isEqualTo(1)
-        assertThat(reportUserPermissions[0].userGroup).isEqualTo("scope.reader@email.com")
+        assertThat(reportUserPermissions[0].userGroup).isEqualTo("scoped.reader@email.com")
         assertThat(reportUserPermissions[0].permission.name).isEqualTo("reports.read")
         assertThat(reportUserPermissions[0].permission.scope).isInstanceOf(Scope.Specific::class.java)
         assertThat(reportUserPermissions[0].permission.scope.value).isEqualTo("report:report1")
@@ -383,7 +383,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         giveUserGroupMember("global.readers", "global@reader.com")
 
         insertUser("report1@reader.com", "report1 reader")
-        giveUserGroupMember("report1.readers", "report1.reader.com")
+        giveUserGroupMember("report1.readers", "report1@reader.com")
 
         insertUser("report2@reader.com", "report2 reader")
         giveUserGroupMember("report2.readers", "report2.reader.com")
