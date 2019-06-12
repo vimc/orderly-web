@@ -306,8 +306,8 @@ class ReportPageTests : SeleniumTest()
                 ReifiedPermission("users.manage", Scope.Global())
         ))
 
-        addUserWithPermissions(listOf(), "no.perms@example.com")
-        addUserGroupWithPermissions("test-group", listOf("no.perms@example.com"), listOf())
+        addUserWithPermissions(listOf(), "no.individual.perms@example.com")
+        addUserGroupWithPermissions("test-group", listOf("no.individual.perms@example.com"), listOf())
 
         insertReport("testreport", "20170103-143015-1234abcd")
 
@@ -328,8 +328,8 @@ class ReportPageTests : SeleniumTest()
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
         assertThat(listItems.count()).isEqualTo(2)
 
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.perms@example.com")
-        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.individual.perms@example.com")
+        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.individual.perms@example.com")
         assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
 
         assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
