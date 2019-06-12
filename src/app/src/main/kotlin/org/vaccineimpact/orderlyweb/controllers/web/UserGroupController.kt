@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
-import java.net.URLDecoder
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
@@ -38,5 +37,5 @@ class UserGroupController(context: ActionContext,
         return okayResponse()
     }
 
-    private fun userGroupId(): String = URLDecoder.decode(context.params(":user-group-id"), "UTF-8")
+    private fun userGroupId(): String = context.params(":user-group-id")
 }

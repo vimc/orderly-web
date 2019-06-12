@@ -21,7 +21,7 @@ class UserGroupControllerTests : TeamcityTests()
     fun `adds permission to user group`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1@example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "add",
                     "name" to "test.permission",
@@ -48,7 +48,7 @@ class UserGroupControllerTests : TeamcityTests()
     fun `removes permission from user group`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1@example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "remove",
                     "name" to "test.permission",
@@ -75,7 +75,7 @@ class UserGroupControllerTests : TeamcityTests()
     fun `throws exception if associate permission with unknown action`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "user1%40example.com"
+            on { this.params(":user-group-id") } doReturn "user1@example.com"
             on { this.postData() } doReturn mapOf(
                     "action" to "addx",
                     "name" to "test.permission",

@@ -316,6 +316,7 @@ class ReportPageTests : SeleniumTest()
 
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
+        assertThat(driver.findElements(By.cssSelector("#reportReadersListVueApp li")).count()).isEqualTo(1)
 
         val addReaderInput = driver.findElement(By.cssSelector("#reportReadersListVueApp input"))
         addReaderInput.sendKeys("test-group")
