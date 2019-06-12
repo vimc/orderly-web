@@ -386,7 +386,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         giveUserGroupMember("report1.readers", "report1@reader.com")
 
         insertUser("report2@reader.com", "report2 reader")
-        giveUserGroupMember("report2.readers", "report2.reader.com")
+        giveUserGroupMember("report2.readers", "report2@reader.com")
 
         insertUser("all.groups@reader.com", "all groups reader")
         giveUserGroupMember("global.readers", "all.groups@reader.com")
