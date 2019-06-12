@@ -52,7 +52,7 @@ describe("reportReadersList", () => {
 
         expect(wrapper.find('label').text()).toBe("Report readers");
 
-        expect(wrapper.find('input').attributes("placeholder")).toBe("user email");
+        expect(wrapper.find('input').attributes("placeholder")).toBe("user email or user group id");
         expect(wrapper.find('button').text()).toBe("Add reader");
 
         expect(wrapper.find('.text-danger').text()).toBe("test error");
@@ -131,7 +131,7 @@ describe("reportReadersList", () => {
 
     it('add reader calls associate permission endpoint and refreshes list of readers', (done) => {
 
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(200);
 
         mockAxios.onGet('/users/report-readers/report1/')
@@ -169,7 +169,7 @@ describe("reportReadersList", () => {
 
     it('remove reader calls associate permission endpoint and refreshes list of readers', (done) => {
 
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(200);
 
         mockAxios.onGet('/users/report-readers/report1/')
@@ -207,7 +207,7 @@ describe("reportReadersList", () => {
     });
 
     it('add reader shows default error and does not refresh reader list', (done) => {
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500);
 
         mockAxios.onGet('/users/report-readers/report1/')
@@ -264,7 +264,7 @@ describe("reportReadersList", () => {
     });
 
     it('shows error from response if available on add reader', (done) => {
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500, {"errors": [{"message": "test add reader error message"}]});
 
         mockAxios.onGet('/users/report-readers/report1/')
@@ -292,7 +292,7 @@ describe("reportReadersList", () => {
     });
 
     it('shows error from response if available on remove reader', (done) => {
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500, {"errors": [{"message": "test remove reader error message"}]});
 
         mockAxios.onGet('/users/report-readers/report1/')

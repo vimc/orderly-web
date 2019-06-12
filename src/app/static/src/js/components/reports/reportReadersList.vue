@@ -3,7 +3,7 @@
         <label class="font-weight-bold">Report readers</label>
         <div>
             <div class="input-group mb-3">
-                <input v-model="add_email" class="form-control form-control-sm" type="text" placeholder="user email" value />
+                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="user email or user group id" value />
                 <div class="input-group-append">
                     <button v-on:click="add" type="submit" class="btn btn-sm">Add reader</button>
                 </div>
@@ -30,7 +30,7 @@
         props: ['report', 'initial_readers'],
         data() {
             return {
-                add_email: "",
+                add_user: "",
                 error: "",
                 readers: []
             }
@@ -40,7 +40,7 @@
         },
         methods: {
             add: function() {
-                this.postAssociatePermissionAction("add", this.add_email);
+                this.postAssociatePermissionAction("add", this.add_user);
             },
             remove: function(email) {
                 this.postAssociatePermissionAction("remove", email);
@@ -57,7 +57,7 @@
             handleError: function(error, defaultMessage) {
                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
             },
-            postAssociatePermissionAction: function(action, email)  {
+            postAssociatePermissionAction: function(action, user)  {
                 const data = {
                     name: "reports.read",
                     action: action,
@@ -65,10 +65,10 @@
                     scope_id: this.report.name
                 };
 
-                api.post(`/users/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+                api.post(`/user-groups/${encodeURIComponent(user)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.refreshReaders();
-                        this.add_email = "";
+                        this.add_user = "";
                         this.error = "";
                     })
                     .catch((error) => {
