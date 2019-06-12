@@ -74,10 +74,10 @@ class UserRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `addUser updates source, username and last logged in, if email already exists`()
+    fun `addUser updates source, username, display name and last logged in, if email already exists`()
     {
         val sut = OrderlyUserRepository()
-        sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.Montagu)
+        sut.addUser("email@somewhere.com", "user.name", "User Name", UserSource.Montagu)
 
         var result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
@@ -89,7 +89,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.source).isEqualTo("Montagu")
 
         val then = Instant.now()
-        sut.addUser("email@somewhere.com", "another.name", "full name", UserSource.GitHub)
+        sut.addUser("email@somewhere.com", "another.name", "Another Name", UserSource.GitHub)
 
         result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
@@ -98,6 +98,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         }
 
         assertThat(result.username).isEqualTo("another.name")
+        assertThat(result.displayName).isEqualTo("Another Name")
         assertThat(result.source).isEqualTo("GitHub")
         assertThat(result.lastLoggedIn).isBetween(then, Instant.now())
     }

@@ -67,4 +67,19 @@ class MontaguAuthenticatorTests : TeamcityTests()
                 UserSource.Montagu)
     }
 
+    @Test
+    fun `user can be saved even if name is null`()
+    {
+        val mockMontaguAPIClient = mock<MontaguAPIClient> {
+            on { getUserDetails("token") } doReturn fakeUserDetails.copy(name = null)
+        }
+        val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
+
+        val credentials = TokenCredentials("token")
+        sut.validate(credentials, mock())
+
+        verify(mockUserRepo).addUser("user@example.com", "test.user", "",
+                UserSource.Montagu)
+    }
+
 }

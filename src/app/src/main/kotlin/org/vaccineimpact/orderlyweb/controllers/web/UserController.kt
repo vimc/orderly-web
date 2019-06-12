@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
 
 class UserController(context: ActionContext,
-                     val authRepo : AuthorizationRepository,
+                     val authRepo: AuthorizationRepository,
                      val userRepo: UserRepository) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(), OrderlyUserRepository())
@@ -53,7 +53,8 @@ class UserController(context: ActionContext,
     {
         val report = report()
         val users = authRepo.getReportReaders(report)
-        return users.map{ ReportReaderViewModel.build(it.key, it.value) }.sortedBy { it.displayName}
+        return users.map { ReportReaderViewModel.build(it.key, it.value) }
+                .sortedBy { it.displayName.toLowerCase() }
     }
 
     private fun userEmail(): String = URLDecoder.decode(context.params(":email"), "UTF-8")
