@@ -16,6 +16,9 @@ import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
+import org.vaccineimpact.orderlyweb.tests.insertUserGroup
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupMember
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 
 class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 {
@@ -321,7 +324,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getReportReaders gets all users and scopes which can read report`()
+    fun `getReportReaders gets all readers with identity permissions`()
     {
         JooqContext().use {
             insertReport("report1", "version1")
@@ -337,6 +340,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             giveUserGroupPermission("another.scoped.reader@email.com", "reports.read", Scope.Specific("report", "report2"))
 
             insertUser("non.reader@email.com", "non.reader.name")
+
         }
 
         val sut = OrderlyAuthorizationRepository()
@@ -345,13 +349,79 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         assertThat(result.count()).isEqualTo(2)
 
         assertThat(result.firstKey().username).isEqualTo("global.reader.name")
-        val globalScope = result[result.firstKey()]!!
-        assertThat(globalScope).isInstanceOf(Scope.Global::class.java)
+        val globalUserPermissions = result[result.firstKey()]!!
+        assertThat(globalUserPermissions.count()).isEqualTo(1)
+        assertThat(globalUserPermissions[0].userGroup).isEqualTo("global.reader@email.com")
+        assertThat(globalUserPermissions[0].permission.name).isEqualTo("reports.read")
+        assertThat(globalUserPermissions[0].permission.scope).isInstanceOf(Scope.Global::class.java)
 
         assertThat(result.lastKey().username).isEqualTo("scoped.reader.name")
-        val reportScope = result[result.lastKey()]!!
-        assertThat(reportScope).isInstanceOf(Scope.Specific::class.java)
-        assertThat(reportScope.value).isEqualTo("report:report1")
+        val reportUserPermissions = result[result.lastKey()]!!
+        assertThat(reportUserPermissions.count()).isEqualTo(1)
+        assertThat(reportUserPermissions[0].userGroup).isEqualTo("scope.reader@email.com")
+        assertThat(reportUserPermissions[0].permission.name).isEqualTo("reports.read")
+        assertThat(reportUserPermissions[0].permission.scope).isInstanceOf(Scope.Specific::class.java)
+        assertThat(reportUserPermissions[0].permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `getReportReaders gets all readers with permissions from non-identity groups`()
+    {
+        insertReport("report1", "version1")
+        insertReport("report2", "version2")
+
+        insertUserGroup("global.readers")
+        giveUserGroupPermission("global.readers", "reports.read", Scope.Global())
+
+        insertUserGroup("report1.readers")
+        giveUserGroupPermission("report1.readers", "reports.read", Scope.Specific("report", "report1"))
+
+        insertUserGroup("report2.readers")
+        giveUserGroupPermission("report2.readers", "reports.read", Scope.Specific("report", "report2"))
+
+        insertUser("global@reader.com", "global reader")
+        giveUserGroupMember("global.readers", "global@reader.com")
+
+        insertUser("report1@reader.com", "report1 reader")
+        giveUserGroupMember("report1.readers", "report1.reader.com")
+
+        insertUser("report2@reader.com", "report2 reader")
+        giveUserGroupMember("report2.readers", "report2.reader.com")
+
+        insertUser("all.groups@reader.com", "all groups reader")
+        giveUserGroupMember("global.readers", "all.groups@reader.com")
+        giveUserGroupMember("report1.readers", "all.groups@reader.com")
+        giveUserGroupMember("report2.readers", "all.groups@reader.com")
+        //also give permission at user level
+        giveUserGroupPermission("all.groups@reader.com", "reports.read", Scope.Global())
+
+        val sut = OrderlyAuthorizationRepository()
+        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+
+        assertThat(result.count()).isEqualTo(3)
+
+        assertThat(result.firstKey().username).isEqualTo("all groups reader")
+        var permissions = result[result.firstKey()]!!
+        assertThat(permissions.count()).isEqualTo(3)
+        assertThat(permissions.any{ it.userGroup == "global.readers" && it.permission.scope is Scope.Global })
+        assertThat(permissions.any{ it.userGroup == "report1.readers" && it.permission.scope is Scope.Specific
+                                        && it.permission.scope.value == "report:report1"})
+        assertThat(permissions.any{ it.userGroup == "all.groups@reader.com" && it.permission.scope is Scope.Global })
+
+        result.remove(result.firstKey())
+        assertThat(result.firstKey().username).isEqualTo("global reader")
+        permissions = result[result.firstKey()]!!
+        assertThat(permissions.count()).isEqualTo(1)
+        assertThat(permissions[0].userGroup).isEqualTo("global.readers")
+        assertThat(permissions[0].permission).isInstanceOf(Scope.Global::class.java)
+
+        result.remove(result.firstKey())
+        assertThat(result.firstKey().username).isEqualTo("report1 reader")
+        permissions = result[result.firstKey()]!!
+        assertThat(permissions.count()).isEqualTo(1)
+        assertThat(permissions[0].userGroup).isEqualTo("report1.readers")
+        assertThat(permissions[0].permission.scope).isInstanceOf(Scope.Specific::class.java)
+        assertThat(permissions[0].permission.scope.value).isEqualTo("report:report1")
     }
 
 }

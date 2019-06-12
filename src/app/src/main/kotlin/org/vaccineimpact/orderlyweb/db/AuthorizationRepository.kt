@@ -195,6 +195,8 @@ class OrderlyAuthorizationRepository : AuthorizationRepository
                     ORDERLYWEB_USER.EMAIL,
                     ORDERLYWEB_USER.USER_SOURCE,
                     ORDERLYWEB_USER.LAST_LOGGED_IN,
+                    ORDERLYWEB_USER_GROUP.ID,
+                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
 

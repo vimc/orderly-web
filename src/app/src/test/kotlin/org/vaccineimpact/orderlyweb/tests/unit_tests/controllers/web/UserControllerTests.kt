@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.lang.IllegalArgumentException
 import java.time.Instant
@@ -34,17 +35,29 @@ class UserControllerTests : TeamcityTests()
             on { this.params(":report") } doReturn "r1"
         }
 
+        val specificPerm = ReifiedPermission("reports.read", Scope.Specific("report", "r1"))
+        val globalPerm = ReifiedPermission("reports.read", Scope.Global())
+
         val reportReaders = mapOf(
                 User("scoped.reader",
                         "Scoped Reader",
                         "scoped.reader@email.com",
                         "test",
-                        Instant.now()) to Scope.Specific("report", "r1"),
+                        Instant.now()) to
+                        listOf(UserGroupPermission("scoped.reader@email.com", specificPerm)),
                 User("global.reader",
                         "Global Reader",
                         "global.reader@email.com",
                         "test",
-                        Instant.now()) to Scope.Global()
+                        Instant.now()) to
+                        listOf(UserGroupPermission("global.reader@email.com", globalPerm)),
+                User("group.reader",
+                        "Group Reader",
+                        "group.reader@email.com",
+                        "test",
+                        Instant.now()) to
+                        listOf(UserGroupPermission("group.reader@email.com", specificPerm),
+                               UserGroupPermission("user.group", specificPerm))
 
         )
 
@@ -56,15 +69,19 @@ class UserControllerTests : TeamcityTests()
         val sut = UserController(actionContext, authRepo, userRepo)
         val result = sut.getReportReaders()
 
-        assertThat(result.count()).isEqualTo(2)
+        assertThat(result.count()).isEqualTo(3)
 
         assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by username
         assertThat(result[0].displayName).isEqualTo("Global Reader")
         assertThat(result[0].canRemove).isFalse()
 
-        assertThat(result[1].username).isEqualTo("scoped.reader")
-        assertThat(result[1].displayName).isEqualTo("Scoped Reader")
-        assertThat(result[1].canRemove).isTrue()
+        assertThat(result[1].username).isEqualTo("group.reader")
+        assertThat(result[1].displayName).isEqualTo("Group Reader")
+        assertThat(result[1].canRemove).isFalse()
+
+        assertThat(result[2].username).isEqualTo("scoped.reader")
+        assertThat(result[2].displayName).isEqualTo("Scoped Reader")
+        assertThat(result[2].canRemove).isTrue()
     }
 
     @Test
@@ -74,27 +91,33 @@ class UserControllerTests : TeamcityTests()
             on { this.params(":report") } doReturn "r1"
         }
 
+        val globalPerm = ReifiedPermission("reports.read", Scope.Global())
+
         val reportReaders = mapOf(
                 User("r1username",
                         "",
                         "r1@email.com",
                         "test",
-                        Instant.now()) to Scope.Global(),
+                        Instant.now()) to
+                        listOf(UserGroupPermission("r1@email.com", globalPerm)),
                 User("r2username",
                         "unknown",
                         "r2@email.com",
                         "test",
-                        Instant.now()) to Scope.Global(),
+                        Instant.now()) to
+                        listOf(UserGroupPermission("r2@email.com", globalPerm)),
                 User("",
                         "",
                         "r3@email.com",
                         "test",
-                        Instant.now()) to Scope.Global(),
+                        Instant.now()) to
+                        listOf(UserGroupPermission("r3@email.com", globalPerm)),
                 User("unknown",
                         "unknown",
                         "r4@email.com",
                         "test",
-                        Instant.now()) to Scope.Global()
+                        Instant.now()) to
+                        listOf(UserGroupPermission("r4@email.com", globalPerm))
 
         )
 
