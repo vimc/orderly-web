@@ -323,7 +323,7 @@ class ReportPageTests : SeleniumTest()
         val addReaderButton = driver.findElement(By.cssSelector("#reportReadersListVueApp button"))
         addReaderButton.click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.perms@example.com']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.individual.perms@example.com']")))
 
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
         assertThat(listItems.count()).isEqualTo(2)
