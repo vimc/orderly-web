@@ -7,13 +7,16 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
 import spark.Response
 
-open class DirectActionContext(private val context: SparkWebContext) : ActionContext
+open class DirectActionContext(private val context: SparkWebContext,
+                               private val appConfig: Config = AppConfig(),
+                               private val profileManager: ProfileManager<CommonProfile>? = null ) : ActionContext
 {
     private val request
         get() = context.sparkRequest
@@ -39,7 +42,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
     }
 
     override val userProfile: CommonProfile? by lazy {
-        val manager = ProfileManager<CommonProfile>(context)
+        val manager = profileManager ?: ProfileManager<CommonProfile>(context)
         manager.getAll(true).singleOrNull()
     }
 
@@ -49,7 +52,7 @@ open class DirectActionContext(private val context: SparkWebContext) : ActionCon
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean
     {
-        return if (AppConfig().authorizationEnabled)
+        return if (appConfig.authorizationEnabled)
         {
             permissions.any { requirement.satisfiedBy(it) }
         }
