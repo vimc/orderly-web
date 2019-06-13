@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.models.permissions
+package org.vaccineimpact.orderlyweb.errors
 
 class ReifiedPermissionParseException(raw: String)
     : Exception("Unable to parse '$raw' as a ReifiedPermission. " +

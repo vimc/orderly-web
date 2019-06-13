@@ -26,4 +26,13 @@ class ExceptionTests: TeamcityTests()
                         "It should have the form 'scope/name' where scope is either the global scope '*' " +
                         "or a specific scope identifier in the form 'prefix:<urlKey>'")
     }
+
+    @Test
+    fun `can create ReifiedPermissionParseException`()
+    {
+        val sut = ReifiedPermissionParseException("invalid")
+        Assertions.assertThat(sut.message).isEqualTo("Unable to parse 'invalid' as a ReifiedPermission. " +
+                "It should have the form 'scope/name' where scope is either the global scope '*' " +
+                "or a specific scope identifier in the form 'prefix:id'")
+    }
 }

@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermissionParseException
+import org.vaccineimpact.orderlyweb.errors.ReifiedPermissionParseException
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class ReifiedPermissionTests: TeamcityTests()
