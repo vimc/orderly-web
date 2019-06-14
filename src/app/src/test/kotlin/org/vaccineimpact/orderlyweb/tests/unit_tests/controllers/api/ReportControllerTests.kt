@@ -17,6 +17,8 @@ import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.ReportVersion
+import java.time.Instant
 
 class ReportControllerTests : ControllerTest()
 {
@@ -121,6 +123,56 @@ class ReportControllerTests : ControllerTest()
                 mockConfig)
 
         assertThatThrownBy { sut.getAllReports() }
+                .isInstanceOf(MissingRequiredPermissionError::class.java)
+                .hasMessageContaining("*/reports.read")
+    }
+
+    @Test
+    fun `getAllVersions returns all report versions if user has global read permissions`()
+    {
+        val now = Instant.now()
+        val reportVersions = listOf(
+                ReportVersion("r1", "display1", "v1", "v1", true, now,
+                        "auth", "req"),
+                ReportVersion("r2", "display2", "v2", "v2", true, now,
+                        "auth", "req")
+        )
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getAllReportVersions() } doReturn reportVersions
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { it.permissions } doReturn permissionSetGlobal
+        }
+
+        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        val result = sut.getAllVersions()
+        assertThat(result).hasSameElementsAs(reportVersions)
+    }
+
+    @Test
+    fun `getAllVersions throws MissingRequiredPermission error if user has no report reading permissions`()
+    {
+        val reports = listOf(Report(reportName, "test full name 1", "v1"),
+                Report("testname2", "test full name 2", "v1"))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getAllReports() } doReturn reports
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { it.permissions } doReturn PermissionSet()
+        }
+
+        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        assertThatThrownBy { sut.getAllVersions() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
                 .hasMessageContaining("*/reports.read")
     }
