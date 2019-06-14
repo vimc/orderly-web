@@ -31,6 +31,6 @@
                  var canReview = true;
            </#if>
         </script>
-    <script type="text/javascript" src="js/index.bundle.js"></script>
+    <script type="text/javascript" src="${appUrl}/js/index.bundle.js"></script>
     </#macro>
 </@layout>

@@ -63,6 +63,6 @@
         <script type="text/javascript">
             var report = ${reportJson};
         </script>
-        <script type="text/javascript" src="/js/report.bundle.js"></script>
+        <script type="text/javascript" src="${appUrl}/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>
