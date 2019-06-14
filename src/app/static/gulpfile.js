@@ -7,7 +7,8 @@ const gulp = require('gulp'),
     webpack = require('webpack-stream'),
     through = require('through'),
     path = require('path'),
-    webpackConfig = require('./webpack.config');
+    webpackConfig = require('./webpack.config'),
+    externals = require("./externals.config");
 
 sass.compiler = require('node-sass');
 
@@ -22,7 +23,7 @@ gulp.task('sass', function () {
         .pipe(gulp.dest('public/css'));
 });
 
-gulp.task('js', () => {
+gulp.task('webpack', () => {
     return gulp.src('src/js/*.js')
         .pipe(through(function (file) {
             file.named = path.basename(file.path, path.extname(file.path));
@@ -32,4 +33,10 @@ gulp.task('js', () => {
         .pipe(gulp.dest('public/js'));
 });
 
-gulp.task('build', gulp.parallel('sass', 'js'));
+
+gulp.task('js', function () {
+    return gulp.src(externals)
+        .pipe(gulp.dest('public/js/lib'));
+});
+
+gulp.task('build', gulp.parallel('sass', 'js', 'webpack'));

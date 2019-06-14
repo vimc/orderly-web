@@ -1,7 +1,32 @@
 const path = require('path');
-const config = require('./webpack.common.config');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
-module.exports = Object.assign({
+module.exports = {
+    module: {
+        rules: [
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            },
+            {
+                test: /\.js$/,
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-env']
+                }
+            },
+            {
+                parser: {amd: false}
+            }
+        ]
+    },
+    externals: {
+        jquery: 'jQuery'
+    },
+    plugins: [
+        // make sure to include the plugin!
+        new VueLoaderPlugin()
+    ],
     output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
     resolve: {
         alias: {
@@ -10,4 +35,4 @@ module.exports = Object.assign({
         }
     },
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development'
-}, config);
+};

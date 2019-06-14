@@ -1,10 +1,10 @@
 import {options} from "./utils/reportsTable";
+import $ from 'jquery';
 
-const $ = window.$ = window.jQuery = require("jquery");
-require('datatables.net');
-require('datatables.net-dt');
-require('datatables.net-bs4');
-require("treetables");
+require("datatables.net")(window, $);
+require("datatables.net-dt")(window, $);
+require('datatables.net-bs4')(window, $);
+require("treetables")(window, $);
 
 $(document).ready(function () {
     const isReviewer = typeof canReview !== "undefined";
@@ -14,12 +14,12 @@ $(document).ready(function () {
     $('#expand').on("click", () => {
         $table.data("treeTable")
             .expandAllRows()
-            .redraw()    ;
+            .redraw();
     });
 
     $('#collapse').on("click", () => {
         $table.data("treeTable")
             .collapseAllRows()
-            .redraw()    ;
+            .redraw();
     })
 });
