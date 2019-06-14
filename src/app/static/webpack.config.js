@@ -14,6 +14,9 @@ module.exports = {
                 options: {
                     presets: ['@babel/preset-env']
                 }
+            },
+            {
+                parser: {amd: false}
             }
         ]
     },

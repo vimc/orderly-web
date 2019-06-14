@@ -32,10 +32,6 @@
                  var canReview = true;
            </#if>
         </script>
-    <script type="text/javascript" src="/js/lib/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="/js/lib/dataTables.dataTables.min.js"></script>
-    <script type="text/javascript" src="/js/lib/dataTables.bootstrap4.min.js"></script>
-    <script type="text/javascript" src="/js/lib/treeTable.min.js"></script>
     <script type="text/javascript" src="/js/index.bundle.js"></script>
     </#macro>
 </@layout>
