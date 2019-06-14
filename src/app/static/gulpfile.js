@@ -7,8 +7,6 @@ const gulp = require('gulp'),
     webpack = require('webpack-stream'),
     through = require('through'),
     path = require('path'),
-    uglify = require('gulp-uglify'),
-    babel = require('gulp-babel'),
     webpackConfig = require('./webpack.config'),
     externals = require("./externals.config");
 
@@ -38,13 +36,6 @@ gulp.task('webpack', () => {
 
 gulp.task('js', function () {
     return gulp.src(externals)
-        .pipe(babel({
-            presets: ['@babel/preset-env']
-        }))
-        .pipe(uglify())
-        .pipe(rename({
-            extname: ".min.js"
-        }))
         .pipe(gulp.dest('public/js/lib'));
 });
 
