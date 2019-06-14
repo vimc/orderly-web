@@ -108,7 +108,7 @@ class VersionPageTests : TeamcityTests()
 
         Assertions.assertThat(breadcrumbs.count()).isEqualTo(1)
         Assertions.assertThat(breadcrumbs.first().child(0).text()).isEqualTo("name")
-        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("url")
+        Assertions.assertThat(breadcrumbs.first().child(0).attr("href")).isEqualTo("http://localhost:8888/url")
     }
 
     @Test

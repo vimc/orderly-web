@@ -28,7 +28,7 @@ class IndexTests : TeamcityTests()
         val breadcrumbs = doc.select(".crumb-item")
         assertThat(breadcrumbs.count()).isEqualTo(1)
         assertThat(breadcrumbs.first().selectFirst("a").text()).isEqualTo("Main menu")
-        assertThat(breadcrumbs.first().selectFirst("a").attr("href")).isEqualTo("/")
+        assertThat(breadcrumbs.first().selectFirst("a").attr("href")).isEqualTo("http://localhost:8888//")
 
         assertThat(doc.select("h1.reports-list").text()).isEqualTo("Find a report")
         assertThat(doc.select("table#reports-table").count()).isEqualTo(1)
