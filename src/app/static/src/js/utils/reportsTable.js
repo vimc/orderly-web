@@ -18,7 +18,7 @@ function buildIdCell(data, type, full) {
     if (full["tt_parent"] === 0) {
         return '';
     }
-    return `<a href="reports/${full["name"]}/${data}/">
+    return `<a href="report/${full["name"]}/${data}/">
                 <div>
                 <span>${full["date"]}</span>
                 ${buildVersionBadge(data, full)}
@@ -35,7 +35,7 @@ function buildNameCell(data, type, full) {
     return `<div>
                 <span>${full["display_name"]}</span><br/>
                 <span class="text-muted">${full["num_versions"]} ${versionText}: </span>                
-                <a href="reports/${full['name']}/${full["latest_version"]}/">view latest</a>
+                <a href="report/${full['name']}/${full["latest_version"]}/">view latest</a>
             </div>`;
 }
 

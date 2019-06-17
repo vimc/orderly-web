@@ -63,21 +63,20 @@ class WebRequestHelper : RequestHelper()
                                  method: HttpMethod = HttpMethod.get): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
-        val fullUrl = if (url.contains("http")){
+        val fullUrl = if (url.contains("http"))
+        {
             url
         }
-       else
+        else
         {
-            baseUrl + url
+            "$baseUrl/$url"
         }
-        val result = when (method)
+        return when (method)
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)
             HttpMethod.post -> khttp.post(fullUrl, headers)
             else -> throw IllegalArgumentException("Method not supported")
         }
-
-        return result
     }
 
 }

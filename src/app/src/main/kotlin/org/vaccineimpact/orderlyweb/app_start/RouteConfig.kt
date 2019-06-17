@@ -32,8 +32,6 @@ object WebRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/", IndexController::class, "index")
                     .secure(setOf("*/reports.read")),
-            WebEndpoint("/reports/", IndexController::class, "index")
-                    .secure(setOf("*/reports.read")),
             WebEndpoint("/weblogin", SecurityController::class, "weblogin"),
             WebEndpoint("/weblogin/external", SecurityController::class, "webloginExternal")
                     .secure(externalAuth = true)

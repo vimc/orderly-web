@@ -149,9 +149,9 @@ class IndexControllerTests : TeamcityTests()
 
         val expected = listOf(
                 PinnedReportViewModel("r1", "v1", "r1", "Fri Jun 07 2019",
-                        DownloadableFileViewModel("r1-v1.zip", "http://localhost:8888/reports/r1/versions/v1/all/")),
+                        DownloadableFileViewModel("r1-v1.zip", "http://localhost:8888/report/r1/version/v1/all/")),
                 PinnedReportViewModel("r2", "v2", "r2 display name", "Sat Jun 08 2019",
-                        DownloadableFileViewModel("r2-v2.zip", "http://localhost:8888/reports/r2/versions/v2/all/"))
+                        DownloadableFileViewModel("r2-v2.zip", "http://localhost:8888/report/r2/version/v2/all/"))
         )
 
         assertThat(result.count()).isEqualTo(2)

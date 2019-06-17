@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -77,11 +78,11 @@ class ReportControllerTests : TeamcityTests()
         val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.versions[1].url).isEqualTo("http://localhost:8888/reports/r1/20170103-143015-1234abcd")
+        assertThat(result.versions[1].url).isEqualTo("http://localhost:8888/report/r1/20170103-143015-1234abcd")
         assertThat(result.versions[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
         assertThat(result.versions[1].selected).isTrue()
 
-        assertThat(result.versions[0].url).isEqualTo("http://localhost:8888/reports/r1/20170104-091500-1234dcba")
+        assertThat(result.versions[0].url).isEqualTo("http://localhost:8888/report/r1/20170104-091500-1234dcba")
         assertThat(result.versions[0].date).isEqualTo("Wed Jan 04 2017, 09:15")
         assertThat(result.versions[0].selected).isFalse()
     }
@@ -173,7 +174,7 @@ class ReportControllerTests : TeamcityTests()
         val sut = ReportController(mockActionContext, orderly)
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.focalArtefactUrl).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
+        assertThat(result.focalArtefactUrl).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
     }
 
     @Test
@@ -195,14 +196,14 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.artefacts[0].artefact).isEqualTo(artefacts[0])
         assertThat(result.artefacts[0].files.count()).isEqualTo(1)
         assertThat(result.artefacts[0].files[0].name).isEqualTo("unsuitable.csv")
-        assertThat(result.artefacts[0].files[0].url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/artefacts/unsuitable.csv?inline=false")
+        assertThat(result.artefacts[0].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/unsuitable.csv?inline=false")
 
         assertThat(result.artefacts[1].artefact).isEqualTo(artefacts[1])
         assertThat(result.artefacts[1].files.count()).isEqualTo(2)
         assertThat(result.artefacts[1].files[0].name).isEqualTo("subdir/another.csv")
-        assertThat(result.artefacts[1].files[0].url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/artefacts/subdir%3Aanother.csv?inline=false")
+        assertThat(result.artefacts[1].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Aanother.csv?inline=false")
         assertThat(result.artefacts[1].files[1].name).isEqualTo("suitable.png")
-        assertThat(result.artefacts[1].files[1].url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/artefacts/suitable.png?inline=false")
+        assertThat(result.artefacts[1].files[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.png?inline=false")
     }
 
     @Test
@@ -221,7 +222,7 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
-        assertThat(result.artefacts[1].inlineArtefactFigure).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/artefacts/suitable.jpg?inline=true")
+        assertThat(result.artefacts[1].inlineArtefactFigure).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.jpg?inline=true")
     }
 
     @Test
@@ -239,15 +240,15 @@ class ReportControllerTests : TeamcityTests()
 
         assertThat(result.dataLinks[0].key).isEqualTo("data1")
         assertThat(result.dataLinks[0].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[0].csv.url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/data/data1/?type=csv")
+        assertThat(result.dataLinks[0].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=csv")
         assertThat(result.dataLinks[0].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[0].rds.url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/data/data1/?type=rds")
+        assertThat(result.dataLinks[0].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=rds")
 
         assertThat(result.dataLinks[1].key).isEqualTo("data2")
         assertThat(result.dataLinks[1].csv.name).isEqualTo("csv")
-        assertThat(result.dataLinks[1].csv.url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/data/data2/?type=csv")
+        assertThat(result.dataLinks[1].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=csv")
         assertThat(result.dataLinks[1].rds.name).isEqualTo("rds")
-        assertThat(result.dataLinks[1].rds.url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/data/data2/?type=rds")
+        assertThat(result.dataLinks[1].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=rds")
     }
 
     @Test
@@ -263,9 +264,9 @@ class ReportControllerTests : TeamcityTests()
 
         assertThat(result.resources.count()).isEqualTo(2)
         assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
-        assertThat(result.resources[0].url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/resources/resource1.Rmd")
+        assertThat(result.resources[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/resource1.Rmd")
         assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
-        assertThat(result.resources[1].url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/resources/subdir%3Aresource2.Rmd")
+        assertThat(result.resources[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/subdir%3Aresource2.Rmd")
     }
 
     @Test
@@ -275,7 +276,7 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.zipFile.name).isEqualTo("r1-$versionId.zip")
-        assertThat(result.zipFile.url).isEqualTo("http://localhost:8888/reports/r1/versions/$versionId/all/")
+        assertThat(result.zipFile.url).isEqualTo("http://localhost:8888/reports/r1/version/$versionId/all/")
     }
 
     @Test
@@ -365,10 +366,10 @@ class ReportControllerTests : TeamcityTests()
         assertThat(breadcrumbs.count()).isEqualTo(2)
 
         assertThat(breadcrumbs.first().name).isEqualTo("Main menu")
-        assertThat(breadcrumbs.first().url).isEqualTo("/")
+        assertThat(breadcrumbs.first().url).isEqualTo(AppConfig()["app.url"])
 
         assertThat(breadcrumbs[1].name).isEqualTo("r1 ($versionId)")
-        assertThat(breadcrumbs[1].url).isEqualTo("/reports/r1/$versionId/")
+        assertThat(breadcrumbs[1].url).isEqualTo("${AppConfig()["app.url"]}/report/r1/$versionId/")
     }
 
     @Test

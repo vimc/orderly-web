@@ -90,7 +90,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val displayName = report.displayName ?: report.name
 
-            val breadcrumb = Breadcrumb("${report.name} (${report.id})", "/reports/${report.name}/${report.id}/")
+            val breadcrumb = Breadcrumb("${report.name} (${report.id})", "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/")
 
             val changelogViewModel = changelog.groupBy { it.reportVersion }.map {
                 ChangelogViewModel.build(it.key, it.value)
@@ -173,7 +173,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
-            return VersionPickerViewModel("${AppConfig()["app.url"]}/reports/$reportName/$id", date,
+            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", date,
                     selected = id == currentVersion)
         }
 

@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="pinnedReports" type="List<PinnedReportViewModel>" -->
+<#-- @ftlvariable name="pinnedReports" type="kotlin.collections.List<PinnedReportViewModel>" -->
 <#import "../macros/download-icon.ftl" as download_icon>
 <#if pinnedReports?has_content>
     <h1 class="h3 mb-3 pinned-reports">Pinned Reports</h1>
@@ -7,7 +7,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <a href="${appUrl}/reports/${pinnedReport.name}/${pinnedReport.version}/">${pinnedReport.displayName}</a>
+                        <a href="report/${pinnedReport.name}/${pinnedReport.version}/">${pinnedReport.displayName}</a>
                         <div class="text-muted small">Updated: ${pinnedReport.date}</div>
                     </div>
                     <div class="card-body">

@@ -32,7 +32,7 @@ class ErrorPageTests : IntegrationTest()
 
         assertThat(doc.select("li")[1].text()).isEqualTo("Return to the main menu")
         assertThat(doc.selectFirst("li a").text()).isEqualTo("the main menu")
-        assertThat(doc.selectFirst("li a").attr("href")).isEqualTo("/reports")
+        assertThat(doc.selectFirst("li a").attr("href")).isEqualTo(AppConfig()["app.url"])
 
         assertThat(doc.select("li")[2].text()).isEqualTo("If you are sure this page should exist, please let us know")
         assertThat(doc.select("li a")[1].text()).isEqualTo("let us know")
@@ -69,7 +69,7 @@ class ErrorPageTests : IntegrationTest()
             Pair(report[REPORT_VERSION.REPORT], report[REPORT_VERSION.ID])
         }
 
-        val result = webRequestHelper.loginWithMontaguAndMakeRequest("/reports/$report/$version/",
+        val result = webRequestHelper.loginWithMontaguAndMakeRequest("/report/$report/$version/",
                 readReports)
 
         assertThat(result.statusCode).isEqualTo(500)
