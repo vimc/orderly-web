@@ -1,12 +1,16 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
+import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.encodeFilename
 
-class ReportFileViewModelBuilder(private val reportName: String, private val reportVersion: String)
+class ReportFileViewModelBuilder(private val reportName: String,
+                                 private val reportVersion: String,
+                                 appConfig: Config = AppConfig())
 {
     private var inline: Boolean = false
 
-    val baseUrl = "/reports/${reportName}/versions/${reportVersion}/"
+    val baseUrl = "${appConfig["app.url"]}/reports/${reportName}/versions/${reportVersion}/"
 
     fun buildArtefactFileViewModel(fileName: String): DownloadableFileViewModel
     {

@@ -3,6 +3,8 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -171,7 +173,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
-            return VersionPickerViewModel("/reports/$reportName/$id", date,
+            return VersionPickerViewModel("${AppConfig()["app.url"]}/reports/$reportName/$id", date,
                     selected = id == currentVersion)
         }
 
