@@ -31,6 +31,15 @@ class SecurityControllerTests : ControllerTest()
     }
 
     @Test
+    fun `returns expected model on web login when no requested url`()
+    {
+        val sut = SecurityController(mock())
+
+        val result = sut.weblogin()
+        Assertions.assertThat(result.requestedUrl).isEqualTo("")
+    }
+
+    @Test
     fun `redirects to requested url on web login external`()
     {
         val mockResponse = mock<Response>{}

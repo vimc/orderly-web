@@ -20,13 +20,13 @@ class ArtefactControllerTests : ControllerTest()
         on { this.get("orderly.root") } doReturn "root/"
     }
 
+    private val name = "testname"
+    private val version = "testversion"
+
     @Test
     fun `gets artefacts for report`()
     {
-        val name = "testname"
-        val version = "testversion"
-
-        val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
+       val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
 
         val orderly = mock<OrderlyClient> {
             on { this.getArtefactHashes(name, version) } doReturn artefacts
@@ -45,8 +45,6 @@ class ArtefactControllerTests : ControllerTest()
     @Test
     fun `downloads artefact for report`()
     {
-        val name = "testname"
-        val version = "testversion"
         val artefact = "testartefact"
 
         val orderly = mock<OrderlyClient> {
@@ -75,8 +73,6 @@ class ArtefactControllerTests : ControllerTest()
     @Test
     fun `throws unknown object error if artefact does not exist for report`()
     {
-        val name = "testname"
-        val version = "testversion"
         val artefact = "test.png"
 
         val orderly = mock<OrderlyClient> {
@@ -93,6 +89,74 @@ class ArtefactControllerTests : ControllerTest()
 
         assertThatThrownBy { sut.getFile() }
                 .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `sets correct content type for csv file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".csv", "text/csv")
+    }
+
+    @Test
+    fun `sets correct content type for png file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".png", "image/png")
+    }
+
+    @Test
+    fun `sets correct content type for svg file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".svg", "image/svg+xml")
+    }
+
+    @Test
+    fun `sets correct content type for pdf file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".pdf", "application/pdf")
+    }
+
+    @Test
+    fun `sets correct content type for html file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".html", "text/html")
+    }
+
+    @Test
+    fun `sets correct content type for css file`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".css", "text/css")
+    }
+
+    @Test
+    fun `sets correct content type for unknown file type`()
+    {
+        assertCorrectContentTypeSetForFileExtension(".xxx", "application/octet-stream")
+    }
+
+    private fun assertCorrectContentTypeSetForFileExtension(extension: String, expectedContentType: String)
+    {
+        val artefact = "testartefact$extension"
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getArtefactHash(name, version, artefact) } doReturn ""
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
+            on { this.getSparkResponse() } doReturn mockSparkResponse
+        }
+
+        val fileSystem = mock<FileSystem>() {
+            on { this.fileExists("root/archive/$name/$version/$artefact") } doReturn true
+        }
+
+        val sut = ArtefactController(actionContext, orderly, fileSystem, mockConfig)
+
+        sut.getFile()
+
+        verify(actionContext).addDefaultResponseHeaders(expectedContentType)
     }
 
 }
