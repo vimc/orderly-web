@@ -160,17 +160,13 @@ class ReportControllerTests : ControllerTest()
         val reports = listOf(Report(reportName, "test full name 1", "v1"),
                 Report("testname2", "test full name 2", "v1"))
 
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reports
-        }
 
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn PermissionSet()
         }
 
-        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
+        val sut = ReportController(mockContext, mock(), mock(),
+                mock(), mockConfig)
 
         assertThatThrownBy { sut.getAllVersions() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
