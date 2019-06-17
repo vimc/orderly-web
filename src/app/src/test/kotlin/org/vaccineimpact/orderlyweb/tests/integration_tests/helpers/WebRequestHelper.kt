@@ -63,7 +63,13 @@ class WebRequestHelper : RequestHelper()
                                  method: HttpMethod = HttpMethod.get): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
-        val fullUrl = baseUrl + url
+        val fullUrl = if (url.contains("http")){
+            url
+        }
+       else
+        {
+            baseUrl + url
+        }
         val result = when (method)
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)

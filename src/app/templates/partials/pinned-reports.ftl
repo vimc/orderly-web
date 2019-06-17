@@ -7,7 +7,7 @@
             <div class="col-12 col-sm-6 col-lg-4">
                 <div class="card">
                     <div class="card-header">
-                        <a href="/reports/${pinnedReport.name}/${pinnedReport.version}/">${pinnedReport.displayName}</a>
+                        <a href="${appUrl}/reports/${pinnedReport.name}/${pinnedReport.version}/">${pinnedReport.displayName}</a>
                         <div class="text-muted small">Updated: ${pinnedReport.date}</div>
                     </div>
                     <div class="card-body">
