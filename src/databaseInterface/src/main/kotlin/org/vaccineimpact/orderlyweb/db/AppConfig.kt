@@ -6,6 +6,8 @@ import java.util.*
 interface Config
 {
     operator fun get(key: String): String
+
+    val authorizationEnabled: Boolean
 }
 
 class AppConfig : Config
@@ -40,7 +42,7 @@ class AppConfig : Config
         }
     }
 
-    val authorizationEnabled by lazy {
+    override val authorizationEnabled by lazy {
         getBool("auth.fine_grained")
     }
     

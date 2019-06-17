@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.models.permissions
 
+import org.vaccineimpact.orderlyweb.errors.ReifiedPermissionParseException
 import org.vaccineimpact.orderlyweb.models.Scope
 
 // A permission is just a name, like 'coverage.read'
