@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
-import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.okhttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 
@@ -14,14 +14,14 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `khttpMontaguAPIClient can talk to API`()
     {
         val token = login()["access_token"].toString()
-        val sut = khttpMontaguAPIClient()
+        val sut = okhttpMontaguAPIClient()
         sut.getUserDetails(token)
     }
 
     @Test
     fun `khttpMontaguAPIClient throws error if request fails`()
     {
-        val sut = khttpMontaguAPIClient()
+        val sut = okhttpMontaguAPIClient()
 
         assertThatThrownBy {
             sut.getUserDetails("bad-token")
@@ -33,7 +33,7 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `khttpMontaguAPIClient can get user details`()
     {
         val token = login()["access_token"].toString()
-        val sut = khttpMontaguAPIClient()
+        val sut = okhttpMontaguAPIClient()
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
         Assertions.assertThat(result.email).isEqualTo("test.user@example.com")

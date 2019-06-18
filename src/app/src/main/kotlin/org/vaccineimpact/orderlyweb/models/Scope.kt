@@ -65,7 +65,7 @@ sealed class Scope  (val value: String)
             else
             {
 
-                return Scope.Specific(associatePermission.scopePrefix!!, associatePermission.scopeId!!)
+                return Scope.Specific(associatePermission.scopePrefix, associatePermission.scopeId!!)
             }
         }
 
