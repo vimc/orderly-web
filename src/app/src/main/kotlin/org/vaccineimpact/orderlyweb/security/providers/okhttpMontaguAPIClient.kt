@@ -11,14 +11,13 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import java.io.IOException
-import javax.net.ssl.TrustManager
 import java.io.BufferedInputStream
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManagerFactory
-import javax.net.ssl.X509TrustManager
 import java.io.FileInputStream
+import org.pac4j.oauth.client.OkClient
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
 
 
 interface MontaguAPIClient
@@ -95,29 +94,33 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
         else
         {
             logger.info("Getting $url in dev mode")
-            //If in dev mode we need to allow the use of our self-signed certificate
 
-            //Stolen from https://jebware.com/blog/?p=340
-            val trustManagers: Array<TrustManager>
+            //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
+            // Create a trust manager that does not validate certificate chains
+            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+                override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+                }
 
-            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType())
-            keyStore.load(null, null)
-            val certInputStream = FileInputStream("/etc/orderly/web/certificate.pem")
-            val bis = BufferedInputStream(certInputStream)
-            val certificateFactory = CertificateFactory.getInstance("X.509")
-            while (bis.available() > 0)
-            {
-                val cert = certificateFactory.generateCertificate(bis)
-                keyStore.setCertificateEntry("localhost", cert)
+                override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+                }
+
+                override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
+            })
+
+            val allHostnameVerifier = object : HostnameVerifier{
+                override fun verify(var1: String, var2: SSLSession): Boolean
+                { return true }
             }
-            val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-            trustManagerFactory.init(keyStore)
-            trustManagers = trustManagerFactory.getTrustManagers()
-            val sslContext = SSLContext.getInstance("TLS")
-            sslContext.init(null, trustManagers, null)
+
+            // Install the all-trusting trust manager
+            val sslContext = SSLContext.getInstance("SSL")
+            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            // Create an ssl socket factory with our all-trusting manager
+            val sslSocketFactory = sslContext.socketFactory
 
             client = OkHttpClient.Builder()
-                    .sslSocketFactory(sslContext.getSocketFactory(), trustManagers[0] as X509TrustManager)
+                    .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+                    .hostnameVerifier(allHostnameVerifier)
                     .build()
         }
 
