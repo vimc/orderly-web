@@ -6,6 +6,7 @@ import okhttp3.Headers
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -43,6 +44,8 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
     private val urlBase = appConfig["montagu.api_url"]
     private val devMode = appConfig["proxy.dev.mode"]
     private val serializer = Serializer.instance.gson
+
+    private val logger = LoggerFactory.getLogger(okhttpMontaguAPIClient::class.java)
 
     override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
     {
@@ -86,10 +89,12 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
         val client: OkHttpClient;
         if (devMode != "true")
         {
+            logger.info("Getting $url in prod mode")
             client = OkHttpClient()
         }
         else
         {
+            logger.info("Getting $url in dev mode")
             //If in dev mode we need to allow the use of our self-signed certificate
 
             //Stolen from https://jebware.com/blog/?p=340
