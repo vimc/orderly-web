@@ -108,7 +108,7 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
             while (bis.available() > 0)
             {
                 val cert = certificateFactory.generateCertificate(bis)
-                keyStore.setCertificateEntry("www.example.com", cert)
+                keyStore.setCertificateEntry("localhost", cert)
             }
             val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
             trustManagerFactory.init(keyStore)
