@@ -1,8 +1,6 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
-import java.net.URLEncoder
 import org.pac4j.core.client.IndirectClient
-
 import org.pac4j.core.context.Cookie
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
@@ -16,21 +14,26 @@ import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
+import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
+import java.net.URLEncoder
 
 class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
 {
 
-    init {
+    init
+    {
         setCallbackUrl("/login")
     }
 
     override fun clientInit()
     {
-        defaultCredentialsExtractor(CookieExtractor(cookie))
-        defaultRedirectActionBuilder(MontaguIndirectClientRedirectActionBuilder())
+        val montaguAPIClient = khttpMontaguAPIClient()
+        val cookieExtractor = CookieExtractor(cookie)
+        defaultCredentialsExtractor(cookieExtractor)
+        defaultRedirectActionBuilder(MontaguIndirectClientRedirectActionBuilder(montaguAPIClient, cookieExtractor))
 
-        defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), khttpMontaguAPIClient()))
+        defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), montaguAPIClient))
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
 
         defaultLogoutActionBuilder(MontaguLogoutActionBuilder())
@@ -48,11 +51,31 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
 
 }
 
-class MontaguIndirectClientRedirectActionBuilder: RedirectActionBuilder {
-    override fun redirect(context: WebContext?): RedirectAction {
-        val loginUrl = URLEncoder.encode(AppConfig()["app.url"] + "/login", "utf-8")
-        val montaguUrl = AppConfig()["montagu.url"]
-        val redirectUrl = "$montaguUrl?redirectTo=$loginUrl";
+class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: MontaguAPIClient,
+                                                 private val cookieExtractor: CookieExtractor,
+                                                 private val appConfig: AppConfig = AppConfig()) : RedirectActionBuilder
+{
+    override fun redirect(context: WebContext): RedirectAction
+    {
+        val loginCallbackUrl = appConfig["app.url"] + "/login"
+
+        val redirectUrl = try
+        {
+            val token = cookieExtractor
+                    .extract(context)
+                    .token
+
+            montaguAPIClient.getUserDetails(token)
+
+            // already logged in to Montagu, so send user straight to the login callback
+            loginCallbackUrl
+        }
+        catch (e: Exception)
+        {
+            // not already logged in to Montagu so redirect to Montagu
+            "${appConfig["montagu.url"]}?redirectTo=${URLEncoder.encode(loginCallbackUrl, "utf-8")}"
+        }
+
         return RedirectAction.redirect(redirectUrl)
     }
 }
@@ -62,7 +85,7 @@ class MontaguLogoutActionBuilder : LogoutActionBuilder<CommonProfile>
     override fun getLogoutAction(context: WebContext, currentProfile: CommonProfile, targetUrl: String?): RedirectAction
     {
         //logout of Montagu by resetting token cookies
-        listOf("montagu_jwt_token", "jwt_token").forEach{
+        listOf("montagu_jwt_token", "jwt_token").forEach {
             val cookie = Cookie(it, "")
             cookie.domain = context.serverName
             context.addResponseCookie(cookie)
