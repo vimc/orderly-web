@@ -101,6 +101,7 @@ abstract class IntegrationTest : TeamcityTests()
                                  method: HttpMethod = HttpMethod.get)
     {
         val checker = WebPermissionChecker(url, requiredPermissions, contentType, method)
+        checker.checkPermissionsAreSufficient()
         for (permission in requiredPermissions)
         {
             checker.checkPermissionIsRequired(permission)

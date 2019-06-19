@@ -21,12 +21,6 @@ class IndexPageTests : IntegrationTest()
     }
 
     @Test
-    fun `can get index page with reports route prefix`()
-    {
-        assertWebUrlSecured("/reports/", readReports)
-    }
-
-    @Test
     fun `pinned report zip file can be downloaded`()
     {
         insertGlobalPinnedReport("other", 0)

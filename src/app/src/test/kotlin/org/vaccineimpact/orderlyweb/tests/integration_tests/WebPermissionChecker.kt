@@ -17,7 +17,10 @@ class WebPermissionChecker(private val url: String,
 
     private val testUserEmail = "test.user@example.com"
     private val webRequestHelper = WebRequestHelper()
-    private val authRepo = OrderlyAuthorizationRepository()
+
+    fun checkPermissionsAreSufficient() {
+        checkThesePermissionsAreSufficient(allRequiredPermissions, "Could not access $url with the given permissions")
+    }
 
     fun checkPermissionIsRequired(
             permission: ReifiedPermission
