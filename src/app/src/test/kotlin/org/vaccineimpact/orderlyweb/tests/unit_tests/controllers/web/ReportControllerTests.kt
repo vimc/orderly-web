@@ -366,10 +366,10 @@ class ReportControllerTests : TeamcityTests()
         assertThat(breadcrumbs.count()).isEqualTo(2)
 
         assertThat(breadcrumbs.first().name).isEqualTo("Main menu")
-        assertThat(breadcrumbs.first().url).isEqualTo(AppConfig()["app.url"])
+        assertThat(breadcrumbs.first().url).isEqualTo("http://localhost:8888")
 
         assertThat(breadcrumbs[1].name).isEqualTo("r1 ($versionId)")
-        assertThat(breadcrumbs[1].url).isEqualTo("${AppConfig()["app.url"]}/report/r1/$versionId/")
+        assertThat(breadcrumbs[1].url).isEqualTo("http://localhost:8888/report/r1/$versionId/")
     }
 
     @Test

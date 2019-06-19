@@ -61,7 +61,7 @@ describe("reportReadersList", () => {
     });
 
     it('fetches readers on mount', (done) => {
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -82,7 +82,7 @@ describe("reportReadersList", () => {
     });
 
     it('shows default error when fetching readers', (done) => {
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(500);
 
         const wrapper = mount(ReportReadersList, {
@@ -106,7 +106,7 @@ describe("reportReadersList", () => {
     });
 
     it('shows error from response if available when fetching readers', (done) => {
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(404, {"errors": [{"message": "test error message"}]});
 
         const wrapper = mount(ReportReadersList, {
@@ -131,10 +131,10 @@ describe("reportReadersList", () => {
 
     it('add reader calls associate permission endpoint and refreshes list of readers', (done) => {
 
-        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(200);
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -169,10 +169,10 @@ describe("reportReadersList", () => {
 
     it('remove reader calls associate permission endpoint and refreshes list of readers', (done) => {
 
-        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(200);
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -207,10 +207,10 @@ describe("reportReadersList", () => {
     });
 
     it('add reader shows default error and does not refresh reader list', (done) => {
-        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500);
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -235,10 +235,10 @@ describe("reportReadersList", () => {
     });
 
     it('remove reader shows default error and does not refresh reader list', (done) => {
-        mockAxios.onPost(`/users/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/user1%40example.com/actions/associate-permission/`)
             .reply(500);
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -264,10 +264,10 @@ describe("reportReadersList", () => {
     });
 
     it('shows error from response if available on add reader', (done) => {
-        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500, {"errors": [{"message": "test add reader error message"}]});
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
@@ -292,10 +292,10 @@ describe("reportReadersList", () => {
     });
 
     it('shows error from response if available on remove reader', (done) => {
-        mockAxios.onPost(`/user-groups/user1%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
             .reply(500, {"errors": [{"message": "test remove reader error message"}]});
 
-        mockAxios.onGet('/users/report-readers/report1/')
+        mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
         const wrapper = mount(ReportReadersList, {
