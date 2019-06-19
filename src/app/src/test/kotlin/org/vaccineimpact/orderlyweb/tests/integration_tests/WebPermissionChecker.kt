@@ -73,7 +73,8 @@ class WebPermissionChecker(private val url: String,
     {
         webRequestHelper.getWebPage("/logout")
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method, postData)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                permissions, contentType, method, postData)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(200)
