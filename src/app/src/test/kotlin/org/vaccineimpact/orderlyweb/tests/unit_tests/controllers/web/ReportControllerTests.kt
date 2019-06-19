@@ -276,7 +276,7 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.zipFile.name).isEqualTo("r1-$versionId.zip")
-        assertThat(result.zipFile.url).isEqualTo("http://localhost:8888/reports/report/r1/version/$versionId/all/")
+        assertThat(result.zipFile.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/all/")
     }
 
     @Test
