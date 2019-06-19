@@ -22,7 +22,7 @@ class WebPermissionChecker(private val url: String,
 
     fun checkPermissionsAreSufficient() {
         checkThesePermissionsAreSufficient(allRequiredPermissions,
-                "Expected status code 200 for $url with the given permissions but got %s")
+                assertionTextFormat = "Expected status code 200 for $url with the given permissions but got %s")
     }
 
     fun checkPermissionIsRequired(
@@ -70,14 +70,15 @@ class WebPermissionChecker(private val url: String,
     }
 
     private fun checkThesePermissionsAreSufficient(permissions: Set<ReifiedPermission>,
-                                                   assertionText: String)
+                                                   assertionText: String? = null,
+                                                   assertionTextFormat: String? = null)
     {
         webRequestHelper.getWebPage("/logout")
 
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 permissions, contentType, method, postData)
         Assertions.assertThat(response.statusCode)
-                .withFailMessage(assertionText.format(response.statusCode))
+                .withFailMessage(assertionTextFormat?.format(response.statusCode)?: assertionText)
                 .isEqualTo(200)
 
     }
