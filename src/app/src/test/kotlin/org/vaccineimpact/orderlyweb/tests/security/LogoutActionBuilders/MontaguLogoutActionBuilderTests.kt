@@ -22,16 +22,6 @@ class MontaguLogoutActionBuilderTests : TeamcityTests()
         val result = sut.getLogoutAction(mockContext, mock(), "/")
 
         assertThat(result.location).isEqualTo("http://localhost:8888")
-
-        //Check that montagu auth cookies have been reset
-        val cookieCaptor = ArgumentCaptor.forClass(Cookie::class.java)
-        verify(mockContext, times(2)).addResponseCookie(capture(cookieCaptor))
-        val addedCookies = cookieCaptor.allValues
-        assertThat(addedCookies.count()).isEqualTo(2)
-        assertThat(addedCookies.firstOrNull{ it.domain == "testServer" && it.name == "montagu_jwt_token"
-                                                    && it.value == ""}).isNotNull()
-        assertThat(addedCookies.firstOrNull{ it.domain == "testServer" && it.name == "jwt_token"
-                && it.value == ""}).isNotNull()
     }
 
 }

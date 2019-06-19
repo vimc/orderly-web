@@ -27,6 +27,7 @@ class _401Tests: TeamcityTests()
             on { appName } doReturn "testApp"
             on { authProvider } doReturn "Montagu"
             on { logo } doReturn "logo.png"
+            on { montaguApiUrl } doReturn "http://test-montagu"
         }
 
         val xmlResponse = template.xmlResponseFor(mockModel)

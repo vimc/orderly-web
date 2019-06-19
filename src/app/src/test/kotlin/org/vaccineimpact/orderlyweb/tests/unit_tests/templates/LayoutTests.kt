@@ -52,7 +52,7 @@ class LayoutTests : TeamcityTests()
         assertHeaderRenderedCorrectly(doc)
 
         assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("/logout")
+        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
         assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
 
