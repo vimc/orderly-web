@@ -11,11 +11,6 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import java.io.IOException
-import java.io.BufferedInputStream
-import java.security.KeyStore
-import java.security.cert.CertificateFactory
-import java.io.FileInputStream
-import org.pac4j.oauth.client.OkClient
 import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
@@ -48,9 +43,6 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
 
     override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
     {
-        //val response = khttp.get("$urlBase/user/",
-        //        headers = mapOf("Authorization" to "Bearer $token"))
-
         getHttpResponse("$urlBase/user/", mapOf("Authorization" to "Bearer $token"))
                 .use { response ->
                     val result = parseResult(response.body!!.string())

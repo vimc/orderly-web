@@ -61,13 +61,6 @@ class MontaguLogoutActionBuilder : LogoutActionBuilder<CommonProfile>
 {
     override fun getLogoutAction(context: WebContext, currentProfile: CommonProfile, targetUrl: String?): RedirectAction
     {
-        //logout of Montagu by resetting token cookies
-        listOf("montagu_jwt_token", "jwt_token").forEach{
-            val cookie = Cookie(it, "")
-            cookie.domain = context.serverName
-            context.addResponseCookie(cookie)
-        }
-
         return RedirectAction.redirect(AppConfig()["app.url"])
     }
 }

@@ -21,6 +21,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     override val appEmail = AppConfig()["app.email"]
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
     override val logo = AppConfig()["app.logo"]
+    override val montaguApiUrl = AppConfig()["montagu.api_url"]
 
     init
     {
@@ -40,5 +41,6 @@ interface AppViewModel
     val appEmail: String
     val authProvider: String
     val logo: String
+    val montaguApiUrl: String
 }
 

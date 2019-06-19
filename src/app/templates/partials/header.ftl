@@ -23,7 +23,7 @@
     </div>
     <#if loggedIn>
         <div class="logout">
-            <span>Logged in as ${user} | <a href="/logout">Logout</a></span>
+            <span>Logged in as ${user} | <a id="logout-link" href="#">Logout</a></span>
         </div>
     </#if>
 </header>
