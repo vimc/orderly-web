@@ -8,7 +8,6 @@ import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
@@ -97,10 +96,11 @@ abstract class IntegrationTest : TeamcityTests()
     }
 
     protected fun assertWebUrlSecured(url: String, requiredPermissions: Set<ReifiedPermission>,
-                                 contentType: String = ContentTypes.html,
-                                 method: HttpMethod = HttpMethod.get)
+                                      contentType: String = ContentTypes.html,
+                                      method: HttpMethod = HttpMethod.get,
+                                      postData: Map<String, String>? = null)
     {
-        val checker = WebPermissionChecker(url, requiredPermissions, contentType, method)
+        val checker = WebPermissionChecker(url, requiredPermissions, contentType, method, postData)
         checker.checkPermissionsAreSufficient()
         for (permission in requiredPermissions)
         {

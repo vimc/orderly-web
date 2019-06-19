@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests
 
+import khttp.post
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
@@ -12,7 +13,8 @@ import spark.route.HttpMethod
 class WebPermissionChecker(private val url: String,
                            private val allRequiredPermissions: Set<ReifiedPermission>,
                            private val contentType: String = ContentTypes.html,
-                           private val method: HttpMethod = HttpMethod.get)
+                           private val method: HttpMethod = HttpMethod.get,
+                           private val postData: Map<String, String>? = null)
 {
 
     private val testUserEmail = "test.user@example.com"
@@ -55,7 +57,11 @@ class WebPermissionChecker(private val url: String,
     {
         webRequestHelper.getWebPage("/logout")
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                permissions,
+                contentType,
+                method,
+                postData)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(404) // we return 404s for unauthorized users
@@ -67,7 +73,7 @@ class WebPermissionChecker(private val url: String,
     {
         webRequestHelper.getWebPage("/logout")
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method, postData)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(200)
