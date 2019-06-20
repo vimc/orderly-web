@@ -3,7 +3,7 @@
 <#-- @ftlvariable name="isAdmin" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
-        <link rel="stylesheet" href="/css/report-page.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
     </#macro>
     <div class="row">
         <div class="col-12 col-md-4 col-xl-3">
@@ -63,7 +63,8 @@
         <script type="text/javascript">
             var report = ${reportJson};
         </script>
-        <script type="text/javascript" src="/js/lib/bootstrap.min.js"></script>
-        <script type="text/javascript" src="/js/report.bundle.js"></script>
+
+        <script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
+        <script type="text/javascript" src="${appUrl}/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>

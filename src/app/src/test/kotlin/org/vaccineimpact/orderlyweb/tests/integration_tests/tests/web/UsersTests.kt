@@ -21,10 +21,11 @@ class UsersTests : IntegrationTest()
     @Test
     fun `only user managers can associate permission`()
     {
-        val url = "/users/test.user%40example.com/associate-permission/"
+        val url = "/user-groups/test.user%40example.com/actions/associate-permission/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post)
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("action" to "add",
+                "name" to "users.manage"))
     }
 
 }

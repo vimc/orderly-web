@@ -54,6 +54,7 @@ class LayoutTests : TeamcityTests()
         assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
         assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
         assertThat(doc.selectFirst(".logout span a").attr("onclick")).isEqualTo("logoutViaMontagu()")
+
         assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
 
@@ -65,10 +66,10 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.select("title").text()).isEqualTo(appName)
         assertThat(doc.select("header a").attr("href")).isEqualTo("/")
-        assertThat(doc.select("header a img").attr("src")).isEqualTo("/img/logo/logo.png")
+        assertThat(doc.select("header a img").attr("src")).isEqualTo("http://localhost:8888/img/logo/logo.png")
         assertThat(doc.select("header a img").attr("alt")).isEqualTo(appName)
 
-        assertThat(doc.select(".site-title a").attr("href")).isEqualTo("/")
+        assertThat(doc.select(".site-title a").attr("href")).isEqualTo("http://localhost:8888")
         assertThat(doc.select(".site-title a").text()).isEqualTo(appName)
     }
 }

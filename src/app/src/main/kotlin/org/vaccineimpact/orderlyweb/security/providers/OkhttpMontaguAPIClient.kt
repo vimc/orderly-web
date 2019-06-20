@@ -34,13 +34,13 @@ interface MontaguAPIClient
 
 }
 
-class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
+class OkhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
 {
     private val urlBase = appConfig["montagu.api_url"]
     private val devMode = appConfig["proxy.dev.mode"]
     private val serializer = Serializer.instance.gson
 
-    private val logger = LoggerFactory.getLogger(okhttpMontaguAPIClient::class.java)
+    private val logger = LoggerFactory.getLogger(OkhttpMontaguAPIClient::class.java)
 
     override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
     {

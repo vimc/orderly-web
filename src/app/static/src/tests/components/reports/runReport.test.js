@@ -85,7 +85,7 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
 
         expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
@@ -123,7 +123,7 @@ describe("runReport", () => {
 
         setTimeout(()  => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe("/reports/name1/run/");
+            expect(mockAxios.history.post[0].url).toBe("http://app/report/name1/actions/run/");
 
             //should also hide modal
             expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
@@ -155,7 +155,7 @@ describe("runReport", () => {
     it('updates status and stops polling when run request fails', (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(500);
 
         wrapper.setData({
@@ -185,7 +185,7 @@ describe("runReport", () => {
     it('updates status and starts polling when run request is successful', (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         wrapper.setData({
@@ -238,11 +238,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('/reports/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "success", "version": "20190514-160954-fc295f38"}});
 
         wrapper.setData({
@@ -254,7 +254,7 @@ describe("runReport", () => {
         setTimeout(()  => {
             expect(wrapper.find('#run-report-status').text()).toContain("Running status: success");
             expect(wrapper.find('#run-report-new-version a').text()).toBe("Tue May 14 2019, 16:09");
-            expect(wrapper.find('#run-report-new-version a').attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
+            expect(wrapper.find('#run-report-new-version a').attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
 
             //expect key to have been set and polling timer to have been cleared
             expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
@@ -274,11 +274,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('/reports/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "error", "version": ""}});
 
         wrapper.setData({
@@ -311,11 +311,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('/reports/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "still going", "version": ""}});
 
         wrapper.setData({
@@ -345,11 +345,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('/reports/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('/reports/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(500);
 
         wrapper.setData({
@@ -395,7 +395,7 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-status").text()).toContain("Running status: storedStatus");
 
         expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("/reports/name1/20190514-160954-fc295f38");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
 
         expect(wrapper.vm.$data["runningKey"]).toBe("storedKey");

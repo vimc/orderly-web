@@ -6,7 +6,7 @@
     <#if styles??>
         <@styles></@styles>
     <#else>
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
+        <link rel="stylesheet" type="text/css" href="${appUrl}/css/style.css">
     </#if>
 
     <title>${appName}</title>
@@ -14,10 +14,10 @@
     <body>
 <header class="header">
     <a href="/" class="home-link">
-        <img src="/img/logo/${logo}" class="pl-md-1 logo" height="75" alt="${appName}"/>
+        <img src="${appUrl}/img/logo/${logo}" class="pl-md-1 logo" height="75" alt="${appName}"/>
     </a>
     <div class="site-title">
-        <a href="/">
+        <a href="${appUrl}">
             ${appName}
         </a>
     </div>
@@ -27,7 +27,7 @@
               <#if authProvider?lower_case == "montagu">
                 href="#" onclick="logoutViaMontagu()"
               <#else>
-                href="/logout"
+                href="${appUrl}/logout"
               </#if>>Logout</a></span>
         </div>
     </#if>

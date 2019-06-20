@@ -1,6 +1,7 @@
-<#-- @ftlvariable name="authProvider" type="String" -->
 <#-- @ftlvariable name="montaguApiUrl" type="String" -->
 <script type="text/javascript" src="/js/lib/jquery.slim.min.js"></script>
+<script>var appUrl="${appUrl}"</script>
+<script type="text/javascript" src="${appUrl}/js/lib/jquery.slim.min.js"></script>r
 <#if scripts??>
     <@scripts></@scripts>
 </#if>
@@ -10,7 +11,7 @@ function logoutViaMontagu() {
     fetch("${montaguApiUrl}/logout/", {
         credentials: 'include'
     }).then(() => {
-        window.location.href = "/logout";
+        window.location.href = "${appUrl}/logout";
     });
 }
 </script>

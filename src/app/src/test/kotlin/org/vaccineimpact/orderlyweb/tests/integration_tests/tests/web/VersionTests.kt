@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -26,9 +27,10 @@ class VersionTests : IntegrationTest()
         val versionId = version[REPORT_VERSION.ID]
         val reportName = version[REPORT_VERSION.REPORT]
 
-        val url = "/reports/$reportName/versions/$versionId/publish/"
+        val url = "/report/$reportName/version/$versionId/publish/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post)
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post,
+                contentType = ContentTypes.json)
     }
 
     @Test
@@ -59,9 +61,9 @@ class VersionTests : IntegrationTest()
         val versionId = version[REPORT_VERSION.ID]
         val reportName = version[REPORT_VERSION.REPORT]
 
-        val url = "/reports/$reportName/versions/$versionId/all/"
+        val url = "/report/$reportName/version/$versionId/all/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
     }
 
     @Test
@@ -69,7 +71,7 @@ class VersionTests : IntegrationTest()
     {
         val url = getAnyDataUrl() + "?type=csv"
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
-                contentType = ContentTypes.csv)
+                contentType = ContentTypes.binarydata)
     }
 
     @Test
@@ -96,7 +98,7 @@ class VersionTests : IntegrationTest()
         val version = data[REPORT_VERSION_DATA.REPORT_VERSION]
         val name = URLEncoder.encode(data[REPORT_VERSION_DATA.NAME], "UTF-8")
 
-        return "/reports/$report/versions/$version/data/$name/"
+        return "/report/$report/version/$version/data/$name/"
     }
 
     private fun getAnyResourceUrl(): String
@@ -108,6 +110,7 @@ class VersionTests : IntegrationTest()
                     .join(REPORT_VERSION)
                     .on(FILE_INPUT.REPORT_VERSION.eq(REPORT_VERSION.ID))
                     .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }
 
@@ -116,7 +119,7 @@ class VersionTests : IntegrationTest()
         val fileName = resource[FILE_INPUT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
 
-        return "/reports/$report/versions/$version/resources/$encodedFileName/"
+        return "/report/$report/version/$version/resources/$encodedFileName/"
     }
 
     private fun getAnyArtefactUrl(): String
@@ -136,6 +139,6 @@ class VersionTests : IntegrationTest()
         val fileName = resource[FILE_ARTEFACT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
 
-        return "/reports/$report/versions/$version/artefacts/$encodedFileName/"
+        return "/report/$report/version/$version/artefacts/$encodedFileName/"
     }
 }

@@ -20,8 +20,9 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb) :
             this(context.userProfile, breadcrumbs.toList())
 
-    override val appName = appConfig["app.name"]
-    override val appEmail = appConfig["app.email"]
+    override val appName = AppConfig()["app.name"]
+    override val appUrl = AppConfig()["app.url"]
+    override val appEmail = AppConfig()["app.email"]
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
     override val logo = appConfig["app.logo"]
     override val montaguApiUrl =
@@ -53,5 +54,6 @@ interface AppViewModel
     val authProvider: String
     val logo: String
     val montaguApiUrl: String
+    val appUrl: String
 }
 

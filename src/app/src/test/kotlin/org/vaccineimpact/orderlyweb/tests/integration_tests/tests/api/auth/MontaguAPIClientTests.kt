@@ -8,7 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
-import org.vaccineimpact.orderlyweb.security.providers.okhttpMontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.OkhttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 
@@ -18,14 +18,14 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `okhttpMontaguAPIClient can talk to API`()
     {
         val token = login()["access_token"].toString()
-        val sut = okhttpMontaguAPIClient()
+        val sut = OkhttpMontaguAPIClient()
         sut.getUserDetails(token)
     }
 
     @Test
     fun `okhttpMontaguAPIClient throws error if request fails`()
     {
-        val sut = okhttpMontaguAPIClient()
+        val sut = OkhttpMontaguAPIClient()
 
         assertThatThrownBy {
             sut.getUserDetails("bad-token")
@@ -37,7 +37,7 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `okhttpMontaguAPIClient can get user details`()
     {
         val token = login()["access_token"].toString()
-        val sut = okhttpMontaguAPIClient()
+        val sut = OkhttpMontaguAPIClient()
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
         Assertions.assertThat(result.email).isEqualTo("test.user@example.com")
@@ -53,7 +53,7 @@ class MontaguAPIClientTests : TeamcityTests()
         }
 
         val token = login()["access_token"].toString()
-        val sut = okhttpMontaguAPIClient(appConfig = mockConfig)
+        val sut = OkhttpMontaguAPIClient(appConfig = mockConfig)
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
     }
