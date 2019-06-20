@@ -27,6 +27,12 @@ describe("reportsTable", () => {
         expect(opts.columns[1].data).toBe("id");
     });
 
+    it("has expected dom structure", () => {
+        const dom = options(true, []).dom;
+        expect(dom).toBe('<"top">rt<"bottom"lp><"clear">',);
+    });
+
+
     describe("name cell", () => {
 
         it("contains display name for parent", () => {

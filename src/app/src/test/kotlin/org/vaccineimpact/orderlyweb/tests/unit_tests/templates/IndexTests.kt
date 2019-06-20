@@ -86,7 +86,6 @@ class IndexTests : TeamcityTests()
         assertThat(pinnedReports.count()).isEqualTo(0)
     }
 
-
     @Test
     fun `reviewers can see the status column`()
     {
@@ -94,11 +93,11 @@ class IndexTests : TeamcityTests()
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select("th").count()).isEqualTo(5)
-        assertThat(doc.select("th")[0].text()).isEqualTo("Name")
-        assertThat(doc.select("th")[1].text()).isEqualTo("Id")
-        assertThat(doc.select("th")[2].text()).isEqualTo("Status")
-        assertThat(doc.select("th")[3].text()).isEqualTo("Author")
-        assertThat(doc.select("th")[4].text()).isEqualTo("Requester")
+        assertThat(doc.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
+        assertThat(doc.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
+        assertThat(doc.select("th")[2].selectFirst("label").text()).isEqualTo("Status")
+        assertThat(doc.select("th")[3].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(doc.select("th")[4].selectFirst("label").text()).isEqualTo("Requester")
     }
 
     @Test
@@ -108,10 +107,24 @@ class IndexTests : TeamcityTests()
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select("th").count()).isEqualTo(4)
-        assertThat(doc.select("th")[0].text()).isEqualTo("Name")
-        assertThat(doc.select("th")[1].text()).isEqualTo("Id")
-        assertThat(doc.select("th")[2].text()).isEqualTo("Author")
-        assertThat(doc.select("th")[3].text()).isEqualTo("Requester")
+        assertThat(doc.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
+        assertThat(doc.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
+        assertThat(doc.select("th")[2].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(doc.select("th")[3].selectFirst("label").text()).isEqualTo("Requester")
 
+    }
+
+    @Test
+    fun `each column has a custom filter`()
+    {
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select("th").count()).isEqualTo(5)
+        assertThat(doc.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
+        assertThat(doc.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
+        assertThat(doc.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
+        assertThat(doc.select("th")[3].selectFirst("input").id()).isEqualTo("author-filter")
+        assertThat(doc.select("th")[4].selectFirst("input").id()).isEqualTo("requester-filter")
     }
 }

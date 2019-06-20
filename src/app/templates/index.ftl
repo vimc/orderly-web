@@ -24,7 +24,7 @@
         </th>
         <th>
             <label for="version-filter">Version</label>
-            <input class="form-control" type="text" id=version-filter"
+            <input class="form-control" type="text" id="version-filter"
                    data-role="standard-filter"
                    data-col="2"/>
         </th>
@@ -51,7 +51,7 @@
         </th>
         <th>
             <label for="requester-filter">Requester</label>
-            <input class="form-control" type="text" id=requester-filter"
+            <input class="form-control" type="text" id="requester-filter"
                    data-role="standard-filter"
                    data-col="<@if isReviewer "5" "4"/>"/>
         </th>
