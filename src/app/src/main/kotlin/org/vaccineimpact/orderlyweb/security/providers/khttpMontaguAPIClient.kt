@@ -8,6 +8,7 @@ import java.io.IOException
 
 interface MontaguAPIClient
 {
+    @Throws(MontaguAPIException::class)
     fun getUserDetails(token: String): UserDetails
 
     data class UserDetails(val email: String, val username: String, val name: String?)

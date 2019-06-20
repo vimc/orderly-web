@@ -19,9 +19,8 @@ interface RouteConfig
 object APIRouteConfig : RouteConfig
 {
     override val endpoints: List<EndpointDefinition> =
-            ReportRouteConfig.endpoints
+            GitRouteConfig.endpoints.plus(ReportRouteConfig.endpoints)
                     .plus(VersionRouteConfig.endpoints)
-                    .plus(GitRouteConfig.endpoints)
                     .plus(HomeRouteConfig.endpoints)
                     .plus(DataRouteConfig.endpoints)
                     .plus(UserRouteConfig.endpoints)
@@ -35,7 +34,7 @@ object WebRouteConfig : RouteConfig
             WebEndpoint("/weblogin", SecurityController::class, "weblogin"),
             WebEndpoint("/weblogin/external", SecurityController::class, "webloginExternal")
                     .secure(externalAuth = true)
-            ) +
+    ) +
             WebReportRouteConfig.endpoints +
             WebVersionRouteConfig.endpoints +
             WebUserRouteConfig.endpoints +

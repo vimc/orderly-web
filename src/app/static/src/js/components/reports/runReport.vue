@@ -83,7 +83,7 @@
             },
             run: function () {
                 this.showModal = false;
-                api.post(`/report/${this.report.name}/run/`)
+                api.post(`/report/${this.report.name}/actions/run/`)
                     .then(({data}) => {
                         this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
@@ -105,7 +105,7 @@
                 }
 
                 this.pollingTimer = setInterval(() => {
-                        api.get(`/report/${this.runningKey}/status/`)
+                        api.get(`/reports/${this.report.name}/actions/status/${this.runningKey}/`)
                             .then(({data}) => {
                                 this.runningStatus = data.data.status;
                                 this.newVersionFromRun = data.data.version;

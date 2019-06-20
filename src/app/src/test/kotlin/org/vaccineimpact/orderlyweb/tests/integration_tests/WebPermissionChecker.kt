@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests
 import khttp.post
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.removePermission

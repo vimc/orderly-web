@@ -32,9 +32,13 @@ object WebVersionRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
                     contentType = ContentTypes.csv)
                     .secure(readReports),
-            WebEndpoint("/report/:name/version/:version/data/:data/",
+            WebEndpoint("/reports/:name/versions/:version/data/:data/",
                     org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
                     contentType = ContentTypes.binarydata)
+                    .secure(readReports),
+            WebEndpoint("/report/:name/version/:version/data/:data/",
+                    org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
+                    contentType = ContentTypes.csv)
                     .secure(readReports)
 
     )

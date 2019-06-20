@@ -21,8 +21,8 @@ class UserGroupController(context: ActionContext,
 
         val postData = context.postData()
         val associatePermission = AssociatePermission(
-                postData["action"] ?: throw MissingParameterError("action"),
-                postData["name"]?: throw MissingParameterError("action"),
+                postData["action"]?: throw MissingParameterError("action"),
+                postData["name"]?: throw MissingParameterError("name"),
                 postData["scope_prefix"],
                 postData["scope_id"]
         )

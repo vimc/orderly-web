@@ -123,7 +123,7 @@ describe("runReport", () => {
 
         setTimeout(()  => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe("http://app/report/name1/run/");
+            expect(mockAxios.history.post[0].url).toBe("http://app/report/name1/actions/run/");
 
             //should also hide modal
             expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
@@ -155,7 +155,7 @@ describe("runReport", () => {
     it('updates status and stops polling when run request fails', (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
-        mockAxios.onPost('/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(500);
 
         wrapper.setData({
@@ -185,7 +185,7 @@ describe("runReport", () => {
     it('updates status and starts polling when run request is successful', (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
-        mockAxios.onPost('http://app/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         wrapper.setData({
@@ -238,11 +238,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('http://app/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('http://app/report/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "success", "version": "20190514-160954-fc295f38"}});
 
         wrapper.setData({
@@ -274,11 +274,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('http://app/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('http://app/report/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "error", "version": ""}});
 
         wrapper.setData({
@@ -311,11 +311,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('http://app/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('http://app/report/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(200, {"data": {"status": "still going", "version": ""}});
 
         wrapper.setData({
@@ -345,11 +345,11 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
-        mockAxios.onPost('http://app/report/name1/run/')
+        mockAxios.onPost('http://app/report/name1/actions/run/')
             .reply(200, {"data": {"key": "some_key"}});
 
         //mock endpoint which is polled
-        mockAxios.onGet('http://app/report/some_key/status/')
+        mockAxios.onGet('http://app/report/name1/actions/status/some_key/')
             .reply(500);
 
         wrapper.setData({
