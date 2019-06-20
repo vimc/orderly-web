@@ -29,7 +29,25 @@ $(document).ready(function () {
     });
 
     $('[data-role=standard-filter]').on('keyup', function () {
-        dt.search(this.value).draw();
+        const col = parseInt($(this).data("col"));
+        const value = this.value;
+
+        if (col === 1) {
+            // for the name column search this and the invisible display name column
+            const displayName = isReviewer ? 6 : 5;
+            dt.columns([1, displayName])
+                // need an extra call to data() here because of column visibility
+                // https://stackoverflow.com/a/49812374/2624366
+                .data()
+                .search(value)
+                .draw();
+        }
+        else {
+            dt.column(col)
+                .search(value)
+                .draw();
+        }
+
     });
 
     $('#expand').on("click", () => {

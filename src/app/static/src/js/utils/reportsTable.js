@@ -1,5 +1,3 @@
-import $ from "jquery";
-
 function buildBasicCell(data, type, full) {
     if (full["tt_parent"] === 0) {
         return '';

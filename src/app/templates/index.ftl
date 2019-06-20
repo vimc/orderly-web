@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="reportsJson" type="String" -->
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
+<#macro if if then else=""><#if if>${then}<#else>${else}</#if></#macro>
 <@layout>
     <#macro styles>
         <link rel="stylesheet" href="/css/index.min.css"/>
@@ -17,12 +18,15 @@
     <tr>
         <th>
             <label for="name-filter">Name</label>
-            <input class="form-control" type="text" id="name-filter" data-role="standard-filter"/>
+            <input class="form-control" type="text" id="name-filter"
+                   data-role="standard-filter"
+                   data-col="1"/>
         </th>
         <th>
             <label for="version-filter">Version</label>
             <input class="form-control" type="text" id=version-filter"
-                   data-role="standard-filter"/>
+                   data-role="standard-filter"
+                   data-col="2"/>
         </th>
             <#if isReviewer>
                 <th><label for="status-filter">Status</label>
@@ -42,12 +46,14 @@
         <th>
             <label for="author-filter">Author</label>
             <input class="form-control" type="text" id="author-filter"
-                   data-role="standard-filter"/>
+                   data-role="standard-filter"
+                   data-col="<@if isReviewer "4" "3"/>"/>
         </th>
         <th>
             <label for="requester-filter">Requester</label>
             <input class="form-control" type="text" id=requester-filter"
-                   data-role="standard-filter"/>
+                   data-role="standard-filter"
+                   data-col="<@if isReviewer "5" "4"/>"/>
         </th>
     </tr>
     </thead>
