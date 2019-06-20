@@ -8,7 +8,6 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import sun.awt.X11.XConstants.BadRequest
 
 class UserGroupController(context: ActionContext,
                      val authRepo : AuthorizationRepository) : Controller(context)

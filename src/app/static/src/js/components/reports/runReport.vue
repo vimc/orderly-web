@@ -105,7 +105,7 @@
                 }
 
                 this.pollingTimer = setInterval(() => {
-                        api.get(`/reports/${this.report.name}/actions/status/${this.runningKey}/`)
+                        api.get(`/report/${this.report.name}/actions/status/${this.runningKey}/`)
                             .then(({data}) => {
                                 this.runningStatus = data.data.status;
                                 this.newVersionFromRun = data.data.version;
