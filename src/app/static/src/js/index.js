@@ -11,6 +11,7 @@ $(document).ready(function () {
     const $table = $('#reports-table');
 
     $("th input, th select").on("click", (e) => {
+        // we don't watch the column sort event triggered when filtering
         e.stopPropagation();
     });
 
@@ -22,11 +23,11 @@ $(document).ready(function () {
             const status = $('#status-filter').val();
             return statusFilter(status, data);
         });
-    }
 
-    $('#status-filter').change(() => {
-        dt.draw();
-    });
+        $('#status-filter').change(() => {
+            dt.draw();
+        });
+    }
 
     $('[data-role=standard-filter]').on('keyup', function () {
         const col = parseInt($(this).data("col"));
