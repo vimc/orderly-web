@@ -4,20 +4,16 @@
 <#if scripts??>
     <@scripts></@scripts>
 </#if>
-
-<script>
-    $("#logout-link").click(() => {
 <#if authProvider?lower_case == "montagu">
-        fetch("${montaguApiUrl}/logout/", {
-            credentials: 'include'
-        }).then((response) => {
-            window.location.href = "/logout";
-        });
-<#else>
-        window.location.href="/logout";
-</#if>
+<script>
+function logoutViaMontagu() {
+    fetch("${montaguApiUrl}/logout/", {
+        credentials: 'include'
+    }).then(() => {
+        window.location.href = "/logout";
     });
+}
 </script>
-
+</#if>
 </body>
 </html>

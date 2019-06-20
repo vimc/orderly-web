@@ -23,7 +23,12 @@
     </div>
     <#if loggedIn>
         <div class="logout">
-            <span>Logged in as ${user} | <a id="logout-link" href="#">Logout</a></span>
+            <span>Logged in as ${user} | <a id="logout-link"
+              <#if authProvider?lower_case == "montagu">
+                href="#" onclick="logoutViaMontagu()"
+              <#else>
+                href="/logout"
+              </#if>>Logout</a></span>
         </div>
     </#if>
 </header>

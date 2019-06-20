@@ -80,13 +80,10 @@ class okhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
         val client: OkHttpClient;
         if (devMode != "true")
         {
-            logger.info("Getting $url in prod mode")
             client = OkHttpClient()
         }
         else
         {
-            logger.info("Getting $url in dev mode")
-
             //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
             // Create a trust manager that does not validate certificate chains
             val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
