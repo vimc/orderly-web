@@ -34,13 +34,23 @@ interface MontaguAPIClient
 
 }
 
-class OkhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
+abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
 {
-    private val urlBase = appConfig["montagu.api_url"]
-    private val devMode = appConfig["proxy.dev.mode"]
-    private val serializer = Serializer.instance.gson
 
-    private val logger = LoggerFactory.getLogger(OkhttpMontaguAPIClient::class.java)
+    companion object
+    {
+        fun create(appConfig: Config = AppConfig()): OkHttpMontaguAPIClient
+        {
+            return if (appConfig.getBool("allow.localhost"))
+                LocalOkHttpMontaguApiClient(appConfig)
+            else
+                RemoteHttpMontaguApiClient(appConfig)
+
+        }
+    }
+
+    private val urlBase = appConfig["montagu.api_url"]
+    private val serializer = Serializer.instance.gson
 
     override fun getUserDetails(token: String): MontaguAPIClient.UserDetails
     {
@@ -75,44 +85,9 @@ class OkhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
 
     }
 
-
     private fun getHttpResponse(url: String, headers: Map<String, String>): Response
     {
-        val client: OkHttpClient;
-        if (devMode != "true")
-        {
-            client = OkHttpClient()
-        }
-        else
-        {
-            //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
-            // Create a trust manager that does not validate certificate chains
-            val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-                override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-                }
-
-                override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
-                }
-
-                override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
-            })
-
-            val allHostnameVerifier = object : HostnameVerifier{
-                override fun verify(var1: String, var2: SSLSession): Boolean
-                { return true }
-            }
-
-            // Install the all-trusting trust manager
-            val sslContext = SSLContext.getInstance("SSL")
-            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-            // Create an ssl socket factory with our all-trusting manager
-            val sslSocketFactory = sslContext.socketFactory
-
-            client = OkHttpClient.Builder()
-                    .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
-                    .hostnameVerifier(allHostnameVerifier)
-                    .build()
-        }
+        val client = getHttpClient()
 
         val headersBuilder = Headers.Builder()
         headers.forEach { k, v ->  headersBuilder.add(k, v)}
@@ -123,6 +98,50 @@ class OkhttpMontaguAPIClient(appConfig: Config = AppConfig()) : MontaguAPIClient
                 .build()
 
         return client.newCall(request).execute()
+    }
+
+    protected abstract fun getHttpClient(): OkHttpClient
+}
+
+class LocalOkHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+{
+    override fun getHttpClient(): OkHttpClient
+    {
+        //Stolen from https://stackoverflow.com/questions/25509296/trusting-all-certificates-with-okhttp
+        // Create a trust manager that does not validate certificate chains
+        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
+            }
+
+            override fun getAcceptedIssuers() = arrayOf<X509Certificate>()
+        })
+
+        val allHostnameVerifier = object : HostnameVerifier{
+            override fun verify(var1: String, var2: SSLSession): Boolean
+            { return true }
+        }
+
+        // Install the all-trusting trust manager
+        val sslContext = SSLContext.getInstance("SSL")
+        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+        // Create an ssl socket factory with our all-trusting manager
+        val sslSocketFactory = sslContext.socketFactory
+
+        return OkHttpClient.Builder()
+                .sslSocketFactory(sslSocketFactory, trustAllCerts[0] as X509TrustManager)
+                .hostnameVerifier(allHostnameVerifier)
+                .build()
+    }
+}
+
+class RemoteHttpMontaguApiClient(appConfig: Config): OkHttpMontaguAPIClient(appConfig)
+{
+    override fun getHttpClient(): OkHttpClient
+    {
+        return OkHttpClient()
     }
 }
 

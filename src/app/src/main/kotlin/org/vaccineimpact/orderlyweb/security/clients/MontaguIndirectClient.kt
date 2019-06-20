@@ -13,7 +13,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
-import org.vaccineimpact.orderlyweb.security.providers.OkhttpMontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
 import java.net.URLEncoder
 
@@ -27,7 +27,7 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
 
     override fun clientInit()
     {
-        val montaguAPIClient = OkhttpMontaguAPIClient()
+        val montaguAPIClient = OkHttpMontaguAPIClient.create()
         val cookieExtractor = CookieExtractor(cookie)
         defaultCredentialsExtractor(cookieExtractor)
         defaultRedirectActionBuilder(MontaguIndirectClientRedirectActionBuilder(montaguAPIClient, cookieExtractor))

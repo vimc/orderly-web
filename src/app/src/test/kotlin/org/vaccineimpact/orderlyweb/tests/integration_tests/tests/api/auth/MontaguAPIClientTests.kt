@@ -8,7 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
-import org.vaccineimpact.orderlyweb.security.providers.OkhttpMontaguAPIClient
+import org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 
@@ -18,14 +18,14 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `okhttpMontaguAPIClient can talk to API`()
     {
         val token = login()["access_token"].toString()
-        val sut = OkhttpMontaguAPIClient()
+        val sut = OkHttpMontaguAPIClient.create()
         sut.getUserDetails(token)
     }
 
     @Test
     fun `okhttpMontaguAPIClient throws error if request fails`()
     {
-        val sut = OkhttpMontaguAPIClient()
+        val sut = OkHttpMontaguAPIClient.create()
 
         assertThatThrownBy {
             sut.getUserDetails("bad-token")
@@ -37,7 +37,7 @@ class MontaguAPIClientTests : TeamcityTests()
     fun `okhttpMontaguAPIClient can get user details`()
     {
         val token = login()["access_token"].toString()
-        val sut = OkhttpMontaguAPIClient()
+        val sut = OkHttpMontaguAPIClient.create()
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
         Assertions.assertThat(result.email).isEqualTo("test.user@example.com")
@@ -45,15 +45,15 @@ class MontaguAPIClientTests : TeamcityTests()
     }
 
     @Test
-    fun `okhttpMontaguAPIClient can get user details in proxy dev mode`()
+    fun `okhttpMontaguAPIClient can get user details allowing localhost`()
     {
         val mockConfig = mock<Config>{
-            on { get("proxy.dev.mode") } doReturn "true"
+            on { getBool("allow.localhost") } doReturn true
             on { get("montagu.api_url") } doReturn AppConfig()["montagu.api_url"]
         }
 
         val token = login()["access_token"].toString()
-        val sut = OkhttpMontaguAPIClient(appConfig = mockConfig)
+        val sut = OkHttpMontaguAPIClient.create(appConfig = mockConfig)
         val result = sut.getUserDetails(token)
         Assertions.assertThat(result.username).isEqualTo("test.user")
     }
