@@ -71,7 +71,7 @@ class VersionTests : IntegrationTest()
     {
         val url = getAnyDataUrl() + "?type=csv"
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
-                contentType = ContentTypes.csv)
+                contentType = ContentTypes.binarydata)
     }
 
     @Test

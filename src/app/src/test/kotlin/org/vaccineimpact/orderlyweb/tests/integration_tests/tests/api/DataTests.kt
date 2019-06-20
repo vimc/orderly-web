@@ -50,7 +50,7 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
+        val response = apiRequestHelper.get(url, ContentTypes.csv,
                 userEmail = fakeReportReader("testname"))
 
         assertSuccessful(response)
@@ -69,7 +69,7 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
+        val response = apiRequestHelper.get(url, ContentTypes.csv,
                 userEmail = fakeReportReader("badreportname"))
 
         assertUnauthorized(response, "testname")
