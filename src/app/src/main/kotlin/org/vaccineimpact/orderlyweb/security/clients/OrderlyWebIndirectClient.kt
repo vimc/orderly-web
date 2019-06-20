@@ -27,16 +27,12 @@ class OrderlyWebIndirectClient() : IndirectClient<Credentials, CommonProfile>(){
         defaultAuthenticator(NeverInvokedAuthenticator())
     }
 
-
 }
 
 class OrderlyWebIndirectClientRedirectActionBuilder: RedirectActionBuilder
 {
     override fun redirect(context: WebContext) : RedirectAction
     {
-        //TODO: When implementing https://vimc.myjetbrains.com/youtrack/issue/mrc-228 we might put logic to choose
-        //to redirect to weblogin or to configured Montagu homepage (skip our landing page for Montagu users)
-
         //Attach the originally requested url to the redirect url as a query string parameter, so we can redirect
         //there once authenticated via the 'landing page'
         val requestedUrl = context.fullRequestURL

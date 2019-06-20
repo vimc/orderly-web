@@ -32,7 +32,7 @@ class ErrorHandler(templateEngine: TemplateEngine,
             }
             else
             {
-                logger.error("An unhandled exception occurred", e.cause)
+                logger.error("An unhandled exception occurred", e)
                 handleError(UnexpectedError(), req, res)
             }
         }
