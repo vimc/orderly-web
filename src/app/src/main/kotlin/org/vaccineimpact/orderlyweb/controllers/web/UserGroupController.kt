@@ -4,6 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -19,8 +20,8 @@ class UserGroupController(context: ActionContext,
 
         val postData = context.postData()
         val associatePermission = AssociatePermission(
-                postData["action"]!!,
-                postData["name"]!!,
+                postData["action"]?: throw MissingParameterError("action"),
+                postData["name"]?: throw MissingParameterError("name"),
                 postData["scope_prefix"],
                 postData["scope_id"]
         )

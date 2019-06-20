@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests
 
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.removePermission
@@ -12,12 +11,17 @@ import spark.route.HttpMethod
 class WebPermissionChecker(private val url: String,
                            private val allRequiredPermissions: Set<ReifiedPermission>,
                            private val contentType: String = ContentTypes.html,
-                           private val method: HttpMethod = HttpMethod.get)
+                           private val method: HttpMethod = HttpMethod.get,
+                           private val postData: Map<String, String>? = null)
 {
 
     private val testUserEmail = "test.user@example.com"
     private val webRequestHelper = WebRequestHelper()
-    private val authRepo = OrderlyAuthorizationRepository()
+
+    fun checkPermissionsAreSufficient() {
+        checkThesePermissionsAreSufficient(allRequiredPermissions,
+                "Expected successful request to $url with the given permissions")
+    }
 
     fun checkPermissionIsRequired(
             permission: ReifiedPermission
@@ -52,7 +56,11 @@ class WebPermissionChecker(private val url: String,
     {
         webRequestHelper.getWebPage("/logout")
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                permissions,
+                contentType,
+                method,
+                postData)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(404) // we return 404s for unauthorized users
@@ -64,7 +72,8 @@ class WebPermissionChecker(private val url: String,
     {
         webRequestHelper.getWebPage("/logout")
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url, permissions, contentType, method)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                permissions, contentType, method, postData)
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(assertionText)
                 .isEqualTo(200)

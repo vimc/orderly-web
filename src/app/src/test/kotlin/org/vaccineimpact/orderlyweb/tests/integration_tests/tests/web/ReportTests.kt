@@ -1,9 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -14,17 +12,16 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report runners can run report`()
     {
-        val url = "/reports/minimal/run"
+        val url = "/reports/minimal/actions/run"
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
-                method = HttpMethod.post)
+                method = HttpMethod.post, contentType = ContentTypes.json)
     }
 
     @Test
     fun `only report runners can get running report status`()
     {
-
-        val url = "/reports/frightened_rabbit/status"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
-                method = HttpMethod.post)
+        val url = "/reports/minimal/actions/status/frightened_rabbit/"
+        val requiredPermissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
+        assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
 }
