@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.json
 import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
@@ -27,10 +29,11 @@ class WebRequestHelper : RequestHelper()
     fun loginWithMontaguAndMakeRequest(url: String,
                                        withPermissions: Set<ReifiedPermission>,
                                        contentType: String = "text/html",
-                                       method: HttpMethod = HttpMethod.get): Response
+                                       method: HttpMethod = HttpMethod.get,
+                                       postData: Map<String, String>? = null): Response
     {
         val sessionCookie = webLoginWithMontagu(withPermissions)
-        return requestWithSessionCookie(url, sessionCookie, contentType, method)
+        return requestWithSessionCookie(url, sessionCookie, contentType, method, postData)
     }
 
     fun getWithMontaguCookie(
@@ -60,18 +63,32 @@ class WebRequestHelper : RequestHelper()
     fun requestWithSessionCookie(url: String,
                                  cookies: String,
                                  contentType: String = "text/html",
-                                 method: HttpMethod = HttpMethod.get): Response
+                                 method: HttpMethod = HttpMethod.get,
+                                 postData: Map<String, String>? = null): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
-        val fullUrl = baseUrl + url
-        val result = when (method)
+        val fullUrl = if (url.contains("http"))
+        {
+            url
+        }
+        else
+        {
+            "$baseUrl/$url"
+        }
+        return when (method)
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)
-            HttpMethod.post -> khttp.post(fullUrl, headers)
+            HttpMethod.post -> khttp.post(fullUrl, headers, data = postData?.toJsonObject()?.toJsonString())
             else -> throw IllegalArgumentException("Method not supported")
         }
+    }
 
-        return result
+    private fun Map<String, *>.toJsonObject(): JsonObject
+    {
+        val pairs = entries.map { it.toPair() }.toTypedArray()
+        return json {
+            obj(*pairs)
+        }
     }
 
 }

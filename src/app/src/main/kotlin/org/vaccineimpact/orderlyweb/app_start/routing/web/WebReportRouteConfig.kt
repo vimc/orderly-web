@@ -15,12 +15,12 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/reports/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
-            WebEndpoint("/reports/:name/run/",
+            WebEndpoint("/reports/:name/actions/run/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "run",
                     method = HttpMethod.post)
                     .json()
                     .secure(runReports),
-            WebEndpoint("/reports/:key/status/",
+            WebEndpoint("/reports/:name/actions/status/:key/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
                     .json()
                     .secure(runReports)

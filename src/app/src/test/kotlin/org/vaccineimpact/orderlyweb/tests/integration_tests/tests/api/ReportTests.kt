@@ -34,7 +34,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `gets report status`()
     {
-        val response = apiRequestHelper.get("/reports/agronomic_seahorse/status/",
+        val response = apiRequestHelper.get("/reports/agronomic_seahorse/status",
                 userEmail = fakeGlobalReportReviewer())
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
