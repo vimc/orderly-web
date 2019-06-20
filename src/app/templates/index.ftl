@@ -15,13 +15,40 @@
 <table id="reports-table" class="table dt-responsive display table-striped">
     <thead>
     <tr>
-        <th>Name</th>
-        <th>Id</th>
+        <th>
+            <label for="name-filter">Name</label>
+            <input class="form-control" type="text" id="name-filter" data-role="standard-filter"/>
+        </th>
+        <th>
+            <label for="version-filter">Version</label>
+            <input class="form-control" type="text" id=version-filter"
+                   data-role="standard-filter"/>
+        </th>
             <#if isReviewer>
-                <th>Status</th>
+                <th><label for="status-filter">Status</label>
+                    <select id="status-filter" class="form-control">
+                        <option value="all">
+                            All
+                        </option>
+                        <option value="published">
+                            Published
+                        </option>
+                        <option value="internal">
+                            Internal
+                        </option>
+                    </select>
+                </th>
             </#if>
-        <th>Author</th>
-        <th>Requester</th>
+        <th>
+            <label for="author-filter">Author</label>
+            <input class="form-control" type="text" id="author-filter"
+                   data-role="standard-filter"/>
+        </th>
+        <th>
+            <label for="requester-filter">Requester</label>
+            <input class="form-control" type="text" id=requester-filter"
+                   data-role="standard-filter"/>
+        </th>
     </tr>
     </thead>
 </table>

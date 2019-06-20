@@ -1,3 +1,5 @@
+import $ from "jquery";
+
 function buildBasicCell(data, type, full) {
     if (full["tt_parent"] === 0) {
         return '';
@@ -80,10 +82,14 @@ export const options = (isReviewer, reports) => {
             "data": "requester",
             "render": buildBasicCell,
             "orderable": false
+        },
+        {
+            "data": "display_name",
+            "visible": false
         }]);
 
     return {
-        "dom": '<"top"f>rt<"bottom"lp><"clear">',
+        "dom": '<"top">rt<"bottom"lp><"clear">',
         "data": reports,
         "collapsed": true,
         "columns": cols,
@@ -92,5 +98,17 @@ export const options = (isReviewer, reports) => {
         ],
         "lengthMenu": [10, 25, 50, 75, 100],
         "pageLength": 50
+    }
+};
+
+export const statusFilter = (selectedStatus, data) => {
+    switch (selectedStatus) {
+        case "published":
+            return data[3];
+        case "internal":
+            return !data[3];
+        case "all":
+        default:
+            return true
     }
 };
