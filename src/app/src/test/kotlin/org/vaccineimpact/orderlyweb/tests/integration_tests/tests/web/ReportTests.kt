@@ -12,7 +12,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report runners can run report`()
     {
-        val url = "/reports/minimal/actions/run"
+        val url = "/report/minimal/actions/run"
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post, contentType = ContentTypes.json)
     }
@@ -20,7 +20,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report runners can get running report status`()
     {
-        val url = "/reports/minimal/actions/status/frightened_rabbit/"
+        val url = "/report/minimal/actions/status/frightened_rabbit/"
         val requiredPermissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }

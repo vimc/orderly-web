@@ -92,6 +92,6 @@ class VersionPageTests : IntegrationTest()
         val report = data[REPORT_VERSION.REPORT]
         val version = data[REPORT_VERSION.ID]
 
-        return "/reports/$report/$version/"
+        return "/report/$report/$version/"
     }
 }

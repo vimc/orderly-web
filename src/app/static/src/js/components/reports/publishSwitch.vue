@@ -31,7 +31,7 @@
         },
         methods: {
             publish: function () {
-                api.post(`/reports/${this.report.name}/versions/${this.report.id}/publish/`)
+                api.post(`/report/${this.report.name}/version/${this.report.id}/publish/`)
                     .then(() => {
                         this.$emit('toggle');
                         this.error = "";

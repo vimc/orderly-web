@@ -2,7 +2,7 @@
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
 <@layout>
     <#macro styles>
-        <link rel="stylesheet" href="/css/index.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/index.min.css"/>
     </#macro>
     <#include "partials/pinned-reports.ftl">
 <h1 class="h3 mb-3 reports-list">Find a report</h1>
@@ -32,6 +32,7 @@
                  var canReview = true;
            </#if>
         </script>
-    <script type="text/javascript" src="/js/index.bundle.js"></script>
+
+    <script type="text/javascript" src="${appUrl}/js/index.bundle.js"></script>
     </#macro>
 </@layout>

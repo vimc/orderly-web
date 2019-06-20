@@ -39,7 +39,7 @@ describe("publishSwitch", () => {
     });
 
     it('emits toggle event after successful publish toggle', (done) => {
-        mockAxios.onPost('/reports/name1/versions/version/publish/')
+        mockAxios.onPost('http://app/report/name1/version/version/publish/')
             .reply(200);
 
         const wrapper = mount(PublishSwitch, {
@@ -63,7 +63,7 @@ describe("publishSwitch", () => {
     });
 
     it('does not emit toggle event after failed publish toggle', (done) => {
-        mockAxios.onPost('/reports/name1/versions/version/publish/')
+        mockAxios.onPost('http://app/report/name1/version/version/publish/')
             .reply(500);
 
         const wrapper = mount(PublishSwitch, {
