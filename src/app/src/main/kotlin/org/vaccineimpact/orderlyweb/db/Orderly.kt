@@ -208,6 +208,18 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError(resourcename, "Resource")
     }
 
+    override fun getReadme(name: String, version: String): Map<String, String> {
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.FILE_HASH)
+                    .from(FILE_INPUT)
+                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.README.toString()))
+                    .fetch()
+                    .associate { it[FILE_INPUT.FILENAME] to it[FILE_INPUT.FILE_HASH] }
+        }
+    }
+
     override fun getLatestChangelogByName(name: String): List<Changelog>
     {
         JooqContext().use {

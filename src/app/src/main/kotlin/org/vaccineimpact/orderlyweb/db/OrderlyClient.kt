@@ -47,4 +47,6 @@ interface OrderlyClient
 
     @Throws(UnknownObjectError::class)
     fun getLatestChangelogByName(name: String): List<Changelog>
+
+    fun getReadme(name: String, version: String): Map<String, String>
 }
