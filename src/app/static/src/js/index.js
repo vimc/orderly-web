@@ -1,4 +1,4 @@
-import {options, statusFilter} from "./utils/reportsTable";
+import {nameFilter, options, statusFilter} from "./utils/reportsTable";
 import $ from 'jquery';
 
 require("datatables.net")(window, $);
@@ -29,26 +29,21 @@ $(document).ready(function () {
         });
     }
 
+    $.fn.dataTable.ext.search.push((settings, data) => {
+        const displayName = isReviewer ? 6 : 5;
+        const value = $('#name-filter').val();
+        return nameFilter(displayName, value, data);
+    });
+
+    $('#name-filter').keyup(() => {
+        dt.draw();
+    });
+
     $('[data-role=standard-filter]').on('keyup', function () {
         const col = parseInt($(this).data("col"));
-        const value = this.value;
-
-        if (col === 1) {
-            // for the name column search this and the invisible display name column
-            const displayName = isReviewer ? 6 : 5;
-            dt.columns([1, displayName])
-                // need an extra call to data() here because of column visibility
-                // https://stackoverflow.com/a/49812374/2624366
-                .data()
-                .search(value)
-                .draw();
-        }
-        else {
-            dt.column(col)
-                .search(value)
-                .draw();
-        }
-
+        dt.column(col)
+            .search( this.value)
+            .draw();
     });
 
     $('#expand').on("click", () => {

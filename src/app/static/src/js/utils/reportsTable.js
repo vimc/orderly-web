@@ -85,7 +85,8 @@ export const options = (isReviewer, reports) => {
         },
         {
             "data": "display_name",
-            "visible": false
+            "visible": false,
+            "searchable": true
         }]);
 
     return {
@@ -112,4 +113,9 @@ export const statusFilter = (selectedStatus, data) => {
         default:
             return true
     }
+};
+
+export const nameFilter = (displayNameCol, value, data) => {
+    const re = new RegExp(value);
+    return re.test(data[1]) || re.test(data[displayNameCol]);
 };

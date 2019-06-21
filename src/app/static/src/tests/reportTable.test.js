@@ -1,4 +1,4 @@
-import {options, statusFilter} from "../js/utils/reportsTable"
+import {nameFilter, options, statusFilter} from "../js/utils/reportsTable"
 
 const $ = require('jquery');
 
@@ -195,8 +195,8 @@ describe("reportsTable", () => {
 
     describe("filtering", () => {
 
-        const internal = [null, "r1", "v1", false];
-        const published = [null, "r1", "v1", true];
+        const internal = [null, "r1", "v1", false, "author", "requester", "displaya"];
+        const published = [null, "r2", "v1", true, "author", "requester", "displayb"];
 
         it("can return reports with any status", () => {
             expect(statusFilter("all", internal)).toBe(true);
@@ -211,7 +211,17 @@ describe("reportsTable", () => {
         it("can return internal reports", () => {
             expect(statusFilter("internal", internal)).toBe(true);
             expect(statusFilter("internal", published)).toBe(false);
-        })
+        });
+
+        it("can filter by name", () => {
+            expect(nameFilter(6, "2", internal)).toBe(false);
+            expect(nameFilter(6, "2", published)).toBe(true);
+        });
+
+        it("can filter by display name", () => {
+            expect(nameFilter(6, "aya", internal)).toBe(true);
+            expect(nameFilter(6, "aya", published)).toBe(false);
+        });
     });
 
 });

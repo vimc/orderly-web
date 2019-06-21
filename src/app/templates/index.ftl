@@ -40,9 +40,7 @@
         </tr>
         <tr>
             <th>
-                <input class="form-control" type="text" id="name-filter"
-                       data-role="standard-filter"
-                       data-col="1"/>
+                <input class="form-control" type="text" id="name-filter"/>
             </th>
             <th>
 
