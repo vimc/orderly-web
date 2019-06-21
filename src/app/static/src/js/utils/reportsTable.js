@@ -88,6 +88,7 @@ export const options = (isReviewer, reports) => {
 
     return {
         "dom": '<"top">rt<"bottom"lp><"clear">',
+        "bSortCellsTop": true,
         "data": reports,
         "collapsed": true,
         "columns": cols,
