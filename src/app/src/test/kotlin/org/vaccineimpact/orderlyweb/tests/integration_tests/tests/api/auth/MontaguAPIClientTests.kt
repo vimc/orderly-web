@@ -45,10 +45,10 @@ class MontaguAPIClientTests : TeamcityTests()
     }
 
     @Test
-    fun `okhttpMontaguAPIClient can get user details allowing localhost`()
+    fun `okhttpMontaguAPIClient can get user details not allowing localhost`()
     {
         val mockConfig = mock<Config>{
-            on { getBool("allow.localhost") } doReturn true
+            on { getBool("allow.localhost") } doReturn false
             on { get("montagu.api_url") } doReturn AppConfig()["montagu.api_url"]
         }
 
