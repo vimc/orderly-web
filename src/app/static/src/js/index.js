@@ -6,8 +6,8 @@ require("datatables.net-dt")(window, $);
 require('datatables.net-bs4')(window, $);
 require("treetables")(window, $);
 
-$(document).ready(function () {
-    const isReviewer = typeof canReview !== "undefined";
+export const initReportTable = (isReviewer, reports) => {
+
     const $table = $('#reports-table');
 
     $table.treeTable(options(isReviewer, reports));
@@ -36,8 +36,9 @@ $(document).ready(function () {
 
     $('[data-role=standard-filter]').on('keyup', function () {
         const col = parseInt($(this).data("col"));
+
         dt.column(col)
-            .search( this.value)
+            .search(this.value)
             .draw();
     });
 
@@ -52,4 +53,9 @@ $(document).ready(function () {
             .collapseAllRows()
             .redraw();
     })
+};
+
+$(document).ready(() => {
+    const isReviewer = typeof canReview !== "undefined";
+    initReportTable(isReviewer, reports)
 });
