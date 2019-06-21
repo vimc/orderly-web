@@ -1,7 +1,6 @@
 <#-- @ftlvariable name="montaguUrl" type="String" -->
-<script type="text/javascript" src="/js/lib/jquery.slim.min.js"></script>
 <script>var appUrl="${appUrl}"</script>
-<script type="text/javascript" src="${appUrl}/js/lib/jquery.slim.min.js"></script>r
+<script type="text/javascript" src="${appUrl}/js/lib/jquery.slim.min.js"></script>
 <#if scripts??>
     <@scripts></@scripts>
 </#if>
