@@ -10,11 +10,6 @@ $(document).ready(function () {
     const isReviewer = typeof canReview !== "undefined";
     const $table = $('#reports-table');
 
-    $("th input, th select").on("click", (e) => {
-        // we don't watch the column sort event triggered when filtering
-        e.stopPropagation();
-    });
-
     $table.treeTable(options(isReviewer, reports));
     const dt = $table.DataTable();
 
@@ -35,7 +30,7 @@ $(document).ready(function () {
         return nameFilter(displayName, value, data);
     });
 
-    $('#name-filter').keyup(() => {
+    $('#name-filter').on('keyup', () => {
         dt.draw();
     });
 
