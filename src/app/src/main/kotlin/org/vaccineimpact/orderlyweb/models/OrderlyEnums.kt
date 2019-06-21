@@ -4,6 +4,7 @@ enum class FilePurpose
 {
     SOURCE,
     SCRIPT,
+    README,
     RESOURCE,
     ORDERLY_YML,
     GLOBAL;
