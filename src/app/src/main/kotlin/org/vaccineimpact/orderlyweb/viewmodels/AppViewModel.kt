@@ -25,16 +25,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     override val appEmail = AppConfig()["app.email"]
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
     override val logo = appConfig["app.logo"]
-    override val montaguApiUrl =
-            try
-            {
-                appConfig["montagu.client_api_url"]
-
-            }
-            catch (e: MissingConfigurationKey)
-            {
-                appConfig["montagu.api_url"]
-            }
+    override val montaguUrl = appConfig["montagu.url"]
     init
     {
         if (!breadcrumbs.any())
@@ -53,7 +44,7 @@ interface AppViewModel
     val appEmail: String
     val authProvider: String
     val logo: String
-    val montaguApiUrl: String
+    val montaguUrl: String
     val appUrl: String
 }
 
