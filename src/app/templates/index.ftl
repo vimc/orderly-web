@@ -40,12 +40,12 @@
         </tr>
         <tr>
             <th>
-                <input class="form-control" type="text" id="name-filter"/>
+                <input class="form-control" type="text" id="name-filter" placeholder="Type to filter..."/>
             </th>
             <th>
 
                 <input class="form-control" type="text" id="version-filter"
-                       data-role="standard-filter"
+                       data-role="standard-filter" placeholder="Type to filter..."
                        data-col="2"/>
             </th>
             <#if isReviewer>
@@ -65,11 +65,13 @@
             </#if>
             <th>
                 <input class="form-control" type="text" id="author-filter"
+                       placeholder="Type to filter..."
                        data-role="standard-filter"
                        data-col="<@if isReviewer "4" "3"/>"/>
             </th>
             <th>
                 <input class="form-control" type="text" id="requester-filter"
+                       placeholder="Type to filter..."
                        data-role="standard-filter"
                        data-col="<@if isReviewer "5" "4"/>"/>
             </th>
