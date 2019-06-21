@@ -19,8 +19,7 @@
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
             <div v-if="newVersionFromRun" id="run-report-new-version">
-                New version: <a
-                    v-bind:href="`/reports/${report.name}/${newVersionFromRun}`">{{newVersionDisplayName}}</a>
+                New version: <a v-bind:href="newVersionHref">{{newVersionDisplayName}}</a>
             </div>
             <div v-on:click="dismissRunStatus" id="run-report-dismiss" class="btn btn-link p-0">Dismiss</div>
         </div>
@@ -63,6 +62,9 @@
             },
             runHasCompleted: function () {
                 return this.runningStatus && (this.runningStatus === "success" || this.runningStatus.toLowerCase().indexOf("error") > -1);
+            },
+            newVersionHref: function() {
+                return `${api.baseUrl}/report/${this.report.name}/${this.newVersionFromRun}`
             }
         },
         watch: {
@@ -81,7 +83,7 @@
             },
             run: function () {
                 this.showModal = false;
-                api.post(`/reports/${this.report.name}/actions/run/`)
+                api.post(`/report/${this.report.name}/actions/run/`)
                     .then(({data}) => {
                         this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
@@ -103,7 +105,7 @@
                 }
 
                 this.pollingTimer = setInterval(() => {
-                        api.get(`/reports/${this.report.name}/actions/status/${this.runningKey}/`)
+                        api.get(`/report/${this.report.name}/actions/status/${this.runningKey}/`)
                             .then(({data}) => {
                                 this.runningStatus = data.data.status;
                                 this.newVersionFromRun = data.data.version;

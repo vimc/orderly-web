@@ -3,6 +3,9 @@ module.exports = {
     "setupFilesAfterEnv": [
         "<rootDir>/src/tests/setup.js"
     ],
+    "globals": {
+        "appUrl": "http://app",
+    },
     "moduleFileExtensions": [
         "js",
         "json",

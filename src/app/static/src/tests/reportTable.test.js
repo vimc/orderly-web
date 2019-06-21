@@ -49,7 +49,7 @@ describe("reportsTable", () => {
             }));
 
             const $link = $result.find("a");
-            expect($link.attr("href")).toBe("/reports/r1/v1/");
+            expect($link.attr("href")).toBe("http://app/report/r1/v1/");
             expect($link.text()).toBe("view latest");
         });
 
@@ -85,7 +85,7 @@ describe("reportsTable", () => {
                 date: "human friendly date"
             }));
 
-            expect($result.attr("href")).toBe("/reports/r1/some-id/");
+            expect($result.attr("href")).toBe("http://app/report/r1/some-id/");
             expect($result.find("span:not(.badge)").text()).toBeIgnoringWhitespace("human friendly date");
             expect($result.find("div.small").text()).toBeIgnoringWhitespace("(some-id)");
         });

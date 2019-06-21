@@ -27,6 +27,7 @@ class _401Tests: TeamcityTests()
             on { appName } doReturn "testApp"
             on { authProvider } doReturn "Montagu"
             on { logo } doReturn "logo.png"
+            on { appUrl } doReturn "http://app"
         }
 
         val xmlResponse = template.xmlResponseFor(mockModel)
@@ -43,6 +44,7 @@ class _401Tests: TeamcityTests()
             on { appName } doReturn "testApp"
             on { authProvider } doReturn "GitHub"
             on { logo } doReturn "logo.png"
+            on { appUrl } doReturn "http://app"
         }
 
         val xmlResponse = template.xmlResponseFor(mockModel)

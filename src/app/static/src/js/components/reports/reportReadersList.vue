@@ -9,10 +9,10 @@
                 </div>
             </div>
             <ul class="list-unstyled report-readers">
-                <li v-for="reader in readers" v-bind:id="reader.username">
+                <li v-for="reader in readers" v-bind:id="reader.email">
                     <span class="reader-display-name">{{reader.display_name}}</span>
                     <span v-if="reader.can_remove" v-on:click="remove(reader.email)" class="remove-reader d-inline-block ml-2 large">×</span>
-                    <div class="text-muted small" style="margin-top: -1rem">{{reader.email}}</div>
+                    <div class="text-muted small email">{{reader.email}}</div>
                 </li>
             </ul>
         </div>

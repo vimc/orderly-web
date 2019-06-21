@@ -6,7 +6,7 @@
     <#if styles??>
         <@styles></@styles>
     <#else>
-        <link rel="stylesheet" type="text/css" href="/css/style.css">
+        <link rel="stylesheet" type="text/css" href="${appUrl}/css/style.css">
     </#if>
 
     <title>${appName}</title>
@@ -14,16 +14,16 @@
     <body>
 <header class="header">
     <a href="/" class="home-link">
-        <img src="/img/logo/${logo}" class="pl-md-1 logo" height="75" alt="${appName}"/>
+        <img src="${appUrl}/img/logo/${logo}" class="pl-md-1 logo" height="75" alt="${appName}"/>
     </a>
     <div class="site-title">
-        <a href="/">
+        <a href="${appUrl}">
             ${appName}
         </a>
     </div>
     <#if loggedIn>
         <div class="logout">
-            <span>Logged in as ${user} | <a href="/logout">Logout</a></span>
+            <span>Logged in as ${user} | <a href="${appUrl}/logout">Logout</a></span>
         </div>
     </#if>
 </header>

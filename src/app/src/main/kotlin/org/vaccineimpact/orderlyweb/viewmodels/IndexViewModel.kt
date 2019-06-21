@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -25,7 +26,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
     companion object
     {
-        val breadcrumb = Breadcrumb("Main menu", "/")
+        val breadcrumb = Breadcrumb("Main menu", AppConfig()["app.url"])
 
         fun build(reports: List<ReportVersion>,
                   pinnedReports: List<ReportVersion>,

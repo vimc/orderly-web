@@ -41,7 +41,7 @@ class ReportPageTests : SeleniumTest()
         }
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/")
+        driver.get(RequestHelper.webBaseUrl + "/report/$reportName/$versionId/")
 
         val toggleButton = driver.findElement(By.cssSelector("[data-toggle=toggle]"))
         assertThat(toggleButton.getAttribute("class").contains("off")).isTrue()
@@ -75,7 +75,7 @@ class ReportPageTests : SeleniumTest()
         }
 
         loginWithMontagu()
-        val versionUrl = RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/"
+        val versionUrl = RequestHelper.webBaseUrl + "/report/$reportName/$versionId/"
         driver.get(versionUrl)
 
         val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
@@ -123,7 +123,7 @@ class ReportPageTests : SeleniumTest()
         }
 
         loginWithMontagu()
-        val versionUrl = RequestHelper.webBaseUrl + "/reports/$reportName/$versionId/"
+        val versionUrl = RequestHelper.webBaseUrl + "/report/$reportName/$versionId/"
         driver.get(versionUrl)
 
         val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
@@ -161,7 +161,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/")
 
         //Confirm that we've started on the Report tab
         confirmTabActive("report-tab", true)
@@ -195,7 +195,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/")
 
         val sidebar = driver.findElement(By.id("sidebar"))
         assertThat(sidebar.isDisplayed).isFalse()
@@ -217,11 +217,11 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170104-091500-1234dcba")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170104-091500-1234dcba")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170104-091500-1234dcba")
 
         val versionSwitcher = Select(driver.findElement(By.cssSelector("#report-version-switcher")))
         versionSwitcher.selectByVisibleText("Tue Jan 03 2017, 14:30")
-        wait.until(ExpectedConditions.urlMatches(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd"))
+        wait.until(ExpectedConditions.urlMatches(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd"))
         assertThat(driver.findElement(By.cssSelector("p.small.text-muted")).text).isEqualTo("20170103-143015-1234abcd")
     }
 
@@ -243,7 +243,7 @@ class ReportPageTests : SeleniumTest()
                 listOf(ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))))
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
         val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
@@ -272,7 +272,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
@@ -312,7 +312,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
@@ -353,7 +353,7 @@ class ReportPageTests : SeleniumTest()
         ), "read.perms@example.com")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
