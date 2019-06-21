@@ -70,7 +70,8 @@ class VersionController(context: ActionContext,
         else
         {
             (orderly.getArtefactHashes(report, version)
-                    + orderly.getResourceHashes(report, version))
+                    + orderly.getResourceHashes(report, version)
+                    + orderly.getReadme(report, version))
                     .map { "$folderName/${it.key}" }
         }
     }
