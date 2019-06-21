@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
@@ -32,6 +33,8 @@ class ReportController(context: ActionContext,
     {
         val name = context.params(":name")
         val response = orderlyServerAPI.post("/reports/$name/run/", context)
+        LoggerFactory.getLogger("TEST").info("--------------- tried to run report ---------------")
+        LoggerFactory.getLogger("TEST").info(response.text)
         return passThroughResponse(response)
     }
 
