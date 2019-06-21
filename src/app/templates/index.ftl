@@ -12,19 +12,20 @@
     <a href="#" class="mr-2" id="collapse">Collapse all reports</a>/<a href="#" class="ml-2" id="expand">Expand all
     reports</a>
 </div>
-<table id="reports-table" class="table dt-responsive display table-striped">
-    <thead>
-    <tr>
-        <th>Name</th>
-        <th>Id</th>
-            <#if isReviewer>
-                <th>Status</th>
-            </#if>
-        <th>Author</th>
-        <th>Requester</th>
-    </tr>
-    </thead>
-</table>
+    <table id="reports-table" class="table display table-striped" style="width:100%">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Id</th>
+                <#if isReviewer>
+                    <th>Status</th>
+                </#if>
+            <th>Author</th>
+            <th>Requester</th>
+        </tr>
+        </thead>
+    </table>
+
     <#macro scripts>
         <script type="text/javascript">
             var reports = ${reportsJson}
