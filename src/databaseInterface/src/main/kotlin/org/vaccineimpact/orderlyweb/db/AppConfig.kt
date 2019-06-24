@@ -6,6 +6,8 @@ import java.util.*
 interface Config
 {
     operator fun get(key: String): String
+    fun getBool(key: String): Boolean
+    fun getInt(key: String): Int
 
     val authorizationEnabled: Boolean
 }
@@ -46,8 +48,8 @@ class AppConfig : Config
         getBool("auth.fine_grained")
     }
     
-    fun getInt(key: String) = get(key).toInt()
-    fun getBool(key: String) = get(key).toBoolean()
+    override fun getInt(key: String) = get(key).toInt()
+    override fun getBool(key: String) = get(key).toBoolean()
 }
 
 class MissingConfiguration(key: String) : Exception("Detected a value like \${foo} for key '$key' in the configuration. This probably means that the config template has not been processed. Try running ./gradlew :PROJECT:copy[Test]Config")

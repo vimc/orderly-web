@@ -47,6 +47,7 @@ dependencies {
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
 
     compile "khttp:khttp:0.1.0"
+    compile "com.squareup.okhttp3:okhttp:4.0.0-RC1"
 
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "khttp:khttp:0.1.0"
