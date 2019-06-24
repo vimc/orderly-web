@@ -1,13 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersion
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.encompass
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -15,6 +8,9 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
@@ -43,9 +39,7 @@ class ReportController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
-        LoggerFactory.getLogger("TEST").info("--------------- tried to get report status ---------------")
-        LoggerFactory.getLogger("TEST").info(response.text)
-         return passThroughResponse(response)
+        return passThroughResponse(response)
     }
 
 
@@ -53,6 +47,8 @@ class ReportController(context: ActionContext,
     {
         val key = context.params(":key")
         val response = orderlyServerAPI.get("/reports/$key/status/", context)
+        LoggerFactory.getLogger("TEST").info("--------------- tried to get report status ---------------")
+        LoggerFactory.getLogger("TEST").info(response.text)
         return passThroughResponse(response)
     }
 
