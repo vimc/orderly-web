@@ -43,7 +43,9 @@ class ReportController(context: ActionContext,
         val name = context.params(":name")
         val version = context.params(":version")
         val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
-        return passThroughResponse(response)
+        LoggerFactory.getLogger("TEST").info("--------------- tried to get report status ---------------")
+        LoggerFactory.getLogger("TEST").info(response.text)
+         return passThroughResponse(response)
     }
 
 
