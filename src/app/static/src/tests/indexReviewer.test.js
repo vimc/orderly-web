@@ -2,7 +2,7 @@ import {initReportTable} from "../js";
 
 const $ = require('jquery');
 
-describe("index page", () => {
+describe("index page as report reviewer", () => {
 
     document.body.innerHTML = '<table id="reports-table" class="table dt-responsive display table-striped">\n' +
         '        <thead>\n' +
@@ -149,6 +149,7 @@ describe("index page", () => {
 
     it("wires up status filter", () => {
 
+        expect($.fn.dataTable.ext.search.length).toBe(2);
         const $table = $('#reports-table');
         const $filter = $('#status-filter');
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
