@@ -46,7 +46,7 @@ class ReportController(context: ActionContext,
     fun status(): String
     {
         val key = context.params(":key")
-        val response = orderlyServerAPI.get("/reports/$key/status/", context)
+        val response = orderlyServerAPI.get("/reports/$key/status/?output=true", context)
         LoggerFactory.getLogger("TEST").info("--------------- tried to get report status ---------------")
         LoggerFactory.getLogger("TEST").info(response.text)
         return passThroughResponse(response)
