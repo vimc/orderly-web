@@ -9,6 +9,8 @@ import org.eclipse.egit.github.core.service.OrganizationService
 import org.eclipse.egit.github.core.service.TeamService
 import org.eclipse.egit.github.core.service.UserService
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
+import org.vaccineimpact.orderlyweb.db.MissingConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 
 interface GithubAuthHelper
@@ -43,11 +45,15 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         val githubOrg = appConfig["auth.github_org"]
         val teamName = appConfig["auth.github_team"]
 
-        if (!githubOrg.isEmpty() && !currentUserBelongsToOrg(githubOrg))
+        if (githubOrg.isEmpty())
+        {
+            throw InvalidConfigurationKey("auth.github_org", githubOrg)
+        }
+        if (!currentUserBelongsToOrg(githubOrg))
         {
             throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
-        if (!githubOrg.isEmpty() && !teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
+        if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
         }
