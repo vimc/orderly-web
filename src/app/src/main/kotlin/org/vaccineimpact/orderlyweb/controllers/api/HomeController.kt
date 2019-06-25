@@ -13,7 +13,7 @@ class HomeController(context: ActionContext, private val config: Config)
     constructor(context: ActionContext) :
             this(context, AppConfig())
 
-    fun index() = Index("montagu-reports", this.config["app.version"], OrderlyWeb.urls)
+    fun index() = Index(this.config["app.name"], this.config["app.version"], OrderlyWeb.urls)
 
     data class Index(val name: String, val version: String, val endpoints: List<String>)
 }

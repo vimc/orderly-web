@@ -53,24 +53,24 @@ class ReportController(context: ActionContext,
 
     fun getAllReports(): List<Report>
     {
-        if (!reportReadingScopes.any())
+        if (!canReadReports())
         {
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
         val reports = orderly.getAllReports()
-        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
+        return reports.filter { canReadReport(it.name) }
     }
 
     fun getAllVersions(): List<ReportVersion>
     {
-        if (!reportReadingScopes.any())
+        if (!canReadReports())
         {
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
         val reports = orderly.getAllReportVersions()
-        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
+        return reports.filter { canReadReport(it.name) }
     }
 
     fun getVersionsByName(): List<String>
