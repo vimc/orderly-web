@@ -1,0 +1,10 @@
+{
+  "id": "Report",
+  "type": "object",
+  "properties": {
+    "name": {"type" :"string"},
+    "display_name": {"type": [ "string", "null"] },
+    "latest_version": { "type": "string" }
+  },
+  "required": ["name", "latest_version", "display_name"]
+}

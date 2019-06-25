@@ -1,0 +1,5 @@
+{
+	"id": "Dictionary",
+	"type": "object",
+	"additionalProperties": { "type": "string"}
+}

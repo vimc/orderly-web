@@ -1,0 +1,16 @@
+{
+    "id": "Response",
+    "type": "object",
+    "properties": {
+        "status": {
+            "enum": [ "success", "failure" ]
+        },
+        "data": {},
+        "errors": {
+            "type": "array",
+            "items": { "$ref": "Error.schema.json" }
+        }
+    },
+    "additionalProperties": false,
+    "required": ["status", "errors", "data" ]
+}

@@ -9,12 +9,12 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
 
-class GithubAuthenticationTests : SeleniumTest()
+class GithubAuthenticationTests : CustomConfigTests()
 {
     val JSONValidator = JSONValidator()
 
     @Before
-    fun startApp() {
+    fun start() {
         startApp("auth.provider=github")
     }
 

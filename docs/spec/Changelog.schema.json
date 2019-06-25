@@ -1,0 +1,24 @@
+{
+
+  "id": "Changelog",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "report_version": {
+        "type": "string"
+      },
+      "label": {
+        "type": "string"
+      },
+      "value": {
+        "type": "string"
+      },
+      "from_file": {
+        "type": "boolean"
+      }
+    },
+    "additionalProperties": false,
+    "required": ["report_version", "label", "value", "from_file"]
+  }
+}
