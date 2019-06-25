@@ -24,6 +24,7 @@ class ReportControllerTests : ControllerTest()
 {
     private val mockConfig = mock<Config> {
         on { this.get("orderly.root") } doReturn "root/"
+        on { this.authorizationEnabled } doReturn true
     }
 
     private val reportName = "report1"
@@ -33,6 +34,22 @@ class ReportControllerTests : ControllerTest()
 
     private val permissionSetGlobal = PermissionSet(
             setOf(ReifiedPermission("reports.read", Scope.Global())))
+
+    private val reports = listOf(Report(reportName, "test full name 1", "v1"),
+            Report("testname2", "test full name 2", "v1"))
+
+
+    private val reportVersions = listOf(
+            ReportVersion(reportName, "display1", "v1", "v1", true, Instant.now(),
+                    "auth", "req"),
+            ReportVersion("r2", "display2", "v2", "v2", true, Instant.now(),
+                    "auth", "req")
+    )
+
+    private val mockOrderly = mock<OrderlyClient> {
+        on { this.getAllReports() } doReturn reports
+        on { this.getAllReportVersions() } doReturn reportVersions
+    }
 
     @Test
     fun `runs a report`()
@@ -61,18 +78,11 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getAllReports returns report names user is authorized to see`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1"),
-                Report("testname2", "test full name 2", "v1"))
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reports
-        }
-
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn permissionSetForSingleReport
         }
 
-        val sut = ReportController(mockContext, orderly, mock(),
+        val sut = ReportController(mockContext, mockOrderly, mock(),
                 mock(),
                 mockConfig)
 
@@ -84,13 +94,6 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getAllReports returns all report names if fine grained auth is turned off`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1"),
-                Report("testname2", "test full name 2", "v1"))
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reports
-        }
-
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn permissionSetForSingleReport
         }
@@ -99,7 +102,7 @@ class ReportControllerTests : ControllerTest()
             on { authorizationEnabled } doReturn false
         }
 
-        val sut = ReportController(mockContext, orderly, mock(),
+        val sut = ReportController(mockContext, mockOrderly, mock(),
                 mock(),
                 mockConfig)
 
@@ -110,18 +113,11 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getAllReports returns all report names if user has global read permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1"),
-                Report("testname2", "test full name 2", "v1"))
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reports
-        }
-
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn permissionSetGlobal
         }
 
-        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+        val sut = ReportController(mockContext, mockOrderly, mock<ZipClient>(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -133,18 +129,11 @@ class ReportControllerTests : ControllerTest()
     @Test
     fun `getAllReports throws MissingRequiredPermission error if user has no report reading permissions`()
     {
-        val reports = listOf(Report(reportName, "test full name 1", "v1"),
-                Report("testname2", "test full name 2", "v1"))
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReports() } doReturn reports
-        }
-
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn PermissionSet()
         }
 
-        val sut = ReportController(mockContext, orderly, mock(),
+        val sut = ReportController(mockContext, mockOrderly, mock(),
                 mock(),
                 mockConfig)
 
@@ -153,26 +142,15 @@ class ReportControllerTests : ControllerTest()
                 .hasMessageContaining("*/reports.read")
     }
 
+
     @Test
     fun `getAllVersions returns all report versions if user has global read permissions`()
     {
-        val now = Instant.now()
-        val reportVersions = listOf(
-                ReportVersion("r1", "display1", "v1", "v1", true, now,
-                        "auth", "req"),
-                ReportVersion("r2", "display2", "v2", "v2", true, now,
-                        "auth", "req")
-        )
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn reportVersions
-        }
-
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn permissionSetGlobal
         }
 
-        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+        val sut = ReportController(mockContext, mockOrderly, mock<ZipClient>(),
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -181,19 +159,24 @@ class ReportControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getAllVersions returns all versions if fine grained auth is turned off`()
+    fun `getAllVersions returns only versions user can see`()
     {
-        val reportVersions = listOf(
-                ReportVersion("r1", "display1", "v1", "v1", true, Instant.now(),
-                        "auth", "req"),
-                ReportVersion("r2", "display2", "v2", "v2", true, Instant.now(),
-                        "auth", "req")
-        )
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn reportVersions
+        val mockContext = mock<ActionContext> {
+            on { it.permissions } doReturn permissionSetForSingleReport
         }
 
+        val sut = ReportController(mockContext, mockOrderly, mock(),
+                mock(),
+                mockConfig)
+
+        val result = sut.getAllVersions()
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo(reportName)
+    }
+
+    @Test
+    fun `getAllVersions returns all versions if fine grained auth is turned off`()
+    {
         val mockContext = mock<ActionContext> {
             on { it.permissions } doReturn permissionSetForSingleReport
         }
@@ -202,43 +185,12 @@ class ReportControllerTests : ControllerTest()
             on { authorizationEnabled } doReturn false
         }
 
-        val sut = ReportController(mockContext, orderly, mock(),
+        val sut = ReportController(mockContext, mockOrderly, mock(),
                 mock(),
                 mockConfig)
 
         val result = sut.getAllVersions()
         assertThat(result).hasSize(2)
-    }
-
-    @Test
-    fun `getAllVersions returns only versions user can see if fine grained auth is turned on`()
-    {
-        val reportVersions = listOf(
-                ReportVersion(reportName, "display1", "v1", "v1", true, Instant.now(),
-                        "auth", "req"),
-                ReportVersion("r2", "display2", "v2", "v2", true, Instant.now(),
-                        "auth", "req")
-        )
-
-        val orderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn reportVersions
-        }
-
-        val mockContext = mock<ActionContext> {
-            on { it.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn true
-        }
-
-        val sut = ReportController(mockContext, orderly, mock(),
-                mock(),
-                mockConfig)
-
-        val result = sut.getAllVersions()
-        assertThat(result).hasSize(1)
-        assertThat(result[0].name).isEqualTo(reportName)
     }
 
     @Test
@@ -307,6 +259,5 @@ class ReportControllerTests : ControllerTest()
             assertThat(result[i]).isEqualTo(changelogs[i])
         }
     }
-
 
 }
