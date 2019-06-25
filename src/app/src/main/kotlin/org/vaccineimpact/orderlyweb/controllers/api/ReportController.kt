@@ -19,7 +19,7 @@ class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
                        private val zip: ZipClient,
                        private val orderlyServerAPI: OrderlyServerAPI,
-                       private val config: Config) : Controller(context)
+                       private val config: Config) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(context,
