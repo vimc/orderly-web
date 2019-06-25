@@ -6,7 +6,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
+import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.MontaguDirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -25,7 +25,7 @@ class MontaguDirectClientTests : TeamcityTests()
         assertThat(credentialsExtractor.prefixHeader).isEqualTo("token ")
 
         val authenticator = sut.authenticator
-        assertThat(authenticator is GithubAuthenticator).isTrue()
+        assertThat(authenticator is MontaguAuthenticator).isTrue()
 
         val ags = sut.authorizationGenerators
         Assertions.assertThat((ags as List<AuthorizationGenerator<CommonProfile>>).count()).isEqualTo(1)
