@@ -18,10 +18,7 @@ class FineGrainedPermissionTests : CustomConfigTests()
     {
         startApp("auth.fine_grained=false")
 
-        // this is a PAT for a test user who only has access to a test org with no repos
-        // reversed so GitHub doesn't spot it and invalidate it
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
-
+        val token = RequestHelper().loginWithMontagu()["access_token"].toString()
         val result = post(url, auth = TestTokenHeader(token))
 
         assertSuccessful(result)
@@ -54,9 +51,7 @@ class FineGrainedPermissionTests : CustomConfigTests()
     {
         startApp("auth.fine_grained=true")
 
-        // this is a PAT for a test user who only has access to a test org with no repos
-        // reversed so GitHub doesn't spot it and invalidate it
-        val token = "db5920039c7d88fd976cbdab1da8e531c1148fcf".reversed()
+        val token = RequestHelper().loginWithMontagu()["access_token"].toString()
 
         val result = post(url, auth = TestTokenHeader(token))
 
