@@ -19,7 +19,7 @@ class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
                        private val zip: ZipClient,
                        private val orderlyServerAPI: OrderlyServerAPI,
-                       private val config: Config) : Controller(context)
+                       private val config: Config) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(context,
@@ -53,24 +53,24 @@ class ReportController(context: ActionContext,
 
     fun getAllReports(): List<Report>
     {
-        if (!reportReadingScopes.any())
+        if (!canReadReports())
         {
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
         val reports = orderly.getAllReports()
-        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
+        return reports.filter { canReadReport(it.name) }
     }
 
     fun getAllVersions(): List<ReportVersion>
     {
-        if (!reportReadingScopes.any())
+        if (!canReadReports())
         {
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
         val reports = orderly.getAllReportVersions()
-        return reports.filter { reportReadingScopes.encompass(Scope.Specific("report", it.name)) }
+        return reports.filter { canReadReport(it.name) }
     }
 
     fun getVersionsByName(): List<String>
