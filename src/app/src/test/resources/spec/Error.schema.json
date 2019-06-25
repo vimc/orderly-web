@@ -1,9 +1,0 @@
-{
-    "id": "Error",
-    "properties": {
-        "code": { "$ref": "ErrorCode.schema.json" },
-        "message": { "type": "string" }
-    },
-    "additionalProperties": false,
-    "required": [ "code", "message" ]
-}

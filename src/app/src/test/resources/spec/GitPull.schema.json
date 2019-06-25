@@ -1,7 +1,0 @@
-{
-  "id": "GitPull",
-  "type": ["array", "string"],
-  "items": {
-    "type": "string"
-  }
-}
