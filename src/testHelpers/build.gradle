@@ -3,6 +3,8 @@ dependencies {
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
     compile "khttp:khttp:0.1.0"
+    compile "org.assertj:assertj-core:3.6.2"
+    compile "com.github.fge:json-schema-validator:2.2.6"
 
     compile project(":databaseInterface")
 }

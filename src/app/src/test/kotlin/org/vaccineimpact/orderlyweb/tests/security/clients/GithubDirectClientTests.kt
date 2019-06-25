@@ -4,12 +4,11 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.pac4j.core.authorization.generator.AuthorizationGenerator
-import org.pac4j.core.client.BaseClient
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
-import org.vaccineimpact.orderlyweb.security.clients.GithubDirectClient
+import org.vaccineimpact.orderlyweb.security.clients.GitHubDirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class GithubDirectClientTests : TeamcityTests()
@@ -17,7 +16,7 @@ class GithubDirectClientTests : TeamcityTests()
     @Test
     fun `initialises as expected`()
     {
-        val sut = GithubDirectClient()
+        val sut = GitHubDirectClient()
         sut.init()
 
         val credentialsExtractor = sut.credentialsExtractor

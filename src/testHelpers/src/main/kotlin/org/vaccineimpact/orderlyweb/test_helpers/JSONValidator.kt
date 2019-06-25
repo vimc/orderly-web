@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.validators
+package org.vaccineimpact.orderlyweb.test_helpers
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonNode

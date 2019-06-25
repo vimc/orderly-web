@@ -1,16 +1,16 @@
 package org.vaccineimpact.orderlyweb.tests.security
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.authorization.authorizer.AbstractRequireElementAuthorizer
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.WebActionAdaptor
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
-import org.vaccineimpact.orderlyweb.security.clients.APIActionAdaptor
-import org.vaccineimpact.orderlyweb.security.clients.JWTHeaderClient
-import org.vaccineimpact.orderlyweb.security.clients.JWTParameterClient
+import org.vaccineimpact.orderlyweb.security.clients.*
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class APISecurityClientsConfigFactoryTests: TeamcityTests()
@@ -53,21 +53,39 @@ class APISecurityClientsConfigFactoryTests: TeamcityTests()
     }
 
     @Test
-    fun `allows external authentication`()
+    fun `allows external authentication with Montagu if configured auth provider`()
     {
-        val sut = APISecurityClientsConfigFactory()
+        val mockAuthConfig = mock<AuthenticationConfig> () {
+            on { getAuthenticationDirectClient() } doReturn MontaguDirectClient()
+        }
+        val sut = APISecurityClientsConfigFactory(mockAuthConfig)
         val result = sut.externalAuthentication()
 
         assertThat(result).isEqualTo(sut)
         val allClients = result.allClients().split(", ")
         assertThat(allClients.count()).isEqualTo(1)
-        assertThat(allClients[0]).isEqualTo("GithubDirectClient")
+        assertThat(allClients[0]).isEqualTo("MontaguDirectClient")
+    }
+
+    @Test
+    fun `allows external authentication with GitHub if configured auth provider`()
+    {
+        val mockAuthConfig = mock<AuthenticationConfig> () {
+            on { getAuthenticationDirectClient() } doReturn GitHubDirectClient()
+        }
+        val sut = APISecurityClientsConfigFactory(mockAuthConfig)
+        val result = sut.externalAuthentication()
+
+        assertThat(result).isEqualTo(sut)
+        val allClients = result.allClients().split(", ")
+        assertThat(allClients.count()).isEqualTo(1)
+        assertThat(allClients[0]).isEqualTo("GitHubDirectClient")
     }
 
     @Test
     fun `builds expected config`()
     {
-        var sut = APISecurityClientsConfigFactory()
+        val sut = APISecurityClientsConfigFactory()
         sut.allowParameterAuthentication()
         val requiredPermissions = setOf(PermissionRequirement.parse("*/testperm"))
         sut.setRequiredPermissions(requiredPermissions)

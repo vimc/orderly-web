@@ -10,17 +10,13 @@ import org.eclipse.egit.github.core.service.TeamService
 import org.eclipse.egit.github.core.service.UserService
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.InvalidConfigurationKey
-import org.vaccineimpact.orderlyweb.db.MissingConfigurationKey
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 
 interface GithubAuthHelper
 {
     fun authenticate(token: String)
 
-    //Checks that the GitHub user associated with the given token is permitted to authenticate with OrderlyWeb by
-    //getting org/team membership for the user from GitHub API and comparing with permitted values in AppConfig.
-    //Throws CredentialsException if check fails
-    fun checkGithubUserHasOrderlyWebAccess()
+    fun checkGitHubOrgAndTeamMembership()
 
     fun getUserEmail(): String
 
@@ -38,7 +34,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         user = getGitHubUser()
     }
 
-    override fun checkGithubUserHasOrderlyWebAccess()
+    override fun checkGitHubOrgAndTeamMembership()
     {
         checkAuthenticated()
 
@@ -49,7 +45,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw InvalidConfigurationKey("auth.github_org", githubOrg)
         }
-        if (!currentUserBelongsToOrg(githubOrg))
+        if (!userBelongsToOrg(githubOrg))
         {
             throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
@@ -64,9 +60,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         checkAuthenticated()
 
         // If the GitHub user has no public email set, we need to make an extra call to get it
-        val email = user!!.email ?: getEmailForUser()
-
-        return email
+        return user!!.email ?: getEmailForUser()
     }
 
     override fun getUser(): User
@@ -108,7 +102,7 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         }
     }
 
-    private fun currentUserBelongsToOrg(githubOrg: String): Boolean
+    private fun userBelongsToOrg(githubOrg: String): Boolean
     {
         try
         {

@@ -1,16 +1,23 @@
-package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
+package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
 import khttp.options
 import khttp.post
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class GithubAuthenticationTests : IntegrationTest()
+class GithubAuthenticationTests : SeleniumTest()
 {
+    val JSONValidator = JSONValidator()
+
+    @Before
+    fun startApp() {
+        startApp("auth.provider=github")
+    }
+
     @Test
     fun `authentication fails without Auth header`()
     {
@@ -108,5 +115,5 @@ class GithubAuthenticationTests : IntegrationTest()
         }
     }
 
-    val url = "${APIRequestHelper().baseUrl}/login/"
+    val url = "${RequestHelper.apiBaseUrl}/login/"
 }
