@@ -23,13 +23,17 @@ For each endpoint, if the user does not have the `reports.review` permission the
 accessible. If the user does have `reports.review` then all reports will be accessible.
 
 ## POST /login/
-At the moment only GitHub authentication is supported. Users who are members of a configured GitHub organization or team
- will be able to access the API.
+To login and retrieve a bearer token that can be used to authenticate all other requests
+users will need either a GitHub token or a Montagu token, depending on which provider the app is configured to run with.
  
 To authenticate with GitHub, first create a limited scope GitHub token by going [here](https://github.com/settings/tokens)
 and choosing `read:user` and `user:email` under section `user` as the only selected scopes.
 
-Then make a POST request to `/login/` sending request header `Authorization: token GITHUB_TOKEN`
+To authenticate with Montagu, first retrieve a Montatgu token by following the instructions 
+[here](https://github.com/vimc/montagu-api/blob/master/docs/spec/Authentication.md#post-authenticate)
+
+Once you have a token from the appropriate provider, make a POST request to `/login/` sending request header 
+`Authorization: token MONTAGU_OR_GITHUB_TOKEN`
 
 Like so:
 
@@ -39,10 +43,10 @@ Like so:
     Content-Type: application/x-www-form-urlencoded
 
 ### Response
-If the GitHub token is valid, and the user is a member of the app's configured organization or team then an 
-OrderlyWeb access_token is returned that can be used in future
-requests. To use the token include the access token using the Authorization
-header, with this format: `Authorization: Bearer TOKEN` in future requests to
+If you provide a valid Montagu or GitHub token (for GitHub you must also be a member of the configured org and
+ optionally, team) then an OrderlyWeb access_token is returned that can be used in future
+requests. Include the access token using the Authorization
+header with the format `Authorization: Bearer ACCESS_TOKEN` in future requests to
 other  endpoints.
 
 Schema: [`LoginSuccessful.schema.json`](../schemas/LoginSuccessful.schema.json)
