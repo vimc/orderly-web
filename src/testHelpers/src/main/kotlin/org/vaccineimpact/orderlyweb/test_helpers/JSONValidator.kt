@@ -26,7 +26,6 @@ class JSONValidator
         checkResultSchema(json, "success")
         // Then use the more specific schema on the data portion
         val data = json["data"]
-       // val schema = readSchema(schemaName)
         assertValidates(schemaName, data)
     }
 
