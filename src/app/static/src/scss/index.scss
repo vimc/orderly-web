@@ -10,12 +10,29 @@ $border-color: rgba(0, 0, 0, 0.125);
   }
 
   th {
-    border-bottom: 0;
     border-top: 0;
     border-left: 1px solid $border-color;
+    border-bottom: 0;
+    box-shadow: inset 0 0 0 0 transparent;
 
-    &:nth-child(0), &:nth-child(2) {
+    &:nth-child(1), &:nth-child(2) {
       border-left: 0;
+    }
+
+    &.sorting_asc {
+      box-shadow: inset 0 3px 0 0 $gray-600;
+    }
+
+    &.sorting_desc {
+      box-shadow: inset 0 -3px 0 0 $gray-600;
+    }
+  }
+
+  thead {
+    tr:first-child {
+      th {
+        border-bottom: 1px solid $border-color;
+      }
     }
   }
 

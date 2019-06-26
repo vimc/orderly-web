@@ -1,4 +1,4 @@
-import {options} from "../js/utils/reportsTable"
+import {nameFilter, options, statusFilter} from "../js/utils/reportsTable"
 
 const $ = require('jquery');
 
@@ -6,14 +6,19 @@ describe("reportsTable", () => {
 
     it("has expected columns when user is reviewer", () => {
         const cols = options(true, []).columns;
-        expect(cols.length).toBe(5);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "author", "requester"])
+        expect(cols.length).toBe(6);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "author", "requester", "display_name"])
     });
 
     it("has expected columns when user is not a reviewer", () => {
         const cols = options(false, []).columns;
-        expect(cols.length).toBe(4);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "author", "requester"])
+        expect(cols.length).toBe(5);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "author", "requester", "display_name"])
+    });
+
+    it("has invisible display name col", () => {
+        const cols = options(false, []).columns;
+        expect(cols[4].visible).toBe(false);
     });
 
     it("is ordered by version desc", () => {
@@ -21,6 +26,12 @@ describe("reportsTable", () => {
         expect(opts.order).toStrictEqual([[2, "desc"]]);
         expect(opts.columns[1].data).toBe("id");
     });
+
+    it("has expected dom structure", () => {
+        const dom = options(true, []).dom;
+        expect(dom).toBe('<"top">rt<"bottom"lp><"clear">',);
+    });
+
 
     describe("name cell", () => {
 
@@ -180,7 +191,37 @@ describe("reportsTable", () => {
             const result = requesterCol.render("requester", null, {tt_parent: 1});
             expect(result).toBe("requester");
         });
-    })
+    });
 
+    describe("filtering", () => {
+
+        const internal = [null, "r1", "v1", false, "author", "requester", "displaya"];
+        const published = [null, "r2", "v1", true, "author", "requester", "displayb"];
+
+        it("can return reports with any status", () => {
+            expect(statusFilter("all", internal)).toBe(true);
+            expect(statusFilter("all", published)).toBe(true);
+        });
+
+        it("can return published reports", () => {
+            expect(statusFilter("published", internal)).toBe(false);
+            expect(statusFilter("published", published)).toBe(true);
+        });
+
+        it("can return internal reports", () => {
+            expect(statusFilter("internal", internal)).toBe(true);
+            expect(statusFilter("internal", published)).toBe(false);
+        });
+
+        it("can filter by name", () => {
+            expect(nameFilter(6, "2", internal)).toBe(false);
+            expect(nameFilter(6, "2", published)).toBe(true);
+        });
+
+        it("can filter by display name", () => {
+            expect(nameFilter(6, "aya", internal)).toBe(true);
+            expect(nameFilter(6, "aya", published)).toBe(false);
+        });
+    });
 
 });
