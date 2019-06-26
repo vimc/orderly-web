@@ -82,10 +82,16 @@ export const options = (isReviewer, reports) => {
             "data": "requester",
             "render": buildBasicCell,
             "orderable": false
+        },
+        {
+            "data": "display_name",
+            "visible": false,
+            "searchable": true
         }]);
 
     return {
-        "dom": '<"top"f>rt<"bottom"lp><"clear">',
+        "dom": '<"top">rt<"bottom"lp><"clear">',
+        "bSortCellsTop": true,
         "data": reports,
         "collapsed": true,
         "columns": cols,
@@ -95,4 +101,21 @@ export const options = (isReviewer, reports) => {
         "lengthMenu": [10, 25, 50, 75, 100],
         "pageLength": 50
     }
+};
+
+export const statusFilter = (selectedStatus, data) => {
+    switch (selectedStatus) {
+        case "published":
+            return data[3];
+        case "internal":
+            return !data[3];
+        case "all":
+        default:
+            return true
+    }
+};
+
+export const nameFilter = (displayNameCol, value, data) => {
+    const re = new RegExp(value);
+    return re.test(data[1]) || re.test(data[displayNameCol]);
 };
