@@ -2,13 +2,15 @@
 <#-- @ftlvariable name="loggedIn" type="Boolean" -->
 <#-- @ftlvariable name="user" type="String" -->
 <#-- @ftlvariable name="logo" type="String" -->
+<#-- @ftlvariable name="appUrl" type="String" -->
 <head>
     <#if styles??>
         <@styles></@styles>
     <#else>
         <link rel="stylesheet" type="text/css" href="${appUrl}/css/style.css">
     </#if>
-
+    <link rel="icon" href="${appUrl}/favicon.ico" type="image/ico"/>
+    <link rel="shortcut icon" href="${appUrl}/favicon.ico" type="image/x-icon"/>
     <title>${appName}</title>
 </head>
     <body>
