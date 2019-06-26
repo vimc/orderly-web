@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
 import org.pac4j.core.client.IndirectClient
-import org.pac4j.core.context.Cookie
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.logout.LogoutActionBuilder
@@ -14,8 +13,8 @@ import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
+import org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
-import org.vaccineimpact.orderlyweb.security.providers.khttpMontaguAPIClient
 import java.net.URLEncoder
 
 class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(), OrderlyWebTokenCredentialClient
@@ -28,12 +27,13 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
 
     override fun clientInit()
     {
-        val montaguAPIClient = khttpMontaguAPIClient()
+        val montaguAPIClient = OkHttpMontaguAPIClient.create()
         val cookieExtractor = CookieExtractor(cookie)
         defaultCredentialsExtractor(cookieExtractor)
         defaultRedirectActionBuilder(MontaguIndirectClientRedirectActionBuilder(montaguAPIClient, cookieExtractor))
 
         defaultAuthenticator(MontaguAuthenticator(OrderlyUserRepository(), montaguAPIClient))
+
         setAuthorizationGenerator(OrderlyAuthorizationGenerator())
 
         defaultLogoutActionBuilder(MontaguLogoutActionBuilder())
@@ -84,13 +84,6 @@ class MontaguLogoutActionBuilder : LogoutActionBuilder<CommonProfile>
 {
     override fun getLogoutAction(context: WebContext, currentProfile: CommonProfile, targetUrl: String?): RedirectAction
     {
-        //logout of Montagu by resetting token cookies
-        listOf("montagu_jwt_token", "jwt_token").forEach {
-            val cookie = Cookie(it, "")
-            cookie.domain = context.serverName
-            context.addResponseCookie(cookie)
-        }
-
         return RedirectAction.redirect(AppConfig()["app.url"])
     }
 }
