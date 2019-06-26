@@ -13,7 +13,7 @@
         <a href="#" class="mr-2" id="collapse">Collapse all reports</a>/<a href="#" class="ml-2" id="expand">Expand all
             reports</a>
     </div>
-    <table id="reports-table" class="table dt-responsive display table-striped">
+    <table id="reports-table" class="table display table-striped" style="width:100%">
         <thead>
         <tr>
             <th>

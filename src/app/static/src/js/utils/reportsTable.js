@@ -99,7 +99,8 @@ export const options = (isReviewer, reports) => {
             [2, 'desc']
         ],
         "lengthMenu": [10, 25, 50, 75, 100],
-        "pageLength": 50
+        "pageLength": 50,
+        "autoWidth": false
     }
 };
 
