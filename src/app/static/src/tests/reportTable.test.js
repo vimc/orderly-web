@@ -32,6 +32,11 @@ describe("reportsTable", () => {
         expect(dom).toBe('<"top">rt<"bottom"lp><"clear">',);
     });
 
+    it("has expected options", () => {
+        const opts = options(true, []);
+        expect(opts.pageLength).toBe(50);
+        expect(opts.autoWidth).toBe(false);
+    });
 
     describe("name cell", () => {
 
