@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
+import org.hamcrest.Matchers
 import org.jsoup.nodes.Document
 import org.junit.ClassRule
 import org.junit.Test
@@ -12,6 +13,8 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
+import org.xmlmatchers.XmlMatchers
+import javax.xml.transform.Source
 
 class LayoutTests : TeamcityTests()
 {
@@ -30,7 +33,9 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertHeaderRenderedCorrectly(doc)
+        val xml = template.xmlResponseFor(testModel)
+
+        assertHeaderRenderedCorrectly(doc, xml)
 
         assertThat(doc.select(".logout").count()).isEqualTo(0) //should not show logged in view
         assertThat(doc.select("#content").count()).isEqualTo(1)
@@ -40,7 +45,7 @@ class LayoutTests : TeamcityTests()
     fun `renders correctly when logged in`()
     {
         val mockContext = mock<ActionContext> {
-            on {userProfile} doReturn CommonProfile().apply {
+            on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
             }
         }
@@ -48,8 +53,9 @@ class LayoutTests : TeamcityTests()
         val testModel = IndexViewModel(mockContext, listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
+        val xml = template.xmlResponseFor(testModel)
 
-        assertHeaderRenderedCorrectly(doc)
+        assertHeaderRenderedCorrectly(doc, xml)
 
         assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
         assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
@@ -60,9 +66,15 @@ class LayoutTests : TeamcityTests()
 
     }
 
-    private fun assertHeaderRenderedCorrectly(doc: Document)
+    private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)
     {
         val appName = AppConfig()["app.name"]
+
+        org.hamcrest.MatcherAssert.assertThat(xml,
+                XmlMatchers.hasXPath("//link[@rel='icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico")))
+
+        org.hamcrest.MatcherAssert.assertThat(xml,
+                XmlMatchers.hasXPath("//link[@rel='shortcut icon']/@href", Matchers.equalTo("http://localhost:8888/favicon.ico")))
 
         assertThat(doc.select("title").text()).isEqualTo(appName)
         assertThat(doc.select("header a").attr("href")).isEqualTo("/")
@@ -71,5 +83,6 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.select(".site-title a").attr("href")).isEqualTo("http://localhost:8888")
         assertThat(doc.select(".site-title a").text()).isEqualTo(appName)
+
     }
 }
