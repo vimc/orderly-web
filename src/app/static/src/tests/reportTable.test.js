@@ -202,30 +202,44 @@ describe("reportsTable", () => {
 
         const internal = [null, "r1", "v1", false, "author", "requester", "displaya"];
         const published = [null, "r2", "v1", true, "author", "requester", "displayb"];
+        const parentBoth = [null, "r2,r1", "v1,v1", "true,false", "author", "requester", "displaya,displayb"];
+        const parentInternalOnly = [null, "", "", "false,false", "", "", ""];
+        const parentPublishedOnly = [null, "", "", "true,true", "", "", ""];
 
         it("can return reports with any status", () => {
             expect(statusFilter("all", internal)).toBe(true);
             expect(statusFilter("all", published)).toBe(true);
+            expect(statusFilter("all", parentBoth)).toBe(true);
+            expect(statusFilter("all", parentPublishedOnly)).toBe(true);
+            expect(statusFilter("all", parentInternalOnly)).toBe(true);
         });
 
         it("can return published reports", () => {
             expect(statusFilter("published", internal)).toBe(false);
             expect(statusFilter("published", published)).toBe(true);
+            expect(statusFilter("published", parentBoth)).toBe(true);
+            expect(statusFilter("published", parentPublishedOnly)).toBe(true);
+            expect(statusFilter("published", parentInternalOnly)).toBe(false);
         });
 
         it("can return internal reports", () => {
             expect(statusFilter("internal", internal)).toBe(true);
             expect(statusFilter("internal", published)).toBe(false);
+            expect(statusFilter("internal", parentBoth)).toBe(true);
+            expect(statusFilter("internal", parentPublishedOnly)).toBe(false);
+            expect(statusFilter("internal", parentInternalOnly)).toBe(true);
         });
 
         it("can filter by name", () => {
             expect(nameFilter(6, "2", internal)).toBe(false);
             expect(nameFilter(6, "2", published)).toBe(true);
+            expect(nameFilter(6, "2", parentBoth)).toBe(true);
         });
 
         it("can filter by display name", () => {
             expect(nameFilter(6, "aya", internal)).toBe(true);
             expect(nameFilter(6, "aya", published)).toBe(false);
+            expect(nameFilter(6, "aya", parentBoth)).toBe(true);
         });
     });
 
