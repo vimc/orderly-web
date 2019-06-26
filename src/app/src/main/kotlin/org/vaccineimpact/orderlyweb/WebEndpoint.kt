@@ -65,7 +65,6 @@ data class WebEndpoint(
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
         ))
-
     }
 
 }

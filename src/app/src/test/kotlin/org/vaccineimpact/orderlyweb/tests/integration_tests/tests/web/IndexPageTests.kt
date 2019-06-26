@@ -1,13 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
 class IndexPageTests : IntegrationTest()
 {
@@ -15,9 +16,9 @@ class IndexPageTests : IntegrationTest()
     private val url = "/"
 
     @Test
-    fun `only report readers can get index page`()
+    fun `all authenticated users can get index page`()
     {
-        assertWebUrlSecured(url, readReports)
+        assertWebUrlSecured(url, setOf())
     }
 
     @Test
