@@ -4,7 +4,7 @@ module.exports = {
         "<rootDir>/src/tests/setup.js"
     ],
     "globals": {
-        "appUrl": "http://app",
+        "appUrl": "http://app"
     },
     "moduleFileExtensions": [
         "js",
