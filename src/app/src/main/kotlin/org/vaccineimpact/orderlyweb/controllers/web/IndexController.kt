@@ -6,25 +6,22 @@ import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
-class IndexController: OrderlyDataController
+class IndexController : OrderlyDataController
 {
     constructor(actionContext: ActionContext,
-                orderly: OrderlyClient): super(actionContext, orderly)
+                orderly: OrderlyClient) : super(actionContext, orderly)
 
-    constructor(actionContext: ActionContext): super(actionContext)
+    constructor(actionContext: ActionContext) : super(actionContext)
 
     @Template("index.ftl")
     fun index(): IndexViewModel
     {
-        if (!canReadReports())
-        {
-            throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
-        }
-
         val reports = orderly.getAllReportVersions()
                 .filter { canReadReport(it.name) }
 
-        return IndexViewModel.build(reports,
-                orderly.getGlobalPinnedReports(), context)
+        val pinnedReports = orderly.getGlobalPinnedReports()
+                .filter { canReadReport(it.name) }
+
+        return IndexViewModel.build(reports, pinnedReports, context)
     }
 }
