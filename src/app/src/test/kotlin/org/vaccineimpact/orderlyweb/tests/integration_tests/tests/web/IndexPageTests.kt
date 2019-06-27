@@ -26,6 +26,15 @@ class IndexPageTests : IntegrationTest()
     }
 
     @Test
+    fun `unauthenticated users cannot get index page`()
+    {
+        val response = webRequestHelper.getWebPage("/")
+
+        val page = Jsoup.parse(response.text)
+        assertThat(page.selectFirst(".siteTitle").text()).isEqualTo("Montagu") // user has been redirected to login
+    }
+
+    @Test
     fun `can download pinned report zip file`()
     {
         insertGlobalPinnedReport("minimal", 0)
