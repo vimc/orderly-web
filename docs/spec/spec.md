@@ -277,7 +277,7 @@ Required permissions: `reports.run`.
 ```
 ## GET /reports/:name/versions/:version/data/
 
-Gets a dict of data names to hashes.
+Gets a dictionary of data names to hashes.
 
 Required permissions: `reports.read`.
 
@@ -299,9 +299,13 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/artefacts/
 
-Gets a dict of artefact names to hashes.
+Gets a dictionary of artefact names to hashes.
 
 Required permissions: `reports.read`.
+
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {
@@ -317,9 +321,13 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/resources/
 
-Gets a dict of resource names to hashes.
+Gets a dictionary of resource names to hashes.
 
 Required permissions: `reports.read`.
+
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {
@@ -335,7 +343,7 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/all/
 
-Downloads a zip file of everything (including data).
+Downloads a zip file of all files associated with a report version (including data).
 
 Required permissions: `reports.read`.
 
