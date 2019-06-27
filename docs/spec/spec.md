@@ -281,6 +281,9 @@ Gets a dict of data names to hashes.
 
 Required permissions: `reports.read`.
 
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {  
