@@ -19,7 +19,6 @@ In addition
   
   * [`Error.schema.json`](Error.schema.json) - Schema of error responses
   * [`ErrorCode.schema.json`](ErrorCode.schema.json) - Schema of error codes (provided as part of error responses)
-  * [`Index.schema.json`](Index.schema.json) - Schema of response found at root url `/` which lists all available endpoints
   * [`Response.schema.json`](Response.schema.json) - The wrapper schema of all responses. 
 
 * For each endpoint, if the user does not have the `reports.review` permission then only published report versions' data 
@@ -67,6 +66,14 @@ Schema: [`LoginSuccessful.schema.json`](../schemas/LoginSuccessful.schema.json)
 
 Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the authentication 
 provider is GitHub and the user is not a member of the configured GitHub organization or team.
+
+## GET /
+
+Return a description of all endpoint available over the api. 
+
+Required permissions: none
+
+Schema: [`Index.schema.json`](Index.schema.json)
 
 ## GET /reports/
 
