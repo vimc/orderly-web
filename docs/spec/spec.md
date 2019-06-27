@@ -350,9 +350,12 @@ Required permissions: `reports.read`.
 ## GET /reports/:name/versions/:version/changelog/
 
 Returns the changelog for a report version, the report creator's record of changes made during the development
-of this version.
+of this version. 
 
-Required permissions: `reports.review`.
+`Reports.read` is the minimum permission required. Users who have `reports.read` permission only will be able to see
+public changelog entries. Users with `reports.review` permission will also see internal changelog entries. 
+
+Required permissions: `reports.read`.
 
 Schema: [`Changelog.schema.json`]( Changelog.schema.json)
 
@@ -375,6 +378,39 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
 ]
 ```
 
+## GET /reports/:name/latest/changelog/
+
+Returns the changelog for latest version of the named report. 
+
+`Reports.read` is the minimum permission required. Users who have `reports.read` permission only will be able to see
+public changelog entries. Users with `reports.review` permission will also see internal changelog entries. 
+
+The changelog returned will belong to the the latest report version which is accessible to the user. For readers with 
+`report.read` permission only, this will be the latest public version. For readers with `report.review` permission it
+will be the latest published or unpublished version. 
+
+Required permissions: `reports.read`.
+
+Schema: [`Changelog.schema.json`]( Changelog.schema.json)
+
+### Example
+
+```json
+[
+  {
+    "label": "public",
+    "value": "Added graphs",
+    "from_file": true,
+    "report_version": "20171220-234033-f97cc4f3"
+  },
+  {
+    "label": "internal",
+    "value": "Fixed typos in text",
+    "from_file": true,
+    "report_version": "20171202-074745-4f66ded4"
+  }
+]
+```
 
 ## GET /data/csv/:id/
 
@@ -388,29 +424,3 @@ Download a data set in rds format.
 
 Required permissions: `reports.read`.
 
-## GET /reports/:name/latest/changelog/
-
-Returns the changelog for latest version of the named report. 
-
-Required permissions: `reports.review`.
-
-Schema: [`Changelog.schema.json`]( Changelog.schema.json)
-
-### Example
-
-```json
-[
-  {
-    "label": "public",
-    "value": "Added graphs",
-    "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3"
-  },
-  {
-    "label": "internal",
-    "value": "Fixed typos in text",
-    "from_file": true,
-    "report_version": "20171202-074745-4f66ded4"
-  }
-]
-```
