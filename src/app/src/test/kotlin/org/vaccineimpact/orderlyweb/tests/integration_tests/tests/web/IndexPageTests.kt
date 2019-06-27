@@ -1,10 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.JsonArray
+import com.google.gson.JsonParser
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
@@ -24,6 +28,35 @@ class IndexPageTests : IntegrationTest()
         val page = Jsoup.parse(response.text)
         assertThat(page.selectFirst("h1").text()).isEqualTo("Find a report")
     }
+
+    @Test
+    fun `only reports the user has permission to read are shown`()
+    {
+        // with single report permission
+        var sessionCookie = webRequestHelper.webLoginWithMontagu(setOf(ReifiedPermission("reports.read",
+                Scope.Specific("report", "minimal"))))
+        var response = webRequestHelper.requestWithSessionCookie("/", sessionCookie)
+
+        var page = Jsoup.parse(response.text)
+        var reportsTag = page.getElementsByTag("script")[2].html()
+                .split("var reports = ")
+
+        var reports = JsonParser().parse(reportsTag[1]) as JsonArray
+        assertThat(reports.count()).isEqualTo(2)
+
+        // with global permission
+        sessionCookie = webRequestHelper.webLoginWithMontagu(setOf(ReifiedPermission("reports.read",
+                Scope.Global())))
+        response = webRequestHelper.requestWithSessionCookie("/", sessionCookie)
+
+        page = Jsoup.parse(response.text)
+        reportsTag = page.getElementsByTag("script")[2].html()
+                .split("var reports = ")
+
+        reports = JsonParser().parse(reportsTag[1]) as JsonArray
+        assertThat(reports.count()).isEqualTo(13)
+    }
+
 
     @Test
     fun `unauthenticated users cannot get index page`()
