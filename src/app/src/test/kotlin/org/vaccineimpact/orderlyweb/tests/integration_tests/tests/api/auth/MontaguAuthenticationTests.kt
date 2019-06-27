@@ -32,7 +32,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     }
 
     @Test
-    fun `authentication fails with invalid github token`()
+    fun `authentication fails with invalid token`()
     {
         val result = post(url, auth = TestTokenHeader("badtoken"))
         assertThat(result.statusCode).isEqualTo(401)
