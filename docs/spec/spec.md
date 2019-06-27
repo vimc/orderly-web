@@ -4,8 +4,8 @@ Follows the general points in the [montagu api](https://github.com/vimc/montagu-
 
 * all data is returned in JSON format following the standard response schema defined above
 * `POST` data must be sent in JSON format
-* All API endpoints can be found relative to `[base-url]/api/[version]`, where `[base-url]` is the home url for the OrderlyWeb
-web portal, and `[version]` is the required version of the api/
+* All API endpoints can be found relative to `https://[base-url]/api/[version]`, where `[base-url]` is the home url for the 
+OrderlyWeb web portal, and `[version]` is the required version of the api.
 * The only available version currently is `v1` so all api endpoints can be found relative to
 `https://[base-url]/api/v1/` e.g. `https://[base-url]/api/v1/reports/`
 * API endpoints can be accessed with or without trailing slashes e.g. both `https://[base-url]/api/v1/reports/` and 
@@ -14,10 +14,17 @@ web portal, and `[version]` is the required version of the api/
 In addition
 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
-* Authentication is via tokens issued by the Montagu API or by GitHub (see [below](## post-login) for details).
+* Authentication is via tokens issued by the Montagu API or by GitHub (see [below](#post-login) for details).
+* Here are the JSON formats of some response types not covered by the standard data responses described below:
+  
+  * [`Error.schema.json`](Error.schema.json) 
+  * [`ErrorCode.schema.json`](ErrorCode.schema.json)
+  * [`Index.schema.json`](Index.schema.json)
+  * [`Response.schema.json`](Response.schema.json)
 
-For each endpoint, if the user does not have the `reports.review` permission then only published reports will be 
+* For each endpoint, if the user does not have the `reports.review` permission then only published reports' data will be 
 accessible. If the user does have `reports.review` then all reports will be accessible.
+
 
 ## POST /login/
 To login and retrieve a bearer token that can be used to authenticate all other requests
@@ -56,8 +63,8 @@ Schema: [`LoginSuccessful.schema.json`](../schemas/LoginSuccessful.schema.json)
         "expires_in": 3600
     }
 
-Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the user is not
- a member of the configured GitHub organization or team.
+Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the authentication 
+provider is GitHub and the user is not a member of the configured GitHub organization or team.
 
 ## GET /reports/
 
