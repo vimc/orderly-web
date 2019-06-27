@@ -15,12 +15,12 @@ In addition
 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
 * Authentication is via tokens issued by the Montagu API or by GitHub (see [below](#post-login) for details).
-* Here are the JSON formats of some response types not covered by the standard data responses described below:
+* Here are the JSON schema of some response types not covered by the standard data responses described below:
   
-  * [`Error.schema.json`](Error.schema.json) 
-  * [`ErrorCode.schema.json`](ErrorCode.schema.json)
-  * [`Index.schema.json`](Index.schema.json)
-  * [`Response.schema.json`](Response.schema.json)
+  * [`Error.schema.json`](Error.schema.json) - Schema of error responses
+  * [`ErrorCode.schema.json`](ErrorCode.schema.json) - Schema of error codes (provided as part of error responses)
+  * [`Index.schema.json`](Index.schema.json) - Schema of response found at root url `/` which lists all available endpoints
+  * [`Response.schema.json`](Response.schema.json) - The wrapper schema of all responses. 
 
 * For each endpoint, if the user does not have the `reports.review` permission then only published reports' data will be 
 accessible. If the user does have `reports.review` then all reports will be accessible.
@@ -68,8 +68,7 @@ provider is GitHub and the user is not a member of the configured GitHub organiz
 
 ## GET /reports/
 
-Return a list of all reports with minimal metadata - the id, human readable name, latest version of each and
-whether that version is published.
+Return a list of all reports with minimal metadata - the id, human readable name and latest version of each.
 
 Required permissions: `reports.read`.
 
@@ -80,8 +79,8 @@ Schema: [`Reports.schema.json`](Reports.schema.json)
 ```json
 
   [
-    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63", "published": "true"},
-    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734", "published": "false"}       
+    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
+    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
   ]
 
 ```
