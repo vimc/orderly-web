@@ -1,23 +1,20 @@
 # OrderlyWeb API
 
-Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/spec/spec.md)
+Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/docs/spec/spec.md)
 
 * all data is returned in JSON format following the standard response schema defined above
 * `POST` data must be sent in JSON format
-* The canonical form for all URLs (not including query string) ends in a slash: `/`
-* The API will be versioned via URL. So for version 1, all URLs will begin /v1/. e.g. http://.../v1/reports/
+* All API endpoints can be found relative to `[base-url]/api/[version]`, where `[base-url]` is the home url for the OrderlyWeb
+web portal, and `[version]` is the required version of the api/
+* The only available version currently is `v1` so all api endpoints can be found relative to
+`https://[base-url]/api/v1/` e.g. `https://[base-url]/api/v1/reports/`
+* API endpoints can be accessed with or without trailing slashes e.g. both `https://[base-url]/api/v1/reports/` and 
+`https://[base-url]/api/v1/reports` will work. 
 
 In addition
 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
-* Authentication is via tokens issues by the Montagu API
-
-Some files are directly copied over (with only whitespace changes) from `montagu-api`:
-
-* `Error.schema.json`
-* `ErrorCode.schema.json`
-* `Index.schema.json`
-* `Response.schema.json`
+* Authentication is via tokens issued by the Montagu API or by GitHub (see [below](## post-login) for details).
 
 For each endpoint, if the user does not have the `reports.review` permission then only published reports will be 
 accessible. If the user does have `reports.review` then all reports will be accessible.
