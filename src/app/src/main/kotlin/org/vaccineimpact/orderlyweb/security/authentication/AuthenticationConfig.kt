@@ -5,8 +5,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.credentials.Credentials
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
+import org.vaccineimpact.orderlyweb.security.clients.*
 
 open class AuthenticationConfig(val appConfig: Config = AppConfig())
 {
@@ -36,6 +35,14 @@ open class AuthenticationConfig(val appConfig: Config = AppConfig())
         return  when (getConfiguredProvider()) {
             AuthenticationProvider.GitHub -> GithubIndirectClient(getGithubOAuthKey(), getGithubOAuthSecret())
             AuthenticationProvider.Montagu -> MontaguIndirectClient()
+        }
+    }
+
+    open fun getAuthenticationDirectClient() : OrderlyWebTokenCredentialClient
+    {
+        return  when (getConfiguredProvider()) {
+            AuthenticationProvider.GitHub -> GitHubDirectClient()
+            AuthenticationProvider.Montagu -> MontaguDirectClient()
         }
     }
 

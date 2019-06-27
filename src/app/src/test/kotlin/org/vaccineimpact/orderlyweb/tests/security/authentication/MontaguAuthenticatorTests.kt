@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
@@ -80,6 +81,20 @@ class MontaguAuthenticatorTests : TeamcityTests()
 
         verify(mockUserRepo).addUser("user@example.com", "test.user", "",
                 UserSource.Montagu)
+    }
+
+    @Test
+    fun `adds url wildcard to profile`()
+    {
+        val mockMontaguAPIClient = mock<MontaguAPIClient> {
+            on { getUserDetails("token") } doReturn fakeUserDetails.copy(name = null)
+        }
+        val sut = MontaguAuthenticator(mockUserRepo, mockMontaguAPIClient)
+
+        val credentials = TokenCredentials("token")
+        sut.validate(credentials, mock())
+
+        assertThat(credentials.userProfile.getAttribute("url")).isEqualTo("*")
     }
 
 }

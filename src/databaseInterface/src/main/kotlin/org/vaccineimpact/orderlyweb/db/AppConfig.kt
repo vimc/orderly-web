@@ -54,3 +54,4 @@ class AppConfig : Config
 
 class MissingConfiguration(key: String) : Exception("Detected a value like \${foo} for key '$key' in the configuration. This probably means that the config template has not been processed. Try running ./gradlew :PROJECT:copy[Test]Config")
 class MissingConfigurationKey(val key: String) : Exception("Missing configuration key '$key'")
+class InvalidConfigurationKey(val key: String, val value: String) : Exception("Invalid configuration value '$value' for key '$key'")

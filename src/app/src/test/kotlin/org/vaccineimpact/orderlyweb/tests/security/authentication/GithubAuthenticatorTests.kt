@@ -44,7 +44,7 @@ class GithubAuthenticatorTests : TeamcityTests()
         val sut = GithubAuthenticator(mockUserData, mock(), mockGithubAuthHelper)
         sut.validate(TokenCredentials("token"), mock())
         verify(mockGithubAuthHelper).authenticate("token")
-        verify(mockGithubAuthHelper).checkGithubUserHasOrderlyWebAccess()
+        verify(mockGithubAuthHelper).checkGitHubOrgAndTeamMembership()
         verify(mockGithubAuthHelper).getUser()
         verify(mockGithubAuthHelper).getUserEmail()
     }
