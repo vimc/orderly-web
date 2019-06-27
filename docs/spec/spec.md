@@ -22,8 +22,10 @@ In addition
   * [`Index.schema.json`](Index.schema.json) - Schema of response found at root url `/` which lists all available endpoints
   * [`Response.schema.json`](Response.schema.json) - The wrapper schema of all responses. 
 
-* For each endpoint, if the user does not have the `reports.review` permission then only published reports' data will be 
-accessible. If the user does have `reports.review` then all reports will be accessible.
+* For each endpoint, if the user does not have the `reports.review` permission then only published report versions' data 
+will be accessible. If the user does have `reports.review` then both published and unpublished report versions will be accessible. 
+* In addition, users may have permission scoped at the report level, and will not be able to access reports for which they
+do not have read or review permission. 
 
 
 ## POST /login/
@@ -91,7 +93,7 @@ Returns a list of version names for the named report.
 
 Required permissions: `reports.read`.
 
-Schema: [`Versions.schema.json`](Version.schema.json)
+Schema: [`Versions.schema.json`](Versions.schema.json)
 
 ### Example
 
@@ -109,7 +111,7 @@ Returns metadata about a single report version.
 
 Required permissions: `reports.read`.
 
-Schema: [`Report.schema.json`](Version.schema.json)
+Schema: [`Version.schema.json`](Version.schema.json)
 
 ### Example
 
