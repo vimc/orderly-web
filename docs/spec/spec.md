@@ -143,7 +143,7 @@ Schema: [`Version.schema.json`](Version.schema.json)
 
 ## POST /reports/:name/run/
 
-Try and run a report `:name`.
+Starts a new Orderly run of a report named `:name`.
 
 Required permissions: `reports.run`.
 
@@ -171,7 +171,7 @@ Get the status of a report.
 
 Required permissions: `reports.run`.
 
-This works only for reports that were queued by the runner itself/
+This works only for reports that were queued by the runner itself.
 
 Schema: [`Status.schema.json`](Status.schema.json)
 
@@ -227,7 +227,7 @@ true
 
 ## GET /reports/git/status/
 
-Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash informationl.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
+Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash information.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
 
 Required permissions: `reports.run`.
 
