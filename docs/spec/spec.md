@@ -1,32 +1,76 @@
 # OrderlyWeb API
 
-Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/docs/spec/spec.md)
-
-* all data is returned in JSON format following the standard response schema defined above
-* `POST` data must be sent in JSON format
+# General points
+* By default data returned is in JSON format, and POST and PUT data is expected 
+  as a string containing JSON-formatted data. Some endpoints return other data
+  as described in the individual endpoint descriptions.
+* Dates and times are returned as strings according to the ISO 8601 standard.
+* Unless otherwise noted, URLs and IDs embedded in URLs are case-sensitive.
+* You must include the correct accept-header for each request: `application/json` for 
+  json endpoints and `text/csv` for csv endpoints. If your accept-header is incorrectly 
+  set for the endpoint you are accessing, you may get a `Error: Unknown resource. 
+  Please check the URL` even though your URL may be correct.
 * All API endpoints can be found relative to `https://[base-url]/api/[version]`, where `[base-url]` is the home url for the 
-OrderlyWeb web portal, and `[version]` is the required version of the api.
+  OrderlyWeb web portal, and `[version]` is the required version of the api.
 * The only available version currently is `v1` so all api endpoints can be found relative to
-`https://[base-url]/api/v1/` e.g. `https://[base-url]/api/v1/reports/`
+  `https://[base-url]/api/v1/` e.g. `https://[base-url]/api/v1/reports/`
 * API endpoints can be accessed with or without trailing slashes e.g. both `https://[base-url]/api/v1/reports/` and 
-`https://[base-url]/api/v1/reports` will work. 
-
-In addition
-
+  `https://[base-url]/api/v1/reports` will work. 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
 * Authentication is via tokens issued by the Montagu API or by GitHub (see [below](#post-login) for details).
-* Here are the JSON schema of some response types not covered by the standard data responses described below:
-  
-  * [`Error.schema.json`](Error.schema.json) - Schema of error responses
-  * [`ErrorCode.schema.json`](ErrorCode.schema.json) - Schema of error codes (provided as part of error responses)
-  * [`Response.schema.json`](Response.schema.json) - The wrapper schema of all responses. 
-
 * For each endpoint, if the user does not have the `reports.review` permission then only published report versions' data 
 will be accessible. If the user does have `reports.review` then both published and unpublished report versions will be accessible. 
 * In addition, users may have permission scoped at the report level, and will not be able to access reports for which they
-do not have read or review permission. 
+do not have read or review permission.   
 
+# Standard response format
+All responses are returned in a standard format. Throughout this specification, 
+wherever an endpoint describes its response format, it should be assumed the payload is wrapped in
+the standard response format, so that the `data` property holds the payload.
 
+## Success
+Schema: [`Response.schema.json`](Response.schema.json)
+
+### Example
+    {
+        "status": "success",
+        "data": {},
+        "errors": []
+    }
+
+## Error
+Schema: [`Response.schema.json`](Response.schema.json)
+
+### Example
+    {
+        "status": "failure",
+        "data": null,
+        "errors": [
+            { 
+                "code": "unique-error-code", 
+                "message": "Full, user-friendly error message" 
+            }
+        ]
+    }
+
+# Standard response codes
+The complete list of HTTP status codes returned by the API is:
+* 200 - OK
+* 201 - Object successfully created
+* 400 - Bad request
+* 404 - Resource not found. This will be returned both when the url is not part of the spec,
+and when a requested resource does not exist 
+* 401 - Unauthorized - User is not logged in
+* 403 - Forbidden - User does not have required permissions
+* 409 - Conflict. This will be returned when the user's request attempts to insert an object into
+the database with a primary key that already exists.
+* 500 - Internal server error - This generally indicates an unexpected error has occurred. 
+
+*Note that we use 400 liberally to indicate when submitted data
+does not conform to expected OrderlyWeb conventions, as well as for invalid operation
+ requests.
+
+#Endpoints
 ## POST /login/
 To login and retrieve a bearer token that can be used to authenticate all other requests
 users will need either a GitHub token or a Montagu token, depending on which provider the app is configured to run with.
@@ -69,7 +113,7 @@ provider is GitHub and the user is not a member of the configured GitHub organiz
 
 ## GET /
 
-Return a description of all endpoint available over the api. 
+Return a description of all endpoints available over the api. 
 
 Required permissions: none
 
@@ -356,7 +400,9 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/all/
 
-Downloads a zip file of all files associated with a report version (including data).
+If the requesting user has `reports.review` permission, downloads a zip file of all files associated with a report 
+version (including data). If the user only has `reports.read` permission, a zip file containing the report version's
+artefacts, resources and readme file only will be downloaded.  
 
 Required permissions: `reports.read`.
 
