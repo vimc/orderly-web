@@ -18,7 +18,7 @@ class OrderlyTests : TeamcityTests()
     fun `initialises Orderly correctly when user is reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+            on { this.isReviewer()} doReturn true
         }
 
         val sut = Orderly(mockContext)
@@ -29,7 +29,7 @@ class OrderlyTests : TeamcityTests()
     fun `initialises Orderly correctly when user is not reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+            on { this.isReviewer() } doReturn false
         }
 
         val sut = Orderly(mockContext)
@@ -40,7 +40,7 @@ class OrderlyTests : TeamcityTests()
     fun `initialises Orderly correctly when user is global reader`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.read", Scope.Global())) } doReturn true
+            on { this.isGlobalReader() } doReturn true
         }
 
         val sut = Orderly(mockContext)
@@ -51,7 +51,7 @@ class OrderlyTests : TeamcityTests()
     fun `initialises Orderly correctly when user is not global reader`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.read", Scope.Global())) } doReturn false
+            on { this.isGlobalReader() } doReturn false
         }
 
         val sut = Orderly(mockContext)

@@ -23,7 +23,7 @@ abstract class Controller(val context: ActionContext, val appConfig: Config = Ap
     {
         return if (appConfig.authorizationEnabled)
         {
-            context.reportReadingScopes.any()
+            context.isGlobalReader() || context.reportReadingScopes.any()
         }
         else
         {

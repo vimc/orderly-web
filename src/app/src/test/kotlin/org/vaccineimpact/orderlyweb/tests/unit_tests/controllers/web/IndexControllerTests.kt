@@ -149,53 +149,5 @@ class IndexControllerTests : TeamcityTests()
         }
     }
 
-    @Test
-    fun `only reports the user has permission to read are returned`()
-    {
-        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
-
-        val r1v1 = ReportVersion(reportName, null, "v1", "v2", true, someDate, "author1", "requester1")
-        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
-                "another author", "another requester")
-        val r2v2 = ReportVersion("r2", null, "r2v2", "r2v1", true, someDate.minus(Duration.ofDays(2)),
-                "another author", "another requester")
-
-        val fakeReports = listOf(r1v1, r2v1, r2v2)
-
-        val mockOrderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn fakeReports
-        }
-
-        val sut = IndexController(specificReaderContext, mockOrderly)
-
-        val result = sut.index()
-
-        assertThat(result.reports.count()).isEqualTo(2) // one parent row and one child row
-        assertThat(result.reports.all { it.name == reportName }).isTrue()
-    }
-
-    @Test
-    fun `only pinned reports the user has permission to read are returned`()
-    {
-        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
-
-        val r1v1 = ReportVersion(reportName, null, "v1", "v2", true, someDate, "author1", "requester1")
-        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
-                "another author", "another requester")
-
-        val fakeReports = listOf(r1v1, r2v1)
-
-        val mockOrderly = mock<OrderlyClient> {
-            on { this.getGlobalPinnedReports() } doReturn fakeReports
-        }
-
-        val sut = IndexController(specificReaderContext, mockOrderly)
-
-        val result = sut.index()
-
-        assertThat(result.pinnedReports.count()).isEqualTo(1)
-        assertThat(result.pinnedReports.first().name).isEqualTo(reportName)
-    }
-
 }
 
