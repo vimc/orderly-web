@@ -460,7 +460,6 @@ Schema: [`Versions.schema.json`](Versions.schema.json)
 ]  
 ```
 
-
 ## GET /data/csv/:id/
 
 Downloads a data set in csv format.
