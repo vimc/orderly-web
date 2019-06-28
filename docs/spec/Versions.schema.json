@@ -1,7 +1,5 @@
 {
   "id": "Versions",
   "type": "array",
-  "items": {
-    "type": "string"
-  }
+  "items": { "$ref": "Version.schema.json" }
 }

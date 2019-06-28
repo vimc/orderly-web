@@ -100,7 +100,7 @@ Returns a list of version names for the named report.
 
 Required permissions: `reports.read`.
 
-Schema: [`Versions.schema.json`](Versions.schema.json)
+Schema: [`VersionIds.schema.json`](VersionIds.schema.json)
 
 ### Example
 
@@ -114,11 +114,11 @@ Schema: [`Versions.schema.json`](Versions.schema.json)
 
 ## GET /reports/:name/versions/:version/
 
-Returns metadata about a single report version.
+Returns full metadata about a single report version.
 
 Required permissions: `reports.read`.
 
-Schema: [`Version.schema.json`](Version.schema.json)
+Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
 
 ### Example
 
@@ -398,7 +398,7 @@ will be the latest published or unpublished version.
 
 Required permissions: `reports.read`.
 
-Schema: [`Changelog.schema.json`]( Changelog.schema.json)
+Schema: [`Changelog.schema.json`](Changelog.schema.json)
 
 ### Example
 
@@ -418,6 +418,43 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
   }
 ]
 ```
+
+## GET /versions/
+
+Gets metadata of all report versions accessible to the user. 
+
+Required permissions: `reports.read`
+
+Schema: [`Versions.schema.json`](Versions.schema.json)
+
+### Example
+
+```json
+{
+    "id": "20161006-142357-e80edf58",
+    "name": "minimal",
+    "displayname": null,
+    "description": null,
+    "artefacts": [
+      {        
+          "format": "staticgraph",
+          "description": "A graph of things",
+          "files": [
+            "mygraph.png"
+          ]        
+      }
+    ],
+    "resources": ["source/inputdata.csv"],
+    "date": "2016-10-06 14:23:57.0",   
+    "data_hashes": {
+      "dat": "386f507375907a60176b717016f0a648"
+    },
+    "published": false,
+    "requester": "Funder McFunderface",
+    "author": "Researcher McResearcherface"
+  }
+```
+
 
 ## GET /data/csv/:id/
 
