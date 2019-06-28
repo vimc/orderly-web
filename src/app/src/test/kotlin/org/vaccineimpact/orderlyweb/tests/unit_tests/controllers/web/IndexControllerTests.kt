@@ -197,31 +197,5 @@ class IndexControllerTests : TeamcityTests()
         assertThat(result.pinnedReports.first().name).isEqualTo(reportName)
     }
 
-    @Test
-    fun `isReviewer is true when report reviewing permission is present in the context`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
-            on { permissions } doReturn PermissionSet()
-        }
-
-        val sut = IndexController(mockContext, mock())
-        val result = sut.index()
-        assertThat(result.isReviewer).isTrue()
-    }
-
-    @Test
-    fun `isReviewer is false when report reviewing permission is not present in the context`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
-            on { permissions } doReturn PermissionSet()
-        }
-
-        val sut = IndexController(mockContext, mock())
-        val result = sut.index()
-        assertThat(result.isReviewer).isFalse()
-    }
-
 }
 

@@ -1,10 +1,20 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.ZipClient
+import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ReportTests : CleanDatabaseTests()
@@ -37,6 +47,109 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[1].name).isEqualTo("test2")
         assertThat(results[1].displayName).isEqualTo("display name test2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
+    }
+
+    @Test
+    fun `getAllReports returns report names user is authorized to see`()
+    {
+        insertReport("goodname", "va")
+        insertReport("badname", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.reportReadingScopes } doReturn listOf("goodname")
+        }
+
+        val sut = Orderly(mockContext)
+
+        val result = sut.getAllReports()
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("goodname")
+    }
+
+    @Test
+    fun `getAllReports returns all report names if user has global read permissions`()
+    {
+        insertReport("goodname", "va")
+        insertReport("badname", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.isGlobalReader() } doReturn true
+        }
+
+        val sut = Orderly(mockContext)
+
+        val results = sut.getAllReports()
+        assertThat(results.count()).isEqualTo(2)
+    }
+
+    @Test
+    fun `getGlobalPinnedReports returns report names user is authorized to see`()
+    {
+        insertReport("goodname", "va")
+        insertReport("badname", "vb")
+        insertGlobalPinnedReport("goodname", 0)
+        insertGlobalPinnedReport("badname", 1)
+
+        val mockContext = mock<ActionContext> {
+            on { it.reportReadingScopes } doReturn listOf("goodname")
+        }
+
+        val sut = Orderly(mockContext)
+
+        val result = sut.getGlobalPinnedReports()
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("goodname")
+    }
+
+    @Test
+    fun `getGlobalPinnedReports returns all report names if user has global read permissions`()
+    {
+        insertReport("goodname", "va")
+        insertReport("anothername", "vb")
+        insertGlobalPinnedReport("goodname", 0)
+        insertGlobalPinnedReport("anothername", 1)
+
+        val mockContext = mock<ActionContext> {
+            on { it.isGlobalReader() } doReturn true
+        }
+
+        val sut = Orderly(mockContext)
+
+        val results = sut.getGlobalPinnedReports()
+        assertThat(results.count()).isEqualTo(2)
+    }
+
+    @Test
+    fun `getAllReportVersions returns report names user is authorized to see`()
+    {
+        insertReport("goodname", "va")
+        insertReport("badname", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.reportReadingScopes } doReturn listOf("goodname")
+        }
+
+        val sut = Orderly(mockContext)
+
+        val result = sut.getAllReportVersions()
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("goodname")
+    }
+
+    @Test
+    fun `getAllReportVersions returns all report names if user has global read permissions`()
+    {
+        insertReport("goodname", "va")
+        insertReport("anothername", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.isGlobalReader() } doReturn true
+        }
+
+        val sut = Orderly(mockContext)
+
+        val results = sut.getAllReportVersions()
+        assertThat(results.count()).isEqualTo(2)
     }
 
     @Test

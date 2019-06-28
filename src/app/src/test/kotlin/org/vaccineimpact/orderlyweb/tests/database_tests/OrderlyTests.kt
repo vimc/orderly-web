@@ -62,11 +62,8 @@ class OrderlyTests : TeamcityTests()
     @Test
     fun `passes through names of reports user can read`()
     {
-        val permissions = setOf(ReifiedPermission("reports.read", Scope.Specific("report", "minimal")),
-                ReifiedPermission("reports.read", Scope.Specific("version", "v1"))
-        )
         val mockContext = mock<ActionContext> {
-            on { permissions } doReturn PermissionSet()
+            on { reportReadingScopes } doReturn listOf("minimal")
         }
 
         val sut = Orderly(mockContext)

@@ -76,57 +76,6 @@ class ReportControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getAllReports returns report names user is authorized to see`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { it.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val sut = ReportController(mockContext, mockOrderly, mock(),
-                mock(),
-                mockConfig)
-
-        val result = sut.getAllReports()
-        assertThat(result).hasSize(1)
-        assertThat(result[0].name).isEqualTo(reportName)
-    }
-
-    @Test
-    fun `getAllReports returns all report names if fine grained auth is turned off`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { it.permissions } doReturn permissionSetForSingleReport
-        }
-
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn false
-        }
-
-        val sut = ReportController(mockContext, mockOrderly, mock(),
-                mock(),
-                mockConfig)
-
-        val result = sut.getAllReports()
-        assertThat(result).hasSize(2)
-    }
-
-    @Test
-    fun `getAllReports returns all report names if user has global read permissions`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { it.permissions } doReturn permissionSetGlobal
-        }
-
-        val sut = ReportController(mockContext, mockOrderly, mock<ZipClient>(),
-                mock<OrderlyServerAPI>(),
-                mockConfig)
-
-        val result = sut.getAllReports()
-        assertThat(result).hasSameElementsAs(reports)
-    }
-
-
-    @Test
     fun `getAllReports throws MissingRequiredPermission error if user has no report reading permissions`()
     {
         val mockContext = mock<ActionContext> {
