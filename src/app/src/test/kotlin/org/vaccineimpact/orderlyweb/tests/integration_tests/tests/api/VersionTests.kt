@@ -145,7 +145,7 @@ class VersionTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Versions")
+        JSONValidator.validateAgainstSchema(response.text, "VersionIds")
     }
 
     @Test
@@ -157,7 +157,7 @@ class VersionTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Versions")
+        JSONValidator.validateAgainstSchema(response.text, "VersionIds")
     }
 
     @Test
@@ -171,14 +171,14 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `can get report by name and version with global permissionss`()
+    fun `can get report by name and version with global permissions`()
     {
         insertReport("testname", "testversion")
         val response = apiRequestHelper.get("/reports/testname/versions/testversion",
                 userEmail = fakeGlobalReportReader())
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Version")
+        JSONValidator.validateAgainstSchema(response.text, "VersionDetails")
     }
 
     @Test
@@ -189,7 +189,7 @@ class VersionTests : IntegrationTest()
                 userEmail = fakeReportReader("testname"))
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Version")
+        JSONValidator.validateAgainstSchema(response.text, "VersionDetails")
     }
 
     @Test
@@ -210,7 +210,7 @@ class VersionTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstSchema(response.text, "Version")
+        JSONValidator.validateAgainstSchema(response.text, "VersionDetails")
     }
 
     @Test
