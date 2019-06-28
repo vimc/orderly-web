@@ -238,6 +238,8 @@ Get git status.  This does not quite map onto `git status` but includes output f
 
 Required permissions: `reports.run`.
 
+Schema: [`GitStatus.schema.json`](GitStatus.schema.json)
+
 ## Example
 
 ```json
@@ -255,6 +257,8 @@ Fetch from remote git.  This is required before accessing an updated reference (
 
 Required permissions: `reports.run`.
 
+Schema: [`GitFetch.schema.json`](GitFetch.schema.json)
+
 ## Example
 
 ```json
@@ -264,12 +268,13 @@ Required permissions: `reports.run`.
 ]
 ```
 
-
 ## POST /reports/git/pull/
 
 Pull from remote git.  This updates the working tree.
 
 Required permissions: `reports.run`.
+
+Schema: [`GitPull.schema.json`](GitPull.schema.json)
 
 ## Example
 
@@ -282,6 +287,7 @@ Required permissions: `reports.run`.
   " create mode 100644 new"
 ]
 ```
+
 ## GET /reports/:name/versions/:version/data/
 
 Gets a dictionary of data names to hashes.
