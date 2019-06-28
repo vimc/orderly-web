@@ -3,11 +3,16 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ReportTests : CleanDatabaseTests()
 {
+    private fun createSut(isReviewer: Boolean = false): OrderlyClient
+    {
+        return Orderly(isReviewer, true, listOf())
+    }
 
     @Test
     fun `reader can get all published reports`()
@@ -19,7 +24,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
-        val sut = Orderly()
+        val sut = createSut()
 
         val results = sut.getAllReports()
 
@@ -41,7 +46,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test", "version2")
         insertReport("test", "version3", published = false)
 
-        val sut = Orderly()
+        val sut = createSut()
 
         val results = sut.getReportsByName("test")
 
@@ -61,7 +66,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
-        val sut = Orderly(isReviewer = true)
+        val sut = createSut(isReviewer = true)
 
         val results = sut.getAllReports()
 
@@ -81,7 +86,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("test", "version2")
         insertReport("test", "version3", published = false)
 
-        val sut = Orderly(isReviewer = true)
+        val sut = createSut(isReviewer = true)
 
         val results = sut.getReportsByName("test")
 

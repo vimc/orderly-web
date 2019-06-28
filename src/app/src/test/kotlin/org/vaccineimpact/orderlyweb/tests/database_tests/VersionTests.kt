@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
@@ -18,6 +19,10 @@ import java.sql.Timestamp
 
 class VersionTests : CleanDatabaseTests()
 {
+    private fun createSut(isReviewer: Boolean = false): OrderlyClient
+    {
+        return Orderly(isReviewer, true, listOf())
+    }
 
     @Test
     fun `reader can get published report version details`()
@@ -34,7 +39,7 @@ class VersionTests : CleanDatabaseTests()
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, fileNames = listOf("artefactfile.csv"))
 
-        val sut = Orderly()
+        val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
         assertThat(result.id).isEqualTo("version1")
@@ -57,7 +62,7 @@ class VersionTests : CleanDatabaseTests()
     {
         insertReport("test", "version1", published = false)
 
-        val sut = Orderly()
+        val sut = createSut()
         Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
@@ -67,7 +72,7 @@ class VersionTests : CleanDatabaseTests()
     {
         insertReport("test", "version1")
 
-        val sut = Orderly()
+        val sut = createSut()
 
         Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
@@ -79,7 +84,7 @@ class VersionTests : CleanDatabaseTests()
     {
         insertReport("test", "version1")
 
-        val sut = Orderly()
+        val sut = createSut()
 
         Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
@@ -90,7 +95,7 @@ class VersionTests : CleanDatabaseTests()
     {
         insertReport("test", "version1", published = false)
 
-        val sut = Orderly(isReviewer = true)
+        val sut = createSut(isReviewer = true)
 
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
@@ -111,7 +116,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test3", "test3version")
         insertReport("test3", "test3versionunpublished", published = false)
 
-        val sut = Orderly()
+        val sut = createSut()
 
         val results = sut.getAllReportVersions()
 
@@ -158,7 +163,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test3", "test3version")
         insertReport("test3", "test3versionunpublished", published = false)
 
-        val sut = Orderly(isReviewer = true)
+        val sut = createSut(isReviewer = true)
 
         val results = sut.getAllReportVersions()
 
@@ -214,7 +219,7 @@ class VersionTests : CleanDatabaseTests()
         insertGlobalPinnedReport("test3", 1)
         insertGlobalPinnedReport("test1", 2)
 
-        val sut = Orderly(isReviewer = false)
+        val sut = createSut(isReviewer = false)
 
         val results = sut.getGlobalPinnedReports()
 
@@ -242,7 +247,7 @@ class VersionTests : CleanDatabaseTests()
         insertGlobalPinnedReport("test3", 1)
         insertGlobalPinnedReport("test1", 2)
 
-        val sut = Orderly(isReviewer = true)
+        val sut = createSut(isReviewer = true)
 
         val results = sut.getGlobalPinnedReports()
 

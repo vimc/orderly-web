@@ -8,7 +8,4 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 abstract class OrderlyDataController(actionContext: ActionContext,
-                       val orderly: OrderlyClient =
-                               Orderly(actionContext.hasPermission(
-                                       ReifiedPermission("reports.review", Scope.Global())))
-): Controller(actionContext)
+                                     val orderly: OrderlyClient = Orderly(actionContext)) : Controller(actionContext)

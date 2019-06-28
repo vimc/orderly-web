@@ -40,7 +40,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with access token`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val token = apiRequestHelper.generateOnetimeToken(url)
@@ -54,7 +54,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with bearer token`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata)
@@ -67,7 +67,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with bearer token without trailing slash`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata)
@@ -93,7 +93,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `can get artefact file with scoped report reading permission`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata,
@@ -105,7 +105,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `can't get artefact file if report not within report reading scope`()
     {
-        val publishedVersion = Orderly().getReportsByName("other")[0]
+        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata,

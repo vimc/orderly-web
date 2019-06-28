@@ -34,30 +34,6 @@ class IndexControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `initialises Orderly correctly when user is reviewer`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
-        }
-
-        val sut = IndexController(mockContext)
-
-        assertThat((sut.orderly as Orderly).isReviewer).isTrue()
-    }
-
-    @Test
-    fun `initialises Orderly correctly when user is not reviewer`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
-        }
-
-        val sut = IndexController(mockContext)
-
-        assertThat((sut.orderly as Orderly).isReviewer).isFalse()
-    }
-
-    @Test
     fun `builds report rows`()
     {
         val someDate = Instant.parse("2019-05-23T12:31:00.613Z")

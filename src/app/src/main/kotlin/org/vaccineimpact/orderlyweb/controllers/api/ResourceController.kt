@@ -17,7 +17,7 @@ class ResourceController(context: ActionContext,
 {
     constructor(context: ActionContext) :
             this(context,
-                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Orderly(context),
                     Files(),
                     AppConfig())
 
