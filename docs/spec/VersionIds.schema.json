@@ -1,0 +1,7 @@
+{
+  "id": "VersionIds",
+  "type": "array",
+  "items": {
+    "type": "string"
+  }
+}

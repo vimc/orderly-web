@@ -1,27 +1,76 @@
 # OrderlyWeb API
 
-Follows the general points in the [montagu api](https://github.com/vimc/montagu-api/blob/master/spec/spec.md)
-
-* all data is returned in JSON format following the standard response schema defined above
-* `POST` data must be sent in JSON format
-* The canonical form for all URLs (not including query string) ends in a slash: `/`
-* The API will be versioned via URL. So for version 1, all URLs will begin /v1/. e.g. http://.../v1/reports/
-
-In addition
-
+# General points
+* By default data returned is in JSON format, and POST and PUT data is expected 
+  as a string containing JSON-formatted data. Some endpoints return other data
+  as described in the individual endpoint descriptions.
+* Dates and times are returned as strings according to the ISO 8601 standard.
+* Unless otherwise noted, URLs and IDs embedded in URLs are case-sensitive.
+* You must include the correct accept-header for each request: `application/json` for 
+  json endpoints and `text/csv` for csv endpoints. If your accept-header is incorrectly 
+  set for the endpoint you are accessing, you may get a `Error: Unknown resource. 
+  Please check the URL` even though your URL may be correct.
+* All API endpoints can be found relative to `https://[base-url]/api/[version]`, where `[base-url]` is the home url for the 
+  OrderlyWeb web portal, and `[version]` is the required version of the api.
+* The only available version currently is `v1` so all api endpoints can be found relative to
+  `https://[base-url]/api/v1/` e.g. `https://[base-url]/api/v1/reports/`
+* API endpoints can be accessed with or without trailing slashes e.g. both `https://[base-url]/api/v1/reports/` and 
+  `https://[base-url]/api/v1/reports` will work. 
 * Query parameters that accept booleans are case insensitive and accept `true` and `false`.
-* Authentication is via tokens issues by the Montagu API
+* Authentication is via tokens issued by the Montagu API or by GitHub (see [below](#post-login) for details).
+* For each endpoint, if the user does not have the `reports.review` permission then only published report versions' data 
+will be accessible. If the user does have `reports.review` then both published and unpublished report versions will be accessible. 
+* In addition, users may have permission scoped at the report level, and will not be able to access reports for which they
+do not have read or review permission.   
 
-Some files are directly copied over (with only whitespace changes) from `montagu-api`:
+# Standard response format
+All responses are returned in a standard format. Throughout this specification, 
+wherever an endpoint describes its response format, it should be assumed the payload is wrapped in
+the standard response format, so that the `data` property holds the payload.
 
-* `Error.schema.json`
-* `ErrorCode.schema.json`
-* `Index.schema.json`
-* `Response.schema.json`
+## Success
+Schema: [`Response.schema.json`](Response.schema.json)
 
-For each endpoint, if the user does not have the `reports.review` permission then only published reports will be 
-accessible. If the user does have `reports.review` then all reports will be accessible.
+### Example
+    {
+        "status": "success",
+        "data": {},
+        "errors": []
+    }
 
+## Error
+Schema: [`Response.schema.json`](Response.schema.json)
+
+### Example
+    {
+        "status": "failure",
+        "data": null,
+        "errors": [
+            { 
+                "code": "unique-error-code", 
+                "message": "Full, user-friendly error message" 
+            }
+        ]
+    }
+
+# Standard response codes
+The complete list of HTTP status codes returned by the API is:
+* 200 - OK
+* 201 - Object successfully created
+* 400 - Bad request
+* 404 - Resource not found. This will be returned both when the url is not part of the spec,
+and when a requested resource does not exist 
+* 401 - Unauthorized - User is not logged in
+* 403 - Forbidden - User does not have required permissions
+* 409 - Conflict. This will be returned when the user's request attempts to insert an object into
+the database with a primary key that already exists.
+* 500 - Internal server error - This generally indicates an unexpected error has occurred. 
+
+*Note that we use 400 liberally to indicate when submitted data
+does not conform to expected OrderlyWeb conventions, as well as for invalid operation
+ requests.
+
+#Endpoints
 ## POST /login/
 To login and retrieve a bearer token that can be used to authenticate all other requests
 users will need either a GitHub token or a Montagu token, depending on which provider the app is configured to run with.
@@ -59,13 +108,20 @@ Schema: [`LoginSuccessful.schema.json`](../schemas/LoginSuccessful.schema.json)
         "expires_in": 3600
     }
 
-Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the user is not
- a member of the configured GitHub organization or team.
+Otherwise an error response is returned with status code 401 if the token was invalid, or 403 if the authentication 
+provider is GitHub and the user is not a member of the configured GitHub organization or team.
+
+## GET /
+
+Return a description of all endpoints available over the api. 
+
+Required permissions: none
+
+Schema: [`Index.schema.json`](Index.schema.json)
 
 ## GET /reports/
 
-Return a list of all reports with minimal metadata - the id, human readable name, latest version of each and
-whether that version is published.
+Return a list of all reports with minimal metadata - the id, human readable name and latest version of each.
 
 Required permissions: `reports.read`.
 
@@ -76,8 +132,8 @@ Schema: [`Reports.schema.json`](Reports.schema.json)
 ```json
 
   [
-    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63", "published": "true"},
-    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734", "published": "false"}       
+    {"name": "minimal", "display_name": "Minimal example", "latest_version": "20161010-121958-d5f0ea63"},
+    {"name": "use_resource", "display_name": "Use resources example", "latest_version": "20171011-121958-effh734"}       
   ]
 
 ```
@@ -88,7 +144,7 @@ Returns a list of version names for the named report.
 
 Required permissions: `reports.read`.
 
-Schema: [`Versions.schema.json`](Version.schema.json)
+Schema: [`VersionIds.schema.json`](VersionIds.schema.json)
 
 ### Example
 
@@ -102,11 +158,11 @@ Schema: [`Versions.schema.json`](Version.schema.json)
 
 ## GET /reports/:name/versions/:version/
 
-Returns metadata about a single report version.
+Returns full metadata about a single report version.
 
 Required permissions: `reports.read`.
 
-Schema: [`Report.schema.json`](Version.schema.json)
+Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
 
 ### Example
 
@@ -138,7 +194,7 @@ Schema: [`Report.schema.json`](Version.schema.json)
 
 ## POST /reports/:name/run/
 
-Try and run a report `:name`.
+Starts a new Orderly run of a report named `:name`.
 
 Required permissions: `reports.run`.
 
@@ -166,7 +222,7 @@ Get the status of a report.
 
 Required permissions: `reports.run`.
 
-This works only for reports that were queued by the runner itself/
+This works only for reports that were queued by the runner itself.
 
 Schema: [`Status.schema.json`](Status.schema.json)
 
@@ -222,9 +278,11 @@ true
 
 ## GET /reports/git/status/
 
-Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash informationl.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
+Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash information.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
 
 Required permissions: `reports.run`.
+
+Schema: [`GitStatus.schema.json`](GitStatus.schema.json)
 
 ## Example
 
@@ -243,6 +301,8 @@ Fetch from remote git.  This is required before accessing an updated reference (
 
 Required permissions: `reports.run`.
 
+Schema: [`GitFetch.schema.json`](GitFetch.schema.json)
+
 ## Example
 
 ```json
@@ -252,12 +312,13 @@ Required permissions: `reports.run`.
 ]
 ```
 
-
 ## POST /reports/git/pull/
 
 Pull from remote git.  This updates the working tree.
 
 Required permissions: `reports.run`.
+
+Schema: [`GitPull.schema.json`](GitPull.schema.json)
 
 ## Example
 
@@ -270,12 +331,16 @@ Required permissions: `reports.run`.
   " create mode 100644 new"
 ]
 ```
+
 ## GET /reports/:name/versions/:version/data/
 
-Gets a dict of data names to hashes.
+Gets a dictionary of data names to hashes.
 
 Required permissions: `reports.read`.
 
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {  
@@ -291,9 +356,13 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/artefacts/
 
-Gets a dict of artefact names to hashes.
+Gets a dictionary of artefact names to hashes.
 
 Required permissions: `reports.read`.
+
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {
@@ -309,9 +378,13 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/resources/
 
-Gets a dict of resource names to hashes.
+Gets a dictionary of resource names to hashes.
 
 Required permissions: `reports.read`.
+
+Schema: [`Dictionary.schema.json`](Dictionary.schema.json)
+
+## Example
 
 ```json
 {
@@ -327,16 +400,21 @@ Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/all/
 
-Downloads a zip file of everything (including data).
+If the requesting user has `reports.review` permission, downloads a zip file of all files associated with a report 
+version (including data). If the user only has `reports.read` permission, a zip file containing the report version's
+artefacts, resources and readme file only will be downloaded.  
 
 Required permissions: `reports.read`.
 
 ## GET /reports/:name/versions/:version/changelog/
 
 Returns the changelog for a report version, the report creator's record of changes made during the development
-of this version.
+of this version. 
 
-Required permissions: `reports.review`.
+`Reports.read` is the minimum permission required. Users who have `reports.read` permission only will be able to see
+public changelog entries. Users with `reports.review` permission will also see internal changelog entries. 
+
+Required permissions: `reports.read`.
 
 Schema: [`Changelog.schema.json`]( Changelog.schema.json)
 
@@ -359,6 +437,74 @@ Schema: [`Changelog.schema.json`]( Changelog.schema.json)
 ]
 ```
 
+## GET /reports/:name/latest/changelog/
+
+Returns the changelog for latest version of the named report. 
+
+`Reports.read` is the minimum permission required. Users who have `reports.read` permission only will be able to see
+public changelog entries. Users with `reports.review` permission will also see internal changelog entries. 
+
+The changelog returned will belong to the the latest report version which is accessible to the user. For readers with 
+`report.read` permission only, this will be the latest public version. For readers with `report.review` permission it
+will be the latest published or unpublished version. 
+
+Required permissions: `reports.read`.
+
+Schema: [`Changelog.schema.json`](Changelog.schema.json)
+
+### Example
+
+```json
+[
+  {
+    "label": "public",
+    "value": "Added graphs",
+    "from_file": true,
+    "report_version": "20171220-234033-f97cc4f3"
+  },
+  {
+    "label": "internal",
+    "value": "Fixed typos in text",
+    "from_file": true,
+    "report_version": "20171202-074745-4f66ded4"
+  }
+]
+```
+
+## GET /versions/
+
+Gets metadata of all report versions accessible to the user. 
+
+Required permissions: `reports.read`
+
+Schema: [`Versions.schema.json`](Versions.schema.json)
+
+### Example
+
+```json
+[
+  {
+    "id": "20161006-142357-e80edf58",
+    "name": "minimal",
+    "displayname": null,  
+    "resources": ["source/inputdata.csv"],
+    "date": "2016-10-06 14:23:57.0",   
+    "published": false,
+    "requester": "Funder McFunderface",
+    "author": "Researcher McResearcherface"
+  },
+  {
+      "id": "20161106-152357-e80edf92",
+      "name": "another name",
+      "displayname": null,  
+      "resources": ["source/inputdata.csv"],
+      "date": "2016-11-06 15:23:57.0",   
+      "published": true,
+      "requester": "Funder McFunderface",
+      "author": "Researcher McResearcherface"
+    }
+]  
+```
 
 ## GET /data/csv/:id/
 
@@ -372,29 +518,3 @@ Download a data set in rds format.
 
 Required permissions: `reports.read`.
 
-## GET /reports/:name/latest/changelog/
-
-Returns the changelog for latest version of the named report. 
-
-Required permissions: `reports.review`.
-
-Schema: [`Changelog.schema.json`]( Changelog.schema.json)
-
-### Example
-
-```json
-[
-  {
-    "label": "public",
-    "value": "Added graphs",
-    "from_file": true,
-    "report_version": "20171220-234033-f97cc4f3"
-  },
-  {
-    "label": "internal",
-    "value": "Fixed typos in text",
-    "from_file": true,
-    "report_version": "20171202-074745-4f66ded4"
-  }
-]
-```
