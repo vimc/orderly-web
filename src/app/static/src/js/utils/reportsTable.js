@@ -107,9 +107,11 @@ export const options = (isReviewer, reports) => {
 export const statusFilter = (selectedStatus, data) => {
     switch (selectedStatus) {
         case "published":
-            return data[3];
+            const reTrue = new RegExp("true");
+            return reTrue.test(data[3]);
         case "internal":
-            return !data[3];
+            const reFalse = new RegExp("false");
+            return reFalse.test(data[3]);
         case "all":
         default:
             return true
@@ -117,6 +119,6 @@ export const statusFilter = (selectedStatus, data) => {
 };
 
 export const nameFilter = (displayNameCol, value, data) => {
-    const re = new RegExp(value);
+    const re = new RegExp(value, "i");
     return re.test(data[1]) || re.test(data[displayNameCol]);
 };
