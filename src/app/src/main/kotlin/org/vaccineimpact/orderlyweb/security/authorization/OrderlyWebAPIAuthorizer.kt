@@ -14,7 +14,7 @@ open class OrderlyWebAPIAuthorizer(requiredPermissions: Set<PermissionRequiremen
 
     override fun isProfileAuthorized(context: WebContext, profile: CommonProfile): Boolean
     {
-        var claimedUrl = profile.getAttribute("url")
+        val claimedUrl = profile.getAttribute("url")
         var requestedUrl = context.path
         val queryParameters = context.requestParameters
                 .filter { it.key != "access_token" }

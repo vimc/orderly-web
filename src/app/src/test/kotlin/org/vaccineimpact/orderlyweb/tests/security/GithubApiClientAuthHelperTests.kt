@@ -75,7 +75,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         //default mock values should succeed
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         sut.authenticate("token")
-        sut.checkGithubUserHasOrderlyWebAccess()
+        sut.checkGitHubOrgAndTeamMembership()
     }
 
     @Test
@@ -112,7 +112,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
     {
         val sut = GithubApiClientAuthHelper(mockAppConfig, mockGithubApiClient)
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserHasOrderlyWebAccess()
+            sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(IllegalStateException::class.java)
                 .hasMessageContaining("User has not been authenticated")
     }
@@ -159,7 +159,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserHasOrderlyWebAccess()
+            sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(BadConfigurationError::class.java)
                 .hasMessageContaining("GitHub org orgName has no team called teamName")
     }
@@ -183,7 +183,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserHasOrderlyWebAccess()
+            sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub org orgName")
     }
@@ -207,7 +207,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserHasOrderlyWebAccess()
+            sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("User is not a member of GitHub team teamName")
     }
@@ -252,7 +252,7 @@ class GithubApiClientAuthHelperTests : TeamcityTests()
         sut.authenticate("token")
 
         Assertions.assertThatThrownBy {
-            sut.checkGithubUserHasOrderlyWebAccess()
+            sut.checkGitHubOrgAndTeamMembership()
         }.isInstanceOf(CredentialsException::class.java)
                 .hasMessageContaining("GitHub token must include scope read:user")
 

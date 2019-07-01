@@ -9,6 +9,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 
@@ -21,13 +22,13 @@ interface APISecurityConfigFactory : ConfigFactory
 }
 
 
-class APISecurityClientsConfigFactory : APISecurityConfigFactory
+class APISecurityClientsConfigFactory(val authenticationConfig: AuthenticationConfig =
+                                              AuthenticationConfig()) : APISecurityConfigFactory
 {
     companion object
     {
         val headerClient = JWTHeaderClient(WebTokenHelper.instance.verifier)
         val parameterClient = JWTParameterClient(WebTokenHelper.instance.verifier, TokenStore.instance)
-        val githubDirectClient = GithubDirectClient()
     }
 
     private val allClients = mutableListOf<OrderlyWebTokenCredentialClient>(headerClient)
@@ -72,8 +73,7 @@ class APISecurityClientsConfigFactory : APISecurityConfigFactory
     override fun externalAuthentication(): APISecurityConfigFactory
     {
         allClients.clear()
-        // TODO add Montagu direct client and use if configured to do so
-        allClients.add(APISecurityClientsConfigFactory.githubDirectClient)
+        allClients.add(authenticationConfig.getAuthenticationDirectClient())
         return this
     }
 

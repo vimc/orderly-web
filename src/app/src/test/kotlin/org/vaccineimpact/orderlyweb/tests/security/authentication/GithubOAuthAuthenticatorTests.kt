@@ -42,6 +42,6 @@ class GithubOAuthAuthenticatorTests : TeamcityTests()
         sut.validate(mockCredentials, mock())
 
         verify(mockGithubAuthHelper).authenticate("1234567")
-        verify(mockGithubAuthHelper).checkGithubUserHasOrderlyWebAccess()
+        verify(mockGithubAuthHelper).checkGitHubOrgAndTeamMembership()
     }
 }

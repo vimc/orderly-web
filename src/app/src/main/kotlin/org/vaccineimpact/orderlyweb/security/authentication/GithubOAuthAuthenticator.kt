@@ -24,7 +24,7 @@ class GithubOAuthAuthenticator(config: OAuth20Configuration,
 
         //Check github user is member of org/team allowed to access OrderlyWeb
         githubAuthHelper.authenticate(token)
-        githubAuthHelper.checkGithubUserHasOrderlyWebAccess()
+        githubAuthHelper.checkGitHubOrgAndTeamMembership()
 
     }
 

@@ -13,7 +13,7 @@
         <a href="#" class="mr-2" id="collapse">Collapse all reports</a>/<a href="#" class="ml-2" id="expand">Expand all
             reports</a>
     </div>
-    <table id="reports-table" class="table display table-striped" style="width:100%">
+    <table id="reports-table" class="table display table-striped" style="width:100%; table-layout: fixed">
         <thead>
         <tr>
             <th>
@@ -25,8 +25,7 @@
 
             </th>
             <#if isReviewer>
-                <th><label for="status-filter">Status</label>
-
+                <th style="width:100px"><label for="status-filter">Status</label>
                 </th>
             </#if>
             <th>
