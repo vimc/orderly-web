@@ -59,6 +59,18 @@ class YouTrackHelper:
         else:
             return branch, NOT_FOUND
 
+    def add_build_tag(self, tag):
+        template = "admin/customfield/buildBundle/vimc: Fixed in builds1/{tag}"
+        r = self.request(template.format(tag=tag), method="put")
+        # 409 means already exists
+        return r.status_code in [201, 409], r
+
+    def modify_ticket(self, full_id, command):
+        template = "issue/{issue}/execute?command={command}"
+        fragment = template.format(issue=full_id, command=command)
+        r = self.request(fragment, method="post")
+        return r.status_code == 200, r
+
     def request(self, url_fragment, method="get"):
         headers = {
             "Authorization": "Bearer " + self.token,
@@ -110,3 +122,27 @@ def check_tickets(latest_tag):
             exit(-1)
 
     return pairs
+
+
+def tag_tickets(tickets, tag):
+    yt = YouTrackHelper()
+    problems = []
+
+    success, response = yt.add_build_tag(tag)
+    if not success:
+        template = "Failed to create new tag {tag}. {status}: {text}"
+        problems.append(template.format(tag=tag,
+                                        status=response.status_code,
+                                        text=response.text))
+        return problems
+
+    for ticket in tickets:
+        if ticket == NOT_FOUND:
+            continue
+        success, response = yt.modify_ticket(ticket.id, "Fixed in build " + tag)
+        if not success:
+            template = "Failed to tag {id}. {status}: {text}"
+            problems.append(template.format(id=ticket.id,
+                                            status=response.status_code,
+                                            text=response.text))
+    return problems

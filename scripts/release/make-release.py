@@ -15,7 +15,7 @@ from docopt import docopt
 from helpers import run, fetch
 from io import StringIO
 from release_tag import get_latest_release_tag, version_greater_than
-from tickets import check_tickets
+from tickets import check_tickets, tag_tickets
 from tickets import NOT_FOUND
 
 
@@ -58,6 +58,34 @@ def write_release_log(message):
         f.write("\n")
 
 
+def commit_and_tag():
+    run("git add RELEASE_LOG.md")
+    run("git commit -m \"{msg}\"".format(msg=release_message))
+    print("* Tagging")
+    tag(new_tag, release_message)
+
+
+def update_youtrack(branches_and_tickets, test_run):
+    if test_run:
+        print("* --test-run is enabled: Skipping updating YouTrack")
+        return
+
+    print("* Updating YouTrack")
+    tickets = list(ticket for branch, ticket in branches_and_tickets)
+    problems = tag_tickets(tickets, new_tag)
+    if problems:
+        print("Error updating YouTrack:")
+        for problem in problems:
+            print(problem)
+        print("")
+
+
+def tag(tag_name, branch_diff):
+    message = "Release {tag}, incorporating these branches: {branches}".format(
+        tag=tag_name, branches=branch_diff)
+    run("git tag -a {tag} -m \"{msg}\"".format(tag=tag_name, msg=message))
+
+
 if __name__ == "__main__":
     args = docopt(__doc__)
     test_run = args["--test-run"]
@@ -75,15 +103,15 @@ if __name__ == "__main__":
         print("* Writing release log for " + new_tag)
         release_message = make_release_message(new_tag, branches_and_tickets)
         write_release_log(release_message)
-        #commit_and_tag()
-        #update_youtrack(branches_and_tickets, test_run)
+        commit_and_tag()
+        update_youtrack(branches_and_tickets, test_run)
 
-#        print("""---------------------------------------------------------------
-#Completed successfully. No changes have been pushed, so please review and then
-#push using:
-#  git push --follow-tags
-#  ./scripts/release/tag-images.py tag --publish latest
-#Tickets have been tagged in YouTrack, so post release do the following:
-#* Go to
-#  https://vimc.myjetbrains.com/youtrack/issues?q=Fixed%20in%20build:%20{tag}
-#* Select all tickets and type "State: Deployed".""".format(tag=new_tag))
+        print("""---------------------------------------------------------------
+Completed successfully. No changes have been pushed, so please review and then
+push using:
+  git push --follow-tags
+  ./scripts/release/tag-images.py tag --publish latest
+Tickets have been tagged in YouTrack, so post release do the following:
+* Go to
+  https://vimc.myjetbrains.com/youtrack/issues?q=Fixed%20in%20build:%20{tag}
+* Select all tickets and type "State: Deployed".""".format(tag=new_tag))
