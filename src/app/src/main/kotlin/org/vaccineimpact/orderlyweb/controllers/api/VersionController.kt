@@ -22,7 +22,7 @@ class VersionController(context: ActionContext,
 
     constructor(context: ActionContext) :
             this(context,
-                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Orderly(context),
                     Zip(),
                     Files(),
                     OrderlyServer(AppConfig(), KHttpClient()),

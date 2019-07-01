@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
@@ -48,6 +49,15 @@ open class DirectActionContext(private val context: SparkWebContext,
 
     override val permissions by lazy {
         userProfile?.orderlyWebPermissions?: PermissionSet()
+    }
+
+    override fun isGlobalReader() = hasPermission(ReifiedPermission("reports.read", Scope.Global()))
+    override fun isReviewer() = hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+
+    override val reportReadingScopes by lazy {
+        permissions
+                .filter { it.name == "reports.read" && it.scope.databaseScopePrefix == "report" }
+                .map { it.scope.databaseScopeId }
     }
 
     override fun hasPermission(requirement: ReifiedPermission): Boolean

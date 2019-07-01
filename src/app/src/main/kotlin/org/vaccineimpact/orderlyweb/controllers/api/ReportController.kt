@@ -23,7 +23,7 @@ class ReportController(context: ActionContext,
 {
     constructor(context: ActionContext) :
             this(context,
-                    Orderly(context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))),
+                    Orderly(context),
                     Zip(),
                     OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
@@ -58,8 +58,7 @@ class ReportController(context: ActionContext,
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
-        val reports = orderly.getAllReports()
-        return reports.filter { canReadReport(it.name) }
+        return orderly.getAllReports()
     }
 
     fun getAllVersions(): List<ReportVersion>
@@ -69,8 +68,7 @@ class ReportController(context: ActionContext,
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
-        val reports = orderly.getAllReportVersions()
-        return reports.filter { canReadReport(it.name) }
+        return orderly.getAllReportVersions()
     }
 
     fun getVersionsByName(): List<String>

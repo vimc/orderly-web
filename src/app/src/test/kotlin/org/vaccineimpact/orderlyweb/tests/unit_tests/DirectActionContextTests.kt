@@ -8,7 +8,9 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
+import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -19,15 +21,16 @@ import spark.Request
 import spark.Response
 import javax.servlet.http.HttpServletResponse
 
-class DirectActionContextTests: TeamcityTests()
+class DirectActionContextTests : TeamcityTests()
 {
     val mockUserProfile = mock<CommonProfile> {
         on { it.getAttributes() } doReturn mapOf(
                 "orderlyWebPermissions" to
                         PermissionSet(
                                 setOf(
-                                        ReifiedPermission("testPermission1", Scope.Global()),
-                                        ReifiedPermission("testPermission2", Scope.Specific("testPrefix", "testId"))
+                                        ReifiedPermission("reports.read", Scope.Global()),
+                                        ReifiedPermission("reports.read", Scope.Specific("version", "testId")),
+                                        ReifiedPermission("reports.read", Scope.Specific("report", "testname"))
                                 )
                         )
         )
@@ -125,7 +128,7 @@ class DirectActionContextTests: TeamcityTests()
         val context = mock<SparkWebContext>()
 
         val sut = DirectActionContext(context, profileManager = mockProfileManager)
-        val hasPerm = sut.hasPermission(ReifiedPermission("testPermission2", Scope.Specific("testPrefix", "testId")))
+        val hasPerm = sut.hasPermission(ReifiedPermission("reports.read", Scope.Specific("version", "testId")))
 
         assertThat(hasPerm).isTrue()
     }
@@ -136,7 +139,7 @@ class DirectActionContextTests: TeamcityTests()
         val context = mock<SparkWebContext>()
 
         val sut = DirectActionContext(context, profileManager = mockProfileManager)
-        val hasPerm = sut.hasPermission(ReifiedPermission("testPermission2", Scope.Global()))
+        val hasPerm = sut.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
 
         assertThat(hasPerm).isFalse()
     }
@@ -147,7 +150,7 @@ class DirectActionContextTests: TeamcityTests()
         val context = mock<SparkWebContext>()
 
         val sut = DirectActionContext(context, profileManager = mockProfileManager)
-        assertThatThrownBy { sut.requirePermission(ReifiedPermission("testPermission2", Scope.Global())) }
+        assertThatThrownBy { sut.requirePermission(ReifiedPermission("users.manage", Scope.Global())) }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
 
     }
@@ -158,7 +161,7 @@ class DirectActionContextTests: TeamcityTests()
         val context = mock<SparkWebContext>()
 
         val sut = DirectActionContext(context, profileManager = mockProfileManager)
-        sut.requirePermission(ReifiedPermission("testPermission2", Scope.Specific("testPrefix", "testId")))
+        sut.requirePermission(ReifiedPermission("reports.read", Scope.Specific("version", "testId")))
     }
 
     @Test
@@ -194,5 +197,40 @@ class DirectActionContextTests: TeamcityTests()
         sut.setStatusCode(500)
 
         verify(response).status(500)
+    }
+
+    @Test
+    fun `isGlobalReader is true if fine grained auth is turned off`()
+    {
+        val context = mock<SparkWebContext>()
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+        }
+        val sut = DirectActionContext(context, profileManager = mockProfileManager,
+                appConfig = mockConfig)
+
+        assertThat(sut.isGlobalReader()).isTrue()
+    }
+
+    @Test
+    fun `isReviewer is true if fine grained auth is turned off`()
+    {
+        val context = mock<SparkWebContext>()
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+        }
+        val sut = DirectActionContext(context, profileManager = mockProfileManager,
+                appConfig = mockConfig)
+
+        assertThat(sut.isReviewer()).isTrue()
+    }
+
+    @Test
+    fun `report reading scopes are derived from permission`()
+    {
+        val context = mock<SparkWebContext>()
+        val sut = DirectActionContext(context, profileManager = mockProfileManager)
+
+        assertThat(sut.reportReadingScopes).hasSameElementsAs(listOf("testname"))
     }
 }

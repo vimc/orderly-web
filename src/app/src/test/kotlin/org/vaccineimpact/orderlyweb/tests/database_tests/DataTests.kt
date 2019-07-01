@@ -14,7 +14,7 @@ class DataTests : CleanDatabaseTests()
 
     private fun createSut(): Orderly
     {
-        return Orderly(false)
+        return Orderly(isReviewer = false, isGlobalReader = true, reportReadingScopes = listOf())
     }
 
     @Test

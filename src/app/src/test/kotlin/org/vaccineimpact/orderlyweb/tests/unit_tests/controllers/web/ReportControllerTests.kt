@@ -376,7 +376,7 @@ class ReportControllerTests : TeamcityTests()
     fun `initialises Orderly correctly when user is reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+            on { this.isReviewer() } doReturn true
         }
 
         val sut = ReportController(mockContext)
@@ -388,7 +388,7 @@ class ReportControllerTests : TeamcityTests()
     fun `initialises Orderly correctly when user is not reviewer`()
     {
         val mockContext = mock<ActionContext> {
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+            on { this.isReviewer() } doReturn false
         }
 
         val sut = ReportController(mockContext)

@@ -15,7 +15,7 @@ class ArtefactTests : CleanDatabaseTests()
 
     private fun createSut(isReviewer: Boolean = false): Orderly
     {
-        return Orderly(isReviewer)
+        return Orderly(isReviewer, true, listOf())
     }
 
     @Test

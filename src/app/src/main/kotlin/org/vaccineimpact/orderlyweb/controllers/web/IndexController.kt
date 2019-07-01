@@ -17,11 +17,7 @@ class IndexController : OrderlyDataController
     fun index(): IndexViewModel
     {
         val reports = orderly.getAllReportVersions()
-                .filter { canReadReport(it.name) }
-
         val pinnedReports = orderly.getGlobalPinnedReports()
-                .filter { canReadReport(it.name) }
-
         return IndexViewModel.build(reports, pinnedReports, context)
     }
 }

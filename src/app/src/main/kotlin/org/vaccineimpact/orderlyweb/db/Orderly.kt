@@ -2,14 +2,19 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.impl.DSL.select
 import org.jooq.impl.DSL.trueCondition
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import java.sql.Timestamp
 
-class Orderly(val isReviewer: Boolean = false) : OrderlyClient
+class Orderly(val isReviewer: Boolean,
+              val isGlobalReader: Boolean,
+              val reportReadingScopes: List<String> = listOf()) : OrderlyClient
 {
+    constructor(context: ActionContext): this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+
     override fun getArtefacts(report: String, version: String): List<Artefact>
     {
         JooqContext().use {
@@ -208,7 +213,8 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
                 ?: throw UnknownObjectError(resourcename, "Resource")
     }
 
-    override fun getReadme(name: String, version: String): Map<String, String> {
+    override fun getReadme(name: String, version: String): Map<String, String>
+    {
         return JooqContext().use { ctx ->
             getReportVersion(name, version, ctx)
             ctx.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.FILE_HASH)
@@ -252,7 +258,8 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
 
     }
 
-    override fun checkVersionExistsForReport(name: String, version: String) {
+    override fun checkVersionExistsForReport(name: String, version: String)
+    {
         JooqContext().use {
             getReportVersion(name, version, it)
         }
@@ -282,7 +289,7 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
                 .groupBy(REPORT_VERSION.REPORT)
                 .asTemporaryTable(name = "latest_version_for_each_report")
     }
-    
+
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
@@ -301,7 +308,9 @@ class Orderly(val isReviewer: Boolean = false) : OrderlyClient
     }
 
     // shouldInclude for the relational schema
-    private val shouldIncludeReportVersion = REPORT_VERSION.PUBLISHED.bitOr(isReviewer)
+    private val shouldIncludeReportVersion =
+            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader))
+                    .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =
             if (isReviewer)
