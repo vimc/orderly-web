@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
+import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.json
 import org.vaccineimpact.orderlyweb.secure
@@ -12,6 +13,9 @@ object WebReportRouteConfig : RouteConfig
     private val readReports = setOf("report:<name>/reports.read")
     private val runReports = setOf("*/reports.run")
     override val endpoints = listOf(
+            WebEndpoint("/", IndexController::class, "index")
+                    // more specific permission checking in the controller action
+                    .secure(),
             WebEndpoint("/report/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),

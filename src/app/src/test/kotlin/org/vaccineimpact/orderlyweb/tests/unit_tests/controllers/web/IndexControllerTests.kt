@@ -10,16 +10,29 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
+import java.security.Permission
 import java.time.Duration
 import java.time.Instant
 
 class IndexControllerTests : TeamcityTests()
 {
+    private val reportName = "r1"
+    private val specificReaderContext = mock<ActionContext> {
+        on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read",
+                Scope.Specific("report", reportName))))
+    }
+
+    private val globalReaderContext = mock<ActionContext> {
+        on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read",
+                Scope.Global())))
+    }
+
     @Test
     fun `initialises Orderly correctly when user is reviewer`()
     {
@@ -64,7 +77,7 @@ class IndexControllerTests : TeamcityTests()
         val mockOrderly = mock<OrderlyClient> {
             on { this.getAllReportVersions() } doReturn fakeReports
         }
-        val sut = IndexController(mock(), mockOrderly)
+        val sut = IndexController(globalReaderContext, mockOrderly)
 
         val result = sut.index().reports.sortedBy { it.ttKey }
 
@@ -143,7 +156,7 @@ class IndexControllerTests : TeamcityTests()
         val mockOrderly = mock<OrderlyClient> {
             on { this.getGlobalPinnedReports() } doReturn fakeReports
         }
-        val sut = IndexController(mock(), mockOrderly)
+        val sut = IndexController(globalReaderContext, mockOrderly)
 
         val result = sut.index().pinnedReports
 
@@ -160,12 +173,60 @@ class IndexControllerTests : TeamcityTests()
         }
     }
 
+    @Test
+    fun `only reports the user has permission to read are returned`()
+    {
+        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
+
+        val r1v1 = ReportVersion(reportName, null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
+                "another author", "another requester")
+        val r2v2 = ReportVersion("r2", null, "r2v2", "r2v1", true, someDate.minus(Duration.ofDays(2)),
+                "another author", "another requester")
+
+        val fakeReports = listOf(r1v1, r2v1, r2v2)
+
+        val mockOrderly = mock<OrderlyClient> {
+            on { this.getAllReportVersions() } doReturn fakeReports
+        }
+
+        val sut = IndexController(specificReaderContext, mockOrderly)
+
+        val result = sut.index()
+
+        assertThat(result.reports.count()).isEqualTo(2) // one parent row and one child row
+        assertThat(result.reports.all { it.name == reportName }).isTrue()
+    }
+
+    @Test
+    fun `only pinned reports the user has permission to read are returned`()
+    {
+        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
+
+        val r1v1 = ReportVersion(reportName, null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
+                "another author", "another requester")
+
+        val fakeReports = listOf(r1v1, r2v1)
+
+        val mockOrderly = mock<OrderlyClient> {
+            on { this.getGlobalPinnedReports() } doReturn fakeReports
+        }
+
+        val sut = IndexController(specificReaderContext, mockOrderly)
+
+        val result = sut.index()
+
+        assertThat(result.pinnedReports.count()).isEqualTo(1)
+        assertThat(result.pinnedReports.first().name).isEqualTo(reportName)
+    }
 
     @Test
     fun `isReviewer is true when report reviewing permission is present in the context`()
     {
         val mockContext = mock<ActionContext> {
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+            on { permissions } doReturn PermissionSet()
         }
 
         val sut = IndexController(mockContext, mock())
@@ -178,6 +239,7 @@ class IndexControllerTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+            on { permissions } doReturn PermissionSet()
         }
 
         val sut = IndexController(mockContext, mock())

@@ -14,9 +14,6 @@ export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/customConfigTests/git)
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
-$here/cli.sh add-users test.user@example.com
-$here/cli.sh grant test.user@example.com */reports.read
-
 echo "Dependencies are now running; press Ctrl+C to teardown"
 
 # From now on, if the user presses Ctrl+C we should teardown
