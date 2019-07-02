@@ -33,7 +33,7 @@ class ReportControllerTests : TeamcityTests()
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
             Changelog("20160103-143015-1234abcd", "public", "something public", true),
-            Changelog("20170103-143015-1234abcd", "internal", "something internal in 2017", true),
+            Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", true),
             Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true))
 
     private val mockActionContext = mock<ActionContext> {
@@ -90,11 +90,21 @@ class ReportControllerTests : TeamcityTests()
     @Test
     fun `report version picker options are ordered by date descending`()
     {
+        val mockOrderly = mock<OrderlyClient> {
+
+            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
+            on { this.getReportsByName("r1") } doReturn
+                    listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba", versionId, "20170202-093000-1234dcba")
+            on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
+        }
+
         val sut = ReportController(mockActionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.versions[0].date).isEqualTo("Wed Jan 04 2017, 09:15")
-        assertThat(result.versions[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
+        assertThat(result.versions[0].date).isEqualTo("Sat Feb 04 2017, 09:30")
+        assertThat(result.versions[1].date).isEqualTo("Thu Feb 02 2017, 09:30")
+        assertThat(result.versions[2].date).isEqualTo("Wed Jan 04 2017, 09:15")
+        assertThat(result.versions[3].date).isEqualTo("Tue Jan 03 2017, 14:30")
     }
 
 
@@ -129,7 +139,7 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
-        assertThat(result.changelog[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
+        assertThat(result.changelog[1].date).isEqualTo("Fri Jan 06 2017, 14:30")
         assertThat(result.changelog[2].date).isEqualTo("Sun Jan 03 2016, 14:30")
     }
 

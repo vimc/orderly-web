@@ -11,7 +11,6 @@ object WebUserGroupRouteConfig : RouteConfig
     override val endpoints = listOf(
             WebEndpoint("/user-groups/:user-group-id/actions/associate-permission/",
                     UserGroupController::class, "associatePermission",
-                    contentType = ContentTypes.json,
                     method = HttpMethod.post)
                     .json()
                     .secure(usersManage)

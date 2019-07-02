@@ -4,9 +4,11 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.isImage
-import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.models.Artefact
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -92,9 +94,10 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val breadcrumb = Breadcrumb("${report.name} (${report.id})", "${AppConfig()["app.url"]}/report/${report.name}/${report.id}/")
 
-            val changelogViewModel = changelog.groupBy { it.reportVersion }.map {
-                ChangelogViewModel.build(it.key, it.value)
-            }
+            val changelogViewModel = changelog.sortedByDescending { it.reportVersion }
+                    .groupBy { it.reportVersion }.map {
+                        ChangelogViewModel.build(it.key, it.value)
+                    }
 
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
@@ -105,8 +108,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     dataViewModels,
                     resourceViewModels,
                     zipFile,
-                    versions.map { buildVersionPickerViewModel(report.name, report.id, it) }.sortedByDescending { it.date },
-                    changelogViewModel.sortedByDescending { it.date },
+                    versions.sortedByDescending { it }.map { buildVersionPickerViewModel(report.name, report.id, it) },
+                    changelogViewModel,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
