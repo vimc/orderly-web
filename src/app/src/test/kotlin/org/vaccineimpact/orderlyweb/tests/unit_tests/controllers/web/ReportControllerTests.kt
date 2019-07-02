@@ -120,8 +120,8 @@ class ReportControllerTests : TeamcityTests()
         var expectedEntries = listOf(ChangelogItemViewModel("public", "something public in 2018"))
         assertThat(result.changelog[0].entries).hasSameElementsAs(expectedEntries)
 
-        assertThat(result.changelog[1].date).isEqualTo("Tue Jan 03 2017, 14:30")
-        assertThat(result.changelog[1].version).isEqualTo("20170103-143015-1234abcd")
+        assertThat(result.changelog[1].date).isEqualTo("Fri Jan 06 2017, 14:30")
+        assertThat(result.changelog[1].version).isEqualTo("20170106-143015-1234abcd")
         expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal in 2017"))
         assertThat(result.changelog[1].entries).hasSameElementsAs(expectedEntries)
 
