@@ -5,6 +5,8 @@
 
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
+See [Release process](ReleaseProcess.md) for how to make a release 
+
 ## Developing
 System requirements:
 * **openjdk 8**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
