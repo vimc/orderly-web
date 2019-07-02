@@ -60,3 +60,7 @@ def get_latest_release_tag():
 
 def version_greater_than(target, than):
     return ReleaseTag.parse(target) > ReleaseTag.parse(than)
+
+
+def validate_release_tag(tag):
+    return ReleaseTag.validate(tag)
