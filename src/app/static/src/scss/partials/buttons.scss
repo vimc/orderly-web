@@ -1,6 +1,6 @@
-button, .button {
+.button {
   @include button-variant($btn-primary-color, darken($btn-primary-color, 10%));
-  @include button-size(5px, 20px, 1em, 1.5em,  0);
+  @include button-size(5px, 20px, 1em, 1.5em, 0);
   @extend .btn
 }
 
@@ -23,19 +23,23 @@ button:disabled, .button.disabled {
 
 .arrowDown:before {
   content: "\25be";
-  float:right;
+  float: right;
   color: inherit;
 }
 
 .arrowUp:before {
   content: "\25b4";
-  float:right;
+  float: right;
   color: inherit;
 }
 
-.arrowUp:after, .arrowDown:after
-{
+.arrowUp:after, .arrowDown:after {
   content: "";
-  margin:0 0.5em;
-  display:inline-block;
+  margin: 0 0.5em;
+  display: inline-block;
+}
+
+.btn-link {
+  cursor: pointer;
+  padding: 0;
 }

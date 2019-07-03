@@ -21,7 +21,7 @@
             <div v-if="newVersionFromRun" id="run-report-new-version">
                 New version: <a v-bind:href="newVersionHref">{{newVersionDisplayName}}</a>
             </div>
-            <a v-on:click="dismissRunStatus" id="run-report-dismiss" href="#">Dismiss</a>
+            <button v-on:click="dismissRunStatus" id="run-report-dismiss" class="btn btn-link">Dismiss</button>
         </div>
     </div>
 </template>
