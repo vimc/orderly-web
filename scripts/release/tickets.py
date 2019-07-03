@@ -67,7 +67,7 @@ class YouTrackHelper:
         print(r.json())
 
     def add_build_tag(self, tag):
-        template = "admin/customfield/versionBundle/MRC%20Centre%3A%20Fixed%20in%20OrderlyWeb%20builds/{tag}"
+        template = "admin/customfield/versionBundle/MRC Centre: Fixed in OrderlyWeb builds/{tag}"
         r = self.request(template.format(tag=tag), method="put")
         # 409 means already exists
         return r.status_code in [201, 409], r
@@ -146,7 +146,7 @@ def tag_tickets(tickets, tag):
     for ticket in tickets:
         if ticket == NOT_FOUND:
             continue
-        success, response = yt.modify_ticket(ticket.id, "Fixed in build " + tag)
+        success, response = yt.modify_ticket(ticket.id, "Fixed in OrderlyWeb build " + tag)
         if not success:
             template = "Failed to tag {id}. {status}: {text}"
             problems.append(template.format(id=ticket.id,
