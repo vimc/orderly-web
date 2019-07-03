@@ -60,7 +60,7 @@ class YouTrackHelper:
             return branch, NOT_FOUND
 
     def add_build_tag(self, tag):
-        template = "admin/customfield/buildBundle/mrc: Fixed in build/{tag}"
+        template = "admin/customfield/buildBundle/vimc: Fixed in builds1/{tag}"
         r = self.request(template.format(tag=tag), method="put")
         # 409 means already exists
         return r.status_code in [201, 409], r
