@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """Tags images used in a particular release and pushes the tags into
 our local docker registry at docker.montagu.dide.ic.ac.uk:5000.  Use
-tag 'latest' to select the most recent conforming git tag (this will
-not set things to be the docker 'latest' tag though).  If run with the
-"publish" option it will also publish images to
-https://hub.docker.com/u/vimc
+version 'latest' to select the most recent conforming git tag (this will
+not set things to be the docker 'latest' tag though).  If run without the
+"--local-only" option it will also publish images to
+https://hub.docker.com/u/vimc and publish a 'release' tag there which will
+always give the latest released public version.
 
 Usage:
-  tag-images.py tag [--publish] <version>
-  tag-images.py publish <version>
+  tag-images.py [--local-only] <version>
 
 """
 import docker
@@ -104,8 +104,10 @@ if __name__ == "__main__":
         version = get_latest_release_tag()
     else:
         validate_release_tag(version)
-    if args["tag"]:
-        set_image_tags(version)
 
-    if args["--publish"]:
+    set_image_tags(version)
+
+    if args["--local-only"]:
+        print("* --local-only is enabled: Skipping publish")
+    else:
         publish_images(version)
