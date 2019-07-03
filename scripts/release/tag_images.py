@@ -8,7 +8,7 @@ https://hub.docker.com/u/vimc and publish a 'release' tag there which will
 always give the latest released public version.
 
 Usage:
-  tag-images.py [--local-only] <version>
+  tag-images.py <version> [--local-only]
 
 """
 import docker
@@ -53,7 +53,7 @@ class DockerTag:
 
 
 def get_version_sha(version):
-    return subprocess.run(["git", "rev-parse", version],
+    return subprocess.run(["git", "rev-parse", "--short=7", version],
                stdout=subprocess.PIPE, check=True, universal_newlines=True).stdout.strip()
 
 
@@ -104,6 +104,8 @@ if __name__ == "__main__":
         version = get_latest_release_tag()
     else:
         validate_release_tag(version)
+
+    print("Tagging images for version " + version)
 
     set_image_tags(version)
 
