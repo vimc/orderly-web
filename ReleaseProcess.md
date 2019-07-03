@@ -8,7 +8,7 @@
    script.
 1. Check build has passed in Teamcity
 1. Deploy to the support machine(s), test and deploy to production when ready (see below).
-1. Use `RELEASE_LOG.md` to know which tickets to update to the 'Deployed' status
+1. The script will have updated relevant YouTrack tickets' `Fixed in build` field. Update these to the 'Deployed' status.
 
 ## Deploying to UAT / Science / Production
 
@@ -17,8 +17,5 @@
        `sudo su vagrant && cd`). Then run `./uat.sh` or `./science.sh` which will give you a shell inside the virtual 
        machine.
     - For production, `ssh -p 10022 montagu@production.montagu.dide.ic.ac.uk`   
-1. Navigate to `orderly-web-deploy`
-1. Modify the orderly-web.yml file for the configuration you wish to deploy, setting the `tag` value to the release 
-   version under the `web` `image` section. 
-1. Run `orderly-web start` for the configuration, as described in the orderly-web-deploy 
-    [documentation](https://github.com/vimc/orderly-web-deploy/blob/a189456edc11f347f179fcf1763cc034fd1516ac/README.md).  
+1. Navigate to `montagu-orderly-web` and follow the instructions 
+   [here](https://github.com/vimc/montagu-orderly-web/blob/master/README.md) to deploy the release version.
