@@ -12,3 +12,10 @@
 * move_perms_to_orderly
 
 
+# v0.0.2
+
+## Tickets
+* mrc-290: Versioning script for Orderly Web
+
+## Other branches merged in this release
+
