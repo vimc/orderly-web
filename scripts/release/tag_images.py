@@ -13,7 +13,7 @@ Usage:
 """
 import docker
 import docopt
-from subprocess import run, PIPE
+import subprocess
 from release_tag import get_latest_release_tag, validate_release_tag
 
 # List of container images that we will tag
@@ -26,6 +26,7 @@ containers = [
 
 registry_local = "docker.montagu.dide.ic.ac.uk:5000"
 registry_hub = "vimc"
+current_release_tag = "release"
 
 
 class DockerTag:
@@ -52,8 +53,8 @@ class DockerTag:
 
 
 def get_version_sha(version):
-    return run(["git", "rev-parse", version],
-               stdout=PIPE, check=True, universal_newlines=True).stdout.strip()
+    return subprocess.run(["git", "rev-parse", version],
+               stdout=subprocess.PIPE, check=True, universal_newlines=True).stdout.strip()
 
 
 def set_image_tag(name, version, sha):
@@ -84,6 +85,8 @@ def publish_image(img, name):
     existing = [t.version for t in tags if t.registry == registry_local]
     for tag in set(existing) - set(published):
         tag_and_push(img, registry_hub, name, tag)
+    # Make this the 'release' version of the image
+    tag_and_push(img, registry_hub, name, current_release_tag)
 
 
 # NOTE: Using subprocess here and not the python docker module because
@@ -91,7 +94,7 @@ def publish_image(img, name):
 def tag_and_push(img, registry_local, name, tag):
     t = DockerTag(registry_local, name, tag)
     img.tag(t.repository, t.version)
-    run(["docker", "push", str(t)], check=True)
+    subprocess.run(["docker", "push", str(t)], check=True)
 
 
 if __name__ == "__main__":
@@ -103,7 +106,6 @@ if __name__ == "__main__":
         validate_release_tag(version)
     if args["tag"]:
         set_image_tags(version)
-        if args["--publish"]:
-            publish_images(version)
-    elif args["publish"]:
+
+    if args["--publish"]:
         publish_images(version)
