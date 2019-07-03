@@ -59,13 +59,6 @@ class YouTrackHelper:
         else:
             return branch, NOT_FOUND
 
-    def check_custom_field(self):
-        print("checking custom YT field")
-        #r = self.request("admin/customfield/field/Fixed in OrderlyWeb build", method="get")
-        r = self.request("admin/customfield/versionBundle/MRC%20Centre%3A%20Fixed%20in%20OrderlyWeb%20builds/v9.9.9", method="put")
-        print(r.status_code)
-        print(r.json())
-
     def add_build_tag(self, tag):
         template = "admin/customfield/versionBundle/MRC Centre: Fixed in OrderlyWeb builds/{tag}"
         r = self.request(template.format(tag=tag), method="put")

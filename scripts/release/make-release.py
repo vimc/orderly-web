@@ -5,7 +5,7 @@ tickets are in the correct status. The changelog is written to RELEASE_LOG.md
 and includes ticket summaries from YouTrack, where applicable
 
 Usage:
-  make-release.py [--test-run] [--checking-custom]
+  make-release.py [--test-run]
 
 Options:
   --test-run    Don't insist on Git being in a clean state
@@ -15,7 +15,7 @@ from docopt import docopt
 from helpers import run, fetch
 from io import StringIO
 from release_tag import get_latest_release_tag, version_greater_than
-from tickets import check_tickets, tag_tickets, YouTrackHelper
+from tickets import check_tickets, tag_tickets
 from tickets import NOT_FOUND
 
 
@@ -99,30 +99,23 @@ if __name__ == "__main__":
     args = docopt(__doc__)
     test_run = args["--test-run"]
 
-    checking_custom = args["--checking-custom"]
-    if (checking_custom):
-        print('checking custom')
-        yt = YouTrackHelper()
-        yt.check_custom_field()
-
+    if not (git_is_clean() or test_run):
+        print("Git status reports as not clean; aborting making release")
     else:
-        if not (git_is_clean() or test_run):
-            print("Git status reports as not clean; aborting making release")
-        else:
-            fetch()
-            latest_tag = get_latest_release_tag()
-            print("The latest release was " + str(latest_tag))
+        fetch()
+        latest_tag = get_latest_release_tag()
+        print("The latest release was " + str(latest_tag))
 
-            branches_and_tickets = check_tickets(latest_tag)
-            new_tag = get_new_tag(latest_tag)
+        branches_and_tickets = check_tickets(latest_tag)
+        new_tag = get_new_tag(latest_tag)
 
-            print("* Writing release log for " + new_tag)
-            release_message = make_release_message(new_tag, branches_and_tickets)
-            write_release_log(release_message, test_run)
-            commit_and_tag(test_run)
-            update_youtrack(branches_and_tickets, test_run)
+        print("* Writing release log for " + new_tag)
+        release_message = make_release_message(new_tag, branches_and_tickets)
+        write_release_log(release_message, test_run)
+        commit_and_tag(test_run)
+        update_youtrack(branches_and_tickets, test_run)
 
-            print("""---------------------------------------------------------------
+        print("""---------------------------------------------------------------
     Completed successfully. No changes have been pushed, so please review and then
     push using:
       git push --follow-tags
