@@ -53,8 +53,9 @@ class DockerTag:
 
 
 def get_version_sha(version):
-    return subprocess.run(["git", "rev-parse", "--short=7", version],
+    long_sha =  subprocess.run(["git", "rev-list", "-n", "1", version],
                stdout=subprocess.PIPE, check=True, universal_newlines=True).stdout.strip()
+    return long_sha[:7]
 
 
 def set_image_tag(name, version, sha):
