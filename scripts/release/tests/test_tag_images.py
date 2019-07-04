@@ -27,7 +27,7 @@ def test_set_image_tags(mock_docker, mock_run):
     set_image_tags("v1.0.0")
 
     # assert sha fetched for version
-    mock_run.assert_any_call(["git", "rev-parse", "v1.0.0"],
+    mock_run.assert_any_call(["git", "rev-list", "-n", "1", "v1.0.0"],
                stdout=subprocess.PIPE, check=True, universal_newlines=True)
 
     for container in containers:
