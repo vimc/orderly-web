@@ -4,17 +4,20 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupController(context: ActionContext,
-                     val authRepo : AuthorizationRepository) : Controller(context)
+                          private val authRepo: AuthorizationRepository,
+                          val userRepo: UserRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
+    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(),
+            OrderlyUserRepository())
 
     fun associatePermission(): String
     {
@@ -22,8 +25,8 @@ class UserGroupController(context: ActionContext,
 
         val postData = context.postData()
         val associatePermission = AssociatePermission(
-                postData["action"]?: throw MissingParameterError("action"),
-                postData["name"]?: throw MissingParameterError("name"),
+                postData["action"] ?: throw MissingParameterError("action"),
+                postData["name"] ?: throw MissingParameterError("name"),
                 postData["scope_prefix"],
                 postData["scope_id"]
         )
@@ -42,7 +45,7 @@ class UserGroupController(context: ActionContext,
 
     fun getGlobalReportReaders(): List<UserGroupViewModel>
     {
-        val users = authRepo.getGlobalReportReaderGroups()
+        val users = userRepo.getGlobalReportReaderGroups()
         return users.map { UserGroupViewModel.build(it) }
                 .sortedBy { it.name.toLowerCase() }
     }

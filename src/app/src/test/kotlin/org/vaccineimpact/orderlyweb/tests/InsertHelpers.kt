@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.time.Instant
 import kotlin.streams.asSequence
@@ -147,6 +148,23 @@ fun giveUserGroupMember(groupName: String, userEmail: String)
                 .onDuplicateKeyIgnore()
                 .execute()
     }
+}
+
+fun createGroup(group: String, vararg permissions: ReifiedPermission)
+{
+    insertUserGroup(group)
+    permissions.map {
+        giveUserGroupPermission(group, it.name, it.scope)
+    }
+}
+
+fun addMembers(group: String, vararg emails: String)
+{
+    emails.map {
+        insertUser(it, it.split("@")[0])
+        giveUserGroupMember(group, it)
+    }
+
 }
 
 fun giveUserGroupPermission(groupName: String,

@@ -9,10 +9,16 @@ object WebUserGroupRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
+            WebEndpoint("/user-groups/report-readers/",
+                    UserGroupController::class, "getGlobalReportReaders")
+                    .json()
+                    .secure(usersManage)
+                    .transform(),
             WebEndpoint("/user-groups/:user-group-id/actions/associate-permission/",
                     UserGroupController::class, "associatePermission",
                     method = HttpMethod.post)
                     .json()
                     .secure(usersManage)
+
     )
 }

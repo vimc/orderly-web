@@ -6,6 +6,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -49,10 +51,10 @@ class UserControllerTests : TeamcityTests()
 
         )
 
-        val authRepo = mock<AuthorizationRepository>{
+        val repo = mock<UserRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, repo)
         val result = sut.getReportReaders()
 
         assertThat(result.count()).isEqualTo(3)
@@ -107,10 +109,10 @@ class UserControllerTests : TeamcityTests()
 
         )
 
-        val authRepo = mock<AuthorizationRepository>{
+        val repo = mock<UserRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, repo)
         val result = sut.getReportReaders()
 
         assertThat(result.count()).isEqualTo(4)

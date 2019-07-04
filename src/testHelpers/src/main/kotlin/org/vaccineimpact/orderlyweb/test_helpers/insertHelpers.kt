@@ -147,4 +147,3 @@ fun giveUserGlobalPermission(db: JooqContext, userGroup: String, permissionName:
         this.id = id
     }.insert()
 }
-
