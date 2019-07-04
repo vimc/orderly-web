@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -27,19 +27,19 @@ class UserControllerTests : TeamcityTests()
         val globalPerm = ReifiedPermission("reports.read", Scope.Global())
 
         val reportReaders = mapOf(
-                User("scoped.reader",
+                UserDetails("scoped.reader",
                         "Scoped Reader",
                         "scoped.reader@email.com",
                         "test",
                         Instant.now()) to
                         listOf(UserGroupPermission("scoped.reader@email.com", specificPerm)),
-                User("global.reader",
+                UserDetails("global.reader",
                         "Global Reader",
                         "global.reader@email.com",
                         "test",
                         Instant.now()) to
                         listOf(UserGroupPermission("global.reader@email.com", globalPerm)),
-                User("group.reader",
+                UserDetails("group.reader",
                         "Group Reader",
                         "group.reader@email.com",
                         "test",
@@ -80,25 +80,25 @@ class UserControllerTests : TeamcityTests()
         val globalPerm = ReifiedPermission("reports.read", Scope.Global())
 
         val reportReaders = mapOf(
-                User("r1username",
+                UserDetails("r1username",
                         "",
                         "r1@email.com",
                         "test",
                         Instant.now()) to
                         listOf(UserGroupPermission("r1@email.com", globalPerm)),
-                User("r2username",
+                UserDetails("r2username",
                         "unknown",
                         "r2@email.com",
                         "test",
                         Instant.now()) to
                         listOf(UserGroupPermission("r2@email.com", globalPerm)),
-                User("",
+                UserDetails("",
                         "",
                         "r3@email.com",
                         "test",
                         Instant.now()) to
                         listOf(UserGroupPermission("r3@email.com", globalPerm)),
-                User("unknown",
+                UserDetails("unknown",
                         "unknown",
                         "r4@email.com",
                         "test",

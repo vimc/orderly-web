@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.viewmodels.ReportReaderViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupController(context: ActionContext,
                      val authRepo : AuthorizationRepository) : Controller(context)
@@ -36,6 +38,13 @@ class UserGroupController(context: ActionContext,
         }
 
         return okayResponse()
+    }
+
+    fun getGlobalReportReaders(): List<UserGroupViewModel>
+    {
+        val users = authRepo.getGlobalReportReaderGroups()
+        return users.map { UserGroupViewModel.build(it) }
+                .sortedBy { it.name.toLowerCase() }
     }
 
     private fun userGroupId(): String = context.params(":user-group-id")

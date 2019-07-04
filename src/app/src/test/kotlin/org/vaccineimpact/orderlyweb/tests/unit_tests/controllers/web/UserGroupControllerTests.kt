@@ -8,12 +8,11 @@ import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.lang.IllegalArgumentException
-import java.time.Instant
 
 class UserGroupControllerTests : TeamcityTests()
 {
@@ -61,6 +60,7 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(actionContext, authRepo)
         val result = sut.associatePermission()
 
+
         assertThat(result).isEqualTo("OK")
 
         val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
@@ -88,6 +88,42 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(actionContext, authRepo)
         Assertions.assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
 
+    }
+
+    @Test
+    fun `builds user group view model`()
+    {
+        val authRepo = mock<AuthorizationRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(UserGroup("Funders",
+                    listOf(User("test.user", "Test User", "test@example.com"),
+                            User("funder.user", "Funder User", "funder@example.com"))))
+        }
+
+        val sut = UserGroupController(mock(), authRepo)
+        val result = sut.getGlobalReportReaders()
+        assertThat(result[0].name).isEqualTo("Funders")
+        assertThat(result[0].members.all { !it.canRemove }).isTrue()
+        assertThat(result[0].members[0].displayName).isEqualTo("Test User")
+        assertThat(result[0].members[1].displayName).isEqualTo("Funder User")
+        assertThat(result[0].members[0].email).isEqualTo("test@example.com")
+        assertThat(result[0].members[1].email).isEqualTo("funder@example.com")
+    }
+
+    @Test
+    fun `orders user group view models alphabetically`()
+    {
+        val authRepo = mock<AuthorizationRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("Science", listOf()),
+                    UserGroup("Funders", listOf()),
+                    UserGroup("Tech", listOf()))
+        }
+
+        val sut = UserGroupController(mock(), authRepo)
+        val result = sut.getGlobalReportReaders()
+        assertThat(result[0].name).isEqualTo("Funders")
+        assertThat(result[1].name).isEqualTo("Science")
+        assertThat(result[2].name).isEqualTo("Tech")
     }
 
 }

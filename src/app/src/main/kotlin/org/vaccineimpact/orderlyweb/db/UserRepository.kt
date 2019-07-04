@@ -2,22 +2,22 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
 import java.time.Instant
 
 interface UserRepository
 {
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
-    fun getUser(email: String): User?
+    fun getUser(email: String): UserDetails?
 }
 
 class OrderlyUserRepository : UserRepository
 {
-    override fun getUser(email: String): User?
+    override fun getUser(email: String): UserDetails?
     {
         return JooqContext().use {
-            getUserRecord(email, it)?.into(User::class.java)
+            getUserRecord(email, it)?.into(UserDetails::class.java)
         }
     }
 

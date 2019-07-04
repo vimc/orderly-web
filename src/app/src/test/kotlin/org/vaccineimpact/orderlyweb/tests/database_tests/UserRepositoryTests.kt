@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import java.time.Instant
@@ -40,7 +40,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         val result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.USERNAME.eq("user.name"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.email).isEqualTo("email@somewhere.com")
@@ -82,7 +82,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         var result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.username).isEqualTo("user.name")
@@ -94,7 +94,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.username).isEqualTo("another.name")
