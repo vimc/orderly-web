@@ -9,7 +9,7 @@ always give the latest released public version.
 
 Usage:
   tag_images.py tag [--publish] <version>
-  tag_images.py tag publish <version>
+  tag_images.py publish <version>
 
 """
 import docker
