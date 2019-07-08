@@ -5,6 +5,8 @@
 
 See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
 
+See [Release process](ReleaseProcess.md) for how to make a release 
+
 ## Developing
 System requirements:
 * **openjdk 8**: Install as per: https://openjdk.java.net/install/ Be sure to install the jdk package 
@@ -70,6 +72,9 @@ You will also have to install chromedriver: `./scripts/install-chromedriver.sh`
 
 Javascript tests are in `src/app/static/src/tests` and can be run from the `static` directory
 with `npm test`
+
+Python tests of the release scripts are in `/scripts/release/tests` and can be run from the top level `orderly-web`
+directory by running `./scripts/release/tests/test-release.sh`
 
 ### Regenerate database interface
 ```
