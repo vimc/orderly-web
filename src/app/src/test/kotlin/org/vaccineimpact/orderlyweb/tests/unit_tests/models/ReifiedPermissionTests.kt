@@ -30,4 +30,26 @@ class ReifiedPermissionTests: TeamcityTests()
         assertThatThrownBy { ReifiedPermission.parse("invalid perm") }
                 .isInstanceOf(ReifiedPermissionParseException::class.java)
     }
+
+    @Test
+    fun `equals is true if identical`()
+    {
+        val global = ReifiedPermission.parse("*/testPerm")
+        assertThat(global.equals(ReifiedPermission.parse("*/testPerm"))).isTrue()
+
+        val specific = ReifiedPermission.parse("testPrefix:testId/testPerm")
+        assertThat(specific.equals(ReifiedPermission.parse("testPrefix:testId/testPerm"))).isTrue()
+    }
+
+    @Test
+    fun `equals is false if not identical`()
+    {
+        val sut = ReifiedPermission.parse("testPrefix:testId/testPerm")
+        assertThat(sut.equals(ReifiedPermission.parse("anotherTestPrefix:testId/testPerm"))).isFalse()
+        assertThat(sut.equals(ReifiedPermission.parse("testPrefix:anotherTestId/testPerm"))).isFalse()
+        assertThat(sut.equals(ReifiedPermission.parse("*/testPerm"))).isFalse()
+        assertThat(sut.equals(ReifiedPermission.parse("testPrefix:testId/wrongPerm"))).isFalse()
+    }
+
+
 }
