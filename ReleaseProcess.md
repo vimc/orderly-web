@@ -11,7 +11,8 @@
 1. Deploy to the support machine(s) and test (see below for deployment instructions). 
 1. When you are ready to publish the release, run `./scripts/release/tag_images.py publish latest` to push the 
    version-tagged images to the public registry, and also push a 'release' tag, which will always tag the latest 
-   published release and deploy to production when ready (see below).
+   published release.
+1. Deploy to production (see below).
 1. The script will have updated relevant YouTrack tickets' `Fixed in build` field. Update these to the 'Deployed' status.
 
 ## Deploying to UAT / Science / Production
