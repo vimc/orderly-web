@@ -27,14 +27,14 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
     {
         JooqContext().use {
 
-            if (it.dsl.selectFrom(Tables.ORDERLYWEB_USER_GROUP)
+            if (it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
                             .where(Tables.ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
                             .singleOrNull() != null)
             {
                 throw DuplicateKeyError(mapOf("user-group" to userGroup))
             }
 
-            it.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
+            it.dsl.newRecord(ORDERLYWEB_USER_GROUP)
                     .apply {
                         this.id = userGroup
                     }.store()

@@ -95,17 +95,24 @@ class UserGroupControllerTests : TeamcityTests()
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(UserGroup("Funders",
                     listOf(User("test.user", "Test User", "test@example.com"),
-                            User("funder.user", "Funder User", "funder@example.com"))))
+                            User("unknown", "unknown", "funder@example.com"),
+                            User("funder.user", "unknown", "another@example.com")
+                    )))
         }
 
         val sut = UserGroupController(mock(), mock(), repo)
         val result = sut.getGlobalReportReaders()
+        assertThat(result.count()).isEqualTo(1)
         assertThat(result[0].name).isEqualTo("Funders")
-        assertThat(result[0].members.all { !it.canRemove }).isTrue()
-        assertThat(result[0].members[0].displayName).isEqualTo("Test User")
-        assertThat(result[0].members[1].displayName).isEqualTo("Funder User")
-        assertThat(result[0].members[0].email).isEqualTo("test@example.com")
-        assertThat(result[0].members[1].email).isEqualTo("funder@example.com")
+
+        val members = result[0].members
+        assertThat(members.all { !it.canRemove }).isTrue()
+        assertThat(members[0].displayName).isEqualTo("Test User")
+        assertThat(members[1].displayName).isEqualTo("funder.user")
+        assertThat(members[2].displayName).isEqualTo("funder@example.com")
+        assertThat(members[0].email).isEqualTo("test@example.com")
+        assertThat(members[1].email).isEqualTo("another@example.com")
+        assertThat(members[2].email).isEqualTo("funder@example.com")
     }
 
     @Test

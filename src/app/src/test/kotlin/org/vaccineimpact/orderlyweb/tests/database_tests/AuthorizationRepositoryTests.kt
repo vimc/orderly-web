@@ -254,6 +254,22 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `ensureUserGroupHasPermission throws UnknownObjectError if scope prefix does not exist`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+
+        assertThatThrownBy {
+            sut.ensureUserGroupHasPermission("user@email.com",
+                    ReifiedPermission("reports.read", Scope.Specific("nonsense", "r1")))
+        }.isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown permission-scope : 'nonsense'")
+    }
+
+    @Test
     fun `can add user to group`()
     {
         val sut = OrderlyAuthorizationRepository()
