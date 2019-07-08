@@ -8,9 +8,9 @@ data class UserGroupViewModel(val name: String, val members: List<ReportReaderVi
     {
         fun build(userGroup: UserGroup): UserGroupViewModel
         {
-
            return UserGroupViewModel(userGroup.name, userGroup.members.map {
-               ReportReaderViewModel.build(it, canRemove = false) })
+               ReportReaderViewModel.build(it, canRemove = false)
+           }.sortedBy { it.displayName })
         }
 
     }

@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import java.lang.IllegalArgumentException
 
 class UserGroupControllerTests : TeamcityTests()
 {
@@ -124,6 +123,23 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(result[0].name).isEqualTo("Funders")
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[2].name).isEqualTo("Tech")
+    }
+
+    @Test
+    fun `orders user group view model members alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("Science", listOf(
+                            User("c.user", "C User", "testc@example.com"),
+                            User("a.user", "A User", "test@example.com"),
+                            User("b.user", "B User", "testb@example.com"))
+                    ))
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val members = sut.getGlobalReportReaders()[0].members
+        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
     }
 
 }
