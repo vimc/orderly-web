@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
@@ -29,23 +30,17 @@ class UserControllerTests : TeamcityTests()
         val globalPerm = ReifiedPermission("reports.read", Scope.Global())
 
         val reportReaders = mapOf(
-                UserDetails("scoped.reader",
+                User("scoped.reader",
                         "Scoped Reader",
-                        "scoped.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "scoped.reader@email.com") to
                         listOf(UserGroupPermission("scoped.reader@email.com", specificPerm)),
-                UserDetails("global.reader",
+                User("global.reader",
                         "Global Reader",
-                        "global.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "global.reader@email.com") to
                         listOf(UserGroupPermission("global.reader@email.com", globalPerm)),
-                UserDetails("group.reader",
+                User("group.reader",
                         "Group Reader",
-                        "group.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "group.reader@email.com") to
                         listOf(UserGroupPermission("group.reader@email.com", specificPerm),
                                UserGroupPermission("user.group", specificPerm))
 
@@ -82,29 +77,21 @@ class UserControllerTests : TeamcityTests()
         val globalPerm = ReifiedPermission("reports.read", Scope.Global())
 
         val reportReaders = mapOf(
-                UserDetails("r1username",
+                User("r1username",
                         "",
-                        "r1@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r1@email.com") to
                         listOf(UserGroupPermission("r1@email.com", globalPerm)),
-                UserDetails("r2username",
+                User("r2username",
                         "unknown",
-                        "r2@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r2@email.com") to
                         listOf(UserGroupPermission("r2@email.com", globalPerm)),
-                UserDetails("",
+                User("",
                         "",
-                        "r3@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r3@email.com") to
                         listOf(UserGroupPermission("r3@email.com", globalPerm)),
-                UserDetails("unknown",
+                User("unknown",
                         "unknown",
-                        "r4@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r4@email.com") to
                         listOf(UserGroupPermission("r4@email.com", globalPerm))
 
         )

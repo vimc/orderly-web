@@ -13,7 +13,7 @@ interface UserRepository
 {
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
     fun getUser(email: String): UserDetails?
-    fun getReportReaders(reportName: String): Map<UserDetails, List<UserGroupPermission>>
+    fun getReportReaders(reportName: String): Map<User, List<UserGroupPermission>>
     fun getGlobalReportReaderGroups(): List<UserGroup>
 }
 
@@ -52,7 +52,7 @@ class OrderlyUserRepository(private val permissionMapper: PermissionMapper = Per
                 record[ORDERLYWEB_USER.EMAIL])
     }
 
-    override fun getReportReaders(reportName: String): Map<UserDetails, List<UserGroupPermission>>
+    override fun getReportReaders(reportName: String): Map<User, List<UserGroupPermission>>
     {
         //Returns all users which can read the report, along with the set of all relevant permissions
         // (global or report-specific, and the user groups from which they are derived)
@@ -60,23 +60,18 @@ class OrderlyUserRepository(private val permissionMapper: PermissionMapper = Per
             val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,
                     ORDERLYWEB_USER.DISPLAY_NAME,
                     ORDERLYWEB_USER.EMAIL,
-                    ORDERLYWEB_USER.USER_SOURCE,
-                    ORDERLYWEB_USER.LAST_LOGGED_IN,
                     ORDERLYWEB_USER_GROUP.ID,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
                     ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
-
                     .fromJoinPath(ORDERLYWEB_USER_GROUP,
                             ORDERLYWEB_USER_GROUP_USER,
                             ORDERLYWEB_USER)
 
                     .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                     .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
-
                     .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
                     .and(permissionIsGlobal().or(permissionIsScopedToReport(reportName)))
-
                     .fetch()
 
             return result.map(permissionMapper::mapUserGroupPermission)

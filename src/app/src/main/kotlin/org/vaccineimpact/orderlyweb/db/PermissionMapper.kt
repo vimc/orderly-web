@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
@@ -22,9 +23,9 @@ class PermissionMapper
                     dbScope[Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID])
     }
 
-    fun mapUserGroupPermission(record: Record): Pair<UserDetails, UserGroupPermission>
+    fun mapUserGroupPermission(record: Record): Pair<User, UserGroupPermission>
     {
-        return record.into(UserDetails::class.java) to
+        return record.into(User::class.java) to
                 UserGroupPermission(record[Tables.ORDERLYWEB_USER_GROUP.ID], mapPermission(record))
     }
 }
