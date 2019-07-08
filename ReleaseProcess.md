@@ -7,15 +7,11 @@
    to Deploy". It will prompt you to push the tag to git and to tag and push Docker images by running the tag_images 
    script:
     1. Push the tag to git and check the build has passed in Teamcity
-    1. Run `./scripts/release/tag_images.py`. You can run with the `tag_images.py tag [--publish] <version>`
-    usage, to tag images with the release version and push to the private registry (docker.montagu.dide.ic.ac.uk:5000),
-    and optionally provide the `--publish` option to also push the versioned image to the public registry (vimc).
-    The publish step will also push a 'release' tag, which will always tag the latest published release. 
-    If you omit the `--publish` tag in order to test a release without publishing, you can subsequently run the script 
-    with the `tag_images.py publish <version>` usage in order to publish a version which was previously tagged to the 
-    private registry only. You can substitute 'latest' for a specific `<version>` to run the script for the latest
-    created version. 
-1. Deploy to the support machine(s), test and deploy to production when ready (see below).
+    1. Run `./scripts/release/tag_images.py tag latest` to tag and push the release to the private registry. 
+1. Deploy to the support machine(s) and test (see below for deployment instructions). 
+1. When you are ready to publish the release, run `./scripts/release/tag_images.py publish latest` to push the 
+   version-tagged images to the public registry, and also push a 'release' tag, which will always tag the latest 
+   published release and deploy to production when ready (see below).
 1. The script will have updated relevant YouTrack tickets' `Fixed in build` field. Update these to the 'Deployed' status.
 
 ## Deploying to UAT / Science / Production

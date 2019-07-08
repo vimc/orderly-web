@@ -119,8 +119,10 @@ if __name__ == "__main__":
     Completed successfully. No changes have been pushed, so please review and then
     push using:
       git push --follow-tags
-      ./scripts/release/tag_images.py tag --publish latest
-      (or omit --publish option to tag an unpublished release)
+      ./scripts/release/tag_images.py tag latest
+    Test the release on uat/science, then when you are ready to publish the release
+    to the public registry, run:
+      ./scripts/release/tag_images.py publish latest
     Tickets have been tagged in YouTrack, so post release do the following:
     * Go to
       https://vimc.myjetbrains.com/youtrack/issues?q=Fixed%20in%20build:%20{tag}

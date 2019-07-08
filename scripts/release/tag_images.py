@@ -8,7 +8,7 @@ https://hub.docker.com/u/vimc and publish a 'release' tag there which will
 always give the latest released public version.
 
 Usage:
-  tag_images.py tag [--publish] <version>
+  tag_images.py tag <version>
   tag_images.py publish <version>
 
 """
@@ -109,6 +109,8 @@ if __name__ == "__main__":
 
     if args["tag"]:
         set_image_tags(version)
+        # The --publish option is not currently available in Usage, to
+        # enforce 2-step publish
         if args["--publish"]:
             publish_images(version)
     elif args["publish"]:
