@@ -144,6 +144,23 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("Science", listOf(
+                            User("c.user", "C User", "testc@example.com"),
+                            User("a.user", "A User", "test@example.com"),
+                            User("b.user", "B User", "testb@example.com"))
+                    ))
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val members = sut.getGlobalReportReaders()[0].members
+        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+    }
+
+    @Test
     fun `getGlobalReportReaderGroups builds identity group view models`()
     {
         val repo = mock<UserRepository> {
