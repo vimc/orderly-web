@@ -4,6 +4,7 @@ import $ from 'jquery';
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
 import reportReadersList from './components/reports/reportReadersList.vue'
+import globalReadersList from './components/reports/globalReportReadersList.vue'
 
 let data = {report: null};
 
@@ -41,7 +42,8 @@ $(document).ready(() => {
             el: '#reportReadersListVueApp',
             data: data,
             components: {
-                reportReadersList: reportReadersList
+                reportReadersList: reportReadersList,
+                globalReadersList: globalReadersList
             }
         });
     }
