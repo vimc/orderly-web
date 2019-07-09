@@ -12,12 +12,22 @@ interface UserRepository
 {
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
     fun getUser(email: String): UserDetails?
+    fun getUserEmails(): List<String>
     fun getScopedIndividualReportReaders(reportName: String): List<User>
     fun getGlobalReportReaderGroups(): List<UserGroup>
 }
 
 class OrderlyUserRepository() : UserRepository
 {
+    override fun getUserEmails(): List<String>
+    {
+        return JooqContext().use {
+            it.dsl.select(ORDERLYWEB_USER.EMAIL)
+                    .from(ORDERLYWEB_USER)
+                    .fetchInto(String::class.java)
+        }
+    }
+
     override fun getGlobalReportReaderGroups(): List<UserGroup>
     {
         return JooqContext().use {

@@ -2,10 +2,19 @@
     <div id="report-readers-list">
         <label class="font-weight-bold">Specific read access</label>
         <div>
-            <div class="input-group mb-3">
-                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="email" value />
-                <div class="input-group-append">
-                    <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
+            <div class="mb-3">
+                <vue-bootstrap-typeahead
+                        size="sm"
+                        v-model="new_user"
+                        placeholder="email"
+                        :data="available_users"
+                        @hit="error = ''">
+                    <template slot="append">
+                        <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
+                    </template>
+                </vue-bootstrap-typeahead>
+                <div class="text-danger small" v-if="error.length > 0">
+                    {{error}}
                 </div>
             </div>
             <ul class="list-unstyled report-readers">
@@ -16,48 +25,74 @@
                 </li>
             </ul>
         </div>
-        <div class="text-danger mt-3" v-if="error.length > 0">
-            {{error}}
-        </div>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
+    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 
     export default {
         name: 'reportReadersList',
         props: ['report', 'initial_readers'],
         data() {
             return {
-                add_user: "",
+                new_user: "",
                 error: "",
-                readers: []
+                readers: [],
+                all_users: []
             }
         },
         mounted() {
             this.refreshReaders();
+            this.getUserEmails();
+        },
+        components: {
+            VueBootstrapTypeahead
+        },
+        computed: {
+            available_users: function () {
+                return this.all_users.filter(x =>
+                    !(new Set(this.readers.map(r => r.email))).has(x));
+            }
+        },
+        watch: {
+            new_user() {
+               this.error = ""
+            }
         },
         methods: {
-            add: function() {
+            add: function () {
                 this.postAssociatePermissionAction("add", this.add_user);
             },
-            remove: function(email) {
+            remove: function (email) {
                 this.postAssociatePermissionAction("remove", email);
             },
-            refreshReaders: function() {
+            getUserEmails: function() {
+                api.get(`/users/`)
+                    .then(({data}) => {
+                        this.all_users = data.data
+                    })
+            },
+            refreshReaders: function () {
                 api.get(`/users/report-readers/${this.report.name}/`)
                     .then(({data}) => {
                         this.readers = data.data
-                })
+                    })
                     .catch((error) => {
-                        this.handleError(error, "could not fetch list of readers");
-                })
+                        this.handleError(error, "could not fetch list of users");
+                    })
             },
-            handleError: function(error, defaultMessage) {
-               this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
+            handleError: function (error, defaultMessage) {
+                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
             },
-            postAssociatePermissionAction: function(action, user)  {
+            postAssociatePermissionAction: function (action, user) {
+
+                if (action === "add" && !new Set(this.available_users).has(user)) {
+                    this.error = "You must enter a valid user email";
+                    return;
+                }
+
                 const data = {
                     name: "reports.read",
                     action: action,
@@ -72,7 +107,7 @@
                         this.error = "";
                     })
                     .catch((error) => {
-                        this.handleError(error, `could not ${action} reader`);
+                        this.handleError(error, `could not ${action} user`);
                     });
             }
         }
