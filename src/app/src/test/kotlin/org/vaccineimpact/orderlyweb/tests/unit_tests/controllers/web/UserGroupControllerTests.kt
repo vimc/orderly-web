@@ -90,7 +90,7 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `builds user group view model`()
+    fun `getGlobalReportReaderGroups builds user group view model`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(UserGroup("Funders",
@@ -116,7 +116,7 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `orders user group view models alphabetically`()
+    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(
@@ -133,7 +133,7 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `orders user group view model members alphabetically`()
+    fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(
