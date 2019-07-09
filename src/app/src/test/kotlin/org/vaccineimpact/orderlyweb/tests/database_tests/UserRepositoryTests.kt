@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.*
 import java.time.Instant
@@ -252,6 +253,20 @@ class UserRepositoryTests : CleanDatabaseTests()
         val result = sut.getGlobalReportReaderGroups()
 
         assertThat(result.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups returns identity groups`()
+    {
+        insertUser("test.user@example.com", "Test User")
+        giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Global())
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].name).isEqualTo("test.user@example.com")
+        assertThat(result[0].members.all { it.email == "test.user@example.com" }).isTrue()
     }
 
 }
