@@ -12,14 +12,13 @@ describe("reportReadersList", () => {
         {
             email: "user1@example.com",
             username: "user1",
-            display_name: "User One",
-            can_remove: true
+            display_name: "User One"
+
         },
         {
             email: "user2@example.com",
             username: "user2",
-            display_name: "User Two",
-            can_remove: false
+            display_name: "User Two"
         }
     ];
 
@@ -33,7 +32,7 @@ describe("reportReadersList", () => {
 
         expect(listItems.at(1).find('span.reader-display-name').text()).toBe("User Two");
         expect(listItems.at(1).find('div').text()).toBe("user2@example.com");
-        expect(listItems.at(1).findAll('span.remove-reader').length).toBe(0);
+        expect(listItems.at(1).findAll('span.remove-reader').length).toBe(1);
     }
 
     it('renders data', () => {
@@ -50,10 +49,10 @@ describe("reportReadersList", () => {
             readers: reportReaders
         });
 
-        expect(wrapper.find('label').text()).toBe("Report readers");
+        expect(wrapper.find('label').text()).toBe("Specific read access");
 
-        expect(wrapper.find('input').attributes("placeholder")).toBe("user email or user group id");
-        expect(wrapper.find('button').text()).toBe("Add reader");
+        expect(wrapper.find('input').attributes("placeholder")).toBe("email");
+        expect(wrapper.find('button').text()).toBe("Add user");
 
         expect(wrapper.find('.text-danger').text()).toBe("test error");
 

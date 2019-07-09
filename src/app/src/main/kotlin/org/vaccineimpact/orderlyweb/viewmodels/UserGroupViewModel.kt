@@ -17,7 +17,7 @@ sealed class UserGroupViewModel(val name: String, val members: List<ReportReader
             }
 
             return MembersGroupViewModel(userGroup.name, userGroup.members.map {
-                ReportReaderViewModel.build(it, canRemove = false)
+                ReportReaderViewModel.build(it)
             }.sortedBy { it.displayName })
         }
 

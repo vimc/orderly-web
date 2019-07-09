@@ -11,11 +11,11 @@ class UserController(context: ActionContext,
 {
     constructor(context: ActionContext) : this(context, OrderlyUserRepository())
 
-    fun getReportReaders(): List<ReportReaderViewModel>
+    fun getScopedReportReaders(): List<ReportReaderViewModel>
     {
         val report = report()
-        val users = userRepo.getReportReaders(report)
-        return users.map { ReportReaderViewModel.build(it.key, it.value) }
+        val users = userRepo.getIndividualReportReadersForReport(report)
+        return users.map { ReportReaderViewModel.build(it) }
                 .sortedBy { it.displayName.toLowerCase() }
     }
 
