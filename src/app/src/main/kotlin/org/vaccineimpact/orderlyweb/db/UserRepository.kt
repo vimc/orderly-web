@@ -6,7 +6,6 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import java.time.Instant
 
 interface UserRepository
