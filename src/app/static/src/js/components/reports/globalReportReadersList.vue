@@ -2,7 +2,7 @@
     <div id="report-readers-global-list">
         <label class="font-weight-bold">
             Global read access
-            <a href="#" class="small">
+            <a href="#" class="small" data-toggle="tooltip" title="Coming soon!">
                 <edit-icon></edit-icon>
                 Edit roles</a>
         </label>
