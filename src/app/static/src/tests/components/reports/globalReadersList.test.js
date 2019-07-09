@@ -1,6 +1,7 @@
 import {mount} from '@vue/test-utils';
 import GlobalReadersList from "../../../js/components/reports/globalReportReadersList.vue";
 import {mockAxios} from "../../mockAxios";
+import EditIcon from '../../../js/components/reports/editIcon.vue';
 
 describe("globalReadersList", () => {
 
@@ -68,6 +69,7 @@ describe("globalReadersList", () => {
 
         expect(wrapper.find('label').text()).toContain("Global read access");
         expect(wrapper.find('label').find("a").text()).toBe("Edit roles");
+        expect(wrapper.find('label').findAll(EditIcon).length).toBe(1);
 
         const roles = wrapper.findAll("ul.roles > li");
         expect(roles.length).toBe(2);

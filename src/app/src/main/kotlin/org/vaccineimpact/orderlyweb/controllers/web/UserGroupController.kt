@@ -47,7 +47,9 @@ class UserGroupController(context: ActionContext,
     {
         val users = userRepo.getGlobalReportReaderGroups()
         return users.map { UserGroupViewModel.build(it) }
-                .sortedBy { it.name.toLowerCase() }
+                .sortedWith(compareBy({
+                    it is UserGroupViewModel.IdentityGroupViewModel
+                }, { it.name }))
     }
 
     private fun userGroupId(): String = context.params(":user-group-id")

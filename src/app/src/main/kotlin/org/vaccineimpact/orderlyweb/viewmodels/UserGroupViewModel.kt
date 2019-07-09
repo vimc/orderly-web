@@ -11,7 +11,7 @@ sealed class UserGroupViewModel(val name: String, val members: List<ReportReader
     {
         fun build(userGroup: UserGroup): UserGroupViewModel
         {
-            if (userGroup.members.all { it.email == userGroup.name })
+            if (userGroup.members.any() && userGroup.members.all { it.email == userGroup.name })
             {
                 return IdentityGroupViewModel(userGroup.name)
             }

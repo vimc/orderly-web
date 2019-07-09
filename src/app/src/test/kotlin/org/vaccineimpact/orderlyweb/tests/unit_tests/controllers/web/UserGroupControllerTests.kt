@@ -118,13 +118,20 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
+    fun `getGlobalReportReaderGroups orders user group view models first by whether or not they have members then alphabetically`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(
                     UserGroup("Science", listOf()),
+                    UserGroup("test.user@example.com", listOf(
+                            User("test.user", "Test User", "test.user@example.com"))
+                    ),
                     UserGroup("Funders", listOf()),
-                    UserGroup("Tech", listOf()))
+                    UserGroup("Tech", listOf()),
+                    UserGroup("another.user@example.com", listOf(
+                            User("another.user", "A User", "another.user@example.com"))
+                    )
+            )
         }
 
         val sut = UserGroupController(mock(), mock(), repo)
@@ -132,25 +139,9 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(result[0].name).isEqualTo("Funders")
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[2].name).isEqualTo("Tech")
+        assertThat(result[3].name).isEqualTo("another.user@example.com")
+        assertThat(result[4].name).isEqualTo("test.user@example.com")
     }
-
-    @Test
-    fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
-    {
-        val repo = mock<UserRepository> {
-            on { getGlobalReportReaderGroups() } doReturn listOf(
-                    UserGroup("Science", listOf(
-                            User("c.user", "C User", "testc@example.com"),
-                            User("a.user", "A User", "test@example.com"),
-                            User("b.user", "B User", "testb@example.com"))
-                    ))
-        }
-
-        val sut = UserGroupController(mock(), mock(), repo)
-        val members = sut.getGlobalReportReaders()[0].members
-        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
-    }
-
 
     @Test
     fun `getGlobalReportReaderGroups builds identity group view models`()
