@@ -13,6 +13,13 @@ data class ReifiedPermission(
 )
 {
     override fun toString() = "$scope/$name"
+    override fun equals(other: Any?) = when (other)
+    {
+        is ReifiedPermission -> other.toString() == toString()
+        else -> false
+    }
+
+    override fun hashCode() = toString().hashCode()
 
     fun satisfiedBy(permission: ReifiedPermission)
             = name == permission.name && permission.scope.encompasses(scope)

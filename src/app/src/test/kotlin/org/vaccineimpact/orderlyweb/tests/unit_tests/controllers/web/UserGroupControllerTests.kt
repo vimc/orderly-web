@@ -11,9 +11,9 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import java.lang.IllegalArgumentException
-import java.time.Instant
+import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupControllerTests : TeamcityTests()
 {
@@ -31,7 +31,7 @@ class UserGroupControllerTests : TeamcityTests()
         }
 
         val authRepo = mock<AuthorizationRepository>()
-        val sut = UserGroupController(actionContext, authRepo)
+        val sut = UserGroupController(actionContext, authRepo, mock())
         val result = sut.associatePermission()
 
         assertThat(result).isEqualTo("OK")
@@ -58,8 +58,9 @@ class UserGroupControllerTests : TeamcityTests()
         }
 
         val authRepo = mock<AuthorizationRepository>()
-        val sut = UserGroupController(actionContext, authRepo)
+        val sut = UserGroupController(actionContext, authRepo, mock())
         val result = sut.associatePermission()
+
 
         assertThat(result).isEqualTo("OK")
 
@@ -84,10 +85,89 @@ class UserGroupControllerTests : TeamcityTests()
             )
         }
 
-        val authRepo = mock<AuthorizationRepository>()
-        val sut = UserGroupController(actionContext, authRepo)
+        val sut = UserGroupController(actionContext, mock(), mock())
         Assertions.assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
 
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups builds members user group view model`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(UserGroup("Funders",
+                    listOf(User("test.user", "Test User", "test@example.com"),
+                            User("unknown", "unknown", "funder@example.com"),
+                            User("funder.user", "unknown", "another@example.com")
+                    )))
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val result = sut.getGlobalReportReaders()
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0] is UserGroupViewModel.MembersGroupViewModel).isTrue()
+        assertThat(result[0].name).isEqualTo("Funders")
+
+        val members = result[0].members
+        assertThat(members.all { !it.canRemove }).isTrue()
+        assertThat(members[0].displayName).isEqualTo("Test User")
+        assertThat(members[1].displayName).isEqualTo("funder.user")
+        assertThat(members[2].displayName).isEqualTo("funder@example.com")
+        assertThat(members[0].email).isEqualTo("test@example.com")
+        assertThat(members[1].email).isEqualTo("another@example.com")
+        assertThat(members[2].email).isEqualTo("funder@example.com")
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("Science", listOf()),
+                    UserGroup("Funders", listOf()),
+                    UserGroup("Tech", listOf()))
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val result = sut.getGlobalReportReaders()
+        assertThat(result[0].name).isEqualTo("Funders")
+        assertThat(result[1].name).isEqualTo("Science")
+        assertThat(result[2].name).isEqualTo("Tech")
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("Science", listOf(
+                            User("c.user", "C User", "testc@example.com"),
+                            User("a.user", "A User", "test@example.com"),
+                            User("b.user", "B User", "testb@example.com"))
+                    ))
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val members = sut.getGlobalReportReaders()[0].members
+        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+    }
+
+
+    @Test
+    fun `getGlobalReportReaderGroups builds identity group view models`()
+    {
+        val repo = mock<UserRepository> {
+            on { getGlobalReportReaderGroups() } doReturn listOf(
+                    UserGroup("test.user@example.com", listOf(
+                            User("test.user", "Test User", "test.user@example.com"))
+                    )
+            )
+        }
+
+        val sut = UserGroupController(mock(), mock(), repo)
+        val result = sut.getGlobalReportReaders()
+        assertThat(result[0] is UserGroupViewModel.IdentityGroupViewModel).isTrue()
+        assertThat(result[0].members.count()).isEqualTo(0)
+        assertThat(result[0].name).isEqualTo("test.user@example.com")
     }
 
 }

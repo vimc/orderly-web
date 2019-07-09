@@ -24,6 +24,18 @@ data class ReportReaderViewModel(val email: String, val username: String, val di
             return ReportReaderViewModel(user.email, user.username, displayName, canRemove)
         }
 
+        fun build(user: User, canRemove: Boolean): ReportReaderViewModel
+        {
+           val displayName = when
+            {
+                isNotEmptyOrUnknown(user.displayName) -> user.displayName
+                isNotEmptyOrUnknown(user.username) -> user.username
+                else -> user.email
+            }
+
+            return ReportReaderViewModel(user.email, user.username, displayName, canRemove)
+        }
+
         private fun isNotEmptyOrUnknown(value: String): Boolean
         {
             return !(value.isEmpty() || value == "unknown")

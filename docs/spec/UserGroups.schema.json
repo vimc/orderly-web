@@ -1,0 +1,21 @@
+{
+
+  "id": "UserGroups",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "members": {
+        "type": "array",
+        "items": {
+          "$ref": "User.schema.json"
+        }
+      }
+    },
+    "additionalProperties": false,
+    "required": ["name", "members"]
+  }
+}

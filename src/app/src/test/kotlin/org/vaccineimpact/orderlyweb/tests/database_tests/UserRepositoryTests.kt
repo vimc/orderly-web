@@ -5,9 +5,15 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.*
 import java.time.Instant
 
 class UserRepositoryTests : CleanDatabaseTests()
@@ -40,7 +46,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         val result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.USERNAME.eq("user.name"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.email).isEqualTo("email@somewhere.com")
@@ -54,7 +60,7 @@ class UserRepositoryTests : CleanDatabaseTests()
     {
         val email = "email@somewhere.com"
         val sut = OrderlyUserRepository()
-        sut.addUser(email,"user.name", "full name", UserSource.GitHub)
+        sut.addUser(email, "user.name", "full name", UserSource.GitHub)
 
         val result = JooqContext().use {
             it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
@@ -82,7 +88,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         var result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.username).isEqualTo("user.name")
@@ -94,7 +100,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         result = JooqContext().use {
             it.dsl.selectFrom(ORDERLYWEB_USER)
                     .where(ORDERLYWEB_USER.EMAIL.eq("email@somewhere.com"))
-                    .fetchOneInto(User::class.java)
+                    .fetchOneInto(UserDetails::class.java)
         }
 
         assertThat(result.username).isEqualTo("another.name")
@@ -102,4 +108,165 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.source).isEqualTo("GitHub")
         assertThat(result.lastLoggedIn).isBetween(then, Instant.now())
     }
+
+
+    @Test
+    fun `getReportReaders gets all readers with identity permissions`()
+    {
+        JooqContext().use {
+            insertReport("report1", "version1")
+            insertReport("report2", "version2")
+
+            insertUser("global.reader@email.com", "global.reader.name")
+            giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+
+            insertUser("scoped.reader@email.com", "scoped.reader.name")
+            giveUserGroupPermission("scoped.reader@email.com", "reports.read", Scope.Specific("report", "report1"))
+
+            insertUser("another.scoped.reader@email.com", "scoped.reader.name")
+            giveUserGroupPermission("another.scoped.reader@email.com", "reports.read", Scope.Specific("report", "report2"))
+
+            insertUser("non.reader@email.com", "non.reader.name")
+
+        }
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+
+        assertThat(result.count()).isEqualTo(2)
+
+        assertThat(result.firstKey().username).isEqualTo("global.reader.name")
+        val globalUserPermissions = result[result.firstKey()]!!
+        assertThat(globalUserPermissions).containsOnly(UserGroupPermission("global.reader@email.com",
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        assertThat(result.lastKey().username).isEqualTo("scoped.reader.name")
+        val reportUserPermissions = result[result.lastKey()]!!
+        assertThat(reportUserPermissions).containsOnly(UserGroupPermission("scoped.reader@email.com",
+                ReifiedPermission("reports.read", Scope.Specific("report", "report1"))))
+    }
+
+    @Test
+    fun `getReportReaders gets all readers with permissions from non-identity groups`()
+    {
+        val globalRead = ReifiedPermission("reports.read", Scope.Global())
+        val report1Read = ReifiedPermission("reports.read", Scope.Specific("report", "report1"))
+        val report2Read = ReifiedPermission("reports.read", Scope.Specific("report", "report2"))
+
+        insertReport("report1", "version1")
+        insertReport("report2", "version2")
+
+        createGroup("global.readers", globalRead)
+        createGroup("report1.readers", report1Read)
+        createGroup("report2.readers", report2Read)
+
+        addMembers("global.readers", "global@reader.com", "all.groups@reader.com")
+        addMembers("report1.readers", "report1@reader.com")
+        addMembers("report2.readers", "report2@reader.com")
+
+        giveUserGroupMember("report1.readers", "all.groups@reader.com")
+        giveUserGroupMember("report2.readers", "all.groups@reader.com")
+
+        //also give permission at user level
+        giveUserGroupPermission("all.groups@reader.com", "reports.read", Scope.Global())
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+
+        assertThat(result.count()).isEqualTo(3)
+
+        assertThat(result.firstKey().username).isEqualTo("all.groups")
+        var permissions = result[result.firstKey()]!!
+        assertThat(permissions).containsExactlyElementsOf(
+                listOf(
+                        UserGroupPermission("all.groups@reader.com", globalRead),
+                        UserGroupPermission("global.readers", globalRead),
+                        UserGroupPermission("report1.readers", report1Read)
+                )
+        )
+
+        result.remove(result.firstKey())
+        assertThat(result.firstKey().username).isEqualTo("global")
+        permissions = result[result.firstKey()]!!
+        assertThat(permissions).containsOnly(UserGroupPermission("global.readers", globalRead))
+
+        result.remove(result.firstKey())
+        assertThat(result.firstKey().username).isEqualTo("report1")
+        permissions = result[result.firstKey()]!!
+        assertThat(permissions).containsOnly(UserGroupPermission("report1.readers", report1Read))
+    }
+
+    @Test
+    fun `gets global report reading groups`()
+    {
+        insertReport("report1", "version1")
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        createGroup("Science", ReifiedPermission("reports.read", Scope.Global()))
+
+        addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
+        addMembers("Science", "science.user@example.com")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(2)
+        assertThat(result[0].name).isEqualTo("Funder")
+        assertThat(result[0].members.map { it.email })
+                .containsExactlyElementsOf(listOf("funder.a@example.com", "funder.b@example.com"))
+
+        assertThat(result[1].name).isEqualTo("Science")
+        assertThat(result[1].members.map { it.email })
+                .containsExactlyElementsOf(listOf("science.user@example.com"))
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups does not return specific report reading groups`()
+    {
+        insertReport("report1", "version1")
+        createGroup("Tech", ReifiedPermission("reports.read", Scope.Specific("report", "report1")))
+        addMembers("Tech", "tech.user@example.com")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups does not return non report reading groups`()
+    {
+        createGroup("Admin", ReifiedPermission("users.manage", Scope.Global()))
+        addMembers("Admin", "admin.user@example.com")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups does not return groups with no members`()
+    {
+        createGroup("Admin", ReifiedPermission("reports.read", Scope.Global()))
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups returns identity groups`()
+    {
+        insertUser("test.user@example.com", "Test User")
+        giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Global())
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderGroups()
+
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].name).isEqualTo("test.user@example.com")
+        assertThat(result[0].members.all { it.email == "test.user@example.com" }).isTrue()
+    }
+
 }

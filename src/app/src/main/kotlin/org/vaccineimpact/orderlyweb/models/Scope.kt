@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.models
 
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 
-sealed class Scope  (val value: String)
+sealed class Scope(val value: String)
 {
     class Global : Scope("*")
     {
@@ -17,10 +17,10 @@ sealed class Scope  (val value: String)
     {
         override fun encompasses(other: Scope): Boolean = when (other)
         {
-        // Global scope is larger than any specific scope
+            // Global scope is larger than any specific scope
             is Global -> false
 
-        // Different specific scopes are not ordered relative to each other, so only return true if they are indentical
+            // Different specific scopes are not ordered relative to each other, so only return true if they are indentical
             is Specific -> equals(other)
         }
 

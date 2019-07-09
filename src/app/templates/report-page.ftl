@@ -9,7 +9,8 @@
         <div class="col-12 col-md-4 col-xl-3">
             <div class="sidebar pb-4 pb-md-0">
                 <nav class="pl-0 pr-0 pr-md-4 navbar navbar-light">
-                    <button type="button" class="d-md-none navbar-toggler" data-toggle="collapse" data-target="#sidebar">
+                    <button type="button" class="d-md-none navbar-toggler" data-toggle="collapse"
+                            data-target="#sidebar">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">

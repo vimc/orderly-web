@@ -1,0 +1,15 @@
+{
+
+  "id": "User",
+  "type": "object",
+  "properties": {
+    "display_name": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": true,
+  "required": ["display_name", "email"]
+}

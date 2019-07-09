@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.models
 import java.beans.ConstructorProperties
 import java.time.Instant
 
-data class User
+data class UserDetails
 @ConstructorProperties("username", "displayName", "email", "userSource", "lastLoggedIn")
 constructor(val username: String,
             val displayName: String,
@@ -12,7 +12,15 @@ constructor(val username: String,
             val lastLoggedIn: Instant
 )
 
-enum class UserSource {
+data class User
+@ConstructorProperties("username", "displayName", "email")
+constructor(val username: String,
+            val displayName: String,
+            val email: String
+)
+
+enum class UserSource
+{
     Montagu,
     GitHub,
     CLI

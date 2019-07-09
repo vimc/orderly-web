@@ -6,8 +6,11 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -29,30 +32,24 @@ class UserControllerTests : TeamcityTests()
         val reportReaders = mapOf(
                 User("scoped.reader",
                         "Scoped Reader",
-                        "scoped.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "scoped.reader@email.com") to
                         listOf(UserGroupPermission("scoped.reader@email.com", specificPerm)),
                 User("global.reader",
                         "Global Reader",
-                        "global.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "global.reader@email.com") to
                         listOf(UserGroupPermission("global.reader@email.com", globalPerm)),
                 User("group.reader",
                         "Group Reader",
-                        "group.reader@email.com",
-                        "test",
-                        Instant.now()) to
+                        "group.reader@email.com") to
                         listOf(UserGroupPermission("group.reader@email.com", specificPerm),
                                UserGroupPermission("user.group", specificPerm))
 
         )
 
-        val authRepo = mock<AuthorizationRepository>{
+        val repo = mock<UserRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, repo)
         val result = sut.getReportReaders()
 
         assertThat(result.count()).isEqualTo(3)
@@ -82,35 +79,27 @@ class UserControllerTests : TeamcityTests()
         val reportReaders = mapOf(
                 User("r1username",
                         "",
-                        "r1@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r1@email.com") to
                         listOf(UserGroupPermission("r1@email.com", globalPerm)),
                 User("r2username",
                         "unknown",
-                        "r2@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r2@email.com") to
                         listOf(UserGroupPermission("r2@email.com", globalPerm)),
                 User("",
                         "",
-                        "r3@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r3@email.com") to
                         listOf(UserGroupPermission("r3@email.com", globalPerm)),
                 User("unknown",
                         "unknown",
-                        "r4@email.com",
-                        "test",
-                        Instant.now()) to
+                        "r4@email.com") to
                         listOf(UserGroupPermission("r4@email.com", globalPerm))
 
         )
 
-        val authRepo = mock<AuthorizationRepository>{
+        val repo = mock<UserRepository>{
             on { this.getReportReaders("r1")} doReturn(reportReaders)
         }
-        val sut = UserController(actionContext, authRepo)
+        val sut = UserController(actionContext, repo)
         val result = sut.getReportReaders()
 
         assertThat(result.count()).isEqualTo(4)
