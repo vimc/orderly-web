@@ -14,7 +14,7 @@ class UserController(context: ActionContext,
     fun getScopedReportReaders(): List<ReportReaderViewModel>
     {
         val report = report()
-        val users = userRepo.getIndividualReportReadersForReport(report)
+        val users = userRepo.getScopedIndividualReportReaders(report)
         return users.map { ReportReaderViewModel.build(it) }
                 .sortedBy { it.displayName.toLowerCase() }
     }

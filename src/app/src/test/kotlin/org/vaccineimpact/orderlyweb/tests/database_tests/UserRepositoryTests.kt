@@ -9,9 +9,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.*
 import java.time.Instant
@@ -130,7 +128,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         }
 
         val sut = OrderlyUserRepository()
-        val result = sut.getIndividualReportReadersForReport("report1")
+        val result = sut.getScopedIndividualReportReaders("report1")
 
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0].username).isEqualTo("scoped.reader.name")
@@ -147,7 +145,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         }
 
         val sut = OrderlyUserRepository()
-        val result = sut.getIndividualReportReadersForReport("report1")
+        val result = sut.getScopedIndividualReportReaders("report1")
         assertThat(result.count()).isEqualTo(0)
     }
 
@@ -173,7 +171,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         giveUserGroupMember("report2.readers", "all.groups@reader.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getIndividualReportReadersForReport("report1")
+        val result = sut.getScopedIndividualReportReaders("report1")
 
         assertThat(result.count()).isEqualTo(0)
     }

@@ -13,7 +13,7 @@ interface UserRepository
 {
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
     fun getUser(email: String): UserDetails?
-    fun getIndividualReportReadersForReport(reportName: String): List<User>
+    fun getScopedIndividualReportReaders(reportName: String): List<User>
     fun getGlobalReportReaderGroups(): List<UserGroup>
 }
 
@@ -52,7 +52,7 @@ class OrderlyUserRepository() : UserRepository
                 record[ORDERLYWEB_USER.EMAIL])
     }
 
-    override fun getIndividualReportReadersForReport(reportName: String): List<User>
+    override fun getScopedIndividualReportReaders(reportName: String): List<User>
     {
         JooqContext().use {
             val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,
