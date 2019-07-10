@@ -10,13 +10,11 @@
             <ul class="list-unstyled roles">
                 <li v-for="(role, index) in readers" v-bind:id="role.name"
                     v-bind:class="['role',
-                    {'open':role.expanded},
-                    {'has-children': role.hasChildren}]"
+                    {'open':role.expanded}]"
                     v-on:click="toggle(index, role)">
                     <div class="expander"></div>
                     <span v-text="role.name" class="role-name"></span>
                     <ul class="list-unstyled members report-readers"
-                        v-if="role.hasChildren"
                         v-show="role.expanded">
                         <li v-for="member in role.members">
                             <span class="reader-display-name">{{member.display_name}}</span>
@@ -48,10 +46,7 @@
             getReaders: function () {
                 api.get(`/user-groups/report-readers/`)
                     .then(({data}) => {
-                        this.readers = data.data.map((r) => ({
-                            ...r,
-                            hasChildren: r.members.length > 0
-                        }));
+                        this.readers = data.data
                     })
             },
             toggle: function (index, role) {

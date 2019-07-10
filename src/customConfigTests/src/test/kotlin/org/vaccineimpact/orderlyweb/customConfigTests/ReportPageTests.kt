@@ -281,9 +281,8 @@ class ReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-global-list li")))
         val listItems = driver.findElements(By.cssSelector("#report-readers-global-list li.role"))
 
-        assertThat(listItems.count()).isEqualTo(2)
+        assertThat(listItems.count()).isEqualTo(1)
         assertThat(listItems[0].findElement(By.cssSelector("span.role-name")).text).isEqualTo("test-group")
-        assertThat(listItems[1].findElement(By.cssSelector("span.role-name")).text).isEqualTo("test.user@example.com")
     }
 
     @Test

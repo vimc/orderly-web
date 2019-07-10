@@ -91,7 +91,7 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `getGlobalReportReaderGroups builds members user group view model`()
+    fun `getGlobalReportReaderGroups builds user group view models`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(UserGroup("Funders",
@@ -104,7 +104,6 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(mock(), mock(), repo)
         val result = sut.getGlobalReportReaders()
         assertThat(result.count()).isEqualTo(1)
-        assertThat(result[0] is UserGroupViewModel.MembersGroupViewModel).isTrue()
         assertThat(result[0].name).isEqualTo("Funders")
 
         val members = result[0].members
@@ -118,19 +117,13 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `getGlobalReportReaderGroups orders user group view models first by whether or not they have members then alphabetically`()
+    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
     {
         val repo = mock<UserRepository> {
             on { getGlobalReportReaderGroups() } doReturn listOf(
                     UserGroup("Science", listOf()),
-                    UserGroup("test.user@example.com", listOf(
-                            User("test.user", "Test User", "test.user@example.com"))
-                    ),
                     UserGroup("Funders", listOf()),
-                    UserGroup("Tech", listOf()),
-                    UserGroup("another.user@example.com", listOf(
-                            User("another.user", "A User", "another.user@example.com"))
-                    )
+                    UserGroup("Tech", listOf())
             )
         }
 
@@ -139,8 +132,6 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(result[0].name).isEqualTo("Funders")
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[2].name).isEqualTo("Tech")
-        assertThat(result[3].name).isEqualTo("another.user@example.com")
-        assertThat(result[4].name).isEqualTo("test.user@example.com")
     }
 
     @Test
@@ -158,24 +149,6 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(mock(), mock(), repo)
         val members = sut.getGlobalReportReaders()[0].members
         assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
-    }
-
-    @Test
-    fun `getGlobalReportReaderGroups builds identity group view models`()
-    {
-        val repo = mock<UserRepository> {
-            on { getGlobalReportReaderGroups() } doReturn listOf(
-                    UserGroup("test.user@example.com", listOf(
-                            User("test.user", "Test User", "test.user@example.com"))
-                    )
-            )
-        }
-
-        val sut = UserGroupController(mock(), mock(), repo)
-        val result = sut.getGlobalReportReaders()
-        assertThat(result[0] is UserGroupViewModel.IdentityGroupViewModel).isTrue()
-        assertThat(result[0].members.count()).isEqualTo(0)
-        assertThat(result[0].name).isEqualTo("test.user@example.com")
     }
 
 }
