@@ -43,3 +43,8 @@ button:disabled, .button.disabled {
   cursor: pointer;
   padding: 0;
 }
+
+.input-group > .input-group-append > .btn {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}

@@ -10,9 +10,8 @@ data class UserGroupViewModel(val name: String, val members: List<ReportReaderVi
         fun build(userGroup: UserGroup, canRemove: Boolean): UserGroupViewModel
         {
             return UserGroupViewModel(userGroup.name, userGroup.members.map {
-                ReportReaderViewModel.build(it, canRemove = false)
+                ReportReaderViewModel.build(it)
             }.sortedBy { it.displayName }, canRemove)
         }
-
     }
 }
