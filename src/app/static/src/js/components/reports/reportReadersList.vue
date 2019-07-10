@@ -58,17 +58,17 @@
         },
         watch: {
             new_user() {
-               this.error = ""
+                this.error = ""
             }
         },
         methods: {
             add: function () {
-                this.postAssociatePermissionAction("add", this.add_user);
+                this.postAssociatePermissionAction("add", this.new_user);
             },
             remove: function (email) {
                 this.postAssociatePermissionAction("remove", email);
             },
-            getUserEmails: function() {
+            getUserEmails: function () {
                 api.get(`/users/`)
                     .then(({data}) => {
                         this.all_users = data.data
