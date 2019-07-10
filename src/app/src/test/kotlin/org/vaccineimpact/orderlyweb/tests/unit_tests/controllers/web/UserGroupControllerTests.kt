@@ -108,7 +108,6 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(result[0].name).isEqualTo("Funders")
 
         val members = result[0].members
-        assertThat(members.all { !it.canRemove }).isTrue()
         assertThat(members[0].displayName).isEqualTo("Test User")
         assertThat(members[1].displayName).isEqualTo("funder.user")
         assertThat(members[2].displayName).isEqualTo("funder@example.com")

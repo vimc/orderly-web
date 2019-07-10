@@ -6,11 +6,8 @@ import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
-import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 
 interface AuthorizationRepository
 {

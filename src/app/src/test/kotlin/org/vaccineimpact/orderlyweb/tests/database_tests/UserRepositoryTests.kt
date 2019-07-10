@@ -9,9 +9,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.*
 import java.time.Instant
@@ -111,7 +109,7 @@ class UserRepositoryTests : CleanDatabaseTests()
 
 
     @Test
-    fun `getReportReaders gets all readers with identity permissions`()
+    fun `getIndividualReportReadersForReport gets readers with correctly scoped identity permissions`()
     {
         JooqContext().use {
             insertReport("report1", "version1")
@@ -127,27 +125,32 @@ class UserRepositoryTests : CleanDatabaseTests()
             giveUserGroupPermission("another.scoped.reader@email.com", "reports.read", Scope.Specific("report", "report2"))
 
             insertUser("non.reader@email.com", "non.reader.name")
-
         }
 
         val sut = OrderlyUserRepository()
-        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+        val result = sut.getScopedIndividualReportReaders("report1")
 
-        assertThat(result.count()).isEqualTo(2)
-
-        assertThat(result.firstKey().username).isEqualTo("global.reader.name")
-        val globalUserPermissions = result[result.firstKey()]!!
-        assertThat(globalUserPermissions).containsOnly(UserGroupPermission("global.reader@email.com",
-                ReifiedPermission("reports.read", Scope.Global())))
-
-        assertThat(result.lastKey().username).isEqualTo("scoped.reader.name")
-        val reportUserPermissions = result[result.lastKey()]!!
-        assertThat(reportUserPermissions).containsOnly(UserGroupPermission("scoped.reader@email.com",
-                ReifiedPermission("reports.read", Scope.Specific("report", "report1"))))
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].username).isEqualTo("scoped.reader.name")
+        assertThat(result[0].email).isEqualTo("scoped.reader@email.com")
+        assertThat(result[0].displayName).isEqualTo("scoped.reader.name")
     }
 
     @Test
-    fun `getReportReaders gets all readers with permissions from non-identity groups`()
+    fun `getIndividualReportReadersForReport does not get readers with global identity permissions`()
+    {
+        JooqContext().use {
+            insertUser("global.reader@email.com", "global.reader.name")
+            giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+        }
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getScopedIndividualReportReaders("report1")
+        assertThat(result.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getIndividualReportReadersForReport does not get all readers with permissions from non-identity groups`()
     {
         val globalRead = ReifiedPermission("reports.read", Scope.Global())
         val report1Read = ReifiedPermission("reports.read", Scope.Specific("report", "report1"))
@@ -167,33 +170,10 @@ class UserRepositoryTests : CleanDatabaseTests()
         giveUserGroupMember("report1.readers", "all.groups@reader.com")
         giveUserGroupMember("report2.readers", "all.groups@reader.com")
 
-        //also give permission at user level
-        giveUserGroupPermission("all.groups@reader.com", "reports.read", Scope.Global())
-
         val sut = OrderlyUserRepository()
-        val result = sut.getReportReaders("report1").toSortedMap(compareBy { it.username })
+        val result = sut.getScopedIndividualReportReaders("report1")
 
-        assertThat(result.count()).isEqualTo(3)
-
-        assertThat(result.firstKey().username).isEqualTo("all.groups")
-        var permissions = result[result.firstKey()]!!
-        assertThat(permissions).containsExactlyElementsOf(
-                listOf(
-                        UserGroupPermission("all.groups@reader.com", globalRead),
-                        UserGroupPermission("global.readers", globalRead),
-                        UserGroupPermission("report1.readers", report1Read)
-                )
-        )
-
-        result.remove(result.firstKey())
-        assertThat(result.firstKey().username).isEqualTo("global")
-        permissions = result[result.firstKey()]!!
-        assertThat(permissions).containsOnly(UserGroupPermission("global.readers", globalRead))
-
-        result.remove(result.firstKey())
-        assertThat(result.firstKey().username).isEqualTo("report1")
-        permissions = result[result.firstKey()]!!
-        assertThat(permissions).containsOnly(UserGroupPermission("report1.readers", report1Read))
+        assertThat(result.count()).isEqualTo(0)
     }
 
     @Test
