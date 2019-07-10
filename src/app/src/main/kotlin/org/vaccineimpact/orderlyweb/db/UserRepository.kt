@@ -15,26 +15,41 @@ interface UserRepository
     fun getUser(email: String): UserDetails?
     fun getReportReaders(reportName: String): Map<User, List<UserGroupPermission>>
     fun getGlobalReportReaderGroups(): List<UserGroup>
+    fun getScopedReportReaderGroups(reportName: String): List<UserGroup>
 }
 
 class OrderlyUserRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : UserRepository
 {
+    private fun reportReadingGroupsQuery(db: JooqContext) = db.dsl.select(ORDERLYWEB_USER_GROUP.ID,
+            ORDERLYWEB_USER.USERNAME,
+            ORDERLYWEB_USER.DISPLAY_NAME,
+            ORDERLYWEB_USER.EMAIL)
+            .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                    ORDERLYWEB_USER_GROUP_USER,
+                    ORDERLYWEB_USER)
+            .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+            .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+            .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
+            .and(ORDERLYWEB_USER_GROUP.ID.ne(ORDERLYWEB_USER.EMAIL))
+
     override fun getGlobalReportReaderGroups(): List<UserGroup>
     {
         return JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_USER_GROUP.ID,
-                    ORDERLYWEB_USER.USERNAME,
-                    ORDERLYWEB_USER.DISPLAY_NAME,
-                    ORDERLYWEB_USER.EMAIL)
-                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
-                            ORDERLYWEB_USER_GROUP_USER,
-                            ORDERLYWEB_USER)
-                    .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
-                    .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
-                    .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
-                    .and(ORDERLYWEB_USER_GROUP.ID.ne(ORDERLYWEB_USER.EMAIL))
+            reportReadingGroupsQuery(it)
                     .and(permissionIsGlobal())
+                    .fetch()
+                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID] }
+                    .map(::mapUserGroup)
+        }
+    }
+
+    override fun getScopedReportReaderGroups(reportName: String): List<UserGroup>
+    {
+        return JooqContext().use {
+
+            reportReadingGroupsQuery(it)
+                    .and(permissionIsScopedToReport(reportName))
                     .fetch()
                     .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID] }
                     .map(::mapUserGroup)

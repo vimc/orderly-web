@@ -14,7 +14,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupController(context: ActionContext,
                           private val authRepo: AuthorizationRepository,
-                          val userRepo: UserRepository) : Controller(context)
+                          private val userRepo: UserRepository) : Controller(context)
 {
     constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(),
             OrderlyUserRepository())
@@ -46,7 +46,14 @@ class UserGroupController(context: ActionContext,
     fun getGlobalReportReaders(): List<UserGroupViewModel>
     {
         val users = userRepo.getGlobalReportReaderGroups()
-        return users.map { UserGroupViewModel.build(it) }
+        return users.map { UserGroupViewModel.build(it, false) }
+                .sortedBy { it.name }
+    }
+
+    fun getScopedReportReaders(): List<UserGroupViewModel>
+    {
+        val users = userRepo.getScopedReportReaderGroups(context.params(":name"))
+        return users.map { UserGroupViewModel.build(it, true) }
                 .sortedBy { it.name }
     }
 
