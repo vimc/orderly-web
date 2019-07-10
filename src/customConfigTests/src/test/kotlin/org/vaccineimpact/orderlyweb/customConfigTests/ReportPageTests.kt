@@ -241,12 +241,39 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
-        val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
+        val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
 
         assertThat(listItems.count()).isEqualTo(1)
         assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
                 .isEqualTo("user@example.com")
+    }
+
+    @Test
+    fun `can view global report readers`()
+    {
+        startApp("auth.provider=montagu")
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("users.manage", Scope.Global()),
+                ReifiedPermission("reports.read", Scope.Global())
+        ))
+
+        addUserWithPermissions(listOf(), "user.with.group.perm@example.com")
+        addUserGroupWithPermissions("test-group",
+                listOf("user.with.group.perm@example.com"),
+                listOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-global-list li")))
+        val listItems = driver.findElements(By.cssSelector("#report-readers-global-list li.role"))
+
+        assertThat(listItems.count()).isEqualTo(1)
+        assertThat(listItems[0].findElement(By.cssSelector("span.role-name")).text).isEqualTo("test-group")
     }
 
     @Test
@@ -265,18 +292,23 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        var listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        var listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
         assertThat(listItems.count()).isEqualTo(0)
 
-        val addReaderInput = driver.findElement(By.cssSelector("#reportReadersListVueApp input"))
+        val addReaderInput = driver.findElement(By.cssSelector("#report-readers-list input"))
         addReaderInput.sendKeys("no.perms@example.com")
-        val addReaderButton = driver.findElement(By.cssSelector("#reportReadersListVueApp button"))
+        val addReaderButton = driver.findElement(By.cssSelector("#report-readers-list button"))
         addReaderButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.perms@example.com']")))
 
-        listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
         assertThat(listItems.count()).isEqualTo(1)
+
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
+                .isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
     }
 
     @Test
@@ -298,15 +330,14 @@ class ReportPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         //let existing readers load first
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#reportReadersListVueApp li")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
 
-        val removeReader = driver.findElement(By.cssSelector("#reportReadersListVueApp span.remove-reader"))
+        val removeReader = driver.findElement(By.cssSelector("#report-readers-list span.remove-reader"))
         removeReader.click()
 
-        //wait until there's only one reader in the list, ie the removable one has been removed
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#reportReadersListVueApp li"), 0))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#report-readers-list li"), 0))
 
-        val listItems = driver.findElements(By.cssSelector("#reportReadersListVueApp li"))
+        val listItems = driver.findElements(By.cssSelector("#report-readers-list  li"))
         assertThat(listItems.count()).isEqualTo(0)
     }
 
