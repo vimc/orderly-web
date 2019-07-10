@@ -32,6 +32,7 @@ class OrderlyUserRepository() : UserRepository
                     .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                     .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
                     .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
+                    .and(ORDERLYWEB_USER_GROUP.ID.ne(ORDERLYWEB_USER.EMAIL))
                     .and(permissionIsGlobal())
                     .fetch()
                     .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID] }

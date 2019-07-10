@@ -236,7 +236,7 @@ class UserRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderGroups returns identity groups`()
+    fun `getGlobalReportReaderGroups does not return identity groups`()
     {
         insertUser("test.user@example.com", "Test User")
         giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Global())
@@ -244,9 +244,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyUserRepository()
         val result = sut.getGlobalReportReaderGroups()
 
-        assertThat(result.count()).isEqualTo(1)
-        assertThat(result[0].name).isEqualTo("test.user@example.com")
-        assertThat(result[0].members.all { it.email == "test.user@example.com" }).isTrue()
+        assertThat(result.count()).isEqualTo(0)
     }
 
 }

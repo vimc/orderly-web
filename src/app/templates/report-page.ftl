@@ -35,6 +35,7 @@
                             </#if>
                             <#if isUsersManager>
                                 <div id="reportReadersListVueApp" class="mt-5">
+                                    <global-readers-list></global-readers-list>
                                     <report-readers-list :report=report></report-readers-list>
                                 </div>
                             </#if>
@@ -65,6 +66,7 @@
             var report = ${reportJson};
         </script>
 
+        <script type="text/javascript" src="${appUrl}/js/lib/popper.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/report.bundle.js"></script>
     </#macro>
