@@ -1,4 +1,3 @@
-
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
@@ -8,7 +7,6 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -236,11 +234,9 @@ class ReportPageTests : SeleniumTest()
                 ReifiedPermission("users.manage", Scope.Global()),
                 ReifiedPermission("reports.read", Scope.Global())
         ))
-        addUserWithPermissions(listOf(), "no.perms@example.com")
-
-        addUserWithPermissions(listOf(), "user.with.group.perm@example.com")
-        addUserGroupWithPermissions("test-group", listOf("user.with.group.perm@example.com"),
-                listOf(ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))))
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))
+        ), "user@example.com")
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
@@ -248,14 +244,9 @@ class ReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
         val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
 
-        assertThat(listItems.count()).isEqualTo(2)
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
-        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
-        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
-
-        assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("user.with.group.perm@example.com")
-        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("user.with.group.perm@example.com")
-        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
+        assertThat(listItems.count()).isEqualTo(1)
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
+                .isEqualTo("user@example.com")
     }
 
     @Test
@@ -301,8 +292,8 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        //let existing readers load first
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
+        var listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
+        assertThat(listItems.count()).isEqualTo(0)
 
         val addReaderInput = driver.findElement(By.cssSelector("#report-readers-list input"))
         addReaderInput.sendKeys("no.perms@example.com")
@@ -311,57 +302,13 @@ class ReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.perms@example.com']")))
 
-        val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
-        assertThat(listItems.count()).isEqualTo(2)
+        listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
+        assertThat(listItems.count()).isEqualTo(1)
 
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.perms@example.com")
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
+                .isEqualTo("no.perms@example.com")
         assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
         assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
-
-        assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
-        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
-        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
-    }
-
-    @Test
-    fun `can add report readers through user group`()
-    {
-        startApp("auth.provider=montagu")
-
-        addUserWithPermissions(listOf(
-                ReifiedPermission("reports.read", Scope.Global()),
-                ReifiedPermission("users.manage", Scope.Global())
-        ))
-
-        addUserWithPermissions(listOf(), "no.individual.perms@example.com")
-        addUserGroupWithPermissions("test-group", listOf("no.individual.perms@example.com"), listOf())
-
-        insertReport("testreport", "20170103-143015-1234abcd")
-
-        loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
-
-        //let existing readers load first
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
-        assertThat(driver.findElements(By.cssSelector("#report-readers-list li")).count()).isEqualTo(1)
-
-        val addReaderInput = driver.findElement(By.cssSelector("#report-readers-list input"))
-        addReaderInput.sendKeys("test-group")
-        val addReaderButton = driver.findElement(By.cssSelector("#report-readers-list button"))
-        addReaderButton.click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("li[id='no.individual.perms@example.com']")))
-
-        val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
-        assertThat(listItems.count()).isEqualTo(2)
-
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("no.individual.perms@example.com")
-        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.individual.perms@example.com")
-        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
-
-        assertThat(listItems[1].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
-        assertThat(listItems[1].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
-        assertThat(listItems[1].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
     }
 
     @Test
@@ -388,14 +335,10 @@ class ReportPageTests : SeleniumTest()
         val removeReader = driver.findElement(By.cssSelector("#report-readers-list span.remove-reader"))
         removeReader.click()
 
-        //wait until there's only one reader in the list, ie the removable one has been removed
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li:only-of-type")))
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#report-readers-list li"), 0))
 
-        val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
-        assertThat(listItems.count()).isEqualTo(1)
-        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text).isEqualTo("Test User")
-        assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("test.user@example.com")
-        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(0)
+        val listItems = driver.findElements(By.cssSelector("#report-readers-list  li"))
+        assertThat(listItems.count()).isEqualTo(0)
     }
 
     private fun confirmTabActive(tabId: String, active: Boolean)
