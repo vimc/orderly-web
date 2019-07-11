@@ -3,8 +3,8 @@ import $ from 'jquery';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
-import reportReadersList from './components/reports/reportReadersList.vue'
-import globalReadersList from './components/reports/globalReportReadersList.vue'
+import reportReadersList from './components/reports/permissions/reportReadersList.vue'
+import globalReadersList from './components/reports/permissions/globalReportReadersList.vue'
 
 let data = {report: null};
 

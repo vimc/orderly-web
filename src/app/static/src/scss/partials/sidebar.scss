@@ -89,6 +89,10 @@ ul.roles {
   li.role {
     cursor: pointer;
 
+    ul {
+      cursor: default;
+    }
+
     .role-name {
       padding-left: 15px;
     }

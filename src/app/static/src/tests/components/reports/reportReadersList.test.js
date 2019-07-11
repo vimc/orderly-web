@@ -1,5 +1,6 @@
 import {mount} from '@vue/test-utils';
-import ReportReadersList from "../../../js/components/reports/reportReadersList.vue";
+import ReportReader from "../../../js/components/reports/permissions/reportReader.vue"
+import ReportReadersList from "../../../js/components/reports/permissions/reportReadersList.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("reportReadersList", () => {
@@ -23,16 +24,16 @@ describe("reportReadersList", () => {
     ];
 
     function expectWrapperToHaveRenderedReaders(wrapper) {
-        const listItems = wrapper.findAll('li');
+        const listItems = wrapper.findAll(ReportReader);
         expect(listItems.length).toBe(2);
 
-        expect(listItems.at(0).find('span.reader-display-name').text()).toBe("User One");
-        expect(listItems.at(0).find('div').text()).toBe("user1@example.com");
-        expect(listItems.at(0).findAll('span.remove-reader').length).toBe(1);
+        expect(listItems.at(0).props().displayName).toBe("User One");
+        expect(listItems.at(0).props().email).toBe("user1@example.com");
+        expect(listItems.at(0).props().canRemove).toBe(true);
 
-        expect(listItems.at(1).find('span.reader-display-name').text()).toBe("User Two");
-        expect(listItems.at(1).find('div').text()).toBe("user2@example.com");
-        expect(listItems.at(1).findAll('span.remove-reader').length).toBe(1);
+        expect(listItems.at(1).props().displayName).toBe("User Two");
+        expect(listItems.at(1).props().email).toBe("user2@example.com");
+        expect(listItems.at(1).props().canRemove).toBe(true);
     }
 
     it('renders data', () => {

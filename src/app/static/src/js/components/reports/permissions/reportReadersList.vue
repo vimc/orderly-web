@@ -3,16 +3,17 @@
         <label class="font-weight-bold">Specific read access</label>
         <div>
             <div class="input-group mb-3">
-                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="email" value />
+                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="email" value/>
                 <div class="input-group-append">
                     <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
                 </div>
             </div>
             <ul class="list-unstyled report-readers">
                 <li v-for="reader in readers" v-bind:id="reader.email">
-                    <span class="reader-display-name">{{reader.display_name}}</span>
-                    <span v-on:click="remove(reader.email)" class="remove-reader d-inline-block ml-2 large">×</span>
-                    <div class="text-muted small email">{{reader.email}}</div>
+                    <report-reader :email="reader.email"
+                                   :display-name="reader.display_name"
+                                   :can-remove="true"
+                                   @remove="remove"></report-reader>
                 </li>
             </ul>
         </div>
@@ -23,10 +24,12 @@
 </template>
 
 <script>
-    import {api} from "../../utils/api";
+    import {api} from "../../../utils/api";
+    import ReportReader from "./reportReader.vue";
 
     export default {
         name: 'reportReadersList',
+        components: {ReportReader},
         props: ['report', 'initial_readers'],
         data() {
             return {
@@ -39,25 +42,25 @@
             this.refreshReaders();
         },
         methods: {
-            add: function() {
+            add: function () {
                 this.postAssociatePermissionAction("add", this.add_user);
             },
-            remove: function(email) {
+            remove: function (email) {
                 this.postAssociatePermissionAction("remove", email);
             },
-            refreshReaders: function() {
+            refreshReaders: function () {
                 api.get(`/users/report-readers/${this.report.name}/`)
                     .then(({data}) => {
                         this.readers = data.data
-                })
+                    })
                     .catch((error) => {
                         this.handleError(error, "could not fetch list of readers");
-                })
+                    })
             },
-            handleError: function(error, defaultMessage) {
-               this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
+            handleError: function (error, defaultMessage) {
+                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
             },
-            postAssociatePermissionAction: function(action, user)  {
+            postAssociatePermissionAction: function (action, user) {
                 const data = {
                     name: "reports.read",
                     action: action,

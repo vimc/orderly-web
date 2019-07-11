@@ -1,7 +1,7 @@
 import {mount} from '@vue/test-utils';
-import GlobalReadersList from "../../../js/components/reports/globalReportReadersList.vue";
+import GlobalReadersList from "../../../js/components/reports/permissions/globalReportReadersList.vue";
 import {mockAxios} from "../../mockAxios";
-import EditIcon from '../../../js/components/reports/editIcon.vue';
+import EditIcon from '../../../js/components/reports/permissions/editIcon.vue';
 
 describe("globalReadersList", () => {
 

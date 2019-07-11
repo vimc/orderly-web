@@ -7,30 +7,17 @@
                 Edit roles</a>
         </label>
         <div>
-            <ul class="list-unstyled roles">
-                <li v-for="(role, index) in readers" v-bind:id="role.name"
-                    v-bind:class="['role',
-                    {'open':role.expanded}]"
-                    v-on:click="toggle(index, role)">
-                    <div class="expander"></div>
-                    <span v-text="role.name" class="role-name"></span>
-                    <ul class="list-unstyled members report-readers"
-                        v-show="role.expanded">
-                        <li v-for="member in role.members">
-                            <span class="reader-display-name">{{member.display_name}}</span>
-                            <div class="text-muted small email">{{member.email}}</div>
-                        </li>
-                    </ul>
-                </li>
-            </ul>
+           <role-list :roles="readers"></role-list>
         </div>
     </div>
 </template>
 
 <script>
-    import {api} from "../../utils/api";
+    import {api} from "../../../utils/api";
     import EditIcon from './editIcon.vue';
     import Vue from "vue";
+    import ReportReader from "./reportReader.vue";
+    import RoleList from "./roleList.vue";
 
     export default {
         name: 'globalReadersList',
@@ -54,6 +41,8 @@
             }
         },
         components: {
+            RoleList,
+            ReportReader,
             EditIcon
         }
     };
