@@ -34,7 +34,7 @@ describe("scopedReaderRolesList", () => {
         });
 
         wrapper.setData({
-            readers: mockRoles
+            roles: mockRoles
         });
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));

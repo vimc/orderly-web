@@ -17,6 +17,13 @@ module.exports = {
             },
             {
                 parser: {amd: false}
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ]
             }
         ]
     },

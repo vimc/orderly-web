@@ -35,6 +35,19 @@ class UserRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `gets user emails in alphabetical order`()
+    {
+        val sut = OrderlyUserRepository()
+
+        insertUser("c@somewhere.com", "some.name")
+        insertUser("a@somewhere.com", "test.name")
+        insertUser("b@somewhere.com", "test.name")
+
+        val result = sut.getUserEmails()
+        assertThat(result).containsExactlyElementsOf(listOf("a@somewhere.com", "b@somewhere.com", "c@somewhere.com"))
+    }
+
+    @Test
     fun `addUser can create new github user`()
     {
         val then = Instant.now()

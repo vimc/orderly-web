@@ -19,5 +19,10 @@ class UserController(context: ActionContext,
                 .sortedBy { it.displayName.toLowerCase() }
     }
 
+    fun getUserEmails(): List<String>
+    {
+        return userRepo.getUserEmails()
+    }
+
     private fun report(): String = context.params(":report")
 }
