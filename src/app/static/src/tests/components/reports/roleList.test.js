@@ -1,9 +1,9 @@
 import {mount} from '@vue/test-utils';
-import GlobalReadersList from "../../../js/components/reports/permissions/globalReportReadersList.vue";
 import {mockAxios} from "../../mockAxios";
-import EditIcon from '../../../js/components/reports/permissions/editIcon.vue';
 
-describe("globalReadersList", () => {
+import RoleList from "../../../js/components/reports/permissions/roleList.vue";
+
+describe("roleList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
@@ -11,7 +11,7 @@ describe("globalReadersList", () => {
             .reply(200, {"data": mockRoles});
     });
 
-    const mockRoles =  [
+    const mockRoles = [
         {
             name: "Funders",
             members: [
@@ -22,60 +22,28 @@ describe("globalReadersList", () => {
                     can_remove: false
                 }
             ]
-        },
-        {
-            name: "test.user@example.com",
-            members: []
         }
     ];
 
-    it('fetches readers on mount', (done) => {
-
-        const wrapper = mount(GlobalReadersList);
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
-            expect(wrapper.vm.$data["readers"]).toEqual(expect.arrayContaining(mockRoles));
-            done();
-        });
-    });
-
-    it('renders roles', () => {
-
-        const wrapper = mount(GlobalReadersList);
-        wrapper.setData({
-            readers: mockRoles
-        });
-
-        expect(wrapper.find('label').text()).toContain("Global read access");
-        expect(wrapper.find('label').find("a").text()).toBe("Edit roles");
-        expect(wrapper.find('label').findAll(EditIcon).length).toBe(1);
-
-        const roles = wrapper.findAll("ul.roles > li");
-        expect(roles.length).toBe(2);
-    });
-
     it('renders roles with members', () => {
 
-        const wrapper = mount(GlobalReadersList);
-        wrapper.setData({
-            readers: mockRoles
-        });
+        const wrapper = mount(RoleList, {propsData: {
+            roles: mockRoles
+        }});
 
         const roles = wrapper.findAll("ul.roles > li");
-        const roleWithMembers = roles.at(0);
+        expect(roles.length).toBe(1);
 
+        const roleWithMembers = roles.at(0);
         expect(roleWithMembers.classes("open")).toBe(false);
         expect(roleWithMembers.find(".role-name").text()).toBe("Funders");
-
     });
 
     it('can expand and collapse members', () => {
 
-        const wrapper = mount(GlobalReadersList);
-        wrapper.setData({
-            readers: mockRoles
-        });
+        const wrapper = mount(RoleList, {propsData: {
+                roles: mockRoles
+            }});
 
         const roles = wrapper.findAll("ul.roles > li");
         const roleWithMembers = roles.at(0);

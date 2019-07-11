@@ -1,6 +1,6 @@
 import {mount} from '@vue/test-utils';
 import ReportReader from "../../../js/components/reports/permissions/reportReader.vue"
-import ReportReadersList from "../../../js/components/reports/permissions/reportReadersList.vue";
+import ReportReadersList from "../../../js/components/reports/permissions/scopedReportReadersList.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("reportReadersList", () => {

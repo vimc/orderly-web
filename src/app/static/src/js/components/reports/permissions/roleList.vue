@@ -2,13 +2,13 @@
     <ul class="list-unstyled roles">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':role.expanded}]"
-            v-on:click="toggle(index, role)">
+            v-bind:class="['role', {'open':expanded[index]}]"
+            v-on:click="toggle(index)">
             <div class="expander"></div>
             <span v-text="role.name" class="role-name"></span>
             <ul class="list-unstyled members report-readers"
                 v-on:click="function(e){e.stopPropagation()}"
-                v-show="role.expanded">
+                v-show="expanded[index]">
                 <li v-for="member in role.members">
                     <report-reader :email="member.email"
                                    :display-name="member.display_name"
@@ -21,21 +21,24 @@
 </template>
 
 <script>
-    import EditIcon from './editIcon.vue';
     import Vue from "vue";
     import ReportReader from "./reportReader.vue";
 
     export default {
         name: 'roleList',
-        props: ["roles"],
+        props: ["roles", "canRemove"],
+        data() {
+            return {
+                expanded: {}
+            }
+        },
         methods: {
-            toggle: function (index, role) {
-                Vue.set(this.roles, index, {...role, expanded: !role.expanded});
+            toggle: function (index) {
+                Vue.set(this.expanded, index, !this.expanded[index]);
             }
         },
         components: {
-            ReportReader,
-            EditIcon
+            ReportReader
         }
     };
 </script>
