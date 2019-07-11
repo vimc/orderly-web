@@ -12,7 +12,7 @@ describe("reportReadersList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/emails/')
+        mockAxios.onGet('http://app/typeahead/emails/')
             .reply(200, {"data": userEmails});
     });
 

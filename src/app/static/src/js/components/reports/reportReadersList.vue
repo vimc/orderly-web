@@ -68,7 +68,7 @@
                 this.postAssociatePermissionAction("remove", email);
             },
             getUserEmails: function () {
-                api.get(`/emails/`)
+                api.get(`/typeahead/emails/`)
                     .then(({data}) => {
                         this.allUsers = data.data
                     })
