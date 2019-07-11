@@ -104,7 +104,6 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(mock(), mock(), repo)
         val result = sut.getGlobalReportReaders()
         assertThat(result.count()).isEqualTo(1)
-        assertThat(result.all { !it.canRemove }).isTrue()
         assertThat(result[0].name).isEqualTo("Funders")
 
         val members = result[0].members
@@ -169,7 +168,6 @@ class UserGroupControllerTests : TeamcityTests()
         val sut = UserGroupController(actionContextWithReport, mock(), repo)
         val result = sut.getScopedReportReaders()
         assertThat(result.count()).isEqualTo(1)
-        assertThat(result.all { it.canRemove }).isTrue()
         assertThat(result[0].name).isEqualTo("Funders")
 
         val members = result[0].members
