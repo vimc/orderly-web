@@ -3,8 +3,9 @@ import $ from 'jquery';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
-import reportReadersList from './components/reports/permissions/scopedReportReadersList.vue'
-import globalReadersList from './components/reports/permissions/globalReportReadersRoleList.vue'
+import scopedReportReadersList from './components/reports/permissions/scopedReportReadersList.vue'
+import globalReaderRolesList from './components/reports/permissions/globalReportReadersRoleList.vue'
+import scopedReaderRolesList from './components/reports/permissions/scopedReportReadersRoleList.vue'
 
 let data = {report: null};
 
@@ -42,8 +43,9 @@ $(document).ready(() => {
             el: '#reportReadersListVueApp',
             data: data,
             components: {
-                reportReadersList: reportReadersList,
-                globalReadersList: globalReadersList
+                reportReadersList: scopedReportReadersList,
+                globalReadersList: globalReaderRolesList,
+                scopedReaderRolesList: scopedReaderRolesList
             }
         });
     }

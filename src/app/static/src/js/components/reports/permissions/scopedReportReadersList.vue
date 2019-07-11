@@ -1,7 +1,6 @@
 <template>
     <div id="report-readers-list">
-        <label class="font-weight-bold">Specific read access</label>
-        <div>
+       <div>
             <div class="input-group mb-3">
                 <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="email" value/>
                 <div class="input-group-append">

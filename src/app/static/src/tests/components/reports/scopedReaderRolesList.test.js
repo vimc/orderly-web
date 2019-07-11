@@ -29,7 +29,7 @@ describe("scopedReaderRolesList", () => {
 
         const wrapper = mount(ScopedReadersList, {
             propsData: {
-                report: "r1"
+                report: {name: "r1"}
             }
         });
 
@@ -46,7 +46,7 @@ describe("scopedReaderRolesList", () => {
 
         const wrapper = mount(ScopedReadersList, {
             propsData: {
-                report: "r1"
+                report: {name: "r1"}
             }
         });
 

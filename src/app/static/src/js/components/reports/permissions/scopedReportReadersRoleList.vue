@@ -1,6 +1,12 @@
 <template>
     <div>
-        <role-list :roles="readers" :can-remove="true"></role-list>
+        <div class="input-group mb-3">
+            <input v-model="new_role" class="form-control form-control-sm" type="text" placeholder="role name" value/>
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-sm">Add role</button>
+            </div>
+        </div>
+        <role-list :roles="roles" :can-remove="true"></role-list>
     </div>
 </template>
 
@@ -12,18 +18,19 @@
         name: 'scopedReadersRoleList',
         props: ["report"],
         mounted() {
-            this.getReaders();
+            this.getRoles();
         },
         data() {
             return {
-                readers: []
+                new_role: "",
+                roles: []
             }
         },
         methods: {
-            getReaders: function () {
-                api.get(`/user-groups/report-readers/${this.report}/`)
+            getRoles: function () {
+                api.get(`/user-groups/report-readers/${this.report.name}/`)
                     .then(({data}) => {
-                        this.readers = data.data
+                        this.roles = data.data
                     })
             }
         },
