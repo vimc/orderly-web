@@ -27,18 +27,4 @@ class ReportTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
 
-    @Test
-    fun `can get scoped report reading groups`()
-    {
-        createGroup("Funder", ReifiedPermission("reports.read", Scope.Specific("report", "minimal")))
-        addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
-
-        val url = "/report/minimal/report-readers/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("users.manage", Scope.Global()),
-                        ReifiedPermission("reports.read", Scope.Global())),
-                ContentTypes.json)
-
-        JSONValidator.validateAgainstSchema(response.text, "UserGroups")
-    }
 }

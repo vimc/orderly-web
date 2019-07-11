@@ -29,11 +29,6 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/actions/status/:key/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
                     .json()
-                    .secure(runReports),
-            WebEndpoint("/report/:name/report-readers", UserGroupController::class, "getScopedReportReaders")
-                    .json()
-                    .transform()
-                    .secure(setOf("*/users.manage", "*/reports.read"))
-
+                    .secure(runReports)
     )
 }

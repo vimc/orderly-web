@@ -152,7 +152,7 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     private val actionContextWithReport = mock<ActionContext> {
-        on { this.params(":name") } doReturn "r1"
+        on { this.params(":report") } doReturn "r1"
     }
 
     @Test

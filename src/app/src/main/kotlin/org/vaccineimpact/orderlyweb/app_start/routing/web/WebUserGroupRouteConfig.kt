@@ -14,6 +14,11 @@ object WebUserGroupRouteConfig : RouteConfig
                     .json()
                     .secure(usersManage)
                     .transform(),
+            WebEndpoint("/user-groups/report-readers/:report/",
+                    UserGroupController::class, "getScopedReportReaders")
+                    .json()
+                    .secure(usersManage + setOf("*/reports.read"))
+                    .transform(),
             WebEndpoint("/user-groups/:user-group-id/actions/associate-permission/",
                     UserGroupController::class, "associatePermission",
                     method = HttpMethod.post)
