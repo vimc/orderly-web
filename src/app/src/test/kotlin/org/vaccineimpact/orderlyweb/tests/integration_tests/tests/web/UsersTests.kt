@@ -56,7 +56,7 @@ class UsersTests : IntegrationTest()
     @Test
     fun `only user managers can get user emails`()
     {
-        val url = "/users/"
+        val url = "/emails/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)

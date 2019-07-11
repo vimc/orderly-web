@@ -15,7 +15,7 @@ object WebUserRouteConfig : RouteConfig
                 .json()
                 .transform()
                 .secure(usersManage),
-            WebEndpoint("/users/",
+            WebEndpoint("/emails/",
                     UserController::class, "getUserEmails",
                     contentType = ContentTypes.json)
                     .json()

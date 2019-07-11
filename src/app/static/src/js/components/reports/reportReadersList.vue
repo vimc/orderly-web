@@ -5,10 +5,9 @@
             <div class="mb-3">
                 <vue-bootstrap-typeahead
                         size="sm"
-                        v-model="new_user"
+                        v-model="newUser"
                         placeholder="email"
-                        :data="available_users"
-                        @hit="error = ''">
+                        :data="availableUsers">
                     <template slot="append">
                         <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
                     </template>
@@ -34,47 +33,47 @@
 
     export default {
         name: 'reportReadersList',
-        props: ['report', 'initial_readers'],
+        props: ['report'],
         data() {
             return {
-                new_user: "",
+                newUser: "",
                 error: "",
                 readers: [],
-                all_users: []
+                allUsers: []
             }
         },
         mounted() {
-            this.refreshReaders();
+            this.getReaders();
             this.getUserEmails();
         },
         components: {
             VueBootstrapTypeahead
         },
         computed: {
-            available_users: function () {
-                return this.all_users.filter(x =>
+            availableUsers: function () {
+                return this.allUsers.filter(x =>
                     !(new Set(this.readers.map(r => r.email))).has(x));
             }
         },
         watch: {
-            new_user() {
+            newUser() {
                 this.error = ""
             }
         },
         methods: {
             add: function () {
-                this.postAssociatePermissionAction("add", this.new_user);
+                this.postAssociatePermissionAction("add", this.newUser);
             },
             remove: function (email) {
                 this.postAssociatePermissionAction("remove", email);
             },
             getUserEmails: function () {
-                api.get(`/users/`)
+                api.get(`/emails/`)
                     .then(({data}) => {
-                        this.all_users = data.data
+                        this.allUsers = data.data
                     })
             },
-            refreshReaders: function () {
+            getReaders: function () {
                 api.get(`/users/report-readers/${this.report.name}/`)
                     .then(({data}) => {
                         this.readers = data.data
@@ -88,7 +87,7 @@
             },
             postAssociatePermissionAction: function (action, user) {
 
-                if (action === "add" && !new Set(this.available_users).has(user)) {
+                if (action === "add" && !new Set(this.availableUsers).has(user)) {
                     this.error = "You must enter a valid user email";
                     return;
                 }
@@ -102,8 +101,8 @@
 
                 api.post(`/user-groups/${encodeURIComponent(user)}/actions/associate-permission/`, data)
                     .then(() => {
-                        this.refreshReaders();
-                        this.add_user = "";
+                        this.getReaders();
+                        this.newUser = "";
                         this.error = "";
                     })
                     .catch((error) => {

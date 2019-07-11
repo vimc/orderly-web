@@ -12,7 +12,7 @@ describe("reportReadersList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/users/')
+        mockAxios.onGet('http://app/emails/')
             .reply(200, {"data": userEmails});
     });
 
@@ -137,7 +137,7 @@ describe("reportReadersList", () => {
         });
     });
 
-    it('add reader calls associate permission endpoint and refreshes list of readers', (done) => {
+    it('add reader calls associate permission endpoint and refreshes data', (done) => {
 
         mockAxios.onPost(`http://app/user-groups/test.user%40example.com/actions/associate-permission/`)
             .reply(200);
@@ -153,7 +153,7 @@ describe("reportReadersList", () => {
             }
         });
 
-        wrapper.setData({all_users: userEmails});
+        wrapper.setData({allUsers: userEmails});
 
         wrapper.find("input").setValue('test.user@example.com');
         wrapper.find('button').trigger('click');
@@ -171,6 +171,7 @@ describe("reportReadersList", () => {
             expect(postData.scope_id).toBe("report1");
 
             expectWrapperToHaveRenderedReaders(wrapper);
+            expect(wrapper.vm.$data["newUser"]).toBe("");
 
             done();
         });
@@ -231,7 +232,7 @@ describe("reportReadersList", () => {
             }
         });
 
-        wrapper.setData({all_users: userEmails});
+        wrapper.setData({allUsers: userEmails});
 
         wrapper.find('input').setValue('test.user@example.com');
         wrapper.find('button').trigger('click');
@@ -290,7 +291,7 @@ describe("reportReadersList", () => {
             }
         });
 
-        wrapper.setData({all_users: userEmails});
+        wrapper.setData({allUsers: userEmails});
 
         wrapper.find('input').setValue('test.user@example.com');
         wrapper.find('button').trigger('click');
@@ -317,7 +318,7 @@ describe("reportReadersList", () => {
             }
         });
 
-        wrapper.setData({all_users: userEmails});
+        wrapper.setData({allUsers: userEmails});
 
         wrapper.find('input').setValue('bad.user@example.com');
         wrapper.find('button').trigger('click');
@@ -348,7 +349,7 @@ describe("reportReadersList", () => {
             }
         });
 
-        wrapper.setData({all_users: userEmails});
+        wrapper.setData({allUsers: userEmails});
         wrapper.setData({readers: readers});
 
         wrapper.find('input').setValue('test.user@example.com');
