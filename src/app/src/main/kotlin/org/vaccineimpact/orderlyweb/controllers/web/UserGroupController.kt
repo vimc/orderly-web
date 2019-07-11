@@ -52,7 +52,7 @@ class UserGroupController(context: ActionContext,
 
     fun getScopedReportReaders(): List<UserGroupViewModel>
     {
-        val users = userRepo.getScopedReportReaderGroups(context.params(":name"))
+        val users = userRepo.getScopedReportReaderGroups(context.params(":report"))
         return users.map { UserGroupViewModel.build(it, true) }
                 .sortedBy { it.name }
     }
