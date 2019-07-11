@@ -1,40 +1,55 @@
 <template>
     <div>
-        <div class="input-group mb-3">
-            <input v-model="new_role" class="form-control form-control-sm" type="text" placeholder="role name" value/>
-            <div class="input-group-append">
-                <button type="submit" class="btn btn-sm">Add role</button>
-            </div>
-        </div>
-        <role-list :roles="roles" :can-remove="true"></role-list>
+        <manage-permissions :report="report"
+                            placeholder="role name"
+                            add-text="Add role"
+                            :current-items="currentRoles"
+                            :available-items="availableRoles"
+                            @added="getCurrentRoles"></manage-permissions>
+        <role-list :roles="currentRoles" :can-remove="true"></role-list>
     </div>
 </template>
 
 <script>
     import {api} from "../../../utils/api";
     import RoleList from "./roleList.vue";
+    import ManagePermissions from "./managePermissions.vue";
 
     export default {
         name: 'scopedReadersRoleList',
         props: ["report"],
         mounted() {
-            this.getRoles();
+            this.getCurrentRoles();
+            this.getAllRoles();
         },
         data() {
             return {
-                new_role: "",
-                roles: []
+                currentRoles: [],
+                allRoles: []
             }
         },
         methods: {
-            getRoles: function () {
+            getCurrentRoles: function () {
                 api.get(`/user-groups/report-readers/${this.report.name}/`)
                     .then(({data}) => {
-                        this.roles = data.data
+                        this.currentRoles = data.data
+                    })
+            },
+            getAllRoles: function () {
+                api.get(`/user-groups/report-readers/${this.report.name}/`)
+                    .then(({data}) => {
+                        this.allRoles = ["funders"]
                     })
             }
         },
+        computed: {
+            availableRoles: function () {
+                return this.allRoles.filter(x =>
+                    !(new Set(this.currentRoles.map(r => r.name))).has(x));
+            }
+        },
         components: {
+            ManagePermissions,
             RoleList
         }
     };

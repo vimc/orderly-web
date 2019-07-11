@@ -1,69 +1,54 @@
 <template>
-    <div id="report-readers-list"><
-        <div class="mb-3">
-            <vue-bootstrap-typeahead
-                    size="sm"
-                    v-model="new_user"
-                    placeholder="email"
-                    :data="available_users"
-                    @hit="error = ''">
-                <template slot="append">
-                    <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
-                </template>
-            </vue-bootstrap-typeahead>
-            <div class="text-danger small" v-if="error.length > 0">
-                {{error}}
-            </div>
-        </div>
-        <ul class="list-unstyled report-readers">
-            <li v-for="reader in readers" v-bind:id="reader.email">
-                <report-reader :email="reader.email"
-                               :display-name="reader.display_name"
-                               :can-remove="true"
-                               @remove="remove"></report-reader>
-            </li>
-        </ul>
+    <div id="report-readers-list">
+        <manage-permissions :report="report"
+                            placeholder="email"
+                            add-text="Add user"
+                            :current-items="readers"
+                            :available-items="availableUsers"
+                            @added="getReaders"></manage-permissions>
+        <error-info default-message="Could not remove user" :error="removeError"></error-info>
+        <reader-list :readers="readers" :can-remove="true" @remove="remove"></reader-list>
+        <error-info default-message="Could not fetch list of users" :error="getError"></error-info>
     </div>
 </template>
 
 <script>
-    import {api} from "../../../utils/api";
-    import ReportReader from "./reportReader.vue";
-    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+    import {api, userService} from "../../../utils/api";
+    import ReaderList from "./readerList.vue";
+    import ManagePermissions from "./managePermissions.vue";
+    import ErrorInfo from "../../errorInfo.vue";
 
     export default {
         name: 'reportReadersList',
-        components: {ReportReader, VueBootstrapTypeahead},
-        props: ['report', 'initial_readers'],
+        components: {ErrorInfo, ReaderList, ManagePermissions},
+        props: ['report', 'initialReaders'],
         data() {
             return {
-                new_user: "",
-                error: "",
                 readers: [],
-                all_users: []
+                allUsers: [],
+                removeError: null,
+                getError: null
             }
         },
         mounted() {
-            this.refreshReaders();
+            this.getReaders();
             this.getUserEmails();
         },
         computed: {
-            available_users: function () {
-                return this.all_users.filter(x =>
+            availableUsers: function () {
+                return this.allUsers.filter(x =>
                     !(new Set(this.readers.map(r => r.email))).has(x));
             }
         },
-        watch: {
-            new_user() {
-                this.error = ""
-            }
-        },
         methods: {
-            add: function () {
-                this.postAssociatePermissionAction("add", this.new_user);
-            },
             remove: function (email) {
-                this.postAssociatePermissionAction("remove", email);
+               userService.removeUserGroup(email, this.report.name)
+                    .then(() => {
+                        this.refreshReaders();
+                    })
+                    .catch((error) => {
+                        this.removeError = error
+                    });
             },
             getUserEmails: function () {
                 api.get(`/users/`)
@@ -71,40 +56,14 @@
                         this.all_users = data.data
                     })
             },
-            refreshReaders: function () {
+            getReaders: function () {
                 api.get(`/users/report-readers/${this.report.name}/`)
                     .then(({data}) => {
                         this.readers = data.data
                     })
                     .catch((error) => {
-                        this.handleError(error, "could not fetch list of users");
+                        this.getError = error
                     })
-            },
-            handleError: function (error, defaultMessage) {
-                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
-            },
-            postAssociatePermissionAction: function (action, user) {
-                if (action === "add" && !new Set(this.available_users).has(user)) {
-                    this.error = "You must enter a valid user email";
-                    return;
-                }
-
-                const data = {
-                    name: "reports.read",
-                    action: action,
-                    scope_prefix: "report",
-                    scope_id: this.report.name
-                };
-
-                api.post(`/user-groups/${encodeURIComponent(user)}/actions/associate-permission/`, data)
-                    .then(() => {
-                        this.refreshReaders();
-                        this.add_user = "";
-                        this.error = "";
-                    })
-                    .catch((error) => {
-                        this.handleError(error, `could not ${action} user`);
-                    });
             }
         }
     };

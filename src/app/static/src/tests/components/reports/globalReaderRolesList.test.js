@@ -1,7 +1,7 @@
 import {mount} from '@vue/test-utils';
 import GlobalReadersList from "../../../js/components/reports/permissions/globalReportReadersRoleList.vue";
 import {mockAxios} from "../../mockAxios";
-import EditIcon from '../../../js/components/reports/permissions/editIcon.vue';
+import EditIcon from '../../../js/components/editIcon.vue';
 import RoleList from "../../../js/components/reports/permissions/roleList.vue";
 
 describe("globalReaderRolesList", () => {

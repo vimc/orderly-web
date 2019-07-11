@@ -15,7 +15,7 @@
 
 <script>
     import {api} from "../../../utils/api";
-    import EditIcon from './editIcon.vue';
+    import EditIcon from './../../editIcon.vue';
     import ReportReader from "./reportReader.vue";
     import RoleList from "./roleList.vue";
 

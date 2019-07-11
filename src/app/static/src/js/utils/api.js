@@ -18,3 +18,16 @@ export const api = {
             response.data.errors[0].message
 };
 
+export const userService = {
+
+    removeUserGroup: (userGroup, reportName) => {
+        const data = {
+            name: "reports.read",
+            action: "remove",
+            scope_prefix: "report",
+            scope_id: reportName
+        };
+
+        return api.post(`/user-groups/${encodeURIComponent(userGroup)}/actions/associate-permission/`, data)
+    }
+};
