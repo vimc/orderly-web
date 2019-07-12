@@ -44,7 +44,7 @@ class UserControllerTests : TeamcityTests()
         )
 
         val repo = mock<UserRepository> {
-            on { this.getScopedIndividualReportReaders("r1") } doReturn (reportReaders)
+            on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
         val sut = UserController(actionContext, repo)
         val result = sut.getScopedReportReaders()
@@ -84,7 +84,7 @@ class UserControllerTests : TeamcityTests()
                         "r4@email.com"))
 
         val repo = mock<UserRepository> {
-            on { this.getScopedIndividualReportReaders("r1") } doReturn (reportReaders)
+            on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
         val sut = UserController(actionContext, repo)
         val result = sut.getScopedReportReaders()
