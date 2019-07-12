@@ -23,6 +23,11 @@ object WebUserGroupRouteConfig : RouteConfig
                     UserGroupController::class, "associatePermission",
                     method = HttpMethod.post)
                     .json()
+                    .secure(usersManage),
+            WebEndpoint("/typeahead/roles/",
+                    UserGroupController::class, "getAllRoleNames")
+                    .json()
+                    .transform()
                     .secure(usersManage)
 
     )

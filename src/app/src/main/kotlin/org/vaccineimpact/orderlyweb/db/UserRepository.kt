@@ -15,10 +15,23 @@ interface UserRepository
     fun getScopedIndividualReportReaders(reportName: String): List<User>
     fun getGlobalReportReaderGroups(): List<UserGroup>
     fun getScopedReportReaderGroups(reportName: String): List<UserGroup>
+    fun getAllRoleNames(): List<String>
 }
 
 class OrderlyUserRepository() : UserRepository
 {
+    override fun getAllRoleNames(): List<String>
+    {
+        return JooqContext().use {
+            return it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
+                    .from(ORDERLYWEB_USER_GROUP)
+                    .leftOuterJoin(ORDERLYWEB_USER)
+                    .on(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
+                    .where(ORDERLYWEB_USER.EMAIL.isNull)
+                    .fetchInto(String::class.java)
+        }
+    }
+
     private fun reportReadingGroupsQuery(db: JooqContext) = db.dsl.select(ORDERLYWEB_USER_GROUP.ID,
             ORDERLYWEB_USER.USERNAME,
             ORDERLYWEB_USER.DISPLAY_NAME,

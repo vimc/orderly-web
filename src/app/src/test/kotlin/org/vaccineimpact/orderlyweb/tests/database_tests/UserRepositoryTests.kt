@@ -333,4 +333,20 @@ class UserRepositoryTests : CleanDatabaseTests()
         assertThat(result.count()).isEqualTo(0)
     }
 
+    @Test
+    fun `getAllRoleNames gets non-id group names`() {
+
+        insertUser("test.user@example.com", "Test User")
+
+        createGroup("Admin")
+        addMembers("Admin", "test.user@example.com")
+
+        createGroup("Funder")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getAllRoleNames()
+
+        assertThat(result).containsExactly("Admin", "Funder")
+    }
+
 }

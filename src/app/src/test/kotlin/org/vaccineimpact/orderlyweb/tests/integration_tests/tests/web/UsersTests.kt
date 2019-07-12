@@ -69,4 +69,12 @@ class UsersTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
 
+    @Test
+    fun `only user managers can get all role names`()
+    {
+        val url = "/typeahead/roles/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
 }

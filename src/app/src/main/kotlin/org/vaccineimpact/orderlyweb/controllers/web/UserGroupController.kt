@@ -57,5 +57,10 @@ class UserGroupController(context: ActionContext,
                 .sortedBy { it.name }
     }
 
+    fun getAllRoleNames(): List<String>
+    {
+       return userRepo.getAllRoleNames()
+    }
+
     private fun userGroupId(): String = context.params(":user-group-id")
 }

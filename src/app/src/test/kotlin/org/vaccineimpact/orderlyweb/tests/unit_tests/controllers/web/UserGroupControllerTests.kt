@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupControllerTests : TeamcityTests()
 {
@@ -214,4 +213,13 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
     }
 
+    @Test
+    fun `can get role names`()
+    {
+        val repo = mock<UserRepository> {
+            on { getAllRoleNames() } doReturn listOf("Science", "Funders")
+        }
+        val sut = UserGroupController(mock(), mock(), repo)
+        assertThat(sut.getAllRoleNames()).containsExactly("Science", "Funders")
+    }
 }
