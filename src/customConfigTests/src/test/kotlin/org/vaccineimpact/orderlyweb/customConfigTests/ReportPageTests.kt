@@ -245,7 +245,7 @@ class ReportPageTests : SeleniumTest()
         val listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
 
         assertThat(listItems.count()).isEqualTo(1)
-        assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
                 .isEqualTo("user@example.com")
     }
 
@@ -305,10 +305,10 @@ class ReportPageTests : SeleniumTest()
         listItems = driver.findElements(By.cssSelector("#report-readers-list li"))
         assertThat(listItems.count()).isEqualTo(1)
 
-        assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
+        assertThat(listItems[0].findElement(By.cssSelector("span.reader-display-name")).text)
                 .isEqualTo("no.perms@example.com")
         assertThat(listItems[0].findElement(By.cssSelector("div")).text).isEqualTo("no.perms@example.com")
-        assertThat(listItems[0].findElements(By.cssSelector("span.remove-user")).count()).isEqualTo(1)
+        assertThat(listItems[0].findElements(By.cssSelector("span.remove-reader")).count()).isEqualTo(1)
     }
 
     @Test
@@ -332,7 +332,7 @@ class ReportPageTests : SeleniumTest()
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-readers-list li")))
 
-        val removeReader = driver.findElement(By.cssSelector("#report-readers-list span.remove-user"))
+        val removeReader = driver.findElement(By.cssSelector("#report-readers-list span.remove-reader"))
         removeReader.click()
 
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#report-readers-list li"), 0))

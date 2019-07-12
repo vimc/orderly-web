@@ -7,7 +7,7 @@ describe("globalReadersList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/user-groups/report-readers/')
+        mockAxios.onGet('http://app/roles/report-readers/')
             .reply(200, {"data": mockRoles});
     });
 

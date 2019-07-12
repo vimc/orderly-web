@@ -44,7 +44,7 @@
         },
         methods: {
             getReaders: function () {
-                api.get(`/user-groups/report-readers/`)
+                api.get(`/roles/report-readers/`)
                     .then(({data}) => {
                         this.readers = data.data
                     })
