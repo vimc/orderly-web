@@ -12,6 +12,5 @@ data class UserGroupViewModel(val name: String, val members: List<ReportReaderVi
                 ReportReaderViewModel.build(it)
             }.sortedBy { it.displayName })
         }
-
     }
 }
