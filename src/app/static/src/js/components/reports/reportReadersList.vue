@@ -1,14 +1,11 @@
 <template>
-    <div id="report-readers-list">
-        <label class="font-weight-bold">Specific read access</label>
-        <div>
-            <add-permission :permission="permission"
-                            type="user"
-                            :available-user-groups="availableUsers"
-                            @added="getReaders"></add-permission>
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-            <user-list :users="readers" :can-remove="true" @remove="remove"></user-list>
-        </div>
+    <div id="scoped-report-readers-list">
+        <add-permission :permission="permission"
+                        type="user"
+                        :available-user-groups="availableUsers"
+                        @added="getReaders"></add-permission>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        <user-list :users="readers" :can-remove="true" @remove="remove"></user-list>
     </div>
 </template>
 
@@ -57,7 +54,7 @@
             remove: function (email) {
 
                 const data = {
-                   ...this.permission,
+                    ...this.permission,
                     action: "remove"
                 };
 

@@ -1,21 +1,17 @@
 <template>
-    <div id="report-readers-scoped-list">
-        <div>
-            <add-permission :permission="permission"
-                            type="role"
-                            :available-user-groups="availableRoles"
-                            @added="getAllRoles"></add-permission>
-            <role-list :can-remove-members="false"
-                       :can-remove-roles="true"
-                       :roles="currentRoles"></role-list>
-        </div>
+    <div id="scoped-roles-list">
+        <add-permission :permission="permission"
+                        type="role"
+                        :available-user-groups="availableRoles"
+                        @added="getCurrentRoles"></add-permission>
+        <role-list :can-remove-members="false"
+                   :can-remove-roles="true"
+                   :roles="currentRoles"></role-list>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
-    import EditIcon from './editIcon.vue';
-    import UserList from "../permissions/userList.vue";
     import RoleList from "../permissions/roleList.vue";
     import AddPermission from "../permissions/addPermission.vue";
 
@@ -42,7 +38,7 @@
                     name: "reports.read",
                     scope_prefix: "report",
                     scope_id: this.report.name
-                };
+                }
             }
         },
         methods: {
@@ -61,9 +57,8 @@
         },
         components: {
             RoleList,
-            UserList,
-            EditIcon,
             AddPermission
         }
     };
+
 </script>

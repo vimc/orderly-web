@@ -96,6 +96,16 @@ abstract class SeleniumTest : CustomConfigTests()
         }
     }
 
+    protected fun giveUserPermissions(email: String, vararg permissions: ReifiedPermission)
+    {
+        val authRepo = OrderlyAuthorizationRepository()
+
+        for (permission in permissions)
+        {
+            authRepo.ensureUserGroupHasPermission(email, permission)
+        }
+    }
+
     protected fun addUserGroupWithPermissions(userGroupId: String, members: List<String>, permissions: List<ReifiedPermission>)
     {
         val authRepo = OrderlyAuthorizationRepository()

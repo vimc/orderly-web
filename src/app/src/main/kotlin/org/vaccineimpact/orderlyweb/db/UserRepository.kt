@@ -24,7 +24,7 @@ class OrderlyUserRepository : UserRepository
     override fun getAllRoleNames(): List<String>
     {
         return JooqContext().use {
-            return it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
+            it.dsl.select(ORDERLYWEB_USER_GROUP.ID)
                     .from(ORDERLYWEB_USER_GROUP)
                     .leftOuterJoin(ORDERLYWEB_USER)
                     .on(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
