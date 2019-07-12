@@ -364,9 +364,12 @@ class VersionPageTests : TeamcityTests()
         val mockModel = testModel.copy(isUsersManager = true)
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
+        val doc = template.jsoupDocFor(mockModel)
 
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         Assertions.assertThat(reportReaders).isNotNull()
+        Assertions.assertThat(doc.selectFirst("#reportReadersListVueApp label").text())
+                .isEqualTo("Specific read access")
     }
 
     @Test
