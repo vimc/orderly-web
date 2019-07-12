@@ -1,6 +1,6 @@
 import User from "../../../js/components/permissions/user.vue"
 import UserList from "../../../js/components/permissions/userList.vue"
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 
 describe("userList", () => {
 
@@ -39,6 +39,21 @@ describe("userList", () => {
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
         expect(secondUserProps.canRemove).toBe(true);
+    });
+
+    it("displays extra css classes", () => {
+
+        const wrapper = shallowMount(UserList, {
+            propsData: {
+                users: users,
+                canRemove: true,
+                cssClass: "test-class"
+            }
+        });
+
+        expect(wrapper.classes()).toContain("removable-users-list");
+        expect(wrapper.classes()).toContain("list-unstyled");
+        expect(wrapper.classes()).toContain("test-class");
     });
 
     it("displays non-removable users", () => {
