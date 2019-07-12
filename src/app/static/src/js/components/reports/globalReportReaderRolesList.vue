@@ -15,14 +15,14 @@
 </template>
 
 <script>
+    import Vue from "vue";
     import {api} from "../../utils/api";
     import EditIcon from './editIcon.vue';
-    import Vue from "vue";
-    import UserList from "../permissions/userList";
-    import RoleList from "../permissions/roleList";
+    import UserList from "../permissions/userList.vue";
+    import RoleList from "../permissions/roleList.vue";
 
     export default {
-        name: 'globalReadersList',
+        name: 'globalReaderRolesList',
         mounted() {
             this.getRoles();
         },

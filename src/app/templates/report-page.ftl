@@ -35,7 +35,7 @@
                             </#if>
                             <#if isUsersManager>
                                 <div id="reportReadersListVueApp" class="mt-5">
-                                    <global-readers-list></global-readers-list>
+                                    <global-reader-roles-list></global-reader-roles-list>
                                     <report-readers-list :report=report></report-readers-list>
                                 </div>
                             </#if>

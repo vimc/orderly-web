@@ -22,8 +22,8 @@
 <script>
     import {api} from "../../utils/api";
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
-    import ErrorInfo from "../errorInfo";
-    import UserList from "../permissions/userList";
+    import ErrorInfo from "../errorInfo.vue";
+    import UserList from "../permissions/userList.vue";
 
     export default {
         name: 'reportReadersList',
