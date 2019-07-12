@@ -53,6 +53,14 @@ class UsersTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
 
+    @Test
+    fun `only user managers can get user emails`()
+    {
+        val url = "/typeahead/emails/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
 
     @Test
     fun `can get scoped report reading groups`()
@@ -67,6 +75,7 @@ class UsersTests : IntegrationTest()
                 ContentTypes.json)
 
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
+
     }
 
 }

@@ -2,10 +2,18 @@
     <div id="report-readers-list">
         <label class="font-weight-bold">Specific read access</label>
         <div>
-            <div class="input-group mb-3">
-                <input v-model="add_user" class="form-control form-control-sm" type="text" placeholder="email" value />
-                <div class="input-group-append">
-                    <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
+            <div class="mb-3">
+                <vue-bootstrap-typeahead
+                        size="sm"
+                        v-model="newUser"
+                        placeholder="email"
+                        :data="availableUsers">
+                    <template slot="append">
+                        <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
+                    </template>
+                </vue-bootstrap-typeahead>
+                <div class="text-danger small" v-if="error.length > 0">
+                    {{error}}
                 </div>
             </div>
             <ul class="list-unstyled report-readers">
@@ -16,48 +24,74 @@
                 </li>
             </ul>
         </div>
-        <div class="text-danger mt-3" v-if="error.length > 0">
-            {{error}}
-        </div>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
+    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 
     export default {
         name: 'reportReadersList',
-        props: ['report', 'initial_readers'],
+        props: ['report'],
         data() {
             return {
-                add_user: "",
+                newUser: "",
                 error: "",
-                readers: []
+                readers: [],
+                allUsers: []
             }
         },
         mounted() {
-            this.refreshReaders();
+            this.getReaders();
+            this.getUserEmails();
+        },
+        components: {
+            VueBootstrapTypeahead
+        },
+        computed: {
+            availableUsers: function () {
+                return this.allUsers.filter(x =>
+                    !(new Set(this.readers.map(r => r.email))).has(x));
+            }
+        },
+        watch: {
+            newUser() {
+                this.error = ""
+            }
         },
         methods: {
-            add: function() {
-                this.postAssociatePermissionAction("add", this.add_user);
+            add: function () {
+                this.postAssociatePermissionAction("add", this.newUser);
             },
-            remove: function(email) {
+            remove: function (email) {
                 this.postAssociatePermissionAction("remove", email);
             },
-            refreshReaders: function() {
+            getUserEmails: function () {
+                api.get(`/typeahead/emails/`)
+                    .then(({data}) => {
+                        this.allUsers = data.data
+                    })
+            },
+            getReaders: function () {
                 api.get(`/users/report-readers/${this.report.name}/`)
                     .then(({data}) => {
                         this.readers = data.data
-                })
+                    })
                     .catch((error) => {
-                        this.handleError(error, "could not fetch list of readers");
-                })
+                        this.handleError(error, "could not fetch list of users");
+                    })
             },
-            handleError: function(error, defaultMessage) {
-               this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
+            handleError: function (error, defaultMessage) {
+                this.error = "Error: " + (api.errorMessage(error.response) || defaultMessage);
             },
-            postAssociatePermissionAction: function(action, user)  {
+            postAssociatePermissionAction: function (action, user) {
+
+                if (action === "add" && !new Set(this.availableUsers).has(user)) {
+                    this.error = "You must enter a valid user email";
+                    return;
+                }
+
                 const data = {
                     name: "reports.read",
                     action: action,
@@ -67,12 +101,12 @@
 
                 api.post(`/user-groups/${encodeURIComponent(user)}/actions/associate-permission/`, data)
                     .then(() => {
-                        this.refreshReaders();
-                        this.add_user = "";
+                        this.getReaders();
+                        this.newUser = "";
                         this.error = "";
                     })
                     .catch((error) => {
-                        this.handleError(error, `could not ${action} reader`);
+                        this.handleError(error, `could not ${action} user`);
                     });
             }
         }

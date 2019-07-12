@@ -6,6 +6,9 @@ module.exports = {
     "globals": {
         "appUrl": "http://app"
     },
+    "transformIgnorePatterns": [
+        "node_modules/(?!(vue-bootstrap-typeahead)/)"
+    ],
     "moduleFileExtensions": [
         "js",
         "json",
