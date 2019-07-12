@@ -1,4 +1,4 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import ErrorInfo from "../../js/components/errorInfo.vue"
 
 describe("errorInfo", () => {
@@ -7,7 +7,7 @@ describe("errorInfo", () => {
 
         const wrapper = mount(ErrorInfo, {
             propsData: {
-                error: {
+                apiError: {
                     response: {data: {"errors": [{"message": "test error message"}]}}
                 },
                 defaultMessage: "test default"
@@ -21,7 +21,7 @@ describe("errorInfo", () => {
 
         const wrapper = mount(ErrorInfo, {
             propsData: {
-                error: {
+                apiError: {
                     response: {data: "something went wrong"}
                 },
                 defaultMessage: "test default"
@@ -31,11 +31,23 @@ describe("errorInfo", () => {
         expect(wrapper.find('.text-danger').text()).toBe("Error: test default");
     });
 
+    it("uses default message if error message cannot be found in response", () => {
+
+        const wrapper = shallowMount(ErrorInfo);
+
+        expect(wrapper.vm.apiErrorMessage({})).toBeFalsy();
+        expect(wrapper.vm.apiErrorMessage({"data": {}})).toBeFalsy();
+        expect(wrapper.vm.apiErrorMessage({"data": {"errors": {}}})).toBeFalsy();
+        expect(wrapper.vm.apiErrorMessage({"data": {"errors": []}})).toBeFalsy();
+        expect(wrapper.vm.apiErrorMessage({"data": {"errors": [{}]}})).toBeFalsy();
+
+    });
+
     it('shows nothing if error is null', () => {
 
         const wrapper = mount(ErrorInfo, {
             propsData: {
-                error: null,
+                apiError: null,
                 defaultMessage: "test default"
             }
         });

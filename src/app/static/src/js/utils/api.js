@@ -10,11 +10,6 @@ const buildFullUrl = (url) => {
 export const api = {
     baseUrl: baseUrl,
     get: (url) => axios.get(buildFullUrl(url), {withCredentials: true}),
-    post: (url, data) => axios.post(buildFullUrl(url), data, {withCredentials: true}),
-    errorMessage: (response) => response &&
-            response.data  &&
-            response.data.errors &&
-            response.data.errors[0] &&
-            response.data.errors[0].message
+    post: (url, data) => axios.post(buildFullUrl(url), data, {withCredentials: true})
 };
 

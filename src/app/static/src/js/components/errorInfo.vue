@@ -5,20 +5,24 @@
 </template>
 
 <script>
-    import {api} from "../utils/api";
-
     export default {
         name: "errorInfo",
-        props: ["error", "defaultMessage"],
+        props: ["apiError", "defaultMessage"],
         computed: {
             errorMessage: function () {
-                if (this.error) {
-                    return "Error: " + (api.errorMessage(this.error.response) || this.defaultMessage);
-                }
-                else {
+                if (this.apiError) {
+                    return "Error: " + (this.apiErrorMessage(this.apiError.response) || this.defaultMessage);
+                } else {
                     return null
                 }
             }
+        },
+        methods: {
+            apiErrorMessage: (response) => response &&
+                response.data &&
+                response.data.errors &&
+                response.data.errors[0] &&
+                response.data.errors[0].message
         }
     }
 </script>

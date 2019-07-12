@@ -65,7 +65,7 @@ describe("reportReadersList", () => {
         expect(wrapper.find('input').attributes("placeholder")).toBe("email");
         expect(wrapper.find('button').text()).toBe("Add user");
 
-        expect(wrapper.find(ErrorInfo).props().error).toBe("test error");
+        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
         expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
 
         expectWrapperToHaveRenderedReaders(wrapper);
@@ -111,7 +111,7 @@ describe("reportReadersList", () => {
             expect(mockAxios.history.get.length).toBe(2);
             expect(wrapper.find(UserList).props().users.length).toBe(0);
             expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not fetch list of users");
-            expect(wrapper.find(ErrorInfo).props().error.response.data).toStrictEqual(testError);
+            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
 
             done();
         });
@@ -214,7 +214,7 @@ describe("reportReadersList", () => {
             expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
 
             expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add user");
-            expect(wrapper.find(ErrorInfo).props().error.response.data).toStrictEqual(testError);
+            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
 
             done();
         });
@@ -245,7 +245,7 @@ describe("reportReadersList", () => {
                 expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
 
                 expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not remove user");
-                expect(wrapper.find(ErrorInfo).props().error.response.data).toStrictEqual(testError);
+                expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
                 done();
             });
         });

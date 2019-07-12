@@ -12,7 +12,7 @@
                         <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
                     </template>
                 </vue-bootstrap-typeahead>
-                <error-info :default-message="defaultMessage" :error="error"></error-info>
+                <error-info :default-message="defaultMessage" :api-error="error"></error-info>
             </div>
             <user-list :users="readers" :can-remove="true" @remove="remove"></user-list>
         </div>
