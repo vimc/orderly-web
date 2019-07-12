@@ -150,4 +150,68 @@ class UserGroupControllerTests : TeamcityTests()
         assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
     }
 
+    private val actionContextWithReport = mock<ActionContext> {
+        on { this.params(":report") } doReturn "r1"
+    }
+
+    @Test
+    fun `getScopedReportReaders builds user group view models`()
+    {
+        val repo = mock<UserRepository> {
+            on { getScopedReportReaderGroups("r1") } doReturn listOf(UserGroup("Funders",
+                    listOf(User("test.user", "Test User", "test@example.com"),
+                            User("unknown", "unknown", "funder@example.com"),
+                            User("funder.user", "unknown", "another@example.com")
+                    )))
+        }
+
+        val sut = UserGroupController(actionContextWithReport, mock(), repo)
+        val result = sut.getScopedReportReaders()
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].name).isEqualTo("Funders")
+
+        val members = result[0].members
+        assertThat(members[0].displayName).isEqualTo("Test User")
+        assertThat(members[1].displayName).isEqualTo("funder.user")
+        assertThat(members[2].displayName).isEqualTo("funder@example.com")
+        assertThat(members[0].email).isEqualTo("test@example.com")
+        assertThat(members[1].email).isEqualTo("another@example.com")
+        assertThat(members[2].email).isEqualTo("funder@example.com")
+    }
+
+    @Test
+    fun `getScopedReportReaders orders user group view models alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getScopedReportReaderGroups("r1") } doReturn listOf(
+                    UserGroup("Science", listOf()),
+                    UserGroup("Funders", listOf()),
+                    UserGroup("Tech", listOf())
+            )
+        }
+
+        val sut = UserGroupController(actionContextWithReport, mock(), repo)
+        val result = sut.getScopedReportReaders()
+        assertThat(result[0].name).isEqualTo("Funders")
+        assertThat(result[1].name).isEqualTo("Science")
+        assertThat(result[2].name).isEqualTo("Tech")
+    }
+
+    @Test
+    fun `getScopedReportReaders orders user group view model members alphabetically`()
+    {
+        val repo = mock<UserRepository> {
+            on { getScopedReportReaderGroups("r1") } doReturn listOf(
+                    UserGroup("Science", listOf(
+                            User("c.user", "C User", "testc@example.com"),
+                            User("a.user", "A User", "test@example.com"),
+                            User("b.user", "B User", "testb@example.com"))
+                    ))
+        }
+
+        val sut = UserGroupController(actionContextWithReport, mock(), repo)
+        val members = sut.getScopedReportReaders()[0].members
+        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+    }
+
 }

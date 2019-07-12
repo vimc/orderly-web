@@ -53,4 +53,20 @@ class UsersTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
 
+
+    @Test
+    fun `can get scoped report reading groups`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Specific("report", "minimal")))
+        addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
+
+        val url = "/user-groups/report-readers/minimal/"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("users.manage", Scope.Global()),
+                        ReifiedPermission("reports.read", Scope.Global())),
+                ContentTypes.json)
+
+        JSONValidator.validateAgainstSchema(response.text, "UserGroups")
+    }
+
 }

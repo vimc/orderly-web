@@ -4,6 +4,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.tests.addMembers
+import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
@@ -24,4 +26,5 @@ class ReportTests : IntegrationTest()
         val requiredPermissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
+
 }
