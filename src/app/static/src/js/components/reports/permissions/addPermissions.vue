@@ -9,7 +9,7 @@
                 <button v-on:click="add" type="submit" class="btn btn-sm">{{addText}}</button>
             </template>
         </vue-bootstrap-typeahead>
-        <error-info :error="error" default-message=""></error-info>
+        <error-info :error="error" :default-message="defaultMessage"></error-info>
     </div>
 </template>
 
@@ -19,15 +19,14 @@
     import ErrorInfo from "../../errorInfo.vue";
 
     export default {
-        name: 'managePermissions',
+        name: 'addPermissions',
         components: {ErrorInfo, VueBootstrapTypeahead},
-        props: ['report', 'currentItems', 'availableItems', 'placeholder', 'addText'],
+        props: ['report', 'availableItems', 'placeholder', 'addText'],
         data() {
             return {
                 newItem: "",
-                error: "",
-                currentItems: [],
-                allItems: []
+                error: null,
+                defaultMessage: ""
             }
         },
         watch: {
@@ -39,6 +38,8 @@
             add: function () {
                 if (!new Set(this.availableItems).has(this.newItem)) {
                     this.error = `You must enter a valid ${this.placeholder}`;
+                    this.defaultMessage
+                        = `You must enter a valid ${this.placeholder}`;
                     return;
                 }
 
@@ -54,7 +55,8 @@
                         this.$emit('added');
                     })
                     .catch((error) => {
-                        this.handleError(error, `could not add ${this.newItem}`);
+                        this.error = error;
+                        this.defaultMessage = `could not add ${this.newItem}`;
                     });
             }
         }

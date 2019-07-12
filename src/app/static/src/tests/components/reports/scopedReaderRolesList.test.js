@@ -34,7 +34,7 @@ describe("scopedReaderRolesList", () => {
         });
 
         wrapper.setData({
-            roles: mockRoles
+            currentRoles: mockRoles
         });
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
@@ -51,7 +51,7 @@ describe("scopedReaderRolesList", () => {
         });
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get.length).toBe(2);
             expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
             done();
         });

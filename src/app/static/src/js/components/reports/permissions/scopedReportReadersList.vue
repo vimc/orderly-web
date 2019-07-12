@@ -1,33 +1,32 @@
 <template>
     <div id="report-readers-list">
-        <manage-permissions :report="report"
-                            placeholder="email"
-                            add-text="Add user"
-                            :current-items="readers"
-                            :available-items="availableUsers"
-                            @added="getReaders"></manage-permissions>
-        <error-info default-message="Could not remove user" :error="removeError"></error-info>
+        <add-permissions :report="report"
+                         placeholder="email"
+                         add-text="Add user"
+                         :current-items="readers"
+                         :available-items="availableUsers"
+                         @added="getReaders"></add-permissions>
+        <error-info :default-message="defaultMessage" :error="error"></error-info>
         <reader-list :readers="readers" :can-remove="true" @remove="remove"></reader-list>
-        <error-info default-message="Could not fetch list of users" :error="getError"></error-info>
     </div>
 </template>
 
 <script>
     import {api, userService} from "../../../utils/api";
     import ReaderList from "./readerList.vue";
-    import ManagePermissions from "./managePermissions.vue";
+    import AddPermissions from "./addPermissions.vue";
     import ErrorInfo from "../../errorInfo.vue";
 
     export default {
         name: 'reportReadersList',
-        components: {ErrorInfo, ReaderList, ManagePermissions},
+        components: {ErrorInfo, ReaderList, AddPermissions},
         props: ['report', 'initialReaders'],
         data() {
             return {
                 readers: [],
                 allUsers: [],
-                removeError: null,
-                getError: null
+                error: null,
+                defaultMessage: "Something went wrong"
             }
         },
         mounted() {
@@ -42,18 +41,19 @@
         },
         methods: {
             remove: function (email) {
-               userService.removeUserGroup(email, this.report.name)
+                userService.removeUserGroup(email, this.report.name)
                     .then(() => {
-                        this.refreshReaders();
+                        this.getReaders();
                     })
                     .catch((error) => {
-                        this.removeError = error
+                        this.defaultMessage = `Could not remove ${email}`;
+                        this.error = error
                     });
             },
             getUserEmails: function () {
                 api.get(`/users/`)
                     .then(({data}) => {
-                        this.all_users = data.data
+                        this.allUsers = data.data
                     })
             },
             getReaders: function () {
@@ -62,7 +62,8 @@
                         this.readers = data.data
                     })
                     .catch((error) => {
-                        this.getError = error
+                        this.defaultMessage = "Could not fetch users";
+                        this.error = error
                     })
             }
         }

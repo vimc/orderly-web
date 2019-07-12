@@ -13,10 +13,10 @@
         computed: {
             errorMessage: function () {
                 if (this.error) {
-                    this.errorMessage = "Error: " + (api.errorMessage(this.error.response) || this.defaultMessage);
+                   return "Error: " + (api.errorMessage(this.error.response) || this.defaultMessage);
                 }
                 else {
-                    this.errorMessage = null
+                    return null
                 }
             }
         }

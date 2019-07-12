@@ -1,11 +1,11 @@
 <template>
     <div>
-        <manage-permissions :report="report"
+        <add-permissions :report="report"
                             placeholder="role name"
                             add-text="Add role"
                             :current-items="currentRoles"
                             :available-items="availableRoles"
-                            @added="getCurrentRoles"></manage-permissions>
+                            @added="getCurrentRoles"></add-permissions>
         <role-list :roles="currentRoles" :can-remove="true"></role-list>
     </div>
 </template>
@@ -13,7 +13,7 @@
 <script>
     import {api} from "../../../utils/api";
     import RoleList from "./roleList.vue";
-    import ManagePermissions from "./managePermissions.vue";
+    import AddPermissions from "./addPermissions.vue";
 
     export default {
         name: 'scopedReadersRoleList',
@@ -49,7 +49,7 @@
             }
         },
         components: {
-            ManagePermissions,
+            AddPermissions,
             RoleList
         }
     };
