@@ -13,10 +13,9 @@
         "items": {
           "$ref": "User.schema.json"
         }
-      },
-      "can_remove": {"type": "boolean"}
+      }
     },
     "additionalProperties": false,
-    "required": ["name", "members", "can_remove"]
+    "required": ["name", "members"]
   }
 }
