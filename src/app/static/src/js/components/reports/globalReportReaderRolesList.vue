@@ -24,6 +24,7 @@
         name: 'globalReaderRolesList',
         mounted() {
             this.getRoles();
+
         },
         data() {
             return {

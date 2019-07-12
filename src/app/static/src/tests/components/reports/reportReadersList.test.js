@@ -143,9 +143,7 @@ describe("reportReadersList", () => {
             expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
 
             expectPostDataCorrect("add");
-
             expectWrapperToHaveRenderedReaders(wrapper);
-            expect(wrapper.vm.$data["newUser"]).toBe("");
 
             done();
         });
