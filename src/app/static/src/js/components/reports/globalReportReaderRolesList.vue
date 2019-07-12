@@ -15,7 +15,6 @@
 </template>
 
 <script>
-    import Vue from "vue";
     import {api} from "../../utils/api";
     import EditIcon from './editIcon.vue';
     import UserList from "../permissions/userList.vue";
@@ -37,9 +36,6 @@
                     .then(({data}) => {
                         this.roles = data.data
                     })
-            },
-            toggle: function (index, role) {
-                Vue.set(this.roles, index, {...role, expanded: !role.expanded});
             }
         },
         components: {
