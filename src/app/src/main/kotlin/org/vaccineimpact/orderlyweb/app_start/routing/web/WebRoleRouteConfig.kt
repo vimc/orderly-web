@@ -2,30 +2,25 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
+import org.vaccineimpact.orderlyweb.controllers.web.RoleController
 import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
-import spark.route.HttpMethod
 
-object WebUserGroupRouteConfig : RouteConfig
+object WebRoleRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
-            WebEndpoint("/user-groups/report-readers/",
-                    UserGroupController::class, "getGlobalReportReaders")
+            WebEndpoint("/roles/report-readers/",
+                    RoleController::class, "getGlobalReportReaders")
                     .json()
                     .secure(usersManage)
                     .transform(),
-            WebEndpoint("/user-groups/report-readers/:report/",
-                    UserGroupController::class, "getScopedReportReaders")
+            WebEndpoint("/roles/report-readers/:report/",
+                    RoleController::class, "getScopedReportReaders")
                     .json()
                     .secure(usersManage + setOf("*/reports.read"))
                     .transform(),
-            WebEndpoint("/user-groups/:user-group-id/actions/associate-permission/",
-                    UserGroupController::class, "associatePermission",
-                    method = HttpMethod.post)
-                    .json()
-                    .secure(usersManage),
             WebEndpoint("/typeahead/roles/",
-                    UserGroupController::class, "getAllRoleNames")
+                    RoleController::class, "getAllRoleNames")
                     .json()
                     .transform()
                     .secure(usersManage)

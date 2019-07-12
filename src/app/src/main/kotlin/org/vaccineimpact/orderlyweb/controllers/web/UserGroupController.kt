@@ -5,19 +5,15 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.viewmodels.UserGroupViewModel
 
 class UserGroupController(context: ActionContext,
-                          private val authRepo: AuthorizationRepository,
-                          private val userRepo: UserRepository) : Controller(context)
+                          private val authRepo: AuthorizationRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository(),
-            OrderlyUserRepository())
+    constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
 
     fun associatePermission(): String
     {
@@ -41,25 +37,6 @@ class UserGroupController(context: ActionContext,
         }
 
         return okayResponse()
-    }
-
-    fun getGlobalReportReaders(): List<UserGroupViewModel>
-    {
-        val users = userRepo.getGlobalReportReaderGroups()
-        return users.map { UserGroupViewModel.build(it) }
-                .sortedBy { it.name }
-    }
-
-    fun getScopedReportReaders(): List<UserGroupViewModel>
-    {
-        val users = userRepo.getScopedReportReaderGroups(context.params(":report"))
-        return users.map { UserGroupViewModel.build(it) }
-                .sortedBy { it.name }
-    }
-
-    fun getAllRoleNames(): List<String>
-    {
-       return userRepo.getAllRoleNames()
     }
 
     private fun userGroupId(): String = context.params(":user-group-id")

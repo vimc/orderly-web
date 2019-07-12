@@ -5,16 +5,16 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails
 import org.vaccineimpact.orderlyweb.models.UserSource
-import org.vaccineimpact.orderlyweb.models.permissions.UserGroup
+import org.vaccineimpact.orderlyweb.models.permissions.Role
 import java.time.Instant
 
 interface UserRepository
 {
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
     fun getUser(email: String): UserDetails?
-    fun getScopedIndividualReportReaders(reportName: String): List<User>
-    fun getGlobalReportReaderGroups(): List<UserGroup>
-    fun getScopedReportReaderGroups(reportName: String): List<UserGroup>
+    fun getScopedReportReaderUsers(reportName: String): List<User>
+    fun getGlobalReportReaderRoles(): List<Role>
+    fun getScopedReportReaderRoles(reportName: String): List<Role>
     fun getAllRoleNames(): List<String>
 }
 
@@ -44,7 +44,7 @@ class OrderlyUserRepository() : UserRepository
             .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
             .and(ORDERLYWEB_USER_GROUP.ID.ne(ORDERLYWEB_USER.EMAIL))
 
-    override fun getGlobalReportReaderGroups(): List<UserGroup>
+    override fun getGlobalReportReaderRoles(): List<Role>
     {
         return JooqContext().use {
 
@@ -56,7 +56,7 @@ class OrderlyUserRepository() : UserRepository
         }
     }
 
-    override fun getScopedReportReaderGroups(reportName: String): List<UserGroup>
+    override fun getScopedReportReaderRoles(reportName: String): List<Role>
     {
         return JooqContext().use {
 
@@ -68,9 +68,9 @@ class OrderlyUserRepository() : UserRepository
         }
     }
 
-    private fun mapUserGroup(group: Map.Entry<String, List<Record>>): UserGroup
+    private fun mapUserGroup(group: Map.Entry<String, List<Record>>): Role
     {
-        return UserGroup(group.key, group.value.map(::mapUser))
+        return Role(group.key, group.value.map(::mapUser))
     }
 
     private fun mapUser(record: Record): User
@@ -80,7 +80,7 @@ class OrderlyUserRepository() : UserRepository
                 record[ORDERLYWEB_USER.EMAIL])
     }
 
-    override fun getScopedIndividualReportReaders(reportName: String): List<User>
+    override fun getScopedReportReaderUsers(reportName: String): List<User>
     {
         JooqContext().use {
             val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,

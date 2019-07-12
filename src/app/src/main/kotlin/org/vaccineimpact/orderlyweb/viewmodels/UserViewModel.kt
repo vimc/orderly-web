@@ -2,11 +2,11 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.models.User
 
-data class ReportReaderViewModel(val email: String, val username: String, val displayName: String)
+data class UserViewModel(val email: String, val username: String, val displayName: String)
 {
     companion object
     {
-        fun build(user: User): ReportReaderViewModel
+        fun build(user: User): UserViewModel
         {
            val displayName = when
             {
@@ -15,7 +15,7 @@ data class ReportReaderViewModel(val email: String, val username: String, val di
                 else -> user.email
             }
 
-            return ReportReaderViewModel(user.email, user.username, displayName)
+            return UserViewModel(user.email, user.username, displayName)
         }
 
         private fun isNotEmptyOrUnknown(value: String): Boolean

@@ -128,7 +128,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         }
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedIndividualReportReaders("report1")
+        val result = sut.getScopedReportReaderUsers("report1")
 
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0].username).isEqualTo("scoped.reader.name")
@@ -145,7 +145,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         }
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedIndividualReportReaders("report1")
+        val result = sut.getScopedReportReaderUsers("report1")
         assertThat(result.count()).isEqualTo(0)
     }
 
@@ -171,7 +171,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         giveUserGroupMember("report2.readers", "all.groups@reader.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedIndividualReportReaders("report1")
+        val result = sut.getScopedReportReaderUsers("report1")
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -187,7 +187,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Science", "science.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getGlobalReportReaderGroups()
+        val result = sut.getGlobalReportReaderRoles()
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].name).isEqualTo("Funder")
@@ -207,7 +207,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Tech", "tech.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getGlobalReportReaderGroups()
+        val result = sut.getGlobalReportReaderRoles()
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -219,7 +219,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Admin", "admin.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getGlobalReportReaderGroups()
+        val result = sut.getGlobalReportReaderRoles()
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -230,7 +230,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Global()))
 
         val sut = OrderlyUserRepository()
-        val result = sut.getGlobalReportReaderGroups()
+        val result = sut.getGlobalReportReaderRoles()
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -242,7 +242,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Global())
 
         val sut = OrderlyUserRepository()
-        val result = sut.getGlobalReportReaderGroups()
+        val result = sut.getGlobalReportReaderRoles()
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -258,7 +258,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Science", "science.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].name).isEqualTo("Funder")
@@ -278,7 +278,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Tech", "tech.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -291,7 +291,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Admin", "admin.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -303,7 +303,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         addMembers("Admin", "admin.user@example.com")
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -315,7 +315,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Specific("report", "r1")))
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(0)
     }
@@ -328,7 +328,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Specific("report", "r1"))
 
         val sut = OrderlyUserRepository()
-        val result = sut.getScopedReportReaderGroups("r1")
+        val result = sut.getScopedReportReaderRoles("r1")
 
         assertThat(result.count()).isEqualTo(0)
     }
