@@ -16,9 +16,10 @@ interface UserRepository
     fun getGlobalReportReaderRoles(): List<Role>
     fun getScopedReportReaderRoles(reportName: String): List<Role>
     fun getAllRoleNames(): List<String>
+    fun getUserEmails(): List<String>
 }
 
-class OrderlyUserRepository() : UserRepository
+class OrderlyUserRepository : UserRepository
 {
     override fun getAllRoleNames(): List<String>
     {
@@ -28,6 +29,15 @@ class OrderlyUserRepository() : UserRepository
                     .leftOuterJoin(ORDERLYWEB_USER)
                     .on(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
                     .where(ORDERLYWEB_USER.EMAIL.isNull)
+                    .fetchInto(String::class.java)
+        }
+    }
+
+    override fun getUserEmails(): List<String>
+    {
+        return JooqContext().use {
+            it.dsl.select(ORDERLYWEB_USER.EMAIL)
+                    .from(ORDERLYWEB_USER)
                     .fetchInto(String::class.java)
         }
     }

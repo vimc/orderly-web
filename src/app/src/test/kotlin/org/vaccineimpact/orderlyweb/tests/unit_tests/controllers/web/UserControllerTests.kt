@@ -13,6 +13,18 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 class UserControllerTests : TeamcityTests()
 {
     @Test
+    fun `gets user emails`()
+    {
+        val repo = mock<UserRepository> {
+            on { this.getUserEmails() } doReturn (listOf("one", "two"))
+        }
+
+        val sut = UserController(mock(), repo)
+
+        assertThat(sut.getUserEmails()).containsExactlyElementsOf(listOf("one", "two"))
+    }
+
+    @Test
     fun `gets individual scoped report readers`()
     {
         val actionContext = mock<ActionContext> {

@@ -20,6 +20,13 @@ object WebUserRouteConfig : RouteConfig
                     UserGroupController::class, "associatePermission",
                     method = HttpMethod.post)
                     .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/typeahead/emails/",
+                    UserController::class, "getUserEmails",
+                    contentType = ContentTypes.json)
+                    .json()
+                    .transform()
                     .secure(usersManage)
     )
 }
