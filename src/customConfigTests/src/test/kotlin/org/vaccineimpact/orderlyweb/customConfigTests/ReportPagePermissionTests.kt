@@ -52,6 +52,19 @@ class ReportPagePermissionTests : SeleniumTest()
         assertThat(listItems[0].getAttribute("id")).isEqualTo(userGroup)
     }
 
+    private fun canRemoveUserGroup(widgetId: String) {
+        //let existing readers load first
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId > ul > li")))
+
+        val removeReader = driver.findElement(By.cssSelector("#$widgetId  span.remove-user-group"))
+        removeReader.click()
+
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#$widgetId  li"), 0))
+
+        val listItems = driver.findElements(By.cssSelector("#$widgetId li"))
+        assertThat(listItems.count()).isEqualTo(0)
+    }
+
     @Before
     fun setupPage()
     {
@@ -123,16 +136,7 @@ class ReportPagePermissionTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        //let existing readers load first
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#scoped-report-readers-list li")))
-
-        val removeReader = driver.findElement(By.cssSelector("#scoped-report-readers-list span.remove-user"))
-        removeReader.click()
-
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#scoped-report-readers-list li"), 0))
-
-        val listItems = driver.findElements(By.cssSelector("#scoped-report-readers-list  li"))
-        assertThat(listItems.count()).isEqualTo(0)
+        canRemoveUserGroup("scoped-report-readers-list")
     }
 
     @Test
@@ -144,5 +148,17 @@ class ReportPagePermissionTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         canAddUserGroup("scoped-roles-list", "new-group")
+    }
+
+    @Test
+    fun `can remove role`()
+    {
+        addUserGroupWithPermissions(testRole,
+                listOf(testListItemUser),
+                listOf(ReifiedPermission("reports.read", Scope.Specific("report", "testreport"))))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
+        canRemoveUserGroup("scoped-roles-list")
     }
 }
