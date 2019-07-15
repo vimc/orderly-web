@@ -2,33 +2,34 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleController(context: ActionContext,
-                     private val userRepo: UserRepository) : Controller(context)
+                     private val roleRepo: RoleRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyUserRepository())
+    constructor(context: ActionContext) : this(context, OrderlyRoleRepository())
 
     fun getGlobalReportReaders(): List<RoleViewModel>
     {
-        val users = userRepo.getGlobalReportReaderRoles()
+        val users = roleRepo.getGlobalReportReaderRoles()
         return users.map { RoleViewModel.build(it) }
                 .sortedBy { it.name }
     }
 
     fun getScopedReportReaders(): List<RoleViewModel>
     {
-        val users = userRepo.getScopedReportReaderRoles(context.params(":report"))
+        val users = roleRepo.getScopedReportReaderRoles(context.params(":report"))
         return users.map { RoleViewModel.build(it) }
                 .sortedBy { it.name }
     }
 
     fun getAllRoleNames(): List<String>
     {
-        return userRepo.getAllRoleNames()
+        return roleRepo.getAllRoleNames()
     }
 
-    private fun userGroupId(): String = context.params(":user-group-id")
 }
