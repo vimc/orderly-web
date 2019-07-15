@@ -4,7 +4,7 @@ import $ from 'jquery';
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
 import reportReadersList from './components/reports/reportReadersList.vue'
-import globalReadersList from './components/reports/globalReportReadersList.vue'
+import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
 
 let data = {report: null};
 
@@ -43,7 +43,7 @@ $(document).ready(() => {
             data: data,
             components: {
                 reportReadersList: reportReadersList,
-                globalReadersList: globalReadersList
+                globalReaderRolesList: globalReaderRolesList
             }
         });
     }

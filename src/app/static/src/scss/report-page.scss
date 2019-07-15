@@ -1,6 +1,7 @@
 @import "style";
 @import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";
 @import "partials/sidebar";
+@import "partials/permissions";
 
 .changelog-header tr th {
   background-color: $theme-header-bg-color;
@@ -38,24 +39,6 @@
   &.no-badge:last-of-type {
     padding-bottom: 0;
   }
-}
-
-.report-readers {
-  .email {
-    line-height: 0.5rem;
-    margin-top: -0.5rem;
-    word-break: break-word;
-  }
-}
-
-.remove-reader {
-  cursor: pointer;
-  color: $danger;
-}
-
-.remove-reader:hover {
-  color: darken($danger, 10%);
-  text-decoration: underline;
 }
 
 #publish-switch {
