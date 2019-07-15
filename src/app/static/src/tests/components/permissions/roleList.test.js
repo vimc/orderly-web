@@ -96,7 +96,7 @@ describe("roleList", () => {
         });
 
         wrapper.findAll(RemovePermission).at(0).vm.$emit("removed");
-        expect(wrapper.emitted().removed).toBeDefined();
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["role"]);
     });
 
     it('emits removed event when userList does', () => {
@@ -110,7 +110,7 @@ describe("roleList", () => {
         });
 
         wrapper.find(UserList).vm.$emit("removed");
-        expect(wrapper.emitted().removed).toBeDefined();
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"]);
     });
 
     it('can expand and collapse members', () => {

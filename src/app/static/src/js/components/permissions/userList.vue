@@ -5,7 +5,7 @@
                   :display-name="user.display_name"
                   :can-remove="canRemove"
                   :permission="permission"
-                  @removed="$emit('removed')"></user>
+                  @removed="$emit('removed', 'user')"></user>
         </li>
     </ul>
 </template>

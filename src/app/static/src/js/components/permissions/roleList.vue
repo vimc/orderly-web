@@ -9,13 +9,13 @@
             <remove-permission v-if="canRemoveRoles"
                                :user-group="role.name"
                                :permission="permission"
-                               @removed="$emit('removed')"></remove-permission>
+                               @removed="$emit('removed', 'role')"></remove-permission>
             <user-list v-on:click="function(e){e.stopPropagation()}"
                        v-show="expanded[index]"
                        cssClass="members"
                        :users="role.members"
                        :canRemove="canRemoveMembers"
-                       @removed="$emit('removed')"></user-list>
+                       @removed="$emit('removed', 'user')"></user-list>
         </li>
     </ul>
 </template>
