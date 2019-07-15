@@ -1,5 +1,7 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import ReportReadersList from "../../../js/components/reports/reportReadersList.vue";
+import ErrorInfo from "../../../js/components/errorInfo.vue";
+import UserList from "../../../js/components/permissions/userList.vue";
 import {mockAxios} from "../../mockAxios";
 import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
 
@@ -31,16 +33,16 @@ describe("reportReadersList", () => {
     ];
 
     function expectWrapperToHaveRenderedReaders(wrapper) {
-        const listItems = wrapper.findAll('li');
-        expect(listItems.length).toBe(2);
+        const listItems = wrapper.find(UserList);
+        expect(listItems.props().users).toEqual(expect.arrayContaining(reportReaders));
+    }
 
-        expect(listItems.at(0).find('span.reader-display-name').text()).toBe("User One");
-        expect(listItems.at(0).find('div').text()).toBe("user1@example.com");
-        expect(listItems.at(0).findAll('span.remove-reader').length).toBe(1);
-
-        expect(listItems.at(1).find('span.reader-display-name').text()).toBe("User Two");
-        expect(listItems.at(1).find('div').text()).toBe("user2@example.com");
-        expect(listItems.at(1).findAll('span.remove-reader').length).toBe(1);
+    function expectPostDataCorrect(action) {
+        const postData = JSON.parse(mockAxios.history.post[0].data);
+        expect(postData.name).toBe("reports.read");
+        expect(postData.action).toBe(action);
+        expect(postData.scope_prefix).toBe("report");
+        expect(postData.scope_id).toBe("report1");
     }
 
     it('renders data', () => {
@@ -54,6 +56,7 @@ describe("reportReadersList", () => {
         });
         wrapper.setData({
             error: "test error",
+            defaultMessage: "default error",
             readers: reportReaders
         });
 
@@ -62,7 +65,8 @@ describe("reportReadersList", () => {
         expect(wrapper.find('input').attributes("placeholder")).toBe("email");
         expect(wrapper.find('button').text()).toBe("Add user");
 
-        expect(wrapper.find('.text-danger').text()).toBe("test error");
+        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
+        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
 
         expectWrapperToHaveRenderedReaders(wrapper);
     });
@@ -71,7 +75,7 @@ describe("reportReadersList", () => {
         mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
 
-        const wrapper = mount(ReportReadersList, {
+        const wrapper = shallowMount(ReportReadersList, {
             propsData: {
                 report: {
                     name: "report1"
@@ -89,11 +93,13 @@ describe("reportReadersList", () => {
         });
     });
 
-    it('shows default error when fetching readers', (done) => {
-        mockAxios.onGet('http://app/users/report-readers/report1/')
-            .reply(500);
+    it('sets error when fetching readers', (done) => {
 
-        const wrapper = mount(ReportReadersList, {
+        const testError = {test: "something"};
+        mockAxios.onGet('http://app/users/report-readers/report1/')
+            .reply(500, testError);
+
+        const wrapper = shallowMount(ReportReadersList, {
             propsData: {
                 report: {
                     name: "report1"
@@ -103,35 +109,9 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-
-            const listItems = wrapper.findAll('li');
-            expect(listItems.length).toBe(0);
-
-            expect(wrapper.find('.text-danger').text()).toBe("Error: could not fetch list of users");
-
-            done();
-        });
-    });
-
-    it('shows error from response if available when fetching readers', (done) => {
-        mockAxios.onGet('http://app/users/report-readers/report1/')
-            .reply(404, {"errors": [{"message": "test error message"}]});
-
-        const wrapper = mount(ReportReadersList, {
-            propsData: {
-                report: {
-                    name: "report1"
-                }
-            }
-        });
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2);
-
-            const listItems = wrapper.findAll('li');
-            expect(listItems.length).toBe(0);
-
-            expect(wrapper.find('.text-danger').text()).toBe("Error: test error message");
+            expect(wrapper.find(UserList).props().users.length).toBe(0);
+            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not fetch list of users");
+            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
 
             done();
         });
@@ -164,11 +144,7 @@ describe("reportReadersList", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
 
-            const postData = JSON.parse(mockAxios.history.post[0].data);
-            expect(postData.name).toBe("reports.read");
-            expect(postData.action).toBe("add");
-            expect(postData.scope_prefix).toBe("report");
-            expect(postData.scope_id).toBe("report1");
+            expectPostDataCorrect("add");
 
             expectWrapperToHaveRenderedReaders(wrapper);
             expect(wrapper.vm.$data["newUser"]).toBe("");
@@ -195,7 +171,7 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find('span.remove-reader').trigger('click');
+            wrapper.find('span.remove-user').trigger('click');
 
             setTimeout(() => {
                 expect(wrapper.findAll('.text-danger').length).toBe(0);
@@ -203,12 +179,7 @@ describe("reportReadersList", () => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after removedreader
 
-                const postData = JSON.parse(mockAxios.history.post[0].data);
-                expect(postData.name).toBe("reports.read");
-                expect(postData.action).toBe("remove");
-                expect(postData.scope_prefix).toBe("report");
-                expect(postData.scope_id).toBe("report1");
-
+                expectPostDataCorrect("remove");
                 expectWrapperToHaveRenderedReaders(wrapper);
 
                 done();
@@ -217,9 +188,10 @@ describe("reportReadersList", () => {
 
     });
 
-    it('add reader shows default error and does not refresh reader list', (done) => {
+    it('add reader sets error and does not refresh reader list', (done) => {
+        const testError = {test: "something"};
         mockAxios.onPost(`http://app/user-groups/test.user%40example.com/actions/associate-permission/`)
-            .reply(500);
+            .reply(500, testError);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
@@ -241,15 +213,18 @@ describe("reportReadersList", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
 
-            expect(wrapper.find('.text-danger').text()).toBe("Error: could not add user");
+            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add user");
+            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
 
             done();
         });
     });
 
-    it('remove reader shows default error and does not refresh reader list', (done) => {
-        mockAxios.onPost(`http://app/users/test.user%40example.com/actions/associate-permission/`)
-            .reply(500);
+    it('remove reader sets error and does not refresh reader list', (done) => {
+
+        const testError = {test: "something"};
+        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
+            .reply(500, testError);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
@@ -263,46 +238,16 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find('span.remove-reader').trigger('click');
+            wrapper.find('span.remove-user').trigger('click');
 
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
 
-                expect(wrapper.find('.text-danger').text()).toBe("Error: could not remove user");
-
+                expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not remove user");
+                expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
                 done();
             });
-        });
-    });
-
-    it('shows error from response if available on add reader', (done) => {
-        mockAxios.onPost(`http://app/user-groups/test.user%40example.com/actions/associate-permission/`)
-            .reply(500, {"errors": [{"message": "test add reader error message"}]});
-
-        mockAxios.onGet('http://app/users/report-readers/report1/')
-            .reply(200, {"data": reportReaders});
-
-        const wrapper = mount(ReportReadersList, {
-            propsData: {
-                report: {
-                    name: "report1"
-                }
-            }
-        });
-
-        wrapper.setData({allUsers: userEmails});
-
-        wrapper.find('input').setValue('test.user@example.com');
-        wrapper.find('button').trigger('click');
-
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
-
-            expect(wrapper.find('.text-danger').text()).toBe("Error: test add reader error message");
-
-            done();
         });
     });
 
@@ -325,13 +270,13 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(0);
-            expect(wrapper.find('.text-danger').text()).toBe("You must enter a valid user email");
+            expect(wrapper.find('.text-danger').text()).toBe("Error: you must enter a valid user email");
             done();
         });
     });
 
     it('available users are those that are not already readers', (done) => {
-        
+
         const readers = [{
             email: "test.user@example.com",
             username: "user1",
@@ -357,37 +302,8 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(0);
-            expect(wrapper.find('.text-danger').text()).toBe("You must enter a valid user email");
+            expect(wrapper.find('.text-danger').text()).toBe("Error: you must enter a valid user email");
             done();
-        });
-    });
-
-    it('shows error from response if available on remove reader', (done) => {
-        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
-            .reply(500, {"errors": [{"message": "test remove reader error message"}]});
-
-        mockAxios.onGet('http://app/users/report-readers/report1/')
-            .reply(200, {"data": reportReaders});
-
-        const wrapper = mount(ReportReadersList, {
-            propsData: {
-                report: {
-                    name: "report1"
-                }
-            }
-        });
-
-        setTimeout(() => {
-            wrapper.find('span.remove-reader').trigger('click');
-
-            setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
-
-                expect(wrapper.find('.text-danger').text()).toBe("Error: test remove reader error message");
-
-                done();
-            });
         });
     });
 
