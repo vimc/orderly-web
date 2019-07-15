@@ -8,7 +8,7 @@ import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
@@ -19,7 +19,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getGlobalReportReaderGroups builds user group view models`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getGlobalReportReaderRoles() } doReturn listOf(Role("Funders",
                     listOf(User("test.user", "Test User", "test@example.com"),
                             User("unknown", "unknown", "funder@example.com"),
@@ -44,7 +44,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getGlobalReportReaderRoles() } doReturn listOf(
                     Role("Science", listOf()),
                     Role("Funders", listOf()),
@@ -62,7 +62,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getGlobalReportReaderRoles() } doReturn listOf(
                     Role("Science", listOf(
                             User("c.user", "C User", "testc@example.com"),
@@ -83,7 +83,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getScopedReportReaders builds user group view models`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getScopedReportReaderRoles("r1") } doReturn listOf(Role("Funders",
                     listOf(User("test.user", "Test User", "test@example.com"),
                             User("unknown", "unknown", "funder@example.com"),
@@ -108,7 +108,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getScopedReportReaders orders user group view models alphabetically`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getScopedReportReaderRoles("r1") } doReturn listOf(
                     Role("Science", listOf()),
                     Role("Funders", listOf()),
@@ -126,7 +126,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `getScopedReportReaders orders user group view model members alphabetically`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getScopedReportReaderRoles("r1") } doReturn listOf(
                     Role("Science", listOf(
                             User("c.user", "C User", "testc@example.com"),
@@ -143,7 +143,7 @@ class RoleControllerTests : TeamcityTests()
     @Test
     fun `can get role names`()
     {
-        val repo = mock<UserRepository> {
+        val repo = mock<RoleRepository> {
             on { getAllRoleNames() } doReturn listOf("Science", "Funders")
         }
         val sut = RoleController(mock(), repo)
