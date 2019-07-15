@@ -6,7 +6,9 @@
                         @added="getCurrentRoles"></add-permission>
         <role-list :can-remove-members="false"
                    :can-remove-roles="true"
-                   :roles="currentRoles"></role-list>
+                   :roles="currentRoles"
+                   :permission="permission"
+                   @removed="getCurrentRoles"></role-list>
     </div>
 </template>
 

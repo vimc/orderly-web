@@ -148,45 +148,7 @@ describe("reportReadersList", () => {
 
     });
 
-    it('remove reader calls associate permission endpoint and refreshes list of readers', (done) => {
-
-        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
-            .reply(200);
-
-        mockAxios.onGet('http://app/users/report-readers/report1/')
-            .reply(200, {"data": reportReaders});
-
-        const wrapper = mount(ReportReadersList, {
-            propsData: {
-                report: {
-                    name: "report1"
-                }
-            }
-        });
-
-        setTimeout(() => {
-            wrapper.find('span.remove-user').trigger('click');
-
-            setTimeout(() => {
-                expect(wrapper.findAll('.text-danger').length).toBe(0);
-
-                expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after removedreader
-
-                expectPostDataCorrect("remove");
-                expectWrapperToHaveRenderedReaders(wrapper);
-
-                done();
-            });
-        });
-
-    });
-
-    it('remove reader sets error and does not refresh reader list', (done) => {
-
-        const testError = {test: "something"};
-        mockAxios.onPost(`http://app/user-groups/user1%40example.com/actions/associate-permission/`)
-            .reply(500, testError);
+    it('refreshes list of readers on removed event', (done) => {
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
@@ -200,17 +162,18 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find(UserList).vm.$emit("remove", "user1@example.com");
+            wrapper.find(UserList).vm.$emit("removed");
 
             setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(2); //Initial fetches only
 
-                expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not remove user");
-                expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
+                expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after removedreader
+
+                expectWrapperToHaveRenderedReaders(wrapper);
+
                 done();
             });
         });
+
     });
 
     it('available users are those that are not already readers', () => {

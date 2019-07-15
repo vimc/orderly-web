@@ -116,6 +116,27 @@ describe("scopedReaderRolesList", () => {
 
     });
 
+    it('refreshes data when removed event is emitted', (done) => {
+
+        mockAxios.onPost(`http://app/user-groups/Tech/actions/associate-permission/`)
+            .reply(200);
+
+        mockAxios.onGet('http://app/roles/report-readers/report1/')
+            .reply(200, {"data": mockRoles});
+
+        const wrapper = getSut();
+
+        wrapper.setData({allRoles: mockRoleNames});
+
+        wrapper.find(RoleList).vm.$emit("removed");
+
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
+            done();
+        });
+
+    });
+
     it('fetches all and current roles on mount', (done) => {
 
         const wrapper = getSut();

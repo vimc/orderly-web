@@ -81,7 +81,7 @@ describe("userList", () => {
 
     });
 
-    it("emits remove event when child component does", () => {
+    it("emits removed event when child component does", () => {
 
         const wrapper = shallowMount(UserList, {
             propsData: {
@@ -90,9 +90,8 @@ describe("userList", () => {
             }
         });
 
-        wrapper.findAll(User).at(0).vm.$emit("remove");
-        expect(wrapper.emitted().remove[0])
-            .toEqual(expect.arrayContaining(["test.user@example.com"]))
+        wrapper.findAll(User).at(0).vm.$emit("removed");
+        expect(wrapper.emitted().removed).toBeDefined();
     });
 
 });

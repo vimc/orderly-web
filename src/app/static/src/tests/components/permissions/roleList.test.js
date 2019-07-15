@@ -1,6 +1,7 @@
 import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
+import RemovePermission from "../../../js/components/permissions/removePermission.vue"
 
 describe("roleList", () => {
 
@@ -56,6 +57,60 @@ describe("roleList", () => {
         expect(userLists.at(0).props().canRemove).toBe(true);
         expect(userLists.at(1).props().canRemove).toBe(true);
 
+    });
+
+    it('renders removable roles', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        expect(wrapper.findAll(RemovePermission).length).toBe(2);
+    });
+
+    it('renders non-removable roles', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: false,
+                canRemoveMembers: true
+            }
+        });
+
+        expect(wrapper.findAll(RemovePermission).length).toBe(0);
+    });
+
+    it('emits removed event when removePermission does', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.findAll(RemovePermission).at(0).vm.$emit("removed");
+        expect(wrapper.emitted().removed).toBeDefined();
+    });
+
+    it('emits removed event when userList does', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveMembers: true,
+                canRemoveRoles: true
+            }
+        });
+
+        wrapper.find(UserList).vm.$emit("removed");
+        expect(wrapper.emitted().removed).toBeDefined();
     });
 
     it('can expand and collapse members', () => {

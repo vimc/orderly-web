@@ -6,16 +6,16 @@
     line-height: 0.5rem;
     word-break: break-word;
   }
+}
 
-  .remove-user {
-    cursor: pointer;
-    color: $danger;
-    line-height: 1em;
-    vertical-align: top;
-  }
+.remove-user-group {
+  cursor: pointer;
+  color: $danger;
+  line-height: 1em;
+  vertical-align: top;
+}
 
-  .remove-user:hover {
-    color: darken($danger, 10%);
-    text-decoration: underline;
-  }
+.remove-user-group:hover {
+  color: darken($danger, 10%);
+  text-decoration: underline;
 }
