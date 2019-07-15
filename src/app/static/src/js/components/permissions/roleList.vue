@@ -14,6 +14,7 @@
                        v-show="expanded[index]"
                        cssClass="members"
                        :users="role.members"
+                       :permission="permission"
                        :canRemove="canRemoveMembers"
                        @removed="$emit('removed', 'user')"></user-list>
         </li>

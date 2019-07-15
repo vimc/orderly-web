@@ -3,7 +3,11 @@ set -e
 
 here=$(dirname $0)
 
-$here/cli.sh add-users test.user@example.com
-$here/cli.sh grant test.user@example.com */reports.read
-$here/cli.sh grant test.user@example.com */reports.review
-$here/cli.sh grant test.user@example.com */reports.run
+$here/cli.sh add-users test.user@example.com another.user@example.com
+$here/cli.sh grant test.user@example.com */reports.read */reports.review */reports.run */users.manage
+$here/cli.sh add-groups Science Funders
+$here/cli.sh add-members Science test.user@example.com
+$here/cli.sh add-members Funders another.user@example.com
+$here/cli.sh grant Funders */reports.read
+$here/cli.sh grant Science report:minimal/reports.read
+

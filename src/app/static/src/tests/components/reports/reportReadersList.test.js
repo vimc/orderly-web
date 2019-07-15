@@ -61,6 +61,12 @@ describe("reportReadersList", () => {
         });
 
         expect(wrapper.find(AddPermission).props().type).toBe("user");
+        expect(wrapper.find(UserList).props().canRemove).toBe(true);
+        expect(wrapper.find(UserList).props().permission).toStrictEqual({
+            name: "reports.read",
+            scope_id: "report1",
+            scope_prefix: "report"
+        });
         expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
         expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
 

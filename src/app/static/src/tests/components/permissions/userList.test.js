@@ -17,12 +17,19 @@ describe("userList", () => {
         }
     ];
 
+    const testPermission = {
+        name: "test.perm",
+        scope_id : "report",
+        scope_prefix: "r1"
+    };
+
     it("displays removable users", () => {
 
         const wrapper = shallowMount(UserList, {
             propsData: {
                 users: users,
-                canRemove: true
+                canRemove: true,
+                permission: testPermission
             }
         });
 
@@ -33,12 +40,15 @@ describe("userList", () => {
         expect(firstUserProps.displayName).toBe("Test User");
         expect(firstUserProps.email).toBe("test.user@example.com");
         expect(firstUserProps.canRemove).toBe(true);
+        expect(firstUserProps.permission).toStrictEqual(testPermission);
 
         const secondUserProps = wrapper.findAll(User).at(1).props();
 
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
         expect(secondUserProps.canRemove).toBe(true);
+        expect(secondUserProps.permission).toStrictEqual(testPermission);
+
     });
 
     it("displays extra css classes", () => {

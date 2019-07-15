@@ -22,13 +22,20 @@ describe("roleList", () => {
         }
     ];
 
+    const testPermission = {
+        name: "test.perm",
+        scope_id : "report",
+        scope_prefix: "r1"
+    };
+
     it('renders roles with non-removable members', () => {
 
         const wrapper = shallowMount(RoleList,
             {
                 propsData: {
                     roles: mockRoles,
-                    canRemoveMembers: false
+                    canRemoveMembers: false,
+                    permission: testPermission
                 }
             });
 
@@ -37,9 +44,11 @@ describe("roleList", () => {
 
         expect(userLists.at(0).props().users).toEqual(expect.arrayContaining(mockRoles[0].members));
         expect(userLists.at(0).props().canRemove).toBe(false);
+        expect(userLists.at(0).props().permission).toStrictEqual(testPermission);
 
         expect(userLists.at(1).props().users.length).toBe(0);
         expect(userLists.at(1).props().canRemove).toBe(false);
+        expect(userLists.at(1).props().permission).toStrictEqual(testPermission);
     });
 
     it('renders roles with removable members', () => {

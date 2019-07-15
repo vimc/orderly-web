@@ -1,9 +1,9 @@
 <template>
-    <div>
+    <span>
      <span v-on:click="remove"
            class="remove-user-group d-inline-block ml-2 large">×</span>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-    </div>
+    </span>
 </template>
 <script>
 

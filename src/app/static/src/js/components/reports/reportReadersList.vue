@@ -5,7 +5,10 @@
                         :available-user-groups="availableUsers"
                         @added="getReaders"></add-permission>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-        <user-list :users="readers" :can-remove="true" @removed="getReaders"></user-list>
+        <user-list :users="readers"
+                   :can-remove="true"
+                   @removed="getReaders"
+                   :permission="permission"></user-list>
     </div>
 </template>
 
