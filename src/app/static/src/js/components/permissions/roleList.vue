@@ -2,15 +2,18 @@
     <ul class="list-unstyled roles">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}]"
+            v-bind:class="['role', {'open':expanded[index]}, {'has-members': role.members.length > 0}]"
             v-on:click="toggle(index)">
             <div class="expander"></div>
             <span v-text="role.name" class="role-name"></span>
+
             <remove-permission v-if="canRemoveRoles"
                                :user-group="role.name"
                                :permission="permission"
                                @removed="$emit('removed', 'role')"></remove-permission>
-            <user-list v-on:click="function(e){e.stopPropagation()}"
+
+            <user-list v-if="role.members.length > 0"
+                       v-on:click="function(e){e.stopPropagation()}"
                        v-show="expanded[index]"
                        cssClass="members"
                        :users="role.members"
