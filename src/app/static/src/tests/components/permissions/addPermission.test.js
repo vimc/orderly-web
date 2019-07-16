@@ -103,7 +103,7 @@ describe("addPermission", () => {
 
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(0);
-                expect(wrapper.find('.text-danger').text()).toBe("Error: you must enter a valid email");
+                expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid email or already has this permission");
                 done();
             });
         });
@@ -136,7 +136,7 @@ describe("addPermission", () => {
 
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(0);
-                expect(wrapper.find('.text-danger').text()).toBe("Error: you must enter a valid role name");
+                expect(wrapper.find('.text-danger').text()).toBe("Error: badUserGroup is not a valid role name or already has this permission");
                 done();
             });
         });

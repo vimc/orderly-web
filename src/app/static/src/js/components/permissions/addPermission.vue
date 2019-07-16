@@ -46,8 +46,8 @@
             add: function () {
 
                 if (!new Set(this.availableUserGroups).has(this.newUserGroup)) {
-                    this.error = `you must enter a valid ${this.placeholder}`;
-                    this.defaultMessage = `you must enter a valid ${this.placeholder}`;
+                    this.error = `${this.newUserGroup} is not a valid ${this.placeholder} or already has this permission`;
+                    this.defaultMessage = `${this.newUserGroup} is not a valid ${this.placeholder} or already has this permission`;
                     return;
                 }
 
