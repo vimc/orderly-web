@@ -5,6 +5,7 @@ import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
 import reportReadersList from './components/reports/reportReadersList.vue'
 import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
+import scopedReaderRolesList from './components/reports/scopedReportReaderRolesList.vue'
 
 let data = {report: null};
 
@@ -43,7 +44,8 @@ $(document).ready(() => {
             data: data,
             components: {
                 reportReadersList: reportReadersList,
-                globalReaderRolesList: globalReaderRolesList
+                globalReaderRolesList: globalReaderRolesList,
+                scopedReaderRolesList: scopedReaderRolesList
             }
         });
     }

@@ -60,8 +60,6 @@ describe("reportReadersList", () => {
             readers: reportReaders
         });
 
-        expect(wrapper.find('label').text()).toBe("Specific read access");
-
         expect(wrapper.find(AddPermission).props().type).toBe("user");
         expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
         expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
