@@ -2,17 +2,15 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
-import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.UserDetails
-import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.*
-import java.time.Instant
+import org.vaccineimpact.orderlyweb.tests.addMembers
+import org.vaccineimpact.orderlyweb.tests.createGroup
+import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class RoleRepositoryTests : CleanDatabaseTests()
 {
@@ -65,14 +63,14 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderRoles does not return groups with no members`()
+    fun `getGlobalReportReaderRoles returns groups with no members`()
     {
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Global()))
 
         val sut = OrderlyRoleRepository()
         val result = sut.getGlobalReportReaderRoles()
 
-        assertThat(result.count()).isEqualTo(0)
+        assertThat(result.count()).isEqualTo(1)
     }
 
     @Test
@@ -149,7 +147,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoles does not return groups with no members`()
+    fun `getScopedReportReaderRoles returns groups with no members`()
     {
         insertReport("r1", "v1")
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Specific("report", "r1")))
@@ -157,7 +155,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyRoleRepository()
         val result = sut.getScopedReportReaderRoles("r1")
 
-        assertThat(result.count()).isEqualTo(0)
+        assertThat(result.count()).isEqualTo(1)
     }
 
     @Test
