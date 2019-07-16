@@ -43,7 +43,7 @@ ul.roles {
       }
     }
 
-    &.has-children {
+    &.has-members {
       cursor: pointer;
 
       .expander {
@@ -52,6 +52,7 @@ ul.roles {
         &::after {
           margin-top: 8px;
           content: '';
+          color: inherit;
           position: absolute;
           -webkit-transform: rotate(-90deg);
           transform: rotate(-90deg);
