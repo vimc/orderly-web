@@ -17,12 +17,19 @@ describe("userList", () => {
         }
     ];
 
+    const testPermission = {
+        name: "test.perm",
+        scope_id : "report",
+        scope_prefix: "r1"
+    };
+
     it("displays removable users", () => {
 
         const wrapper = shallowMount(UserList, {
             propsData: {
                 users: users,
-                canRemove: true
+                canRemove: true,
+                permission: testPermission
             }
         });
 
@@ -33,12 +40,15 @@ describe("userList", () => {
         expect(firstUserProps.displayName).toBe("Test User");
         expect(firstUserProps.email).toBe("test.user@example.com");
         expect(firstUserProps.canRemove).toBe(true);
+        expect(firstUserProps.permission).toStrictEqual(testPermission);
 
         const secondUserProps = wrapper.findAll(User).at(1).props();
 
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
         expect(secondUserProps.canRemove).toBe(true);
+        expect(secondUserProps.permission).toStrictEqual(testPermission);
+
     });
 
     it("displays extra css classes", () => {
@@ -81,7 +91,7 @@ describe("userList", () => {
 
     });
 
-    it("emits remove event when child component does", () => {
+    it("emits removed event when child component does", () => {
 
         const wrapper = shallowMount(UserList, {
             propsData: {
@@ -90,9 +100,8 @@ describe("userList", () => {
             }
         });
 
-        wrapper.findAll(User).at(0).vm.$emit("remove");
-        expect(wrapper.emitted().remove[0])
-            .toEqual(expect.arrayContaining(["test.user@example.com"]))
+        wrapper.findAll(User).at(0).vm.$emit("removed");
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"])
     });
 
 });

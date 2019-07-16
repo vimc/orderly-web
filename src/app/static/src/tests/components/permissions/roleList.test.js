@@ -1,6 +1,7 @@
 import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
+import RemovePermission from "../../../js/components/permissions/removePermission.vue"
 
 describe("roleList", () => {
 
@@ -21,13 +22,20 @@ describe("roleList", () => {
         }
     ];
 
+    const testPermission = {
+        name: "test.perm",
+        scope_id : "report",
+        scope_prefix: "r1"
+    };
+
     it('renders roles with non-removable members', () => {
 
         const wrapper = shallowMount(RoleList,
             {
                 propsData: {
                     roles: mockRoles,
-                    canRemoveMembers: false
+                    canRemoveMembers: false,
+                    permission: testPermission
                 }
             });
 
@@ -36,6 +44,7 @@ describe("roleList", () => {
 
         expect(userLists.at(0).props().users).toEqual(expect.arrayContaining(mockRoles[0].members));
         expect(userLists.at(0).props().canRemove).toBe(false);
+        expect(userLists.at(0).props().permission).toStrictEqual(testPermission);
     });
 
     it('renders roles with removable members', () => {
@@ -52,6 +61,60 @@ describe("roleList", () => {
         expect(userLists.length).toBe(1);
         expect(userLists.at(0).props().canRemove).toBe(true);
 
+    });
+
+    it('renders removable roles', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        expect(wrapper.findAll(RemovePermission).length).toBe(2);
+    });
+
+    it('renders non-removable roles', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: false,
+                canRemoveMembers: true
+            }
+        });
+
+        expect(wrapper.findAll(RemovePermission).length).toBe(0);
+    });
+
+    it('emits removed event when removePermission does', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.findAll(RemovePermission).at(0).vm.$emit("removed");
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["role"]);
+    });
+
+    it('emits removed event when userList does', () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveMembers: true,
+                canRemoveRoles: true
+            }
+        });
+
+        wrapper.find(UserList).vm.$emit("removed");
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"]);
     });
 
     it('can expand and collapse members', () => {

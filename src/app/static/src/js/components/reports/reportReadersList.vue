@@ -5,7 +5,10 @@
                         :available-user-groups="availableUsers"
                         @added="getReaders"></add-permission>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-        <user-list :users="readers" :can-remove="true" @remove="remove"></user-list>
+        <user-list :users="readers"
+                   :can-remove="true"
+                   @removed="getReaders"
+                   :permission="permission"></user-list>
     </div>
 </template>
 
@@ -51,23 +54,6 @@
             }
         },
         methods: {
-            remove: function (email) {
-
-                const data = {
-                    ...this.permission,
-                    action: "remove"
-                };
-
-                api.post(`/user-groups/${encodeURIComponent(email)}/actions/associate-permission/`, data)
-                    .then(() => {
-                        this.getReaders();
-                        this.error = null;
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = `could not remove user`;
-                    });
-            },
             getUserEmails: function () {
                 api.get(`/typeahead/emails/`)
                     .then(({data}) => {
