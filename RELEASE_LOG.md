@@ -20,3 +20,23 @@
 
 ## Other branches merged in this release
 
+# v1.0.0
+
+## Tickets
+* VIMC-2993: Add monitor endpoint for OW
+* mrc-290: Versioning script for Orderly Web
+* mrc-349: Bug: order of versions in dropdown switcher is wrong
+* mrc-352: Backend for showing global reader roles in sidebar
+* mrc-353: Get roles that have specific report reading permission for the sidebar
+* mrc-355: Remove specific report reading permission from roles in sidebar
+* mrc-356: Turn report readers list into only those readers who have individual scoped permissions
+* mrc-357: Validate user email when adding a new user in the sidebar
+* mrc-358: Frontend for showing global readers in sidebar
+* mrc-360: Front-end for showing specific report readers in sidebar
+* mrc-360_addPermissionComponent: Front-end for showing specific report readers in sidebar
+* mrc-360_refactor: Front-end for showing specific report readers in sidebar
+* mrc-360_typeahead: Front-end for showing specific report readers in sidebar
+
+## Other branches merged in this release
+* identity_groups
+
