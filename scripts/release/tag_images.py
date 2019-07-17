@@ -71,6 +71,7 @@ def set_image_tags(version):
     for name in containers:
         print("  - " + name)
         set_image_tag(name, version, sha)
+        set_image_tag(name, current_release_tag, sha)
 
 
 def publish_images(version):
@@ -111,7 +112,7 @@ if __name__ == "__main__":
         set_image_tags(version)
         # The --publish option is not currently available in Usage, to
         # enforce 2-step publish
-        if args["--publish"]:
+        if args["publish"]:
             publish_images(version)
     elif args["publish"]:
         publish_images(version)
