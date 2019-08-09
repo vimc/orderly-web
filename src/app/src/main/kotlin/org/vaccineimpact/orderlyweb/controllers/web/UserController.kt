@@ -4,6 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserController(context: ActionContext,
@@ -15,7 +16,18 @@ class UserController(context: ActionContext,
     {
         val report = report()
         val users = userRepo.getScopedReportReaderUsers(report)
-        return users.map { UserViewModel.build(it) }
+        return users.mapToUserViewModels()
+    }
+
+    fun getGlobalReportReaders(): List<UserViewModel>
+    {
+        val users = userRepo.getGlobalReportReaderUsers()
+        return users.mapToUserViewModels()
+    }
+
+    fun List<User>.mapToUserViewModels(): List<UserViewModel>
+    {
+        return this.map { UserViewModel.build(it) }
                 .sortedBy { it.displayName.toLowerCase() }
     }
 

@@ -3,6 +3,7 @@ import $ from 'jquery';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
 import runReport from './components/reports/runReport.vue'
+import globalReportReadersList from './components/reports/globalReportReadersList'
 import reportReadersList from './components/reports/reportReadersList.vue'
 import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
 import scopedReaderRolesList from './components/reports/scopedReportReaderRolesList.vue'
@@ -44,6 +45,7 @@ $(document).ready(() => {
             data: data,
             components: {
                 reportReadersList: reportReadersList,
+                globalReportReadersList: globalReportReadersList,
                 globalReaderRolesList: globalReaderRolesList,
                 scopedReaderRolesList: scopedReaderRolesList
             }

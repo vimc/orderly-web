@@ -36,6 +36,7 @@
                             <#if isUsersManager>
                                 <div id="reportReadersListVueApp" class="mt-5">
                                     <global-reader-roles-list></global-reader-roles-list>
+                                    <global-report-readers-list></global-report-readers-list>
                                     <label class="font-weight-bold">Specific read access</label>
                                     <scoped-reader-roles-list :report=report></scoped-reader-roles-list>
                                     <hr/>
