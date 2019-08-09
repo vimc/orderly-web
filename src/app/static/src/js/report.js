@@ -23,7 +23,7 @@ $(document).ready(() => {
                 publishSwitch: publishSwitch
             },
             methods: {
-                handleToggle: function() {
+                handleToggle: function () {
                     this.report.published = !this.report.published
                 }
             }
@@ -51,4 +51,13 @@ $(document).ready(() => {
     }
 
     $('[data-toggle="tooltip"]').tooltip();
+
+    if (location.hash) {
+        $('a[href="' + location.hash + '"]').tab("show");
+    }
+
+    $('a[data-toggle="tab"]').on("click", function () {
+        const hash = $(this).attr("href");
+        location.hash = hash.split("#")[1];
+    });
 });
