@@ -193,15 +193,13 @@ class UserRepositoryTests : CleanDatabaseTests()
     @Test
     fun `getGlobalReportReaderUsers gets readers with global identity permissions`()
     {
-        JooqContext().use {
-            insertUser("global.reader@email.com", "global.reader.name")
-            giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+        insertUser("global.reader@email.com", "global.reader.name")
+        giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
 
-            insertUser("global.reader2@email.com", "global.reader2.name")
-            giveUserGroupPermission("global.reader2@email.com", "reports.read", Scope.Global())
+        insertUser("global.reader2@email.com", "global.reader2.name")
+        giveUserGroupPermission("global.reader2@email.com", "reports.read", Scope.Global())
 
-            insertUser("non.reader@email.com", "non.reader.name")
-        }
+        insertUser("non.reader@email.com", "non.reader.name")
 
         val sut = OrderlyUserRepository()
         val result = sut.getGlobalReportReaderUsers()
@@ -248,7 +246,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         insertUser("global.reader@email.com", "global.reader.name")
         giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
 
-        createGroup("global.readers", ReifiedPermission("report.read", Scope.Global()))
+        createGroup("global.readers", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("global.readers", "group.global.reader@email.com")
 
         val sut = OrderlyUserRepository()
