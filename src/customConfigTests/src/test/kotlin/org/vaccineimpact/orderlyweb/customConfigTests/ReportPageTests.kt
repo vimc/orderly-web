@@ -171,6 +171,7 @@ class ReportPageTests : SeleniumTest()
         Thread.sleep(500)
         confirmTabActive("report-tab", false)
         confirmTabActive("downloads-tab", true)
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
 
         //And back to Report
         val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
@@ -178,7 +179,25 @@ class ReportPageTests : SeleniumTest()
         Thread.sleep(500)
         confirmTabActive("report-tab", true)
         confirmTabActive("downloads-tab", false)
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report")
 
+    }
+
+    @Test
+    fun `can deep link to tabs`()
+    {
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(ReifiedPermission("reports.read"
+                , Scope.Global())))
+
+        insertReport("testreport", "20170103-143015-1234abcd")
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
+
+        confirmTabActive("report-tab", false)
+        confirmTabActive("downloads-tab", true)
     }
 
     @Test

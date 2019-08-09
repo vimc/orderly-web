@@ -16,13 +16,13 @@
                     <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                         <ul class="nav flex-column list-unstyled mb-0">
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
+                                <a class="nav-link active" data-toggle="tab" href="#report" role="tab">Report</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#downloads-tab" role="tab">Downloads</a>
+                                <a class="nav-link" data-toggle="tab" href="#downloads" role="tab">Downloads</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#changelog-tab" role="tab">Changelog</a>
+                                <a class="nav-link" data-toggle="tab" href="#changelog" role="tab">Changelog</a>
                             </li>
                         </ul>
                         <hr/>
@@ -53,13 +53,13 @@
             </div>
         </div>
         <div class="col-12 col-md-8 tab-content">
-            <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="report-tab">
+            <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="report">
                 <#include "partials/report-tab.ftl">
             </div>
-            <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="downloads-tab">
+            <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="downloads">
                 <#include "partials/downloads.ftl">
             </div>
-            <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="changelog-tab">
+            <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="changelog">
                 <#include "partials/changelog.ftl">
             </div>
         </div>
