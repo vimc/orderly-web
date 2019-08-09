@@ -1,11 +1,14 @@
-import {mount, shallowMount} from '@vue/test-utils';
+import {shallowMount} from '@vue/test-utils';
 import GlobalReportReadersList from "../../../js/components/reports/globalReportReadersList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import UserList from "../../../js/components/permissions/userList.vue";
-import AddPermission from "../../../js/components/permissions/addPermission.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("globalReportReadersList", () => {
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
 
     const reportReaders = [
         {
@@ -46,7 +49,7 @@ describe("globalReportReadersList", () => {
         mockAxios.onGet('http://app/users/report-readers/')
             .reply(200, {"data": reportReaders});
 
-        const wrapper = shallowMount(ReportReadersList);
+        const wrapper = shallowMount(GlobalReportReadersList);
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(1);
@@ -63,7 +66,7 @@ describe("globalReportReadersList", () => {
         mockAxios.onGet('http://app/users/report-readers/')
             .reply(500, testError);
 
-        const wrapper = shallowMount(ReportReadersList);
+        const wrapper = shallowMount(GlobalReportReadersList);
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(1);
