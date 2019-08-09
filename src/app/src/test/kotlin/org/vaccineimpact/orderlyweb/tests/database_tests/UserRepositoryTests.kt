@@ -188,4 +188,72 @@ class UserRepositoryTests : CleanDatabaseTests()
 
         assertThat(result.count()).isEqualTo(0)
     }
+
+
+    @Test
+    fun `getGlobalReportReaderUsers gets readers with global identity permissions`()
+    {
+        JooqContext().use {
+            insertUser("global.reader@email.com", "global.reader.name")
+            giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+
+            insertUser("global.reader2@email.com", "global.reader2.name")
+            giveUserGroupPermission("global.reader2@email.com", "reports.read", Scope.Global())
+
+            insertUser("non.reader@email.com", "non.reader.name")
+        }
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderUsers()
+
+        assertThat(result.count()).isEqualTo(2)
+
+        assertThat(result[0].username).isEqualTo("global.reader.name")
+        assertThat(result[0].email).isEqualTo("global.reader@email.com")
+        assertThat(result[0].displayName).isEqualTo("global.reader.name")
+
+        assertThat(result[1].username).isEqualTo("global.reader2.name")
+        assertThat(result[1].email).isEqualTo("global.reader2@email.com")
+        assertThat(result[1].displayName).isEqualTo("global.reader2.name")
+    }
+
+    @Test
+    fun `getIndividualReportReadersForReport does not get readers with scoped identity or group permissions only`()
+    {
+        insertReport("report1", "version1")
+
+        insertUser("global.reader@email.com", "global.reader.name")
+        giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+        //it shouldn't matter if the global read also has scoped permission
+        giveUserGroupPermission("global.reader@email.com", "reports.read",
+                Scope.Specific("report", "report1"))
+
+        insertUser("scoped.identity.reader@email.com", "scoped.identity.reader.name")
+        giveUserGroupPermission("scoped.identity.reader@email.com", "reports.read",
+                Scope.Specific("report", "report1"))
+
+        val report1Read = ReifiedPermission("reports.read", Scope.Specific("report", "report1"))
+        createGroup("report1.readers", report1Read)
+        addMembers("report1.readers", "scoped.group.reader@email.com")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderUsers()
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].username).isEqualTo("global.reader.name")
+    }
+
+    @Test
+    fun `getGlobalReportReaderUsers does not get readers with global permissions only from non-identity groups`()
+    {
+        insertUser("global.reader@email.com", "global.reader.name")
+        giveUserGroupPermission("global.reader@email.com", "reports.read", Scope.Global())
+
+        createGroup("global.readers", ReifiedPermission("report.read", Scope.Global()))
+        addMembers("global.readers", "group.global.reader@email.com")
+
+        val sut = OrderlyUserRepository()
+        val result = sut.getGlobalReportReaderUsers()
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].username).isEqualTo("global.reader.name")
+    }
 }

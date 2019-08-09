@@ -51,7 +51,7 @@ class UserControllerTests : TeamcityTests()
 
         assertThat(result.count()).isEqualTo(3)
 
-        assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by username
+        assertThat(result[0].username).isEqualTo("global.reader") //Should have been sorted by display name
         assertThat(result[0].displayName).isEqualTo("Global Reader")
 
         assertThat(result[1].username).isEqualTo("group.reader")
@@ -60,6 +60,37 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[2].username).isEqualTo("scoped.reader")
         assertThat(result[2].displayName).isEqualTo("Scoped Reader")
 
+    }
+
+    @Test
+    fun `gets global report readers`()
+    {
+        val actionContext = mock<ActionContext>()
+        val reportReaders = listOf(
+                User("global.reader",
+                        "Global Reader",
+                        "global.reader@email.com"),
+                User("global.reader.2",
+                        "A Global Reader2",
+                        "global.reader2@email.com")
+        )
+
+        val repo = mock<UserRepository> {
+            on { this.getGlobalReportReaderUsers()} doReturn (reportReaders)
+        }
+
+        val sut = UserController(actionContext, repo)
+        val result = sut.getGlobalReportReaders()
+
+        assertThat(result.count()).isEqualTo(2)
+
+        assertThat(result[0].username).isEqualTo("global.reader.2") //Should have been sorted by displayname
+        assertThat(result[0].displayName).isEqualTo("A Global Reader2")
+        assertThat(result[0].email).isEqualTo("global.reader2@email.com")
+
+        assertThat(result[1].username).isEqualTo("global.reader")
+        assertThat(result[1].displayName).isEqualTo("Global Reader")
+        assertThat(result[1].email).isEqualTo("global.reader@email.com")
     }
 
     @Test

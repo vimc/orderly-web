@@ -4,7 +4,7 @@ import {mockAxios} from "../../mockAxios";
 import EditIcon from '../../../js/components/reports/editIcon.vue';
 import RoleList from "../../../js/components/permissions/roleList.vue"
 
-describe("globalReadersList", () => {
+describe("globalReaderRolesList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
