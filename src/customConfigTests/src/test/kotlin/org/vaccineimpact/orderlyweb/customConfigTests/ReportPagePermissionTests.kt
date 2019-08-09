@@ -34,7 +34,7 @@ class ReportPagePermissionTests : SeleniumTest()
 
         //Expect to find the global test user as well
         assertThat(listItems.count()).isEqualTo(2)
-        assertThat(listItems[1].findElement(By.cssSelector("span.display-name")).text)
+        assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
                 .isEqualTo(globalTestUser)
         assertThat(listItems[1].findElement(By.cssSelector("span.display-name")).text)
                 .isEqualTo(testListItemUser)
