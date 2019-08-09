@@ -105,6 +105,18 @@ class ReportPagePermissionTests : SeleniumTest()
     }
 
     @Test
+    fun `can view global report readers`()
+    {
+        giveUserPermissions(testListItemUser,
+                ReifiedPermission("reports.read", Scope.Global()))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
+
+        canViewReportReaders("global-report-readers-list")
+    }
+
+    @Test
     fun `can view global report reader roles`()
     {
         addUserGroupWithPermissions(testRole,
