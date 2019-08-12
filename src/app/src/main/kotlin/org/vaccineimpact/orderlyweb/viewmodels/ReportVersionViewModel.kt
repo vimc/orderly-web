@@ -4,6 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.Changelog
@@ -18,7 +19,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val focalArtefactUrl: String?,
                                       val isAdmin: Boolean,
                                       val isRunner: Boolean,
-                                      val isUsersManager: Boolean,
+                                      val showPermissionManagement: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
@@ -32,7 +33,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 focalArtefactUrl: String?,
                 isAdmin: Boolean,
                 isRunner: Boolean,
-                isUsersManager: Boolean,
+                showPermissionManagement: Boolean,
                 artefacts: List<ArtefactViewModel>,
                 dataLinks: List<InputDataViewModel>,
                 resources: List<DownloadableFileViewModel>,
@@ -47,7 +48,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     focalArtefactUrl,
                     isAdmin,
                     isRunner,
-                    isUsersManager,
+                    showPermissionManagement,
                     artefacts,
                     dataLinks,
                     resources,
@@ -61,7 +62,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         fun build(report: ReportVersionDetails,
                   versions: List<String>,
                   changelog: List<Changelog>,
-                  context: ActionContext): ReportVersionPageViewModel
+                  context: ActionContext,
+                  appConfig: Config): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
 
@@ -88,7 +90,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
-            val isUsersManager = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+            val showPermissionManagement = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+                    && appConfig.authorizationEnabled
 
             val displayName = report.displayName ?: report.name
 
@@ -103,7 +106,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     focalArtefactUrl,
                     isAdmin,
                     isRunner,
-                    isUsersManager,
+                    showPermissionManagement,
                     artefactViewModels,
                     dataViewModels,
                     resourceViewModels,

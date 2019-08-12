@@ -33,7 +33,7 @@
                                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                                 </div>
                             </#if>
-                            <#if isUsersManager>
+                            <#if showPermissionManagement>
                                 <div id="reportReadersListVueApp" class="mt-5">
                                     <global-reader-roles-list></global-reader-roles-list>
                                     <label class="font-weight-bold">Specific read access</label>
