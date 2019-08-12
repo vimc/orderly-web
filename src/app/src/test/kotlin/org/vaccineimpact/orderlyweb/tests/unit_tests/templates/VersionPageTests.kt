@@ -369,6 +369,8 @@ class VersionPageTests : TeamcityTests()
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         Assertions.assertThat(reportReaders).isNotNull()
         Assertions.assertThat(doc.selectFirst("#reportReadersListVueApp label").text())
+                .contains("Global read access")
+        Assertions.assertThat(doc.select("#reportReadersListVueApp label")[1].text())
                 .isEqualTo("Specific read access")
     }
 

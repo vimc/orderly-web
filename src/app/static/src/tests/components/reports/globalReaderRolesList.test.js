@@ -30,17 +30,6 @@ describe("globalReaderRolesList", () => {
         }
     ];
 
-    it("renders title and edit icon", () => {
-        const wrapper = mount(GlobalReadersList);
-        wrapper.setData({
-            roles: mockRoles
-        });
-
-        expect(wrapper.find("label").text()).toContain("Global read access");
-        expect(wrapper.find(EditIcon).isVisible()).toBe(true);
-
-    });
-
     it('renders role list', () => {
 
         const wrapper = mount(GlobalReadersList);
