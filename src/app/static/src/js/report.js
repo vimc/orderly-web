@@ -7,6 +7,7 @@ import globalReportReadersList from './components/reports/globalReportReadersLis
 import reportReadersList from './components/reports/reportReadersList.vue'
 import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
 import scopedReaderRolesList from './components/reports/scopedReportReaderRolesList.vue'
+import editIcon from './components/reports/editIcon.vue'
 
 let data = {report: null};
 
@@ -44,6 +45,7 @@ $(document).ready(() => {
             el: '#reportReadersListVueApp',
             data: data,
             components: {
+                editIcon: editIcon,
                 reportReadersList: reportReadersList,
                 globalReportReadersList: globalReportReadersList,
                 globalReaderRolesList: globalReaderRolesList,

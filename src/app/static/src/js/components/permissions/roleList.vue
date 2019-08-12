@@ -1,5 +1,5 @@
 <template>
-    <ul class="list-unstyled roles">
+    <ul class="list-unstyled roles" v-if="roles.length > 0">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
             v-bind:class="['role', {'open':expanded[index]}, {'has-members': role.members.length > 0}]"
