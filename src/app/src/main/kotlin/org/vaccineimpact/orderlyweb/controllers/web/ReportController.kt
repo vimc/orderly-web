@@ -14,7 +14,12 @@ class ReportController: OrderlyDataController
     constructor(context: ActionContext) : super(context)
 
     @Template("report-page.ftl")
-    fun getByNameAndVersion(appConfig: Config = AppConfig()): ReportVersionPageViewModel
+    fun getByNameAndVersion(): ReportVersionPageViewModel
+    {
+        return getByNameAndVersion(AppConfig())
+    }
+
+    fun getByNameAndVersion(appConfig: Config): ReportVersionPageViewModel
     {
         val reportName = context.params(":name")
         val version = context.params(":version")
@@ -22,6 +27,5 @@ class ReportController: OrderlyDataController
         val versions = orderly.getReportsByName(reportName)
         val changelog = orderly.getChangelogByNameAndVersion(reportName, version)
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context, appConfig)
-
     }
 }
