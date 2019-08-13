@@ -359,9 +359,9 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `user managers see report readers`()
+    fun `report readers are shown if showPermissionManagement is true`()
     {
-        val mockModel = testModel.copy(isUsersManager = true)
+        val mockModel = testModel.copy(showPermissionManagement = true)
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
         val doc = template.jsoupDocFor(mockModel)
@@ -373,9 +373,9 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `non user managers do not see report readers`()
+    fun `report readers are not shown if showPermissionManagement is false`()
     {
-        val mockModel = testModel.copy(isUsersManager = false)
+        val mockModel = testModel.copy(showPermissionManagement = false)
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
