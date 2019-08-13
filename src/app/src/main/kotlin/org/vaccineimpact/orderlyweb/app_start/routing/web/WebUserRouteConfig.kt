@@ -10,6 +10,11 @@ object WebUserRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
+            WebEndpoint("/users/report-readers/",
+                    UserController::class, "getGlobalReportReaders")
+                    .json()
+                    .transform()
+                    .secure(usersManage),
             WebEndpoint("/users/report-readers/:report/",
                     UserController::class, "getScopedReportReaders",
                     contentType = ContentTypes.json)

@@ -35,8 +35,16 @@
                             </#if>
                             <#if showPermissionManagement>
                                 <div id="reportReadersListVueApp" class="mt-5">
+                                    <label class="font-weight-bold">
+                                        Global read access
+                                        <a href="#" class="small" data-toggle="tooltip" title="Coming soon!">
+                                            <edit-icon></edit-icon>
+                                            Edit roles</a>
+                                    </label>
                                     <global-reader-roles-list></global-reader-roles-list>
-                                    <label class="font-weight-bold">Specific read access</label>
+                                    <global-report-readers-list></global-report-readers-list>
+
+                                    <label class="font-weight-bold specific-read-access-label">Specific read access</label>
                                     <scoped-reader-roles-list :report=report></scoped-reader-roles-list>
                                     <hr/>
                                     <report-readers-list :report=report></report-readers-list>

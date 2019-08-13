@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
+import org.jooq.Record3
+import org.jooq.SelectConditionStep
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails
@@ -12,6 +14,7 @@ interface UserRepository
     fun addUser(email: String, username: String, displayName: String, source: UserSource)
     fun getUser(email: String): UserDetails?
     fun getScopedReportReaderUsers(reportName: String): List<User>
+    fun getGlobalReportReaderUsers(): List<User>
     fun getUserEmails(): List<String>
 }
 
@@ -29,18 +32,19 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
     override fun getScopedReportReaderUsers(reportName: String): List<User>
     {
         JooqContext().use {
-            val result = it.dsl.select(ORDERLYWEB_USER.USERNAME,
-                    ORDERLYWEB_USER.DISPLAY_NAME,
-                    ORDERLYWEB_USER.EMAIL)
-                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
-                            ORDERLYWEB_USER_GROUP_USER,
-                            ORDERLYWEB_USER)
-
-                    .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
-                    .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
-                    .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
-                    .and(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
+            val result = it.reportReadersQuery()
                     .and(permissionIsScopedToReport(reportName))
+                    .fetch()
+
+            return result.map(userMapper::mapUser)
+        }
+    }
+
+    override fun getGlobalReportReaderUsers(): List<User>
+    {
+        JooqContext().use {
+            val result = it.reportReadersQuery()
+                    .and(permissionIsGlobal())
                     .fetch()
 
             return result.map(userMapper::mapUser)
@@ -94,6 +98,21 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                         .execute()
             }
         }
+    }
+
+    private fun JooqContext.reportReadersQuery(): SelectConditionStep<Record3<String,String,String>>
+    {
+        return this.dsl.select(ORDERLYWEB_USER.USERNAME,
+                ORDERLYWEB_USER.DISPLAY_NAME,
+                ORDERLYWEB_USER.EMAIL)
+                .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                        ORDERLYWEB_USER_GROUP_USER,
+                        ORDERLYWEB_USER)
+
+                .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq("reports.read"))
+                .and(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
     }
 
     private fun getUserRecord(email: String, db: JooqContext): Record?

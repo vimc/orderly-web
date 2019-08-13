@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ReportPagePermissionTests : SeleniumTest()
 {
+    private val globalTestUser = "Test User"
     private val testListItemUser = "user@example.com"
     private val testRole = "test-role"
 
@@ -22,6 +23,20 @@ class ReportPagePermissionTests : SeleniumTest()
 
         assertThat(listItems.count()).isEqualTo(1)
         assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
+                .isEqualTo(testListItemUser)
+    }
+
+
+    private fun canViewGlobalReportReaders(widgetId: String)
+    {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId li")))
+        val listItems = driver.findElements(By.cssSelector("#$widgetId li"))
+
+        //Expect to find the global test user as well
+        assertThat(listItems.count()).isEqualTo(2)
+        assertThat(listItems[0].findElement(By.cssSelector("span.display-name")).text)
+                .isEqualTo(globalTestUser)
+        assertThat(listItems[1].findElement(By.cssSelector("span.display-name")).text)
                 .isEqualTo(testListItemUser)
     }
 
@@ -102,6 +117,18 @@ class ReportPagePermissionTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
         canViewReportReaderRoles("scoped-roles-list")
+    }
+
+    @Test
+    fun `can view global report readers`()
+    {
+        giveUserPermissions(testListItemUser,
+                ReifiedPermission("reports.read", Scope.Global()))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
+
+        canViewGlobalReportReaders("global-report-readers-list")
     }
 
     @Test

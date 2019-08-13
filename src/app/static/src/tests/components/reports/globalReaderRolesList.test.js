@@ -4,7 +4,7 @@ import {mockAxios} from "../../mockAxios";
 import EditIcon from '../../../js/components/reports/editIcon.vue';
 import RoleList from "../../../js/components/permissions/roleList.vue"
 
-describe("globalReadersList", () => {
+describe("globalReaderRolesList", () => {
 
     beforeEach(() => {
         mockAxios.reset();
@@ -29,17 +29,6 @@ describe("globalReadersList", () => {
             members: []
         }
     ];
-
-    it("renders title and edit icon", () => {
-        const wrapper = mount(GlobalReadersList);
-        wrapper.setData({
-            roles: mockRoles
-        });
-
-        expect(wrapper.find("label").text()).toContain("Global read access");
-        expect(wrapper.find(EditIcon).isVisible()).toBe(true);
-
-    });
 
     it('renders role list', () => {
 
