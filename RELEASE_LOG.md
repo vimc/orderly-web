@@ -40,3 +40,14 @@
 ## Other branches merged in this release
 * identity_groups
 
+# v1.0.1
+
+## Tickets
+* mrc-359: Show global report reading users in sidebar
+* mrc-394: Don't show permission management if fine grained perms are turned off
+* mrc-395: Should be able to use anchor tags to jump between report and download tabs
+
+## Other branches merged in this release
+* fix_selenium
+* release_process
+
