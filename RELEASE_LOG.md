@@ -51,3 +51,10 @@
 * fix_selenium
 * release_process
 
+# v1.0.2
+
+## Tickets
+* mrc-401: Deep linking works but now the page jumps around when you tab
+
+## Other branches merged in this release
+
