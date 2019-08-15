@@ -95,9 +95,9 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Downloads")
         Assertions.assertThat(doc.select(".nav-item")[2].text()).isEqualTo("Changelog")
 
-        Assertions.assertThat(doc.selectFirst("#report").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
-        Assertions.assertThat(doc.selectFirst("#downloads").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
-        Assertions.assertThat(doc.selectFirst("#changelog").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#report-tab").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#downloads-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#changelog-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
     }
 
     @Test
@@ -130,7 +130,7 @@ class VersionPageTests : TeamcityTests()
     {
         val xmlResponse = template.xmlResponseFor(testModel)
 
-        val xPathRoot = "//div[@id='report']"
+        val xPathRoot = "//div[@id='report-tab']"
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
@@ -148,7 +148,7 @@ class VersionPageTests : TeamcityTests()
     {
         val xmlResponse = template.xmlResponseFor(testModel)
 
-        val xPathRoot = "//div[@id='downloads']"
+        val xPathRoot = "//div[@id='downloads-tab']"
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
                 equalToCompressingWhiteSpace("r1 display")))
@@ -271,7 +271,7 @@ class VersionPageTests : TeamcityTests()
     fun `renders changelog tab title`()
     {
         val doc = template.jsoupDocFor(testModel)
-        Assertions.assertThat(doc.select("#changelog h3").text()).isEqualTo("Changelog")
+        Assertions.assertThat(doc.select("#changelog-tab h3").text()).isEqualTo("Changelog")
     }
 
     @Test
@@ -285,10 +285,10 @@ class VersionPageTests : TeamcityTests()
         val testModel = testModel.copy(changelog = changelog)
         val doc = template.jsoupDocFor(testModel)
 
-        val rows = doc.select("#changelog table tbody tr")
+        val rows = doc.select("#changelog-tab table tbody tr")
 
         Assertions.assertThat(rows.count()).isEqualTo(1)
-        Assertions.assertThat(doc.select("#changelog p").count()).isEqualTo(0)
+        Assertions.assertThat(doc.select("#changelog-tab p").count()).isEqualTo(0)
 
         val cells = rows[0].select("td")
         Assertions.assertThat(cells[0].selectFirst("a").attr("href")).isEqualTo("/reports/r1/v1")
@@ -309,8 +309,8 @@ class VersionPageTests : TeamcityTests()
     {
         val doc = template.jsoupDocFor(testModel)
 
-        Assertions.assertThat(doc.select("#changelog table").count()).isEqualTo(0)
-        Assertions.assertThat(doc.selectFirst("#changelog p").text()).isEqualTo("There is no changelog for this report version")
+        Assertions.assertThat(doc.select("#changelog-tab table").count()).isEqualTo(0)
+        Assertions.assertThat(doc.selectFirst("#changelog-tab p").text()).isEqualTo("There is no changelog for this report version")
     }
 
     @Test

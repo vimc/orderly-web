@@ -162,23 +162,23 @@ class ReportPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/")
 
         //Confirm that we've started on the Report tab
-        confirmTabActive("report", true)
-        confirmTabActive("downloads", false)
+        confirmTabActive("report-tab", true)
+        confirmTabActive("downloads-tab", false)
 
         //Change to Downloads tab
-        val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads']"))
+        val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads-tab']"))
         downloadsLink.click()
         Thread.sleep(500)
-        confirmTabActive("report", false)
-        confirmTabActive("downloads", true)
+        confirmTabActive("report-tab", false)
+        confirmTabActive("downloads-tab", true)
         assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
 
         //And back to Report
-        val reportLink = driver.findElement(By.cssSelector("a[href='#report']"))
+        val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
         reportLink.click()
         Thread.sleep(500)
-        confirmTabActive("report", true)
-        confirmTabActive("downloads", false)
+        confirmTabActive("report-tab", true)
+        confirmTabActive("downloads-tab", false)
         assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report")
 
     }
@@ -196,8 +196,8 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
 
-        confirmTabActive("report", false)
-        confirmTabActive("downloads", true)
+        confirmTabActive("report-tab", false)
+        confirmTabActive("downloads-tab", true)
     }
 
     @Test
@@ -244,7 +244,7 @@ class ReportPageTests : SeleniumTest()
 
     private fun confirmTabActive(tabId: String, active: Boolean)
     {
-        val tabLink = driver.findElement(By.cssSelector("a[href='#${tabId}']"))
+        val tabLink = driver.findElement(By.cssSelector("a[href='#$tabId']"))
         var expectedLinkClasses = arrayOf("nav-link")
         if (active)
         {
