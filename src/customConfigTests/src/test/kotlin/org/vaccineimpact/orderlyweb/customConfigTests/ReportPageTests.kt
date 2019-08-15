@@ -166,20 +166,20 @@ class ReportPageTests : SeleniumTest()
         confirmTabActive("downloads", false)
 
         //Change to Downloads tab
-        val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads']"))
+        val downloadsLink = driver.findElement(By.cssSelector("a[href='#downloads-tab']"))
         downloadsLink.click()
         Thread.sleep(500)
         confirmTabActive("report", false)
         confirmTabActive("downloads", true)
-        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads-tab")
 
         //And back to Report
-        val reportLink = driver.findElement(By.cssSelector("a[href='#report']"))
+        val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
         reportLink.click()
         Thread.sleep(500)
         confirmTabActive("report", true)
         confirmTabActive("downloads", false)
-        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report")
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#report-tab")
 
     }
 
@@ -194,7 +194,7 @@ class ReportPageTests : SeleniumTest()
         insertReport("testreport", "20170103-143015-1234abcd")
 
         loginWithMontagu()
-        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads-tab")
 
         confirmTabActive("report", false)
         confirmTabActive("downloads", true)
@@ -236,7 +236,7 @@ class ReportPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170104-091500-1234dcba")
 
-        val versionSwitcher = Select(driver.findElement(By.cssSelector("#report-version-switcher")))
+        val versionSwitcher = Select(driver.findElement(By.cssSelector("#report-tab-version-switcher")))
         versionSwitcher.selectByVisibleText("Tue Jan 03 2017, 14:30")
         wait.until(ExpectedConditions.urlMatches(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd"))
         assertThat(driver.findElement(By.cssSelector("p.small.text-muted")).text).isEqualTo("20170103-143015-1234abcd")
