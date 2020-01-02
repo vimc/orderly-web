@@ -2,6 +2,7 @@ import {mount} from '@vue/test-utils';
 import AddPermission from "../../../js/components/permissions/addPermission.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
+import Vue from "vue";
 
 describe("addPermission", () => {
 
@@ -36,7 +37,7 @@ describe("addPermission", () => {
         });
     }
 
-    it('add sets error and does not emit added event', (done) => {
+    it('add sets error and does not emit added event', async (done) => {
         const testError = {test: "something"};
         mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
             .reply(500, testError);
@@ -44,6 +45,9 @@ describe("addPermission", () => {
         const wrapper = createSut("user");
 
         wrapper.find('input').setValue('testGroup1');
+
+        await Vue.nextTick();
+
         wrapper.find('button').trigger('click');
 
         setTimeout(() => {
@@ -56,7 +60,7 @@ describe("addPermission", () => {
         });
     });
 
-    it('add calls associate permission endpoint and emits added event', (done) => {
+    it('add calls associate permission endpoint and emits added event', async (done) => {
 
         mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
             .reply(200);
@@ -64,6 +68,9 @@ describe("addPermission", () => {
         const wrapper = createSut("user");
 
         wrapper.find("input").setValue('testGroup1');
+
+        await Vue.nextTick();
+
         wrapper.find('button').trigger('click');
 
         setTimeout(() => {
@@ -78,13 +85,15 @@ describe("addPermission", () => {
 
     describe("add permission to user", () => {
 
-        it('renders', () => {
+        it('renders', async () => {
 
             const wrapper = createSut("user");
             wrapper.setData({
                 error: "test error",
                 defaultMessage: "default error"
             });
+
+            await Vue.nextTick();
 
             expect(wrapper.find('input').attributes("placeholder")).toBe("email");
             expect(wrapper.find('button').text()).toBe("Add user");
@@ -94,11 +103,14 @@ describe("addPermission", () => {
 
         });
 
-        it('validates that email value is an available user group', (done) => {
+        it('validates that email value is an available user group', async (done) => {
 
             const wrapper = createSut("user");
 
             wrapper.find('input').setValue('badUserGroup');
+
+            await Vue.nextTick();
+
             wrapper.find('button').trigger('click');
 
             setTimeout(() => {
@@ -111,13 +123,15 @@ describe("addPermission", () => {
 
     describe("add permission to role", () => {
 
-        it('renders', () => {
+        it('renders', async () => {
 
             const wrapper = createSut("role");
             wrapper.setData({
                 error: "test error",
                 defaultMessage: "default error"
             });
+
+            await Vue.nextTick();
 
             expect(wrapper.find('input').attributes("placeholder")).toBe("role name");
             expect(wrapper.find('button').text()).toBe("Add role");
@@ -127,11 +141,14 @@ describe("addPermission", () => {
 
         });
 
-        it('validates that email value is an available user group', (done) => {
+        it('validates that email value is an available user group', async (done) => {
 
             const wrapper = createSut("role");
 
             wrapper.find('input').setValue('badUserGroup');
+
+            await Vue.nextTick();
+
             wrapper.find('button').trigger('click');
 
             setTimeout(() => {

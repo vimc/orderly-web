@@ -1,3 +1,4 @@
+import Vue from "vue";
 import {mount, shallowMount} from '@vue/test-utils';
 import ReportReadersList from "../../../js/components/reports/reportReadersList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
@@ -45,7 +46,7 @@ describe("reportReadersList", () => {
         expect(postData.scope_id).toBe("report1");
     }
 
-    it('renders data', () => {
+    it('renders data', async () => {
 
         const wrapper = shallowMount(ReportReadersList, {
             propsData: {
@@ -59,6 +60,8 @@ describe("reportReadersList", () => {
             defaultMessage: "default error",
             readers: reportReaders
         });
+
+        await Vue.nextTick();
 
         expect(wrapper.find(AddPermission).props().type).toBe("user");
         expect(wrapper.find(UserList).props().canRemove).toBe(true);
@@ -87,7 +90,8 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find(AddPermission).props().availableUserGroups).toEqual(expect.arrayContaining(userEmails));
+            expect(wrapper.find(AddPermission).props().availableUserGroups)
+                .toEqual(expect.arrayContaining(userEmails));
 
             expectWrapperToHaveRenderedReaders(wrapper);
 
@@ -119,7 +123,7 @@ describe("reportReadersList", () => {
         });
     });
 
-    it('refreshes data when added event is emitted', (done) => {
+    it('refreshes data when added event is emitted', async (done) => {
 
         mockAxios.onPost(`http://app/user-groups/test.user%40example.com/actions/associate-permission/`)
             .reply(200);
@@ -136,6 +140,8 @@ describe("reportReadersList", () => {
         });
 
         wrapper.setData({allUsers: userEmails});
+
+        await Vue.nextTick();
 
         wrapper.find("input").setValue('test.user@example.com');
         wrapper.find('button').trigger('click');
@@ -182,7 +188,7 @@ describe("reportReadersList", () => {
 
     });
 
-    it('available users are those that are not already readers', () => {
+    it('available users are those that are not already readers', async () => {
 
         const readers = [{
             email: "test.user@example.com",
@@ -206,6 +212,8 @@ describe("reportReadersList", () => {
 
         wrapper.setData({allUsers: emails});
         wrapper.setData({readers: readers});
+
+        await Vue.nextTick();
 
         expect(wrapper.find(AddPermission).props().availableUserGroups.length).toBe(1);
         expect(wrapper.find(AddPermission).props().availableUserGroups[0]).toBe("another.user@example.com");

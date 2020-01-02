@@ -1,8 +1,8 @@
 import {mount} from '@vue/test-utils';
 import GlobalReadersList from "../../../js/components/reports/globalReportReaderRolesList.vue";
 import {mockAxios} from "../../mockAxios";
-import EditIcon from '../../../js/components/reports/editIcon.vue';
 import RoleList from "../../../js/components/permissions/roleList.vue"
+import Vue from "vue";
 
 describe("globalReaderRolesList", () => {
 
@@ -30,12 +30,14 @@ describe("globalReaderRolesList", () => {
         }
     ];
 
-    it('renders role list', () => {
+    it('renders role list', async () => {
 
         const wrapper = mount(GlobalReadersList);
         wrapper.setData({
             roles: mockRoles
         });
+
+        await Vue.nextTick();
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
         expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(false);

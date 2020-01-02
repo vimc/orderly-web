@@ -3,6 +3,7 @@ import ScopedReaderRoleList from "../../../js/components/reports/scopedReportRea
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
 import AddPermission from "../../../js/components/permissions/addPermission.vue";
+import Vue from "vue";
 
 describe("scopedReaderRolesList", () => {
 
@@ -52,12 +53,14 @@ describe("scopedReaderRolesList", () => {
         });
     }
 
-    it('renders role list', () => {
+    it('renders role list', async () => {
 
         const wrapper = getSut();
         wrapper.setData({
             currentRoles: mockRoles
         });
+
+        await Vue.nextTick();
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
         expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(true);
@@ -70,7 +73,7 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('renders add permission component', () => {
+    it('renders add permission component', async () => {
 
         const wrapper = getSut();
 
@@ -78,6 +81,8 @@ describe("scopedReaderRolesList", () => {
             currentRoles: mockRoles,
             allRoles: mockRoleNames
         });
+
+        await Vue.nextTick();
 
         const expectedPermission = {
             name: "reports.read",
@@ -93,7 +98,7 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('refreshes data when added event is emitted', (done) => {
+    it('refreshes data when added event is emitted', async (done) => {
 
         mockAxios.onPost(`http://app/user-groups/Tech/actions/associate-permission/`)
             .reply(200);
@@ -104,6 +109,8 @@ describe("scopedReaderRolesList", () => {
         const wrapper = getSut();
 
         wrapper.setData({allRoles: mockRoleNames});
+
+        await Vue.nextTick();
 
         wrapper.find("input").setValue('Tech');
         wrapper.find('button').trigger('click');
@@ -121,7 +128,7 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('refreshes data when removed event is emitted', (done) => {
+    it('refreshes data when removed event is emitted', async (done) => {
 
         mockAxios.onPost(`http://app/user-groups/Tech/actions/associate-permission/`)
             .reply(200);
@@ -132,6 +139,8 @@ describe("scopedReaderRolesList", () => {
         const wrapper = getSut();
 
         wrapper.setData({allRoles: mockRoleNames});
+
+        await Vue.nextTick();
 
         wrapper.find(RoleList).vm.$emit("removed");
 
