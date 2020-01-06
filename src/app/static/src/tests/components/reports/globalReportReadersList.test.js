@@ -3,6 +3,7 @@ import GlobalReportReadersList from "../../../js/components/reports/globalReport
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import UserList from "../../../js/components/permissions/userList.vue";
 import {mockAxios} from "../../mockAxios";
+import Vue from "vue";
 
 describe("globalReportReadersList", () => {
 
@@ -29,7 +30,7 @@ describe("globalReportReadersList", () => {
         expect(listItems.props().users).toEqual(expect.arrayContaining(reportReaders));
     }
 
-    it('renders data', () => {
+    it('renders data', async () => {
 
         const wrapper = shallowMount(GlobalReportReadersList);
         wrapper.setData({
@@ -37,6 +38,8 @@ describe("globalReportReadersList", () => {
             defaultMessage: "default error",
             readers: reportReaders
         });
+
+        await Vue.nextTick();
 
         expect(wrapper.find(UserList).props().canRemove).toBe(false);
         expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");

@@ -3,6 +3,7 @@ import {mockAxios} from "../../mockAxios";
 import * as sinon from "sinon";
 import RunReport from "../../../js/components/reports/runReport.vue"
 import {session} from "../../../js/utils/session";
+import Vue from "vue";
 
 describe("runReport", () => {
 
@@ -50,7 +51,7 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-status").exists()).toBe(false);
     });
 
-    it('shows status', () => {
+    it('shows status', async () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
@@ -61,6 +62,8 @@ describe("runReport", () => {
             newVersionFromRun: ""
         });
 
+        await Vue.nextTick();
+
         expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
         expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
@@ -69,7 +72,7 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
-    it('shows new version', () => {
+    it('shows new version', async () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
@@ -80,6 +83,8 @@ describe("runReport", () => {
             newVersionFromRun: "20190514-160954-fc295f38"
         });
 
+        await Vue.nextTick();
+
         expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
         expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
@@ -89,12 +94,14 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
-    it('shows modal', () => {
+    it('shows modal', async () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-show");
@@ -103,21 +110,22 @@ describe("runReport", () => {
 
     });
 
-    it('displays modal when run button is pressed', () => {
+    it('displays modal when run button is pressed', async() => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.find('button[type="submit"]').trigger("click");
-
+        await Vue.nextTick();
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-show");
-
     });
 
-    it('posts run request when confirm run button is pressed', (done) => {
+    it('posts run request when confirm run button is pressed', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -133,12 +141,14 @@ describe("runReport", () => {
 
     });
 
-    it('does not post run request when cancel run button is pressed', (done) => {
+    it('does not post run request when cancel run button is pressed', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#cancel-run-btn").trigger("click");
 
@@ -152,7 +162,7 @@ describe("runReport", () => {
         });
     });
 
-    it('updates status and stops polling when run request fails', (done) => {
+    it('updates status and stops polling when run request fails', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         mockAxios.onPost('http://app/report/name1/actions/run/')
@@ -161,6 +171,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -182,7 +194,7 @@ describe("runReport", () => {
         });
     });
 
-    it('updates status and starts polling when run request is successful', (done) => {
+    it('updates status and starts polling when run request is successful', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         mockAxios.onPost('http://app/report/name1/actions/run/')
@@ -191,6 +203,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -214,7 +228,7 @@ describe("runReport", () => {
         });
     });
 
-    it('clears status and stops polling when dismiss clicked', () => {
+    it('clears status and stops polling when dismiss clicked', async () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
@@ -225,7 +239,11 @@ describe("runReport", () => {
             newVersionFromRun: "20190514-160954-fc295f38"
         });
 
+        await Vue.nextTick();
+
         wrapper.find("#run-report-dismiss").trigger("click");
+
+        await Vue.nextTick();
 
         expect(wrapper.find("#run-report-status").exists()).toBe(false);
         expect(wrapper.vm.$data["pollingTimer"]).toBeNull();
@@ -234,7 +252,7 @@ describe("runReport", () => {
         expect(sessionStubRemoveRunningReportStatus.getCall(0).args[0]).toBe("name1");
     });
 
-    it('updates status and stops polling when run update request returns success status', (done) => {
+    it('updates status and stops polling when run update request returns success status', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
@@ -248,6 +266,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -270,7 +290,7 @@ describe("runReport", () => {
         }, 1800);
     });
 
-    it('updates status and stops polling when run update request returns error status', (done) => {
+    it('updates status and stops polling when run update request returns error status', async (done) => {
         const wrapper = mount(RunReport, runReportProps);
 
         //mock endpoint initially called to run the report
@@ -284,6 +304,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -306,7 +328,7 @@ describe("runReport", () => {
 
     });
 
-    it('updates status and continues polling when run update request returns non-complete status', (done) => {
+    it('updates status and continues polling when run update request returns non-complete status', async (done) => {
        //ie any status other than 'success' or 'error'
         const wrapper = mount(RunReport, runReportProps);
 
@@ -321,6 +343,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -340,7 +364,7 @@ describe("runReport", () => {
         }, 1800);
     });
 
-    it('updates status and stops polling when run update request fails', (done) => {
+    it('updates status and stops polling when run update request fails', async (done) => {
 
         const wrapper = mount(RunReport, runReportProps);
 
@@ -355,6 +379,8 @@ describe("runReport", () => {
         wrapper.setData({
             showModal: true
         });
+
+        await Vue.nextTick();
 
         wrapper.find("#confirm-run-btn").trigger("click");
 
@@ -377,7 +403,7 @@ describe("runReport", () => {
         }, 1800);
     });
 
-    it('initialises data from session storage', () => {
+    it('initialises data from session storage', async () => {
         session.getRunningReportStatus.restore();
         sinon.stub(session, "getRunningReportStatus").callsFake(() => {
                 return {
@@ -389,6 +415,8 @@ describe("runReport", () => {
         );
 
         const wrapper = mount(RunReport, runReportProps);
+
+        await Vue.nextTick();
 
         expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");

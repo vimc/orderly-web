@@ -2,6 +2,7 @@ import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
 import RemovePermission from "../../../js/components/permissions/removePermission.vue"
+import Vue from "vue";
 
 describe("roleList", () => {
 
@@ -117,7 +118,7 @@ describe("roleList", () => {
         expect(wrapper.emitted().removed[0]).toStrictEqual(["user"]);
     });
 
-    it('can expand and collapse members', () => {
+    it('can expand and collapse members', async () => {
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -136,10 +137,14 @@ describe("roleList", () => {
 
         roleWithMembers.trigger("click");
 
+        await Vue.nextTick();
+
         expect(membersList.isVisible()).toBe(true);
         expect(roleWithMembers.classes("open")).toBe(true);
 
         roleWithMembers.trigger("click");
+
+        await Vue.nextTick();
 
         expect(membersList.isVisible()).toBe(false);
         expect(roleWithMembers.classes("open")).toBe(false);
