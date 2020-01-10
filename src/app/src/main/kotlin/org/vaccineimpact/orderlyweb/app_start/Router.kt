@@ -79,7 +79,7 @@ class Router(private val actionResolver: ActionResolver,
             fullUrl = "$fullUrl/"
         }
 
-        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName}")
+        logger.info("Mapping $fullUrl to ${endpoint.actionName} on ${endpoint.controller.simpleName} with contentType ${endpoint.contentType}")
 
         mapUrl(fullUrl, endpoint)
         mapUrl(fullUrl.dropLast(1), endpoint)

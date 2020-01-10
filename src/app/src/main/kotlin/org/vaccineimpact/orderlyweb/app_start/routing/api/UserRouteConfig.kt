@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.app_start.routing.api
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.UserController
+import spark.route.HttpMethod
 
 object UserRouteConfig: RouteConfig {
     private val usersManage = setOf("*/users.manage")
@@ -14,8 +15,9 @@ object UserRouteConfig: RouteConfig {
                     .transform()
                     .externalAuth(),
 
-            APIEndpoint("user/add/", UserController::class, "addUser")
-                .post()
-                .secure(usersManage)
+            APIEndpoint("/user/add/", UserController::class, "addUser")
+                    .post()
+                    .json()
+                    .secure(usersManage)
     )
 }

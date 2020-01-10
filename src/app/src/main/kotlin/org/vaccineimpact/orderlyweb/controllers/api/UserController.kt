@@ -23,10 +23,11 @@ class UserController(context: ActionContext,
                 expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds)
     }
 
-    fun addUser()
+    fun addUser(): String
     {
         val source = UserSource.valueOf(getFromPosted("source"))
         userRepo.addUser(getFromPosted("email"), getFromPosted("username"), getFromPosted("displayName"), source)
+        return ""
     }
 
     private fun getFromPosted(key: String): String
