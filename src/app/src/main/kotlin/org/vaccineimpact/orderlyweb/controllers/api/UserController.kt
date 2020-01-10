@@ -25,8 +25,8 @@ class UserController(context: ActionContext,
 
     fun addUser()
     {
-        val source = UserSource.valueOf(getFromPosted("source");
-        userRepo.addUser(getFromPosted("email"), getFromPosted("username"), getFromPosted("displayName"), source);
+        val source = UserSource.valueOf(getFromPosted("source"))
+        userRepo.addUser(getFromPosted("email"), getFromPosted("username"), getFromPosted("displayName"), source)
     }
 
     private fun getFromPosted(key: String): String
