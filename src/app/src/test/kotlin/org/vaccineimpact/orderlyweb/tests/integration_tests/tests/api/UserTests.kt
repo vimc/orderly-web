@@ -49,7 +49,7 @@ class UserTests: IntegrationTest()
         JooqContext().use {
             val result = it.dsl.select(Tables.ORDERLYWEB_USER.EMAIL)
                     .from(Tables.ORDERLYWEB_USER)
-                    .where(Tables.ORDERLYWEB_USER.EMAIL.eq("added.user@test.com"))
+                    .where(Tables.ORDERLYWEB_USER.EMAIL.eq(ADDED_USER))
                     .fetch()
             if (exists)
             {
