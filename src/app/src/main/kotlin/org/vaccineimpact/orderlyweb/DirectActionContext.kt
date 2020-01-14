@@ -107,6 +107,6 @@ open class DirectActionContext(private val context: SparkWebContext,
 
     override fun postData(key: String): String
     {
-        return postData()[key]?: throw MissingParameterError(key);
+        return postData()[key] ?: throw MissingParameterError(key);
     }
 }
