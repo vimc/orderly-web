@@ -18,12 +18,10 @@ class UserControllerTests
     fun `adds user`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.postData() } doReturn mapOf(
-                    "email" to "test@test.com",
-                    "username" to "firstname.lastname",
-                    "displayName" to "Firstname Lastname",
-                    "source" to "Montagu"
-            )
+            on { this.postData("email") } doReturn "test@test.com"
+            on { this.postData("username") } doReturn "firstname.lastname"
+            on { this.postData("displayName") } doReturn "Firstname Lastname"
+            on { this.postData("source") } doReturn "Montagu"
         }
         val mockRepo = mock<UserRepository>()
 
@@ -31,30 +29,5 @@ class UserControllerTests
         sut.addUser()
         verify(mockRepo).addUser("test@test.com", "firstname.lastname", "Firstname Lastname",
                                     UserSource.Montagu)
-    }
-
-    @Test
-    fun `addUser throws MissingParameter exception if any param is missing`()
-    {
-        assertErrorOnMissingParam("email")
-        assertErrorOnMissingParam("username")
-        assertErrorOnMissingParam("displayName")
-        assertErrorOnMissingParam("source")
-    }
-
-    private fun assertErrorOnMissingParam(missing: String) {
-        val postData = mapOf(
-                "email" to "test@test.com",
-                "username" to "firstname.lastname",
-                "displayName" to "Firstname Lastname",
-                "source" to "Montagu"
-        ).toMutableMap()
-        postData.remove(missing)
-
-        val actionContext = mock<ActionContext> {
-            on { this.postData() } doReturn postData
-        }
-        val sut = UserController(actionContext, WebTokenHelper.instance, mock())
-        Assertions.assertThatThrownBy { sut.addUser() }.isInstanceOf(MissingParameterError::class.java)
     }
 }

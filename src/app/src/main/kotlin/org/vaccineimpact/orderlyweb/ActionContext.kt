@@ -1,11 +1,9 @@
 package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import spark.Request
 import spark.Response
 
 interface ActionContext
@@ -32,4 +30,7 @@ interface ActionContext
     fun getSparkResponse(): Response
     fun setStatusCode(statusCode: Int)
     fun postData(): Map<String, String>
+
+    @Throws(MissingParameterError::class)
+    fun postData(key: String): String
 }

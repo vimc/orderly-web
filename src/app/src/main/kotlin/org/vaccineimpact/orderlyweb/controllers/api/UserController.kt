@@ -4,7 +4,6 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
@@ -25,13 +24,9 @@ class UserController(context: ActionContext,
 
     fun addUser(): String
     {
-        val source = UserSource.valueOf(getFromPosted("source"))
-        userRepo.addUser(getFromPosted("email"), getFromPosted("username"), getFromPosted("displayName"), source)
+        val source = UserSource.valueOf(context.postData("source"))
+        userRepo.addUser(context.postData("email"), context.postData("username"),
+                            context.postData("displayName"), source)
         return ""
-    }
-
-    private fun getFromPosted(key: String): String
-    {
-        return context.postData()[key] ?: throw MissingParameterError(key);
     }
 }
