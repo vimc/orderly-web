@@ -8,10 +8,9 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
-import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -40,25 +39,41 @@ class DirectActionContextTests : TeamcityTests()
         on { it.getAll(true) } doReturn listOf(mockUserProfile)
     }
 
+    val mockPostRequest = mock<Request> {
+        on { it.body() } doReturn "{ \"some\" : \"value\" }"
+    }
+
+    val mockPostSparkContext = mock<SparkWebContext> {
+        on {
+            it.sparkRequest
+        } doReturn mockPostRequest
+
+    }
+
     @Test
     fun `can deserialise request body`()
     {
-        val request = mock<Request> {
-
-            on { it.body() } doReturn "{ \"some\" : \"value\" }"
-        }
-
-        val context = mock<SparkWebContext> {
-            on {
-                it.sparkRequest
-            } doReturn request
-
-        }
-
-        val sut = DirectActionContext(context)
+        val sut = DirectActionContext(mockPostSparkContext)
 
         val result = sut.postData()
         assert(result["some"].equals("value"))
+    }
+
+    @Test
+    fun `can get value from request body`()
+    {
+        val sut = DirectActionContext(mockPostSparkContext)
+
+        val result = sut.postData("some")
+        assert(result.equals("value"))
+    }
+
+    @Test
+    fun `MissingParameterError thrown if get nonexistent value from request body`()
+    {
+        val sut = DirectActionContext(mockPostSparkContext)
+
+        assertThatThrownBy{ sut.postData("something else") }.isInstanceOf(MissingParameterError::class.java)
     }
 
     @Test
