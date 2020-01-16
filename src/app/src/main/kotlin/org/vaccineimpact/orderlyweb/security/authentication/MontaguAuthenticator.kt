@@ -31,13 +31,13 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         println("validating token")
         val email = validate(token)
-        println("validated token")
+        println("validated token. ")
 
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
             this.id = email
         }
-        println("got credentials")
+        println("got credentials. Email: " + email)
     }
 
     private fun validate(token: String): String
