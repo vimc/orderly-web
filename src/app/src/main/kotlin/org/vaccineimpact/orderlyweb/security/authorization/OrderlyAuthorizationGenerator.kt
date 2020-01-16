@@ -11,7 +11,9 @@ class OrderlyAuthorizationGenerator<T : CommonProfile>(private val authRepo: Aut
 {
     override fun generate(context: WebContext?, profile: T): T
     {
+        println("OrderlyAuthorizationGenerator - getting permissions")
         val permissions = authRepo.getPermissionsForUser(profile.id)
+        println("got permissions")
         profile.orderlyWebPermissions = permissions
         return profile
     }
