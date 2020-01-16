@@ -29,12 +29,15 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
             throw CredentialsException("Token cannot be blank")
         }
 
+        println("validating token")
         val email = validate(token)
+        println("validated token")
 
         credentials.userProfile = CommonProfile().apply {
             this.addAttribute("url", "*")
             this.id = email
         }
+        println("got credentials")
     }
 
     private fun validate(token: String): String
