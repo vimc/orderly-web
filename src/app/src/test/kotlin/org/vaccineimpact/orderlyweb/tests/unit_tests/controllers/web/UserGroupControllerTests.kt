@@ -5,10 +5,12 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentCaptor
+import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
@@ -86,6 +88,30 @@ class UserGroupControllerTests : TeamcityTests()
 
         val sut = UserGroupController(actionContext, mock())
         Assertions.assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    fun `adds new user group`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.postData() } doReturn mapOf("name" to "NEWGROUP")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserGroupController(actionContext, authRepo)
+        sut.addUserGroup()
+        verify(authRepo, Times(1)).createUserGroup("NEWGROUP")
+    }
+
+    @Test
+    fun `throws exception when adding user group if name is missing`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.postData() } doReturn mapOf()
+        }
+
+        val sut = UserGroupController(actionContext, mock())
+        Assertions.assertThatThrownBy { sut.addUserGroup() }.isInstanceOf(MissingParameterError::class.java)
     }
 
 }
