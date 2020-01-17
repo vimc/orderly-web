@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
@@ -86,6 +87,32 @@ class UserGroupControllerTests : TeamcityTests()
 
         val sut = UserGroupController(actionContext, mock())
         Assertions.assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
+    }
+
+    @Test
+    fun `adds user to user group`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf("email" to "test@example.com")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserGroupController(actionContext, authRepo)
+        sut.addUser()
+        verify(authRepo).ensureGroupHasMember("GROUP1", "test@example.com")
+    }
+
+    @Test
+    fun `throws exception when adding user if email is missing`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf()
+        }
+
+        val sut = UserGroupController(actionContext, mock())
+        Assertions.assertThatThrownBy { sut.addUser() }.isInstanceOf(MissingParameterError::class.java)
     }
 
 }
