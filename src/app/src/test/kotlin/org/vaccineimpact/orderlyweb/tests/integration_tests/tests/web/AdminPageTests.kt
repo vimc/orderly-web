@@ -22,7 +22,7 @@ class AdminPageTests : IntegrationTest()
     fun `correct page is served`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(manageUsers)
-        val response = webRequestHelper.requestWithSessionCookie("/", sessionCookie)
+        val response = webRequestHelper.requestWithSessionCookie("/admin", sessionCookie)
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
