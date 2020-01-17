@@ -27,6 +27,12 @@ object WebUserRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
+            WebEndpoint("/user-groups/",
+                    UserGroupController::class, "addUserGroup",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
             WebEndpoint("/typeahead/emails/",
                     UserController::class, "getUserEmails",
                     contentType = ContentTypes.json)
