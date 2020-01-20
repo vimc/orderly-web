@@ -25,9 +25,15 @@ class UserController(context: ActionContext,
 
     fun addUser(): String
     {
+        println("Adding User:")
+        println("email: " + context.postData("email"))
+        println("username: " + context.postData("username"))
+        println("displayName: " + context.postData("displayName"))
+        println("source: " + context.postData("source"))
         val source = UserSource.valueOf(context.postData("source"))
         userRepo.addUser(context.postData("email"), context.postData("username"),
                             context.postData("displayName"), source)
+        println("Added User")
         return ""
     }
 }

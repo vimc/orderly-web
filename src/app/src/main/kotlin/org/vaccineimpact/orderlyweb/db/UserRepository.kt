@@ -60,6 +60,8 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
 
     override fun addUser(email: String, username: String, displayName: String, source: UserSource)
     {
+        println("Adding user $email in repo")
+
         val now = Instant.now().toString()
         JooqContext().use {
 
@@ -86,6 +88,8 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                             this.userGroup = email
                             this.email = email
                         }.insert()
+
+                println("added new user")
             }
             else
             {
@@ -96,6 +100,8 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                         .set(Tables.ORDERLYWEB_USER.LAST_LOGGED_IN, now)
                         .where(Tables.ORDERLYWEB_USER.EMAIL.eq(email))
                         .execute()
+
+                println("updated existing user")
             }
         }
     }
