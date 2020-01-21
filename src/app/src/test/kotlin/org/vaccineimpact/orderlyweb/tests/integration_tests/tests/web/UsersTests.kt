@@ -56,9 +56,9 @@ class UsersTests : IntegrationTest()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("Funder", "test.user@example.com")
-        val url = "/user-groups/Funder/user/test.user@xample.com"
+        val url = "/user-groups/Funder/user/test.user@example.com"
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-            method = HttpMethod.delete)
+            method = HttpMethod.delete, contentType = ContentTypes.json)
     }
 
 }
