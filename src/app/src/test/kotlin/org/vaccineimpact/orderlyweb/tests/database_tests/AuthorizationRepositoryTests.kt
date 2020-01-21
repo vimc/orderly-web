@@ -318,6 +318,27 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `ensureUserGroupDoesNotHaveMember removes user from group`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+            insertUserGroup("some-group")
+            giveUserGroupMember("some-group", "user@email.com")
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+        sut.ensureGroupDoesNotHaveMember("some-group", "user@email.com")
+
+        val userGroupUser = JooqContext().use {
+            it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq("some-group")
+                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq("user@email.com")))
+                    .fetch()
+        }
+        assertThat(userGroupUser.count()).isEqualTo(0)
+    }
+
+    @Test
     fun `ensureGroupHasMember throws UnknownObjectError if group does not exist`()
     {
         val sut = OrderlyAuthorizationRepository()

@@ -46,5 +46,13 @@ class UserGroupController(context: ActionContext,
         return okayResponse()
     }
 
+    fun removeUser(): String
+    {
+        val userGroupId = userGroupId()
+        val email = context.params(":email")
+        authRepo.ensureGroupDoesNotHaveMember(userGroupId, email)
+        return okayResponse()
+    }
+
     private fun userGroupId(): String = context.params(":user-group-id")
 }

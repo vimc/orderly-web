@@ -104,6 +104,20 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `removes user from user group`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.params(":email") } doReturn "test@example.com"
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserGroupController(actionContext, authRepo)
+        sut.removeUser()
+        verify(authRepo).ensureGroupDoesNotHaveMember("GROUP1", "test@example.com")
+    }
+
+    @Test
     fun `throws exception when adding user if email is missing`()
     {
         val actionContext = mock<ActionContext> {
