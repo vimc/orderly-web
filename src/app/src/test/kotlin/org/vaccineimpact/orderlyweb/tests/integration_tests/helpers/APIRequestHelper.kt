@@ -102,3 +102,11 @@ fun fakeGlobalReportReviewer(): String
     giveUserGroupPermission(email, "reports.run", Scope.Global())
     return email
 }
+
+fun fakeUserManager(): String
+{
+    val email = "user.manager@email.com"
+    insertUser(email, "user manager")
+    giveUserGroupPermission(email, "users.manage", Scope.Global())
+    return email
+}

@@ -104,6 +104,20 @@ class UserGroupControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `adds user to user group`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf("email" to "test@example.com")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserGroupController(actionContext, authRepo)
+        sut.addUser()
+        verify(authRepo).ensureGroupHasMember("GROUP1", "test@example.com")
+    }
+
+    @Test
     fun `throws exception when adding user group if name is missing`()
     {
         val actionContext = mock<ActionContext> {
@@ -112,6 +126,18 @@ class UserGroupControllerTests : TeamcityTests()
 
         val sut = UserGroupController(actionContext, mock())
         Assertions.assertThatThrownBy { sut.addUserGroup() }.isInstanceOf(MissingParameterError::class.java)
+    }
+
+    @Test
+    fun `throws exception when adding user if email is missing`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf()
+        }
+
+        val sut = UserGroupController(actionContext, mock())
+        Assertions.assertThatThrownBy { sut.addUser() }.isInstanceOf(MissingParameterError::class.java)
     }
 
 }

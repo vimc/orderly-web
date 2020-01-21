@@ -8,6 +8,7 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -102,5 +103,10 @@ open class DirectActionContext(private val context: SparkWebContext,
         {
             GsonBuilder().create().fromJson<Map<String, String>>(request.body())
         }
+    }
+
+    override fun postData(key: String): String
+    {
+        return postData()[key] ?: throw MissingParameterError(key);
     }
 }
