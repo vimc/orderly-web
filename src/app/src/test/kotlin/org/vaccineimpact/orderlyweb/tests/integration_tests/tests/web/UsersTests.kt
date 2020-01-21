@@ -48,4 +48,15 @@ class UsersTests : IntegrationTest()
                 contentType = ContentTypes.json)
     }
 
+    @Test
+    fun `only user managers can add users to groups`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/user-groups/Funder/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post,
+                postData = mapOf("email" to "test.user@example.com"))
+    }
+
 }

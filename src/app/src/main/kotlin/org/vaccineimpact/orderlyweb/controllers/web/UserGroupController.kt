@@ -5,7 +5,6 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
@@ -51,6 +50,14 @@ class UserGroupController(context: ActionContext,
             else -> throw IllegalArgumentException("Unknown action type")
         }
 
+        return okayResponse()
+    }
+
+    fun addUser(): String
+    {
+        val userGroupId = userGroupId()
+        val email = context.postData()["email"] ?: throw MissingParameterError("action")
+        authRepo.ensureGroupHasMember(userGroupId, email)
         return okayResponse()
     }
 
