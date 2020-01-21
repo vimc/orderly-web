@@ -13,6 +13,7 @@ interface AuthorizationRepository
 {
     fun createUserGroup(userGroup: String)
     fun ensureGroupHasMember(userGroup: String, email: String)
+    fun ensureGroupDoesNotHaveMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
@@ -61,6 +62,16 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                             this.userGroup = userGroup
                         }.insert()
             }
+        }
+    }
+
+    override fun ensureGroupDoesNotHaveMember(userGroup: String, email: String)
+    {
+        JooqContext().use {
+            it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup)
+                            .and(ORDERLYWEB_USER_GROUP_USER.EMAIL.eq(email)))
+                    .execute()
         }
     }
 

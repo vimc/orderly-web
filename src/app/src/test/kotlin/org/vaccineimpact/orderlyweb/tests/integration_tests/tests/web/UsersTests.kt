@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.tests.addMembers
 import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
+import java.net.URLEncoder
 
 class UsersTests : IntegrationTest()
 {
@@ -57,6 +58,16 @@ class UsersTests : IntegrationTest()
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json, method = HttpMethod.post,
                 postData = mapOf("email" to "test.user@example.com"))
+    }
+
+    @Test
+    fun `only user managers can remove users from groups`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        addMembers("Funder", "test.user@example.com")
+        val url = "/user-groups/Funder/user/test.user@xample.com"
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+            method = HttpMethod.delete)
     }
 
 }

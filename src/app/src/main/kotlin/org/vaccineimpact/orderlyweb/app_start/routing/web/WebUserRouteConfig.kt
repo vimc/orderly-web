@@ -39,6 +39,12 @@ object WebUserRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
+            WebEndpoint("/user-groups/:user-group-id/user/:email",
+                    UserGroupController::class, "removeUser",
+                    method = HttpMethod.delete)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
             WebEndpoint("/typeahead/emails/",
                     UserController::class, "getUserEmails",
                     contentType = ContentTypes.json)
