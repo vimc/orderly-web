@@ -14,6 +14,12 @@ class UserGroupController(context: ActionContext,
 {
     constructor(context: ActionContext) : this(context, OrderlyAuthorizationRepository())
 
+    fun addUserGroup(): String {
+        val name = context.postData()["name"] ?: throw MissingParameterError("name")
+        authRepo.createUserGroup(name)
+        return okayResponse()
+    }
+
     fun associatePermission(): String
     {
         val userGroupId = userGroupId()
