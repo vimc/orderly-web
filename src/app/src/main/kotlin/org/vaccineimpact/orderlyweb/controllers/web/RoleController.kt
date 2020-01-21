@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleController(context: ActionContext,
@@ -15,16 +16,20 @@ class RoleController(context: ActionContext,
 
     fun getGlobalReportReaders(): List<RoleViewModel>
     {
-        val users = roleRepo.getGlobalReportReaderRoles()
-        return users.map { RoleViewModel.build(it) }
-                .sortedBy { it.name }
+        return roleRepo.getGlobalReportReaderRoles()
+                .toSortedViewModels()
     }
 
     fun getScopedReportReaders(): List<RoleViewModel>
     {
-        val users = roleRepo.getScopedReportReaderRoles(context.params(":report"))
-        return users.map { RoleViewModel.build(it) }
-                .sortedBy { it.name }
+        return roleRepo.getScopedReportReaderRoles(context.params(":report"))
+                .toSortedViewModels()
+    }
+
+    fun getAll(): List<RoleViewModel>
+    {
+        return roleRepo.getAllRoles()
+                .toSortedViewModels()
     }
 
     fun getAllRoleNames(): List<String>
@@ -32,4 +37,9 @@ class RoleController(context: ActionContext,
         return roleRepo.getAllRoleNames()
     }
 
+    private fun List<Role>.toSortedViewModels() : List<RoleViewModel>
+    {
+        return this.map { RoleViewModel.build(it) }
+                .sortedBy{ it.name }
+    }
 }
