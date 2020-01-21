@@ -24,7 +24,7 @@
         },
         methods: {
             getRoles: function () {
-                api.get(`/roles/all/`)
+                api.get(`/roles/`)
                     .then(({data}) => {
                         this.roles = data.data
                     })
