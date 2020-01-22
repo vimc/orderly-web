@@ -114,8 +114,8 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.find(UserList).vm.$emit("removed");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"]);
+        wrapper.find(UserList).vm.$emit("removed", "bob");
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["bob", "Funders", undefined]);
     });
 
     it('can expand and collapse members', async () => {
@@ -135,14 +135,14 @@ describe("roleList", () => {
         expect(membersList.isVisible()).toBe(false);
         expect(roleWithMembers.classes("open")).toBe(false);
 
-        roleWithMembers.trigger("click");
+        roleWithMembers.find('span').trigger("click");
 
         await Vue.nextTick();
 
         expect(membersList.isVisible()).toBe(true);
         expect(roleWithMembers.classes("open")).toBe(true);
 
-        roleWithMembers.trigger("click");
+        roleWithMembers.find('.expander').trigger("click");
 
         await Vue.nextTick();
 
