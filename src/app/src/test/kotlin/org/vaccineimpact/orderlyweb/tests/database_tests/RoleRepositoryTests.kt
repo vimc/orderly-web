@@ -42,25 +42,25 @@ class RoleRepositoryTests : CleanDatabaseTests()
     {
         createGroup("Admin", ReifiedPermission("users.manage", Scope.Global()))
         createGroup("Science", ReifiedPermission("reports.read", Scope.Global()))
-        createGroup("Reviewer", ReifiedPermission("reports.reviewer", Scope.Global()))
+        createGroup("Reviewer", ReifiedPermission("reports.review", Scope.Global()))
         addMembers("Admin", "admin.a@example.com", "admin.b@example.com")
         addMembers("Science", "science.user@example.com")
         insertUser("notInARole@example.com", "Not Role")
 
         val sut = OrderlyRoleRepository()
-        val result = sut.getGlobalReportReaderRoles()
+        val result = sut.getAllRoles().sortedBy{r -> r.name}
 
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("Admin")
         assertThat(result[0].members.map { it.email })
                 .containsExactlyElementsOf(listOf("admin.a@example.com", "admin.b@example.com"))
 
-        assertThat(result[1].name).isEqualTo("Science")
-        assertThat(result[1].members.map { it.email })
-                .containsExactlyElementsOf(listOf("science.user@example.com"))
+        assertThat(result[1].name).isEqualTo("Reviewer")
+        assertThat(result[1].members.count()).isEqualTo(0)
 
-        assertThat(result[2].name).isEqualTo("Reviewer")
-        assertThat(result[2].members.count()).isEqualTo(0)
+        assertThat(result[2].name).isEqualTo("Science")
+        assertThat(result[2].members.map { it.email })
+                .containsExactlyElementsOf(listOf("science.user@example.com"))
     }
 
     @Test
