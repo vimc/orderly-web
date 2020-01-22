@@ -36,7 +36,7 @@ class RolesTests : IntegrationTest()
     @Test
     fun `only user managers can get all roles`()
     {
-        val url = "/roles/all/"
+        val url = "/roles/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)
@@ -47,9 +47,9 @@ class RolesTests : IntegrationTest()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
-        createGroup("Reviewer", ReifiedPermission("reports.Review", Scope.Global()))
+        createGroup("Reviewer", ReifiedPermission("reports.review", Scope.Global()))
 
-        val url = "/roles/all/"
+        val url = "/roles/"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 ContentTypes.json)
