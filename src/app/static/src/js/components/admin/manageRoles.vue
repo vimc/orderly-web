@@ -2,13 +2,13 @@
     <div id="role-list">
         <role-list :can-remove-members="true"
                    :can-remove-roles="false"
-                   :roles="roles"></role-list>
+                   :roles="roles"
+                   @removed="removed"></role-list>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
-    import UserList from "../permissions/userList.vue";
     import RoleList from "../permissions/roleList.vue";
 
     export default {
@@ -28,11 +28,15 @@
                     .then(({data}) => {
                         this.roles = data.data
                     })
+            },
+            removed: function(email,roleName) {
+                const role = this.roles.find(r => r.name === roleName);
+                const memberIdx = role.members.findIndex(m => m.email === email);
+                role.members.splice(memberIdx,1);
             }
         },
         components: {
-            RoleList,
-            UserList
+            RoleList
         }
     };
 </script>
