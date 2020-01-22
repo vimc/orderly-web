@@ -5,7 +5,8 @@
                   :display-name="user.display_name"
                   :can-remove="canRemove"
                   :permission="permission"
-                  @removed="$emit('removed', 'user')"></user>
+                  :role="role"
+                  @removed="removed"></user>
         </li>
     </ul>
 </template>
@@ -16,7 +17,12 @@
     export default {
         name: "userList",
         components: {User},
-        props: ["users", "canRemove", "cssClass", "permission"]
+        props: ["users", "canRemove", "cssClass", "permission", "role"],
+        methods: {
+            removed: function(email) {
+                this.$emit('removed', email)
+            }
+        }
     }
 </script>
 
