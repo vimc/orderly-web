@@ -100,8 +100,8 @@ describe("userList", () => {
             }
         });
 
-        wrapper.findAll(User).at(0).vm.$emit("removed");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"])
+        wrapper.findAll(User).at(0).vm.$emit("removed", "bob");
+        expect(wrapper.emitted().removed[0]).toStrictEqual(["bob"])
     });
 
 });
