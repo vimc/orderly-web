@@ -20,6 +20,10 @@
                        :role="permission ? '' : role.name"
                        :canRemove="canRemoveMembers"
                        @removed="function(e){removed(e,role)}"></user-list>
+            <add-user-to-role v-if="canAddMembers && expanded[index]"
+                        :role="role.name"
+                        :available-users="availableUsersForRole(role)"
+                        @added="function(e){addedUserToRole(e,role)}"></add-user-to-role>
         </li>
     </ul>
 </template>
@@ -28,10 +32,11 @@
     import Vue from "vue";
     import UserList from "./userList.vue";
     import RemovePermission from "./removePermission";
+    import AddUserToRole from "../admin/addUserToRole";
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemoveRoles", "canRemoveMembers", "permission"],
+        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "permission", "availableUsers"],
         data() {
             return {
                 expanded: {}
@@ -43,11 +48,18 @@
             },
             removed: function(email,role) {
                 this.$emit('removed', email, role.name, this.permission)
+            },
+            addedUserToRole: function(email, role) {
+                this.$emit('added-user-to-role', email, role.name)
+            },
+            availableUsersForRole: function(role) {
+                return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)
             }
         },
         components: {
             RemovePermission,
-            UserList
+            UserList,
+            AddUserToRole
         }
     };
 </script>
