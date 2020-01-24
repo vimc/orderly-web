@@ -33,7 +33,7 @@
             VueBootstrapTypeahead
         },
         watch: {
-            newUserGroup() {
+            newUser() {
                 this.error = ""
             }
         },
