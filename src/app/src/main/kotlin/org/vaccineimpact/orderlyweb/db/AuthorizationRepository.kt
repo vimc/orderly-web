@@ -16,6 +16,7 @@ interface AuthorizationRepository
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
+    fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
 }
 
 class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : AuthorizationRepository
@@ -182,6 +183,13 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                 }
             }
 
+        }
+    }
+
+    override fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
+    {
+        JooqContext().use {
+            return getAllPermissionsForGroup(it, userGroup)
         }
     }
 
