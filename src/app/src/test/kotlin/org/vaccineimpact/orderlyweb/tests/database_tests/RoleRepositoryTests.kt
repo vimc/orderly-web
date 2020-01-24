@@ -31,10 +31,14 @@ class RoleRepositoryTests : CleanDatabaseTests()
         assertThat(result[0].name).isEqualTo("Funder")
         assertThat(result[0].members.map { it.email })
                 .containsExactlyElementsOf(listOf("funder.a@example.com", "funder.b@example.com"))
+        assertThat(result[0].permissions).
+                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[1].members.map { it.email })
                 .containsExactlyElementsOf(listOf("science.user@example.com"))
+        assertThat(result[1].permissions).
+                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
     @Test
@@ -128,10 +132,14 @@ class RoleRepositoryTests : CleanDatabaseTests()
         assertThat(result[0].name).isEqualTo("Funder")
         assertThat(result[0].members.map { it.email })
                 .containsExactlyElementsOf(listOf("funder.a@example.com", "funder.b@example.com"))
+        assertThat(result[0].permissions)
+                .containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Specific("report", "r1"))))
 
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[1].members.map { it.email })
                 .containsExactlyElementsOf(listOf("science.user@example.com"))
+        assertThat(result[1].permissions)
+                .containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Specific("report", "r1"))))
     }
 
     @Test
