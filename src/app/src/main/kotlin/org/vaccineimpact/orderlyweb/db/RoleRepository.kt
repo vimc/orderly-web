@@ -13,7 +13,8 @@ interface RoleRepository
     fun getAllRoles(): List<Role>
 }
 
-class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper()) : RoleRepository
+class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
+                            private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : RoleRepository
 {
     override fun getAllRoleNames(): List<String>
     {
@@ -83,7 +84,10 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper()) :
 
     private fun mapUserGroup(group: Map.Entry<String, List<Record>>): Role
     {
-        return Role(group.key, group.value.mapNotNull { u ->
+        val roleName = group.key
+        val permissions = authRepo.getPermissionsForGroup(roleName)
+
+        return Role(roleName, group.value.mapNotNull { u ->
             if (u[ORDERLYWEB_USER.USERNAME] != null)
             {
                 userMapper.mapUser(u)
@@ -92,7 +96,7 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper()) :
             {
                 null
             }
-        })
+        }, permissions)
     }
 
 }

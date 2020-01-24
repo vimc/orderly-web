@@ -17,6 +17,7 @@ interface AuthorizationRepository
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
+    fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
 }
 
 class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : AuthorizationRepository
@@ -196,6 +197,19 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
         }
     }
 
+    override fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
+    {
+        JooqContext().use {
+            return getAllPermissionsForGroup(it, userGroup)
+        }
+    }
+
+    private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>
+    {
+        return getAllPermissionRecordsForGroup(db, userGroup)
+                .map(permissionMapper::mapPermission)
+    }
+
     private fun checkPermissionExists(db: JooqContext, permission: String)
     {
         db.dsl.selectFrom(ORDERLYWEB_PERMISSION)
@@ -220,12 +234,5 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                 .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(userGroup))
                 .fetch()
     }
-
-    private fun getAllPermissionsForGroup(db: JooqContext, userGroup: String): List<ReifiedPermission>
-    {
-        return getAllPermissionRecordsForGroup(db, userGroup)
-                .map(permissionMapper::mapPermission)
-    }
-
 
 }
