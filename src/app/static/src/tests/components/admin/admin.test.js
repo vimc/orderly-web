@@ -1,10 +1,10 @@
 import {mount} from '@vue/test-utils';
-import ManageRoles from "../../../js/components/admin/manageRoles.vue";
+import Admin from "../../../js/components/admin/admin.vue";
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
 import Vue from "vue";
 
-describe("manageRoles", () => {
+describe("admin component", () => {
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onGet('http://app/roles/')
@@ -23,18 +23,24 @@ describe("manageRoles", () => {
                     display_name: "User One",
                     can_remove: false
                 }
-            ]
+            ],
+            permissions: []
         },
         {
             name: "Science",
-            members: []
+            members: [],
+            permissions: []
         }
     ];
 
     const mockEmails = ["user1@example.com", "user2@example.com"];
 
+    const getWrapper = function() {
+      return mount(Admin);
+    };
+
     it('renders role list', async () => {
-        const wrapper = mount(ManageRoles);
+        const wrapper = getWrapper();
         wrapper.setData({
             roles: mockRoles
         });
@@ -49,7 +55,7 @@ describe("manageRoles", () => {
     });
 
     it('fetches roles and typeahead emails on mount', (done) => {
-        const wrapper = mount(ManageRoles);
+        const wrapper = getWrapper();
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
@@ -78,7 +84,7 @@ describe("manageRoles", () => {
             }
         ];
 
-        const wrapper = mount(ManageRoles);
+        const wrapper = getWrapper();
         wrapper.setData({
             roles: roles
         });
@@ -89,7 +95,7 @@ describe("manageRoles", () => {
     });
 
     it('refreshes roles when role list emits added event', async (done) => {
-        const wrapper = mount(ManageRoles);
+        const wrapper = getWrapper();
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
             wrapper.find(RoleList).vm.$emit("added-user-to-role");

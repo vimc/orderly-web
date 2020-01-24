@@ -1,12 +1,26 @@
 <template>
-    <div id="role-list" class="col-4 ">
-        <role-list :can-remove-members="true"
-                   :can-add-members="true"
-                   :can-remove-roles="false"
-                   :roles="roles"
-                   :available-users="typeaheadEmails"
-                   @removed="removed"
-                   @added-user-to-role="added"></role-list>
+    <div>
+        <div id="manage-roles" class="col-4 ">
+            <h4>Role management</h4>
+            <role-list :show-members="true"
+                       :show-permissions="false"
+                       :can-remove-members="true"
+                       :can-add-members="true"
+                       :can-remove-roles="false"
+                       :roles="roles"
+                       :available-users="typeaheadEmails"
+                       @removed="removedMemberFromRole"
+                       @added-user-to-role="added"></role-list>
+        </div>
+        <div id="manage-permissions" class="col-4 ">
+            <h4>Permission management</h4>
+            <h5>For roles</h5>
+            <role-list :show-members="false"
+                       :show-permissions="true"
+                       :can-remove-permissions="true"
+                       :roles="roles"
+                       @removed="removedPermissionFromRole"></role-list>
+        </div>
     </div>
 </template>
 
@@ -15,7 +29,7 @@
     import RoleList from "../permissions/roleList.vue";
 
     export default {
-        name: 'manageRoles',
+        name: 'admin',
         mounted() {
             this.getRoles();
             this.getTypeaheadEmails();
@@ -39,10 +53,13 @@
                         this.typeaheadEmails = data.data
                     })
             },
-            removed: function(email,roleName) {
+            removedMemberFromRole: function(email,roleName) {
                 const role = this.roles.find(r => r.name === roleName);
                 const memberIdx = role.members.findIndex(m => m.email === email);
                 role.members.splice(memberIdx,1);
+            },
+            removedPermissionFromRole: function(permission, roleName) {
+                alert("removed permission from " + roleName)
             },
             added: function() {
                 this.getRoles();

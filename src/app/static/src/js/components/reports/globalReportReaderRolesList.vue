@@ -2,6 +2,7 @@
     <div id="report-readers-global-list">
         <role-list :can-remove-members="false"
                        :can-remove-roles="false"
+                       :show-members="true"
                        :roles="roles"></role-list>
     </div>
 </template>

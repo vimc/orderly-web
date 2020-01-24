@@ -16,11 +16,13 @@ describe("roleList", () => {
                     username: "user1",
                     display_name: "User One"
                 }
-            ]
+            ],
+            permissions: []
         },
         {
             name: "Science",
-            members: []
+            members: [],
+            permissions: []
         }
     ];
 
@@ -38,6 +40,7 @@ describe("roleList", () => {
             {
                 propsData: {
                     roles: mockRoles,
+                    showMembers: true,
                     canRemoveMembers: false,
                     permission: testPermission
                 }
@@ -56,6 +59,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canRemoveMembers: true
             }
         });
@@ -71,6 +75,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canAddMembers: true,
                 availableUsers: mockAvailableUsers
             }
@@ -93,6 +98,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canAddMembers: false,
                 availableUsers: mockAvailableUsers
             }
@@ -109,6 +115,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canRemoveRoles: true,
                 canRemoveMembers: true
             }
@@ -122,6 +129,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canRemoveRoles: false,
                 canRemoveMembers: true
             }
@@ -135,6 +143,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canRemoveRoles: true,
                 canRemoveMembers: true
             }
@@ -149,6 +158,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 canRemoveMembers: true,
                 canRemoveRoles: true
             }
@@ -163,6 +173,7 @@ describe("roleList", () => {
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
+                showMembers: true,
                 availableUsers: mockAvailableUsers,
                 canAddMembers: true
             }
@@ -182,6 +193,7 @@ describe("roleList", () => {
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
+                showMembers: true,
                 roles: mockRoles
             }
         });
@@ -214,6 +226,7 @@ describe("roleList", () => {
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
+                showMembers: true,
                 roles: mockRoles
             }
         });

@@ -22,11 +22,13 @@ describe("globalReaderRolesList", () => {
                     display_name: "User One",
                     can_remove: false
                 }
-            ]
+            ],
+            permissions: []
         },
         {
             name: "Science",
-            members: []
+            members: [],
+            permissions: []
         }
     ];
 

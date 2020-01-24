@@ -1,13 +1,13 @@
 import Vue from 'vue'
 import $ from 'jquery';
-import manageRoles from './components/admin/manageRoles.vue'
+import admin from './components/admin/admin.vue'
 
 $(document).ready(() => {
     if ($('#adminVueApp').length > 0) {
         new Vue({
             el: '#adminVueApp',
             components: {
-                manageRoles: manageRoles
+                admin: admin
             },
             methods: {
             }

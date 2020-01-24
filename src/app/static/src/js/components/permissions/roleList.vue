@@ -11,7 +11,7 @@
                                :permission="permission"
                                @removed="$emit('removed', 'role')"></remove-permission>
 
-            <user-list v-if="role.members.length > 0"
+            <user-list v-if="role.members.length > 0 && showMembers"
                        v-on:click="function(e){e.stopPropagation()}"
                        v-show="expanded[index]"
                        cssClass="members"
@@ -24,19 +24,30 @@
                         :role="role.name"
                         :available-users="availableUsersForRole(role)"
                         @added="function(e){addedUserToRole(e,role)}"></add-user-to-role>
+
+            <permission-list v-if="role.permissions.length > 0 && showPermissions"
+                    v-show="expanded[index]"
+                    :permissions="role.permissions"
+                    :user-group="role.name"
+                    :canRemove="canRemovePermissions"
+                    cssClass="members"></permission-list>
         </li>
     </ul>
 </template>
 
 <script>
+    //TODO: sort out cssClass, derived from users - do we need that??
+    //TODO: replace 'hasMembers' with computed 'listHasMembers'
     import Vue from "vue";
     import UserList from "./userList.vue";
+    import PermissionList from "./permissionList.vue"
     import RemovePermission from "./removePermission";
     import AddUserToRole from "../admin/addUserToRole";
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "permission", "availableUsers"],
+        props: ["roles", "showMembers", "showPermissions", "canRemoveRoles", "canRemoveMembers", "canAddMembers",
+                    "canRemovePermissions", "permission", "availableUsers"],
         data() {
             return {
                 expanded: {}
@@ -59,7 +70,8 @@
         components: {
             RemovePermission,
             UserList,
-            AddUserToRole
+            AddUserToRole,
+            PermissionList
         }
     };
 </script>
