@@ -79,6 +79,7 @@ class WebRequestHelper : RequestHelper()
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)
             HttpMethod.post -> khttp.post(fullUrl, headers, data = postData?.toJsonObject()?.toJsonString())
+            HttpMethod.delete -> khttp.delete(fullUrl, headers)
             else -> throw IllegalArgumentException("Method not supported")
         }
     }
