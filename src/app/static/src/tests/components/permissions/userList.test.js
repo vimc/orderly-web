@@ -40,14 +40,12 @@ describe("userList", () => {
         expect(firstUserProps.displayName).toBe("Test User");
         expect(firstUserProps.email).toBe("test.user@example.com");
         expect(firstUserProps.canRemove).toBe(true);
-        expect(firstUserProps.permission).toStrictEqual(testPermission);
 
         const secondUserProps = wrapper.findAll(User).at(1).props();
 
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
         expect(secondUserProps.canRemove).toBe(true);
-        expect(secondUserProps.permission).toStrictEqual(testPermission);
 
     });
 

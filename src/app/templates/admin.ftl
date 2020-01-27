@@ -1,8 +1,8 @@
 <@layout>
     <#macro styles>
-        <link rel="stylesheet" href="${appUrl}/css/style.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/admin.min.css"/>
     </#macro>
-    <h3>Manage roles</h3>
+    <h1 class="h3">Manage roles</h1>
     <div id="adminVueApp">
         <manage-roles></manage-roles>
     </div>

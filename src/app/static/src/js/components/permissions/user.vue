@@ -1,27 +1,15 @@
 <template>
     <div class="removable-user">
         <span class="display-name">{{displayName}}</span>
-        <remove-permission v-if="canRemove && permission"
-                           :user-group="email"
-                           :permission="permission"
-                           @removed="$emit('removed', email)">
-        </remove-permission>
-        <remove-role v-if="canRemove && role"
-                           :email="email"
-                           :role="role"
-                           @removed="$emit('removed', email)">
-        </remove-role>
+        <span v-if="canRemove" v-on:click="$emit('removed', email)"
+              class="remove-user-group d-inline-block ml-2 large">×</span>
         <div class="text-muted small email">{{email}}</div>
     </div>
 </template>
 
 <script>
-    import RemovePermission from "./removePermission";
-    import RemoveRole from "./removeRole";
-
     export default {
         name: "user",
-        components: {RemovePermission, RemoveRole},
-        props: ["displayName", "email", "canRemove", "permission", "role"]
+        props: ["displayName", "email", "canRemove"]
     }
 </script>
