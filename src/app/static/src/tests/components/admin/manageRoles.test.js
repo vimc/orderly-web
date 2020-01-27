@@ -77,7 +77,7 @@ describe("manageRoles", () => {
             roles: roles
         });
 
-        wrapper.find(RoleList).vm.$emit("removed", "user1@example.com", "Funders");
+        wrapper.find(RoleList).vm.$emit("removed", "Funders", "user1@example.com");
 
         expect(roles[0].members.length).toBe(0);
     });

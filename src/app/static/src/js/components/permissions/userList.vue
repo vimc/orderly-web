@@ -4,8 +4,6 @@
             <user :email="user.email"
                   :display-name="user.display_name"
                   :can-remove="canRemove"
-                  :permission="permission"
-                  :role="role"
                   @removed="removed"></user>
         </li>
     </ul>
@@ -17,7 +15,7 @@
     export default {
         name: "userList",
         components: {User},
-        props: ["users", "canRemove", "cssClass", "permission", "role"],
+        props: ["users", "canRemove", "cssClass"],
         methods: {
             removed: function(email) {
                 this.$emit('removed', email)

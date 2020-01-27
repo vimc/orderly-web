@@ -29,10 +29,12 @@
                         this.roles = data.data
                     })
             },
-            removed: function(email,roleName) {
-                const role = this.roles.find(r => r.name === roleName);
-                const memberIdx = role.members.findIndex(m => m.email === email);
-                role.members.splice(memberIdx,1);
+            removed: function (roleName, email) {
+                if (email) {
+                    const role = this.roles.find(r => r.name === roleName);
+                    const memberIdx = role.members.findIndex(m => m.email === email);
+                    role.members.splice(memberIdx, 1);
+                }
             }
         },
         components: {

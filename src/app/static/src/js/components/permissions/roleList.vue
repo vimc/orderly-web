@@ -6,20 +6,17 @@
             <div class="expander" v-on:click="toggle(index)"></div>
             <span v-text="role.name" class="role-name" v-on:click="toggle(index)"></span>
 
-            <remove-permission v-if="canRemoveRoles"
-                               :user-group="role.name"
-                               :permission="permission"
-                               @removed="$emit('removed', 'role')"></remove-permission>
+            <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
+                  class="remove-user-group d-inline-block ml-2 large">×</span>
 
             <user-list v-if="role.members.length > 0"
-                       v-on:click="function(e){e.stopPropagation()}"
                        v-show="expanded[index]"
                        cssClass="members"
                        :users="role.members"
-                       :permission="permission"
-                       :role="permission ? '' : role.name"
                        :canRemove="canRemoveMembers"
-                       @removed="function(e){removed(e,role)}"></user-list>
+                       @removed="function(email){removeMember(role.name, email)}"></user-list>
+
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </li>
     </ul>
 </template>
@@ -27,13 +24,16 @@
 <script>
     import Vue from "vue";
     import UserList from "./userList.vue";
-    import RemovePermission from "./removePermission";
+    import ErrorInfo from "../errorInfo.vue";
+    import {api} from "../../utils/api";
 
     export default {
         name: 'roleList',
         props: ["roles", "canRemoveRoles", "canRemoveMembers", "permission"],
         data() {
             return {
+                error: null,
+                defaultMessage: "Something went wrong",
                 expanded: {}
             }
         },
@@ -41,12 +41,33 @@
             toggle: function (index) {
                 Vue.set(this.expanded, index, !this.expanded[index]);
             },
-            removed: function(email,role) {
-                this.$emit('removed', email, role.name, this.permission)
+            removeMember: function (roleName, email) {
+                api.delete(`/user-groups/${encodeURIComponent(roleName)}/user/${encodeURIComponent(email)}`)
+                    .then(() => {
+                        this.$emit('removed', roleName, email);
+                        this.error = null;
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                    });
+            },
+            removeRole: function (roleName) {
+                const data = {
+                    ...this.permission,
+                    action: "remove"
+                };
+                api.post(`/user-groups/${encodeURIComponent(roleName)}/actions/associate-permission/`, data)
+                    .then(() => {
+                        this.$emit("removed", roleName);
+                        this.error = null;
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                    });
             }
         },
         components: {
-            RemovePermission,
+            ErrorInfo,
             UserList
         }
     };

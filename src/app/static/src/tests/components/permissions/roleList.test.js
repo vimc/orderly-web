@@ -1,10 +1,15 @@
 import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
-import RemovePermission from "../../../js/components/permissions/removePermission.vue"
 import Vue from "vue";
+import {mockAxios} from "../../mockAxios";
 
 describe("roleList", () => {
+
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
 
     const mockRoles = [
         {
@@ -45,7 +50,6 @@ describe("roleList", () => {
 
         expect(userLists.at(0).props().users).toEqual(expect.arrayContaining(mockRoles[0].members));
         expect(userLists.at(0).props().canRemove).toBe(false);
-        expect(userLists.at(0).props().permission).toStrictEqual(testPermission);
     });
 
     it('renders roles with removable members', () => {
@@ -74,7 +78,7 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(RemovePermission).length).toBe(2);
+        expect(wrapper.findAll(".remove-user-group").length).toBe(2);
     });
 
     it('renders non-removable roles', () => {
@@ -87,10 +91,13 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(RemovePermission).length).toBe(0);
+        expect(wrapper.findAll(".remove-user-group").length).toBe(0);
     });
 
-    it('emits removed event when removePermission does', () => {
+    it('removes role and emits removed event', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+            .reply(200);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -100,11 +107,18 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.findAll(RemovePermission).at(0).vm.$emit("removed");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["role"]);
+        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders"]);
+            done();
+        })
     });
 
-    it('emits removed event when userList does', () => {
+    it('removes member and emits removed event', (done) => {
+
+        mockAxios.onDelete('http://app/user-groups/Funders/user/bob')
+            .reply(200);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -115,7 +129,11 @@ describe("roleList", () => {
         });
 
         wrapper.find(UserList).vm.$emit("removed", "bob");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["bob", "Funders", undefined]);
+
+        setTimeout(() => {
+            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders", "bob"]);
+            done();
+        });
     });
 
     it('can expand and collapse members', async () => {
