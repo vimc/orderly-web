@@ -1,5 +1,7 @@
 <template>
-    <ul v-bind:class="['list-unstyled', 'removable-users-list', cssClass]" v-if="users.length > 0">
+    <ul v-bind:class="['list-unstyled', 'removable-users-list', cssClass]"
+        v-if="users.length > 0"
+        v-on:click.stop>
         <li v-for="user in users" v-bind:id="user.email">
             <user :email="user.email"
                   :display-name="user.display_name"
@@ -17,7 +19,7 @@
         components: {User},
         props: ["users", "canRemove", "cssClass"],
         methods: {
-            removed: function(email) {
+            removed: function (email) {
                 this.$emit('removed', email)
             }
         }
