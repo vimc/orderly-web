@@ -10,6 +10,7 @@ const buildFullUrl = (url) => {
 export const api = {
     baseUrl: baseUrl,
     get: (url) => axios.get(buildFullUrl(url), {withCredentials: true}),
-    post: (url, data) => axios.post(buildFullUrl(url), data, {withCredentials: true})
+    post: (url, data) => axios.post(buildFullUrl(url), data, {withCredentials: true}),
+    delete: (url) => axios.delete(buildFullUrl(url), {withCredentials: true}),
 };
 

@@ -1,21 +1,15 @@
 <template>
     <div class="removable-user">
         <span class="display-name">{{displayName}}</span>
-        <remove-permission v-if="canRemove"
-                           :user-group="email"
-                           :permission="permission"
-                           @removed="$emit('removed')">
-        </remove-permission>
+        <span v-if="canRemove" v-on:click="$emit('removed', email)"
+              class="remove-user-group d-inline-block ml-2 large">×</span>
         <div class="text-muted small email">{{email}}</div>
     </div>
 </template>
 
 <script>
-    import RemovePermission from "./removePermission";
-
     export default {
         name: "user",
-        components: {RemovePermission},
-        props: ["displayName", "email", "canRemove", "permission"]
+        props: ["displayName", "email", "canRemove"]
     }
 </script>
