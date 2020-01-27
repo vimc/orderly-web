@@ -48,6 +48,7 @@
                         this.error = null;
                     })
                     .catch((error) => {
+                        this.defaultMessage = `could not remove ${email} from ${roleName}`;
                         this.error = error;
                     });
             },
@@ -62,6 +63,7 @@
                         this.error = null;
                     })
                     .catch((error) => {
+                        this.defaultMessage = `could not remove ${roleName}`;
                         this.error = error;
                     });
             }

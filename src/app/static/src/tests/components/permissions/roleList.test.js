@@ -3,6 +3,7 @@ import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
+import ErrorInfo from "../../../js/components/errorInfo";
 
 describe("roleList", () => {
 
@@ -30,7 +31,7 @@ describe("roleList", () => {
 
     const testPermission = {
         name: "test.perm",
-        scope_id : "report",
+        scope_id: "report",
         scope_prefix: "r1"
     };
 
@@ -115,6 +116,29 @@ describe("roleList", () => {
         })
     });
 
+    it('sets error if removing role fails', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+            .reply(500);
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove Funders");
+            done();
+        });
+
+    });
+
     it('removes member and emits removed event', (done) => {
 
         mockAxios.onDelete('http://app/user-groups/Funders/user/bob')
@@ -134,6 +158,29 @@ describe("roleList", () => {
             expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders", "bob"]);
             done();
         });
+    });
+
+    it('sets error if removing member fails', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/user/bob')
+            .reply(500);
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.find(UserList).vm.$emit("removed", "bob");
+
+        setTimeout(() => {
+            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove bob from Funders");
+            done();
+        });
+
     });
 
     it('can expand and collapse members', async () => {

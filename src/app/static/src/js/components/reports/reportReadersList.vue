@@ -81,6 +81,7 @@
                     })
                     .catch((error) => {
                         this.error = error;
+                        this.defaultMessage = `could not remove ${email}`;
                     });
             }
         }

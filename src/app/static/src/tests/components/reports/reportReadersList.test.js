@@ -155,7 +155,10 @@ describe("reportReadersList", () => {
 
     });
 
-    it('refreshes list of readers on removed event', (done) => {
+    it('removes user and refreshes list of readers', (done) => {
+
+        mockAxios.onPost(`http://app/user-groups/bob/actions/associate-permission/`)
+            .reply(200);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
             .reply(200, {"data": reportReaders});
@@ -169,7 +172,7 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find(UserList).vm.$emit("removed");
+            wrapper.find(UserList).vm.$emit("removed", "bob");
 
             setTimeout(() => {
 
@@ -177,6 +180,34 @@ describe("reportReadersList", () => {
 
                 expectWrapperToHaveRenderedReaders(wrapper);
 
+                done();
+            });
+        });
+
+    });
+
+    it('sets error if removing user fails', (done) => {
+
+        mockAxios.onPost(`http://app/user-groups/bob/actions/associate-permission/`)
+            .reply(500);
+
+        mockAxios.onGet('http://app/users/report-readers/report1/')
+            .reply(200, {"data": reportReaders});
+
+        const wrapper = shallowMount(ReportReadersList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        setTimeout(() => {
+            wrapper.find(UserList).vm.$emit("removed", "bob");
+
+            setTimeout(() => {
+                expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
+                expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove bob");
                 done();
             });
         });
