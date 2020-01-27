@@ -9,12 +9,11 @@ import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class UserGroupControllerTests : TeamcityTests()
 {
@@ -140,6 +139,15 @@ class UserGroupControllerTests : TeamcityTests()
 
         val sut = UserGroupController(actionContext, mock())
         Assertions.assertThatThrownBy { sut.addUserGroup() }.isInstanceOf(MissingParameterError::class.java)
+    }
+
+    @Test
+    fun `returns correct breadcrumbs for admin page`()
+    {
+        val sut = UserGroupController(mock(), mock())
+        val model = sut.admin()
+        assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
+                Breadcrumb("Admin", "http://localhost:8888/admin"))
     }
 
     @Test
