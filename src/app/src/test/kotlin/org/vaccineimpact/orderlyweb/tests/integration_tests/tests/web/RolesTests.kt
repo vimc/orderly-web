@@ -33,6 +33,29 @@ class RolesTests : IntegrationTest()
         JSONValidator.validateAgainstSchema(response.text, "UserGroups")
     }
 
+    @Test
+    fun `only user managers can get all roles`()
+    {
+        val url = "/roles/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `can get all roles`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        addMembers("Funder", "funder.a@example.com", "funder.b@example.com")
+        createGroup("Reviewer", ReifiedPermission("reports.review", Scope.Global()))
+
+        val url = "/roles/"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("users.manage", Scope.Global())),
+                ContentTypes.json)
+
+        JSONValidator.validateAgainstSchema(response.text, "UserGroups")
+    }
 
     @Test
     fun `can get scoped report reading groups`()

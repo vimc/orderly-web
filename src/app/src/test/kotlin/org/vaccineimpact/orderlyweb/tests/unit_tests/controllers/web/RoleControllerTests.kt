@@ -13,22 +13,30 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleControllerTests : TeamcityTests()
 {
-    @Test
-    fun `getGlobalReportReaderGroups builds user group view models`()
-    {
-        val repo = mock<RoleRepository> {
-            on { getGlobalReportReaderRoles() } doReturn listOf(Role("Funders",
-                    listOf(User("test.user", "Test User", "test@example.com"),
-                            User("unknown", "unknown", "funder@example.com"),
-                            User("funder.user", "unknown", "another@example.com")
-                    )))
-        }
+    private val singleRoleFromRepo = listOf(Role("Funders",
+            listOf(User("test.user", "Test User", "test@example.com"),
+                    User("unknown", "unknown", "funder@example.com"),
+                    User("funder.user", "unknown", "another@example.com")
+            )))
 
-        val sut = RoleController(mock(), repo)
-        val result = sut.getGlobalReportReaders()
+    private val multipleRolesFromRepo = listOf(
+        Role("Science", listOf()),
+        Role("Funders", listOf()),
+        Role("Tech", listOf())
+    )
+
+    private val roleForAlphabeticFromRepo = listOf(Role("Science", listOf(
+            User("c.user", "C User", "testc@example.com"),
+            User("a.user", "A User", "test@example.com"),
+            User("b.user", "B User", "testb@example.com")
+        )))
+
+    private fun assertExpectedSingleRoleViewModel(result: List<RoleViewModel>)
+    {
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0].name).isEqualTo("Funders")
 
@@ -41,39 +49,89 @@ class RoleControllerTests : TeamcityTests()
         assertThat(members[2].email).isEqualTo("funder@example.com")
     }
 
+    private fun assertExpectedMultipleRoleViewModels(result: List<RoleViewModel>)
+    {
+        assertThat(result[0].name).isEqualTo("Funders")
+        assertThat(result[1].name).isEqualTo("Science")
+        assertThat(result[2].name).isEqualTo("Tech")
+    }
+
+    private fun assertExpectedAlphabeticRoleMembers(result: List<RoleViewModel>)
+    {
+        val members = result[0].members
+        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+    }
+
     @Test
-    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
+    fun `getGlobalReportReaderGroups builds user group view models`()
     {
         val repo = mock<RoleRepository> {
-            on { getGlobalReportReaderRoles() } doReturn listOf(
-                    Role("Science", listOf()),
-                    Role("Funders", listOf()),
-                    Role("Tech", listOf())
-            )
+            on { getGlobalReportReaderRoles() } doReturn singleRoleFromRepo
         }
 
         val sut = RoleController(mock(), repo)
         val result = sut.getGlobalReportReaders()
-        assertThat(result[0].name).isEqualTo("Funders")
-        assertThat(result[1].name).isEqualTo("Science")
-        assertThat(result[2].name).isEqualTo("Tech")
+        assertExpectedSingleRoleViewModel(result)
+    }
+
+    @Test
+    fun `getAllRoles builds user group view models`()
+    {
+        val repo = mock<RoleRepository> {
+            on { getAllRoles() } doReturn singleRoleFromRepo
+        }
+
+        val sut = RoleController(mock(), repo)
+        val result = sut.getAll()
+        assertExpectedSingleRoleViewModel(result)
+    }
+
+    @Test
+    fun `getGlobalReportReaderGroups orders user group view models alphabetically`()
+    {
+        val repo = mock<RoleRepository> {
+            on { getGlobalReportReaderRoles() } doReturn multipleRolesFromRepo
+        }
+
+        val sut = RoleController(mock(), repo)
+        val result = sut.getGlobalReportReaders()
+        assertExpectedMultipleRoleViewModels(result)
+    }
+
+    @Test
+    fun `getAllRoles orders user group view models alphabetically`()
+    {
+        val repo = mock<RoleRepository> {
+            on { getAllRoles() } doReturn multipleRolesFromRepo
+        }
+
+        val sut = RoleController(mock(), repo)
+        val result = sut.getAll()
+        assertExpectedMultipleRoleViewModels(result)
     }
 
     @Test
     fun `getGlobalReportReaderGroups orders user group view model members alphabetically`()
     {
         val repo = mock<RoleRepository> {
-            on { getGlobalReportReaderRoles() } doReturn listOf(
-                    Role("Science", listOf(
-                            User("c.user", "C User", "testc@example.com"),
-                            User("a.user", "A User", "test@example.com"),
-                            User("b.user", "B User", "testb@example.com"))
-                    ))
+            on { getGlobalReportReaderRoles() } doReturn roleForAlphabeticFromRepo
         }
 
         val sut = RoleController(mock(), repo)
-        val members = sut.getGlobalReportReaders()[0].members
-        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+        val result = sut.getGlobalReportReaders()
+        assertExpectedAlphabeticRoleMembers(result)
+    }
+
+    @Test
+    fun `getAllRoles orders user group view model members alphabetically`()
+    {
+        val repo = mock<RoleRepository> {
+            on { getAllRoles() } doReturn roleForAlphabeticFromRepo
+        }
+
+        val sut = RoleController(mock(), repo)
+        val result = sut.getAll()
+        assertExpectedAlphabeticRoleMembers(result)
     }
 
     private val actionContextWithReport = mock<ActionContext> {
@@ -109,35 +167,24 @@ class RoleControllerTests : TeamcityTests()
     fun `getScopedReportReaders orders user group view models alphabetically`()
     {
         val repo = mock<RoleRepository> {
-            on { getScopedReportReaderRoles("r1") } doReturn listOf(
-                    Role("Science", listOf()),
-                    Role("Funders", listOf()),
-                    Role("Tech", listOf())
-            )
+            on { getScopedReportReaderRoles("r1") } doReturn multipleRolesFromRepo
         }
 
         val sut = RoleController(actionContextWithReport, repo)
         val result = sut.getScopedReportReaders()
-        assertThat(result[0].name).isEqualTo("Funders")
-        assertThat(result[1].name).isEqualTo("Science")
-        assertThat(result[2].name).isEqualTo("Tech")
+        assertExpectedMultipleRoleViewModels(result)
     }
 
     @Test
     fun `getScopedReportReaders orders user group view model members alphabetically`()
     {
         val repo = mock<RoleRepository> {
-            on { getScopedReportReaderRoles("r1") } doReturn listOf(
-                    Role("Science", listOf(
-                            User("c.user", "C User", "testc@example.com"),
-                            User("a.user", "A User", "test@example.com"),
-                            User("b.user", "B User", "testb@example.com"))
-                    ))
+            on { getScopedReportReaderRoles("r1") } doReturn roleForAlphabeticFromRepo
         }
 
         val sut = RoleController(actionContextWithReport,repo)
-        val members = sut.getScopedReportReaders()[0].members
-        assertThat(members.map { it.username }).containsExactly("a.user", "b.user", "c.user")
+        val result = sut.getScopedReportReaders()
+        assertExpectedAlphabeticRoleMembers(result)
     }
 
     @Test
