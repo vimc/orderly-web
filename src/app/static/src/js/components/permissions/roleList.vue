@@ -21,7 +21,7 @@
             <add-user-to-role v-if="canAddMembers && expanded[index]"
                         :role="role.name"
                         :available-users="availableUsersForRole(role)"
-                        @added="function(e){addedUserToRole(e,role)}"></add-user-to-role>
+                        @added="$emit('added')"></add-user-to-role>
 
         </li>
     </ul>
@@ -47,9 +47,6 @@
         methods: {
             toggle: function (index) {
                 Vue.set(this.expanded, index, !this.expanded[index]);
-            },
-            addedUserToRole: function(email, role) {
-                this.$emit('added-user-to-role', email, role.name)
             },
             availableUsersForRole: function(role) {
                 return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)

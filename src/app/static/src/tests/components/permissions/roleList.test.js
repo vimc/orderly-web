@@ -223,7 +223,7 @@ describe("roleList", () => {
 
     });
 
-    it('emits added-user-to-role event when user is added', async () => {
+    it('emits added event when user is added', async () => {
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -238,9 +238,9 @@ describe("roleList", () => {
         await Vue.nextTick();
 
         const addUser = wrapper.find(AddUserToRole);
-        addUser.vm.$emit("added", "user2@example.com");
+        addUser.vm.$emit("added");
 
-        expect(wrapper.emitted()["added-user-to-role"][0]).toStrictEqual(["user2@example.com", "Funders"]);
+        expect(wrapper.emitted()["added"].length).toBe(1);
     });
 
     it('can expand and collapse members', async () => {

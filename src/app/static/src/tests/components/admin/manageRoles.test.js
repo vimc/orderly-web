@@ -59,40 +59,25 @@ describe("manageRoles", () => {
         });
     });
 
-    it('removes role member when role list emits removed event', () => {
-        const roles =  [
-            {
-                name: "Funders",
-                members: [
-                    {
-                        email: "user1@example.com",
-                        username: "user1",
-                        display_name: "User One",
-                        can_remove: false
-                    }
-                ]
-            },
-            {
-                name: "Science",
-                members: []
-            }
-        ];
-
-        const wrapper = mount(ManageRoles);
-        wrapper.setData({
-            roles: roles
-        });
-
-        wrapper.find(RoleList).vm.$emit("removed", "Funders", "user1@example.com");
-
-        expect(roles[0].members.length).toBe(0);
-    });
-
-    it('refreshes roles when role list emits added event', async (done) => {
+    it('refreshes roles when role list emits removed event', (done) => {
         const wrapper = mount(ManageRoles);
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            wrapper.find(RoleList).vm.$emit("added-user-to-role");
+            wrapper.find(RoleList).vm.$emit("removed");
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe("http://app/roles/");
+                done();
+            });
+        });
+    });
+
+    it('refreshes roles when role list emits added event', (done) => {
+        const wrapper = mount(ManageRoles);
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(2);
+            wrapper.find(RoleList).vm.$emit("added");
 
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(3);

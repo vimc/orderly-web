@@ -5,8 +5,8 @@
                    :can-remove-roles="false"
                    :roles="roles"
                    :available-users="typeaheadEmails"
-                   @removed="removed"
-                   @added-user-to-role="added"></role-list>
+                   @removed="getRoles"
+                   @added="getRoles"></role-list>
     </div>
 </template>
 
@@ -38,14 +38,6 @@
                     .then(({data}) => {
                         this.typeaheadEmails = data.data
                     })
-            },
-            added: function() {
-                this.getRoles();
-            },
-            removed: function (roleName, email) {
-                const role = this.roles.find(r => r.name === roleName);
-                const memberIdx = role.members.findIndex(m => m.email === email);
-                role.members.splice(memberIdx, 1);
             }
         },
         components: {
