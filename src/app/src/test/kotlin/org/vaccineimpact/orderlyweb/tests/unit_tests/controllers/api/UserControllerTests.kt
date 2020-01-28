@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.api.UserController
@@ -26,8 +27,9 @@ class UserControllerTests
         val mockRepo = mock<UserRepository>()
 
         val sut = UserController(actionContext, WebTokenHelper.instance, mockRepo)
-        sut.addUser()
+        val result = sut.addUser()
         verify(mockRepo).addUser("test@test.com", "firstname.lastname", "Firstname Lastname",
                                     UserSource.Montagu)
+        assertThat(result).isEqualToIgnoringCase("ok")
     }
 }
