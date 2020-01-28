@@ -12,7 +12,6 @@
 
                 <permission-list v-if="user.permissions.length > 0"
                                  v-show="expanded[index]"
-                                 cssClass="members"
                                  :permissions="user.permissions"
                                  @removed="function(p) {removePermission(p, user)}"
                                  @added="function(p) {addPermission(p, user)}"></permission-list>

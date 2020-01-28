@@ -23,7 +23,7 @@ data class UserViewModel(val email: String, val username: String, val displayNam
         fun build(user: User, permissions: PermissionSet): UserViewModel
         {
             return build(user).copy(permissions = permissions.map { PermissionViewModel.build(it) }
-                    .sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::value)))
+                    .sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::scope)))
         }
 
         private fun isNotEmptyOrUnknown(value: String): Boolean
