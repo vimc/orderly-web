@@ -7,7 +7,7 @@
             <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
 
             <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
-                  class="remove-user-group d-inline-block ml-2 large">×</span>
+                  class="remove d-inline-block ml-2 large">×</span>
 
             <user-list v-if="role.members.length > 0"
                        v-show="expanded[index]"

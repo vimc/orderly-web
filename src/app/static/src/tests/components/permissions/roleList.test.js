@@ -253,7 +253,7 @@ describe("roleList", () => {
 
         const roles = wrapper.findAll("ul.roles > li");
         const roleWithMembers = roles.at(0);
-        expect(roleWithMembers.classes("has-members")).toBe(true);
+        expect(roleWithMembers.classes("has-children")).toBe(true);
 
         const membersList = roleWithMembers.find(UserList);
 
@@ -286,7 +286,7 @@ describe("roleList", () => {
         const roles = wrapper.findAll("ul.roles > li");
         const roleWithMembers = roles.at(1);
         expect(roleWithMembers.findAll(UserList).length).toBe(0);
-        expect(roleWithMembers.classes("has-members")).toBe(false);
+        expect(roleWithMembers.classes("has-children")).toBe(false);
     });
 
 });
