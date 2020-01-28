@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb.models
 
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.beans.ConstructorProperties
 import java.time.Instant
 
