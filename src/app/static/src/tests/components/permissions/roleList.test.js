@@ -119,7 +119,7 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(".remove-user-group").length).toBe(2);
+        expect(wrapper.findAll(".remove").length).toBe(2);
     });
 
     it('renders non-removable roles', () => {
@@ -132,7 +132,7 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(".remove-user-group").length).toBe(0);
+        expect(wrapper.findAll(".remove").length).toBe(0);
     });
 
     it('removes role and emits removed event', (done) => {
@@ -148,7 +148,7 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+        wrapper.findAll(".remove").at(0).trigger("click");
 
         setTimeout(() => {
             expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders"]);
@@ -169,7 +169,7 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+        wrapper.findAll(".remove").at(0).trigger("click");
 
         setTimeout(() => {
             expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();

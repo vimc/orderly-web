@@ -8,14 +8,14 @@
   }
 }
 
-.remove-user-group {
+.remove {
   cursor: pointer;
   color: $danger;
   line-height: 1em;
   vertical-align: top;
 }
 
-.remove-user-group:hover {
+.remove:hover {
   color: darken($danger, 10%);
   text-decoration: underline;
 }
