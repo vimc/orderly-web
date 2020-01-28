@@ -27,6 +27,6 @@ class UserController(context: ActionContext,
         val source = UserSource.valueOf(context.postData("source"))
         userRepo.addUser(context.postData("email"), context.postData("username"),
                             context.postData("displayName"), source)
-        return ""
+        return okayResponse()
     }
 }
