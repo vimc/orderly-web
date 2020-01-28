@@ -14,7 +14,7 @@ data class RoleViewModel(val name: String, val members: List<UserViewModel>, val
                     }.sortedBy { it.displayName },
                     role.permissions.map{
                         PermissionViewModel.build(it)
-                    }.sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::value)))
+                    }.sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::scope)))
         }
     }
 }

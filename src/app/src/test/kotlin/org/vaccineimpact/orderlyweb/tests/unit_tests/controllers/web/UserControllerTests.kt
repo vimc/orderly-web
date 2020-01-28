@@ -30,7 +30,7 @@ class UserControllerTests : TeamcityTests()
     fun `gets all users and permissions`()
     {
         val repo = mock<UserRepository> {
-            on { this.getAllUsersWithPermissions() } doReturn
+            on { this.getAllUsers() } doReturn
                     listOf(User("test.user", "Test user", "test@test.com"),
                             User("another.user", "A user", "a@test.com"))
         }
@@ -51,9 +51,9 @@ class UserControllerTests : TeamcityTests()
         assertThat(secondUser.email).isEqualTo("test@test.com")
         assertThat(secondUser.username).isEqualTo("test.user")
         assertThat(secondUser.permissions[0].name).isEqualTo("reports.read")
-        assertThat(secondUser.permissions[0].value).isEqualTo("*")
+        assertThat(secondUser.permissions[0].scope).isEqualTo("*")
         assertThat(secondUser.permissions[1].name).isEqualTo("reports.review")
-        assertThat(secondUser.permissions[1].value).isEqualTo("*")
+        assertThat(secondUser.permissions[1].scope).isEqualTo("*")
 
         assertThat(firstUser.displayName).isEqualTo("A user")
     }
