@@ -52,9 +52,11 @@ class RoleControllerTests : TeamcityTests()
 
         val perms = result[0].permissions
         assertThat(perms[0].name).isEqualTo("reports.read")
-        assertThat(perms[0].scope).isEqualTo("*")
+        assertThat(perms[0].scopeId).isEqualTo("")
+        assertThat(perms[0].scopePrefix).isNull()
         assertThat(perms[1].name).isEqualTo("reports.review")
-        assertThat(perms[1].scope).isEqualTo("report:r1")
+        assertThat(perms[1].scopeId).isEqualTo("r1")
+        assertThat(perms[1].scopePrefix).isEqualTo("report")
     }
 
     private fun assertExpectedMultipleRoleViewModels(result: List<RoleViewModel>)

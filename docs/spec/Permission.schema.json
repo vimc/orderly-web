@@ -5,10 +5,20 @@
     "name": {
       "type": "string"
     },
-    "scope": {
+    "scope_id": {
       "type": "string"
+    },
+    "scope_prefix": {
+      "type": [
+        "string",
+        "null"
+      ]
     }
   },
   "additionalProperties": false,
-  "required": ["name", "scope"]
+  "required": [
+    "name",
+    "scope_id",
+    "scope_prefix"
+  ]
 }
