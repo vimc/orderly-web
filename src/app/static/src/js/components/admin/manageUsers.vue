@@ -9,7 +9,7 @@
                 v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.permissions.length > 0}]">
                 <div class="expander" v-on:click="toggle(index)"></div>
                 <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
-                <div class="text-muted small email">{{u.email}}</div>
+                <div class="text-muted small email role-name">{{u.email}}</div>
 
                 <permission-list v-if="u.permissions.length > 0"
                                  v-show="expanded[index]"
