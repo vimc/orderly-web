@@ -71,7 +71,7 @@ class ReportPagePermissionTests : SeleniumTest()
         //let existing readers load first
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId > ul > li")))
 
-        val removeReader = driver.findElement(By.cssSelector("#$widgetId  span.remove-user-group"))
+        val removeReader = driver.findElement(By.cssSelector("#$widgetId  span.remove"))
         removeReader.click()
 
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#$widgetId  li"), 0))
