@@ -39,8 +39,11 @@
                     })
             },
             userMatches: function (u, searchStr) {
-                return searchStr.length > 1 && (u.display_name.indexOf(searchStr) > -1 ||
-                    u.email.indexOf(searchStr) > -1 || u.username.indexOf(searchStr) > -1)
+                return searchStr.length > 1 && (this.stringMatches(u.display_name, searchStr) ||
+                    this.stringMatches(u.email, searchStr) || this.stringMatches(u.username, searchStr))
+            },
+            stringMatches: function(a, b) {
+                return a.toLowerCase().indexOf(b.toLowerCase()) > -1
             }
         }
     };
