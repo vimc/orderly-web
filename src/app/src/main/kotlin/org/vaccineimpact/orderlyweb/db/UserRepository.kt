@@ -15,7 +15,7 @@ interface UserRepository
     fun getUser(email: String): UserDetails?
     fun getScopedReportReaderUsers(reportName: String): List<User>
     fun getGlobalReportReaderUsers(): List<User>
-    fun getAllUsers(): List<User>
+    fun getAllUsersWithPermissions(): List<User>
     fun getUserEmails(): List<String>
 }
 
@@ -52,7 +52,7 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
         }
     }
 
-    override fun getAllUsers(): List<User>
+    override fun getAllUsersWithPermissions(): List<User>
     {
         return JooqContext().use {
             it.dsl.select(ORDERLYWEB_USER.USERNAME,

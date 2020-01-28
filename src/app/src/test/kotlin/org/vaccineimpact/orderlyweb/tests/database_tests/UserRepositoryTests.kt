@@ -41,7 +41,7 @@ class UserRepositoryTests : CleanDatabaseTests()
         sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.GitHub)
         sut.addUser("email@test.com", "test.name", "test name", UserSource.Montagu)
 
-        val result = sut.getAllUsers()
+        val result = sut.getAllUsersWithPermissions()
         assertThat(result[0].displayName).isEqualTo("full name")
         assertThat(result[0].username).isEqualTo("user.name")
         assertThat(result[0].email).isEqualTo("email@somewhere.com")

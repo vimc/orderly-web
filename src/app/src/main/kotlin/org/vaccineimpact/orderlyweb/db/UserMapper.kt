@@ -13,4 +13,11 @@ class UserMapper
                 record[Tables.ORDERLYWEB_USER.DISPLAY_NAME],
                 record[Tables.ORDERLYWEB_USER.EMAIL])
     }
+
+    fun mapUserAndPermissions(record: Record): User
+    {
+        return User(record[Tables.ORDERLYWEB_USER.USERNAME],
+                record[Tables.ORDERLYWEB_USER.DISPLAY_NAME],
+                record[Tables.ORDERLYWEB_USER.EMAIL])
+    }
 }

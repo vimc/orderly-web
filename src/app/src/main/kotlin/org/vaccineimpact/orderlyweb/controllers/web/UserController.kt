@@ -2,15 +2,18 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserController(context: ActionContext,
-                     private val userRepo: UserRepository) : Controller(context)
+                     private val userRepo: UserRepository,
+                     private val authRepo: AuthorizationRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyUserRepository())
+    constructor(context: ActionContext) : this(context, OrderlyUserRepository(), OrderlyAuthorizationRepository())
 
     fun getScopedReportReaders(): List<UserViewModel>
     {
@@ -27,11 +30,13 @@ class UserController(context: ActionContext,
 
     fun getAllUsers(): List<UserViewModel>
     {
-        val users = userRepo.getAllUsers()
-        return users.mapToUserViewModels()
+        val users = userRepo.getAllUsersWithPermissions()
+        return users.map {
+            UserViewModel.build(it, authRepo.getPermissionsForUser(it.email))
+        }.sortedBy { it.displayName.toLowerCase() }
     }
 
-    fun List<User>.mapToUserViewModels(): List<UserViewModel>
+    private fun List<User>.mapToUserViewModels(): List<UserViewModel>
     {
         return this.map { UserViewModel.build(it) }
                 .sortedBy { it.displayName.toLowerCase() }
