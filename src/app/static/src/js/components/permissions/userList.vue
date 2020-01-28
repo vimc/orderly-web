@@ -1,7 +1,6 @@
 <template>
     <ul v-bind:class="['list-unstyled', 'removable-users-list', cssClass]"
-        v-if="users.length > 0"
-        v-on:click.stop>
+        v-if="users.length > 0">
         <li v-for="user in users" v-bind:id="user.email">
             <user :email="user.email"
                   :display-name="user.display_name"
