@@ -1,10 +1,16 @@
 import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
-import RemovePermission from "../../../js/components/permissions/removePermission.vue"
 import Vue from "vue";
+import {mockAxios} from "../../mockAxios";
+import ErrorInfo from "../../../js/components/errorInfo";
 
 describe("roleList", () => {
+
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
 
     const mockRoles = [
         {
@@ -25,7 +31,7 @@ describe("roleList", () => {
 
     const testPermission = {
         name: "test.perm",
-        scope_id : "report",
+        scope_id: "report",
         scope_prefix: "r1"
     };
 
@@ -45,7 +51,6 @@ describe("roleList", () => {
 
         expect(userLists.at(0).props().users).toEqual(expect.arrayContaining(mockRoles[0].members));
         expect(userLists.at(0).props().canRemove).toBe(false);
-        expect(userLists.at(0).props().permission).toStrictEqual(testPermission);
     });
 
     it('renders roles with removable members', () => {
@@ -74,7 +79,7 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(RemovePermission).length).toBe(2);
+        expect(wrapper.findAll(".remove-user-group").length).toBe(2);
     });
 
     it('renders non-removable roles', () => {
@@ -87,10 +92,13 @@ describe("roleList", () => {
             }
         });
 
-        expect(wrapper.findAll(RemovePermission).length).toBe(0);
+        expect(wrapper.findAll(".remove-user-group").length).toBe(0);
     });
 
-    it('emits removed event when removePermission does', () => {
+    it('removes role and emits removed event', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+            .reply(200);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -100,11 +108,41 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.findAll(RemovePermission).at(0).vm.$emit("removed");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["role"]);
+        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders"]);
+            done();
+        })
     });
 
-    it('emits removed event when userList does', () => {
+    it('sets error if removing role fails', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+            .reply(500);
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.findAll(".remove-user-group").at(0).trigger("click");
+
+        setTimeout(() => {
+            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove Funders");
+            done();
+        });
+
+    });
+
+    it('removes member and emits removed event', (done) => {
+
+        mockAxios.onDelete('http://app/user-groups/Funders/user/bob')
+            .reply(200);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
@@ -114,8 +152,35 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.find(UserList).vm.$emit("removed");
-        expect(wrapper.emitted().removed[0]).toStrictEqual(["user"]);
+        wrapper.find(UserList).vm.$emit("removed", "bob");
+
+        setTimeout(() => {
+            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders", "bob"]);
+            done();
+        });
+    });
+
+    it('sets error if removing member fails', (done) => {
+
+        mockAxios.onPost('http://app/user-groups/Funders/user/bob')
+            .reply(500);
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true,
+                canRemoveMembers: true
+            }
+        });
+
+        wrapper.find(UserList).vm.$emit("removed", "bob");
+
+        setTimeout(() => {
+            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove bob from Funders");
+            done();
+        });
+
     });
 
     it('can expand and collapse members', async () => {
@@ -135,14 +200,14 @@ describe("roleList", () => {
         expect(membersList.isVisible()).toBe(false);
         expect(roleWithMembers.classes("open")).toBe(false);
 
-        roleWithMembers.trigger("click");
+        roleWithMembers.find('span').trigger("click");
 
         await Vue.nextTick();
 
         expect(membersList.isVisible()).toBe(true);
         expect(roleWithMembers.classes("open")).toBe(true);
 
-        roleWithMembers.trigger("click");
+        roleWithMembers.find('.expander').trigger("click");
 
         await Vue.nextTick();
 

@@ -9,6 +9,11 @@ object WebRoleRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
     override val endpoints = listOf(
+            WebEndpoint("/roles/",
+                    RoleController::class, "getAll")
+                    .json()
+                    .secure(usersManage)
+                    .transform(),
             WebEndpoint("/roles/report-readers/",
                     RoleController::class, "getGlobalReportReaders")
                     .json()

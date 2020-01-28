@@ -10,6 +10,7 @@ interface RoleRepository
     fun getGlobalReportReaderRoles(): List<Role>
     fun getScopedReportReaderRoles(reportName: String): List<Role>
     fun getAllRoleNames(): List<String>
+    fun getAllRoles(): List<Role>
 }
 
 class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
@@ -24,6 +25,24 @@ class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
                     .on(ORDERLYWEB_USER_GROUP.ID.eq(ORDERLYWEB_USER.EMAIL))
                     .where(ORDERLYWEB_USER.EMAIL.isNull)
                     .fetchInto(String::class.java)
+        }
+    }
+
+    override fun getAllRoles(): List<Role>
+    {
+        val roleNames = getAllRoleNames()
+        return JooqContext().use {
+            it.dsl.select(ORDERLYWEB_USER_GROUP.ID,
+                    ORDERLYWEB_USER.USERNAME,
+                    ORDERLYWEB_USER.DISPLAY_NAME,
+                    ORDERLYWEB_USER.EMAIL)
+                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                            ORDERLYWEB_USER_GROUP_USER,
+                            ORDERLYWEB_USER, joinType = JoinType.LEFT_OUTER_JOIN)
+                    .where(ORDERLYWEB_USER_GROUP.ID.`in`(roleNames))
+                    .fetch()
+                    .groupBy { r -> r[ORDERLYWEB_USER_GROUP.ID]}
+                    .map(::mapUserGroup)
         }
     }
 
