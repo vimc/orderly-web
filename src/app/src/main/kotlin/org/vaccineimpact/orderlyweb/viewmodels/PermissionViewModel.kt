@@ -8,7 +8,7 @@ data class PermissionViewModel(val name: String, val scope: String)
     {
         fun build(permission: ReifiedPermission): PermissionViewModel
         {
-            return PermissionViewModel(permission.name, permission.scope.value);
+            return PermissionViewModel(permission.name, permission.scope.value)
         }
     }
 }

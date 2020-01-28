@@ -5,10 +5,10 @@
     "name": {
       "type": "string"
     },
-    "value": {
+    "scope": {
       "type": "string"
     }
   },
   "additionalProperties": false,
-  "required": ["name", "value"]
+  "required": ["name", "scope"]
 }
