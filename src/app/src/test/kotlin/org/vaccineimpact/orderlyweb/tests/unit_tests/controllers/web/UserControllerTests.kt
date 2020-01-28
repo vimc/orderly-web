@@ -36,9 +36,10 @@ class UserControllerTests : TeamcityTests()
         }
 
         val authRepo = mock<AuthorizationRepository> {
-            on { this.getPermissionsForUser("test@test.com") } doReturn
+            on { this.getDirectPermissionsForUser("test@test.com") } doReturn
                     PermissionSet("*/reports.review", "report:r1/reports.read")
-            on { this.getPermissionsForUser("a@test.com") } doReturn PermissionSet()
+            on { this.getDirectPermissionsForUser("a@test.com") } doReturn PermissionSet()
+
         }
 
         val sut = UserController(mock(), repo, authRepo)

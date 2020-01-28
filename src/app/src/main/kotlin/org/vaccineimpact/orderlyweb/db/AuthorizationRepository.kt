@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
+import org.jooq.Record3
+import org.jooq.SelectConditionStep
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.DuplicateKeyError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -18,6 +20,7 @@ interface AuthorizationRepository
     fun ensureUserGroupDoesNotHavePermission(userGroup: String, permission: ReifiedPermission)
     fun getPermissionsForUser(email: String): PermissionSet
     fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
+    fun getDirectPermissionsForUser(email: String): PermissionSet
 }
 
 class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : AuthorizationRepository
@@ -79,17 +82,19 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
     override fun getPermissionsForUser(email: String): PermissionSet
     {
         JooqContext().use {
-            val perms = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
-                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
-                    ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
-                    .fromJoinPath(ORDERLYWEB_USER_GROUP,
-                            ORDERLYWEB_USER_GROUP_USER,
-                            ORDERLYWEB_USER)
+            val perms = getAllPermissionsForUserQuery(it, email)
+                    .fetch()
+                    .map(permissionMapper::mapPermission)
 
-                    .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
-                    .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+            return PermissionSet(perms)
+        }
+    }
 
-                    .where(ORDERLYWEB_USER.EMAIL.eq(email))
+    override fun getDirectPermissionsForUser(email: String): PermissionSet
+    {
+        JooqContext().use {
+            val perms = getAllPermissionsForUserQuery(it, email)
+                    .and(ORDERLYWEB_USER.EMAIL.eq(ORDERLYWEB_USER_GROUP.ID))
                     .fetch()
                     .map(permissionMapper::mapPermission)
 
@@ -233,6 +238,20 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
     {
         return getAllPermissionRecordsForGroup(db, userGroup)
                 .map(permissionMapper::mapPermission)
+    }
+
+    private fun getAllPermissionsForUserQuery(db: JooqContext, email: String): SelectConditionStep<Record3<String, Any, String>>
+    {
+        return db.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                .fromJoinPath(ORDERLYWEB_USER_GROUP,
+                        ORDERLYWEB_USER_GROUP_USER,
+                        ORDERLYWEB_USER)
+
+                .join(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                .on(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(ORDERLYWEB_USER_GROUP.ID))
+                .where(ORDERLYWEB_USER.EMAIL.eq(email))
     }
 
 
