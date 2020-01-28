@@ -2,7 +2,7 @@
     <ul class="list-unstyled roles" v-if="roles.length > 0">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}, {'has-members': role.members.length > 0}]">
+            v-bind:class="['role', {'open':expanded[index]}, {'has-children': role.members.length > 0}]">
             <div class="expander" v-on:click="toggle(index)"></div>
             <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
 
@@ -11,7 +11,7 @@
 
             <user-list v-if="role.members.length > 0"
                        v-show="expanded[index]"
-                       cssClass="members"
+                       cssClass="children"
                        :users="role.members"
                        :canRemove="canRemoveMembers"
                        @removed="function(email){removeMember(role.name, email)}"></user-list>

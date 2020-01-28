@@ -1,5 +1,5 @@
 <template>
-    <ul class="list-unstyled">
+    <ul class="list-unstyled children mt-1">
         <li v-for="p in permissions">
             {{p.name}} <span v-if="p.scope_prefix"> / {{p.scope_prefix}}:{{p.scope_id}}</span>
             <span v-on:click="function() {remove(p)}"
@@ -30,7 +30,6 @@
                         this.error = error;
                         this.defaultMessage = `could not remove ${p.name} from ${this.email}`;
                     });
-                this.$emit("removed", p)
             }
         }
     }
