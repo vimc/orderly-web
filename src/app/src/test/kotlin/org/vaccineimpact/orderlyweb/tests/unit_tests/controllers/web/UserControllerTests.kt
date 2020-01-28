@@ -30,7 +30,7 @@ class UserControllerTests : TeamcityTests()
     fun `gets all users and permissions`()
     {
         val repo = mock<UserRepository> {
-            on { this.getAllUsersWithPermissions() } doReturn
+            on { this.getAllUsers() } doReturn
                     listOf(User("test.user", "Test user", "test@test.com"),
                             User("another.user", "A user", "a@test.com"))
         }
