@@ -2,10 +2,9 @@
     <ul class="list-unstyled roles" v-if="roles.length > 0">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}, {'has-members': role.members.length > 0}]"
-            v-on:click="toggle(index)">
-            <div class="expander"></div>
-            <span v-text="role.name" class="role-name"></span>
+            v-bind:class="['role', {'open':expanded[index]}, {'has-members': role.members.length > 0}]">
+            <div class="expander" v-on:click="toggle(index)"></div>
+            <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
 
             <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
                   class="remove-user-group d-inline-block ml-2 large">×</span>
@@ -18,6 +17,11 @@
                        @removed="function(email){removeMember(role.name, email)}"></user-list>
 
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+            <add-user-to-role v-if="canAddMembers && expanded[index]"
+                        :role="role.name"
+                        :available-users="availableUsersForRole(role)"
+                        @added="$emit('added')"></add-user-to-role>
+
         </li>
     </ul>
 </template>
@@ -25,12 +29,13 @@
 <script>
     import Vue from "vue";
     import UserList from "./userList.vue";
+    import AddUserToRole from "../admin/addUserToRole";
     import ErrorInfo from "../errorInfo.vue";
     import {api} from "../../utils/api";
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemoveRoles", "canRemoveMembers", "permission"],
+        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "permission", "availableUsers"],
         data() {
             return {
                 error: null,
@@ -41,6 +46,9 @@
         methods: {
             toggle: function (index) {
                 Vue.set(this.expanded, index, !this.expanded[index]);
+            },
+            availableUsersForRole: function(role) {
+                return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)
             },
             removeMember: function (roleName, email) {
                 api.delete(`/user-groups/${encodeURIComponent(roleName)}/user/${encodeURIComponent(email)}`)
@@ -70,8 +78,9 @@
             }
         },
         components: {
-            ErrorInfo,
-            UserList
+            UserList,
+            AddUserToRole,
+            ErrorInfo
         }
     };
 </script>

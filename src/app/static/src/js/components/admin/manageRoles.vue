@@ -1,9 +1,12 @@
 <template>
-    <div id="role-list">
+    <div id="role-list" class="col-4 ">
         <role-list :can-remove-members="true"
+                   :can-add-members="true"
                    :can-remove-roles="false"
                    :roles="roles"
-                   @removed="removed"></role-list>
+                   :available-users="typeaheadEmails"
+                   @removed="getRoles"
+                   @added="getRoles"></role-list>
     </div>
 </template>
 
@@ -15,11 +18,12 @@
         name: 'manageRoles',
         mounted() {
             this.getRoles();
-
+            this.getTypeaheadEmails();
         },
         data() {
             return {
-                roles: []
+                roles: [],
+                typeaheadEmails: []
             }
         },
         methods: {
@@ -29,10 +33,11 @@
                         this.roles = data.data
                     })
             },
-            removed: function (roleName, email) {
-                const role = this.roles.find(r => r.name === roleName);
-                const memberIdx = role.members.findIndex(m => m.email === email);
-                role.members.splice(memberIdx, 1);
+            getTypeaheadEmails: function () {
+                api.get(`/typeahead/emails/`)
+                    .then(({data}) => {
+                        this.typeaheadEmails = data.data
+                    })
             }
         },
         components: {

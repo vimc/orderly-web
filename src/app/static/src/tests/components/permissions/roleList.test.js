@@ -1,6 +1,7 @@
 import {shallowMount} from '@vue/test-utils';
 import RoleList from "../../../js/components/permissions/roleList.vue";
 import UserList from "../../../js/components/permissions/userList.vue"
+import AddUserToRole from "../../../js/components/admin/addUserToRole.vue"
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo";
@@ -35,6 +36,8 @@ describe("roleList", () => {
         scope_prefix: "r1"
     };
 
+    const mockAvailableUsers = ["user1@example.com", "user2@example.com", "user3@example.com"];
+
     it('renders roles with non-removable members', () => {
 
         const wrapper = shallowMount(RoleList,
@@ -67,6 +70,43 @@ describe("roleList", () => {
         expect(userLists.length).toBe(1);
         expect(userLists.at(0).props().canRemove).toBe(true);
 
+    });
+
+    it('renders roles with addable members', async () => {
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canAddMembers: true,
+                availableUsers: mockAvailableUsers
+            }
+        });
+
+        //don't expect the add user control to appear unless a role is epanded
+        expect(wrapper.findAll(AddUserToRole).length).toBe(0);
+
+        wrapper.find('.expander').trigger("click");
+        await Vue.nextTick();
+
+        expect(wrapper.findAll(AddUserToRole).length).toBe(1);
+        const addUser = wrapper.find(AddUserToRole);
+        expect(addUser.props().role).toBe("Funders");
+        //should have filtered to available users not already in role
+        expect(addUser.props().availableUsers).toStrictEqual(["user2@example.com", "user3@example.com"]);
+    });
+
+    it('does not render addUserToRole is canAddMembers is false', async () => {
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canAddMembers: false,
+                availableUsers: mockAvailableUsers
+            }
+        });
+
+        wrapper.find('.expander').trigger("click");
+        await Vue.nextTick();
+
+        expect(wrapper.findAll(AddUserToRole).length).toBe(0);
     });
 
     it('renders removable roles', () => {
@@ -181,6 +221,26 @@ describe("roleList", () => {
             done();
         });
 
+    });
+
+    it('emits added event when user is added', async () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                availableUsers: mockAvailableUsers,
+                canAddMembers: true
+            }
+        });
+
+        //expand a role
+        wrapper.find('.expander').trigger("click");
+        await Vue.nextTick();
+
+        const addUser = wrapper.find(AddUserToRole);
+        addUser.vm.$emit("added");
+
+        expect(wrapper.emitted()["added"].length).toBe(1);
     });
 
     it('can expand and collapse members', async () => {
