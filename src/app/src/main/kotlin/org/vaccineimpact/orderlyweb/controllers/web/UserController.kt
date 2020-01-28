@@ -32,7 +32,7 @@ class UserController(context: ActionContext,
     {
         val users = userRepo.getAllUsers()
         return users.map {
-            UserViewModel.build(it, authRepo.getPermissionsForUser(it.email))
+            UserViewModel.build(it, authRepo.getDirectPermissionsForUser(it.email))
         }.sortedBy { it.displayName.toLowerCase() }
     }
 

@@ -43,6 +43,10 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
             insertReport("r1", "r1v1")
             insertReport("r2", "r2v1")
 
+            insertUserGroup("Science")
+            giveUserGroupMember("Science", "user@email.com")
+
+            giveUserGroupPermission("Science", "reports.review", Scope.Global())
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"))
             giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r2"))
@@ -54,9 +58,34 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val result = sut.getPermissionsForUser("user@email.com")
 
         assertThat(result)
-                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.review", Scope.Global()),
+                        ReifiedPermission("reports.read", Scope.Global()),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r1")),
                         ReifiedPermission("reports.read", Scope.Specific("report", "r2"))))
+    }
+
+    @Test
+    fun `can get direct permissions for user`()
+    {
+        JooqContext().use {
+            insertUser("user@email.com", "user.name")
+            insertReport("r1", "r1v1")
+            insertUserGroup("Science")
+            giveUserGroupMember("Science", "user@email.com")
+
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Global())
+            giveUserGroupPermission("Science", "reports.review", Scope.Global())
+            giveUserGroupPermission("user@email.com", "reports.read", Scope.Specific("report", "r1"))
+
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+
+        val result = sut.getDirectPermissionsForUser("user@email.com")
+
+        assertThat(result)
+                .hasSameElementsAs(listOf(ReifiedPermission("reports.read", Scope.Global()),
+                        ReifiedPermission("reports.read", Scope.Specific("report", "r1"))))
     }
 
     @Test
