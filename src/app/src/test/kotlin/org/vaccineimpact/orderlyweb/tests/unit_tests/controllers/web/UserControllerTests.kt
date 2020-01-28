@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserControllerTests : TeamcityTests()
 {
@@ -22,6 +23,19 @@ class UserControllerTests : TeamcityTests()
         val sut = UserController(mock(), repo)
 
         assertThat(sut.getUserEmails()).containsExactlyElementsOf(listOf("one", "two"))
+    }
+
+    @Test
+    fun `gets all users`()
+    {
+        val repo = mock<UserRepository> {
+            on { this.getAllUsers() } doReturn
+                    listOf(User("test.user", "Test user", "test@test.com"))
+        }
+
+        val sut = UserController(mock(), repo)
+
+        assertThat(sut.getAllUsers()).containsExactly(UserViewModel("test@test.com", "test.user", "Test user"))
     }
 
     @Test
@@ -76,7 +90,7 @@ class UserControllerTests : TeamcityTests()
         )
 
         val repo = mock<UserRepository> {
-            on { this.getGlobalReportReaderUsers()} doReturn (reportReaders)
+            on { this.getGlobalReportReaderUsers() } doReturn (reportReaders)
         }
 
         val sut = UserController(actionContext, repo)

@@ -13,6 +13,15 @@ import java.net.URLEncoder
 class UsersTests : IntegrationTest()
 {
     @Test
+    fun `only user managers can get all users`()
+    {
+        val url = "/users/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
+
+    @Test
     fun `only user managers can get report readers`()
     {
         val url = "/users/report-readers/minimal"

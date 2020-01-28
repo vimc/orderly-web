@@ -25,6 +25,12 @@ class UserController(context: ActionContext,
         return users.mapToUserViewModels()
     }
 
+    fun getAllUsers(): List<UserViewModel>
+    {
+        val users = userRepo.getAllUsers()
+        return users.mapToUserViewModels()
+    }
+
     fun List<User>.mapToUserViewModels(): List<UserViewModel>
     {
         return this.map { UserViewModel.build(it) }

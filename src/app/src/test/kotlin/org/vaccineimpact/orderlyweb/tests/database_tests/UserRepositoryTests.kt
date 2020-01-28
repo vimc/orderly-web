@@ -35,6 +35,23 @@ class UserRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `can get all users`()
+    {
+        val sut = OrderlyUserRepository()
+        sut.addUser("email@somewhere.com", "user.name", "full name", UserSource.GitHub)
+        sut.addUser("email@test.com", "test.name", "test name", UserSource.Montagu)
+
+        val result = sut.getAllUsers()
+        assertThat(result[0].displayName).isEqualTo("full name")
+        assertThat(result[0].username).isEqualTo("user.name")
+        assertThat(result[0].email).isEqualTo("email@somewhere.com")
+
+        assertThat(result[1].displayName).isEqualTo("test name")
+        assertThat(result[1].username).isEqualTo("test.name")
+        assertThat(result[1].email).isEqualTo("email@test.com")
+    }
+
+    @Test
     fun `gets user emails in alphabetical order`()
     {
         val sut = OrderlyUserRepository()
