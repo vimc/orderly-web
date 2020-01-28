@@ -13,6 +13,12 @@
         "items": {
           "$ref": "User.schema.json"
         }
+      },
+      "permissions": {
+        "type": "array",
+        "items": {
+          "$ref": "Permission.schema.json"
+        }
       }
     },
     "additionalProperties": false,

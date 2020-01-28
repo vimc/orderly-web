@@ -1,14 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
@@ -17,23 +16,26 @@ import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleControllerTests : TeamcityTests()
 {
+    private val testPermissions = listOf(ReifiedPermission("reports.read", Scope.Global()),
+            ReifiedPermission("reports.review", Scope.Specific("report", "r1")))
+
     private val singleRoleFromRepo = listOf(Role("Funders",
             listOf(User("test.user", "Test User", "test@example.com"),
                     User("unknown", "unknown", "funder@example.com"),
                     User("funder.user", "unknown", "another@example.com")
-            )))
+            ), testPermissions))
 
     private val multipleRolesFromRepo = listOf(
-        Role("Science", listOf()),
-        Role("Funders", listOf()),
-        Role("Tech", listOf())
+        Role("Science", listOf(), listOf()),
+        Role("Funders", listOf(), listOf()),
+        Role("Tech", listOf(), listOf())
     )
 
     private val roleForAlphabeticFromRepo = listOf(Role("Science", listOf(
             User("c.user", "C User", "testc@example.com"),
             User("a.user", "A User", "test@example.com"),
             User("b.user", "B User", "testb@example.com")
-        )))
+        ), listOf()))
 
     private fun assertExpectedSingleRoleViewModel(result: List<RoleViewModel>)
     {
@@ -47,6 +49,12 @@ class RoleControllerTests : TeamcityTests()
         assertThat(members[0].email).isEqualTo("test@example.com")
         assertThat(members[1].email).isEqualTo("another@example.com")
         assertThat(members[2].email).isEqualTo("funder@example.com")
+
+        val perms = result[0].permissions
+        assertThat(perms[0].name).isEqualTo("reports.read")
+        assertThat(perms[0].value).isEqualTo("*")
+        assertThat(perms[1].name).isEqualTo("reports.review")
+        assertThat(perms[1].value).isEqualTo("report:r1")
     }
 
     private fun assertExpectedMultipleRoleViewModels(result: List<RoleViewModel>)
@@ -146,7 +154,7 @@ class RoleControllerTests : TeamcityTests()
                     listOf(User("test.user", "Test User", "test@example.com"),
                             User("unknown", "unknown", "funder@example.com"),
                             User("funder.user", "unknown", "another@example.com")
-                    )))
+                    ), listOf()))
         }
 
         val sut = RoleController(actionContextWithReport, repo)

@@ -60,6 +60,25 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `can get permissions for group`()
+    {
+        JooqContext().use {
+            insertUserGroup("Funders")
+            insertReport("fakereport", "v1")
+            giveUserGroupPermission("Funders", "reports.read", Scope.Global())
+            giveUserGroupPermission("Funders", "reports.review", Scope.Specific("version", "v1"))
+
+            val sut = OrderlyAuthorizationRepository()
+            val result = sut.getPermissionsForGroup("Funders")
+            assertThat(result)
+                    .hasSameElementsAs(listOf(
+                            ReifiedPermission("reports.read", Scope.Global()),
+                            ReifiedPermission("reports.review", Scope.Specific("version", "v1")))
+                    )
+        }
+    }
+
+    @Test
     fun `can add user group`()
     {
         val sut = OrderlyAuthorizationRepository()
