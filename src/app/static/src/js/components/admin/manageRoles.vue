@@ -7,12 +7,14 @@
                    :available-users="typeaheadEmails"
                    @removed="getRoles"
                    @added="getRoles"></role-list>
+        <add-role @added="roleAdded" :error="addRoleError"></add-role>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
     import RoleList from "../permissions/roleList.vue";
+    import AddRole from "./addRole";
 
     export default {
         name: 'manageRoles',
@@ -23,7 +25,8 @@
         data() {
             return {
                 roles: [],
-                typeaheadEmails: []
+                typeaheadEmails: [],
+                addRoleError: ""
             }
         },
         methods: {
@@ -38,10 +41,22 @@
                     .then(({data}) => {
                         this.typeaheadEmails = data.data
                     })
+            },
+            roleAdded: function (role) {
+                const data = {name: role};
+                api.post(`/user-groups/`, data)
+                    .then(() => {
+                        this.getRoles();
+                    })
+                    .catch((error) => {
+                        //TODO: deal with error strings, deal with duplicates
+                        this.addRoleError = error;
+                    });
             }
         },
         components: {
-            RoleList
+            RoleList,
+            AddRole
         }
     };
 </script>
