@@ -11,9 +11,9 @@
                 <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
 
-                <permission-list v-if="u.permissions.length > 0"
+                <permission-list v-if="u.direct_permissions.length > 0"
                                  v-show="expanded[index]"
-                                 :permissions="u.permissions"
+                                 :permissions="u.direct_permissions"
                                  :email="u.email"
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>

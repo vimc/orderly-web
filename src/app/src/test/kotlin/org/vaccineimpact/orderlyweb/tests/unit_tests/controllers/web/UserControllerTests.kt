@@ -85,7 +85,7 @@ class UserControllerTests : TeamcityTests()
         assertThat(secondUser.directPermissions[1].scopePrefix).isNull()
         assertThat(secondUser.directPermissions[1].source).isEqualTo("test@test.com")
 
-        assertThat(secondUser.rolePermissions.count()).isEqualTo(0)
+        assertThat(firstUser.rolePermissions.count()).isEqualTo(0)
 
         assertThat(firstUser.displayName).isEqualTo("A user")
     }
