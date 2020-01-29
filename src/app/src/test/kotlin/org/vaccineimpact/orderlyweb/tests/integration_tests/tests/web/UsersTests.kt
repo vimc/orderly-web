@@ -9,7 +9,6 @@ import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
-import java.net.URLEncoder
 
 class UsersTests : IntegrationTest()
 {
@@ -47,22 +46,21 @@ class UsersTests : IntegrationTest()
     }
 
     @Test
-    fun `only user managers can associate permission`()
+    fun `only user managers can add permission`()
     {
-        val url = "/user-groups/test.user%40example.com/actions/associate-permission/"
+        val url = "/users/test.user%40example.com/permissions/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("action" to "add",
-                "name" to "users.manage"))
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage"))
     }
 
     @Test
-    fun `only user managers can add new user groups`()
+    fun `only user managers can remove permission`()
     {
-        val url = "/user-groups/"
+        val url = "/users/test.user%40example.com/permissions/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP"))
+                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage"))
     }
 
     @Test
@@ -78,7 +76,7 @@ class UsersTests : IntegrationTest()
     fun `only user managers can add users to groups`()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
-        val url = "/user-groups/Funder/"
+        val url = "/roles/Funder/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json, method = HttpMethod.post,
@@ -90,9 +88,9 @@ class UsersTests : IntegrationTest()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("Funder", "test.user@example.com")
-        val url = "/user-groups/Funder/user/test.user@example.com"
+        val url = "/roles/Funder/user/test.user@example.com"
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-            method = HttpMethod.delete, contentType = ContentTypes.json)
+                method = HttpMethod.delete, contentType = ContentTypes.json)
     }
 
 }

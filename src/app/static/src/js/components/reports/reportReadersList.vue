@@ -64,10 +64,9 @@
             },
             removeUser: function (email) {
                 const data = {
-                    ...this.permission,
-                    action: "remove"
+                    ...this.permission
                 };
-                api.post(`/user-groups/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+                api.delete(`/users/${encodeURIComponent(email)}/permissions/`, data)
                     .then(() => {
                         this.getReaders();
                         this.error = null;

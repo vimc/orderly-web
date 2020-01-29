@@ -63,10 +63,10 @@ class ScopeTests: TeamcityTests()
     @Test
     fun `can parse from AssociatePermission`()
     {
-        val globalAssocPerm = AssociatePermission("add", "perm", null)
+        val globalAssocPerm = AssociatePermission("perm", null, null)
         assertThat(Scope.parse(globalAssocPerm)).isInstanceOf(Scope.Global::class.java)
 
-        val specificAssocPerm = AssociatePermission("add", "perm", "testPrefix")
+        val specificAssocPerm = AssociatePermission("perm", "testPrefix", "testId")
         val specificScope = Scope.parse(specificAssocPerm)
         assertThat(specificScope).isInstanceOf(Scope.Specific::class.java)
         assertThat((specificScope as Scope.Specific).databaseScopePrefix).isEqualTo("testPrefix")

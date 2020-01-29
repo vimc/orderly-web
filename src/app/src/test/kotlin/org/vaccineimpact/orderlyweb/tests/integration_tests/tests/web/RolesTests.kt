@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.addMembers
 import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class RolesTests : IntegrationTest()
 {
@@ -80,4 +81,33 @@ class RolesTests : IntegrationTest()
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)
     }
+
+    @Test
+    fun `only user managers can add new roles`()
+    {
+        val url = "/roles/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP"))
+    }
+    @Test
+    fun `only user managers can add permission`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/roles/Funders/permissions/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "users.manage"))
+    }
+
+    @Test
+    fun `only user managers can remove permission`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/roles/Funders/permissions/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.delete, postData = mapOf("name" to "users.manage"))
+    }
+
 }

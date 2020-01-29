@@ -54,11 +54,10 @@
                 const data = {
                     name: "reports.read",
                     scope_prefix: "report",
-                    scope_id: this.reportName,
-                    action: "add"
+                    scope_id: this.reportName
                 };
 
-                api.post(`/user-groups/${encodeURIComponent(this.newUserGroup)}/actions/associate-permission/`, data)
+                api.post(`/${type}s/${encodeURIComponent(this.newUserGroup)}/permissions/`, data)
                     .then(() => {
                         this.newUserGroup = "";
                         this.error = null;

@@ -186,8 +186,8 @@ class UserControllerTests : TeamcityTests()
         verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("test"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 
     @Test
@@ -209,11 +209,11 @@ class UserControllerTests : TeamcityTests()
         assertThat(result).isEqualTo("OK")
 
         val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
-        verify(authRepo).ensureUserGroupHasPermission(eq("Funders"), capture(permissionCaptor))
+        verify(authRepo).ensureUserGroupHasPermission(eq("test"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 
 }
