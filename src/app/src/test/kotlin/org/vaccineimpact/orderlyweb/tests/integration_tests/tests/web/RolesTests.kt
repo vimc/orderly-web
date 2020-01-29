@@ -86,7 +86,7 @@ class RolesTests : IntegrationTest()
     fun `only user managers can associate permission`()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
-        val url = "/roles/Funders/actions/associate-permission/"
+        val url = "/roles/Funder/actions/associate-permission/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("action" to "add",
