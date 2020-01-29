@@ -3,7 +3,7 @@
         <vue-bootstrap-typeahead
                 size="sm"
                 v-model="newUser"
-                :placeholder="'email'"
+                placeholder="email"
                 :data="availableUsers">
             <template slot="append">
                 <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
