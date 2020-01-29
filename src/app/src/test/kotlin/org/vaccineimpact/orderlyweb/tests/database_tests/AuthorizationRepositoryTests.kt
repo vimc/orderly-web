@@ -23,6 +23,14 @@ import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 {
     @Test
+    fun `can get permission names`()
+    {
+        val sut = OrderlyAuthorizationRepository()
+        val result = sut.getPermissionNames()
+        assertThat(result).containsExactly("reports.read", "reports.review", "reports.run", "users.manage")
+    }
+
+    @Test
     fun `can get empty permission set for user`()
     {
         JooqContext().use {

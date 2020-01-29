@@ -21,10 +21,20 @@ interface AuthorizationRepository
     fun getPermissionsForUser(email: String): PermissionSet
     fun getPermissionsForGroup(userGroup: String): List<ReifiedPermission>
     fun getDirectPermissionsForUser(email: String): PermissionSet
+    fun getPermissionNames(): List<String>
 }
 
 class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMapper = PermissionMapper()) : AuthorizationRepository
 {
+    override fun getPermissionNames(): List<String>
+    {
+        return JooqContext().use {
+            it.dsl.select(ORDERLYWEB_PERMISSION.ID)
+                    .from(ORDERLYWEB_PERMISSION)
+                    .fetchInto(String::class.java)
+        }
+    }
+
     override fun createUserGroup(userGroup: String)
     {
         JooqContext().use {

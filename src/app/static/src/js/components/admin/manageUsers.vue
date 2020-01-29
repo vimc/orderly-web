@@ -15,7 +15,8 @@
                                  v-show="expanded[index]"
                                  :permissions="u.permissions"
                                  :email="u.email"
-                                 @removed="function(p) {removePermission(p, u)}"></permission-list>
+                                 @removed="function(p) {removePermission(p, u)}"
+                                 :all-permissions="allPermissions"></permission-list>
             </li>
         </ul>
     </div>
@@ -34,6 +35,7 @@
         data() {
             return {
                 allUsers: [],
+                allPermissions: [],
                 searchStr: "",
                 expanded: {}
             }
@@ -53,8 +55,14 @@
                         this.allUsers = data.data
                     })
             },
+            getPermissions: function () {
+                api.get(`/typeahead/permissions/`)
+                    .then(({data}) => {
+                        this.allPermissions = data.data
+                    })
+            },
             removePermission: function (permission, user) {
-                 user.permissions.splice(user.permissions.indexOf(permission), 1);
+                user.permissions.splice(user.permissions.indexOf(permission), 1);
             },
             userMatches: function (u, searchStr) {
                 return searchStr.length > 1 && (this.stringMatches(u.display_name, searchStr) ||
