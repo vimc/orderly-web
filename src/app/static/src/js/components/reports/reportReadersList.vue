@@ -43,6 +43,13 @@
             availableUsers: function () {
                 return this.allUsers.filter(x =>
                     !(new Set(this.readers.map(r => r.email))).has(x));
+            },
+            permission: function () {
+                return {
+                    name: "reports.read",
+                    scope_prefix: "report",
+                    scope_id: this.report.name
+                }
             }
         },
         methods: {

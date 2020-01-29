@@ -34,6 +34,13 @@
             availableRoles: function () {
                 return this.allRoles.filter(x =>
                     !(new Set(this.currentRoles.map(r => r.name))).has(x));
+            },
+            permission: function () {
+                return {
+                    name: "reports.read",
+                    scope_prefix: "report",
+                    scope_id: this.report.name
+                }
             }
         },
         methods: {

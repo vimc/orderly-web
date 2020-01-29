@@ -65,6 +65,12 @@ describe("scopedReaderRolesList", () => {
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
         expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(true);
         expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(false);
+        expect(wrapper.find(RoleList).props().permission).toStrictEqual({
+            name: "reports.read",
+            scope_id : "report1",
+            scope_prefix: "report"
+        });
+
     });
 
     it('renders add report reader component', async () => {
