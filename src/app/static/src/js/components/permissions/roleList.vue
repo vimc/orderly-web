@@ -62,11 +62,11 @@
                     });
             },
             removeRole: function (roleName) {
-                const scopeId = this.permission.scopeId;
+                const scopeId = this.permission.scope_id;
                 const scopePrefix = this.permission.scope_prefix;
                 const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
 
-                api.post(`/roles/${encodeURIComponent(roleName)}/actions/associate-permission/${query}`)
+                api.post(`/roles/${encodeURIComponent(roleName)}/permissions/${this.permission.name}/${query}`)
                     .then(() => {
                         this.$emit("removed", roleName);
                         this.error = null;

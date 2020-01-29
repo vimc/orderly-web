@@ -70,11 +70,11 @@
                     })
             },
             removeUser: function(email) {
-                const scopeId = this.permission.scopeId;
+                const scopeId = this.permission.scope_id;
                 const scopePrefix = this.permission.scope_prefix;
                 const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
 
-                api.post(`/users/${encodeURIComponent(email)}/actions/associate-permission/${query}`)
+                api.post(`/users/${encodeURIComponent(email)}/permissions/${this.permission.name}/${query}`)
                     .then(() => {
                         this.getReaders();
                         this.error = null;
