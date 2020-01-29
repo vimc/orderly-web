@@ -11,7 +11,13 @@
     "email": {
       "type": "string"
     },
-    "permissions": {
+    "direct_permissions": {
+      "type": "array",
+      "items": {
+        "$ref": "Permission.schema.json"
+      }
+    },
+    "role_permissions": {
       "type": "array",
       "items": {
         "$ref": "Permission.schema.json"
