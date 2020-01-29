@@ -1,15 +1,26 @@
 {
-
   "id": "User",
   "type": "object",
   "properties": {
+    "username": {
+      "type": "string"
+    },
     "display_name": {
       "type": "string"
     },
     "email": {
       "type": "string"
+    },
+    "permissions": {
+      "type": "array",
+      "items": {
+        "$ref": "Permission.schema.json"
+      }
     }
   },
   "additionalProperties": true,
-  "required": ["display_name", "email"]
+  "required": [
+    "display_name",
+    "email"
+  ]
 }

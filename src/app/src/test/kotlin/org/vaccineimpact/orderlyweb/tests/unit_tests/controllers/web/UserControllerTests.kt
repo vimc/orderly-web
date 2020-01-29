@@ -6,8 +6,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class UserControllerTests : TeamcityTests()
@@ -19,9 +21,41 @@ class UserControllerTests : TeamcityTests()
             on { this.getUserEmails() } doReturn (listOf("one", "two"))
         }
 
-        val sut = UserController(mock(), repo)
+        val sut = UserController(mock(), repo, mock())
 
         assertThat(sut.getUserEmails()).containsExactlyElementsOf(listOf("one", "two"))
+    }
+
+    @Test
+    fun `gets all users and permissions`()
+    {
+        val repo = mock<UserRepository> {
+            on { this.getAllUsers() } doReturn
+                    listOf(User("test.user", "Test user", "test@test.com"),
+                            User("another.user", "A user", "a@test.com"))
+        }
+
+        val authRepo = mock<AuthorizationRepository> {
+            on { this.getDirectPermissionsForUser("test@test.com") } doReturn PermissionSet("*/reports.review", "*/reports.read")
+            on { this.getDirectPermissionsForUser("a@test.com") } doReturn PermissionSet()
+        }
+
+        val sut = UserController(mock(), repo, authRepo)
+
+        val result = sut.getAllUsers()
+
+        val firstUser = result[0]
+        val secondUser = result[1]
+
+        assertThat(secondUser.displayName).isEqualTo("Test user")
+        assertThat(secondUser.email).isEqualTo("test@test.com")
+        assertThat(secondUser.username).isEqualTo("test.user")
+        assertThat(secondUser.permissions[0].name).isEqualTo("reports.read")
+        assertThat(secondUser.permissions[0].scope).isEqualTo("*")
+        assertThat(secondUser.permissions[1].name).isEqualTo("reports.review")
+        assertThat(secondUser.permissions[1].scope).isEqualTo("*")
+
+        assertThat(firstUser.displayName).isEqualTo("A user")
     }
 
     @Test
@@ -46,7 +80,7 @@ class UserControllerTests : TeamcityTests()
         val repo = mock<UserRepository> {
             on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
-        val sut = UserController(actionContext, repo)
+        val sut = UserController(actionContext, repo, mock())
         val result = sut.getScopedReportReaders()
 
         assertThat(result.count()).isEqualTo(3)
@@ -76,10 +110,10 @@ class UserControllerTests : TeamcityTests()
         )
 
         val repo = mock<UserRepository> {
-            on { this.getGlobalReportReaderUsers()} doReturn (reportReaders)
+            on { this.getGlobalReportReaderUsers() } doReturn (reportReaders)
         }
 
-        val sut = UserController(actionContext, repo)
+        val sut = UserController(actionContext, repo, mock())
         val result = sut.getGlobalReportReaders()
 
         assertThat(result.count()).isEqualTo(2)
@@ -117,7 +151,7 @@ class UserControllerTests : TeamcityTests()
         val repo = mock<UserRepository> {
             on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
-        val sut = UserController(actionContext, repo)
+        val sut = UserController(actionContext, repo, mock())
         val result = sut.getScopedReportReaders()
 
         assertThat(result.count()).isEqualTo(4)
