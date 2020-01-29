@@ -7,7 +7,7 @@
                    :available-users="typeaheadEmails"
                    @removed="getRoles"
                    @added="getRoles"></role-list>
-        <add-role @added="roleAdded" :error="addRoleError"></add-role>
+        <add-role @added="roleAdded" :error="addRoleError" :default-message="addRoleDefaultMessage"></add-role>
     </div>
 </template>
 
@@ -26,7 +26,8 @@
             return {
                 roles: [],
                 typeaheadEmails: [],
-                addRoleError: ""
+                addRoleError: "",
+                addRoleDefaultMessage: ""
             }
         },
         methods: {
@@ -49,8 +50,8 @@
                         this.getRoles();
                     })
                     .catch((error) => {
-                        //TODO: deal with error strings, deal with duplicates
                         this.addRoleError = error;
+                        this.addRoleDefaultMessage = `could not add role '${role}'`
                     });
             }
         },
