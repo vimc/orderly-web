@@ -74,7 +74,7 @@
                     ...this.permission,
                     action: "remove"
                 };
-                api.post(`/user-groups/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+                api.post(`/users/${encodeURIComponent(email)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.getReaders();
                         this.error = null;

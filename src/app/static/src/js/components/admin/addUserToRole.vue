@@ -50,7 +50,7 @@
                     email: this.newUser
                 };
 
-                api.post(`/user-groups/${encodeURIComponent(this.role)}/`, data)
+                api.post(`/roles/${encodeURIComponent(this.role)}/users/`, data)
                     .then(() => {
                         this.$emit("added");
                         this.newUser = "";
