@@ -39,7 +39,7 @@ describe("addPermission", () => {
 
     it('add sets error and does not emit added event', async (done) => {
         const testError = {test: "something"};
-        mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/testGroup1/actions/associate-permission/`)
             .reply(500, testError);
 
         const wrapper = createSut("user");
@@ -62,7 +62,7 @@ describe("addPermission", () => {
 
     it('add calls associate permission endpoint and emits added event', async (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/testGroup1/actions/associate-permission/`)
             .reply(200);
 
         const wrapper = createSut("user");

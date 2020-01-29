@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
-import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import spark.route.HttpMethod
 
 object WebUserRouteConfig : RouteConfig
@@ -27,7 +26,7 @@ object WebUserRouteConfig : RouteConfig
                     .transform()
                     .secure(usersManage),
             WebEndpoint("/users/:user-id/actions/associate-permission/",
-                    AdminController::class, "associatePermission",
+                    UserController::class, "associatePermission",
                     method = HttpMethod.post)
                     .json()
                     .transform()

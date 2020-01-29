@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
-import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import org.vaccineimpact.orderlyweb.json
 import org.vaccineimpact.orderlyweb.secure
 import org.vaccineimpact.orderlyweb.transform
@@ -52,7 +51,7 @@ object WebRoleRouteConfig : RouteConfig
                     .transform()
                     .secure(usersManage),
             WebEndpoint("/roles/:role-id/actions/associate-permission/",
-                    AdminController::class, "associatePermission",
+                    RoleController::class, "associatePermission",
                     method = HttpMethod.post)
                     .json()
                     .transform()

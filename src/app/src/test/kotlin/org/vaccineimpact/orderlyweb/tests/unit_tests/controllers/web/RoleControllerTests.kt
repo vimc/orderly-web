@@ -293,7 +293,7 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `adds new user group`()
+    fun `adds new role`()
     {
         val actionContext = mock<ActionContext> {
             on { this.postData() } doReturn mapOf("name" to "NEWGROUP")
@@ -306,10 +306,10 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `adds user to user group`()
+    fun `adds user to role`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.params(":role-id") } doReturn "GROUP1"
             on { this.postData() } doReturn mapOf("email" to "test@example.com")
         }
 
@@ -320,10 +320,10 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `removes user from user group`()
+    fun `removes user from role`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "GROUP1"
+            on { this.params(":role-id") } doReturn "GROUP1"
             on { this.params(":email") } doReturn "test@example.com"
         }
 
@@ -334,7 +334,7 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `throws exception when adding user group if name is missing`()
+    fun `throws exception when adding role if name is missing`()
     {
         val actionContext = mock<ActionContext> {
             on { this.postData() } doReturn mapOf()
