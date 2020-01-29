@@ -2,17 +2,23 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
+import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleController(context: ActionContext,
-                     private val roleRepo: RoleRepository) : Controller(context)
+                     private val roleRepo: RoleRepository,
+                     private val authRepo: AuthorizationRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, OrderlyRoleRepository())
+    constructor(context: ActionContext) : this(context, OrderlyRoleRepository(), OrderlyAuthorizationRepository())
 
     fun getGlobalReportReaders(): List<RoleViewModel>
     {
@@ -37,9 +43,52 @@ class RoleController(context: ActionContext,
         return roleRepo.getAllRoleNames()
     }
 
-    private fun List<Role>.toSortedViewModels() : List<RoleViewModel>
+    fun addRole(): String
+    {
+        val name = context.postData()["name"] ?: throw MissingParameterError("name")
+        authRepo.createUserGroup(name)
+        return okayResponse()
+    }
+
+    fun addUser(): String
+    {
+        val roleId = roleId()
+        val email = context.postData()["email"] ?: throw MissingParameterError("action")
+        authRepo.ensureGroupHasMember(roleId, email)
+        return okayResponse()
+    }
+
+    fun removeUser(): String
+    {
+        val roleId = roleId()
+        val email = context.params(":email")
+        authRepo.ensureGroupDoesNotHaveMember(roleId, email)
+        return okayResponse()
+    }
+
+    fun addPermission(): String
+    {
+        val roleId = roleId()
+        val permission = context.permissionFromPostData()
+        authRepo.ensureUserGroupHasPermission(roleId, permission)
+
+        return okayResponse()
+    }
+
+    fun removePermission(): String
+    {
+        val roleId = roleId()
+        val permission = context.permissionFromPostData()
+        authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
+
+        return okayResponse()
+    }
+
+    private fun List<Role>.toSortedViewModels(): List<RoleViewModel>
     {
         return this.map { RoleViewModel.build(it) }
-                .sortedBy{ it.name }
+                .sortedBy { it.name }
     }
+
+    private fun roleId(): String = context.params(":role-id")
 }

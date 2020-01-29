@@ -4,10 +4,8 @@ import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import org.vaccineimpact.orderlyweb.json
 import org.vaccineimpact.orderlyweb.secure
-import org.vaccineimpact.orderlyweb.transform
 import spark.route.HttpMethod
 
 object WebReportRouteConfig : RouteConfig

@@ -1,15 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class UserControllerTests : TeamcityTests()
@@ -160,6 +162,58 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[1].displayName).isEqualTo("r2username")
         assertThat(result[2].displayName).isEqualTo("r3@email.com")
         assertThat(result[3].displayName).isEqualTo("r4@email.com")
+    }
+
+    @Test
+    fun `removes permission from user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-id") } doReturn "test"
+            on { this.postData() } doReturn mapOf(
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserController(actionContext, mock(), authRepo)
+        val result = sut.removePermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("test"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        Assertions.assertThat(permission.name).isEqualTo("test.permission")
+        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `adds permission to role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-id") } doReturn "test"
+            on { this.postData() } doReturn mapOf(
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = UserController(actionContext, mock(), authRepo)
+        val result = sut.addPermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupHasPermission(eq("Funders"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        Assertions.assertThat(permission.name).isEqualTo("test.permission")
+        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 
 }

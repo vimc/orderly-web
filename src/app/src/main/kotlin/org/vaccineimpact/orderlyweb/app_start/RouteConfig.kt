@@ -3,8 +3,8 @@ package org.vaccineimpact.orderlyweb.app_start
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.routing.api.*
 import org.vaccineimpact.orderlyweb.app_start.routing.web.*
+import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
-import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 
 interface RouteConfig
 {
@@ -26,7 +26,7 @@ object WebRouteConfig : RouteConfig
     private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics")
             .json()
 
-    private val adminEndpoint = WebEndpoint("/admin/", UserGroupController:: class, "admin")
+    private val adminEndpoint = WebEndpoint("/admin/", AdminController:: class, "admin")
             .secure(setOf("*/users.manage"))
 
     override val endpoints: List<EndpointDefinition> =

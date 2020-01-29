@@ -1,12 +1,16 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentCaptor
+import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -77,7 +81,7 @@ class RoleControllerTests : TeamcityTests()
             on { getGlobalReportReaderRoles() } doReturn singleRoleFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getGlobalReportReaders()
         assertExpectedSingleRoleViewModel(result)
     }
@@ -89,7 +93,7 @@ class RoleControllerTests : TeamcityTests()
             on { getAllRoles() } doReturn singleRoleFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getAll()
         assertExpectedSingleRoleViewModel(result)
     }
@@ -101,7 +105,7 @@ class RoleControllerTests : TeamcityTests()
             on { getGlobalReportReaderRoles() } doReturn multipleRolesFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getGlobalReportReaders()
         assertExpectedMultipleRoleViewModels(result)
     }
@@ -113,7 +117,7 @@ class RoleControllerTests : TeamcityTests()
             on { getAllRoles() } doReturn multipleRolesFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getAll()
         assertExpectedMultipleRoleViewModels(result)
     }
@@ -125,7 +129,7 @@ class RoleControllerTests : TeamcityTests()
             on { getGlobalReportReaderRoles() } doReturn roleForAlphabeticFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getGlobalReportReaders()
         assertExpectedAlphabeticRoleMembers(result)
     }
@@ -137,7 +141,7 @@ class RoleControllerTests : TeamcityTests()
             on { getAllRoles() } doReturn roleForAlphabeticFromRepo
         }
 
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         val result = sut.getAll()
         assertExpectedAlphabeticRoleMembers(result)
     }
@@ -157,7 +161,7 @@ class RoleControllerTests : TeamcityTests()
                     ), listOf()))
         }
 
-        val sut = RoleController(actionContextWithReport, repo)
+        val sut = RoleController(actionContextWithReport, repo, mock())
         val result = sut.getScopedReportReaders()
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0].name).isEqualTo("Funders")
@@ -178,7 +182,7 @@ class RoleControllerTests : TeamcityTests()
             on { getScopedReportReaderRoles("r1") } doReturn multipleRolesFromRepo
         }
 
-        val sut = RoleController(actionContextWithReport, repo)
+        val sut = RoleController(actionContextWithReport, repo, mock())
         val result = sut.getScopedReportReaders()
         assertExpectedMultipleRoleViewModels(result)
     }
@@ -190,7 +194,7 @@ class RoleControllerTests : TeamcityTests()
             on { getScopedReportReaderRoles("r1") } doReturn roleForAlphabeticFromRepo
         }
 
-        val sut = RoleController(actionContextWithReport,repo)
+        val sut = RoleController(actionContextWithReport,repo, mock())
         val result = sut.getScopedReportReaders()
         assertExpectedAlphabeticRoleMembers(result)
     }
@@ -201,7 +205,123 @@ class RoleControllerTests : TeamcityTests()
         val repo = mock<RoleRepository> {
             on { getAllRoleNames() } doReturn listOf("Science", "Funders")
         }
-        val sut = RoleController(mock(), repo)
+        val sut = RoleController(mock(), repo, mock())
         assertThat(sut.getAllRoleNames()).containsExactly("Science", "Funders")
     }
+
+    @Test
+    fun `throws exception when adding user if email is missing`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf()
+        }
+
+        val sut = RoleController(actionContext, mock(), mock())
+        Assertions.assertThatThrownBy { sut.addUser() }.isInstanceOf(MissingParameterError::class.java)
+    }
+
+    @Test
+    fun `throws exception when adding role if name is missing`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.postData() } doReturn mapOf()
+        }
+
+        val sut = RoleController(actionContext, mock(), mock())
+        Assertions.assertThatThrownBy { sut.addRole() }.isInstanceOf(MissingParameterError::class.java)
+    }
+
+    @Test
+    fun `removes user from role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "GROUP1"
+            on { this.params(":email") } doReturn "test@example.com"
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        sut.removeUser()
+        verify(authRepo).ensureGroupDoesNotHaveMember("GROUP1", "test@example.com")
+    }
+
+    @Test
+    fun `adds user to role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "GROUP1"
+            on { this.postData() } doReturn mapOf("email" to "test@example.com")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        sut.addUser()
+        verify(authRepo).ensureGroupHasMember("GROUP1", "test@example.com")
+    }
+    @Test
+    fun `adds new role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.postData() } doReturn mapOf("name" to "NEWGROUP")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        sut.addRole()
+        verify(authRepo, Times(1)).createUserGroup("NEWGROUP")
+    }
+
+    @Test
+    fun `removes permission from role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "Funders"
+            on { this.postData() } doReturn mapOf(
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        val result = sut.removePermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("Funders"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        Assertions.assertThat(permission.name).isEqualTo("test.permission")
+        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `adds permission to role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "Funders"
+            on { this.postData() } doReturn mapOf(
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        val result = sut.addPermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupHasPermission(eq("Funders"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        Assertions.assertThat(permission.name).isEqualTo("test.permission")
+        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
 }

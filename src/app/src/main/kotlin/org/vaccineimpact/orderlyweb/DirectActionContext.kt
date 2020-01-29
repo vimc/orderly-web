@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import spark.Request
@@ -109,4 +110,17 @@ open class DirectActionContext(private val context: SparkWebContext,
     {
         return postData()[key] ?: throw MissingParameterError(key);
     }
+}
+
+fun ActionContext.permissionFromPostData(): ReifiedPermission
+{
+    val postData = this.postData()
+    val associatePermission = AssociatePermission(
+            postData["name"] ?: throw MissingParameterError("name"),
+            postData["scope_prefix"],
+            postData["scope_id"]
+    )
+
+    return ReifiedPermission(associatePermission.name,
+            Scope.parse(associatePermission))
 }
