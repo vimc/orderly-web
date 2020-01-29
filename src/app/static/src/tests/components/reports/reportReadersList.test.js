@@ -3,7 +3,7 @@ import {mount, shallowMount} from '@vue/test-utils';
 import ReportReadersList from "../../../js/components/reports/reportReadersList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import UserList from "../../../js/components/permissions/userList.vue";
-import AddPermission from "../../../js/components/permissions/addPermission.vue";
+import AddReportReader from "../../../js/components/permissions/addReportReader.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("reportReadersList", () => {
@@ -63,7 +63,7 @@ describe("reportReadersList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(AddPermission).props().type).toBe("user");
+        expect(wrapper.find(AddReportReader).props().type).toBe("user");
         expect(wrapper.find(UserList).props().canRemove).toBe(true);
         expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
         expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
@@ -85,7 +85,7 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find(AddPermission).props().availableUserGroups)
+            expect(wrapper.find(AddReportReader).props().availableUserGroups)
                 .toEqual(expect.arrayContaining(userEmails));
 
             expectWrapperToHaveRenderedReaders(wrapper);
@@ -241,8 +241,8 @@ describe("reportReadersList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(AddPermission).props().availableUserGroups.length).toBe(1);
-        expect(wrapper.find(AddPermission).props().availableUserGroups[0]).toBe("another.user@example.com");
+        expect(wrapper.find(AddReportReader).props().availableUserGroups.length).toBe(1);
+        expect(wrapper.find(AddReportReader).props().availableUserGroups[0]).toBe("another.user@example.com");
     });
 
 });

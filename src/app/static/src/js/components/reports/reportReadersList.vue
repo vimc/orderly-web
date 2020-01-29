@@ -1,9 +1,9 @@
 <template>
     <div id="scoped-report-readers-list">
-        <add-permission :permission="permission"
-                        type="user"
-                        :available-user-groups="availableUsers"
-                        @added="getReaders"></add-permission>
+        <add-report-reader :report-name="report.name"
+                           type="user"
+                           :available-user-groups="availableUsers"
+                           @added="getReaders"></add-report-reader>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         <user-list :users="readers"
                    :can-remove="true"
@@ -16,7 +16,7 @@
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
     import UserList from "../permissions/userList.vue";
-    import AddPermission from "../permissions/addPermission.vue";
+    import AddReportReader from "../permissions/addReportReader";
 
     export default {
         name: 'reportReadersList',
@@ -34,7 +34,7 @@
             this.getUserEmails();
         },
         components: {
-            AddPermission,
+            AddReportReader,
             UserList,
             ErrorInfo,
             VueBootstrapTypeahead
@@ -43,13 +43,6 @@
             availableUsers: function () {
                 return this.allUsers.filter(x =>
                     !(new Set(this.readers.map(r => r.email))).has(x));
-            },
-            permission: function () {
-                return {
-                    name: "reports.read",
-                    scope_prefix: "report",
-                    scope_id: this.report.name
-                };
             }
         },
         methods: {
@@ -69,7 +62,7 @@
                         this.defaultMessage = "could not fetch list of users";
                     })
             },
-            removeUser: function(email) {
+            removeUser: function (email) {
                 const data = {
                     ...this.permission,
                     action: "remove"
