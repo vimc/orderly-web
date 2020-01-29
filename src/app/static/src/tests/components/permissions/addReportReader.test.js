@@ -1,10 +1,10 @@
 import {mount} from '@vue/test-utils';
-import AddPermission from "../../../js/components/permissions/addPermission.vue";
+import AddReportReader from "../../../js/components/permissions/addReportReader.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import Vue from "vue";
 
-describe("addPermission", () => {
+describe("addReportReader", () => {
 
     const availableUserGroups = [
         "testGroup1",
@@ -24,13 +24,9 @@ describe("addPermission", () => {
     }
 
     function createSut(type) {
-        return mount(AddPermission, {
+        return mount(AddReportReader, {
             propsData: {
-                permission: {
-                    name: "reports.read",
-                    scope_prefix: "report",
-                    scope_id: "report1"
-                },
+                reportName: "report1",
                 availableUserGroups: availableUserGroups,
                 type: type
             }
