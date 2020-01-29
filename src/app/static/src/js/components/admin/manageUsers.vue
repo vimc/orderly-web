@@ -18,6 +18,7 @@
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
         </ul>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
@@ -25,6 +26,7 @@
     import {api} from "../../utils/api";
     import Vue from "vue";
     import PermissionList from "./permissionList.vue";
+    import ErrorInfo from "../errorInfo.vue";
 
     export default {
         name: 'manageUsers',
@@ -35,7 +37,9 @@
             return {
                 allUsers: [],
                 searchStr: "",
-                expanded: {}
+                expanded: {},
+                error: "",
+                defaultMessage: ""
             }
         },
         computed: {
@@ -54,7 +58,20 @@
                     })
             },
             removePermission: function (permission, user) {
-                 user.permissions.splice(user.permissions.indexOf(permission), 1);
+                const data = {
+                    action: "remove",
+                    ...permission
+                };
+
+                api.post(`/user-groups/${encodeURIComponent(user.email)}/actions/associate-permission/`, data)
+                    .then(() => {
+                        this.error = null;
+                        user.permissions.splice(user.permissions.indexOf(permission), 1);
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = `could not remove ${permission.name} from ${user.email}`;
+                    });
             },
             userMatches: function (u, searchStr) {
                 return searchStr.length > 1 && (this.stringMatches(u.display_name, searchStr) ||
@@ -65,7 +82,8 @@
             }
         },
         components: {
-            PermissionList
+            PermissionList,
+            ErrorInfo
         }
     };
 </script>

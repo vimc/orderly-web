@@ -38,10 +38,7 @@ describe("permission list", () => {
         expect(rendered.find("li .name").text()).toBe("reports.read");
     });
 
-    it("can remove permission", async (done) => {
-        mockAxios.onPost('http://app/user-groups/test/actions/associate-permission/')
-            .reply(200);
-
+    it("emits removed event when remove is clicked", async () => {
         const perm = {
             name: "reports.read",
             scope_id: "",
@@ -50,8 +47,7 @@ describe("permission list", () => {
 
         const rendered = shallowMount(PermissionList, {
             propsData: {
-                permissions: [perm],
-                email: "test"
+                permissions: [perm]
             }
         });
 
@@ -59,44 +55,8 @@ describe("permission list", () => {
 
         await Vue.nextTick();
 
-        expect(mockAxios.history.post.length).toBe(1);
-
-        setTimeout(() => {
-            expect(rendered.emitted().removed[0][0]).toBe(perm);
-            expect(rendered.find(ErrorInfo).props("apiError")).toBe(null);
-            done();
-        });
+        expect(rendered.emitted().removed[0][0]).toStrictEqual(perm);
     });
 
-    it("sets error if removing permission fails", async (done) => {
-        mockAxios.onPost('http://app/user-groups/test/actions/associate-permission/')
-            .reply(500);
-
-        const perm = {
-            name: "reports.read",
-            scope_id: "",
-            scope_prefix: null
-        };
-
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [perm],
-                email: "test"
-            }
-        });
-
-        rendered.find(".remove").trigger("click");
-
-        await Vue.nextTick();
-
-        expect(mockAxios.history.post.length).toBe(1);
-
-        setTimeout(() => {
-            expect(rendered.emitted().removed).toBeUndefined();
-            expect(rendered.find(ErrorInfo).props("defaultMessage")).toBe("could not remove reports.read from test");
-            expect(rendered.find(ErrorInfo).props("apiError")).not.toBe(null);
-            done();
-        });
-    });
 
 });

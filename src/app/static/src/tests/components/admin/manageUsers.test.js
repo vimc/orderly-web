@@ -1,8 +1,9 @@
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
-import {shallowMount, mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import ManageUsers from "../../../js/components/admin/manageUsers.vue";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
+import ErrorInfo from "../../../js/components/errorInfo";
 
 describe("manage users", () => {
 
@@ -114,7 +115,10 @@ describe("manage users", () => {
         expect(rendered.find(PermissionList).isVisible()).toBe(true);
     });
 
-    it("removes permission from visible user when removed event is emitted", async () => {
+    it("can remove permission", async (done) => {
+        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+            .reply(200);
+
         const rendered = mount(ManageUsers);
         rendered.setData({allUsers: mockUsers});
         rendered.find("input").setValue("other");
@@ -125,12 +129,37 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll("ul.children li").length).toBe(1);
+        rendered.find(".remove").trigger("click");
 
-        rendered.find(PermissionList).vm.$emit("removed", mockUsers[1].permissions[0]);
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+
+            expect(rendered.findAll(".remove").length).toBe(0);
+            done();
+        })
+
+    });
+
+    it("sets error if removing permission fails", async (done) => {
+        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+            .reply(500);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll("ul.children li").length).toBe(0);
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.find(".remove").trigger("click");
+
+        setTimeout(() => {
+            expect(rendered.find(ErrorInfo).props("defaultMessage")).toBe("could not remove reports.read from b@example.com");
+            expect(rendered.find(ErrorInfo).props("apiError")).not.toBe(null);
+            done();
+        });
     });
 });
