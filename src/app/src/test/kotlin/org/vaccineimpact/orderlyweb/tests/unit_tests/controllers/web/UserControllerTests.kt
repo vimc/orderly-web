@@ -195,9 +195,8 @@ class UserControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":user-id") } doReturn "user1@example.com"
-            on { this.postData() } doReturn mapOf(
-                    "name" to "test.permission"
-            )
+            on { this.params(":name") } doReturn "test.permission"
+
             on { this.queryParams("scopeId") } doReturn "report1"
             on { this.queryParams("scopePrefix") } doReturn "report"
         }

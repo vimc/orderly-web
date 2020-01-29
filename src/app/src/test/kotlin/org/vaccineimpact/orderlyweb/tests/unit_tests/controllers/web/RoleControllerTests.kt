@@ -248,13 +248,11 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `removes permission from user group`()
+    fun `removes permission from role`()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "test"
-            on { this.postData() } doReturn mapOf(
-                    "name" to "test.permission"
-            )
+            on { this.params(":name") } doReturn "test.permission"
         }
 
         val authRepo = mock<AuthorizationRepository>()
