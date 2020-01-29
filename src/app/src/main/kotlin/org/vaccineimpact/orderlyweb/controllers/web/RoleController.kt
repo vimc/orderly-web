@@ -78,7 +78,10 @@ class RoleController(context: ActionContext,
     fun removePermission(): String
     {
         val roleId = roleId()
-        val permission = context.permissionFromPostData()
+        val name = context.params(":name")
+        val scopePrefix = context.queryParams("scopePrefix")
+        val scopeId = context.queryParams("scopeId")
+        val permission = ReifiedPermission(name, Scope.parse(scopePrefix, scopeId))
         authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
 
         return okayResponse()

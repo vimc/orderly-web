@@ -31,7 +31,7 @@ object WebUserRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/users/:user-id/permissions/",
+            WebEndpoint("/users/:user-id/permissions/:name/",
                     UserController::class, "removePermission",
                     method = HttpMethod.delete)
                     .json()

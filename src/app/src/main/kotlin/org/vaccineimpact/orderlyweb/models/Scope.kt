@@ -58,14 +58,26 @@ sealed class Scope(val value: String)
 
         fun parse(associatePermission: AssociatePermission): Scope
         {
-            if (associatePermission.scopePrefix.isNullOrEmpty())
+            return if (associatePermission.scopePrefix.isNullOrEmpty())
             {
-                return Scope.Global()
+                Scope.Global()
             }
             else
             {
 
-                return Scope.Specific(associatePermission.scopePrefix, associatePermission.scopeId!!)
+                Scope.Specific(associatePermission.scopePrefix, associatePermission.scopeId!!)
+            }
+        }
+
+        fun parse(scopePrefix: String?, scopeId: String?): Scope
+        {
+            return if (scopePrefix.isNullOrEmpty())
+            {
+                Global()
+            }
+            else
+            {
+                Scope.Specific(scopePrefix, scopeId!!)
             }
         }
 

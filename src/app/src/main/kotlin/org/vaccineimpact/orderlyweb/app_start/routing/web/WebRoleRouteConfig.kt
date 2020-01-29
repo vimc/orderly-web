@@ -56,7 +56,7 @@ object WebRoleRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/roles/:role-id/permissions/",
+            WebEndpoint("/roles/:role-id/permissions/:name",
                     RoleController::class, "removePermission",
                     method = HttpMethod.delete)
                     .json()

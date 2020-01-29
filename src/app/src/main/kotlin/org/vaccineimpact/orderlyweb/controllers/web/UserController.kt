@@ -6,7 +6,9 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
@@ -49,7 +51,10 @@ class UserController(context: ActionContext,
     fun removePermission(): String
     {
         val userId = userId()
-        val permission = context.permissionFromPostData()
+        val name = context.params(":name")
+        val scopePrefix = context.queryParams("scopePrefix")
+        val scopeId = context.queryParams("scopeId")
+        val permission = ReifiedPermission(name, Scope.parse(scopePrefix, scopeId))
         authRepo.ensureUserGroupDoesNotHavePermission(userId, permission)
 
         return okayResponse()

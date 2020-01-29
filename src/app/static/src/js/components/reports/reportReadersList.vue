@@ -63,10 +63,11 @@
                     })
             },
             removeUser: function (email) {
-                const data = {
-                    ...this.permission
-                };
-                api.delete(`/users/${encodeURIComponent(email)}/permissions/`, data)
+                const scopeId = this.permission.scopeId;
+                const scopePrefix = this.permission.scope_prefix;
+                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
+
+                api.delete(`/users/${encodeURIComponent(email)}/permissions/${query}`)
                     .then(() => {
                         this.getReaders();
                         this.error = null;
