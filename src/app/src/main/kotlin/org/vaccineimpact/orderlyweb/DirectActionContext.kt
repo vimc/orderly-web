@@ -124,3 +124,10 @@ fun ActionContext.permissionFromPostData(): ReifiedPermission
     return ReifiedPermission(associatePermission.name,
             Scope.parse(associatePermission))
 }
+
+fun ActionContext.permissionFromRouteParams(): ReifiedPermission {
+    val name = this.params(":name")
+    val scopePrefix = this.queryParams("scopePrefix")
+    val scopeId = this.queryParams("scopeId")
+    return ReifiedPermission(name, Scope.parse(scopePrefix, scopeId))
+}

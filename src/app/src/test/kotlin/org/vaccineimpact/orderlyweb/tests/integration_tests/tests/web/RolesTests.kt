@@ -83,7 +83,7 @@ class RolesTests : IntegrationTest()
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)
     }
-    
+
     @Test
     fun `only user managers can add new user groups`()
     {

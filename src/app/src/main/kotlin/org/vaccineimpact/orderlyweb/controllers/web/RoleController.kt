@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
+import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleController(context: ActionContext,
@@ -58,10 +59,7 @@ class RoleController(context: ActionContext,
     fun removePermission(): String
     {
         val roleId = roleId()
-        val name = context.params(":name")
-        val scopePrefix = context.queryParams("scopePrefix")
-        val scopeId = context.queryParams("scopeId")
-        val permission = ReifiedPermission(name, Scope.parse(scopePrefix, scopeId))
+        val permission = context.permissionFromRouteParams()
         authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
 
         return okayResponse()
