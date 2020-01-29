@@ -35,7 +35,7 @@
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "permission", "availableUsers"],
+        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "availableUsers", "permission"],
         data() {
             return {
                 error: null,

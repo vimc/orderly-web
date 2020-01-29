@@ -8,10 +8,8 @@
 
 <script>
     import {api} from "../../utils/api";
-    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
     import UserList from "../permissions/userList.vue";
-    import AddPermission from "../permissions/addPermission.vue";
 
     export default {
         name: 'globalReportReadersList',

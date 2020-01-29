@@ -2,7 +2,7 @@ import {mount} from '@vue/test-utils';
 import ScopedReaderRoleList from "../../../js/components/reports/scopedReportReaderRolesList.vue";
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
-import AddPermission from "../../../js/components/permissions/addPermission.vue";
+import AddReportReader from "../../../js/components/permissions/addReportReader.vue";
 import Vue from "vue";
 
 describe("scopedReaderRolesList", () => {
@@ -73,7 +73,7 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('renders add permission component', async () => {
+    it('renders add report reader component', async () => {
 
         const wrapper = getSut();
 
@@ -84,16 +84,10 @@ describe("scopedReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        const expectedPermission = {
-            name: "reports.read",
-            scope_prefix: "report",
-            scope_id: "report1"
-        };
-
-        expect(wrapper.find(AddPermission).props().type).toBe("role");
-        expect(wrapper.find(AddPermission).props().permission).toStrictEqual(expectedPermission);
-        expect(wrapper.find(AddPermission).props().availableUserGroups.length).toBe(2);
-        expect(wrapper.find(AddPermission).props().availableUserGroups)
+        expect(wrapper.find(AddReportReader).props().type).toBe("role");
+        expect(wrapper.find(AddReportReader).props().reportName).toBe("report1");
+        expect(wrapper.find(AddReportReader).props().availableUserGroups.length).toBe(2);
+        expect(wrapper.find(AddReportReader).props().availableUserGroups)
             .toEqual(expect.arrayContaining(["Tech", "Admin"]));
 
     });
@@ -158,7 +152,7 @@ describe("scopedReaderRolesList", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
             expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-            expect(wrapper.find(AddPermission).props().availableUserGroups)
+            expect(wrapper.find(AddReportReader).props().availableUserGroups)
                 .toEqual(expect.arrayContaining(["Tech", "Admin"]));
 
             done();
