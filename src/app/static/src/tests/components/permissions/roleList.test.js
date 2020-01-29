@@ -137,7 +137,7 @@ describe("roleList", () => {
 
     it('removes role and emits removed event', (done) => {
 
-        mockAxios.onPost('http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=r1')
+        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=r1')
             .reply(200);
 
         const wrapper = shallowMount(RoleList, {
@@ -163,7 +163,7 @@ describe("roleList", () => {
 
     it('sets error if removing role fails', (done) => {
 
-        mockAxios.onPost('http://app/roles/Funders/permissions/reports.read/?&scopePrefix=report&scopeId=r1')
+        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?&scopePrefix=report&scopeId=r1')
             .reply(500);
 
         const wrapper = shallowMount(RoleList, {

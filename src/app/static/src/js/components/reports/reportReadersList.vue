@@ -74,7 +74,7 @@
                 const scopePrefix = this.permission.scope_prefix;
                 const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
 
-                api.post(`/users/${encodeURIComponent(email)}/permissions/${this.permission.name}/${query}`)
+                api.delete(`/users/${encodeURIComponent(email)}/permissions/${this.permission.name}/${query}`)
                     .then(() => {
                         this.getReaders();
                         this.error = null;

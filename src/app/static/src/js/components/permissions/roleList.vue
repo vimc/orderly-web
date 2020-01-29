@@ -66,7 +66,7 @@
                 const scopePrefix = this.permission.scope_prefix;
                 const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
 
-                api.post(`/roles/${encodeURIComponent(roleName)}/permissions/${this.permission.name}/${query}`)
+                api.delete(`/roles/${encodeURIComponent(roleName)}/permissions/${this.permission.name}/${query}`)
                     .then(() => {
                         this.$emit("removed", roleName);
                         this.error = null;
