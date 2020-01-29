@@ -6,11 +6,7 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
-import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
