@@ -1,22 +1,30 @@
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import ManageUsers from "../../../js/components/admin/manageUsers.vue";
+import PermissionList from "../../../js/components/admin/permissionList.vue";
+import ErrorInfo from "../../../js/components/errorInfo";
 
 describe("manage users", () => {
 
-    const mockUsers =  [
+    const mockUsers = [
         {
             username: "a.user",
             display_name: "Some name",
-            email: "a@example.com"
+            email: "a@example.com",
+            permissions: []
         },
         {
             username: "b.user",
             display_name: "Some other name",
-            email: "b@example.com"
+            email: "b@example.com",
+            permissions: [{
+                name: "reports.read",
+                scope_id: "",
+                scope_prefix: null
+            }]
         }
-        ];
+    ];
 
     beforeEach(() => {
         mockAxios.reset();
@@ -39,12 +47,12 @@ describe("manage users", () => {
         rendered.find("input").setValue("a.");
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
-        expect(rendered.find("li").text()).toBe("Some name");
+        expect(rendered.find("li .role-name").text()).toBe("Some name");
 
         rendered.find("input").setValue("A.");
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
-        expect(rendered.find("li").text()).toBe("Some name");
+        expect(rendered.find("li .role-name").text()).toBe("Some name");
     });
 
     it("matches users by case insensitive email", async () => {
@@ -67,13 +75,91 @@ describe("manage users", () => {
 
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
-        expect(rendered.find("li").text()).toBe("Some other name");
+        expect(rendered.find("li .role-name").text()).toBe("Some other name");
 
         rendered.find("input").setValue("Other");
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
-        expect(rendered.find("li").text()).toBe("Some other name");
+        expect(rendered.find("li .role-name").text()).toBe("Some other name");
     });
 
+    it("renders permission list iff user has permissions", async () => {
+        const rendered = shallowMount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("example");
 
+        await Vue.nextTick();
+
+        expect(rendered.findAll("li").length).toBe(2);
+        expect(rendered.findAll(PermissionList).length).toBe(1);
+        expect(rendered.find(PermissionList).props().permissions).toBe(mockUsers[1].permissions);
+
+        expect(rendered.findAll("li").at(0).classes("has-children")).toBe(false);
+        expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
+    });
+
+    it("can open and close permission list", async () => {
+        const rendered = shallowMount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
+
+        await Vue.nextTick();
+
+        expect(rendered.find("li").classes()).not.toContain("open");
+        expect(rendered.find(PermissionList).isVisible()).toBe(false);
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.find("li").classes()).toContain("open");
+        expect(rendered.find(PermissionList).isVisible()).toBe(true);
+    });
+
+    it("can remove permission", async (done) => {
+        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+            .reply(200);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
+
+        await Vue.nextTick();
+
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.find(".remove").trigger("click");
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+
+            expect(rendered.findAll(".remove").length).toBe(0);
+            done();
+        })
+
+    });
+
+    it("sets error if removing permission fails", async (done) => {
+        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+            .reply(500);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
+
+        await Vue.nextTick();
+
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.find(".remove").trigger("click");
+
+        setTimeout(() => {
+            expect(rendered.find(ErrorInfo).props("defaultMessage")).toBe("could not remove reports.read from b@example.com");
+            expect(rendered.find(ErrorInfo).props("apiError")).not.toBe(null);
+            done();
+        });
+    });
 });

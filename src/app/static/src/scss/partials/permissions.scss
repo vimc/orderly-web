@@ -8,21 +8,21 @@
   }
 }
 
-.remove-user-group {
+.remove {
   cursor: pointer;
   color: $danger;
   line-height: 1em;
   vertical-align: top;
 }
 
-.remove-user-group:hover {
+.remove:hover {
   color: darken($danger, 10%);
   text-decoration: underline;
 }
 
 ul.roles {
 
-  ul.members {
+  ul.children {
     margin-left: 30px;
     margin-top: -5px;
     padding-bottom: 20px;
@@ -43,7 +43,7 @@ ul.roles {
       }
     }
 
-    &.has-members {
+    &.has-children {
       cursor: pointer;
 
       .expander {
