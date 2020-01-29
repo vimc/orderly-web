@@ -1,5 +1,5 @@
 <template>
-    <div id="role-list" class="col-4 ">
+    <div id="role-list">
         <role-list :can-remove-members="true"
                    :can-add-members="true"
                    :can-remove-roles="false"

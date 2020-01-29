@@ -15,6 +15,7 @@ interface UserRepository
     fun getUser(email: String): UserDetails?
     fun getScopedReportReaderUsers(reportName: String): List<User>
     fun getGlobalReportReaderUsers(): List<User>
+    fun getAllUsers(): List<User>
     fun getUserEmails(): List<String>
 }
 
@@ -48,6 +49,18 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
                     .fetch()
 
             return result.map(userMapper::mapUser)
+        }
+    }
+
+    override fun getAllUsers(): List<User>
+    {
+        return JooqContext().use {
+            it.dsl.select(ORDERLYWEB_USER.USERNAME,
+                    ORDERLYWEB_USER.DISPLAY_NAME,
+                    ORDERLYWEB_USER.EMAIL)
+                    .from(ORDERLYWEB_USER)
+                    .fetch()
+                    .map(userMapper::mapUser)
         }
     }
 
@@ -100,7 +113,7 @@ class OrderlyUserRepository(private val userMapper: UserMapper = UserMapper()) :
         }
     }
 
-    private fun JooqContext.reportReadersQuery(): SelectConditionStep<Record3<String,String,String>>
+    private fun JooqContext.reportReadersQuery(): SelectConditionStep<Record3<String, String, String>>
     {
         return this.dsl.select(ORDERLYWEB_USER.USERNAME,
                 ORDERLYWEB_USER.DISPLAY_NAME,
