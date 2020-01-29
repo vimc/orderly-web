@@ -36,6 +36,18 @@ object WebUserRouteConfig : RouteConfig
                     contentType = ContentTypes.json)
                     .json()
                     .transform()
+                    .secure(usersManage),
+            WebEndpoint("/users/:user-id/permissions/",
+                    UserController::class, "addPermission",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/users/:user-id/permissions/:name",
+                    UserController::class, "removePermission",
+                    method = HttpMethod.delete)
+                    .json()
+                    .transform()
                     .secure(usersManage)
     )
 }
