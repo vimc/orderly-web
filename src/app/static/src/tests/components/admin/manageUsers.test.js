@@ -12,13 +12,13 @@ describe("manage users", () => {
             username: "a.user",
             display_name: "Some name",
             email: "a@example.com",
-            permissions: []
+            direct_permissions: []
         },
         {
             username: "b.user",
             display_name: "Some other name",
             email: "b@example.com",
-            permissions: [{
+            direct_permissions: [{
                 name: "reports.read",
                 scope_id: "",
                 scope_prefix: null
