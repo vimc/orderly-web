@@ -6,7 +6,7 @@
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
             <li v-for="(u, index) in filteredUsers"
-                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.permissions.length > 0}]">
+                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.direct_permissions.length > 0}]">
                 <div class="expander" v-on:click="toggle(index)"></div>
                 <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
@@ -66,7 +66,7 @@
                 api.post(`/user-groups/${encodeURIComponent(user.email)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.error = null;
-                        user.permissions.splice(user.permissions.indexOf(permission), 1);
+                        user.direct_permissions.splice(user.direct_permissions.indexOf(permission), 1);
                     })
                     .catch((error) => {
                         this.error = error;
