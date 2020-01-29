@@ -49,50 +49,10 @@ class UsersTests : IntegrationTest()
     @Test
     fun `only user managers can associate permission`()
     {
-        val url = "/user-groups/test.user%40example.com/actions/associate-permission/"
+        val url = "/users/test.user%40example.com/actions/associate-permission/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("action" to "add",
                 "name" to "users.manage"))
     }
-
-    @Test
-    fun `only user managers can add new user groups`()
-    {
-        val url = "/user-groups/"
-
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP"))
-    }
-
-    @Test
-    fun `only user managers can get user emails`()
-    {
-        val url = "/typeahead/emails/"
-
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json)
-    }
-
-    @Test
-    fun `only user managers can add users to groups`()
-    {
-        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
-        val url = "/user-groups/Funder/"
-
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                contentType = ContentTypes.json, method = HttpMethod.post,
-                postData = mapOf("email" to "test.user@example.com"))
-    }
-
-    @Test
-    fun `only user managers can remove users from groups`()
-    {
-        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
-        addMembers("Funder", "test.user@example.com")
-        val url = "/user-groups/Funder/user/test.user@example.com"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
-            method = HttpMethod.delete, contentType = ContentTypes.json)
-    }
-
 }

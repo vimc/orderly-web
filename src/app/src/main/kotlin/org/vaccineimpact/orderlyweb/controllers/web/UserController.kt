@@ -6,7 +6,11 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
+import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserController(context: ActionContext,
@@ -47,5 +51,30 @@ class UserController(context: ActionContext,
         return userRepo.getUserEmails()
     }
 
+    fun associatePermission(): String
+    {
+        val userId = userId()
+
+        val postData = context.postData()
+        val associatePermission = AssociatePermission(
+                postData["action"] ?: throw MissingParameterError("action"),
+                postData["name"] ?: throw MissingParameterError("name"),
+                postData["scope_prefix"],
+                postData["scope_id"]
+        )
+
+        val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
+
+        when (associatePermission.action)
+        {
+            "add" -> authRepo.ensureUserGroupHasPermission(userId, permission)
+            "remove" -> authRepo.ensureUserGroupDoesNotHavePermission(userId, permission)
+            else -> throw IllegalArgumentException("Unknown action type")
+        }
+
+        return okayResponse()
+    }
+
+    private fun userId(): String = context.params(":user-id")
     private fun report(): String = context.params(":report")
 }

@@ -56,7 +56,7 @@
                     action: "add"
                 };
 
-                api.post(`/user-groups/${encodeURIComponent(this.newUserGroup)}/actions/associate-permission/`, data)
+                api.post(`/${this.type}s/${encodeURIComponent(this.newUserGroup)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.newUserGroup = "";
                         this.error = null;

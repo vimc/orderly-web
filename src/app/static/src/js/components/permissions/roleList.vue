@@ -51,7 +51,7 @@
                 return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)
             },
             removeMember: function (roleName, email) {
-                api.delete(`/user-groups/${encodeURIComponent(roleName)}/user/${encodeURIComponent(email)}`)
+                api.delete(`/roles/${encodeURIComponent(roleName)}/users/${encodeURIComponent(email)}`)
                     .then(() => {
                         this.$emit('removed', roleName, email);
                         this.error = null;
@@ -66,7 +66,7 @@
                     ...this.permission,
                     action: "remove"
                 };
-                api.post(`/user-groups/${encodeURIComponent(roleName)}/actions/associate-permission/`, data)
+                api.post(`/roles/${encodeURIComponent(roleName)}/actions/associate-permission/`, data)
                     .then(() => {
                         this.$emit("removed", roleName);
                         this.error = null;
