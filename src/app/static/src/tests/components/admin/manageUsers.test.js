@@ -116,7 +116,7 @@ describe("manage users", () => {
     });
 
     it("can remove permission", async (done) => {
-        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+        mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(200);
 
         const rendered = mount(ManageUsers);
@@ -132,7 +132,7 @@ describe("manage users", () => {
         rendered.find(".remove").trigger("click");
 
         setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.delete.length).toBe(1);
 
             expect(rendered.findAll(".remove").length).toBe(0);
             done();
@@ -141,7 +141,7 @@ describe("manage users", () => {
     });
 
     it("sets error if removing permission fails", async (done) => {
-        mockAxios.onPost('http://app/user-groups/b%40example.com/actions/associate-permission/')
+        mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(500);
 
         const rendered = mount(ManageUsers);

@@ -58,12 +58,11 @@
                     })
             },
             removePermission: function (permission, user) {
-                const data = {
-                    action: "remove",
-                    ...permission
-                };
+                const scopeId = permission.scope_id;
+                const scopePrefix = permission.scope_prefix;
+                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
 
-                api.post(`/user-groups/${encodeURIComponent(user.email)}/actions/associate-permission/`, data)
+                api.delete(`/users/${encodeURIComponent(user.email)}/permissions/${permission.name}/${query}`)
                     .then(() => {
                         this.error = null;
                         user.permissions.splice(user.permissions.indexOf(permission), 1);

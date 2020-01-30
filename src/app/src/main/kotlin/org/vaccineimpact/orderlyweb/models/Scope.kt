@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.models
 
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionDTO
+import org.vaccineimpact.orderlyweb.viewmodels.PermissionViewModel
 
 sealed class Scope(val value: String)
 {
@@ -56,16 +56,16 @@ sealed class Scope(val value: String)
             }
         }
 
-        fun parse(permissionDTO: PermissionDTO): Scope
+        fun parse(permissionVM: PermissionViewModel): Scope
         {
-            return if (permissionDTO.scopePrefix.isNullOrEmpty())
+            return if (permissionVM.scopePrefix.isNullOrEmpty())
             {
                 Scope.Global()
             }
             else
             {
 
-                Scope.Specific(permissionDTO.scopePrefix, permissionDTO.scopeId!!)
+                Scope.Specific(permissionVM.scopePrefix, permissionVM.scopeId!!)
             }
         }
 
