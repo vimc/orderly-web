@@ -30,7 +30,7 @@ describe("rolePermissionsList", () => {
     const getWrapper = function() {
         return shallowMount(RolePermissionsList, {
             propsData: {roles: mockRoles}
-        })
+        });
     };
 
     it('renders as expected', () => {
@@ -80,20 +80,14 @@ describe("rolePermissionsList", () => {
         });
         await Vue.nextTick();
 
-        //NB This will change on merge with latest master
-        const url = 'http://app/user-groups/Funders/actions/associate-permission';
-        mockAxios.onPost(url)
+        const url = 'http://app/roles/Funders/permissions/reports.read/';
+        mockAxios.onDelete(url)
             .reply(200);
 
         wrapper.find(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
         setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
-            const data = JSON.parse(mockAxios.history.post[0].data);
-            expect(data.action).toBe("remove");
-            expect(data.name).toBe("reports.read");
-            expect(data.scope_prefix).toBe(null);
-            expect(data.scope_id).toBe("*");
+            expect(mockAxios.history.delete.length).toBe(1);
+            expect(mockAxios.history.delete[0].url).toBe(url);
 
             expect(wrapper.emitted().removed.length).toBe(1);
             expect(wrapper.emitted().removed[0][0]).toBe("Funders");
@@ -109,20 +103,39 @@ describe("rolePermissionsList", () => {
     it('sets errors and does not emit event on unsuccessful remove', async (done) => {
         const wrapper = getWrapper();
 
-        //NB This will change on merge with latest master
-        const url = 'http://app/user-groups/Funders/actions/associate-permission';
-        mockAxios.onPost(url)
+        const url = 'http://app/roles/Funders/permissions/reports.read/';
+        mockAxios.onDelete(url)
             .reply(500, "TEST API ERROR");
 
         wrapper.find(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
         setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe(url);
+            expect(mockAxios.history.delete.length).toBe(1);
+            expect(mockAxios.history.delete[0].url).toBe(url);
 
             expect(wrapper.emitted().removed).toBe(undefined);
 
             expect(wrapper.vm.$data.error.response.data).toBe("TEST API ERROR");
             expect(wrapper.vm.$data.defaultMessage).toBe("could not remove permission from Funders");
+
+            done();
+        });
+    });
+
+    it('calls api with correct url when permission is scoped', async (done) => {
+        const scopedRole = {
+            name: "ScopedRole",
+            permissions: [{name: "test.perm", scope_prefix: "report", scope_id: "r1"}]
+        };
+
+        const wrapper = shallowMount(RolePermissionsList, {
+            propsData: {roles: [scopedRole]}
+        });
+
+        wrapper.find(PermissionList).vm.$emit("removed", scopedRole.permissions[0], "ScopedRole");
+        setTimeout(() => {
+            expect(mockAxios.history.delete.length).toBe(1);
+            const url = "http://app/roles/ScopedRole/permissions/test.perm/?scopePrefix=report&scopeId=r1";
+            expect(mockAxios.history.delete[0].url).toBe(url);
 
             done();
         });

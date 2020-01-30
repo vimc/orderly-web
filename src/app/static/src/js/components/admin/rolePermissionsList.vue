@@ -37,12 +37,10 @@
                 Vue.set(this.expanded, index, !this.expanded[index]);
             },
             removePermission: function (permission, roleName) {
-                //NB This route is about to change! Merge with master after mrc-1294 has been merged
-                const data = {
-                    ...permission,
-                    action: "remove"
-                };
-                api.post(`/user-groups/${encodeURIComponent(roleName)}/actions/associate-permission`, data)
+                const queryString = permission.scope_prefix ?
+                    `?scopePrefix=${encodeURIComponent(permission.scope_prefix)}&scopeId=${encodeURIComponent(permission.scope_id)}` : "";
+
+                api.delete(`/roles/${encodeURIComponent(roleName)}/permissions/${permission.name}/${queryString}`)
                     .then(() => {
                         this.$emit('removed', roleName, permission);
                         this.error = null;
