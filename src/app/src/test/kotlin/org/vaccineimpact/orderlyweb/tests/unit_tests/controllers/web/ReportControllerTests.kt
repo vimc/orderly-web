@@ -341,54 +341,6 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `showPermissionManagement is true if user has users manage permission and fine grained auth is on`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
-        }
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn true
-        }
-        val sut = ReportController(actionContext, mockOrderly)
-        val result = sut.getByNameAndVersion(mockConfig)
-        assertThat(result.showPermissionManagement).isTrue()
-    }
-
-    @Test
-    fun `showPermissionManagement is false for users without users manage permission`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn false
-        }
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn true
-        }
-        val sut = ReportController(actionContext, mockOrderly)
-        val result = sut.getByNameAndVersion(mockConfig)
-        assertThat(result.showPermissionManagement).isFalse()
-    }
-
-    @Test
-    fun `showPermissionManagement is false if fine grained auth is off`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("users.manage", Scope.Global())) } doReturn true
-        }
-        val mockConfig = mock<Config> {
-            on { authorizationEnabled } doReturn false
-        }
-        val sut = ReportController(actionContext, mockOrderly)
-        val result = sut.getByNameAndVersion(mockConfig)
-        assertThat(result.showPermissionManagement).isFalse()
-    }
-
-    @Test
     fun `creates correct breadcrumbs`()
     {
         val sut = ReportController(mockActionContext, mockOrderly)

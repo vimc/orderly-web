@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
-<#-- @ftlvariable name="isAdmin" type="Boolean" -->
+<#-- @ftlvariable name="showPermissionManagement" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>

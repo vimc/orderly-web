@@ -70,11 +70,14 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
     )
 
+    private val testDefaultModel = DefaultViewModel(true, "username",
+            isReviewer = true,
+            isAdmin = true,
+            breadcrumbs = listOf(Breadcrumb("name", "url")))
+
     private val testModel = ReportVersionPageViewModel(
             testReport,
             "/testFocalArtefactUrl",
-            false,
-            false,
             false,
             testArtefactViewModels,
             testDataLinks,
@@ -82,9 +85,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
             listOf(),
             listOf(),
-            listOf(Breadcrumb("name", "url")),
-            true,
-            "userName")
+            testDefaultModel)
 
     @Test
     fun `renders outline correctly`()
@@ -316,22 +317,7 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `reviewers see publish switch`()
     {
-        val mockModel =  ReportVersionPageViewModel(
-                testReport,
-                "/testFocalArtefactUrl",
-                isReviewer = true,
-                isRunner = false,
-                showPermissionManagement = false,
-                artefacts = testArtefactViewModels,
-                dataLinks = testDataLinks,
-                resources = testResources,
-                zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-                versions = listOf(),
-                changelog = listOf(),
-                breadcrumbs = listOf(Breadcrumb("name", "url")),
-                loggedIn = true,
-                userName = "userName")
-
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isReviewer = true))
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
@@ -341,22 +327,7 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `non reviewers do not see publish switch`()
     {
-        val mockModel =  ReportVersionPageViewModel(
-                testReport,
-                "/testFocalArtefactUrl",
-                isReviewer = false,
-                isRunner = false,
-                showPermissionManagement = false,
-                artefacts = testArtefactViewModels,
-                dataLinks = testDataLinks,
-                resources = testResources,
-                zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-                versions = listOf(),
-                changelog = listOf(),
-                breadcrumbs = listOf(Breadcrumb("name", "url")),
-                loggedIn = true,
-                userName = "userName")
-
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isReviewer = false))
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
@@ -367,7 +338,6 @@ class VersionPageTests : TeamcityTests()
     fun `runners see run report`()
     {
         val mockModel = testModel.copy(isRunner = true)
-
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
@@ -388,21 +358,7 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `report readers are shown if showPermissionManagement is true`()
     {
-        val mockModel = ReportVersionPageViewModel(
-            testReport,
-            "/testFocalArtefactUrl",
-            isReviewer = false,
-            isRunner = false,
-            showPermissionManagement = true,
-            artefacts = testArtefactViewModels,
-            dataLinks = testDataLinks,
-            resources = testResources,
-            zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-            versions = listOf(),
-            changelog = listOf(),
-            breadcrumbs = listOf(Breadcrumb("name", "url")),
-            loggedIn = true,
-            userName = "userName")
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isAdmin = true))
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
         val doc = template.jsoupDocFor(mockModel)
@@ -418,21 +374,7 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `report readers are not shown if showPermissionManagement is false`()
     {
-        val mockModel =  ReportVersionPageViewModel(
-            testReport,
-            "/testFocalArtefactUrl",
-            isReviewer = false,
-            isRunner = false,
-            showPermissionManagement = false,
-            artefacts = testArtefactViewModels,
-            dataLinks = testDataLinks,
-            resources = testResources,
-            zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
-            versions = listOf(),
-            changelog = listOf(),
-            breadcrumbs = listOf(Breadcrumb("name", "url")),
-            loggedIn = true,
-            userName = "userName")
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isAdmin = false))
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
