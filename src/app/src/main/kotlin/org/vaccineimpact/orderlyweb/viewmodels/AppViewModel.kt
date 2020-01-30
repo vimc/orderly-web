@@ -13,7 +13,7 @@ data class Breadcrumb(val name: String, val url: String?)
 data class DefaultViewModel(override val loggedIn: Boolean,
                             override val user: String?,
                             override val isReviewer: Boolean,
-                            val isAdmin: Boolean,
+                            override val isAdmin: Boolean,
                             override val breadcrumbs: List<Breadcrumb>,
                             private val appConfig: Config = AppConfig()) : AppViewModel
 {
@@ -32,7 +32,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
     override val logo = appConfig["app.logo"]
     override val montaguUrl = appConfig["montagu.url"]
 
-    override val showPermissionManagement = isAdmin && appConfig.authorizationEnabled
+    override val fineGrainedAuth = appConfig.authorizationEnabled
 
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
 
@@ -58,6 +58,8 @@ interface AppViewModel
     val appUrl: String
 
     val isReviewer: Boolean
-    val showPermissionManagement: Boolean
+    val isAdmin: Boolean
+
+    val fineGrainedAuth: Boolean
 }
 

@@ -1,6 +1,8 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetails" -->
 <#-- @ftlvariable name="reportJson" type="String" -->
-<#-- @ftlvariable name="showPermissionManagement" type="Boolean" -->
+<#-- @ftlvariable name="isAdmin" type="Boolean" -->
+<#-- @ftlvariable name="isReviewer" type="Boolean" -->
+<#-- @ftlvariable name="fineGrainedAuth" type="Boolean" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
@@ -28,12 +30,12 @@
                         <hr/>
                         <div class="pl-3">
                             <#include "partials/version-picker.ftl">
-                            <#if isReviewer>
+                            <#if isReviewer && fineGrainedAuth>
                                 <div id="publishSwitchVueApp" class="pt-3">
                                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                                 </div>
                             </#if>
-                            <#if showPermissionManagement>
+                            <#if isAdmin && fineGrainedAuth>
                                 <div id="reportReadersListVueApp" class="mt-5">
                                     <label class="font-weight-bold">
                                         Global read access

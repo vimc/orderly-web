@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import freemarker.ext.beans.StringModel
@@ -79,6 +80,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
+            on { hasPermission(any())} doReturn true
         }
         val model = IndexViewModel(mockContext, listOf(), listOf())
 
@@ -90,6 +92,8 @@ class TemplateObjectWrapperTests : TeamcityTests()
         assertThat(result["user"].toString()).isEqualTo("user.name")
         assertThat((result["loggedIn"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
         assertThat((result["isReviewer"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
+        assertThat((result["isAdmin"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
+        assertThat((result["fineGrainedAuth"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
         assertThat((result["reports"])).isNotNull()
         assertThat((result["pinnedReports"])).isNotNull()
     }

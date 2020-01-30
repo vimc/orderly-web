@@ -48,7 +48,25 @@ class DefaultViewModelTests : TeamcityTests()
     }
 
     @Test
-    fun `showPermissionManagement is false if isAdmin is false`()
+    fun `fineGrainedAuth is false if auth is not enabled`()
+    {
+        val mockConfig = mock<Config>()
+        {
+            on { authorizationEnabled } doReturn false
+        }
+
+        val sut = DefaultViewModel(true,
+                "username",
+                isReviewer = true,
+                isAdmin = false,
+                breadcrumbs = listOf(IndexViewModel.breadcrumb),
+                appConfig = mockConfig)
+
+        assertThat(sut.fineGrainedAuth).isFalse()
+    }
+
+    @Test
+    fun `fineGrainedAuth is true if auth is enabled`()
     {
         val mockConfig = mock<Config>()
         {
@@ -62,25 +80,7 @@ class DefaultViewModelTests : TeamcityTests()
                 breadcrumbs = listOf(IndexViewModel.breadcrumb),
                 appConfig = mockConfig)
 
-        assertThat(sut.showPermissionManagement).isFalse()
-    }
-
-    @Test
-    fun `showPermissionManagement is false if auth is not enabled`()
-    {
-        val mockConfig = mock<Config>()
-        {
-            on { authorizationEnabled } doReturn false
-        }
-
-        val sut = DefaultViewModel(true,
-                "username",
-                isReviewer = true,
-                isAdmin = true,
-                breadcrumbs = listOf(IndexViewModel.breadcrumb),
-                appConfig = mockConfig)
-
-        assertThat(sut.showPermissionManagement).isFalse()
+        assertThat(sut.fineGrainedAuth).isTrue()
     }
 
     @Test

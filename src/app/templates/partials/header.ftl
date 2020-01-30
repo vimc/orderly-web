@@ -25,7 +25,7 @@
     </div>
     <#if loggedIn>
         <div class="logout">
-            <#if showPermissionManagement>
+            <#if isAdmin && fineGrainedAuth>
                 <span>
                     <a href="/admin">Admin</a> |
                 </span>
