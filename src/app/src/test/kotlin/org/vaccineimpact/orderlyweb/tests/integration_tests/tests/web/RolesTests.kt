@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.addMembers
 import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class RolesTests : IntegrationTest()
 {
@@ -80,4 +81,55 @@ class RolesTests : IntegrationTest()
         assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
                 contentType = ContentTypes.json)
     }
+
+    @Test
+    fun `only user managers can associate permission`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/roles/Funder/actions/associate-permission/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("action" to "add",
+                "name" to "users.manage"))
+    }
+
+    @Test
+    fun `only user managers can add new user groups`()
+    {
+        val url = "/roles/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post, postData = mapOf("name" to "NEWGROUP"))
+    }
+
+    @Test
+    fun `only user managers can get user emails`()
+    {
+        val url = "/typeahead/emails/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `only user managers can add users to groups`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/roles/Funder/users/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.post,
+                postData = mapOf("email" to "test.user@example.com"))
+    }
+
+    @Test
+    fun `only user managers can remove users from groups`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        addMembers("Funder", "test.user@example.com")
+        val url = "/roles/Funder/users/test.user@example.com"
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                method = HttpMethod.delete, contentType = ContentTypes.json)
+    }
+
 }

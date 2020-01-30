@@ -137,7 +137,7 @@ describe("roleList", () => {
 
     it('removes role and emits removed event', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+        mockAxios.onPost('http://app/roles/Funders/actions/associate-permission/')
             .reply(200);
 
         const wrapper = shallowMount(RoleList, {
@@ -158,7 +158,7 @@ describe("roleList", () => {
 
     it('sets error if removing role fails', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+        mockAxios.onPost('http://app/roles/Funders/actions/associate-permission/')
             .reply(500);
 
         const wrapper = shallowMount(RoleList, {
@@ -181,7 +181,7 @@ describe("roleList", () => {
 
     it('removes member and emits removed event', (done) => {
 
-        mockAxios.onDelete('http://app/user-groups/Funders/user/bob')
+        mockAxios.onDelete('http://app/roles/Funders/users/bob')
             .reply(200);
 
         const wrapper = shallowMount(RoleList, {
@@ -202,7 +202,7 @@ describe("roleList", () => {
 
     it('sets error if removing member fails', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/user/bob')
+        mockAxios.onPost('http://app/roles/Funders/users/bob')
             .reply(500);
 
         const wrapper = shallowMount(RoleList, {
