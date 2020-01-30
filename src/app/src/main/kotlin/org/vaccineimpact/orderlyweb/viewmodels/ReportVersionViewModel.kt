@@ -27,32 +27,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
-//    constructor(report: ReportVersionDetails,
-//                focalArtefactUrl: String?,
-//                isReviewer: Boolean,
-//                isRunner: Boolean,
-//                showPermissionManagement: Boolean,
-//                artefacts: List<ArtefactViewModel>,
-//                dataLinks: List<InputDataViewModel>,
-//                resources: List<DownloadableFileViewModel>,
-//                zipFile: DownloadableFileViewModel,
-//                versions: List<VersionPickerViewModel>,
-//                changelog: List<ChangelogViewModel>,
-//                breadcrumbs: List<Breadcrumb>,
-//                loggedIn: Boolean,
-//                userName: String) :
-//
-//            this(report,
-//                    focalArtefactUrl,
-//                    isRunner,
-//                    artefacts,
-//                    dataLinks,
-//                    resources,
-//                    zipFile,
-//                    versions,
-//                    changelog,
-//                    DefaultViewModel(loggedIn, userName, isReviewer, showPermissionManagement, breadcrumbs))
-
     companion object
     {
         fun build(report: ReportVersionDetails,
