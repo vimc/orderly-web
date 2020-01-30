@@ -82,4 +82,30 @@ class DefaultViewModelTests : TeamcityTests()
 
         assertThat(sut.showPermissionManagement).isFalse()
     }
+
+    @Test
+    fun `isReviewer is true if user has global review permission`()
+    {
+        val mockContext = mock<ActionContext>()
+        {
+            on { hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
+        }
+
+        val sut = DefaultViewModel(mockContext, IndexViewModel.breadcrumb)
+
+        assertThat(sut.isReviewer).isTrue()
+    }
+
+    @Test
+    fun `isReviewer is false if user does not have global review permission`()
+    {
+        val mockContext = mock<ActionContext>()
+        {
+            on { hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
+        }
+
+        val sut = DefaultViewModel(mockContext, IndexViewModel.breadcrumb)
+
+        assertThat(sut.isReviewer).isFalse()
+    }
 }

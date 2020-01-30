@@ -289,32 +289,6 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `report reviewers are admins`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn true
-        }
-        val sut = ReportController(actionContext, mockOrderly)
-        val result = sut.getByNameAndVersion()
-        assertThat(result.isReviewer).isTrue()
-    }
-
-    @Test
-    fun `non report reviewers are not admins`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":name") } doReturn "r1"
-            on { this.params(":version") } doReturn versionId
-            on { this.hasPermission(ReifiedPermission("reports.review", Scope.Global())) } doReturn false
-        }
-        val sut = ReportController(actionContext, mockOrderly)
-        val result = sut.getByNameAndVersion()
-        assertThat(result.isReviewer).isFalse()
-    }
-
-    @Test
     fun `users with report running permissions are report runners`()
     {
         val actionContext = mock<ActionContext> {
