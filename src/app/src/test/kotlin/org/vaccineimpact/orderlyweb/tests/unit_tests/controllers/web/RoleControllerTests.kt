@@ -345,7 +345,7 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `does not throw exception if remove differnt user from Admin role`()
+    fun `does not throw exception if remove different user from Admin role`()
     {
         val mockProfile = mock<CommonProfile>{
             on { id } doReturn "test@example.com"
