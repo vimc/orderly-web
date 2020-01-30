@@ -45,7 +45,7 @@
             },
             roleAdded: function (role) {
                 const data = {name: role};
-                api.post(`/user-groups/`, data)
+                api.post(`/roles/`, data)
                     .then(() => {
                         this.addRoleError = "";
                         this.addRoleDefaultMessage = "";
