@@ -61,7 +61,7 @@ class ScopeTests: TeamcityTests()
     }
 
     @Test
-    fun `can parse from AssociatePermission`()
+    fun `can parse from PermissionViewModel`()
     {
         val globalPerm = PermissionViewModel("perm", null, null, "")
         assertThat(Scope.parse(globalPerm)).isInstanceOf(Scope.Global::class.java)
