@@ -2,6 +2,7 @@ import {mount} from '@vue/test-utils';
 import ManageRoles from "../../../js/components/admin/manageRoles.vue";
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
+import AddRole from "../../../js/components/admin/addRole.vue";
 import Vue from "vue";
 
 describe("manageRoles", () => {
@@ -48,6 +49,12 @@ describe("manageRoles", () => {
 
     });
 
+    it('renders addRole', () => {
+        const wrapper = mount(ManageRoles);
+        expect(wrapper.find(AddRole).props().error).toBe("");
+        expect(wrapper.find(AddRole).props().defaultMessage).toBe("");
+    });
+
     it('fetches roles and typeahead emails on mount', (done) => {
         const wrapper = mount(ManageRoles);
 
@@ -82,6 +89,51 @@ describe("manageRoles", () => {
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(3);
                 expect(mockAxios.history.get[2].url).toBe("http://app/roles/");
+                done();
+            });
+        });
+    });
+
+    it('adds role when addRole emits added event', (done) => {
+        mockAxios.onPost('http://app/roles/')
+            .reply(200);
+
+        const wrapper = mount(ManageRoles);
+        setTimeout(() => {
+            wrapper.find(AddRole).vm.$emit("added", "NewRole");
+            setTimeout(() => {
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.post[0].url).toBe("http://app/roles/");
+                expect(mockAxios.history.post[0].method).toBe('post');
+                const data = JSON.parse(mockAxios.history.post[0].data);
+                expect(data.name).toBe("NewRole");
+
+                //should have refreshed roles too
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe("http://app/roles/");
+
+                expect(wrapper.vm.$data.addRoleError).toBe("");
+                expect(wrapper.vm.$data.addRoleDefaultMessage).toBe("");
+
+                done();
+            });
+        });
+    });
+
+    it('sets errors when add role fails', (done) => {
+        mockAxios.onPost('http://app/roles/')
+            .reply(500, "TEST ERROR");
+
+        const wrapper = mount(ManageRoles);
+        setTimeout(() => {
+            wrapper.find(AddRole).vm.$emit("added", "NewRole");
+            setTimeout(() => {
+                //should not have refreshed roles
+                expect(mockAxios.history.get.length).toBe(2);
+
+                expect(wrapper.vm.$data.addRoleError.response.data).toBe("TEST ERROR");
+                expect(wrapper.vm.$data.addRoleDefaultMessage).toBe("could not add role 'NewRole'");
+
                 done();
             });
         });

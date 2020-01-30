@@ -46,7 +46,7 @@ describe("addUserToRole", () => {
 
     it('add sets error and does not emit added event', async (done) => {
         const testError = {test: "something"};
-        mockAxios.onPost(`http://app/user-groups/TestRole/`)
+        mockAxios.onPost(`http://app/roles/TestRole/users/`)
             .reply(500, testError);
 
         const wrapper = createSut();
@@ -69,7 +69,7 @@ describe("addUserToRole", () => {
 
     it('add posts to role endpoint and emits added event', async (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/TestRole/`)
+        mockAxios.onPost(`http://app/roles/TestRole/users/`)
             .reply(200);
 
         const wrapper = createSut();

@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
-import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
 import spark.route.HttpMethod
 
 object WebUserRouteConfig : RouteConfig
@@ -26,33 +25,21 @@ object WebUserRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/user-groups/:user-group-id/actions/associate-permission/",
-                    UserGroupController::class, "associatePermission",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/user-groups/",
-                    UserGroupController::class, "addUserGroup",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/user-groups/:user-group-id/",
-                    UserGroupController::class, "addUser",
-                    method = HttpMethod.post)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
-            WebEndpoint("/user-groups/:user-group-id/user/:email",
-                    UserGroupController::class, "removeUser",
-                    method = HttpMethod.delete)
-                    .json()
-                    .transform()
-                    .secure(usersManage),
             WebEndpoint("/typeahead/emails/",
                     UserController::class, "getUserEmails",
                     contentType = ContentTypes.json)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/users/:user-id/permissions/",
+                    UserController::class, "addPermission",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/users/:user-id/permissions/:name",
+                    UserController::class, "removePermission",
+                    method = HttpMethod.delete)
                     .json()
                     .transform()
                     .secure(usersManage)
