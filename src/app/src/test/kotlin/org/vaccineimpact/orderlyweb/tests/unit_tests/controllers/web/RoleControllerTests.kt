@@ -343,4 +343,21 @@ class RoleControllerTests : TeamcityTests()
                 .isInstanceOf(UsersManageError::class.java)
                 .hasMessageContaining("You cannot remove yourself from the Admin role.")
     }
+
+    @Test
+    fun `does not throw exception if remove differnt user from Admin role`()
+    {
+        val mockProfile = mock<CommonProfile>{
+            on { id } doReturn "test@example.com"
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn mockProfile
+            on { params(":email") } doReturn "rogue-admin@example.com"
+            on { params(":role-id") } doReturn "Admin"
+        }
+
+        val sut = RoleController(mockContext, mock(), mock())
+        sut.removeUser();
+    }
 }
