@@ -84,7 +84,7 @@ class VersionPageTests : TeamcityTests()
             listOf(),
             listOf(Breadcrumb("name", "url")),
             true,
-            "appName")
+            "userName")
 
     @Test
     fun `renders outline correctly`()
@@ -316,7 +316,21 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `admins see publish switch`()
     {
-        val mockModel = testModel.copy(isAdmin = true)
+        val mockModel =  ReportVersionPageViewModel(
+                testReport,
+                "/testFocalArtefactUrl",
+                isAdmin = true,
+                isRunner = false,
+                showPermissionManagement = false,
+                artefacts = testArtefactViewModels,
+                dataLinks = testDataLinks,
+                resources = testResources,
+                zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+                versions = listOf(),
+                changelog = listOf(),
+                breadcrumbs = listOf(Breadcrumb("name", "url")),
+                loggedIn = true,
+                userName = "userName")
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
@@ -327,8 +341,21 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `non admins do not see publish switch`()
     {
-        val mockModel = testModel.copy(isAdmin = false)
-
+        val mockModel =  ReportVersionPageViewModel(
+                testReport,
+                "/testFocalArtefactUrl",
+                isAdmin = false,
+                isRunner = false,
+                showPermissionManagement = false,
+                artefacts = testArtefactViewModels,
+                dataLinks = testDataLinks,
+                resources = testResources,
+                zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+                versions = listOf(),
+                changelog = listOf(),
+                breadcrumbs = listOf(Breadcrumb("name", "url")),
+                loggedIn = true,
+                userName = "userName")
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 

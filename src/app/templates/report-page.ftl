@@ -37,7 +37,7 @@
                                 <div id="reportReadersListVueApp" class="mt-5">
                                     <label class="font-weight-bold">
                                         Global read access
-                                        <a href="#" class="small" data-toggle="tooltip" title="Coming soon!">
+                                        <a href="/admin" class="small">
                                             <edit-icon></edit-icon>
                                             Edit roles</a>
                                     </label>

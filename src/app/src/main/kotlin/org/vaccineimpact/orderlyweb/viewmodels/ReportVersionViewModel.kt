@@ -17,7 +17,6 @@ import java.time.format.DateTimeFormatter
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
-                                      val isAdmin: Boolean,
                                       val isRunner: Boolean,
                                       val showPermissionManagement: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -42,11 +41,10 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 changelog: List<ChangelogViewModel>,
                 breadcrumbs: List<Breadcrumb>,
                 loggedIn: Boolean,
-                appName: String) :
+                userName: String) :
 
             this(report,
                     focalArtefactUrl,
-                    isAdmin,
                     isRunner,
                     showPermissionManagement,
                     artefacts,
@@ -55,7 +53,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     zipFile,
                     versions,
                     changelog,
-                    DefaultViewModel(loggedIn, appName, breadcrumbs))
+                    DefaultViewModel(loggedIn, userName, isAdmin, breadcrumbs))
 
     companion object
     {
@@ -88,7 +86,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             val zipFile = fileViewModelBuilder
                     .buildZipFileViewModel()
 
-            val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
             val showPermissionManagement = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
                     && appConfig.authorizationEnabled
@@ -104,7 +101,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
-                    isAdmin,
                     isRunner,
                     showPermissionManagement,
                     artefactViewModels,
