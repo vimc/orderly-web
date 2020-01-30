@@ -120,7 +120,7 @@ describe("reportReadersList", () => {
 
     it('refreshes data when added event is emitted', async (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/test.user%40example.com/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/test.user%40example.com/permissions/`)
             .reply(200);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
@@ -157,7 +157,7 @@ describe("reportReadersList", () => {
 
     it('removes user and refreshes list of readers', (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/bob/actions/associate-permission/`)
+        mockAxios.onDelete(`http://app/users/bob/permissions/reports.read/?scopePrefix=report&scopeId=report1`)
             .reply(200);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
@@ -188,7 +188,7 @@ describe("reportReadersList", () => {
 
     it('sets error if removing user fails', (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/bob/actions/associate-permission/`)
+        mockAxios.onDelete("http://app/users/bob/permissions/reports.read/?scopePrefix=report&scopeId=report1")
             .reply(500);
 
         mockAxios.onGet('http://app/users/report-readers/report1/')
