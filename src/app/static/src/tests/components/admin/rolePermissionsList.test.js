@@ -29,7 +29,7 @@ describe("rolePermissionsList", () => {
 
     const getWrapper = function() {
         return shallowMount(RolePermissionsList, {
-            propsData: {roles: mockRoles}
+            propsData: {roles: [{...mockRoles[0]}, {...mockRoles[1]}]}
         });
     };
 
@@ -101,6 +101,7 @@ describe("rolePermissionsList", () => {
         });
     });
 
+
     it('sets errors and does not emit event on unsuccessful remove', async (done) => {
         const wrapper = getWrapper();
 
@@ -139,6 +140,54 @@ describe("rolePermissionsList", () => {
             expect(mockAxios.history.delete[0].url).toBe(url);
 
             done();
+        });
+    });
+
+    it('can add permission to role', async (done) => {
+        const wrapper = getWrapper();
+        wrapper.setData({
+            error: "TEST ERROR",
+            defaultMessage: "TEST DEFAULT"
+        });
+        await Vue.nextTick();
+
+        const url = 'http://app/roles/Funders/permissions/';
+        mockAxios.onPost(url)
+            .reply(200);
+
+        wrapper.find(PermissionList).vm.$emit("added", "reports.review");
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe(url);
+
+            expect(wrapper.find(ErrorInfo).props().apiError).toBeNull();
+            expect(wrapper.emitted().added.length).toBe(1);
+            done();
+        });
+    });
+
+    it('sets error if adding permission fails', async (done) => {
+        const wrapper = getWrapper();
+        wrapper.setData({
+            error: "TEST ERROR",
+            defaultMessage: "TEST DEFAULT"
+        });
+
+        await Vue.nextTick();
+
+        const url = 'http://app/roles/Funders/permissions/';
+        mockAxios.onPost(url)
+            .reply(500);
+
+        wrapper.find(PermissionList).vm.$emit("added", "reports.review");
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe(url);
+
+            expect(wrapper.emitted().added).toBeUndefined();
+            expect(wrapper.find(ErrorInfo).props().apiError).not.toBeNull();
+            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");            done();
         });
     });
 });
