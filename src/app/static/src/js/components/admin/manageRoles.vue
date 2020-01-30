@@ -7,12 +7,14 @@
                    :available-users="typeaheadEmails"
                    @removed="getRoles"
                    @added="getRoles"></role-list>
+        <add-role @added="roleAdded" :error="addRoleError" :default-message="addRoleDefaultMessage"></add-role>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
     import RoleList from "../permissions/roleList.vue";
+    import AddRole from "./addRole";
 
     export default {
         name: 'manageRoles',
@@ -23,7 +25,9 @@
         data() {
             return {
                 roles: [],
-                typeaheadEmails: []
+                typeaheadEmails: [],
+                addRoleError: "",
+                addRoleDefaultMessage: ""
             }
         },
         methods: {
@@ -38,10 +42,24 @@
                     .then(({data}) => {
                         this.typeaheadEmails = data.data
                     })
+            },
+            roleAdded: function (role) {
+                const data = {name: role};
+                api.post(`/roles/`, data)
+                    .then(() => {
+                        this.addRoleError = "";
+                        this.addRoleDefaultMessage = "";
+                        this.getRoles();
+                    })
+                    .catch((error) => {
+                        this.addRoleError = error;
+                        this.addRoleDefaultMessage = `could not add role '${role}'`
+                    });
             }
         },
         components: {
-            RoleList
+            RoleList,
+            AddRole
         }
     };
 </script>
