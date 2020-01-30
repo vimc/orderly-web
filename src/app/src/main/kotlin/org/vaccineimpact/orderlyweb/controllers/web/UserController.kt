@@ -3,11 +3,9 @@ package org.vaccineimpact.orderlyweb.controllers.web
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.*
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
-import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.permissionFromPostData
+import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserController(context: ActionContext,
@@ -57,26 +55,21 @@ class UserController(context: ActionContext,
         return userRepo.getUserEmails()
     }
 
-    fun associatePermission(): String
+
+    fun addPermission(): String
     {
         val userId = userId()
+        val permission = context.permissionFromPostData()
+        authRepo.ensureUserGroupHasPermission(userId, permission)
 
-        val postData = context.postData()
-        val associatePermission = AssociatePermission(
-                postData["action"] ?: throw MissingParameterError("action"),
-                postData["name"] ?: throw MissingParameterError("name"),
-                postData["scope_prefix"],
-                postData["scope_id"]
-        )
+        return okayResponse()
+    }
 
-        val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
-
-        when (associatePermission.action)
-        {
-            "add" -> authRepo.ensureUserGroupHasPermission(userId, permission)
-            "remove" -> authRepo.ensureUserGroupDoesNotHavePermission(userId, permission)
-            else -> throw IllegalArgumentException("Unknown action type")
-        }
+    fun removePermission(): String
+    {
+        val userId = userId()
+        val permission = context.permissionFromRouteParams()
+        authRepo.ensureUserGroupDoesNotHavePermission(userId, permission)
 
         return okayResponse()
     }

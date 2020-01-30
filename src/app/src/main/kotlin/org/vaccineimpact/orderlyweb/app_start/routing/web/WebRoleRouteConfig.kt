@@ -50,9 +50,15 @@ object WebRoleRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
-            WebEndpoint("/roles/:role-id/actions/associate-permission/",
-                    RoleController::class, "associatePermission",
+            WebEndpoint("/roles/:role-id/permissions/",
+                    RoleController::class, "addPermission",
                     method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/:role-id/permissions/:name",
+                    RoleController::class, "removePermission",
+                    method = HttpMethod.delete)
                     .json()
                     .transform()
                     .secure(usersManage)

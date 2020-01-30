@@ -194,14 +194,12 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[3].displayName).isEqualTo("r4@email.com")
     }
 
-
     @Test
     fun `adds permission to user`()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":user-id") } doReturn "user1@example.com"
             on { this.postData() } doReturn mapOf(
-                    "action" to "add",
                     "name" to "test.permission",
                     "scope_prefix" to "report",
                     "scope_id" to "report1"
@@ -209,8 +207,9 @@ class UserControllerTests : TeamcityTests()
         }
 
         val authRepo = mock<AuthorizationRepository>()
+
         val sut = UserController(actionContext, mock(), authRepo, mock())
-        val result = sut.associatePermission()
+        val result = sut.addPermission()
 
         assertThat(result).isEqualTo("OK")
 
@@ -218,8 +217,8 @@ class UserControllerTests : TeamcityTests()
         verify(authRepo).ensureUserGroupHasPermission(eq("user1@example.com"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 
     @Test
@@ -227,17 +226,16 @@ class UserControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":user-id") } doReturn "user1@example.com"
-            on { this.postData() } doReturn mapOf(
-                    "action" to "remove",
-                    "name" to "test.permission",
-                    "scope_prefix" to "report",
-                    "scope_id" to "report1"
-            )
+            on { this.params(":name") } doReturn "test.permission"
+
+            on { this.queryParams("scopeId") } doReturn "report1"
+            on { this.queryParams("scopePrefix") } doReturn "report"
         }
 
         val authRepo = mock<AuthorizationRepository>()
+
         val sut = UserController(actionContext, mock(), authRepo, mock())
-        val result = sut.associatePermission()
+        val result = sut.removePermission()
 
         assertThat(result).isEqualTo("OK")
 
@@ -245,7 +243,7 @@ class UserControllerTests : TeamcityTests()
         verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("user1@example.com"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 }

@@ -69,12 +69,13 @@
                         this.defaultMessage = "could not fetch list of users";
                     })
             },
-            removeUser: function (email) {
-                const data = {
-                    ...this.permission,
-                    action: "remove"
-                };
-                api.post(`/users/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+            removeUser: function(email) {
+                const scopeId = this.permission.scope_id;
+                const scopePrefix = this.permission.scope_prefix;
+                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
+
+                api.delete(`/users/${encodeURIComponent(email)}/permissions/${this.permission.name}/${query}`)
+
                     .then(() => {
                         this.getReaders();
                         this.error = null;
