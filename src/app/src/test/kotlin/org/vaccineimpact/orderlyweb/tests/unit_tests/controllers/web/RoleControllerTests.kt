@@ -6,11 +6,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.internal.verification.Times
+import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.errors.UsersManageError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -321,5 +323,24 @@ class RoleControllerTests : TeamcityTests()
 
         val sut = RoleController(actionContext, mock(), mock())
         Assertions.assertThatThrownBy { sut.addRole() }.isInstanceOf(MissingParameterError::class.java)
+    }
+
+    @Test
+    fun `throws exception if remove current user from Admin role`()
+    {
+        val mockProfile = mock<CommonProfile>{
+            on { id } doReturn "test@example.com"
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn mockProfile
+            on { params(":email") } doReturn "test@example.com"
+            on { params(":role-id") } doReturn "Admin"
+        }
+
+        val sut = RoleController(mockContext, mock(), mock())
+        Assertions.assertThatThrownBy { sut.removeUser() }
+                .isInstanceOf(UsersManageError::class.java)
+                .hasMessageContaining("You cannot remove yourself from the Admin role.")
     }
 }
