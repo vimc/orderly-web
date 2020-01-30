@@ -6,14 +6,14 @@
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
             <li v-for="(u, index) in filteredUsers"
-                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.permissions.length > 0}]">
+                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.direct_permissions.length > 0}]">
                 <div class="expander" v-on:click="toggle(index)"></div>
                 <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
 
-                <permission-list v-if="u.permissions.length > 0"
+                <permission-list v-if="u.direct_permissions.length > 0"
                                  v-show="expanded[index]"
-                                 :permissions="u.permissions"
+                                 :permissions="u.direct_permissions"
                                  :email="u.email"
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
@@ -65,7 +65,7 @@
                 api.delete(`/users/${encodeURIComponent(user.email)}/permissions/${permission.name}/${query}`)
                     .then(() => {
                         this.error = null;
-                        user.permissions.splice(user.permissions.indexOf(permission), 1);
+                        user.direct_permissions.splice(user.direct_permissions.indexOf(permission), 1);
                     })
                     .catch((error) => {
                         this.error = error;

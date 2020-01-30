@@ -63,10 +63,10 @@ class ScopeTests: TeamcityTests()
     @Test
     fun `can parse from PermissionViewModel`()
     {
-        val globalPerm = PermissionViewModel("perm", null, null)
+        val globalPerm = PermissionViewModel("perm", null, null, "")
         assertThat(Scope.parse(globalPerm)).isInstanceOf(Scope.Global::class.java)
 
-        val specificPerm = PermissionViewModel("perm", "testPrefix", "testId")
+        val specificPerm = PermissionViewModel("perm", "testPrefix", "testId", "")
         val specificScope = Scope.parse(specificPerm)
         assertThat(specificScope).isInstanceOf(Scope.Specific::class.java)
         assertThat((specificScope as Scope.Specific).databaseScopePrefix).isEqualTo("testPrefix")

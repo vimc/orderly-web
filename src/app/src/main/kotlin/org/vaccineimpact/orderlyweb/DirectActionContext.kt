@@ -115,14 +115,15 @@ open class DirectActionContext(private val context: SparkWebContext,
 fun ActionContext.permissionFromPostData(): ReifiedPermission
 {
     val postData = this.postData()
-    val associatePermission = PermissionViewModel(
+    val permission = PermissionViewModel(
             postData["name"] ?: throw MissingParameterError("name"),
             postData["scope_prefix"],
-            postData["scope_id"]
+            postData["scope_id"],
+            ""
     )
 
-    return ReifiedPermission(associatePermission.name,
-            Scope.parse(associatePermission))
+    return ReifiedPermission(permission.name,
+            Scope.parse(permission))
 }
 
 fun ActionContext.permissionFromRouteParams(): ReifiedPermission {

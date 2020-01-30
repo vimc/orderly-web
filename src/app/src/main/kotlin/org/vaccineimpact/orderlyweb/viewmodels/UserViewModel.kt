@@ -2,9 +2,11 @@ package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.Role
 
 data class UserViewModel(val email: String, val username: String, val displayName: String,
-                         val permissions: List<PermissionViewModel>)
+                         val directPermissions: List<PermissionViewModel>,
+                         val rolePermissions: List<PermissionViewModel>)
 {
     companion object
     {
@@ -17,13 +19,33 @@ data class UserViewModel(val email: String, val username: String, val displayNam
                 else -> user.email
             }
 
-            return UserViewModel(user.email, user.username, displayName, listOf())
+            return UserViewModel(user.email, user.username, displayName, listOf(), listOf())
         }
 
-        fun build(user: User, permissions: PermissionSet): UserViewModel
+        fun build(user: User, directPermissions: PermissionSet, roles: List<Role>): UserViewModel
         {
-            return build(user).copy(permissions = permissions.map { PermissionViewModel.build(it) }
-                    .sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::scopeId)))
+            val directPermissionVms = directPermissions.map { PermissionViewModel.build(it, user.email) }
+                    .sorted()
+
+            val flatListOfRolePermissions = roles.flatMap { r ->
+                r.permissions.map { p ->
+                    PermissionViewModel.build(p, r.name)
+                }
+            }
+
+            val rolePermissionVms = flatListOfRolePermissions
+                    .groupBy { hashSetOf(it.name, it.scopeId, it.scopePrefix) }
+                    .map { g ->
+                        val permission = g.value.first()
+                        val commaSeparatedSources = g.value
+                                .sortedBy { it.source }
+                                .joinToString { it.source }
+
+                        permission.copy(source = commaSeparatedSources)
+                    }.sorted()
+
+            return build(user).copy(directPermissions = directPermissionVms,
+                    rolePermissions = rolePermissionVms)
         }
 
         private fun isNotEmptyOrUnknown(value: String): Boolean

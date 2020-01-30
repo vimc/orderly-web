@@ -13,8 +13,8 @@ data class RoleViewModel(val name: String, val members: List<UserViewModel>, val
                         UserViewModel.build(it)
                     }.sortedBy { it.displayName },
                     role.permissions.map{
-                        PermissionViewModel.build(it)
-                    }.sortedWith(compareBy(PermissionViewModel::name, PermissionViewModel::scopeId)))
+                        PermissionViewModel.build(it, role.name)
+                    }.sorted())
         }
     }
 }

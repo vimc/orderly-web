@@ -12,13 +12,13 @@ describe("manage users", () => {
             username: "a.user",
             display_name: "Some name",
             email: "a@example.com",
-            permissions: []
+            direct_permissions: []
         },
         {
             username: "b.user",
             display_name: "Some other name",
             email: "b@example.com",
-            permissions: [{
+            direct_permissions: [{
                 name: "reports.read",
                 scope_id: "",
                 scope_prefix: null
@@ -92,7 +92,7 @@ describe("manage users", () => {
 
         expect(rendered.findAll("li").length).toBe(2);
         expect(rendered.findAll(PermissionList).length).toBe(1);
-        expect(rendered.find(PermissionList).props().permissions).toBe(mockUsers[1].permissions);
+        expect(rendered.find(PermissionList).props().permissions).toBe(mockUsers[1].direct_permissions);
 
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(false);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
