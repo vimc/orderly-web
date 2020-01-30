@@ -13,6 +13,9 @@
         "string",
         "null"
       ]
+    },
+    "source": {
+      "type": "string"
     }
   },
   "additionalProperties": false,

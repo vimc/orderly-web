@@ -1,9 +1,12 @@
 package org.vaccineimpact.orderlyweb.app_start.routing.web
 
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.WebEndpoint
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
-import org.vaccineimpact.orderlyweb.controllers.web.UserGroupController
+import org.vaccineimpact.orderlyweb.json
+import org.vaccineimpact.orderlyweb.secure
+import org.vaccineimpact.orderlyweb.transform
+import spark.route.HttpMethod
 
 object WebRoleRouteConfig : RouteConfig
 {
@@ -26,6 +29,36 @@ object WebRoleRouteConfig : RouteConfig
                     .transform(),
             WebEndpoint("/typeahead/roles/",
                     RoleController::class, "getAllRoleNames")
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/",
+                    RoleController::class, "addRole",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/:role-id/users/",
+                    RoleController::class, "addUser",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/:role-id/users/:email",
+                    RoleController::class, "removeUser",
+                    method = HttpMethod.delete)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/:role-id/permissions/",
+                    RoleController::class, "addPermission",
+                    method = HttpMethod.post)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
+            WebEndpoint("/roles/:role-id/permissions/:name",
+                    RoleController::class, "removePermission",
+                    method = HttpMethod.delete)
                     .json()
                     .transform()
                     .secure(usersManage)

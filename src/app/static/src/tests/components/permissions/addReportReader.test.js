@@ -1,10 +1,10 @@
 import {mount} from '@vue/test-utils';
-import AddPermission from "../../../js/components/permissions/addPermission.vue";
+import AddReportReader from "../../../js/components/permissions/addReportReader.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import Vue from "vue";
 
-describe("addPermission", () => {
+describe("addReportReader", () => {
 
     const availableUserGroups = [
         "testGroup1",
@@ -24,13 +24,9 @@ describe("addPermission", () => {
     }
 
     function createSut(type) {
-        return mount(AddPermission, {
+        return mount(AddReportReader, {
             propsData: {
-                permission: {
-                    name: "reports.read",
-                    scope_prefix: "report",
-                    scope_id: "report1"
-                },
+                reportName: "report1",
                 availableUserGroups: availableUserGroups,
                 type: type
             }
@@ -39,7 +35,7 @@ describe("addPermission", () => {
 
     it('add sets error and does not emit added event', async (done) => {
         const testError = {test: "something"};
-        mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/testGroup1/permissions/`)
             .reply(500, testError);
 
         const wrapper = createSut("user");
@@ -60,9 +56,9 @@ describe("addPermission", () => {
         });
     });
 
-    it('add calls associate permission endpoint and emits added event', async (done) => {
+    it('adds permission and emits added event', async (done) => {
 
-        mockAxios.onPost(`http://app/user-groups/testGroup1/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/users/testGroup1/permissions/`)
             .reply(200);
 
         const wrapper = createSut("user");

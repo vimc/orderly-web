@@ -1,6 +1,6 @@
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
-import {shallowMount, mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import ManageUsers from "../../../js/components/admin/manageUsers.vue";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
 
@@ -11,13 +11,13 @@ describe("manage users", () => {
             username: "a.user",
             display_name: "Some name",
             email: "a@example.com",
-            permissions: []
+            direct_permissions: []
         },
         {
             username: "b.user",
             display_name: "Some other name",
             email: "b@example.com",
-            permissions: [{
+            direct_permissions: [{
                 name: "reports.read",
                 scope_id: "",
                 scope_prefix: null
@@ -29,13 +29,17 @@ describe("manage users", () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/users/')
             .reply(200, {"data": mockUsers});
+        mockAxios.onGet("http://app/typeahead/permissions/")
+            .reply(200, {
+                "data": ["reports.review", "reports.read"]
+            })
     });
 
-    it("fetches users on mount", (done) => {
+    it("fetches users and permissions on mount", (done) => {
         shallowMount(ManageUsers);
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get.length).toBe(2);
             done();
         });
     });
@@ -82,7 +86,7 @@ describe("manage users", () => {
         expect(rendered.find("li .role-name").text()).toBe("Some other name");
     });
 
-    it("renders permission list iff user has permissions", async () => {
+    it("renders permission list", async () => {
         const rendered = shallowMount(ManageUsers);
         rendered.setData({allUsers: mockUsers});
         rendered.find("input").setValue("example");
@@ -90,8 +94,9 @@ describe("manage users", () => {
         await Vue.nextTick();
 
         expect(rendered.findAll("li").length).toBe(2);
-        expect(rendered.findAll(PermissionList).length).toBe(1);
-        expect(rendered.find(PermissionList).props().permissions).toBe(mockUsers[1].permissions);
+        expect(rendered.findAll(PermissionList).length).toBe(2);
+        expect(rendered.findAll(PermissionList).at(0).props().permissions).toBe(mockUsers[0].direct_permissions);
+        expect(rendered.findAll(PermissionList).at(1).props().permissions).toBe(mockUsers[1].direct_permissions);
 
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(false);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
@@ -114,7 +119,10 @@ describe("manage users", () => {
         expect(rendered.find(PermissionList).isVisible()).toBe(true);
     });
 
-    it("removes permission from visible user when removed event is emitted", async () => {
+    it("can remove permission", async (done) => {
+        mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
+            .reply(200);
+
         const rendered = mount(ManageUsers);
         rendered.setData({allUsers: mockUsers});
         rendered.find("input").setValue("other");
@@ -125,12 +133,100 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll("ul.children li").length).toBe(1);
+        rendered.find(".remove").trigger("click");
 
-        rendered.find(PermissionList).vm.$emit("removed", mockUsers[1].permissions[0]);
+        setTimeout(() => {
+            expect(mockAxios.history.delete.length).toBe(1);
+
+            expect(rendered.findAll(".remove").length).toBe(0);
+            done();
+        })
+
+    });
+
+    it("sets error if removing permission fails", async (done) => {
+        mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
+            .reply(500);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
 
         await Vue.nextTick();
 
-        expect(rendered.findAll("ul.children li").length).toBe(0);
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        rendered.find(".remove").trigger("click");
+
+        setTimeout(() => {
+            expect(rendered.find(".text-danger").text())
+                .toBe("Error: could not remove reports.read from b@example.com");
+            done();
+        });
+    });
+
+    it("can add permission", async (done) => {
+        mockAxios.onPost('http://app/users/b%40example.com/permissions/')
+            .reply(200);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
+
+        await Vue.nextTick();
+
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".name").length).toBe(1);
+        expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
+
+        rendered.findAll("input").at(1).setValue("reports.review");
+
+        await Vue.nextTick();
+
+        rendered.find("button").trigger("click");
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(rendered.findAll(".name").length).toBe(2);
+            expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
+            expect(rendered.findAll(".name").at(1).text()).toBe("reports.review");
+            done();
+        });
+    });
+
+    it("sets error if adding permission fails", async (done) => {
+        mockAxios.onPost('http://app/users/b%40example.com/permissions/')
+            .reply(500);
+
+        const rendered = mount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("other");
+
+        await Vue.nextTick();
+
+        rendered.find(".expander").trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".name").length).toBe(1);
+        expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
+
+        rendered.findAll("input").at(1).setValue("reports.review");
+
+        await Vue.nextTick();
+
+        rendered.find("button").trigger("click");
+
+        setTimeout(() => {
+            expect(rendered.find(".text-danger").text())
+                .toBe("Error: could not add reports.review to b@example.com");
+            done();
+            done();
+        });
     });
 });

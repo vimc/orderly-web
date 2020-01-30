@@ -14,7 +14,6 @@
 </template>
 
 <script>
-    import {api} from "../../utils/api";
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
 
@@ -45,21 +44,7 @@
                     this.defaultMessage = msg;
                     return;
                 }
-
-                const data = {
-                    action: "remove",
-                    ...this.newPermission
-                };
-
-                api.post(`/user-groups/${encodeURIComponent(this.email)}/actions/associate-permission/`, data)
-                    .then(() => {
-                        this.error = null;
-                        this.$emit("added", this.newPermission);
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = `could not add ${this.newPermission} to ${this.email}`;
-                    });
+                this.$emit("added", this.newPermission);
             }
         }
     };

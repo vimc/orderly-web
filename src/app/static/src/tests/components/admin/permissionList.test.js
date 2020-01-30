@@ -2,7 +2,7 @@ import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
 import {shallowMount} from "@vue/test-utils";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
-import ErrorInfo from "../../../js/components/errorInfo.vue";
+import AddPermission from "../../../js/components/admin/addPermission.vue";
 
 describe("permission list", () => {
 
@@ -17,7 +17,8 @@ describe("permission list", () => {
                     name: "reports.read",
                     scope_id: "r1",
                     scope_prefix: "report"
-                }]
+                }],
+                allPermissions: []
             }
         });
 
@@ -31,17 +32,15 @@ describe("permission list", () => {
                     name: "reports.read",
                     scope_id: "",
                     scope_prefix: null
-                }]
+                }],
+                allPermissions: []
             }
         });
 
         expect(rendered.find("li .name").text()).toBe("reports.read");
     });
 
-    it("can remove permission", async (done) => {
-        mockAxios.onPost('http://app/user-groups/test/actions/associate-permission/')
-            .reply(200);
-
+    it("emits removed event when remove is clicked", async () => {
         const perm = {
             name: "reports.read",
             scope_id: "",
@@ -51,7 +50,7 @@ describe("permission list", () => {
         const rendered = shallowMount(PermissionList, {
             propsData: {
                 permissions: [perm],
-                email: "test"
+                allPermissions: ["reports.read"]
             }
         });
 
@@ -59,44 +58,40 @@ describe("permission list", () => {
 
         await Vue.nextTick();
 
-        expect(mockAxios.history.post.length).toBe(1);
-
-        setTimeout(() => {
-            expect(rendered.emitted().removed[0][0]).toBe(perm);
-            expect(rendered.find(ErrorInfo).props("apiError")).toBe(null);
-            done();
-        });
+        expect(rendered.emitted().removed[0][0]).toStrictEqual(perm);
     });
 
-    it("sets error if removing permission fails", async (done) => {
-        mockAxios.onPost('http://app/user-groups/test/actions/associate-permission/')
-            .reply(500);
-
-        const perm = {
-            name: "reports.read",
-            scope_id: "",
-            scope_prefix: null
-        };
+    it("available permissions are any global permissions that the user doesn't have", () => {
 
         const rendered = shallowMount(PermissionList, {
             propsData: {
-                permissions: [perm],
-                email: "test"
+                permissions: [{
+                    name: "reports.review",
+                    scope_id: "",
+                    scope_prefix: null
+                }, {
+                    name: "reports.read",
+                    scope_id: "r1",
+                    scope_prefix: "report"
+                }],
+                allPermissions: ["reports.read", "reports.review", "users.manage"]
             }
         });
 
-        rendered.find(".remove").trigger("click");
-
-        await Vue.nextTick();
-
-        expect(mockAxios.history.post.length).toBe(1);
-
-        setTimeout(() => {
-            expect(rendered.emitted().removed).toBeUndefined();
-            expect(rendered.find(ErrorInfo).props("defaultMessage")).toBe("could not remove reports.read from test");
-            expect(rendered.find(ErrorInfo).props("apiError")).not.toBe(null);
-            done();
-        });
+        expect(rendered.find(AddPermission).props().availablePermissions)
+            .toStrictEqual(["reports.read", "users.manage"])
     });
+
+    it("only shows list of permissions if there are any", () => {
+        const rendered = shallowMount(PermissionList, {
+            propsData: {
+                permissions: [],
+                allPermissions: ["reports.read"]
+            }
+        });
+
+        expect(rendered.findAll("ul").length).toBe(0);
+    });
+
 
 });

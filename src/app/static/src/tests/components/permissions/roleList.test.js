@@ -137,11 +137,16 @@ describe("roleList", () => {
 
     it('removes role and emits removed event', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=r1')
             .reply(200);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
+                permission: {
+                    scope_id: "r1",
+                    scope_prefix: "report",
+                    name: "reports.read"
+                },
                 roles: mockRoles,
                 canRemoveRoles: true,
                 canRemoveMembers: true
@@ -158,11 +163,16 @@ describe("roleList", () => {
 
     it('sets error if removing role fails', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/actions/associate-permission/')
+        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?&scopePrefix=report&scopeId=r1')
             .reply(500);
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
+                permission: {
+                    scope_id: "r1",
+                    scope_prefix: "report",
+                    name: "reports.read"
+                },
                 roles: mockRoles,
                 canRemoveRoles: true,
                 canRemoveMembers: true
@@ -181,7 +191,7 @@ describe("roleList", () => {
 
     it('removes member and emits removed event', (done) => {
 
-        mockAxios.onDelete('http://app/user-groups/Funders/user/bob')
+        mockAxios.onDelete('http://app/roles/Funders/users/bob')
             .reply(200);
 
         const wrapper = shallowMount(RoleList, {
@@ -202,7 +212,7 @@ describe("roleList", () => {
 
     it('sets error if removing member fails', (done) => {
 
-        mockAxios.onPost('http://app/user-groups/Funders/user/bob')
+        mockAxios.onPost('http://app/roles/Funders/users/bob')
             .reply(500);
 
         const wrapper = shallowMount(RoleList, {

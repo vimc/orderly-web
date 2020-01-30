@@ -1,9 +1,9 @@
 <template>
     <div id="scoped-report-readers-list">
-        <add-permission :permission="permission"
-                        type="user"
-                        :available-user-groups="availableUsers"
-                        @added="getReaders"></add-permission>
+        <add-report-reader :report-name="report.name"
+                           type="user"
+                           :available-user-groups="availableUsers"
+                           @added="getReaders"></add-report-reader>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         <user-list :users="readers"
                    :can-remove="true"
@@ -16,7 +16,7 @@
     import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
     import UserList from "../permissions/userList.vue";
-    import AddPermission from "../permissions/addPermission.vue";
+    import AddReportReader from "../permissions/addReportReader";
 
     export default {
         name: 'reportReadersList',
@@ -34,7 +34,7 @@
             this.getUserEmails();
         },
         components: {
-            AddPermission,
+            AddReportReader,
             UserList,
             ErrorInfo,
             VueBootstrapTypeahead
@@ -49,7 +49,7 @@
                     name: "reports.read",
                     scope_prefix: "report",
                     scope_id: this.report.name
-                };
+                }
             }
         },
         methods: {
@@ -70,11 +70,12 @@
                     })
             },
             removeUser: function(email) {
-                const data = {
-                    ...this.permission,
-                    action: "remove"
-                };
-                api.post(`/user-groups/${encodeURIComponent(email)}/actions/associate-permission/`, data)
+                const scopeId = this.permission.scope_id;
+                const scopePrefix = this.permission.scope_prefix;
+                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
+
+                api.delete(`/users/${encodeURIComponent(email)}/permissions/${this.permission.name}/${query}`)
+
                     .then(() => {
                         this.getReaders();
                         this.error = null;

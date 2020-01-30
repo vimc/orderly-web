@@ -1,15 +1,20 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class UserControllerTests : TeamcityTests()
@@ -21,7 +26,7 @@ class UserControllerTests : TeamcityTests()
             on { this.getUserEmails() } doReturn (listOf("one", "two"))
         }
 
-        val sut = UserController(mock(), repo, mock())
+        val sut = UserController(mock(), repo, mock(), mock())
 
         assertThat(sut.getUserEmails()).containsExactlyElementsOf(listOf("one", "two"))
     }
@@ -29,9 +34,10 @@ class UserControllerTests : TeamcityTests()
     @Test
     fun `gets all users and permissions`()
     {
+        val testUser = User("test.user", "Test user", "test@test.com")
         val repo = mock<UserRepository> {
             on { this.getAllUsers() } doReturn
-                    listOf(User("test.user", "Test user", "test@test.com"),
+                    listOf(testUser,
                             User("another.user", "A user", "a@test.com"))
         }
 
@@ -39,10 +45,22 @@ class UserControllerTests : TeamcityTests()
             on { this.getDirectPermissionsForUser("test@test.com") } doReturn
                     PermissionSet("*/reports.review", "report:r1/reports.read")
             on { this.getDirectPermissionsForUser("a@test.com") } doReturn PermissionSet()
-
         }
 
-        val sut = UserController(mock(), repo, authRepo)
+        val roleRepo = mock<RoleRepository> {
+            on { getAllRoles() } doReturn listOf(
+                    Role(
+                            "Science",
+                            listOf(testUser),
+                            listOf(ReifiedPermission("users.manage", Scope.Global()))),
+                    Role(
+                            "Admin",
+                            listOf(testUser),
+                            listOf(ReifiedPermission("users.manage", Scope.Global()))
+                    ))
+        }
+
+        val sut = UserController(mock(), repo, authRepo, roleRepo)
 
         val result = sut.getAllUsers()
 
@@ -52,13 +70,22 @@ class UserControllerTests : TeamcityTests()
         assertThat(secondUser.displayName).isEqualTo("Test user")
         assertThat(secondUser.email).isEqualTo("test@test.com")
         assertThat(secondUser.username).isEqualTo("test.user")
-        assertThat(secondUser.permissions[0].name).isEqualTo("reports.read")
-        assertThat(secondUser.permissions[0].scopeId).isEqualTo("r1")
-        assertThat(secondUser.permissions[0].scopePrefix).isEqualTo("report")
+        assertThat(secondUser.directPermissions[0].name).isEqualTo("reports.read")
+        assertThat(secondUser.directPermissions[0].scopeId).isEqualTo("r1")
+        assertThat(secondUser.directPermissions[0].scopePrefix).isEqualTo("report")
+        assertThat(secondUser.directPermissions[0].source).isEqualTo("test@test.com")
 
-        assertThat(secondUser.permissions[1].name).isEqualTo("reports.review")
-        assertThat(secondUser.permissions[1].scopeId).isEqualTo("")
-        assertThat(secondUser.permissions[1].scopePrefix).isNull()
+        assertThat(secondUser.rolePermissions[0].name).isEqualTo("users.manage")
+        assertThat(secondUser.rolePermissions[0].scopeId).isEqualTo("")
+        assertThat(secondUser.rolePermissions[0].scopePrefix).isNull()
+        assertThat(secondUser.rolePermissions[0].source).isEqualTo("Admin, Science")
+
+        assertThat(secondUser.directPermissions[1].name).isEqualTo("reports.review")
+        assertThat(secondUser.directPermissions[1].scopeId).isEqualTo("")
+        assertThat(secondUser.directPermissions[1].scopePrefix).isNull()
+        assertThat(secondUser.directPermissions[1].source).isEqualTo("test@test.com")
+
+        assertThat(firstUser.rolePermissions.count()).isEqualTo(0)
 
         assertThat(firstUser.displayName).isEqualTo("A user")
     }
@@ -85,7 +112,7 @@ class UserControllerTests : TeamcityTests()
         val repo = mock<UserRepository> {
             on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
-        val sut = UserController(actionContext, repo, mock())
+        val sut = UserController(actionContext, repo, mock(), mock())
         val result = sut.getScopedReportReaders()
 
         assertThat(result.count()).isEqualTo(3)
@@ -118,7 +145,7 @@ class UserControllerTests : TeamcityTests()
             on { this.getGlobalReportReaderUsers() } doReturn (reportReaders)
         }
 
-        val sut = UserController(actionContext, repo, mock())
+        val sut = UserController(actionContext, repo, mock(), mock())
         val result = sut.getGlobalReportReaders()
 
         assertThat(result.count()).isEqualTo(2)
@@ -156,7 +183,7 @@ class UserControllerTests : TeamcityTests()
         val repo = mock<UserRepository> {
             on { this.getScopedReportReaderUsers("r1") } doReturn (reportReaders)
         }
-        val sut = UserController(actionContext, repo, mock())
+        val sut = UserController(actionContext, repo, mock(), mock())
         val result = sut.getScopedReportReaders()
 
         assertThat(result.count()).isEqualTo(4)
@@ -167,4 +194,56 @@ class UserControllerTests : TeamcityTests()
         assertThat(result[3].displayName).isEqualTo("r4@email.com")
     }
 
+    @Test
+    fun `adds permission to user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-id") } doReturn "user1@example.com"
+            on { this.postData() } doReturn mapOf(
+                    "name" to "test.permission",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = UserController(actionContext, mock(), authRepo, mock())
+        val result = sut.addPermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupHasPermission(eq("user1@example.com"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
+
+    @Test
+    fun `removes permission from user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-id") } doReturn "user1@example.com"
+            on { this.params(":name") } doReturn "test.permission"
+
+            on { this.queryParams("scopeId") } doReturn "report1"
+            on { this.queryParams("scopePrefix") } doReturn "report"
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = UserController(actionContext, mock(), authRepo, mock())
+        val result = sut.removePermission()
+
+        assertThat(result).isEqualTo("OK")
+
+        val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
+        verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("user1@example.com"), capture(permissionCaptor))
+
+        val permission = permissionCaptor.value
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
+    }
 }

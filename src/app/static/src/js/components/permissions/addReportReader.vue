@@ -19,8 +19,8 @@
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
-        name: 'addPermission',
-        props: ['permission', 'availableUserGroups', 'type'],
+        name: 'addReportReader',
+        props: ['reportName', 'availableUserGroups', 'type'],
         data() {
             return {
                 newUserGroup: "",
@@ -52,11 +52,13 @@
                 }
 
                 const data = {
-                    ...this.permission,
+                    name: "reports.read",
+                    scope_prefix: "report",
+                    scope_id: this.reportName,
                     action: "add"
                 };
 
-                api.post(`/user-groups/${encodeURIComponent(this.newUserGroup)}/actions/associate-permission/`, data)
+                api.post(`/${this.type}s/${encodeURIComponent(this.newUserGroup)}/permissions/`, data)
                     .then(() => {
                         this.newUserGroup = "";
                         this.error = null;
