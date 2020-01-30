@@ -28,7 +28,7 @@
                         <hr/>
                         <div class="pl-3">
                             <#include "partials/version-picker.ftl">
-                            <#if isAdmin>
+                            <#if isReviewer>
                                 <div id="publishSwitchVueApp" class="pt-3">
                                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                                 </div>

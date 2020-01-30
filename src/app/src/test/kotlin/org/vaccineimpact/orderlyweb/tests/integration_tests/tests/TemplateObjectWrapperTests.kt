@@ -80,7 +80,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
         }
-        val model = IndexViewModel(mockContext, listOf(), listOf(), true)
+        val model = IndexViewModel(mockContext, listOf(), listOf())
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash

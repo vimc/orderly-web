@@ -10,6 +10,8 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
@@ -29,7 +31,7 @@ class LayoutTests : TeamcityTests()
     @Test
     fun `renders correctly when not logged in`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -48,22 +50,66 @@ class LayoutTests : TeamcityTests()
             on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
             }
+            on {
+                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+            } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), true)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
         val xml = template.xmlResponseFor(testModel)
 
         assertHeaderRenderedCorrectly(doc, xml)
 
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("")
         assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
         assertThat(doc.selectFirst(".logout span a").attr("onclick")).isEqualTo("logoutViaMontagu()")
 
         assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
 
+    }
+
+    @Test
+    fun `admins can see admin link`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+            } doReturn true
+        }
+
+        val testModel = IndexViewModel(mockContext, listOf(), listOf())
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout span").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Admin |")
+        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("/admin")
+    }
+
+    @Test
+    fun `non admins cannot see admin link`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+            } doReturn false
+        }
+
+        val testModel = IndexViewModel(mockContext, listOf(), listOf())
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout span").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
     }
 
     private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)

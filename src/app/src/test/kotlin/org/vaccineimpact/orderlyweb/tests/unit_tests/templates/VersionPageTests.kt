@@ -314,12 +314,12 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `admins see publish switch`()
+    fun `reviewers see publish switch`()
     {
         val mockModel =  ReportVersionPageViewModel(
                 testReport,
                 "/testFocalArtefactUrl",
-                isAdmin = true,
+                isReviewer = true,
                 isRunner = false,
                 showPermissionManagement = false,
                 artefacts = testArtefactViewModels,
@@ -339,12 +339,12 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `non admins do not see publish switch`()
+    fun `non reviewers do not see publish switch`()
     {
         val mockModel =  ReportVersionPageViewModel(
                 testReport,
                 "/testFocalArtefactUrl",
-                isAdmin = false,
+                isReviewer = false,
                 isRunner = false,
                 showPermissionManagement = false,
                 artefacts = testArtefactViewModels,
@@ -388,7 +388,21 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `report readers are shown if showPermissionManagement is true`()
     {
-        val mockModel = testModel.copy(showPermissionManagement = true)
+        val mockModel = ReportVersionPageViewModel(
+            testReport,
+            "/testFocalArtefactUrl",
+            isReviewer = false,
+            isRunner = false,
+            showPermissionManagement = true,
+            artefacts = testArtefactViewModels,
+            dataLinks = testDataLinks,
+            resources = testResources,
+            zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            versions = listOf(),
+            changelog = listOf(),
+            breadcrumbs = listOf(Breadcrumb("name", "url")),
+            loggedIn = true,
+            userName = "userName")
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
         val doc = template.jsoupDocFor(mockModel)
@@ -404,7 +418,21 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `report readers are not shown if showPermissionManagement is false`()
     {
-        val mockModel = testModel.copy(showPermissionManagement = false)
+        val mockModel =  ReportVersionPageViewModel(
+            testReport,
+            "/testFocalArtefactUrl",
+            isReviewer = false,
+            isRunner = false,
+            showPermissionManagement = false,
+            artefacts = testArtefactViewModels,
+            dataLinks = testDataLinks,
+            resources = testResources,
+            zipFile = DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            versions = listOf(),
+            changelog = listOf(),
+            breadcrumbs = listOf(Breadcrumb("name", "url")),
+            loggedIn = true,
+            userName = "userName")
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 

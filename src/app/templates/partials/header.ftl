@@ -25,6 +25,11 @@
     </div>
     <#if loggedIn>
         <div class="logout">
+            <#if showPermissionManagement>
+                <span>
+                    <a href="/admin">Admin</a> |
+                </span>
+            </#if>
             <span>Logged in as ${user} | <a id="logout-link"
               <#if authProvider?lower_case == "montagu">
                 href="#" onclick="logoutViaMontagu()"

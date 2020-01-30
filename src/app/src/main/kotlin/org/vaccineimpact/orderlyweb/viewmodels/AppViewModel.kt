@@ -12,21 +12,27 @@ data class Breadcrumb(val name: String, val url: String?)
 
 data class DefaultViewModel(override val loggedIn: Boolean,
                             override val user: String?,
-                            override val isAdmin: Boolean,
+                            override val isReviewer: Boolean,
+                            val isAdmin: Boolean,
                             override val breadcrumbs: List<Breadcrumb>,
                             private val appConfig: Config = AppConfig()) : AppViewModel
 {
-    constructor(userProfile: CommonProfile?, isAdmin: Boolean, breadcrumbs: List<Breadcrumb>) :
-            this(userProfile != null, userProfile?.id, isAdmin, breadcrumbs)
+    constructor(userProfile: CommonProfile?, isReviewer: Boolean, isAdmin: Boolean, breadcrumbs: List<Breadcrumb>, appConfig: Config) :
+            this(userProfile != null, userProfile?.id, isReviewer, isAdmin, breadcrumbs, appConfig)
 
-    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb) :
-            this(context.userProfile, context.hasPermission(ReifiedPermission("reports.review", Scope.Global())), breadcrumbs.toList())
+    constructor(context: ActionContext, vararg breadcrumbs: Breadcrumb, appConfig: Config = AppConfig()):
+            this(context.userProfile,
+                    context.hasPermission(ReifiedPermission("reports.review", Scope.Global())),
+                    context.hasPermission(ReifiedPermission("users.manage", Scope.Global())),
+                    breadcrumbs.toList(), appConfig)
 
     override val appName = appConfig["app.name"]
     override val appUrl = appConfig["app.url"]
     override val appEmail = appConfig["app.email"]
     override val logo = appConfig["app.logo"]
     override val montaguUrl = appConfig["montagu.url"]
+
+    override val showPermissionManagement = isAdmin && appConfig.authorizationEnabled
 
     override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
 
@@ -51,6 +57,7 @@ interface AppViewModel
     val montaguUrl: String
     val appUrl: String
 
-    val isAdmin: Boolean
+    val isReviewer: Boolean
+    val showPermissionManagement: Boolean
 }
 

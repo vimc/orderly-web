@@ -18,7 +18,6 @@ import java.time.format.DateTimeFormatter
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
-                                      val showPermissionManagement: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
@@ -30,7 +29,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 {
     constructor(report: ReportVersionDetails,
                 focalArtefactUrl: String?,
-                isAdmin: Boolean,
+                isReviewer: Boolean,
                 isRunner: Boolean,
                 showPermissionManagement: Boolean,
                 artefacts: List<ArtefactViewModel>,
@@ -46,14 +45,13 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             this(report,
                     focalArtefactUrl,
                     isRunner,
-                    showPermissionManagement,
                     artefacts,
                     dataLinks,
                     resources,
                     zipFile,
                     versions,
                     changelog,
-                    DefaultViewModel(loggedIn, userName, isAdmin, breadcrumbs))
+                    DefaultViewModel(loggedIn, userName, isReviewer, showPermissionManagement, breadcrumbs))
 
     companion object
     {
@@ -87,8 +85,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     .buildZipFileViewModel()
 
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
-            val showPermissionManagement = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
-                    && appConfig.authorizationEnabled
 
             val displayName = report.displayName ?: report.name
 
@@ -102,7 +98,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
                     isRunner,
-                    showPermissionManagement,
                     artefactViewModels,
                     dataViewModels,
                     resourceViewModels,

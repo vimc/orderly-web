@@ -298,7 +298,7 @@ class ReportControllerTests : TeamcityTests()
         }
         val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
-        assertThat(result.isAdmin).isTrue()
+        assertThat(result.isReviewer).isTrue()
     }
 
     @Test
@@ -311,7 +311,7 @@ class ReportControllerTests : TeamcityTests()
         }
         val sut = ReportController(actionContext, mockOrderly)
         val result = sut.getByNameAndVersion()
-        assertThat(result.isAdmin).isFalse()
+        assertThat(result.isReviewer).isFalse()
     }
 
     @Test
