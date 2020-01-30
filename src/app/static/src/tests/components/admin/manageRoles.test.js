@@ -95,7 +95,7 @@ describe("manageRoles", () => {
     });
 
     it('adds role when addRole emits added event', (done) => {
-        mockAxios.onPost('http://app/user-groups/')
+        mockAxios.onPost('http://app/roles/')
             .reply(200);
 
         const wrapper = mount(ManageRoles);
@@ -103,7 +103,7 @@ describe("manageRoles", () => {
             wrapper.find(AddRole).vm.$emit("added", "NewRole");
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.post[0].url).toBe("http://app/user-groups/");
+                expect(mockAxios.history.post[0].url).toBe("http://app/roles/");
                 expect(mockAxios.history.post[0].method).toBe('post');
                 const data = JSON.parse(mockAxios.history.post[0].data);
                 expect(data.name).toBe("NewRole");
@@ -121,7 +121,7 @@ describe("manageRoles", () => {
     });
 
     it('sets errors when add role fails', (done) => {
-        mockAxios.onPost('http://app/user-groups/')
+        mockAxios.onPost('http://app/roles/')
             .reply(500, "TEST ERROR");
 
         const wrapper = mount(ManageRoles);
