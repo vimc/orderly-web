@@ -10,10 +10,12 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.xmlmatchers.XmlMatchers
 import javax.xml.transform.Source
@@ -105,6 +107,35 @@ class LayoutTests : TeamcityTests()
         }
 
         val testModel = IndexViewModel(mockContext, listOf(), listOf())
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout span").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+    }
+
+    @Test
+    fun `admins cannot see admin link if fine grained auth is turned off`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(any())
+            } doReturn true
+        }
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+            on { get("app.name") } doReturn "appName"
+            on { get("app.url") } doReturn "http://app"
+            on { get("app.email") } doReturn "email"
+            on { get("app.logo") } doReturn "logo.png"
+            on { get("montagu.url") } doReturn "montagu"
+        }
+
+        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
+        val testModel = IndexViewModel(listOf(), listOf(), defaultModel)
 
         val doc = template.jsoupDocFor(testModel)
 

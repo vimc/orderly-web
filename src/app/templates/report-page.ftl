@@ -30,7 +30,7 @@
                         <hr/>
                         <div class="pl-3">
                             <#include "partials/version-picker.ftl">
-                            <#if isReviewer && fineGrainedAuth>
+                            <#if isReviewer || !fineGrainedAuth>
                                 <div id="publishSwitchVueApp" class="pt-3">
                                     <publish-switch :report=report @toggle="handleToggle"></publish-switch>
                                 </div>
@@ -52,7 +52,7 @@
                                     <report-readers-list :report=report></report-readers-list>
                                 </div>
                             </#if>
-                            <#if isRunner>
+                            <#if isRunner || !fineGrainedAuth>
                                 <div id="runReportVueApp" class="mt-5">
                                     <run-report :report=report></run-report>
                                 </div>
