@@ -24,7 +24,7 @@
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemovePermissions"],
+        props: ["roles"],
         data() {
             return {
                 error: null,
@@ -46,9 +46,10 @@
                     .then(() => {
                         this.$emit('removed', roleName, permission);
                         this.error = null;
+                        this.defaultMessage = "Something went wrong";
                     })
                     .catch((error) => {
-                        this.defaultMessage = `could not remove ${permission.scope_prefix}:${permission.scope_id} from ${roleName}`;
+                        this.defaultMessage = `could not remove permission from ${roleName}`;
                         this.error = error;
                     });
             }

@@ -1,7 +1,6 @@
 <template>
     <div id="role-list">
         <role-permissions-list
-                   :can-remove-permissions="true"
                    :roles="roles"
                    @removed="getRoles"></role-permissions-list>
     </div>
