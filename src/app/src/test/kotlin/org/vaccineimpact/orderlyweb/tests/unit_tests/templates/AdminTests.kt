@@ -25,5 +25,7 @@ class AdminTests : TeamcityTests()
     {
         val doc = AdminTests.template.jsoupDocFor(testViewModel)
         assertThat(doc.select("#adminVueApp manage-roles")).isNotNull()
+        assertThat(doc.select("#adminVueApp manage-users")).isNotNull()
+        assertThat(doc.select("#adminVueApp manage-role-permissions")).isNotNull()
     }
 }
