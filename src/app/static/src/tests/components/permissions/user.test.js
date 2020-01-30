@@ -16,7 +16,7 @@ describe("user", () => {
         expect(wrapper.classes()).toContain("removable-user");
         expect(wrapper.find('span.display-name').text()).toBe("Test User");
         expect(wrapper.find('.email').text()).toBe("test.user@example.com");
-        expect(wrapper.findAll(".remove-user-group").length).toBe(1);
+        expect(wrapper.findAll(".remove").length).toBe(1);
     });
 
     it("displays non-removable report reader", () => {
@@ -31,7 +31,7 @@ describe("user", () => {
 
         expect(wrapper.find('span.display-name').text()).toBe("Test User");
         expect(wrapper.find('.email').text()).toBe("test.user@example.com");
-        expect(wrapper.findAll(".remove-user-group").length).toBe(0);
+        expect(wrapper.findAll(".remove").length).toBe(0);
     });
 
     it("emits removed event", () => {
@@ -44,7 +44,7 @@ describe("user", () => {
             }
         });
 
-        wrapper.find(".remove-user-group").trigger("click");
+        wrapper.find(".remove").trigger("click");
         expect(wrapper.emitted().removed).toBeDefined();
     });
 

@@ -38,8 +38,10 @@ class UserControllerTests : TeamcityTests()
         }
 
         val authRepo = mock<AuthorizationRepository> {
-            on { this.getDirectPermissionsForUser("test@test.com") } doReturn PermissionSet("*/reports.review", "*/reports.read")
+            on { this.getDirectPermissionsForUser("test@test.com") } doReturn
+                    PermissionSet("*/reports.review", "report:r1/reports.read")
             on { this.getDirectPermissionsForUser("a@test.com") } doReturn PermissionSet()
+
         }
 
         val sut = UserController(mock(), repo, authRepo)
@@ -53,9 +55,12 @@ class UserControllerTests : TeamcityTests()
         assertThat(secondUser.email).isEqualTo("test@test.com")
         assertThat(secondUser.username).isEqualTo("test.user")
         assertThat(secondUser.permissions[0].name).isEqualTo("reports.read")
-        assertThat(secondUser.permissions[0].scope).isEqualTo("*")
+        assertThat(secondUser.permissions[0].scopeId).isEqualTo("r1")
+        assertThat(secondUser.permissions[0].scopePrefix).isEqualTo("report")
+
         assertThat(secondUser.permissions[1].name).isEqualTo("reports.review")
-        assertThat(secondUser.permissions[1].scope).isEqualTo("*")
+        assertThat(secondUser.permissions[1].scopeId).isEqualTo("")
+        assertThat(secondUser.permissions[1].scopePrefix).isNull()
 
         assertThat(firstUser.displayName).isEqualTo("A user")
     }
