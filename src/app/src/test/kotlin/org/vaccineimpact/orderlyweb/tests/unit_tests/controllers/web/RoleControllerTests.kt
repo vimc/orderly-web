@@ -227,7 +227,6 @@ class RoleControllerTests : TeamcityTests()
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "test"
             on { this.postData() } doReturn mapOf(
-                    "action" to "add",
                     "name" to "test.permission",
                     "scope_prefix" to "report",
                     "scope_id" to "report1"
@@ -236,7 +235,7 @@ class RoleControllerTests : TeamcityTests()
 
         val authRepo = mock<AuthorizationRepository>()
         val sut = RoleController(actionContext, mock(), authRepo)
-        val result = sut.associatePermission()
+        val result = sut.addPermission()
 
         assertThat(result).isEqualTo("OK")
 
@@ -244,26 +243,21 @@ class RoleControllerTests : TeamcityTests()
         verify(authRepo).ensureUserGroupHasPermission(eq("test"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("report:report1")
     }
 
     @Test
-    fun `removes permission from user group`()
+    fun `removes permission from role`()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "test"
-            on { this.postData() } doReturn mapOf(
-                    "action" to "remove",
-                    "name" to "test.permission",
-                    "scope_prefix" to "report",
-                    "scope_id" to "report1"
-            )
+            on { this.params(":name") } doReturn "test.permission"
         }
 
         val authRepo = mock<AuthorizationRepository>()
         val sut = RoleController(actionContext, mock(), authRepo)
-        val result = sut.associatePermission()
+        val result = sut.removePermission()
 
         assertThat(result).isEqualTo("OK")
 
@@ -271,25 +265,8 @@ class RoleControllerTests : TeamcityTests()
         verify(authRepo).ensureUserGroupDoesNotHavePermission(eq("test"), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        Assertions.assertThat(permission.name).isEqualTo("test.permission")
-        Assertions.assertThat(permission.scope.value).isEqualTo("report:report1")
-    }
-
-    @Test
-    fun `throws exception if associate permission with unknown action`()
-    {
-        val actionContext = mock<ActionContext> {
-            on { this.params(":user-group-id") } doReturn "user1@example.com"
-            on { this.postData() } doReturn mapOf(
-                    "action" to "addx",
-                    "name" to "test.permission",
-                    "scope_prefix" to "report",
-                    "scope_id" to "report1"
-            )
-        }
-
-        val sut = RoleController(actionContext, mock(), mock())
-        Assertions.assertThatThrownBy { sut.associatePermission() }.isInstanceOf(IllegalArgumentException::class.java)
+        assertThat(permission.name).isEqualTo("test.permission")
+        assertThat(permission.scope.value).isEqualTo("*")
     }
 
     @Test

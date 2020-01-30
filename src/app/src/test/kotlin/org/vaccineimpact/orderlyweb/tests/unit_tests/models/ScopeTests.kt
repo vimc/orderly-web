@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionDTO
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class ScopeTests: TeamcityTests()
@@ -63,10 +63,10 @@ class ScopeTests: TeamcityTests()
     @Test
     fun `can parse from AssociatePermission`()
     {
-        val globalAssocPerm = AssociatePermission("add", "perm", null, null)
+        val globalAssocPerm = PermissionDTO("perm", null, null)
         assertThat(Scope.parse(globalAssocPerm)).isInstanceOf(Scope.Global::class.java)
 
-        val specificAssocPerm = AssociatePermission("add", "perm", "testPrefix", "testId")
+        val specificAssocPerm = PermissionDTO("perm", "testPrefix", "testId")
         val specificScope = Scope.parse(specificAssocPerm)
         assertThat(specificScope).isInstanceOf(Scope.Specific::class.java)
         assertThat((specificScope as Scope.Specific).databaseScopePrefix).isEqualTo("testPrefix")

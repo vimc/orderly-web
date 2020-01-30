@@ -2,12 +2,14 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
+import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.AssociatePermission
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
+import org.vaccineimpact.orderlyweb.permissionFromPostData
+import org.vaccineimpact.orderlyweb.permissionFromRouteParams
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
 class RoleController(context: ActionContext,
@@ -45,26 +47,20 @@ class RoleController(context: ActionContext,
         return okayResponse()
     }
 
-    fun associatePermission(): String
+    fun addPermission(): String
     {
         val roleId = roleId()
+        val permission = context.permissionFromPostData()
+        authRepo.ensureUserGroupHasPermission(roleId, permission)
 
-        val postData = context.postData()
-        val associatePermission = AssociatePermission(
-                postData["action"] ?: throw MissingParameterError("action"),
-                postData["name"] ?: throw MissingParameterError("name"),
-                postData["scope_prefix"],
-                postData["scope_id"]
-        )
+        return okayResponse()
+    }
 
-        val permission = ReifiedPermission(associatePermission.name, Scope.parse(associatePermission))
-
-        when (associatePermission.action)
-        {
-            "add" -> authRepo.ensureUserGroupHasPermission(roleId, permission)
-            "remove" -> authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
-            else -> throw IllegalArgumentException("Unknown action type")
-        }
+    fun removePermission(): String
+    {
+        val roleId = roleId()
+        val permission = context.permissionFromRouteParams()
+        authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
 
         return okayResponse()
     }

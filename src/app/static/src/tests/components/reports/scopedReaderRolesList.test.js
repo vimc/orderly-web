@@ -94,7 +94,7 @@ describe("scopedReaderRolesList", () => {
 
     it('refreshes data when added event is emitted', async (done) => {
 
-        mockAxios.onPost(`http://app/roles/Tech/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/roles/Tech/permissions/`)
             .reply(200);
 
         mockAxios.onGet('http://app/roles/report-readers/report1/')
@@ -124,7 +124,7 @@ describe("scopedReaderRolesList", () => {
 
     it('refreshes data when removed event is emitted', async (done) => {
 
-        mockAxios.onPost(`http://app/roles/Tech/actions/associate-permission/`)
+        mockAxios.onPost(`http://app/roles/Tech/permissions/`)
             .reply(200);
 
         mockAxios.onGet('http://app/roles/report-readers/report1/')
