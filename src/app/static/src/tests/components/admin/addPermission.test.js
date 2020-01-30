@@ -7,7 +7,7 @@ describe("add permission", () => {
     it("shows error if invalid permission is selected", async () => {
         const wrapper = mount(AddPermission, {
             propsData: {
-                email: "test@test.com",
+                userGroup: "test@test.com",
                 availablePermissions: ["reports.read"]
             }
         });

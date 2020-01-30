@@ -8,7 +8,7 @@
                       class="remove d-inline-block ml-2 large">×</span>
             </li>
         </ul>
-        <add-permission :email="email" :available-permissions="availablePermissions" @added="add"></add-permission>
+        <add-permission :user-group="userGroup" :available-permissions="availablePermissions" @added="add"></add-permission>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -20,7 +20,7 @@
     export default {
         name: "permissionList",
         components: {AddPermission, ErrorInfo},
-        props: ["allPermissions", "permissions", "email"],
+        props: ["allPermissions", "permissions", "userGroup"],
         data() {
             return {
                 error: "",

@@ -40,6 +40,7 @@ describe("rolePermissionsList", () => {
         expect(listItems.length).toBe(2);
         expect(listItems.at(0).find('span').text()).toBe("Funders");
         expect(listItems.at(0).find(PermissionList).props().permissions).toBe(mockRoles[0].permissions);
+        expect(listItems.at(0).find(PermissionList).props().userGroup).toBe("Funders");
 
         expect(listItems.at(1).find('span').text()).toBe("Science");
         expect(listItems.at(1).findAll(PermissionList).length).toBe(0);

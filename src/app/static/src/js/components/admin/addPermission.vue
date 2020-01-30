@@ -19,7 +19,7 @@
 
     export default {
         name: 'addPermission',
-        props: ['email', 'availablePermissions'],
+        props: ['userGroup', 'availablePermissions'],
         data() {
             return {
                 newPermission: "",
@@ -39,7 +39,7 @@
         methods: {
             add: function () {
                 if (!new Set(this.availablePermissions).has(this.newPermission)) {
-                    const msg = `${this.newPermission} is not an available permission or already belongs to ${this.email}`;
+                    const msg = `${this.newPermission} is not an available permission or already belongs to ${this.userGroup}`;
                     this.error = msg;
                     this.defaultMessage = msg;
                     return;
