@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -121,10 +122,9 @@ class LayoutTests : TeamcityTests()
             on { userProfile } doReturn CommonProfile().apply {
                 id = "test.user"
             }
-            on {
-                hasPermission(any())
-            } doReturn true
+            on { hasPermission(any()) } doReturn true
         }
+
         val mockConfig = mock<Config> {
             on { authorizationEnabled } doReturn false
             on { get("app.name") } doReturn "appName"
