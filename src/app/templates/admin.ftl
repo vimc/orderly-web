@@ -10,7 +10,8 @@
             </div>
             <div class="col-4 offset-2">
                 <label class="font-weight-bold d-block">Manage permissions</label>
-
+                <label class="font-weight-bold d-block">For roles</label>
+                <manage-role-permissions></manage-role-permissions>
                 <hr/>
                 <label class="font-weight-bold d-block">For individual users</label>
                 <manage-users></manage-users>
