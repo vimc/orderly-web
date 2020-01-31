@@ -4,17 +4,21 @@
     </#macro>
     <div id="adminVueApp">
         <div class="row">
-            <div class="col-4">
+            <div class="col-4" id="manage-roles">
                 <label class="font-weight-bold d-block">Manage roles</label>
                 <manage-roles></manage-roles>
             </div>
             <div class="col-4 offset-2">
                 <label class="font-weight-bold d-block">Manage permissions</label>
                 <label class="font-weight-bold d-block">For roles</label>
-                <manage-role-permissions></manage-role-permissions>
+                <div id="manage-role-permissions">
+                    <manage-role-permissions></manage-role-permissions>
+                </div>
                 <hr/>
                 <label class="font-weight-bold d-block">For individual users</label>
-                <manage-users></manage-users>
+                <div id="manage-users">
+                    <manage-users></manage-users>
+                </div>
             </div>
         </div>
     </div>
