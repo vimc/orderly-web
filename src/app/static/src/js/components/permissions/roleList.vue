@@ -1,23 +1,23 @@
 <template>
     <ul class="list-unstyled roles" v-if="roles.length > 0">
-        <li v-for="(role, index) in roles"
+        <li v-for="role in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}, {'has-children': role.members.length > 0}]">
-            <div class="expander" v-on:click="toggle(index)"></div>
-            <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
+            v-bind:class="['role', {'open':expanded[role.name]}, {'has-children': role.members.length > 0}]">
+            <div class="expander" v-on:click="toggle(role.name)"></div>
+            <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
 
             <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
                   class="remove d-inline-block ml-2 large">×</span>
 
             <user-list v-if="role.members.length > 0"
-                       v-show="expanded[index]"
+                       v-show="expanded[role.name]"
                        cssClass="children"
                        :users="role.members"
                        :canRemove="canRemoveMembers"
                        @removed="function(email){removeMember(role.name, email)}"></user-list>
 
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-            <add-user-to-role v-if="canAddMembers && expanded[index]"
+            <add-user-to-role v-if="canAddMembers && expanded[role.name]"
                         :role="role.name"
                         :available-users="availableUsersForRole(role)"
                         @added="$emit('added')"></add-user-to-role>
@@ -44,8 +44,8 @@
             }
         },
         methods: {
-            toggle: function (index) {
-                Vue.set(this.expanded, index, !this.expanded[index]);
+            toggle: function (roleName) {
+                Vue.set(this.expanded, roleName, !this.expanded[roleName]);
             },
             availableUsersForRole: function(role) {
                 return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)

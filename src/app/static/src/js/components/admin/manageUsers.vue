@@ -5,13 +5,13 @@
                v-model="searchStr"
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
-            <li v-for="(u, index) in filteredUsers"
-                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.direct_permissions.length > 0}]">
-                <div class="expander" v-on:click="toggle(index)"></div>
-                <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
+            <li v-for="u in filteredUsers"
+                v-bind:class="['role', {'open':expanded[u.email]}, {'has-children': u.direct_permissions.length > 0}]">
+                <div class="expander" v-on:click="toggle(u.email)"></div>
+                <span v-on:click="toggle(u.email)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
 
-                <permission-list v-show="expanded[index]"
+                <permission-list v-show="expanded[u.email]"
                                  :permissions="u.direct_permissions"
                                  :user-group="u.email"
                                  @added="function(p) {addPermission(p, u)}"
@@ -48,8 +48,8 @@
             }
         },
         methods: {
-            toggle: function (index) {
-                Vue.set(this.expanded, index, !this.expanded[index]);
+            toggle: function (email) {
+                Vue.set(this.expanded, email, !this.expanded[email]);
             },
             getUsers: function () {
                 api.get(`/users/`)
