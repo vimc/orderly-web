@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.RoleController
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
-import org.vaccineimpact.orderlyweb.errors.UsersManageError
+import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -340,7 +340,7 @@ class RoleControllerTests : TeamcityTests()
 
         val sut = RoleController(mockContext, mock(), mock())
         Assertions.assertThatThrownBy { sut.removeUser() }
-                .isInstanceOf(UsersManageError::class.java)
+                .isInstanceOf(InvalidOperationError::class.java)
                 .hasMessageContaining("You cannot remove yourself from the Admin role.")
     }
 
