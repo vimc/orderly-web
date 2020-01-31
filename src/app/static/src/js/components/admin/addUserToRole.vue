@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-3 ml-3">
+    <div class="mb-3 add-role mt-2">
         <vue-bootstrap-typeahead
                 size="sm"
                 v-model="newUser"

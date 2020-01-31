@@ -1,5 +1,5 @@
 <template>
-    <div class="mb-3 mt-1 add-permission">
+    <div class="mb-3 mt-2 add-permission">
         <vue-bootstrap-typeahead
                 size="sm"
                 v-model="newPermission"
