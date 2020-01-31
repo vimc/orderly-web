@@ -16,16 +16,21 @@
 <script>
     import ErrorInfo from "../errorInfo";
     import AddPermission from "./addPermission";
+    import {api} from "../../utils/api";
 
     export default {
         name: "permissionList",
         components: {AddPermission, ErrorInfo},
-        props: ["allPermissions", "permissions", "userGroup"],
+        props: ["permissions", "userGroup"],
         data() {
             return {
                 error: "",
-                defaultMessage: ""
+                defaultMessage: "",
+                allPermissions: []
             }
+        },
+        mounted() {
+            this.getPermissions();
         },
         computed: {
             globalPermissions() {
@@ -36,6 +41,12 @@
             }
         },
         methods: {
+            getPermissions: function () {
+                api.get(`/typeahead/permissions/`)
+                    .then(({data}) => {
+                        this.allPermissions = data.data
+                    })
+            },
             remove(p) {
                 this.$emit("removed", p);
             },

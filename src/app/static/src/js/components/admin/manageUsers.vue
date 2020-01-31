@@ -15,8 +15,7 @@
                                  :permissions="u.direct_permissions"
                                  :user-group="u.email"
                                  @added="function(p) {addPermission(p, u)}"
-                                 @removed="function(p) {removePermission(p, u)}"
-                                 :all-permissions="allPermissions"></permission-list>
+                                 @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
         </ul>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -33,12 +32,10 @@
         name: 'manageUsers',
         mounted() {
             this.getUsers();
-            this.getPermissions();
         },
         data() {
             return {
                 allUsers: [],
-                allPermissions: [],
                 searchStr: "",
                 expanded: {},
                 error: "",
@@ -58,12 +55,6 @@
                 api.get(`/users/`)
                     .then(({data}) => {
                         this.allUsers = data.data
-                    })
-            },
-            getPermissions: function () {
-                api.get(`/typeahead/permissions/`)
-                    .then(({data}) => {
-                        this.allPermissions = data.data
                     })
             },
             removePermission: function (permission, user) {

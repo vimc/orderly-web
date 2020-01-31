@@ -31,15 +31,15 @@ describe("manage users", () => {
             .reply(200, {"data": mockUsers});
         mockAxios.onGet("http://app/typeahead/permissions/")
             .reply(200, {
-                "data": ["reports.review", "reports.read"]
-            })
+                "data": ["reports.read", "reports.review", "users.manage"]
+            });
     });
 
-    it("fetches users and permissions on mount", (done) => {
+    it("fetches users on mount", (done) => {
         shallowMount(ManageUsers);
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2);
+            expect(mockAxios.history.get.length).toBe(1);
             done();
         });
     });
