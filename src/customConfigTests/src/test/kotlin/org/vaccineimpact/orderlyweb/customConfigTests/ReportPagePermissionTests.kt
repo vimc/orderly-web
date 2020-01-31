@@ -45,7 +45,8 @@ class ReportPagePermissionTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId .role-name")))
         val listItems = driver.findElements(By.cssSelector("#$widgetId .role-name"))
 
-        assertThat(listItems.count()).isEqualTo(1)
+        // 2 roles - the test role and the built in admin role
+        assertThat(listItems.count()).isEqualTo(2)
         assertThat(listItems[0].text).isEqualTo(testRole)
     }
 
