@@ -17,9 +17,7 @@ import java.time.format.DateTimeFormatter
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
                                       val focalArtefactUrl: String?,
-                                      val isAdmin: Boolean,
                                       val isRunner: Boolean,
-                                      val showPermissionManagement: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
                                       val dataLinks: List<InputDataViewModel>,
                                       val resources: List<DownloadableFileViewModel>,
@@ -29,41 +27,12 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
-    constructor(report: ReportVersionDetails,
-                focalArtefactUrl: String?,
-                isAdmin: Boolean,
-                isRunner: Boolean,
-                showPermissionManagement: Boolean,
-                artefacts: List<ArtefactViewModel>,
-                dataLinks: List<InputDataViewModel>,
-                resources: List<DownloadableFileViewModel>,
-                zipFile: DownloadableFileViewModel,
-                versions: List<VersionPickerViewModel>,
-                changelog: List<ChangelogViewModel>,
-                breadcrumbs: List<Breadcrumb>,
-                loggedIn: Boolean,
-                appName: String) :
-
-            this(report,
-                    focalArtefactUrl,
-                    isAdmin,
-                    isRunner,
-                    showPermissionManagement,
-                    artefacts,
-                    dataLinks,
-                    resources,
-                    zipFile,
-                    versions,
-                    changelog,
-                    DefaultViewModel(loggedIn, appName, breadcrumbs))
-
     companion object
     {
         fun build(report: ReportVersionDetails,
                   versions: List<String>,
                   changelog: List<Changelog>,
-                  context: ActionContext,
-                  appConfig: Config): ReportVersionPageViewModel
+                  context: ActionContext): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
 
@@ -88,10 +57,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             val zipFile = fileViewModelBuilder
                     .buildZipFileViewModel()
 
-            val isAdmin = context.hasPermission(ReifiedPermission("reports.review", Scope.Global()))
             val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
-            val showPermissionManagement = context.hasPermission(ReifiedPermission("users.manage", Scope.Global()))
-                    && appConfig.authorizationEnabled
 
             val displayName = report.displayName ?: report.name
 
@@ -104,9 +70,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
-                    isAdmin,
                     isRunner,
-                    showPermissionManagement,
                     artefactViewModels,
                     dataViewModels,
                     resourceViewModels,

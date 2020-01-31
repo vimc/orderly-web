@@ -11,6 +11,10 @@ interface RoleRepository
     fun getScopedReportReaderRoles(reportName: String): List<Role>
     fun getAllRoleNames(): List<String>
     fun getAllRoles(): List<Role>
+
+    companion object {
+        const val ADMIN_ROLE = "Admin";
+    }
 }
 
 class OrderlyRoleRepository(private val userMapper: UserMapper = UserMapper(),
