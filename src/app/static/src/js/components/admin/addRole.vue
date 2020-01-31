@@ -2,7 +2,7 @@
     <div>
         <div class="input-group input-group-sm">
             <input v-model="role" type="text" placeholder="role name" class="form-control">
-            <button v-on:click="add" type="submit" class="btn btn-sm" :disabled="!role">Add role</button>
+            <button v-on:click="add" type="submit" id="add-role-btn" class="btn btn-sm" :disabled="!role">Add role</button>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
