@@ -14,7 +14,7 @@
 </template>
 
 <script>
-    import Typeahead from "../typeahead.vue";
+    import Typeahead from "../typeahead/typeahead.vue";
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
