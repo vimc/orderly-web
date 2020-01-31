@@ -11,7 +11,8 @@ describe("manage users", () => {
             username: "a.user",
             display_name: "Some name",
             email: "a@example.com",
-            direct_permissions: []
+            direct_permissions: [],
+            role_permissions: []
         },
         {
             username: "b.user",
@@ -20,7 +21,14 @@ describe("manage users", () => {
             direct_permissions: [{
                 name: "reports.read",
                 scope_id: "",
-                scope_prefix: null
+                scope_prefix: null,
+                source: "b@example.com"
+            }],
+            role_permissions: [{
+                name: "reports.read",
+                scope_id: "r1",
+                scope_prefix: "report",
+                source: "Admin"
             }]
         }
     ];
@@ -95,11 +103,32 @@ describe("manage users", () => {
 
         expect(rendered.findAll("li").length).toBe(2);
         expect(rendered.findAll(PermissionList).length).toBe(2);
-        expect(rendered.findAll(PermissionList).at(0).props().permissions).toBe(mockUsers[0].direct_permissions);
-        expect(rendered.findAll(PermissionList).at(1).props().permissions).toBe(mockUsers[1].direct_permissions);
 
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(false);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
+    });
+
+    it("passes role and direct permissions to permission list", async () => {
+        const rendered = shallowMount(ManageUsers);
+        rendered.setData({allUsers: mockUsers});
+        rendered.find("input").setValue("example");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(PermissionList).at(0).props("permissions")).toStrictEqual([]);
+        expect(rendered.findAll(PermissionList).at(1).props("permissions")).toStrictEqual(
+            [{
+                name: "reports.read",
+                scope_id: "",
+                scope_prefix: null,
+                source: "b@example.com"
+            }, {
+                name: "reports.read",
+                scope_id: "r1",
+                scope_prefix: "report",
+                source: "Admin"
+            }]);
+
     });
 
     it("can open and close permission list", async () => {
@@ -181,7 +210,7 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(".name").length).toBe(1);
+        expect(rendered.findAll(".name").length).toBe(2);
         expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
 
         rendered.findAll("input").at(1).setValue("reports.review");
@@ -192,9 +221,10 @@ describe("manage users", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(rendered.findAll(".name").length).toBe(2);
+            expect(rendered.findAll(".name").length).toBe(3);
             expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
-            expect(rendered.findAll(".name").at(1).text()).toBe("reports.review");
+            expect(rendered.findAll(".name").at(1).text()).toBe("reports.read / report:r1");
+            expect(rendered.findAll(".name").at(2).text()).toBe("reports.review");
             done();
         });
     });
@@ -213,7 +243,7 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(".name").length).toBe(1);
+        expect(rendered.findAll(".name").length).toBe(2);
         expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
 
         rendered.findAll("input").at(1).setValue("reports.review");
@@ -223,6 +253,7 @@ describe("manage users", () => {
         rendered.find("button").trigger("click");
 
         setTimeout(() => {
+            expect(rendered.findAll(".name").length).toBe(2);
             expect(rendered.find(".text-danger").text())
                 .toBe("Error: could not add reports.review to b@example.com");
             done();

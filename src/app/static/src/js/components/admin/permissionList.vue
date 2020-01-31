@@ -67,6 +67,12 @@
                 if (a.name < b.name){
                     return -1;
                 }
+                if (a.scope_id > b.scope_id) {
+                    return 1;
+                }
+                if (a.scope_id < b.scope_id) {
+                    return -1;
+                }
                 return 0;
             }
         }
