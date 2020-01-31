@@ -12,11 +12,10 @@
                 <div class="text-muted small email role-name">{{u.email}}</div>
 
                 <permission-list v-show="expanded[index]"
-                                 :permissions="u.direct_permissions"
+                                 :permissions="u.direct_permissions.concat(u.role_permissions)"
                                  :user-group="u.email"
                                  @added="function(p) {addPermission(p, u)}"
-                                 @removed="function(p) {removePermission(p, u)}"
-                                 :all-permissions="allPermissions"></permission-list>
+                                 @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
         </ul>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -33,12 +32,10 @@
         name: 'manageUsers',
         mounted() {
             this.getUsers();
-            this.getPermissions();
         },
         data() {
             return {
                 allUsers: [],
-                allPermissions: [],
                 searchStr: "",
                 expanded: {},
                 error: "",
@@ -58,12 +55,6 @@
                 api.get(`/users/`)
                     .then(({data}) => {
                         this.allUsers = data.data
-                    })
-            },
-            getPermissions: function () {
-                api.get(`/typeahead/permissions/`)
-                    .then(({data}) => {
-                        this.allPermissions = data.data
                     })
             },
             removePermission: function (permission, user) {
@@ -92,7 +83,6 @@
                     .then(() => {
                         this.error = null;
                         user.direct_permissions.push(data);
-                        user.direct_permissions.sort()
                     })
                     .catch((error) => {
                         this.error = error;
