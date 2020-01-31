@@ -13,7 +13,6 @@
 
 <script>
     import {api} from "../../utils/api";
-    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
     import UserList from "../permissions/userList.vue";
     import AddReportReader from "../permissions/addReportReader";
@@ -36,8 +35,7 @@
         components: {
             AddReportReader,
             UserList,
-            ErrorInfo,
-            VueBootstrapTypeahead
+            ErrorInfo
         },
         computed: {
             availableUsers: function () {

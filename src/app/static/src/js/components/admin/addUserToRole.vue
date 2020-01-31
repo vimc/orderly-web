@@ -1,6 +1,6 @@
 <template>
     <div class="mb-3 ml-3">
-        <vue-bootstrap-typeahead
+        <typeahead
                 size="sm"
                 v-model="newUser"
                 placeholder="email"
@@ -8,15 +8,15 @@
             <template slot="append">
                 <button v-on:click="add" type="submit" class="btn btn-sm">Add user</button>
             </template>
-        </vue-bootstrap-typeahead>
+        </typeahead>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script>
     import {api} from "../../utils/api";
-    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
     import ErrorInfo from "../errorInfo.vue";
+    import Typeahead from "../typeahead/typeahead.vue";
 
     export default {
         name: 'addUserToRole',
@@ -30,7 +30,7 @@
         },
         components: {
             ErrorInfo,
-            VueBootstrapTypeahead
+            Typeahead
         },
         watch: {
             newUser() {
