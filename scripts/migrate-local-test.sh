@@ -7,16 +7,19 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/migrate-common.sh
 
-# Create orderly demo data just so we're sure of having something to migrate against
-# This will fail if there's anything in the demo folder already
-docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master | true
+if [[ -d demo ]]
+then
+  echo "Orderly demo folder already exists, not re-creating it"
+else
+  docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master | true
 
-docker run --rm --entrypoint create_orderly_demo.sh \
-    -u ${UID} \
-    -v ${PWD}:/orderly \
-    -w /orderly \
-    docker.montagu.dide.ic.ac.uk:5000/orderly:master \
-    "./src/app/"
+  docker run --rm --entrypoint create_orderly_demo.sh \
+      -u ${UID} \
+      -v ${PWD}:/orderly \
+      -w /orderly \
+      docker.montagu.dide.ic.ac.uk:5000/orderly:master \
+      "./src/app/"
+fi
 
 # Build the migration image
 ./scripts/migrate-build.sh
