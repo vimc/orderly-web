@@ -98,7 +98,7 @@ describe("manage users", () => {
         expect(rendered.findAll(PermissionList).at(0).props().permissions).toBe(mockUsers[0].direct_permissions);
         expect(rendered.findAll(PermissionList).at(1).props().permissions).toBe(mockUsers[1].direct_permissions);
 
-        expect(rendered.findAll("li").at(0).classes("has-children")).toBe(false);
+        expect(rendered.findAll("li").at(0).classes("has-children")).toBe(true);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
     });
 

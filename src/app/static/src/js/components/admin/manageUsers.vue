@@ -6,7 +6,7 @@
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
             <li v-for="u in filteredUsers"
-                v-bind:class="['role', {'open':expanded[u.email]}, {'has-children': u.direct_permissions.length > 0}]">
+                v-bind:class="['role has-children', {'open':expanded[u.email]}]">
                 <div class="expander" v-on:click="toggle(u.email)"></div>
                 <span v-on:click="toggle(u.email)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
