@@ -38,7 +38,7 @@ class Ticket:
 
 
 class YouTrackHelper:
-    base_url = "https://vimc.myjetbrains.com/youtrack/rest/"
+    base_url = "https://mrc-ide.myjetbrains.com/youtrack/rest/"
 
     def __init__(self):
         self.token = get_token()
