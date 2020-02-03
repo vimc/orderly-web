@@ -43,7 +43,8 @@ describe("manageRolePermissions", () => {
         expect(listItems.at(0).find(PermissionList).props().userGroup).toBe("Funders");
 
         expect(listItems.at(1).find('span').text()).toBe("Science");
-        expect(listItems.at(1).findAll(PermissionList).length).toBe(0);
+        expect(listItems.at(1).findAll(PermissionList).length).toBe(1);
+        expect(listItems.at(1).find(PermissionList).props().permissions.length).toBe(0);
 
     });
 
