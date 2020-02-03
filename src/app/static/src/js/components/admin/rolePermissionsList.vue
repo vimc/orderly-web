@@ -2,11 +2,10 @@
     <ul class="list-unstyled roles" v-if="roles.length > 0">
         <li v-for="(role, index) in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}, {'has-children': role.permissions.length > 0}]">
+            v-bind:class="['role', 'has-children', {'open':expanded[index]}]">
             <div class="expander" v-on:click="toggle(index)"></div>
             <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
-            <permission-list v-if="role.permissions.length > 0"
-                             v-show="expanded[index]"
+            <permission-list v-show="expanded[index]"
                              cssClass="children"
                              :permissions="role.permissions"
                              :user-group="role.name"
