@@ -109,5 +109,20 @@ describe("adminApp", () => {
             });
         });
     });
+
+    it('refreshes users when manage users emits changed event', async (done) => {
+        const wrapper = shallowMount(AdminApp);
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(2);
+
+            wrapper.find(ManageUserPermissions).vm.$emit("changed");
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe("http://app/users/");
+                done();
+            });
+        });
+    });
     
 });

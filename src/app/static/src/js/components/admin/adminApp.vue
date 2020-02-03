@@ -13,7 +13,7 @@
                     @changed="getAll"></manage-role-permissions>
             <hr/>
             <label class="font-weight-bold d-block">For individual users</label>
-            <manage-user-permissions :all-users="users"></manage-user-permissions>
+            <manage-user-permissions :all-users="users" @changed="getUsers"></manage-user-permissions>
         </div>
     </div>
 </template>

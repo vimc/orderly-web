@@ -55,7 +55,7 @@
                 api.delete(`/users/${encodeURIComponent(user.email)}/permissions/${permission.name}/${query}`)
                     .then(() => {
                         this.error = null;
-                        user.direct_permissions.splice(user.direct_permissions.indexOf(permission), 1);
+                        this.$emit("changed");
                     })
                     .catch((error) => {
                         this.error = error;
@@ -72,8 +72,7 @@
                 api.post(`/users/${encodeURIComponent(user.email)}/permissions/`, data)
                     .then(() => {
                         this.error = null;
-                        user.direct_permissions.push(data);
-                        user.direct_permissions.sort();
+                        this.$emit("changed");
                     })
                     .catch((error) => {
                         this.error = error;

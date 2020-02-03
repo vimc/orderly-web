@@ -140,8 +140,7 @@ describe("manage users", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
-
-            expect(rendered.findAll(".remove").length).toBe(0);
+            expect(rendered.emitted().changed.length).toBe(1);
             done();
         })
 
@@ -162,6 +161,7 @@ describe("manage users", () => {
         rendered.find(".remove").trigger("click");
 
         setTimeout(() => {
+            expect(rendered.emitted().changed).toBeUndefined();
             expect(rendered.find(".text-danger").text())
                 .toBe("Error: could not remove reports.read from b@example.com");
             done();
@@ -192,9 +192,7 @@ describe("manage users", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(rendered.findAll(".name").length).toBe(2);
-            expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
-            expect(rendered.findAll(".name").at(1).text()).toBe("reports.review");
+            expect(rendered.emitted().changed.length).toBe(1);
             done();
         });
     });
@@ -222,6 +220,7 @@ describe("manage users", () => {
         rendered.find("button").trigger("click");
 
         setTimeout(() => {
+            expect(rendered.emitted().changed).toBeUndefined();
             expect(rendered.find(".text-danger").text())
                 .toBe("Error: could not add reports.review to b@example.com");
             done();
