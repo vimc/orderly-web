@@ -5,16 +5,16 @@
                v-model="searchStr"
                placeholder="type to search"/>
         <ul class="list-unstyled roles mt-2">
-            <li v-for="(u, index) in filteredUsers"
-                v-bind:class="['role', {'open':expanded[index]}, {'has-children': u.direct_permissions.length > 0}]">
-                <div class="expander" v-on:click="toggle(index)"></div>
-                <span v-on:click="toggle(index)" class="role-name">{{u.display_name}}</span>
+            <li v-for="u in filteredUsers"
+                v-bind:class="['role has-children', {'open':expanded[u.email]}]">
+                <div class="expander" v-on:click="toggle(u.email)"></div>
+                <span v-on:click="toggle(u.email)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
 
-                <permission-list v-if="u.direct_permissions.length > 0"
-                                 v-show="expanded[index]"
+                <permission-list v-show="expanded[u.email]"
                                  :permissions="u.direct_permissions"
-                                 :email="u.email"
+                                 :user-group="u.email"
+                                 @added="function(p) {addPermission(p, u)}"
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
         </ul>
@@ -48,8 +48,8 @@
             }
         },
         methods: {
-            toggle: function (index) {
-                Vue.set(this.expanded, index, !this.expanded[index]);
+            toggle: function (email) {
+                Vue.set(this.expanded, email, !this.expanded[email]);
             },
             getUsers: function () {
                 api.get(`/users/`)
@@ -70,6 +70,24 @@
                     .catch((error) => {
                         this.error = error;
                         this.defaultMessage = `could not remove ${permission.name} from ${user.email}`;
+                    });
+            },
+            addPermission: function (permission, user) {
+                const data = {
+                    name: permission,
+                    scope_id: "",
+                    scope_prefix: null
+                };
+
+                api.post(`/users/${encodeURIComponent(user.email)}/permissions/`, data)
+                    .then(() => {
+                        this.error = null;
+                        user.direct_permissions.push(data);
+                        user.direct_permissions.sort()
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = `could not add ${permission} to ${user.email}`;
                     });
             },
             userMatches: function (u, searchStr) {

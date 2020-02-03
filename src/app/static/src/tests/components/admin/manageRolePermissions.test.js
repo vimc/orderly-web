@@ -64,4 +64,18 @@ describe("manageRolePermissions", () => {
             });
         });
     });
+
+    it('refreshes roles when role permissions list emits added event', async (done) => {
+        const wrapper = shallowMount(ManageRolePermissions);
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(1);
+            wrapper.find(RolePermissionsList).vm.$emit("added");
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(2);
+                expect(mockAxios.history.get[1].url).toBe("http://app/roles/");
+                done();
+            });
+        });
+    });
 });
