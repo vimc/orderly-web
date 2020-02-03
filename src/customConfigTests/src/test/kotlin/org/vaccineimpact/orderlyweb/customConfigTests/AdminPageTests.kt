@@ -19,6 +19,7 @@ class AdminPageTests : SeleniumTest()
     {
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
+            insertUserAndGroup(it, "another.user@example.com")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "users.manage")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
 
@@ -37,7 +38,6 @@ class AdminPageTests : SeleniumTest()
     @Test
     fun `can view roles`()
     {
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles #role-list li")))
         val roleList = driver.findElement(By.cssSelector("#manage-roles #role-list"))
         val listItems = roleList.findElements(By.cssSelector("li.role"))
         assertThat(listItems.size).isEqualTo(1)
@@ -49,15 +49,12 @@ class AdminPageTests : SeleniumTest()
         val memberItems = listItems[0].findElements(By.cssSelector("li"))
         assertThat(memberItems.size).isEqualTo(1)
         assertThat(memberItems[0].getAttribute("id")).isEqualTo("test.user@example.com")
-
-       // val bodyHtml = driver.findElement(By.cssSelector("body")).getAttribute("innerHTML")
     }
 
     @Test
     fun `can add role, and edit members`()
     {
         //Add role
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("manage-roles")))
         val input = driver.findElement(By.cssSelector("#manage-roles #role-list input[placeholder='role name']"))
         input.sendKeys("NewRole")
         val button = driver.findElement(By.id("add-role-btn"))
@@ -67,7 +64,7 @@ class AdminPageTests : SeleniumTest()
 
         //Add member
         val roleListItem =  driver.findElement(By.cssSelector("#manage-roles #role-list li[id='NewRole']"))
-        roleListItem.findElement(By.cssSelector("span")).click()
+        roleListItem.findElement(By.className("role-name")).click()
 
         val memberInput = roleListItem.findElement(By.cssSelector("input[placeholder='email']"))
         memberInput.sendKeys("test.user@example.com")
@@ -85,6 +82,23 @@ class AdminPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can see search results when adding user to role`()
+    {
+        val roleListItem =  driver.findElement(By.cssSelector("#manage-roles #role-list li[id='Funders']"))
+
+        roleListItem.findElement(By.className("role-name")).click()
+
+        val memberInput = roleListItem.findElement(By.cssSelector("input[placeholder='email']"))
+        memberInput.sendKeys("ano")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles #role-list li[id='Funders'] .vbt-autcomplete-list")))
+        val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
+        val links = autoList.findElements(By.tagName("a"))
+        assertThat(links.size).isEqualTo(1)
+        assertThat(links[0].text).isEqualTo("another.user@example.com")
+    }
+
+    @Test
     fun `can view and edit role permissions`()
     {
         val roleListItem =  driver.findElement(By.cssSelector("#manage-role-permissions #role-list li[id='Funders']"))
@@ -99,21 +113,36 @@ class AdminPageTests : SeleniumTest()
                 ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] li")
                 )))
 
-        //TODO: This is failing as there is currently a bug - role is unexpandable if it has no permissions
         //add permission
-        val html = roleListItem.getAttribute("innerHTML")
         val addPermission = roleListItem.findElement(By.className("add-permission"))
         addPermission.findElement(By.tagName("input")).sendKeys("reports.review")
         addPermission.findElement(By.tagName("button")).click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] li span [name='reports.review']")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] li span[name='reports.review']")))
+    }
+
+    @Test
+    fun `can see search results when adding permission to role`()
+    {
+        val roleListItem =  driver.findElement(By.cssSelector("#manage-role-permissions #role-list li[id='Funders']"))
+        roleListItem.findElement(By.tagName("span")).click()
+
+        val addPermission = roleListItem.findElement(By.className("add-permission"))
+        addPermission.findElement(By.tagName("input")).sendKeys("rep")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] .vbt-autcomplete-list")))
+        val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
+        val links = autoList.findElements(By.tagName("a"))
+        assertThat(links.size).isEqualTo(2)
+        assertThat(links[0].text).isEqualTo("reports.review")
+        assertThat(links[1].text).isEqualTo("reports.run")
     }
 
     @Test
     fun `can view and edit user permissions`()
     {
         val manageUsers = driver.findElement(By.id("manage-users"))
-        val findUsersInput = manageUsers.findElement(By.cssSelector("#user-list input[placeholder='type to search']"))
+        val findUsersInput = manageUsers.findElement(By.cssSelector("#user-list input"))
         findUsersInput.sendKeys("test")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users #user-list div.email")))
@@ -130,6 +159,32 @@ class AdminPageTests : SeleniumTest()
         permissionsListItems[0].findElement(By.className("remove")).click()
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#manage-users li li"), 1))
 
-        //TODO: add permission
+        //add permission
+        val addPermission = userListItem.findElement(By.className("add-permission"))
+        addPermission.findElement(By.tagName("input")).sendKeys("reports.run")
+        addPermission.findElement(By.tagName("button")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li li span[name='reports.run']")))
+    }
+
+    @Test
+    fun `can see search results when adding permission to users`()
+    {
+        val manageUsers = driver.findElement(By.id("manage-users"))
+        val findUsersInput = manageUsers.findElement(By.cssSelector("#user-list input"))
+        findUsersInput.sendKeys("test")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users #user-list div.email")))
+        val userListItem = manageUsers.findElement(By.tagName("li"));
+        userListItem.findElement(By.className("role-name")).click()
+
+        val addPermission = userListItem.findElement(By.className("add-permission"))
+        addPermission.findElement(By.tagName("input")).sendKeys("rep")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li .vbt-autcomplete-list")))
+        val autoList = userListItem.findElement(By.className("vbt-autcomplete-list"))
+        val links = autoList.findElements(By.tagName("a"))
+        assertThat(links.size).isEqualTo(2)
+        assertThat(links[0].text).isEqualTo("reports.read")
+        assertThat(links[1].text).isEqualTo("reports.run")
     }
 }

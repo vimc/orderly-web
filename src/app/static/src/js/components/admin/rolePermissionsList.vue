@@ -12,8 +12,8 @@
                              @added="function(p) {addPermission(p, role)}"
                              @removed="function(p) {removePermission(p, role.name)}"></permission-list>
 
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </li>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </ul>
 </template>
 
