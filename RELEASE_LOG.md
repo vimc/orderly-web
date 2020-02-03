@@ -93,3 +93,9 @@
 
 ## Other branches merged in this release
 
+# v1.1.2
+
+## Tickets
+
+## Other branches merged in this release
+
