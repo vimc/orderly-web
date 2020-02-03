@@ -58,3 +58,32 @@
 
 ## Other branches merged in this release
 
+# v1.1.0
+
+## Tickets
+* mrc-1286: Endpoint for adding new groups
+* mrc-1287: Endpoint for adding members to group
+* mrc-1288: Endpoint for removing users from group
+* mrc-1290: New admin page route
+* mrc-1291: Manage roles widget
+* mrc-1291_adduser: Manage roles widget
+* mrc-1292: Add new role widget
+* mrc-1293_new_remove: Manage role permissions widget
+* mrc-1293_perms_in_roles: Manage role permissions widget
+* mrc-1294: Manage individual user permissions widget
+* mrc-1294_controller: Manage individual user permissions widget
+* mrc-1303: Endpoint for getting all roles
+* mrc-1322: Search widget
+* mrc-1326: Add permission to user/role
+* mrc-1326_REST: Add permission to user/role
+* mrc-1326_movecontroller: Add permission to user/role
+* mrc-1326_rename: Add permission to user/role
+* mrc-1327: Wire up link to admin page from report page
+* mrc-1330: Expand user permission VM to include permissions that come via group memberships
+* mrc-1331: User should not be able to remove themselves from admin role
+* mrc-1335: Bug: Can't use keys to select values from typeahead
+* vimc-3339: Endpoint in OrderlyWeb to add new user
+
+## Other branches merged in this release
+* handlebars
+
