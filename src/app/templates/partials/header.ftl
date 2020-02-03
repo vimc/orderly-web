@@ -27,7 +27,7 @@
         <div class="logout">
             <#if isAdmin && fineGrainedAuth>
                 <span>
-                    <a href="/admin">Admin</a> |
+                    <a href="${appUrl}/admin">Admin</a> |
                 </span>
             </#if>
             <span>Logged in as ${user} | <a id="logout-link"
