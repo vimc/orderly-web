@@ -19,7 +19,6 @@ $here/../scripts/setup-montagu-db.sh
 docker exec api mkdir -p /etc/montagu/api
 docker exec api touch /etc/montagu/api/go_signal
 
-BRANCH_TAG=$(git -C "$PACKAGE_ROOT" symbolic-ref --short HEAD)
 
-docker run --rm -v $here/../src/app/demo:/orderly $BRANCH_TAG
-docker run --rm -v $here/../src/app/git:/orderly $BRANCH_TAG
+docker run --rm -v $here/../src/app/demo:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
+docker run --rm -v $here/../src/app/git:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
