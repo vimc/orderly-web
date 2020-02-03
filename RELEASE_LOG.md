@@ -87,3 +87,9 @@
 ## Other branches merged in this release
 * handlebars
 
+# v1.1.1
+
+## Tickets
+
+## Other branches merged in this release
+
