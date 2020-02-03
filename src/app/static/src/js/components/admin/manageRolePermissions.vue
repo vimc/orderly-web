@@ -1,8 +1,9 @@
 <template>
     <div id="role-list">
         <role-permissions-list
-                   :roles="roles"
-                   @removed="getRoles"></role-permissions-list>
+                :roles="roles"
+                @removed="getRoles"
+                @added="getRoles"></role-permissions-list>
     </div>
 </template>
 

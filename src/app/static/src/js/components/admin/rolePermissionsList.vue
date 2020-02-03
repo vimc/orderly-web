@@ -6,10 +6,12 @@
             <div class="expander" v-on:click="toggle(index)"></div>
             <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
             <permission-list v-if="role.permissions.length > 0"
-                       v-show="expanded[index]"
-                       cssClass="children"
-                       :permissions="role.permissions"
-                       @removed="function(p) {removePermission(p, role.name)}"></permission-list>
+                             v-show="expanded[index]"
+                             cssClass="children"
+                             :permissions="role.permissions"
+                             :user-group="role.name"
+                             @added="function(p) {addPermission(p, role)}"
+                             @removed="function(p) {removePermission(p, role.name)}"></permission-list>
 
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </li>
@@ -50,7 +52,24 @@
                         this.defaultMessage = `could not remove permission from ${roleName}`;
                         this.error = error;
                     });
-            }
+            },
+            addPermission: function (permission, role) {
+                const data = {
+                    name: permission,
+                    scope_id: "",
+                    scope_prefix: null
+                };
+
+                api.post(`/roles/${encodeURIComponent(role.name)}/permissions/`, data)
+                    .then(() => {
+                        this.error = null;
+                        this.$emit('added');
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = `could not add ${permission} to ${role.name}`;
+                    });
+            },
         },
         components: {
             PermissionList,
