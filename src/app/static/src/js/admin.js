@@ -8,11 +8,7 @@ $(document).ready(() => {
     if ($('#adminVueApp').length > 0) {
         new Vue({
             el: '#adminVueApp',
-            components: {
-                manageRoles: manageRoles,
-                manageUsers: manageUsers,
-                manageRolePermissions: manageRolePermissions
-            }
+
         });
     }
 });
