@@ -1,6 +1,6 @@
 <template>
-    <div class="mb-3 add-permission">
-        <vue-bootstrap-typeahead
+    <div class="mb-3 mt-2 add-permission">
+        <typeahead
                 size="sm"
                 v-model="newPermission"
                 placeholder="name"
@@ -8,13 +8,13 @@
             <template slot="append">
                 <button v-on:click="add" type="submit" class="btn btn-sm">Add</button>
             </template>
-        </vue-bootstrap-typeahead>
+        </typeahead>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script>
-    import VueBootstrapTypeahead from 'vue-bootstrap-typeahead'
+    import Typeahead from "../typeahead/typeahead.vue";
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
@@ -29,7 +29,7 @@
         },
         components: {
             ErrorInfo,
-            VueBootstrapTypeahead
+            Typeahead
         },
         watch: {
             newPermission() {

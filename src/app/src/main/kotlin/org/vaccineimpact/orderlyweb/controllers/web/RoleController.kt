@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
@@ -77,6 +78,12 @@ class RoleController(context: ActionContext,
     {
         val roleId = roleId()
         val email = context.params(":email")
+
+        if (roleId==RoleRepository.ADMIN_ROLE && context.userProfile?.id == email)
+        {
+            throw InvalidOperationError("You cannot remove yourself from the ${RoleRepository.ADMIN_ROLE} role.")
+        }
+
         authRepo.ensureGroupDoesNotHaveMember(roleId, email)
         return okayResponse()
     }

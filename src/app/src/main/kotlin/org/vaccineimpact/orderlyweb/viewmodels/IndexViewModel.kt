@@ -14,15 +14,13 @@ import java.time.format.DateTimeFormatter
 
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
                           val pinnedReports: List<PinnedReportViewModel>,
-                          val isReviewer: Boolean,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
-                pinnedReports: List<PinnedReportViewModel>,
-                isReviewer: Boolean)
-            : this(reports, pinnedReports, isReviewer, DefaultViewModel(context, breadcrumb))
+                pinnedReports: List<PinnedReportViewModel>)
+            : this(reports, pinnedReports, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -47,8 +45,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
 
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels,
-                    context.hasPermission(ReifiedPermission("reports.review", Scope.Global())))
+            return IndexViewModel(context, reportRows, pinnedReportsViewModels)
         }
     }
 }

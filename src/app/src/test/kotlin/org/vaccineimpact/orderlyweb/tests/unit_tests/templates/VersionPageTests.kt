@@ -1,14 +1,22 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.equalTo
 import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
+import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.*
@@ -70,11 +78,14 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
     )
 
+    private val testDefaultModel = DefaultViewModel(true, "username",
+            isReviewer = false,
+            isAdmin = false,
+            breadcrumbs = listOf(Breadcrumb("name", "url")))
+
     private val testModel = ReportVersionPageViewModel(
             testReport,
             "/testFocalArtefactUrl",
-            false,
-            false,
             false,
             testArtefactViewModels,
             testDataLinks,
@@ -82,9 +93,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
             listOf(),
             listOf(),
-            listOf(Breadcrumb("name", "url")),
-            true,
-            "appName")
+            testDefaultModel)
 
     @Test
     fun `renders outline correctly`()
@@ -314,10 +323,9 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `admins see publish switch`()
+    fun `reviewers see publish switch`()
     {
-        val mockModel = testModel.copy(isAdmin = true)
-
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isReviewer = true))
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
@@ -325,11 +333,9 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `non admins do not see publish switch`()
+    fun `non reviewers do not see publish switch`()
     {
-        val mockModel = testModel.copy(isAdmin = false)
-
-
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isReviewer = false))
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
@@ -337,10 +343,37 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
+    fun `not reviewers see publish switch if auth is not enabled`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(any())
+            } doReturn false
+        }
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+            on { get("app.name") } doReturn "appName"
+            on { get("app.url") } doReturn "http://app"
+            on { get("app.email") } doReturn "email"
+            on { get("app.logo") } doReturn "logo.png"
+            on { get("montagu.url") } doReturn "montagu"
+        }
+
+        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
+        val mockModel = testModel.copy(appViewModel = defaultModel)
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val publishSwitch = htmlResponse.getElementById("publishSwitchVueApp")
+        Assertions.assertThat(publishSwitch).isNotNull()
+    }
+
+    @Test
     fun `runners see run report`()
     {
         val mockModel = testModel.copy(isRunner = true)
-
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val runReport = htmlResponse.getElementById("runReportVueApp")
@@ -359,9 +392,38 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `report readers are shown if showPermissionManagement is true`()
+    fun `non runners see run report if auth is not enabled`()
     {
-        val mockModel = testModel.copy(showPermissionManagement = true)
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(any())
+            } doReturn false
+        }
+
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+            on { get("app.name") } doReturn "appName"
+            on { get("app.url") } doReturn "http://app"
+            on { get("app.email") } doReturn "email"
+            on { get("app.logo") } doReturn "logo.png"
+            on { get("montagu.url") } doReturn "montagu"
+        }
+
+        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
+        val mockModel = testModel.copy(isRunner=false, appViewModel = defaultModel)
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val runReport = htmlResponse.getElementById("runReportVueApp")
+        Assertions.assertThat(runReport).isNotNull()
+    }
+
+    @Test
+    fun `report readers are shown if user is admin`()
+    {
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isAdmin = true))
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
         val doc = template.jsoupDocFor(mockModel)
@@ -375,13 +437,43 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
-    fun `report readers are not shown if showPermissionManagement is false`()
+    fun `report readers are not shown if user is not admin`()
     {
-        val mockModel = testModel.copy(showPermissionManagement = false)
+        val mockModel = testModel.copy(appViewModel = testDefaultModel.copy(isAdmin = false))
 
         val htmlResponse = template.htmlPageResponseFor(mockModel)
 
         val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
         Assertions.assertThat(reportReaders).isNull()
     }
+
+    @Test
+    fun `report readers are not shown if auth is not enabled`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(any())
+            } doReturn true
+        }
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+            on { get("app.name") } doReturn "appName"
+            on { get("app.url") } doReturn "http://app"
+            on { get("app.email") } doReturn "email"
+            on { get("app.logo") } doReturn "logo.png"
+            on { get("montagu.url") } doReturn "montagu"
+        }
+
+        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
+        val mockModel = testModel.copy(appViewModel = defaultModel)
+        val htmlResponse = template.htmlPageResponseFor(mockModel)
+
+        val reportReaders = htmlResponse.getElementById("reportReadersListVueApp")
+        Assertions.assertThat(reportReaders).isNull()
+    }
+
+
 }
