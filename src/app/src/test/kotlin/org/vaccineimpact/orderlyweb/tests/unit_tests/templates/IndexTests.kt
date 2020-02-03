@@ -6,6 +6,7 @@ import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
+import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
@@ -22,7 +23,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -39,10 +40,10 @@ class IndexTests : TeamcityTests()
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(
                 PinnedReportViewModel("report1", "version1", "display1", "date1",
-                    DownloadableFileViewModel("zip file 1", "zip file url 1")),
+                        DownloadableFileViewModel("zip file 1", "zip file url 1")),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
                         DownloadableFileViewModel("zip file 2", "zip file url 2"))
-        ), false)
+        ))
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -75,7 +76,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly when no pinned reports`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf())
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -89,7 +90,8 @@ class IndexTests : TeamcityTests()
     @Test
     fun `reviewers can see the status column`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = true, isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(5)
@@ -103,7 +105,9 @@ class IndexTests : TeamcityTests()
     @Test
     fun `non-reviewers cannot see the status column`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), false)
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(4)
@@ -117,7 +121,9 @@ class IndexTests : TeamcityTests()
     @Test
     fun `each column has a custom filter`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), true)
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
+                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         assertThat(filters.select("th").count()).isEqualTo(5)
