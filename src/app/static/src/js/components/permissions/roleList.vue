@@ -2,7 +2,7 @@
     <ul class="list-unstyled roles" v-if="roles.length > 0">
         <li v-for="role in roles"
             v-bind:id="role.name"
-            v-bind:class="['role', {'open':expanded[index]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
+            v-bind:class="['role', {'open':expanded[role.name]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
             <div class="expander" v-on:click="toggle(role.name)"></div>
             <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
             <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
