@@ -5,10 +5,12 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
+import org.openqa.selenium.remote.RemoteWebElement
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertRole
+import java.time.Duration
 
 class AdminPageTests : SeleniumTest()
 {
@@ -97,7 +99,14 @@ class AdminPageTests : SeleniumTest()
                 ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] li")
                 )))
 
-        //TODO: add permission
+        //TODO: This is failing as there is currently a bug - role is unexpandable if it has no permissions
+        //add permission
+        val html = roleListItem.getAttribute("innerHTML")
+        val addPermission = roleListItem.findElement(By.className("add-permission"))
+        addPermission.findElement(By.tagName("input")).sendKeys("reports.review")
+        addPermission.findElement(By.tagName("button")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions #role-list li[id='Funders'] li span [name='reports.review']")))
     }
 
     @Test
