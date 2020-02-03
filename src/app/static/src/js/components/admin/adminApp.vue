@@ -34,15 +34,13 @@
         data() {
             return {
                 users: [],
-                roles: [],
-                typeaheadEmails: []
+                roles: []
             }
         },
         methods: {
             getAll: function () {
                 this.getRoles();
                 this.getUsers();
-                this.getTypeaheadEmails();
             },
             getRoles: function () {
                 api.get(`/roles/`)

@@ -42,7 +42,7 @@
                     .then(() => {
                         this.addRoleError = "";
                         this.addRoleDefaultMessage = "";
-                        this.$emit('added')
+                        this.$emit('changed')
                     })
                     .catch((error) => {
                         this.addRoleError = error;

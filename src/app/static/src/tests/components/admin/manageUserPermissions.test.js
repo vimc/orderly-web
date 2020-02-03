@@ -1,7 +1,7 @@
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
 import {mount, shallowMount} from "@vue/test-utils";
-import ManageUsers from "../../../js/components/admin/manageUsers.vue";
+import ManageUserPermissions from "../../../js/components/admin/manageUserPermissions.vue";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
 
 describe("manage users", () => {
@@ -11,7 +11,8 @@ describe("manage users", () => {
             username: "a.user",
             display_name: "Some name",
             email: "a@example.com",
-            direct_permissions: []
+            direct_permissions: [],
+            role_permissions: []
         },
         {
             username: "b.user",
@@ -21,32 +22,37 @@ describe("manage users", () => {
                 name: "reports.read",
                 scope_id: "",
                 scope_prefix: null
-            }]
+            }],
+            role_permissions: []
         }
     ];
 
+    function shallowMountedComponent() {
+        return shallowMount(ManageUserPermissions, {
+            propsData: {
+                allUsers: JSON.parse(JSON.stringify(mockUsers))
+            }
+        });
+    }
+
+    function mountedComponent() {
+        return mount(ManageUserPermissions, {
+            propsData: {
+                allUsers: JSON.parse(JSON.stringify(mockUsers))
+            }
+        });
+    }
+
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/users/')
-            .reply(200, {"data": mockUsers});
         mockAxios.onGet("http://app/typeahead/permissions/")
             .reply(200, {
                 "data": ["reports.read", "reports.review", "users.manage"]
             });
     });
 
-    it("fetches users on mount", (done) => {
-        shallowMount(ManageUsers);
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
-            done();
-        });
-    });
-
     it("matches users by case insensitive username", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("a.");
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
@@ -59,8 +65,7 @@ describe("manage users", () => {
     });
 
     it("matches users by case insensitive email", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("example");
 
         await Vue.nextTick();
@@ -72,8 +77,7 @@ describe("manage users", () => {
     });
 
     it("matches users by case insensitive display name", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -86,25 +90,25 @@ describe("manage users", () => {
         expect(rendered.find("li .role-name").text()).toBe("Some other name");
     });
 
-    it("renders permission list", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+    it("renders permission list for each user", async () => {
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("example");
 
         await Vue.nextTick();
 
         expect(rendered.findAll("li").length).toBe(2);
         expect(rendered.findAll(PermissionList).length).toBe(2);
-        expect(rendered.findAll(PermissionList).at(0).props().permissions).toBe(mockUsers[0].direct_permissions);
-        expect(rendered.findAll(PermissionList).at(1).props().permissions).toBe(mockUsers[1].direct_permissions);
+        expect(rendered.findAll(PermissionList).at(0).props().permissions)
+            .toStrictEqual(mockUsers[0].direct_permissions);
+        expect(rendered.findAll(PermissionList).at(1).props().permissions)
+            .toStrictEqual(mockUsers[1].direct_permissions);
 
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(true);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
     });
 
     it("can open and close permission list", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -123,8 +127,7 @@ describe("manage users", () => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(200);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -147,9 +150,7 @@ describe("manage users", () => {
     it("sets error if removing permission fails", async (done) => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(500);
-
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -171,8 +172,7 @@ describe("manage users", () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(200);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -203,8 +203,7 @@ describe("manage users", () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(500);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
