@@ -92,7 +92,7 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.select(".logout span").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Admin |")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("/admin")
+        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("http://localhost:8888/admin")
     }
 
     @Test
