@@ -38,6 +38,13 @@ object WebRoleRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(usersManage),
+            WebEndpoint(
+                    "/roles/:role-id/",
+                    RoleController::class, "deleteRole",
+                    method = HttpMethod.delete)
+                    .json()
+                    .transform()
+                    .secure(usersManage),
             WebEndpoint("/roles/:role-id/users/",
                     RoleController::class, "addUser",
                     method = HttpMethod.post)
