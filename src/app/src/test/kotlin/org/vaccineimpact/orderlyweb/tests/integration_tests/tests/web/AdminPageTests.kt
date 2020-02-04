@@ -14,7 +14,7 @@ class AdminPageTests : IntegrationTest()
     @Test
     fun `only user managers can see the page`()
     {
-        val url = "/admin"
+        val url = "/manage-access"
         assertWebUrlSecured(url, manageUsers)
     }
 
@@ -22,7 +22,7 @@ class AdminPageTests : IntegrationTest()
     fun `correct page is served`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(manageUsers)
-        val response = webRequestHelper.requestWithSessionCookie("/admin", sessionCookie)
+        val response = webRequestHelper.requestWithSessionCookie("/manage-access", sessionCookie)
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
