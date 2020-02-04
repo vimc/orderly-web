@@ -6,7 +6,7 @@
                         v-if="p.scope_prefix">/ {{p.scope_prefix}}:{{p.scope_id}}</span></span>
                 <span v-if="isDirect(p)" v-on:click="function() {remove(p)}"
                       class="remove d-inline-block ml-2 large">×</span>
-                <span v-if="!isDirect(p)" class="text-muted">({{p.source}})</span>
+                <span v-if="!isDirect(p)" class="text-muted source">({{p.source}})</span>
             </li>
         </ul>
         <add-permission :user-group="userGroup" :available-permissions="availablePermissions" @added="add"></add-permission>

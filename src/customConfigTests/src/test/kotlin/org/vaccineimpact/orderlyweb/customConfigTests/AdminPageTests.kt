@@ -146,18 +146,20 @@ class AdminPageTests : SeleniumTest()
         findUsersInput.sendKeys("test")
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users #user-list div.email")))
-        val userListItem = manageUsers.findElement(By.tagName("li"));
+        val userListItem = manageUsers.findElement(By.className("role"));
         assertThat(userListItem.findElement(By.cssSelector("div.email")).text).isEqualToIgnoringWhitespace("test.user@example.com")
 
         userListItem.findElement(By.className("role-name")).click()
         val permissionsListItems = userListItem.findElements(By.tagName("li"))
-        assertThat(permissionsListItems.size).isEqualTo(2)
-        assertThat(permissionsListItems[0].findElement(By.className("name")).text).isEqualTo("reports.review")
-        assertThat(permissionsListItems[1].findElement(By.className("name")).text).isEqualTo("users.manage")
+        assertThat(permissionsListItems.size).isEqualTo(3)
+        assertThat(permissionsListItems[0].findElement(By.className("name")).text).isEqualTo("reports.read")
+        assertThat(permissionsListItems[0].findElement(By.className("source")).text).isEqualTo("(Funders)")
+        assertThat(permissionsListItems[1].findElement(By.className("name")).text).isEqualTo("reports.review")
+        assertThat(permissionsListItems[2].findElement(By.className("name")).text).isEqualTo("users.manage")
 
         //remove permission
-        permissionsListItems[0].findElement(By.className("remove")).click()
-        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#manage-users li li"), 1))
+        permissionsListItems[1].findElement(By.className("remove")).click()
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#manage-users li li"), 2))
 
         //add permission
         val addPermission = userListItem.findElement(By.className("add-permission"))
