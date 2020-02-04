@@ -1,7 +1,7 @@
 import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
 import {mount, shallowMount} from "@vue/test-utils";
-import ManageUsers from "../../../js/components/admin/manageUsers.vue";
+import ManageUserPermissions from "../../../js/components/admin/manageUserPermissions.vue";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
 
 describe("manage users", () => {
@@ -33,28 +33,32 @@ describe("manage users", () => {
         }
     ];
 
+    function shallowMountedComponent() {
+        return shallowMount(ManageUserPermissions, {
+            propsData: {
+                allUsers: JSON.parse(JSON.stringify(mockUsers))
+            }
+        });
+    }
+
+    function mountedComponent() {
+        return mount(ManageUserPermissions, {
+            propsData: {
+                allUsers: JSON.parse(JSON.stringify(mockUsers))
+            }
+        });
+    }
+
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/users/')
-            .reply(200, {"data": mockUsers});
         mockAxios.onGet("http://app/typeahead/permissions/")
             .reply(200, {
                 "data": ["reports.read", "reports.review", "users.manage"]
             });
     });
 
-    it("fetches users on mount", (done) => {
-        shallowMount(ManageUsers);
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
-            done();
-        });
-    });
-
     it("matches users by case insensitive username", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("a.");
         await Vue.nextTick();
         expect(rendered.findAll("li").length).toBe(1);
@@ -67,8 +71,7 @@ describe("manage users", () => {
     });
 
     it("matches users by case insensitive email", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("example");
 
         await Vue.nextTick();
@@ -80,8 +83,7 @@ describe("manage users", () => {
     });
 
     it("matches users by case insensitive display name", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -94,9 +96,8 @@ describe("manage users", () => {
         expect(rendered.find("li .role-name").text()).toBe("Some other name");
     });
 
-    it("renders permission list", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+    it("renders permission list for each user", async () => {
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("example");
 
         await Vue.nextTick();
@@ -108,8 +109,8 @@ describe("manage users", () => {
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
     });
 
-    it("passes role and direct permissions to permission list", async () => {
-        const rendered = shallowMount(ManageUsers);
+    it("passes both role and direct permissions to permission list", async () => {
+        const rendered = shallowMountedComponent();
         rendered.setData({allUsers: mockUsers});
         rendered.find("input").setValue("example");
 
@@ -132,8 +133,7 @@ describe("manage users", () => {
     });
 
     it("can open and close permission list", async () => {
-        const rendered = shallowMount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = shallowMountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -152,8 +152,7 @@ describe("manage users", () => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(200);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -166,8 +165,7 @@ describe("manage users", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
-
-            expect(rendered.findAll(".remove").length).toBe(0);
+            expect(rendered.emitted().changed.length).toBe(1);
             done();
         })
 
@@ -176,9 +174,7 @@ describe("manage users", () => {
     it("sets error if removing permission fails", async (done) => {
         mockAxios.onDelete('http://app/users/b%40example.com/permissions/reports.read/')
             .reply(500);
-
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -190,6 +186,7 @@ describe("manage users", () => {
         rendered.find(".remove").trigger("click");
 
         setTimeout(() => {
+            expect(rendered.emitted().changed).toBeUndefined();
             expect(rendered.find(".text-danger").text())
                 .toBe("Error: could not remove reports.read from b@example.com");
             done();
@@ -200,8 +197,7 @@ describe("manage users", () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(200);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -209,9 +205,6 @@ describe("manage users", () => {
         rendered.find(".expander").trigger("click");
 
         await Vue.nextTick();
-
-        expect(rendered.findAll(".name").length).toBe(2);
-        expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
 
         rendered.findAll("input").at(1).setValue("reports.review");
 
@@ -221,10 +214,7 @@ describe("manage users", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(rendered.findAll(".name").length).toBe(3);
-            expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
-            expect(rendered.findAll(".name").at(1).text()).toBe("reports.read / report:r1");
-            expect(rendered.findAll(".name").at(2).text()).toBe("reports.review");
+            expect(rendered.emitted().changed.length).toBe(1);
             done();
         });
     });
@@ -233,8 +223,7 @@ describe("manage users", () => {
         mockAxios.onPost('http://app/users/b%40example.com/permissions/')
             .reply(500);
 
-        const rendered = mount(ManageUsers);
-        rendered.setData({allUsers: mockUsers});
+        const rendered = mountedComponent();
         rendered.find("input").setValue("other");
 
         await Vue.nextTick();
@@ -243,9 +232,6 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(".name").length).toBe(2);
-        expect(rendered.findAll(".name").at(0).text()).toBe("reports.read");
-
         rendered.findAll("input").at(1).setValue("reports.review");
 
         await Vue.nextTick();
@@ -253,10 +239,10 @@ describe("manage users", () => {
         rendered.find("button").trigger("click");
 
         setTimeout(() => {
-            expect(rendered.findAll(".name").length).toBe(2);
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(rendered.emitted().changed).toBeUndefined();
             expect(rendered.find(".text-danger").text())
                 .toBe("Error: could not add reports.review to b@example.com");
-            done();
             done();
         });
     });
