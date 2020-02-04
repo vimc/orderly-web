@@ -29,12 +29,9 @@
 
     export default {
         name: 'manageUsers',
-        mounted() {
-            this.getUsers();
-        },
+        props: ["allUsers"],
         data() {
             return {
-                allUsers: [],
                 searchStr: "",
                 expanded: {},
                 error: "",
@@ -50,12 +47,6 @@
             toggle: function (email) {
                 Vue.set(this.expanded, email, !this.expanded[email]);
             },
-            getUsers: function () {
-                api.get(`/users/`)
-                    .then(({data}) => {
-                        this.allUsers = data.data
-                    })
-            },
             removePermission: function (permission, user) {
                 const scopeId = permission.scope_id;
                 const scopePrefix = permission.scope_prefix;
@@ -64,7 +55,7 @@
                 api.delete(`/users/${encodeURIComponent(user.email)}/permissions/${permission.name}/${query}`)
                     .then(() => {
                         this.error = null;
-                        user.direct_permissions.splice(user.direct_permissions.indexOf(permission), 1);
+                        this.$emit("changed");
                     })
                     .catch((error) => {
                         this.error = error;
@@ -81,7 +72,7 @@
                 api.post(`/users/${encodeURIComponent(user.email)}/permissions/`, data)
                     .then(() => {
                         this.error = null;
-                        user.direct_permissions.push(data);
+                        this.$emit("changed");
                     })
                     .catch((error) => {
                         this.error = error;

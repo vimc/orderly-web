@@ -5,8 +5,8 @@
                    :can-remove-roles="false"
                    :roles="roles"
                    :available-users="typeaheadEmails"
-                   @removed="getRoles"
-                   @added="getRoles"></role-list>
+                   @removed="$emit('changed')"
+                   @added="$emit('changed')"></role-list>
         <add-role @added="roleAdded" :error="addRoleError" :default-message="addRoleDefaultMessage"></add-role>
     </div>
 </template>
@@ -18,25 +18,18 @@
 
     export default {
         name: 'manageRoles',
+        props: ["roles"],
         mounted() {
-            this.getRoles();
             this.getTypeaheadEmails();
         },
         data() {
             return {
-                roles: [],
                 typeaheadEmails: [],
                 addRoleError: "",
                 addRoleDefaultMessage: ""
             }
         },
         methods: {
-            getRoles: function () {
-                api.get(`/roles/`)
-                    .then(({data}) => {
-                        this.roles = data.data
-                    })
-            },
             getTypeaheadEmails: function () {
                 api.get(`/typeahead/emails/`)
                     .then(({data}) => {
@@ -49,7 +42,7 @@
                     .then(() => {
                         this.addRoleError = "";
                         this.addRoleDefaultMessage = "";
-                        this.getRoles();
+                        this.$emit('changed')
                     })
                     .catch((error) => {
                         this.addRoleError = error;
