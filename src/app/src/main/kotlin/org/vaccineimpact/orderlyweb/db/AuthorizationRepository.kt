@@ -33,6 +33,7 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
             it.dsl.select(ORDERLYWEB_PERMISSION.ID)
                     .from(ORDERLYWEB_PERMISSION)
                     .fetchInto(String::class.java)
+                    .sorted()
         }
     }
 
