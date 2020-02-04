@@ -1,5 +1,5 @@
 <template>
-    <div id="user-list">
+    <div id="manage-users">
         <input type="text"
                class="form-control"
                v-model="searchStr"

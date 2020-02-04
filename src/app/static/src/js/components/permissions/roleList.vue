@@ -14,8 +14,7 @@
                        :users="role.members"
                        :canRemove="canRemoveMembers"
                        @removed="function(email){removeMember(role.name, email)}"></user-list>
-            
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+
             <add-user-to-role v-if="canAddMembers && expanded[role.name]"
                         :role="role.name"
                         :available-users="availableUsersForRole(role)"

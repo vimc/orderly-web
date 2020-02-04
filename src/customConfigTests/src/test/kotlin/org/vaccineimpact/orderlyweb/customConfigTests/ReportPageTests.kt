@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
+import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import java.util.regex.Pattern
@@ -34,8 +34,8 @@ class ReportPageTests : SeleniumTest()
 
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
         }
 
         loginWithMontagu()
@@ -67,9 +67,9 @@ class ReportPageTests : SeleniumTest()
 
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.review")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.run")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
         loginWithMontagu()
@@ -115,9 +115,9 @@ class ReportPageTests : SeleniumTest()
 
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.review")
-            giveUserGlobalPermission(it, "test.user@example.com", "reports.run")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
         loginWithMontagu()
