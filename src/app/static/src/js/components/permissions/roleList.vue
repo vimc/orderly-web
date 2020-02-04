@@ -5,8 +5,11 @@
             v-bind:class="['role', {'open':expanded[role.name]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
             <div class="expander" v-on:click="toggle(role.name)"></div>
             <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
-            <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
+
+            <span v-if="canRemoveRoles || canDeleteRoles"
+                  v-on:click="function(){ canRemoveRoles ? removeRole(role.name) : deleteRole(role.name)}"
                   class="remove d-inline-block ml-2 large">×</span>
+
 
             <user-list v-if="role.members.length > 0"
                        v-show="expanded[role.name]"
@@ -14,8 +17,7 @@
                        :users="role.members"
                        :canRemove="canRemoveMembers"
                        @removed="function(email){removeMember(role.name, email)}"></user-list>
-            
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+
             <add-user-to-role v-if="canAddMembers && expanded[role.name]"
                         :role="role.name"
                         :available-users="availableUsersForRole(role)"
@@ -35,7 +37,7 @@
 
     export default {
         name: 'roleList',
-        props: ["roles", "canRemoveRoles", "canRemoveMembers", "canAddMembers", "availableUsers", "permission"],
+        props: ["roles", "canRemoveRoles", "canDeleteRoles", "canRemoveMembers", "canAddMembers", "availableUsers", "permission"],
         data() {
             return {
                 error: null,
@@ -73,6 +75,17 @@
                     })
                     .catch((error) => {
                         this.defaultMessage = `could not remove ${roleName}`;
+                        this.error = error;
+                    });
+            },
+            deleteRole: function (roleName) {
+                api.delete(`/roles/${encodeURIComponent(roleName)}/`)
+                    .then(() => {
+                        this.$emit("deleted", roleName);
+                        this.error = null;
+                    })
+                    .catch((error) => {
+                        this.defaultMessage = `could not delete ${roleName}`;
                         this.error = error;
                     });
             }
