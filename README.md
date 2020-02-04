@@ -144,7 +144,7 @@ this can be found in the ```migrations``` folder.  Migrations are run by the doc
 ```scripts/migrate-build.sh```, ```scripts/migrate-test.sh``` and ```scripts/migrate-push.sh``` 
 are run as separate build steps in the TeamCity build configuration, to respectively
 build the docker image, test it by running it and finally push it to the registry. 
-Migrations can also be tested locally with ```scripts/migrate-local-test.sh``` 
+Migrations can also be run on the local demo database with ```dev/migrate-local-test.sh``` 
 
 We don't create a schema as such in the Orderly database, as Sqlite does not support schema. Instead we prefix all our 
 tables' names with "orderlyweb".

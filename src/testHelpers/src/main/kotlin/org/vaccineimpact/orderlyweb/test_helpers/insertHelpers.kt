@@ -111,9 +111,27 @@ fun insertUserAndGroup(db: JooqContext, email: String)
                 this.id = email
             }.store()
 
+    addUserToGroup(db, email, email)
+}
+
+fun insertRole(db: JooqContext, roleName: String, vararg userEmails: String)
+{
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP)
+            .apply {
+                this.id = roleName
+            }.store()
+
+    for (email in userEmails)
+    {
+        addUserToGroup(db, email, roleName)
+    }
+}
+
+fun addUserToGroup(db: JooqContext, email: String, userGroupId: String)
+{
     db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_USER)
             .apply {
-                this.userGroup = email
+                this.userGroup = userGroupId
                 this.email = email
             }.insert()
 }
@@ -129,7 +147,7 @@ fun insertGlobalPinnedReport(reportName: String, ordering: Int)
     }
 }
 
-fun giveUserGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
+fun giveUserGroupGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
 {
 
     db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply {
