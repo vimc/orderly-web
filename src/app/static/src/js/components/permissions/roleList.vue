@@ -6,7 +6,7 @@
             <div class="expander" v-on:click="toggle(role.name)"></div>
             <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
 
-            <span v-if="canRemoveRoles || canDeleteRoles"
+            <span v-if="canRemoveOrDeleteRole(role.name)"
                   v-on:click="function(){ canRemoveRoles ? removeRole(role.name) : confirmDeleteRole(role.name)}"
                   class="remove d-inline-block ml-2 large">×</span>
 
@@ -64,6 +64,9 @@
             },
             availableUsersForRole: function(role) {
                 return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)
+            },
+            canRemoveOrDeleteRole: function(role) {
+                return this.canRemoveRoles || (this.canDeleteRoles && role !== "Admin")
             },
             removeMember: function (roleName, email) {
                 api.delete(`/roles/${encodeURIComponent(roleName)}/users/${encodeURIComponent(email)}`)
