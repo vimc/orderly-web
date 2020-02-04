@@ -113,5 +113,76 @@ describe("permission list", () => {
         expect(rendered.findAll("ul").length).toBe(0);
     });
 
+    it("permissions are sorted", () => {
+        const rendered = shallowMount(PermissionList, {
+            propsData: {
+                permissions: [
+                    {
+                        name: "reports.read",
+                        scope_id: "r2",
+                        scope_prefix: "report"
+                    },
+                    {
+                        name: "reports.read",
+                        scope_id: "",
+                        scope_prefix: null
+                    }, {
+                        name: "reports.review",
+                        scope_id: "",
+                        scope_prefix: null
+                    }, {
+                        name: "reports.read",
+                        scope_id: "r1",
+                        scope_prefix: "report"
+                    }]
+            }
+        });
 
+        const renderedPermissionNames = rendered.findAll(".name");
+        expect(renderedPermissionNames.at(0).text()).toBe("reports.read");
+        expect(renderedPermissionNames.at(1).text()).toBe("reports.read / report:r1");
+        expect(renderedPermissionNames.at(2).text()).toBe("reports.read / report:r2");
+        expect(renderedPermissionNames.at(3).text()).toBe("reports.review");
+    });
+
+    it("renders direct permissions", () => {
+        const rendered = shallowMount(PermissionList, {
+            propsData: {
+                userGroup: "test",
+                permissions: [
+                    {
+                        name: "reports.read",
+                        scope_id: "",
+                        scope_prefix: null,
+                        source: "test"
+                    }]
+            }
+        });
+
+        expect(rendered.find(".name").classes()).not.toContain("text-muted");
+        expect(rendered.findAll(".remove").length).toBe(1);
+        expect(rendered.findAll("span").length).toBe(2);
+        expect(rendered.findAll("span").at(1).text()).toBe("×");
+    });
+
+    it("renders in-direct permissions", () => {
+        const rendered = shallowMount(PermissionList, {
+            propsData: {
+                userGroup: "test",
+                permissions: [
+                    {
+                        name: "reports.read",
+                        scope_id: "",
+                        scope_prefix: null,
+                        source: "something else"
+                    }]
+            }
+        });
+
+        expect(rendered.find(".name").classes()).toContain("text-muted");
+        expect(rendered.findAll(".remove").length).toBe(0);
+        expect(rendered.findAll("span").length).toBe(2);
+        expect(rendered.findAll("span").at(1).classes()).toContain("text-muted");
+        expect(rendered.findAll("span").at(1).text()).toBe("(something else)");
+    });
 });

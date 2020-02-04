@@ -1,11 +1,12 @@
 <template>
     <div>
         <ul v-if="permissions.length > 0" class="list-unstyled children mt-1">
-            <li v-for="p in permissions">
-                <span class="name">{{p.name}} <span
+            <li v-for="p in sortedPermissions">
+                <span class="name" :class="{'text-muted': !isDirect(p)}">{{p.name}} <span
                         v-if="p.scope_prefix">/ {{p.scope_prefix}}:{{p.scope_id}}</span></span>
-                <span v-on:click="function() {remove(p)}"
+                <span v-if="isDirect(p)" v-on:click="function() {remove(p)}"
                       class="remove d-inline-block ml-2 large">×</span>
+                <span v-if="!isDirect(p)" class="text-muted">({{p.source}})</span>
             </li>
         </ul>
         <add-permission :user-group="userGroup" :available-permissions="availablePermissions" @added="add"></add-permission>
@@ -33,8 +34,11 @@
             this.getPermissions();
         },
         computed: {
+            sortedPermissions() {
+              return this.permissions.sort(this.sortByName)
+            },
             globalPermissions() {
-                return this.permissions.filter(p => !p.scope_id).map(p => p.name)
+                return this.permissions.filter(p => p.source === this.userGroup && !p.scope_id).map(p => p.name)
             },
             availablePermissions() {
                 return this.allPermissions.filter(p => this.globalPermissions.indexOf(p) === -1)
@@ -52,6 +56,24 @@
             },
             add(p) {
                 this.$emit("added", p);
+            },
+            isDirect(p) {
+                return p.source === this.userGroup
+            },
+            sortByName(a, b) {
+                if (a.name > b.name) {
+                    return 1;
+                }
+                if (a.name < b.name){
+                    return -1;
+                }
+                if (a.scope_id > b.scope_id) {
+                    return 1;
+                }
+                if (a.scope_id < b.scope_id) {
+                    return -1;
+                }
+                return 0;
             }
         }
     }

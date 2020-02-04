@@ -11,7 +11,7 @@
                 <span v-on:click="toggle(u.email)" class="role-name">{{u.display_name}}</span>
                 <div class="text-muted small email role-name">{{u.email}}</div>
                 <permission-list v-show="expanded[u.email]"
-                                 :permissions="u.direct_permissions"
+                                 :permissions="u.direct_permissions.concat(u.role_permissions)"
                                  :user-group="u.email"
                                  @added="function(p) {addPermission(p, u)}"
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
