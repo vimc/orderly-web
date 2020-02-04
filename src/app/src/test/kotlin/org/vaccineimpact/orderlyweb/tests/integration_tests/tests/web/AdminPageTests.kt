@@ -26,6 +26,6 @@ class AdminPageTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
-        Assertions.assertThat(page.selectFirst("label").text()).isEqualTo("Manage roles")
+        Assertions.assertThat(page.selectFirst("#adminVueApp")).isNotNull()
     }
 }

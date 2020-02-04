@@ -1,11 +1,11 @@
 import {shallowMount} from '@vue/test-utils';
-import RolePermissionsList from "../../../js/components/admin/rolePermissionsList.vue";
 import PermissionList from "../../../js/components/admin/permissionList.vue";
+import ManageRolePermissions from "../../../js/components/admin/manageRolePermissions.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import Vue from "vue";
 
-describe("rolePermissionsList", () => {
+describe("manageRolePermissions", () => {
     beforeEach(() => {
         mockAxios.reset();
     });
@@ -28,7 +28,7 @@ describe("rolePermissionsList", () => {
     ];
 
     const getWrapper = function() {
-        return shallowMount(RolePermissionsList, {
+        return shallowMount(ManageRolePermissions, {
             propsData: {roles: [{...mockRoles[0]}, {...mockRoles[1]}]}
         });
     };
@@ -91,9 +91,7 @@ describe("rolePermissionsList", () => {
             expect(mockAxios.history.delete.length).toBe(1);
             expect(mockAxios.history.delete[0].url).toBe(url);
 
-            expect(wrapper.emitted().removed.length).toBe(1);
-            expect(wrapper.emitted().removed[0][0]).toBe("Funders");
-            expect(wrapper.emitted().removed[0][1]).toBe(mockRoles[0].permissions[0]);
+            expect(wrapper.emitted().changed.length).toBe(1);
 
             expect(wrapper.vm.$data.error).toBe(null);
             expect(wrapper.vm.$data.defaultMessage).toBe("Something went wrong");
@@ -115,7 +113,7 @@ describe("rolePermissionsList", () => {
             expect(mockAxios.history.delete.length).toBe(1);
             expect(mockAxios.history.delete[0].url).toBe(url);
 
-            expect(wrapper.emitted().removed).toBe(undefined);
+            expect(wrapper.emitted().changed).toBe(undefined);
 
             expect(wrapper.vm.$data.error.response.data).toBe("TEST API ERROR");
             expect(wrapper.vm.$data.defaultMessage).toBe("could not remove permission from Funders");
@@ -130,7 +128,7 @@ describe("rolePermissionsList", () => {
             permissions: [{name: "test.perm", scope_prefix: "report", scope_id: "r1"}]
         };
 
-        const wrapper = shallowMount(RolePermissionsList, {
+        const wrapper = shallowMount(ManageRolePermissions, {
             propsData: {roles: [scopedRole]}
         });
 
@@ -162,7 +160,7 @@ describe("rolePermissionsList", () => {
             expect(mockAxios.history.post[0].url).toBe(url);
 
             expect(wrapper.find(ErrorInfo).props().apiError).toBeNull();
-            expect(wrapper.emitted().added.length).toBe(1);
+            expect(wrapper.emitted().changed.length).toBe(1);
             done();
         });
     });
@@ -186,7 +184,7 @@ describe("rolePermissionsList", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
 
-            expect(wrapper.emitted().added).toBeUndefined();
+            expect(wrapper.emitted().changed).toBeUndefined();
             expect(wrapper.find(ErrorInfo).props().apiError).not.toBeNull();
             expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");            done();
         });

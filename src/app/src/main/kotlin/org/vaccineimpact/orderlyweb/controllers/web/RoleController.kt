@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyRoleRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.permissions.Role
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
@@ -45,6 +46,23 @@ class RoleController(context: ActionContext,
     fun addRole(): String {
         val name = context.postData()["name"] ?: throw MissingParameterError("name")
         authRepo.createUserGroup(name)
+        return okayResponse()
+    }
+
+    fun deleteRole(): String {
+        val roleId = roleId()
+        if (roleId == RoleRepository.ADMIN_ROLE)
+        {
+            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.");
+        }
+
+        val roleNames = getAllRoleNames()
+        if (!roleNames.contains(roleId))
+        {
+            throw UnknownObjectError(roleId, "role")
+        }
+
+        authRepo.deleteUserGroup(roleId)
         return okayResponse()
     }
 
