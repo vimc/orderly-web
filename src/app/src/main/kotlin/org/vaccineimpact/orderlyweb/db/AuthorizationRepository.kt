@@ -72,21 +72,27 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_PERMISSION)
                         .where(ORDERLYWEB_USER_GROUP_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_USER)
                         .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup))
+                        .execute()
 
                 it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP)
                         .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                        .execute()
             }
         }
     }

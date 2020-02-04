@@ -53,7 +53,7 @@ class RoleController(context: ActionContext,
         val roleId = roleId()
         if (roleId == RoleRepository.ADMIN_ROLE)
         {
-            throw InvalidOperationError("You cannot delete the Admin role");
+            throw InvalidOperationError("You cannot delete the ${RoleRepository.ADMIN_ROLE} role.");
         }
 
         val roleNames = getAllRoleNames()
