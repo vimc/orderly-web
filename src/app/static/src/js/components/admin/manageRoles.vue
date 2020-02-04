@@ -6,6 +6,7 @@
                    :can-delete-roles="true"
                    :roles="roles"
                    :available-users="typeaheadEmails"
+                   @removed="$emit('changed')"
                    @deleted="$emit('changed')"
                    @added="$emit('changed')"></role-list>
         <add-role @added="roleAdded" :error="addRoleError" :default-message="addRoleDefaultMessage"></add-role>
