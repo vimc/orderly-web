@@ -5,7 +5,7 @@
 set -ex
 
 HERE=$(dirname $0)
-. $HERE/migrate-common.sh
+. $HERE/../scripts/migrate-common.sh
 
 if [[ -d demo ]]
 then
@@ -22,7 +22,7 @@ else
 fi
 
 # Build the migration image
-./scripts/migrate-build.sh
+$HERE/../scripts/migrate-build.sh
 
 # Do the migrations
 docker run --rm -v ${PWD}/src/app/demo:/orderly $COMMIT_TAG
