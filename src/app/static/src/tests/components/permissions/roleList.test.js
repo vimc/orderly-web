@@ -294,9 +294,29 @@ describe("roleList", () => {
         });
 
         const roles = wrapper.findAll("ul.roles > li");
-        const roleWithMembers = roles.at(1);
-        expect(roleWithMembers.findAll(UserList).length).toBe(0);
-        expect(roleWithMembers.classes("has-children")).toBe(false);
+        const roleWithoutMembers = roles.at(1);
+        expect(roleWithoutMembers.findAll(UserList).length).toBe(0);
+        expect(roleWithoutMembers.classes("has-children")).toBe(false);
+    });
+
+    it('adds has-children class if canAddMembers is true', async () => {
+
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles
+            }
+        });
+
+        const roleWithoutMembers = wrapper.findAll("ul.roles > li").at(1);
+        expect(roleWithoutMembers.classes("has-children")).toBe(false);
+
+        wrapper.setProps({
+            canAddMembers: true
+        });
+
+        await Vue.nextTick();
+        expect(roleWithoutMembers.classes("has-children")).toBe(true);
+
     });
 
 });
