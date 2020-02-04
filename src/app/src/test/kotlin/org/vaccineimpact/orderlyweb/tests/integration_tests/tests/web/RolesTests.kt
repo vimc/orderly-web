@@ -103,6 +103,15 @@ class RolesTests : IntegrationTest()
     }
 
     @Test
+    fun `only user managers can delete user group`()
+    {
+        createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
+        val url = "/roles/Funder/"
+        assertWebUrlSecured(url, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                contentType = ContentTypes.json, method = HttpMethod.delete)
+    }
+
+    @Test
     fun `only user managers can add users to groups`()
     {
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))

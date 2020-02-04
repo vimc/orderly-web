@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.jooq.exception.DataAccessException
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
@@ -13,12 +12,8 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.tests.insertUserGroup
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupMember
-import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
+import org.vaccineimpact.orderlyweb.tests.*
 
 class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
 {
@@ -128,6 +123,65 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         Assertions.assertThat(groups.count()).isEqualTo(1)
         Assertions.assertThat(groups.first()[ORDERLYWEB_USER_GROUP.ID]).isEqualTo("testgroup")
     }
+
+    @Test
+    fun `can delete user group`()
+    {
+        val groupName = "Funders"
+
+        var rolePermissionIds: List<Int> = listOf()
+        JooqContext().use {
+            insertUserGroup(groupName)
+            insertReport("fakereport", "v1")
+            giveUserGroupPermission(groupName, "reports.read", Scope.Global())
+            giveUserGroupPermission(groupName, "reports.review", Scope.Specific("report", "fakereport"))
+            giveUserGroupPermission(groupName, "reports.run", Scope.Specific("version", "v1"))
+
+            insertUser("test@example.com", "Test User")
+            giveUserGroupMember(groupName, "test@example.com")
+
+            rolePermissionIds = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                    .from(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .where(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
+                    .fetch(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+        }
+
+        val sut = OrderlyAuthorizationRepository()
+        sut.deleteUserGroup(groupName)
+
+        JooqContext().use {
+            val versionPermCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
+                    .where(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.`in`(rolePermissionIds))
+                    .count()
+            assertThat(versionPermCount).isEqualTo(0)
+
+            val reportPermCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                    .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.`in`(rolePermissionIds))
+                    .count()
+            assertThat(reportPermCount).isEqualTo(0)
+
+            val globalPermCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                    .where(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.`in`(rolePermissionIds))
+                    .count()
+            assertThat(globalPermCount).isEqualTo(0)
+
+            val basePermCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_PERMISSION)
+                    .where(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(groupName))
+                    .count()
+            assertThat(basePermCount).isEqualTo(0)
+
+            val memberCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP_USER)
+                    .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(groupName))
+                    .count()
+            assertThat(memberCount).isEqualTo(0)
+
+            val groupCount = it.dsl.selectFrom(ORDERLYWEB_USER_GROUP)
+                    .where(ORDERLYWEB_USER_GROUP.ID.eq(groupName))
+                    .count()
+            assertThat(groupCount).isEqualTo(0)
+        }
+    }
+
 
     @Test
     fun `cannot add duplicate user groups`()

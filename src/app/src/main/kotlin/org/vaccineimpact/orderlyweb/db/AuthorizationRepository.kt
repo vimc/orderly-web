@@ -11,10 +11,15 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
+import org.jooq.impl.DSL
+import org.jooq.DSLContext
+
+
 
 interface AuthorizationRepository
 {
     fun createUserGroup(userGroup: String)
+    fun deleteUserGroup(userGroup: String)
     fun ensureGroupHasMember(userGroup: String, email: String)
     fun ensureGroupDoesNotHaveMember(userGroup: String, email: String)
     fun ensureUserGroupHasPermission(userGroup: String, permission: ReifiedPermission)
@@ -51,6 +56,44 @@ class OrderlyAuthorizationRepository(private val permissionMapper: PermissionMap
                     .apply {
                         this.id = userGroup
                     }.store()
+        }
+    }
+
+    override fun deleteUserGroup(userGroup: String)
+    {
+        JooqContext().use {
+            it.dsl.transaction{ _ ->
+
+                val userGroupPermissionIds =
+                        it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+                                .from(ORDERLYWEB_USER_GROUP_PERMISSION)
+                                .where(ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(userGroup))
+                                .fetch(ORDERLYWEB_USER_GROUP_PERMISSION.ID)
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
+                        .where(ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION)
+                        .where(ORDERLYWEB_USER_GROUP_REPORT_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION)
+                        .where(ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_PERMISSION)
+                        .where(ORDERLYWEB_USER_GROUP_PERMISSION.ID.`in`(userGroupPermissionIds))
+                        .execute()
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP_USER)
+                        .where(ORDERLYWEB_USER_GROUP_USER.USER_GROUP.eq(userGroup))
+                        .execute()
+
+                it.dsl.deleteFrom(ORDERLYWEB_USER_GROUP)
+                        .where(ORDERLYWEB_USER_GROUP.ID.eq(userGroup))
+                        .execute()
+            }
         }
     }
 

@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.internal.verification.Times
@@ -13,6 +14,7 @@ import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -284,6 +286,60 @@ class RoleControllerTests : TeamcityTests()
         val sut = RoleController(actionContext, mock(), authRepo)
         sut.addRole()
         verify(authRepo, Times(1)).createUserGroup("NEWGROUP")
+    }
+
+    @Test
+    fun `deletes role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "TestRole"
+        }
+
+        val roleRepo = mock<RoleRepository> {
+            on { this.getAllRoleNames() } doReturn listOf("TestRole")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = RoleController(actionContext, roleRepo, authRepo)
+        sut.deleteRole()
+        verify(authRepo).deleteUserGroup("TestRole")
+    }
+
+    @Test
+    fun `throws exception on delete Admin role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "Admin"
+        }
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = RoleController(actionContext, mock(), authRepo)
+
+        assertThatThrownBy { sut.deleteRole() }
+                .isInstanceOf(InvalidOperationError::class.java)
+                .hasMessageContaining("You cannot delete the Admin role")
+        verify(authRepo, Times(0)).deleteUserGroup(any())
+    }
+
+    @Test
+    fun `throws exception on delete non-existent role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "TestRole"
+        }
+
+        val roleRepo = mock<RoleRepository> {
+            on { this.getAllRoleNames() } doReturn listOf("DifferentRole")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = RoleController(actionContext, roleRepo, authRepo)
+        assertThatThrownBy { sut.deleteRole() }
+                .isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown role")
+        verify(authRepo, Times(0)).deleteUserGroup(any())
     }
 
     @Test
