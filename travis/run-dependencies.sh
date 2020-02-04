@@ -20,5 +20,5 @@ docker exec api mkdir -p /etc/montagu/api
 docker exec api touch /etc/montagu/api/go_signal
 
 
-docker run --rm -v $here/../src/app/demo:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
-docker run --rm -v $here/../src/app/git:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
+docker run --rm -v ${TRAVIS_BUILD_DIR}/src/app/demo:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
+docker run --rm -v ${TRAVIS_BUILD_DIR}/src/app/git:/orderly vimc/orderlyweb-migrate:$TRAVIS_BRANCH
