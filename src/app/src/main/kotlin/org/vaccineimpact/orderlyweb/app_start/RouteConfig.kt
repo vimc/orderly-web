@@ -26,7 +26,7 @@ object WebRouteConfig : RouteConfig
     private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics")
             .json()
 
-    private val adminEndpoint = WebEndpoint("/admin/", AdminController:: class, "admin")
+    private val adminEndpoint = WebEndpoint("/manage-access/", AdminController:: class, "admin")
             .secure(setOf("*/users.manage"))
 
     override val endpoints: List<EndpointDefinition> =

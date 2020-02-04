@@ -91,7 +91,7 @@ class LayoutTests : TeamcityTests()
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select(".logout span").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Admin |")
+        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Manage access |")
         assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("http://localhost:8888/admin")
     }
 
