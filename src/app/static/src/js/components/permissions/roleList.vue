@@ -7,7 +7,7 @@
             <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
 
             <span v-if="canRemoveRoles || canDeleteRoles"
-                  v-on:click="function(){ canRemoveRoles ? removeRole(role.name) : deleteRole(role.name)}"
+                  v-on:click="function(){ canRemoveRoles ? removeRole(role.name) : confirmDeleteRole(role.name)}"
                   class="remove d-inline-block ml-2 large">×</span>
 
 
@@ -25,6 +25,17 @@
 
         </li>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        <div v-if="canDeleteRoles" id="delete-role-confirm"
+             v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
+            <div class="modal-main px-3 py-3">
+                <div class="mb-2 font-weight-bold">Confirm delete role</div>
+                <div class="mb-2">Are you sure you want to delete {{roleToDelete}} role?</div>
+                <div class="modal-buttons">
+                    <button v-on:click="deleteRole(roleToDelete)" id="confirm-delete-btn" class="btn submit mr-3">Yes</button>
+                    <button v-on:click="clearConfirmDelete()" id="cancel-delete-btn" class="btn btn-default">No</button>
+                </div>
+            </div>
+        </div>
     </ul>
 </template>
 
@@ -42,7 +53,9 @@
             return {
                 error: null,
                 defaultMessage: "Something went wrong",
-                expanded: {}
+                expanded: {},
+                showModal: false,
+                roleToDelete: ""
             }
         },
         methods: {
@@ -78,7 +91,16 @@
                         this.error = error;
                     });
             },
+            confirmDeleteRole: function(roleName) {
+                this.roleToDelete = roleName;
+                this.showModal = true;
+            },
+            clearConfirmDelete: function() {
+                this.roleToDelete = "";
+                this.showModal = false;
+            },
             deleteRole: function (roleName) {
+                this.clearConfirmDelete();
                 api.delete(`/roles/${encodeURIComponent(roleName)}/`)
                     .then(() => {
                         this.$emit("deleted", roleName);
