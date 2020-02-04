@@ -287,6 +287,24 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `deletes role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "TestRole"
+        }
+
+        val roleRepo = mock<RoleRepository> {
+            on { this.getAllRoleNames() } doReturn listOf("TestRole")
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = RoleController(actionContext, roleRepo, authRepo)
+        sut.deleteRole()
+        verify(authRepo).deleteUserGroup("TestRole")
+    }
+
+    @Test
     fun `adds user to role`()
     {
         val actionContext = mock<ActionContext> {
