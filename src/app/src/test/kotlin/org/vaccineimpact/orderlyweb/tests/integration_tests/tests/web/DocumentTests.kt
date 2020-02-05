@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.assertj.core.api.Assertions
 import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -19,6 +20,12 @@ class DocumentTests : IntegrationTest()
         File("documents").deleteRecursively()
     }
 
+    @Before
+    fun setup() {
+        File("documents/some/path").mkdirs()
+        File("documents/some/path/file.csv").createNewFile()
+    }
+
     @Test
     fun `only document readers can download documents`()
     {
@@ -29,8 +36,6 @@ class DocumentTests : IntegrationTest()
     @Test
     fun `documents can be downloaded`()
     {
-        File("documents/some/path").mkdirs()
-        File("documents/some/path/file.csv").createNewFile()
         File("documents/some/path/file.csv").writeText("TEST")
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readDocuments)
         val response = webRequestHelper.requestWithSessionCookie("/documents/some/path/file.csv", sessionCookie,
