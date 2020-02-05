@@ -10,6 +10,8 @@ here=$(dirname $0)
 	./gradlew :generateTestData
 )
 
+$here/migrate-local-test.sh
+
 export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/customConfigTests/git)
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh

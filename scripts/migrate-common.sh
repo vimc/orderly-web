@@ -1,8 +1,14 @@
-GIT_ID=$(git rev-parse --short=7 HEAD)
-GIT_BRANCH=$(git symbolic-ref --short HEAD)
 REGISTRY=docker.montagu.dide.ic.ac.uk:5000
 REGISTRY_PUBLIC=vimc
 NAME=orderlyweb-migrate
+
+if [ -z "$TRAVIS_BRANCH" ]; then
+    GIT_BRANCH=$(git -C "$PACKAGE_ROOT" symbolic-ref --short HEAD)
+    GIT_ID=$GIT_BRANCH
+else
+    GIT_BRANCH=$TRAVIS_BRANCH
+    GIT_ID=$(git rev-parse --short=7 HEAD)
+fi
 
 TAG=$REGISTRY/$NAME
 COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
