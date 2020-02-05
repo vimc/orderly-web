@@ -39,7 +39,7 @@
                                 <div id="reportReadersListVueApp" class="mt-5">
                                     <label class="font-weight-bold">
                                         Global read access
-                                        <a href="${appUrl}/admin" class="small">
+                                        <a href="${appUrl}/manage-access" class="small">
                                             <edit-icon></edit-icon>
                                             Edit roles</a>
                                     </label>
