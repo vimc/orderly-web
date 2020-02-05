@@ -40,13 +40,13 @@ class AdminPageTests : SeleniumTest()
     {
         val roleList = driver.findElement(By.cssSelector("#manage-roles"))
         val listItems = roleList.findElements(By.cssSelector("li.role"))
-        assertThat(listItems.size).isEqualTo(1)
-        assertThat(listItems[0].getAttribute("id")).isEqualTo("Funders")
+        assertThat(listItems.size).isEqualTo(2)
+        assertThat(listItems[1].getAttribute("id")).isEqualTo("Funders")
 
         //expand the role
-        listItems[0].findElement(By.tagName("span")).click()
+        listItems[1].findElement(By.tagName("span")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles li ul li")))
-        val memberItems = listItems[0].findElements(By.cssSelector("li"))
+        val memberItems = listItems[1].findElements(By.cssSelector("li"))
         assertThat(memberItems.size).isEqualTo(1)
         assertThat(memberItems[0].getAttribute("id")).isEqualTo("test.user@example.com")
     }
