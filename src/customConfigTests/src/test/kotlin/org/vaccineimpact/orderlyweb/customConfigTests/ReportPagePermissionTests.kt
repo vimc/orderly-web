@@ -4,10 +4,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.giveUserGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ReportPagePermissionTests : SeleniumTest()
@@ -40,13 +40,10 @@ class ReportPagePermissionTests : SeleniumTest()
                 .isEqualTo(testListItemUser)
     }
 
-    private fun canViewReportReaderRoles(widgetId: String)
+    private fun getRoleItems(widgetId: String): MutableList<WebElement>
     {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#$widgetId .role-name")))
-        val listItems = driver.findElements(By.cssSelector("#$widgetId .role-name"))
-
-        assertThat(listItems.count()).isEqualTo(1)
-        assertThat(listItems[0].text).isEqualTo(testRole)
+        return driver.findElements(By.cssSelector("#$widgetId .role-name"))
     }
 
     private fun canAddUserGroup(widgetId: String, userGroup: String) {
@@ -116,7 +113,9 @@ class ReportPagePermissionTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        canViewReportReaderRoles("scoped-roles-list")
+        val listItems = getRoleItems("scoped-roles-list")
+        assertThat(listItems.count()).isEqualTo(1)
+        assertThat(listItems[0].text).isEqualTo(testRole)
     }
 
     @Test
@@ -141,7 +140,10 @@ class ReportPagePermissionTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd")
 
-        canViewReportReaderRoles("report-readers-global-list")
+        val listItems = getRoleItems("report-readers-global-list")
+        assertThat(listItems.count()).isEqualTo(2)
+        assertThat(listItems[0].text).isEqualTo("Admin")
+        assertThat(listItems[1].text).isEqualTo(testRole)
     }
 
     @Test

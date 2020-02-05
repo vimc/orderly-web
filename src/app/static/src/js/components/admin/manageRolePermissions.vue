@@ -1,5 +1,5 @@
 <template>
-    <div id="role-list">
+    <div id="manage-role-permissions">
         <ul class="list-unstyled roles" v-if="roles.length > 0">
             <li v-for="(role, index) in roles"
                 v-bind:id="role.name"
