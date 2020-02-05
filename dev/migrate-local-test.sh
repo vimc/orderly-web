@@ -7,7 +7,7 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/../scripts/migrate-common.sh
 
-if [[ -d demo ]]
+if [[ -d ${HERE}/../src/app/demo ]]
 then
   echo "Orderly demo folder already exists, not re-creating it"
 else
