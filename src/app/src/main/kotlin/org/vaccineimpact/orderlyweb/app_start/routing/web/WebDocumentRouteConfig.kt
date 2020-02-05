@@ -6,9 +6,10 @@ import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 
 object WebDocumentRouteConfig : RouteConfig
 {
+    private val readDocuments = setOf("*/documents.read")
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/documents/*",
                     DocumentController::class, "getDocument", contentType = ContentTypes.binarydata)
-                    .secure())
+                    .secure(readDocuments))
 
 }

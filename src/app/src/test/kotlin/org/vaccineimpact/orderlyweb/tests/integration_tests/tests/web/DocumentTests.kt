@@ -11,11 +11,19 @@ import java.io.File
 
 class DocumentTests : IntegrationTest()
 {
-    //private val readDocuments = setOf(ReifiedPermission("documents.read", Scope.Global()))
+    private val readDocuments = setOf(ReifiedPermission("documents.read", Scope.Global()))
 
     @After
-    fun cleanup() {
+    fun cleanup()
+    {
         File("documents").deleteRecursively()
+    }
+
+    @Test
+    fun `only document readers can download documents`()
+    {
+        val url = "/documents/some/file.csv"
+        assertWebUrlSecured(url, readDocuments, contentType = ContentTypes.binarydata)
     }
 
     @Test
@@ -24,7 +32,7 @@ class DocumentTests : IntegrationTest()
         File("documents/some/path").mkdirs()
         File("documents/some/path/file.csv").createNewFile()
         File("documents/some/path/file.csv").writeText("TEST")
-        val sessionCookie = webRequestHelper.webLoginWithMontagu()
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(readDocuments)
         val response = webRequestHelper.requestWithSessionCookie("/documents/some/path/file.csv", sessionCookie,
                 ContentTypes.binarydata)
         assertSuccessful(response)
