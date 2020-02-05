@@ -29,7 +29,7 @@ class DocumentTests : IntegrationTest()
     @Test
     fun `only document readers can download documents`()
     {
-        val url = "/documents/some/file.csv"
+        val url = "/documents/some/path/file.csv"
         assertWebUrlSecured(url, readDocuments, contentType = ContentTypes.binarydata)
     }
 
