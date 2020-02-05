@@ -11,6 +11,8 @@ interface FileSystem
     fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
     fun fileExists(absoluteFilePath: String): Boolean
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
+    fun getChildFolders(sourceAbsolutePath: String): List<String>
+    fun getChildFiles(sourceAbsolutePath: String): List<String>
 }
 
 class Files : FileSystem
@@ -51,6 +53,24 @@ class Files : FileSystem
         populateFileList(source, fileList)
 
         return fileList
+    }
+
+    override fun getChildFolders(sourceAbsolutePath: String): List<String>
+    {
+        val source = File(sourceAbsolutePath)
+        val children = source.list()
+        return children.map{ File(source, it) }
+                .filter{ it.isDirectory }
+                .map{ it.absolutePath.toString()}
+    }
+
+    override fun getChildFiles(sourceAbsolutePath: String): List<String>
+    {
+        val source = File(sourceAbsolutePath)
+        val children = source.list()
+        return children.map{ File(source, it) }
+                .filter{ it.isFile }
+                .map{ it.name}
     }
 
     private fun populateFileList(node: File, fileList: ArrayList<String>)
