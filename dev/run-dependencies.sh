@@ -2,13 +2,13 @@
 set -e
 
 here=$(dirname $0)
-#(
-#	cd $here/../src
-#	# get fresh tests data
-#	rm app/demo -rf
-#	rm app/git -rf
-#	./gradlew :generateTestData
-#)
+(
+	cd $here/../src
+	# get fresh tests data
+	rm app/demo -rf
+	rm app/git -rf
+	./gradlew :generateTestData
+)
 
 $here/migrate-local-test.sh
 

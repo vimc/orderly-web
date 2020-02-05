@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.db
 
 import org.jooq.Record
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
+import org.vaccineimpact.orderlyweb.models.Document
 
-data class Document(val displayName: String, val path: String, val isFile: Boolean, val children: List<Document>)
 interface DocumentRepository {
     fun getAll(): List<Document>
 }
