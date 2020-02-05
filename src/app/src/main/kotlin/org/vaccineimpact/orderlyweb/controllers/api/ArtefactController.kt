@@ -58,20 +58,4 @@ class ArtefactController(context: ActionContext,
         return true
     }
 
-    // TODO: Just return the mime type of the artefact file, once we have that metadata
-    private fun guessFileType(filename: String): String
-    {
-        val ext = File(filename).extension
-        return when (ext)
-        {
-            "csv" -> "text/csv"
-            "png" -> "image/png"
-            "svg" -> "image/svg+xml"
-            "pdf" -> "application/pdf"
-            "html" -> "text/html"
-            "css" -> "text/css"
-            else -> ContentTypes.binarydata
-        }
-    }
-
 }
