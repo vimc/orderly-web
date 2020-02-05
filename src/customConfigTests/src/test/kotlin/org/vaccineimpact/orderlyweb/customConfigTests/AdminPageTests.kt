@@ -52,7 +52,7 @@ class AdminPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can add role, and edit members`()
+    fun `can edit roles and members`()
     {
         //Add role
         val input = driver.findElement(By.cssSelector("#manage-roles input[placeholder='role name']"))
@@ -78,6 +78,14 @@ class AdminPageTests : SeleniumTest()
         removeButton.click()
         wait.until(ExpectedConditions.not(
                 ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-roles li[id='NewRole'] li[id='test.user@example.com']")
+                )))
+
+        //Delete role
+        roleListItem.findElement(By.className("remove")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-roles #confirm-delete-btn")))
+        driver.findElement(By.cssSelector("#manage-roles #confirm-delete-btn")).click()
+        wait.until(ExpectedConditions.not(
+                ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector("#manage-roles li[id='NewRole']")
                 )))
     }
 

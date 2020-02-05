@@ -41,6 +41,7 @@ describe("manageRoles", () => {
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
         expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(false);
+        expect(wrapper.find(RoleList).props().canDeleteRoles).toBe(true);
         expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(true);
         expect(wrapper.find(RoleList).props().canAddMembers).toBe(true);
 
@@ -70,6 +71,14 @@ describe("manageRoles", () => {
             propsData: {roles: mockRoles}
         });
         wrapper.find(RoleList).vm.$emit("removed");
+        expect(wrapper.emitted().changed.length).toBe(1);
+    });
+
+    it('emits changed event when role list emits deleted event', () => {
+        const wrapper = mount(ManageRoles, {
+            propsData: {roles: mockRoles}
+        });
+        wrapper.find(RoleList).vm.$emit("deleted");
         expect(wrapper.emitted().changed.length).toBe(1);
     });
 
