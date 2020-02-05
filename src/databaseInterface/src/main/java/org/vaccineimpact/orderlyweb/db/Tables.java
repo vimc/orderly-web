@@ -20,7 +20,6 @@ import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument;
-import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocumentDir;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
@@ -124,11 +123,6 @@ public class Tables {
      * The table <code>orderlyweb_document</code>.
      */
     public static final OrderlywebDocument ORDERLYWEB_DOCUMENT = org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument.ORDERLYWEB_DOCUMENT;
-
-    /**
-     * The table <code>orderlyweb_document_dir</code>.
-     */
-    public static final OrderlywebDocumentDir ORDERLYWEB_DOCUMENT_DIR = org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocumentDir.ORDERLYWEB_DOCUMENT_DIR;
 
     /**
      * The table <code>orderlyweb_permission</code>.
