@@ -10,6 +10,9 @@ object WebDocumentRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/documents/*",
                     DocumentController::class, "getDocument", contentType = ContentTypes.binarydata)
+                    .secure(readDocuments),
+            WebEndpoint("/docs/",
+                    DocumentController::class, "getAll")
                     .secure(readDocuments))
 
 }

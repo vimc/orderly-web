@@ -7,13 +7,13 @@ import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.DatabaseTests
 
-class DocumentRepositoryTests : CleanDatabaseTests()
+class DocumentRepositoryTests
 {
     @Test
     fun `can build document tree`()
     {
-
         insertDocuments()
         val sut = OrderlyDocumentRepository()
         val result = sut.getAll()
