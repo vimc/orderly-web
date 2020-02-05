@@ -11,5 +11,6 @@ interface DocumentRepository
     fun addDocument(filename: String, path: String)
     fun setDocumentVisibility(document: Document, show: Boolean)
 
-    fun addDirectory(directory: Directory)
+    fun addDirectory(path: String, directoryName: String, parentPath: String?)
+    fun setDirectoryVisibility(dir: Directory, show: Boolean)
 }
