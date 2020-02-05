@@ -1,8 +1,9 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import ManageRoles from "../../../js/components/admin/manageRoles.vue";
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
 import AddRole from "../../../js/components/admin/addRole.vue";
+import ErrorInfo from "../../../js/components/errorInfo";
 import Vue from "vue";
 
 describe("manageRoles", () => {
@@ -40,8 +41,7 @@ describe("manageRoles", () => {
         await Vue.nextTick();
 
         expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-        expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(false);
-        expect(wrapper.find(RoleList).props().canDeleteRoles).toBe(true);
+        expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(true);
         expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(true);
         expect(wrapper.find(RoleList).props().canAddMembers).toBe(true);
 
@@ -51,8 +51,50 @@ describe("manageRoles", () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        expect(wrapper.find(AddRole).props().error).toBe("");
-        expect(wrapper.find(AddRole).props().defaultMessage).toBe("");
+        expect(wrapper.findAll(AddRole).length).toBe(1);
+    });
+
+    it('renders errorInfo', async () => {
+        const wrapper = shallowMount(ManageRoles);
+        wrapper.setData({
+            error: "test-error",
+            defaultMessage: "test-default"
+        });
+
+        await Vue.nextTick();
+
+        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test-error");
+        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("test-default");
+    });
+
+    it(`shows modal if showModal is true`, async () => {
+        const wrapper = shallowMount(ManageRoles, {
+            propsData: {
+                roles: mockRoles,
+                canDeleteRoles: true
+            }
+        });
+
+        wrapper.setData({
+            showModal: true
+        });
+        await Vue.nextTick();
+
+        expect(wrapper.find('#delete-role-confirm').classes('modal-hide')).toBe(false);
+        expect(wrapper.find('#delete-role-confirm').classes('modal-show')).toBe(true);
+    });
+
+    it(`hides modal if showModal is false`, () => {
+        const wrapper = shallowMount(ManageRoles, {
+            propsData: {
+                roles: mockRoles,
+                canDeleteRoles: true
+            }
+        });
+
+        //showModal defaults to false
+        expect(wrapper.find('#delete-role-confirm').classes('modal-hide')).toBe(true);
+        expect(wrapper.find('#delete-role-confirm').classes('modal-show')).toBe(false);
     });
 
     it('fetches typeahead emails on mount', (done) => {
@@ -66,20 +108,26 @@ describe("manageRoles", () => {
         });
     });
 
-    it('emits changed event when role list emits removed event', () => {
+    it('emits changed event when role list emits removedMember event', () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        wrapper.find(RoleList).vm.$emit("removed");
+        wrapper.find(RoleList).vm.$emit("removedMember");
         expect(wrapper.emitted().changed.length).toBe(1);
     });
 
-    it('emits changed event when role list emits deleted event', () => {
+    it('shows modal when role list emits removed event', async () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        wrapper.find(RoleList).vm.$emit("deleted");
-        expect(wrapper.emitted().changed.length).toBe(1);
+        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+
+        await Vue.nextTick();
+
+        expect(wrapper.vm.$data.showModal).toBe(true);
+        expect(wrapper.vm.$data.roleToDelete).toBe("Funders");
+        expect(wrapper.find('#delete-role-confirm').classes('modal-show')).toBe(true);
+        expect(wrapper.find('#delete-role-confirm').text()).toContain('Are you sure you want to delete Funders role?')
     });
 
     it('emits changed event when role list emits added event', () => {
@@ -88,6 +136,85 @@ describe("manageRoles", () => {
         });
         wrapper.find(RoleList).vm.$emit("added");
         expect(wrapper.emitted().changed.length).toBe(1);
+    });
+
+
+    it('cancelling delete role hides model and does not delete role', async (done) => {
+        const wrapper = shallowMount(ManageRoles, {
+            propsData: {
+                roles: mockRoles
+            }
+        });
+        wrapper.setData({
+            showModal: true,
+            roleToDelete: "Funders"
+        });
+        await Vue.nextTick();
+
+        wrapper.find('#cancel-delete-btn').trigger('click');
+        setTimeout(() => {
+            expect(wrapper.vm.$data.showModal).toBe(false);
+            expect(wrapper.vm.$data.roleToDelete).toBe("");
+            expect(mockAxios.history.delete.length).toBe(0);
+            expect(wrapper.emitted().deleted).toBe(undefined);
+            done();
+        })
+
+    });
+
+    it('confirming delete role hides model and deletes role', async (done) => {
+        const url = 'http://app/roles/Funders/';
+        mockAxios.onDelete(url)
+            .reply(200);
+
+        const wrapper = shallowMount(ManageRoles, {
+            propsData: {
+                roles: mockRoles
+            }
+        });
+        wrapper.setData({
+            showModal: true,
+            roleToDelete: "Funders"
+        });
+        await Vue.nextTick();
+
+        wrapper.find('#confirm-delete-btn').trigger('click');
+        setTimeout(() => {
+            expect(wrapper.vm.$data.showModal).toBe(false);
+            expect(wrapper.vm.$data.roleToDelete).toBe("");
+            expect(mockAxios.history.delete.length).toBe(1);
+            expect(mockAxios.history.delete[0].url).toBe(url);
+            expect(wrapper.emitted().changed.length).toBe(1);
+            done();
+        })
+
+    });
+
+    it('sets error if deleting role fails', async (done) => {
+        const url = 'http://app/roles/Funders/';
+        mockAxios.onDelete(url)
+            .reply(500, "TEST ERROR");
+
+        const wrapper = shallowMount(ManageRoles, {
+            propsData: {
+                roles: mockRoles
+            }
+        });
+        wrapper.setData({
+            showModal: true,
+            roleToDelete: "Funders"
+        });
+        await Vue.nextTick();
+
+        wrapper.find('#confirm-delete-btn').trigger('click');
+        setTimeout(() => {
+            expect(wrapper.vm.$data.showModal).toBe(false);
+            expect(wrapper.vm.$data.roleToDelete).toBe("");
+            expect(wrapper.emitted().deleted).toBe(undefined);
+            expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
+            done();
+        })
+
     });
 
     it('adds role when addRole emits added event', (done) => {
@@ -109,8 +236,8 @@ describe("manageRoles", () => {
                 //should have refreshed roles too
                 expect(wrapper.emitted().changed.length).toBe(1);
 
-                expect(wrapper.vm.$data.addRoleError).toBe("");
-                expect(wrapper.vm.$data.addRoleDefaultMessage).toBe("");
+                expect(wrapper.vm.$data.error).toBe("");
+                expect(wrapper.vm.$data.defaultMessage).toBe("");
 
                 done();
             });
@@ -129,8 +256,8 @@ describe("manageRoles", () => {
             setTimeout(() => {
                 expect(wrapper.emitted().changed).toBeUndefined();
 
-                expect(wrapper.vm.$data.addRoleError.response.data).toBe("TEST ERROR");
-                expect(wrapper.vm.$data.addRoleDefaultMessage).toBe("could not add role 'NewRole'");
+                expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
+                expect(wrapper.vm.$data.defaultMessage).toBe("could not add role 'NewRole'");
 
                 done();
             });

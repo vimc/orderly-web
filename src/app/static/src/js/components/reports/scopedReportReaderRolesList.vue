@@ -8,7 +8,8 @@
                    :can-remove-roles="true"
                    :roles="currentRoles"
                    :permission="permission"
-                   @removed="getCurrentRoles"></role-list>
+                   @removed="function(roleName){removeRole(roleName)}"></role-list>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
@@ -16,6 +17,7 @@
     import {api} from "../../utils/api";
     import RoleList from "../permissions/roleList.vue";
     import AddReportReader from "../permissions/addReportReader";
+    import ErrorInfo from "../errorInfo";
 
     export default {
         name: 'scopedReaderRolesList',
@@ -27,7 +29,9 @@
         data() {
             return {
                 currentRoles: [],
-                allRoles: []
+                allRoles: [],
+                error: "",
+                defaultMessage: ""
             }
         },
         computed: {
@@ -55,11 +59,28 @@
                     .then(({data}) => {
                         this.currentRoles = data.data
                     })
+            },
+            removeRole: function (roleName) {
+                const scopeId = this.permission.scope_id;
+                const scopePrefix = this.permission.scope_prefix;
+                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
+
+                api.delete(`/roles/${encodeURIComponent(roleName)}/permissions/${this.permission.name}/${query}`)
+                    .then(() => {
+                        this.getCurrentRoles();
+                        this.error = null;
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.defaultMessage = `could not remove ${roleName}`;
+                        this.error = error;
+                    });
             }
         },
         components: {
             AddReportReader,
-            RoleList
+            RoleList,
+            ErrorInfo
         }
     };
 
