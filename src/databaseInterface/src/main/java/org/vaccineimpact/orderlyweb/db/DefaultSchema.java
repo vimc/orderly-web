@@ -22,9 +22,11 @@ import org.vaccineimpact.orderlyweb.db.tables.Depends;
 import org.vaccineimpact.orderlyweb.db.tables.File;
 import org.vaccineimpact.orderlyweb.db.tables.FileArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.FileInput;
+import org.vaccineimpact.orderlyweb.db.tables.FileInputGlobal;
 import org.vaccineimpact.orderlyweb.db.tables.FilePurpose;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchema;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
@@ -59,7 +61,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -717505418;
+    private static final long serialVersionUID = -1123231404;
 
     /**
      * The reference instance of <code></code>
@@ -112,6 +114,11 @@ public class DefaultSchema extends SchemaImpl {
     public final FileInput FILE_INPUT = org.vaccineimpact.orderlyweb.db.tables.FileInput.FILE_INPUT;
 
     /**
+     * The table <code>file_input_global</code>.
+     */
+    public final FileInputGlobal FILE_INPUT_GLOBAL = org.vaccineimpact.orderlyweb.db.tables.FileInputGlobal.FILE_INPUT_GLOBAL;
+
+    /**
      * The table <code>file_purpose</code>.
      */
     public final FilePurpose FILE_PURPOSE = org.vaccineimpact.orderlyweb.db.tables.FilePurpose.FILE_PURPOSE;
@@ -125,6 +132,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>orderly_schema_tables</code>.
      */
     public final OrderlySchemaTables ORDERLY_SCHEMA_TABLES = org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables.ORDERLY_SCHEMA_TABLES;
+
+    /**
+     * The table <code>orderlyweb_document</code>.
+     */
+    public final OrderlywebDocument ORDERLYWEB_DOCUMENT = org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument.ORDERLYWEB_DOCUMENT;
 
     /**
      * The table <code>orderlyweb_permission</code>.
@@ -255,9 +267,11 @@ public class DefaultSchema extends SchemaImpl {
             File.FILE,
             FileArtefact.FILE_ARTEFACT,
             FileInput.FILE_INPUT,
+            FileInputGlobal.FILE_INPUT_GLOBAL,
             FilePurpose.FILE_PURPOSE,
             OrderlySchema.ORDERLY_SCHEMA,
             OrderlySchemaTables.ORDERLY_SCHEMA_TABLES,
+            OrderlywebDocument.ORDERLYWEB_DOCUMENT,
             OrderlywebPermission.ORDERLYWEB_PERMISSION,
             OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL,
             OrderlywebUser.ORDERLYWEB_USER,

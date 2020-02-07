@@ -31,7 +31,7 @@ class AdminPageTests : SeleniumTest()
 
         loginWithMontagu()
 
-        val adminUrl = RequestHelper.webBaseUrl + "/admin/"
+        val adminUrl = RequestHelper.webBaseUrl + "/manage-access/"
         driver.get(adminUrl)
     }
 

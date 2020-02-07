@@ -24,7 +24,7 @@ class AdminControllerTests : TeamcityTests()
         val sut = AdminController(mock())
         val model = sut.admin()
         assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
-                Breadcrumb("Admin", "http://localhost:8888/admin"))
+                Breadcrumb("Manage access", "http://localhost:8888/manage-access"))
     }
 
 }
