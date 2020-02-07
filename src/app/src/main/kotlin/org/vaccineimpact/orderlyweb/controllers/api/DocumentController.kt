@@ -36,52 +36,47 @@ class DocumentController(context: ActionContext,
         unrefreshedDocs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
     }
 
-    private fun refreshDocumentsInDir(absolutePath: String, //this needs to be absolute
+    private fun refreshDocumentsInDir(absolutePath: String,
                                       unrefreshedDocs: MutableList<Document>)
     {
         val relativeParent = formatFolder(relativePath(absolutePath))
 
-        val files = fileSystem.getChildFiles(absolutePath).map{relativePath(it)}
-        for(file in files)
-        {
-            val docForFile = unrefreshedDocs.find{it.path == file}
-
-            if (docForFile != null)
-            {
-                if (!docForFile.show)
-                {
-                    repo.setVisibility(docForFile, true)
-                }
-               unrefreshedDocs.remove(docForFile)
-            }
-            else
-            {
-                val name = documentName(file)
-                repo.add(file, name, true, relativeParent)
-            }
-        }
-
+        val files = fileSystem.getChildFiles(absolutePath)
         val folders = fileSystem.getChildFolders(absolutePath)
-        for(folderPath in folders)
-        {
-            val folder = formatFolder(relativePath(folderPath))
-            val docForFolder = unrefreshedDocs.find{it.path == folder}
-            if (docForFolder != null)
-            {
-                if (!docForFolder.show)
-                {
-                    repo.setVisibility(docForFolder, true)
-                }
-                unrefreshedDocs.remove(docForFolder)
-            }
-            else
-            {
-                val name = documentName(folder)
-                repo.add(folder, name, false, relativeParent)
-            }
 
-            refreshDocumentsInDir(folderPath, unrefreshedDocs)
+        val refreshChildren = {children: List<String>, areFolders: Boolean ->
+            for (childPath in children)
+            {
+                var child = relativePath(childPath)
+                if (areFolders)
+                {
+                    child = formatFolder(child);
+                }
+
+                val docForChild = unrefreshedDocs.find { it.path == child }
+
+                if (docForChild != null)
+                {
+                    if (!docForChild.show)
+                    {
+                        repo.setVisibility(docForChild, true)
+                    }
+                    unrefreshedDocs.remove(docForChild)
+                }
+                else
+                {
+                    repo.add(child, documentName(child), !areFolders, relativeParent)
+                }
+
+                if (areFolders)
+                {
+                    refreshDocumentsInDir(childPath, unrefreshedDocs)
+                }
+            }
         }
+
+        refreshChildren(files, false)
+        refreshChildren(folders, true)
     }
 
     private fun relativePath(absolutePath: String): String
