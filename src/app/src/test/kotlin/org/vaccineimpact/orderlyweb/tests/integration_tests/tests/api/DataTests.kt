@@ -49,7 +49,7 @@ class DataTests : IntegrationTest()
         insertReport("testname", "testversion")
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
-        val url = "/reports/testname/versions/testversion/data/testdata/"route
+        val url = "/reports/testname/versions/testversion/data/testdata/"
         val response = apiRequestHelper.get(url, ContentTypes.csv,
                 userEmail = fakeReportReader("testname"))
 

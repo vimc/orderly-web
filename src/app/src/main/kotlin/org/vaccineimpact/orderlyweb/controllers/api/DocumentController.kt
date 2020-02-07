@@ -34,8 +34,8 @@ class DocumentController(context: ActionContext,
         refreshDocumentsInDir(topLevelFolder,  unrefreshedDocs, unrefreshedDirs)
 
         //Hide all known files and folders which were not found
-        unrefreshedDocs.forEach{ repo.setVisibility(it, false) }
-        unrefreshedDirs.forEach{ repo.setVisibility(it, false) }
+        unrefreshedDocs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
+        unrefreshedDirs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
     }
 
     private fun refreshDocumentsInDir(path: String,
@@ -100,7 +100,7 @@ class DocumentController(context: ActionContext,
 
     private fun displayName(path: String): String
     {
-        val result = path.split("/").last()
+        val result = path.removeSuffix("/").split("/").last()
         return result.removeSuffix("/")
     }
 

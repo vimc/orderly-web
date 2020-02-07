@@ -12,7 +12,7 @@ object DocumentRouteConfig : RouteConfig
     private val controller = DocumentController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
-            APIEndpoint("/documents/refresh/", controller, "refresh", method = HttpMethod.post)
+            APIEndpoint("/documents/refresh/", controller, "refreshDocuments", method = HttpMethod.post)
                     .secure(refreshPermission)
     )
 }
