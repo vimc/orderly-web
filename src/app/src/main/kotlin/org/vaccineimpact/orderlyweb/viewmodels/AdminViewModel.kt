@@ -10,6 +10,6 @@ data class AdminViewModel(val appViewModel: AppViewModel)
 
     companion object
     {
-        val breadcrumb = Breadcrumb("Admin", "${AppConfig()["app.url"]}/admin")
+        val breadcrumb = Breadcrumb("Manage access", "${AppConfig()["app.url"]}/manage-access")
     }
 }
