@@ -7,12 +7,9 @@ import spark.route.HttpMethod
 
 object DocumentRouteConfig : RouteConfig
 {
-    //TODO: Should have a documents.manage permission instead?
-    private val refreshPermission = setOf("*/users.manage")
     private val controller = DocumentController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
             APIEndpoint("/documents/refresh/", controller, "refreshDocuments", method = HttpMethod.post)
-                    .secure(refreshPermission)
     )
 }

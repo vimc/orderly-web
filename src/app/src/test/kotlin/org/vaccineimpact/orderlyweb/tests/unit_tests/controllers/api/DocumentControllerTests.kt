@@ -14,7 +14,7 @@ class DocumentControllerTests : ControllerTest()
     fun `refreshDocuments populates all docs when there are none pre-existing`()
     {
         val mockConfig = mock<Config>  {
-            on { get("documents.location") } doReturn "/root"
+            on { get("documents.root") } doReturn "/root"
         }
 
         val mockRepo = mock<DocumentRepository> {
@@ -61,7 +61,7 @@ class DocumentControllerTests : ControllerTest()
     fun `refreshDocuments refreshes show field of existing documents`()
     {
         val mockConfig = mock<Config>  {
-            on { get("documents.location") } doReturn "/root"
+            on { get("documents.root") } doReturn "/root"
         }
 
         val flatDocs = listOf(

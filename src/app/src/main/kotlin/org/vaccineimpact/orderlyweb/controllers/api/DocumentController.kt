@@ -14,7 +14,7 @@ class DocumentController(context: ActionContext,
                          private val config: Config = AppConfig(),
                          private val repo: DocumentRepository): Controller(context)
 {
-    private val topLevelFolder = formatFolder(config["documents.location"])
+    private val topLevelFolder = formatFolder(config["documents.root"])
 
     fun refreshDocuments() {
         val allDocs = repo.getAllFlat()
