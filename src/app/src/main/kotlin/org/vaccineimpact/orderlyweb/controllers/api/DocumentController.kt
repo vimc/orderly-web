@@ -7,16 +7,24 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.DocumentRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
+import java.io.File
 
 class DocumentController(context: ActionContext,
-                         private val fileSystem: FileSystem = Files(),
-                         private val config: Config = AppConfig(),
+                         private val fileSystem: FileSystem,
+                         config: Config,
                          private val repo: DocumentRepository): Controller(context)
 {
-    private val topLevelFolder = formatFolder(config["documents.root"])
+    constructor(context: ActionContext) :
+            this(context,
+                    Files(),
+                    AppConfig(),
+                    OrderlyDocumentRepository())
 
-    fun refreshDocuments() {
+    private val topLevelFolder = fileSystem.getAbsolutePath(config["documents.root"])
+
+    fun refreshDocuments(): String {
         val allDocs = repo.getAllFlat()
 
         val unrefreshedDocs = allDocs.toMutableList()
@@ -34,6 +42,8 @@ class DocumentController(context: ActionContext,
 
         //Hide all known docs which were not found
         unrefreshedDocs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
+
+        return okayResponse()
     }
 
     private fun refreshDocumentsInDir(absolutePath: String,
@@ -81,7 +91,12 @@ class DocumentController(context: ActionContext,
 
     private fun relativePath(absolutePath: String): String
     {
-        return "/${absolutePath.removePrefix(topLevelFolder)}"
+        var result =  absolutePath.removePrefix(topLevelFolder)
+        if (!result.startsWith("/"))
+        {
+            result = "/$result";
+        }
+        return result
     }
 
     private fun formatFolder(folder: String): String

@@ -14,7 +14,7 @@ class DocumentControllerTests : ControllerTest()
     fun `refreshDocuments populates all docs when there are none pre-existing`()
     {
         val mockConfig = mock<Config>  {
-            on { get("documents.root") } doReturn "/root"
+            on { get("documents.root") } doReturn "root"
         }
 
         val mockRepo = mock<DocumentRepository> {
@@ -25,8 +25,10 @@ class DocumentControllerTests : ControllerTest()
         // /root/child1/child1File1.csv
         // /root/child2/grandchild/grandchildFile1.csv
         val mockFiles = mock<FileSystem> {
-            on { getChildFiles("/root/") } doReturn listOf("/root/rootFile1.csv", "/root/rootFile2.csv")
-            on { getChildFolders("/root/") } doReturn listOf("/root/child1", "/root/child2")
+            on { getAbsolutePath("root") } doReturn "/root"
+
+            on { getChildFiles("/root") } doReturn listOf("/root/rootFile1.csv", "/root/rootFile2.csv")
+            on { getChildFolders("/root") } doReturn listOf("/root/child1", "/root/child2")
 
             on { getChildFiles("/root/child1") } doReturn listOf("/root/child1/childFile1.csv")
             on { getChildFolders("/root/child1") } doReturn listOf("/root/child1/grandchild")
@@ -61,7 +63,7 @@ class DocumentControllerTests : ControllerTest()
     fun `refreshDocuments refreshes show field of existing documents`()
     {
         val mockConfig = mock<Config>  {
-            on { get("documents.root") } doReturn "/root"
+            on { get("documents.root") } doReturn "root"
         }
 
         val flatDocs = listOf(
@@ -80,8 +82,9 @@ class DocumentControllerTests : ControllerTest()
         }
 
         val mockFiles = mock<FileSystem> {
-            on { getChildFiles("/root/") } doReturn listOf("/root/stillExists.csv", "/root/reAdded.csv")
-            on { getChildFolders("/root/") } doReturn listOf("/root/stillExists", "/root/reAdded")
+            on { getAbsolutePath("root") } doReturn "/root"
+            on { getChildFiles("/root") } doReturn listOf("/root/stillExists.csv", "/root/reAdded.csv")
+            on { getChildFolders("/root") } doReturn listOf("/root/stillExists", "/root/reAdded")
 
         }
 

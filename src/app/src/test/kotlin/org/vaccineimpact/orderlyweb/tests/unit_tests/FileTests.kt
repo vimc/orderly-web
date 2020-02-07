@@ -35,4 +35,11 @@ class FileTests {
         assertThat(folders.count()).isEqualTo(1)
         assertThat(folders[0]).startsWith(useResourceDir)
     }
+
+    @Test
+    fun `can get absolute path`()
+    {
+        assertThat(Files().getAbsolutePath("${AppConfig()["orderly.root"]}archive/use_resource/"))
+                .isEqualTo(useResourceDir)
+    }
 }

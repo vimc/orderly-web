@@ -13,6 +13,7 @@ interface FileSystem
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     fun getChildFolders(sourceAbsolutePath: String): List<String>
     fun getChildFiles(sourceAbsolutePath: String): List<String>
+    fun getAbsolutePath(sourcePath: String): String
 }
 
 class Files : FileSystem
@@ -58,7 +59,7 @@ class Files : FileSystem
     override fun getChildFolders(sourceAbsolutePath: String): List<String>
     {
         val source = File(sourceAbsolutePath)
-        val children = source.list()
+        val children = source.list() ?: arrayOf()
         return children.map{ File(source, it) }
                 .filter{ it.isDirectory }
                 .map{ it.absolutePath.toString()}
@@ -67,10 +68,15 @@ class Files : FileSystem
     override fun getChildFiles(sourceAbsolutePath: String): List<String>
     {
         val source = File(sourceAbsolutePath)
-        val children = source.list()
+        val children = source.list() ?: arrayOf()
         return children.map{ File(source, it) }
                 .filter{ it.isFile }
                 .map{ it.absolutePath.toString()}
+    }
+
+    override fun getAbsolutePath(sourcePath: String): String
+    {
+        return File(sourcePath).absolutePath
     }
 
     private fun populateFileList(node: File, fileList: ArrayList<String>)
