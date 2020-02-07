@@ -29,6 +29,21 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         assertThat(result.last()).isEqualTo(expectedRoot2)
     }
 
+    @Test
+    fun `can get flat list of documents`()
+    {
+        insertDocuments()
+        val sut = OrderlyDocumentRepository()
+        val result = sut.getAllFlat().sortedBy { it.path }
+        assertThat(result.count()).isEqualTo(6)
+        assertThat(result[0]).isEqualTo(Document("root", "/root/", false, false, listOf()))
+        assertThat(result[1]).isEqualTo(Document("some", "/some/", false, true, listOf()))
+        assertThat(result[2]).isEqualTo(Document("empty", "/some/empty/", false, true, listOf()))
+        assertThat(result[3]).isEqualTo(Document("first.csv", "/some/first.csv", true, true, listOf()))
+        assertThat(result[4]).isEqualTo(Document("path", "/some/path/", false, true, listOf()))
+        assertThat(result[5]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, true, listOf()))
+    }
+
     private fun insertDocuments()
     {
         JooqContext().use {

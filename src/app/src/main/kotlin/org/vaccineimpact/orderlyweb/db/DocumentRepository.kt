@@ -8,7 +8,7 @@ interface DocumentRepository {
     fun getAll(): List<Document>
     fun getAllFlat(): List<Document>
 
-    fun add(path: String, displayName: String, isFile: Boolean, parentPath: String?)
+    fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
     fun setVisibility(document: Document, show: Boolean)
 }
 
@@ -29,17 +29,24 @@ class OrderlyDocumentRepository : DocumentRepository {
 
     override fun getAllFlat(): List<Document> {
         JooqContext().use { db ->
-            return db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
-                    .fetchInto(Document::class.java)
+            val result =  db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
+                    .fetch()
+            return result.map{ Document(
+                    it[ORDERLYWEB_DOCUMENT.DISPLAY_NAME] ?: it[ORDERLYWEB_DOCUMENT.NAME],
+                    it[ORDERLYWEB_DOCUMENT.PATH],
+                    it[ORDERLYWEB_DOCUMENT.IS_FILE]==1,
+                    it[ORDERLYWEB_DOCUMENT.SHOW]==1,
+                    listOf()
+            ) }
         }
     }
 
-    override fun add(path: String, displayName: String, isFile: Boolean, parentPath: String?)
+    override fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
     {
         JooqContext().use { db ->
             db.dsl.insertInto(ORDERLYWEB_DOCUMENT)
                     .set(ORDERLYWEB_DOCUMENT.PATH, path)
-                    .set(ORDERLYWEB_DOCUMENT.DISPLAY_NAME, displayName)
+                    .set(ORDERLYWEB_DOCUMENT.NAME, name)
                     .set(ORDERLYWEB_DOCUMENT.IS_FILE, isFile.toInt())
                     .set(ORDERLYWEB_DOCUMENT.PARENT, parentPath)
                     .set(ORDERLYWEB_DOCUMENT.SHOW, 1)
