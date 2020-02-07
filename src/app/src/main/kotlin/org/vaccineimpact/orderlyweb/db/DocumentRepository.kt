@@ -35,7 +35,7 @@ class OrderlyDocumentRepository : DocumentRepository {
 
     private fun mapDocument(db: JooqContext, record: Record) : Document {
         val doc = Document(record[ORDERLYWEB_DOCUMENT.DISPLAY_NAME]?: record[ORDERLYWEB_DOCUMENT.NAME], record[ORDERLYWEB_DOCUMENT.PATH],
-                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, listOf())
+                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, record[ORDERLYWEB_DOCUMENT.SHOW] == 1, listOf())
         return doc.copy(children = getChildren(db, doc))
     }
 

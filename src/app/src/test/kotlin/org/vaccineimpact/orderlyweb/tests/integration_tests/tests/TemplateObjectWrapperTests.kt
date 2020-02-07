@@ -13,11 +13,11 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
-import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 
 class TemplateObjectWrapperTests : TeamcityTests()
@@ -78,7 +78,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
-            on { hasPermission(any())} doReturn true
+            on { hasPermission(any()) } doReturn true
         }
         val model = IndexViewModel(mockContext, listOf(), listOf())
 
@@ -97,17 +97,18 @@ class TemplateObjectWrapperTests : TeamcityTests()
     }
 
     @Test
-    fun `wraps nested bools`()
+    fun `wraps DocumentsViewModel correctly`()
     {
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
-            on { hasPermission(any())} doReturn true
+            on { hasPermission(any()) } doReturn true
         }
-        val model = DocumentsViewModel.build(mockContext, listOf(Document("name", "path", true, listOf())))
+        val model = DocumentsViewModel.build(mockContext, listOf(Document("name", "path", true, true, listOf())))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash
-        assertThat((((result["docs"] as SimpleSequence)[0] as SimpleHash)["isFile"] as TemplateBooleanModel).asBoolean)
-                .isEqualTo(true)
+        val doc = ((result["docs"] as SimpleSequence)[0] as StringModel)
+        assertThat((doc["file"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
+        assertThat((doc["show"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
     }
 }

@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.After
 import org.junit.Test
@@ -9,9 +10,12 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.DocumentRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
+import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
+import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import java.io.File
 
 class DocumentControllerTests : ControllerTest()
@@ -75,5 +79,17 @@ class DocumentControllerTests : ControllerTest()
 
         val sut = DocumentController(mockContext, AppConfig(), Files(), mock())
         assertThatThrownBy { sut.getDocument() }.isInstanceOf(OrderlyFileNotFoundError::class.java)
+    }
+
+    @Test
+    fun `build documents view model`()
+    {
+        val mockRepo = mock<DocumentRepository> {
+            on {getAll()} doReturn listOf(Document("name", "/path", true, true, listOf()))
+        }
+        val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
+        val result = sut.getAll()
+        assertThat(result.appViewModel).isInstanceOf(DefaultViewModel::class.java)
+        assertThat(result.docs).containsExactly(Document("name", "/path", true, true, listOf()))
     }
 }
