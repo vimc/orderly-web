@@ -28,31 +28,31 @@ class DocumentControllerTests : ControllerTest()
             on { getChildFiles("/root/") } doReturn listOf("/root/rootFile1.csv", "/root/rootFile2.csv")
             on { getChildFolders("/root/") } doReturn listOf("/root/child1", "/root/child2")
 
-            on { getChildFiles("/root/child1/") } doReturn listOf("/root/child1/childFile1.csv")
-            on { getChildFolders("/root/child1/") } doReturn listOf("/root/child1/grandchild")
+            on { getChildFiles("/root/child1") } doReturn listOf("/root/child1/childFile1.csv")
+            on { getChildFolders("/root/child1") } doReturn listOf("/root/child1/grandchild")
 
-            on { getChildFiles("/root/child2/") } doReturn listOf<String>()
-            on { getChildFolders("/root/child2/") } doReturn listOf<String>()
+            on { getChildFiles("/root/child2") } doReturn listOf<String>()
+            on { getChildFolders("/root/child2") } doReturn listOf<String>()
 
-            on { getChildFiles("/root/child1/grandchild/") } doReturn listOf("/root/child1/grandchild/grandchildFile1.csv")
-            on { getChildFolders("/root/child1/grandchild/") } doReturn listOf<String>()
+            on { getChildFiles("/root/child1/grandchild") } doReturn listOf("/root/child1/grandchild/grandchildFile1.csv")
+            on { getChildFolders("/root/child1/grandchild") } doReturn listOf<String>()
         }
 
         val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
         sut.refreshDocuments()
 
         //Expect create
-        verify(mockRepo).add("/root/", "root", false, null)
-        verify(mockRepo).add("/root/rootFile1.csv", "rootFile1.csv", true, "/root/")
-        verify(mockRepo).add("/root/rootFile2.csv", "rootFile2.csv", true, "/root/")
+        verify(mockRepo).add("/", "root", false, null)
+        verify(mockRepo).add("/rootFile1.csv", "rootFile1.csv", true, "/")
+        verify(mockRepo).add("/rootFile2.csv", "rootFile2.csv", true, "/")
 
-        verify(mockRepo).add("/root/child1/", "child1", false, "/root/")
-        verify(mockRepo).add("/root/child1/childFile1.csv", "childFile1.csv", true, "/root/child1/")
+        verify(mockRepo).add("/child1/", "child1", false, "/")
+        verify(mockRepo).add("/child1/childFile1.csv", "childFile1.csv", true, "/child1/")
 
-        verify(mockRepo).add("/root/child2/", "child2", false, "/root/")
+        verify(mockRepo).add("/child2/", "child2", false, "/")
 
-        verify(mockRepo).add("/root/child1/grandchild/", "grandchild", false, "/root/child1/")
-        verify(mockRepo).add("/root/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", true, "/root/child1/grandchild/")
+        verify(mockRepo).add("/child1/grandchild/", "grandchild", false, "/child1/")
+        verify(mockRepo).add("/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", true, "/child1/grandchild/")
 
         verify(mockRepo, times(0)).setVisibility(any(), any())
     }
@@ -65,15 +65,15 @@ class DocumentControllerTests : ControllerTest()
         }
 
         val flatDocs = listOf(
-                Document("stillExists.csv", "/root/stillExists.csv", true, true, listOf()),
-                Document("deleted.csv", "/root/deleted.csv", true, true, listOf()),
-                Document("reAdded.csv", "/root/reAdded.csv", true, false, listOf()),
-                Document("previouslyDeleted.csv", "/root/previouslyDeleted.csv", true, false, listOf()),
+                Document("stillExists.csv", "/stillExists.csv", true, true, listOf()),
+                Document("deleted.csv", "/deleted.csv", true, true, listOf()),
+                Document("reAdded.csv", "/reAdded.csv", true, false, listOf()),
+                Document("previouslyDeleted.csv", "/previouslyDeleted.csv", true, false, listOf()),
 
-                Document("stillExists", "/root/stillExists/", false, true, listOf()),
-                Document("deleted", "/root/deleted/", false, true, listOf()),
-                Document("reAdded", "/root/reAdded/", false, false, listOf()),
-                Document("previouslyDeleted", "/root/previouslyDeleted/", false, false, listOf())
+                Document("stillExists", "/stillExists/", false, true, listOf()),
+                Document("deleted", "/deleted/", false, true, listOf()),
+                Document("reAdded", "/reAdded/", false, false, listOf()),
+                Document("previouslyDeleted", "/previouslyDeleted/", false, false, listOf())
         )
         val mockRepo = mock<DocumentRepository> {
             on { getAllFlat() } doReturn flatDocs

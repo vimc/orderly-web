@@ -14,18 +14,18 @@ class DocumentController(context: ActionContext,
                          private val config: Config = AppConfig(),
                          private val repo: DocumentRepository): Controller(context)
 {
-    fun refreshDocuments() {
-        val topLevelFolder = formatFolder(config["documents.location"])
+    private val topLevelFolder = formatFolder(config["documents.location"])
 
+    fun refreshDocuments() {
         val allDocs = repo.getAllFlat()
 
         val unrefreshedDocs = allDocs.filter{it.isFile}.toMutableList()
         val unrefreshedDirs = allDocs.filter{!it.isFile}.toMutableList()
 
-        val topLevelDir = unrefreshedDirs.find{it.path == topLevelFolder}
+        val topLevelDir = unrefreshedDirs.find{it.path == relativePath(topLevelFolder)}
         if ( topLevelDir == null)
         {
-            repo.add(topLevelFolder, displayName(topLevelFolder), false, null)
+            repo.add(relativePath(topLevelFolder), documentName(topLevelFolder), false, null)
         }
         else
         {
@@ -38,11 +38,13 @@ class DocumentController(context: ActionContext,
         unrefreshedDirs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
     }
 
-    private fun refreshDocumentsInDir(path: String,
+    private fun refreshDocumentsInDir(absolutePath: String, //this needs to be absolute
                                       unrefreshedDocs: MutableList<Document>,
                                       unrefreshedDirs: MutableList<Document>)
     {
-        val files = fileSystem.getChildFiles(path)
+        val relativeParent = formatFolder(relativePath(absolutePath))
+
+        val files = fileSystem.getChildFiles(absolutePath).map{relativePath(it)}
         for(file in files)
         {
             val docForFile = unrefreshedDocs.find{it.path == file}
@@ -57,14 +59,15 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                repo.add(file, displayName(file), true, path)
+                val name = documentName(file)
+                repo.add(file, name, true, relativeParent)
             }
         }
 
-        val folders = fileSystem.getChildFolders(path)
+        val folders = fileSystem.getChildFolders(absolutePath)
         for(folderPath in folders)
         {
-            val folder = formatFolder(folderPath)
+            val folder = formatFolder(relativePath(folderPath))
             val docForFolder = unrefreshedDirs.find{it.path == folder}
             if (docForFolder != null)
             {
@@ -76,11 +79,17 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                repo.add(folder, displayName(folder), false, path)
+                val name = documentName(folder)
+                repo.add(folder, name, false, relativeParent)
             }
 
-            refreshDocumentsInDir(folder, unrefreshedDocs, unrefreshedDirs)
+            refreshDocumentsInDir(folderPath, unrefreshedDocs, unrefreshedDirs)
         }
+    }
+
+    private fun relativePath(absolutePath: String): String
+    {
+        return "/${absolutePath.removePrefix(topLevelFolder)}"
     }
 
     private fun formatFolder(folder: String): String
@@ -98,7 +107,7 @@ class DocumentController(context: ActionContext,
         return result;
     }
 
-    private fun displayName(path: String): String
+    private fun documentName(path: String): String
     {
         val result = path.removeSuffix("/").split("/").last()
         return result.removeSuffix("/")
