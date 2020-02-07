@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.test_helpers
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
 import java.sql.Timestamp
 import java.time.Instant
 

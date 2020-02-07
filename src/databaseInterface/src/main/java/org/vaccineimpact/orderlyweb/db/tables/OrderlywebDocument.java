@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebDocumentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
 
-    private static final long serialVersionUID = -658176505;
+    private static final long serialVersionUID = 224470905;
 
     /**
      * The reference instance of <code>orderlyweb_document</code>
@@ -50,14 +50,14 @@ public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
     }
 
     /**
-     * The column <code>orderlyweb_document.id</code>.
+     * The column <code>orderlyweb_document.path</code>.
      */
-    public final TableField<OrderlywebDocumentRecord, Integer> ID = createField("id", org.jooq.impl.SQLDataType.INTEGER.nullable(false), this, "");
+    public final TableField<OrderlywebDocumentRecord, String> PATH = createField("path", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>orderlyweb_document.filename</code>.
+     * The column <code>orderlyweb_document.name</code>.
      */
-    public final TableField<OrderlywebDocumentRecord, String> FILENAME = createField("filename", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<OrderlywebDocumentRecord, String> NAME = createField("name", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>orderlyweb_document.show</code>.
@@ -77,7 +77,12 @@ public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
     /**
      * The column <code>orderlyweb_document.parent</code>.
      */
-    public final TableField<OrderlywebDocumentRecord, String> PARENT = createField("parent", org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<OrderlywebDocumentRecord, String> PARENT = createField("parent", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_document.is_file</code>.
+     */
+    public final TableField<OrderlywebDocumentRecord, Integer> IS_FILE = createField("is_file", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>orderlyweb_document</code> table reference
@@ -130,7 +135,7 @@ public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
      */
     @Override
     public List<ForeignKey<OrderlywebDocumentRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<OrderlywebDocumentRecord, ?>>asList(Keys.FK_ORDERLYWEB_DOCUMENT_ORDERLYWEB_DOCUMENT_DIR_1);
+        return Arrays.<ForeignKey<OrderlywebDocumentRecord, ?>>asList(Keys.FK_ORDERLYWEB_DOCUMENT_ORDERLYWEB_DOCUMENT_1);
     }
 
     /**
