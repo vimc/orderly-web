@@ -19,28 +19,25 @@ class DocumentController(context: ActionContext,
     fun refreshDocuments() {
         val allDocs = repo.getAllFlat()
 
-        val unrefreshedDocs = allDocs.filter{it.isFile}.toMutableList()
-        val unrefreshedDirs = allDocs.filter{!it.isFile}.toMutableList()
+        val unrefreshedDocs = allDocs.toMutableList()
 
-        val topLevelDir = unrefreshedDirs.find{it.path == relativePath(topLevelFolder)}
+        val topLevelDir = unrefreshedDocs.find{it.path == relativePath(topLevelFolder)}
         if ( topLevelDir == null)
         {
             repo.add(relativePath(topLevelFolder), documentName(topLevelFolder), false, null)
         }
         else
         {
-            unrefreshedDirs.remove(topLevelDir)
+            unrefreshedDocs.remove(topLevelDir)
         }
-        refreshDocumentsInDir(topLevelFolder,  unrefreshedDocs, unrefreshedDirs)
+        refreshDocumentsInDir(topLevelFolder,  unrefreshedDocs)
 
-        //Hide all known files and folders which were not found
+        //Hide all known docs which were not found
         unrefreshedDocs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
-        unrefreshedDirs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
     }
 
     private fun refreshDocumentsInDir(absolutePath: String, //this needs to be absolute
-                                      unrefreshedDocs: MutableList<Document>,
-                                      unrefreshedDirs: MutableList<Document>)
+                                      unrefreshedDocs: MutableList<Document>)
     {
         val relativeParent = formatFolder(relativePath(absolutePath))
 
@@ -68,14 +65,14 @@ class DocumentController(context: ActionContext,
         for(folderPath in folders)
         {
             val folder = formatFolder(relativePath(folderPath))
-            val docForFolder = unrefreshedDirs.find{it.path == folder}
+            val docForFolder = unrefreshedDocs.find{it.path == folder}
             if (docForFolder != null)
             {
                 if (!docForFolder.show)
                 {
                     repo.setVisibility(docForFolder, true)
                 }
-                unrefreshedDirs.remove(docForFolder)
+                unrefreshedDocs.remove(docForFolder)
             }
             else
             {
@@ -83,7 +80,7 @@ class DocumentController(context: ActionContext,
                 repo.add(folder, name, false, relativeParent)
             }
 
-            refreshDocumentsInDir(folderPath, unrefreshedDocs, unrefreshedDirs)
+            refreshDocumentsInDir(folderPath, unrefreshedDocs)
         }
     }
 
