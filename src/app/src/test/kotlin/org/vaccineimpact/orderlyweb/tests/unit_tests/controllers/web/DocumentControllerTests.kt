@@ -33,7 +33,7 @@ class DocumentControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DocumentController(mockContext, AppConfig(), Files())
+        val sut = DocumentController(mockContext, AppConfig(), Files(), mock())
         sut.getDocument()
         verify(mockContext)
                 .addResponseHeader("Content-Disposition", "attachment; filename=\"some/path/file.csv\"")
@@ -52,7 +52,7 @@ class DocumentControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DocumentController(mockContext, AppConfig(), Files())
+        val sut = DocumentController(mockContext, AppConfig(), Files(), mock())
         sut.getDocument()
         verify(mockContext, Times(0))
                 .addResponseHeader(eq("Content-Disposition"), any())
@@ -61,7 +61,7 @@ class DocumentControllerTests : ControllerTest()
     @Test
     fun `error is thrown if the path is missing`()
     {
-        val sut = DocumentController(mock(), AppConfig(), Files())
+        val sut = DocumentController(mock(), AppConfig(), Files(), mock())
         assertThatThrownBy { sut.getDocument() }.isInstanceOf(MissingParameterError::class.java)
     }
 
@@ -73,7 +73,7 @@ class DocumentControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = DocumentController(mockContext, AppConfig(), Files())
+        val sut = DocumentController(mockContext, AppConfig(), Files(), mock())
         assertThatThrownBy { sut.getDocument() }.isInstanceOf(OrderlyFileNotFoundError::class.java)
     }
 }
