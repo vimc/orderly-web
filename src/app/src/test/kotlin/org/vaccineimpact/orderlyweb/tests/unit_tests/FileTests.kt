@@ -4,10 +4,11 @@ import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import java.io.File
 
 class FileTests {
 
-    private val useResourceDir = "${AppConfig()["orderly.root"]}archive/use_resource/"
+    private val useResourceDir = File("${AppConfig()["orderly.root"]}archive/use_resource/").absolutePath
 
     @Test
     fun `can getListOfFiles`()

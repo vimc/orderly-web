@@ -44,6 +44,64 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         assertThat(result[5]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, true, listOf()))
     }
 
+    @Test
+    fun `can add documents`()
+    {
+        val sut = OrderlyDocumentRepository()
+        sut.add("/root/", "root", false, null)
+        sut.add("/root/file.csv", "file.csv", true, "/root/")
+
+        JooqContext().use {
+            val result = it.dsl.selectFrom(Tables.ORDERLYWEB_DOCUMENT)
+                    .orderBy(Tables.ORDERLYWEB_DOCUMENT.PATH)
+                    .fetch()
+
+            assertThat(result.count()).isEqualTo(2)
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/root/")
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.DISPLAY_NAME]).isEqualTo(null)
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.DESCRIPTION]).isEqualTo(null)
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("root")
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+            assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo(null)
+
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/root/file.csv")
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.DISPLAY_NAME]).isEqualTo(null)
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.DESCRIPTION]).isEqualTo(null)
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("file.csv")
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+            assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/root/")
+        }
+
+    }
+
+    @Test
+    fun `can set document visibility`()
+    {
+        insertDocuments()
+        val sut = OrderlyDocumentRepository()
+
+        val document = sut.getAllFlat()[0]
+        assertThat(document.show).isEqualTo(true)
+
+        sut.setVisibility(document, false)
+
+        JooqContext().use {
+            val query = it.dsl.select(Tables.ORDERLYWEB_DOCUMENT.SHOW)
+                    .from(Tables.ORDERLYWEB_DOCUMENT)
+                    .where(Tables.ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+
+            var show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
+            assertThat(show).isEqualTo(0)
+
+            sut.setVisibility(document, true)
+
+            show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
+            assertThat(show).isEqualTo(1)
+        }
+    }
+
     private fun insertDocuments()
     {
         JooqContext().use {
