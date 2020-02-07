@@ -7,8 +7,7 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.DocumentRepository
-import org.vaccineimpact.orderlyweb.models.documents.Directory
-import org.vaccineimpact.orderlyweb.models.documents.Document
+import org.vaccineimpact.orderlyweb.models.Document
 
 class DocumentController(context: ActionContext,
                          private val fileSystem: FileSystem = Files(),
@@ -16,15 +15,17 @@ class DocumentController(context: ActionContext,
                          private val repo: DocumentRepository): Controller(context)
 {
     fun refreshDocuments() {
-        val topLevelFolder = trimFolder(config["documents.location"])
+        val topLevelFolder = formatFolder(config["documents.location"])
 
-        val unrefreshedDocs = repo.getAllDocuments().toMutableList()
-        val unrefreshedDirs = repo.getAllDirectories().toMutableList()
+        val allDocs = repo.getAllFlat()
+
+        val unrefreshedDocs = allDocs.filter{it.isFile}.toMutableList()
+        val unrefreshedDirs = allDocs.filter{!it.isFile}.toMutableList()
 
         val topLevelDir = unrefreshedDirs.find{it.path == topLevelFolder}
         if ( topLevelDir == null)
         {
-            repo.addDirectory(topLevelFolder, folderName(topLevelFolder), null)
+            repo.add(topLevelFolder, displayName(topLevelFolder), false, null)
         }
         else
         {
@@ -33,62 +34,74 @@ class DocumentController(context: ActionContext,
         refreshDocumentsInDir(topLevelFolder,  unrefreshedDocs, unrefreshedDirs)
 
         //Hide all known files and folders which were not found
-        unrefreshedDocs.forEach{ repo.setDocumentVisibility(it, false) }
-        unrefreshedDirs.forEach{ repo.setDirectoryVisibility(it, false) }
+        unrefreshedDocs.forEach{ repo.setVisibility(it, false) }
+        unrefreshedDirs.forEach{ repo.setVisibility(it, false) }
     }
 
     private fun refreshDocumentsInDir(path: String,
                                       unrefreshedDocs: MutableList<Document>,
-                                      unrefreshedDirs: MutableList<Directory>)
+                                      unrefreshedDirs: MutableList<Document>)
     {
         val files = fileSystem.getChildFiles(path)
         for(file in files)
         {
-            val documentForFile = unrefreshedDocs.find{it.dirPath == path && it.filename == file}
+            val docForFile = unrefreshedDocs.find{it.path == file}
 
-            if (documentForFile != null)
+            if (docForFile != null)
             {
-                if (!documentForFile.show)
+                if (!docForFile.show)
                 {
-                    repo.setDocumentVisibility(documentForFile, true)
+                    repo.setVisibility(docForFile, true)
                 }
-               unrefreshedDocs.remove(documentForFile)
+               unrefreshedDocs.remove(docForFile)
             }
             else
             {
-                repo.addDocument(file, path)
+                repo.add(file, displayName(file), true, path)
             }
         }
 
         val folders = fileSystem.getChildFolders(path)
         for(folderPath in folders)
         {
-            val folder = trimFolder(folderPath)
-            val dirForFolder = unrefreshedDirs.find{it.path == folder}
-            if (dirForFolder != null)
+            val folder = formatFolder(folderPath)
+            val docForFolder = unrefreshedDirs.find{it.path == folder}
+            if (docForFolder != null)
             {
-                if (!dirForFolder.show)
+                if (!docForFolder.show)
                 {
-                    repo.setDirectoryVisibility(dirForFolder, true)
+                    repo.setVisibility(docForFolder, true)
                 }
-                unrefreshedDirs.remove(dirForFolder)
+                unrefreshedDirs.remove(docForFolder)
             }
             else
             {
-                repo.addDirectory(folder, folderName(folder), path)
+                repo.add(folder, displayName(folder), false, path)
             }
 
             refreshDocumentsInDir(folder, unrefreshedDocs, unrefreshedDirs)
         }
     }
 
-    private fun trimFolder(folder: String): String
+    private fun formatFolder(folder: String): String
     {
-        return folder.removeSuffix("/")
+        var result = folder
+        if (!result.startsWith("/"))
+        {
+            result = "/$result";
+        }
+        if (!result.endsWith("/"))
+        {
+            result = "$result/"
+        }
+
+        return result;
     }
 
-    private fun folderName(absolutePath: String): String
+    private fun displayName(path: String): String
     {
-        return absolutePath.split("/").last()
+        val result = path.split("/").last()
+        return result.removeSuffix("/")
     }
+
 }

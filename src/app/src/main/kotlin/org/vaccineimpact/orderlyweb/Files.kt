@@ -70,7 +70,7 @@ class Files : FileSystem
         val children = source.list()
         return children.map{ File(source, it) }
                 .filter{ it.isFile }
-                .map{ it.name}
+                .map{ it.absolutePath.toString()}
     }
 
     private fun populateFileList(node: File, fileList: ArrayList<String>)

@@ -6,6 +6,10 @@ import org.vaccineimpact.orderlyweb.models.Document
 
 interface DocumentRepository {
     fun getAll(): List<Document>
+    fun getAllFlat(): List<Document>
+
+    fun add(path: String, displayName: String, isFile: Boolean, parentPath: String?)
+    fun setVisibility(document: Document, show: Boolean)
 }
 
 class OrderlyDocumentRepository : DocumentRepository {
@@ -23,6 +27,36 @@ class OrderlyDocumentRepository : DocumentRepository {
         }
     }
 
+    override fun getAllFlat(): List<Document> {
+        JooqContext().use { db ->
+            return db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
+                    .fetchInto(Document::class.java)
+        }
+    }
+
+    override fun add(path: String, displayName: String, isFile: Boolean, parentPath: String?)
+    {
+        JooqContext().use { db ->
+            db.dsl.insertInto(ORDERLYWEB_DOCUMENT)
+                    .set(ORDERLYWEB_DOCUMENT.PATH, path)
+                    .set(ORDERLYWEB_DOCUMENT.DISPLAY_NAME, displayName)
+                    .set(ORDERLYWEB_DOCUMENT.IS_FILE, isFile.toInt())
+                    .set(ORDERLYWEB_DOCUMENT.PARENT, parentPath)
+                    .set(ORDERLYWEB_DOCUMENT.SHOW, 1)
+                    .execute()
+        }
+    }
+
+    override fun setVisibility(document: Document, show: Boolean)
+    {
+        JooqContext().use { db ->
+            db.dsl.update(ORDERLYWEB_DOCUMENT)
+                    .set(ORDERLYWEB_DOCUMENT.SHOW, show.toInt())
+                    .where(ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+                    .execute()
+        }
+    }
+
     private fun getChildren(db: JooqContext, node: Document): List<Document> {
 
         return db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
@@ -35,8 +69,12 @@ class OrderlyDocumentRepository : DocumentRepository {
 
     private fun mapDocument(db: JooqContext, record: Record) : Document {
         val doc = Document(record[ORDERLYWEB_DOCUMENT.DISPLAY_NAME]?: record[ORDERLYWEB_DOCUMENT.NAME], record[ORDERLYWEB_DOCUMENT.PATH],
-                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, listOf())
+                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, record[ORDERLYWEB_DOCUMENT.SHOW] == 1, listOf())
         return doc.copy(children = getChildren(db, doc))
     }
 
+    private fun Boolean.toInt(): Int
+    {
+        return if (this) 1 else 0
+    }
 }
