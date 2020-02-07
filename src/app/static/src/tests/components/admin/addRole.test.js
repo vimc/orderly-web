@@ -12,8 +12,6 @@ describe("addRole", () => {
     const createSut = () => {
         return shallowMount(AddRole, {
             propsData: {
-                error: "test-error",
-                defaultMessage: "test-default"
             }
         });
     };
@@ -24,8 +22,6 @@ describe("addRole", () => {
         expect(wrapper.find('input').attributes("type")).toBe("text");
         expect(wrapper.find('button').text()).toBe("Add role");
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test-error");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("test-default");
     });
 
     it ('emits added event when button clicked', async () => {

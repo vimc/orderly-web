@@ -115,6 +115,7 @@ describe("roleList", () => {
             propsData: {
                 roles: mockRoles,
                 canRemoveRoles: true,
+                canDeleteRoles: false,
                 canRemoveMembers: true
             }
         });
@@ -122,71 +123,18 @@ describe("roleList", () => {
         expect(wrapper.findAll(".remove").length).toBe(2);
     });
 
-    it('renders non-removable roles', () => {
+    it('renders non-removable and non-deletable roles', () => {
 
         const wrapper = shallowMount(RoleList, {
             propsData: {
                 roles: mockRoles,
                 canRemoveRoles: false,
+                canDeleteRoles: false,
                 canRemoveMembers: true
             }
         });
 
         expect(wrapper.findAll(".remove").length).toBe(0);
-    });
-
-    it('removes role and emits removed event', (done) => {
-
-        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=r1')
-            .reply(200);
-
-        const wrapper = shallowMount(RoleList, {
-            propsData: {
-                permission: {
-                    scope_id: "r1",
-                    scope_prefix: "report",
-                    name: "reports.read"
-                },
-                roles: mockRoles,
-                canRemoveRoles: true,
-                canRemoveMembers: true
-            }
-        });
-
-        wrapper.findAll(".remove").at(0).trigger("click");
-
-        setTimeout(() => {
-            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders"]);
-            done();
-        })
-    });
-
-    it('sets error if removing role fails', (done) => {
-
-        mockAxios.onDelete('http://app/roles/Funders/permissions/reports.read/?&scopePrefix=report&scopeId=r1')
-            .reply(500);
-
-        const wrapper = shallowMount(RoleList, {
-            propsData: {
-                permission: {
-                    scope_id: "r1",
-                    scope_prefix: "report",
-                    name: "reports.read"
-                },
-                roles: mockRoles,
-                canRemoveRoles: true,
-                canRemoveMembers: true
-            }
-        });
-
-        wrapper.findAll(".remove").at(0).trigger("click");
-
-        setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove Funders");
-            done();
-        });
-
     });
 
     it('removes member and emits removed event', (done) => {
@@ -205,7 +153,7 @@ describe("roleList", () => {
         wrapper.find(UserList).vm.$emit("removed", "bob");
 
         setTimeout(() => {
-            expect(wrapper.emitted().removed[0]).toStrictEqual(["Funders", "bob"]);
+            expect(wrapper.emitted().removedMember[0]).toStrictEqual(["Funders", "bob"]);
             done();
         });
     });
@@ -251,6 +199,22 @@ describe("roleList", () => {
         addUser.vm.$emit("added");
 
         expect(wrapper.emitted()["added"].length).toBe(1);
+    });
+
+    it('clicking remove emits removed event', async () => {
+        const wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true
+            }
+        });
+
+        wrapper.find('.remove').trigger("click");
+        await Vue.nextTick();
+
+        expect(wrapper.emitted().removed.length).toBe(1)
+        expect(wrapper.emitted().removed[0][0]).toBe("Funders")
+
     });
 
     it('can expand and collapse members', async () => {
@@ -318,5 +282,36 @@ describe("roleList", () => {
         expect(roleWithoutMembers.classes("has-children")).toBe(true);
 
     });
+
+    it('canRemoveRole returns true if canRemove and role is not Admin', () => {
+        let wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true
+            }
+        });
+        expect(wrapper.vm.canRemoveRole("Funders")).toBe(true)
+
+    });
+
+    it('canRemoveRole returns false if cannot remove or role is Admin', () => {
+        let wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: false
+            }
+        });
+        expect(wrapper.vm.canRemoveRole("Funders")).toBe(false)
+
+        wrapper = shallowMount(RoleList, {
+            propsData: {
+                roles: mockRoles,
+                canRemoveRoles: true
+            }
+        });
+        expect(wrapper.vm.canRemoveRole("Admin")).toBe(false)
+    });
+
+
 
 });
