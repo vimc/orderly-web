@@ -1,8 +1,9 @@
-import {mount} from '@vue/test-utils';
+import {mount, shallowMount} from '@vue/test-utils';
 import ScopedReaderRoleList from "../../../js/components/reports/scopedReportReaderRolesList.vue";
 import {mockAxios} from "../../mockAxios";
 import RoleList from "../../../js/components/permissions/roleList.vue"
 import AddReportReader from "../../../js/components/permissions/addReportReader.vue";
+import ErrorInfo from "../../../js/components/errorInfo";
 import Vue from "vue";
 
 describe("scopedReaderRolesList", () => {
@@ -73,6 +74,26 @@ describe("scopedReaderRolesList", () => {
 
     });
 
+    it('renders errorInfo', async () => {
+        const wrapper = shallowMount(ScopedReaderRoleList, {
+            propsData: {
+                report: {
+                    name: "report1"
+                }
+            }
+        });
+
+        wrapper.setData({
+            error: "test-error",
+            defaultMessage: "test-default"
+        });
+
+        await Vue.nextTick();
+
+        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test-error");
+        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("test-default");
+    });
+
     it('renders add report reader component', async () => {
 
         const wrapper = getSut();
@@ -122,29 +143,6 @@ describe("scopedReaderRolesList", () => {
 
     });
 
-    it('refreshes data when removed event is emitted', async (done) => {
-
-        mockAxios.onPost(`http://app/roles/Tech/permissions/`)
-            .reply(200);
-
-        mockAxios.onGet('http://app/roles/report-readers/report1/')
-            .reply(200, {"data": mockRoles});
-
-        const wrapper = getSut();
-
-        wrapper.setData({allRoles: mockRoleNames});
-
-        await Vue.nextTick();
-
-        wrapper.find(RoleList).vm.$emit("removed");
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(3); //Initial fetch and after added reader
-            done();
-        });
-
-    });
-
     it('fetches all and current roles on mount', (done) => {
 
         const wrapper = getSut();
@@ -159,4 +157,46 @@ describe("scopedReaderRolesList", () => {
         });
     });
 
+    it('removes role and gets current roles when role list emits removed event', async (done) => {
+
+        const url = 'http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=report1';
+        mockAxios.onDelete(url)
+            .reply(200);
+
+        const wrapper = getSut();
+
+        await Vue.nextTick();
+
+        expect(mockAxios.history.get.length).toBe(2);
+
+        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+
+        setTimeout(() => {
+            expect(mockAxios.history.delete.length).toBe(1);
+            expect(mockAxios.history.delete[0].url).toBe(url);
+
+            //Check roles were refreshed
+            expect(mockAxios.history.get.length).toBe(3);
+            expect(mockAxios.history.get[2].url).toBe("http://app/roles/report-readers/report1/");
+            done();
+        })
+    });
+
+    it('sets error if removing role fails', (done) => {
+        const url = 'http://app/roles/Funders/permissions/reports.read/?scopePrefix=report&scopeId=report1';
+        mockAxios.onDelete(url)
+            .reply(500, "TEST ERROR");
+
+        const wrapper = getSut();
+
+        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+
+        setTimeout(() => {
+
+            expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
+            expect(wrapper.vm.$data.defaultMessage).toBe("could not remove Funders");
+            done();
+        });
+
+    });
 });
