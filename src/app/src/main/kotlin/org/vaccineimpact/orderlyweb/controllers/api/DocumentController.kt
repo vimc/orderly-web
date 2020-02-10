@@ -49,44 +49,48 @@ class DocumentController(context: ActionContext,
     private fun refreshDocumentsInDir(absolutePath: String,
                                       unrefreshedDocs: MutableList<Document>)
     {
-        val relativeParent = formatFolder(relativePath(absolutePath))
-
         val files = fileSystem.getChildFiles(absolutePath)
         val folders = fileSystem.getChildFolders(absolutePath)
 
-        val refreshChildren = {children: List<String>, areFolders: Boolean ->
-            for (childPath in children)
+        refreshDirChildren(absolutePath, files, false, unrefreshedDocs)
+        refreshDirChildren(absolutePath, folders, true, unrefreshedDocs)
+    }
+
+    private fun refreshDirChildren(dirAbsolutePath: String,
+                                   children: List<String>,
+                                   areFolders: Boolean,
+                                   unrefreshedDocs: MutableList<Document>)
+    {
+        val relativeParent = formatFolder(relativePath(dirAbsolutePath))
+
+        for (childPath in children)
+        {
+            var child = relativePath(childPath)
+            if (areFolders)
             {
-                var child = relativePath(childPath)
-                if (areFolders)
-                {
-                    child = formatFolder(child);
-                }
+                child = formatFolder(child);
+            }
 
-                val docForChild = unrefreshedDocs.find { it.path == child }
+            val docForChild = unrefreshedDocs.find { it.path == child }
 
-                if (docForChild != null)
+            if (docForChild != null)
+            {
+                if (!docForChild.show)
                 {
-                    if (!docForChild.show)
-                    {
-                        repo.setVisibility(docForChild, true)
-                    }
-                    unrefreshedDocs.remove(docForChild)
+                    repo.setVisibility(docForChild, true)
                 }
-                else
-                {
-                    repo.add(child, documentName(child), !areFolders, relativeParent)
-                }
+                unrefreshedDocs.remove(docForChild)
+            }
+            else
+            {
+                repo.add(child, documentName(child), !areFolders, relativeParent)
+            }
 
-                if (areFolders)
-                {
-                    refreshDocumentsInDir(childPath, unrefreshedDocs)
-                }
+            if (areFolders)
+            {
+                refreshDocumentsInDir(childPath, unrefreshedDocs)
             }
         }
-
-        refreshChildren(files, false)
-        refreshChildren(folders, true)
     }
 
     private fun relativePath(absolutePath: String): String
