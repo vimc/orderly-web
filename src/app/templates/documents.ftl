@@ -27,13 +27,12 @@
     </#macro>
 
     <#macro listDoc doc>
-        <#if doc.show>
-            <#if doc.file>
-                <a href="${doc.path}">${doc.displayName}</a>
-            <#else>
-                <span>${doc.displayName}</span>
-            </#if>
-
+        <#if doc.file>
+            <a href="${appUrl}/documents/${doc.path}">${doc.displayName}</a>
+        <#else>
+            <span>${doc.displayName}</span>
+        </#if>
+        <#if doc.children?size != 0>
             <ul>
                 <#list doc.children as child>
                     <li><@listDoc child /></li>

@@ -82,14 +82,15 @@ class DocumentControllerTests : ControllerTest()
     }
 
     @Test
-    fun `build documents view model`()
+    fun `documents view model only contains documents with show = true`()
     {
         val mockRepo = mock<DocumentRepository> {
-            on {getAll()} doReturn listOf(Document("name", "/path", true, true, listOf()))
+            on {getAll()} doReturn listOf(Document("shown", "/path", true, true, listOf()),
+                    Document("notshown", "/file", true, false, listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getAll()
         assertThat(result.appViewModel).isInstanceOf(DefaultViewModel::class.java)
-        assertThat(result.docs).containsExactly(Document("name", "/path", true, true, listOf()))
+        assertThat(result.docs).containsExactly(Document("shown", "/path", true, true, listOf()))
     }
 }

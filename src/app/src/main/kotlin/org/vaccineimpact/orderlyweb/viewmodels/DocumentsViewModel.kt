@@ -11,7 +11,8 @@ data class DocumentsViewModel(val docs: List<Document>, val appViewModel: AppVie
         val breadcrumb = Breadcrumb("Docs", "${AppConfig()["app.url"]}/docs")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel {
-            return DocumentsViewModel(docs, DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+            val docsToDisplay = docs.filter { it.show }
+            return DocumentsViewModel(docsToDisplay, DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
     }
 }
