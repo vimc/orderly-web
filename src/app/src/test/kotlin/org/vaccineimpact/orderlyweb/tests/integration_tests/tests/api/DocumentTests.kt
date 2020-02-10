@@ -34,31 +34,25 @@ class DocumentTests: IntegrationTest()
                     .orderBy(ORDERLYWEB_DOCUMENT.PATH)
                     .fetch()
 
-            assertThat(result.count()).isEqualTo(4)
+            assertThat(result.count()).isEqualTo(3)
 
-            assertThat(result[0][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/")
-            assertThat(result[0][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("documents")
+            assertThat(result[0][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some")
+            assertThat(result[0][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("some")
             assertThat(result[0][ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
             assertThat(result[0][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo(null)
             assertThat(result[0][ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
 
-            assertThat(result[1][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/")
-            assertThat(result[1][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("some")
+            assertThat(result[1][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/path")
+            assertThat(result[1][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("path")
             assertThat(result[1][ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
-            assertThat(result[1][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/")
+            assertThat(result[1][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/some")
             assertThat(result[1][ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
 
-            assertThat(result[2][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/path/")
-            assertThat(result[2][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("path")
-            assertThat(result[2][ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
-            assertThat(result[2][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/some/")
+            assertThat(result[2][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/path/file.csv")
+            assertThat(result[2][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("file.csv")
+            assertThat(result[2][ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            assertThat(result[2][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/some/path")
             assertThat(result[2][ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
-
-            assertThat(result[3][ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/path/file.csv")
-            assertThat(result[3][ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("file.csv")
-            assertThat(result[3][ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
-            assertThat(result[3][ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/some/path/")
-            assertThat(result[3][ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
         }
     }
 }
