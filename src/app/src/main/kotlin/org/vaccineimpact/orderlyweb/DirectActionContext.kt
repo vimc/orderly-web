@@ -34,6 +34,7 @@ open class DirectActionContext(private val context: SparkWebContext,
     override fun queryString(): String? = request.queryString()
     override fun params(): Map<String, String> = request.params()
     override fun params(key: String): String = request.params(key)
+    override fun splat(): Array<String>? = request.splat()
     override fun addResponseHeader(key: String, value: String)
     {
         response.header(key, value)

@@ -32,6 +32,7 @@ object WebRouteConfig : RouteConfig
 
     override val endpoints: List<EndpointDefinition> =
             WebAuthRouteConfig.endpoints +
+                    WebDocumentRouteConfig.endpoints +
                     WebReportRouteConfig.endpoints +
                     WebVersionRouteConfig.endpoints +
                     WebUserRouteConfig.endpoints +

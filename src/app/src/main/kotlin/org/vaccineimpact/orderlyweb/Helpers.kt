@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb
 import spark.Filter
 import spark.Request
 import spark.Response
+import java.io.File
 import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.servlet.http.HttpServletResponse
@@ -50,6 +51,21 @@ fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
 {
     val ext = fileName.toLowerCase().split(".").last()
     return extensions.contains(ext)
+}
+
+fun guessFileType(filename: String): String
+{
+    val ext = File(filename).extension
+    return when (ext)
+    {
+        "csv" -> "text/csv"
+        "png" -> "image/png"
+        "svg" -> "image/svg+xml"
+        "pdf" -> "application/pdf"
+        "html" -> "text/html"
+        "css" -> "text/css"
+        else -> ContentTypes.binarydata
+    }
 }
 
 fun canRenderInBrowser(fileName: String): Boolean

@@ -5,7 +5,9 @@
             v-bind:class="['role', {'open':expanded[role.name]}, {'has-children': canAddMembers || (role.members.length > 0)}]">
             <div class="expander" v-on:click="toggle(role.name)"></div>
             <span v-text="role.name" v-on:click="toggle(role.name)" class="role-name"></span>
-            <span v-if="canRemoveRoles" v-on:click="function(){removeRole(role.name)}"
+
+            <span v-if="canRemoveRole(role.name)"
+                  v-on:click="removed(role.name)"
                   class="remove d-inline-block ml-2 large">×</span>
 
             <user-list v-if="role.members.length > 0"
@@ -49,10 +51,13 @@
             availableUsersForRole: function(role) {
                 return this.availableUsers.filter(u => role.members.map(m => m.email).indexOf(u) < 0)
             },
+            canRemoveRole: function(role) {
+                return this.canRemoveRoles && role !== "Admin"
+            },
             removeMember: function (roleName, email) {
                 api.delete(`/roles/${encodeURIComponent(roleName)}/users/${encodeURIComponent(email)}`)
                     .then(() => {
-                        this.$emit('removed', roleName, email);
+                        this.$emit('removedMember', roleName, email);
                         this.error = null;
                     })
                     .catch((error) => {
@@ -60,20 +65,8 @@
                         this.error = error;
                     });
             },
-            removeRole: function (roleName) {
-                const scopeId = this.permission.scope_id;
-                const scopePrefix = this.permission.scope_prefix;
-                const query = (scopeId && scopePrefix) ? `?scopePrefix=${scopePrefix}&scopeId=${scopeId}` : "";
-
-                api.delete(`/roles/${encodeURIComponent(roleName)}/permissions/${this.permission.name}/${query}`)
-                    .then(() => {
-                        this.$emit("removed", roleName);
-                        this.error = null;
-                    })
-                    .catch((error) => {
-                        this.defaultMessage = `could not remove ${roleName}`;
-                        this.error = error;
-                    });
+            removed: function (roleName) {
+                this.$emit("removed", roleName);
             }
         },
         components: {
