@@ -38,7 +38,7 @@ class DocumentRepositoryTests : CleanDatabaseTests()
                     .set(Tables.ORDERLYWEB_DOCUMENT.IS_FILE, 0)
                     .set(Tables.ORDERLYWEB_DOCUMENT.SHOW, 0)
                     .execute()
-            
+
             it.dsl.insertInto(Tables.ORDERLYWEB_DOCUMENT)
                     .set(Tables.ORDERLYWEB_DOCUMENT.NAME, "root")
                     .set(Tables.ORDERLYWEB_DOCUMENT.PATH, "/root/")

@@ -109,6 +109,5 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val result = sut.wrap(model) as SimpleHash
         val doc = ((result["docs"] as SimpleSequence)[0] as StringModel)
         assertThat((doc["file"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
-        assertThat((doc["show"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
     }
 }
