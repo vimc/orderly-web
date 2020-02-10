@@ -3,11 +3,6 @@ package org.vaccineimpact.orderlyweb.app_start
 import freemarker.template.*
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
-import org.w3c.dom.Node
-import java.sql.Date
-import java.sql.Time
-import java.sql.Timestamp
-import java.util.*
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
 

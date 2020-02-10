@@ -11,7 +11,6 @@ import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.guessFileType
-import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 
 class DocumentController(context: ActionContext,
@@ -24,7 +23,7 @@ class DocumentController(context: ActionContext,
     @Template("documents.ftl")
     fun getAll(): DocumentsViewModel
     {
-        return DocumentsViewModel.build(context, docsRepo.getAll())
+        return DocumentsViewModel.build(context, docsRepo.getAllVisibleDocuments())
     }
 
     fun getDocument(): Boolean

@@ -27,12 +27,12 @@ class DocumentsPageTests : TeamcityTests()
     @Test
     fun `renders list of docs`()
     {
-        val leaf1 = Document("file.csv", "some/file.csv", true, true, listOf())
-        val leaf2 = Document("empty", "some/empty/", false, true, listOf())
-        val leaf3 = Document("file.csv", "some/path/file.doc", true, true, listOf())
-        val root1 = Document("root", "root/", false, true, listOf())
-        val root2 = Document("some", "some/", false, true,
-                listOf(leaf1, leaf2, Document("path", "some/path/", false, true, listOf(leaf3))))
+        val leaf1 = Document("file.csv", "some/file.csv", true, listOf())
+        val leaf2 = Document("empty", "some/empty/", false, listOf())
+        val leaf3 = Document("file.csv", "some/path/file.doc", true, listOf())
+        val root1 = Document("root", "root/", false, listOf())
+        val root2 = Document("some", "some/", false,
+                listOf(leaf1, leaf2, Document("path", "some/path/", false, listOf(leaf3))))
 
         val viewModel = DocumentsViewModel(listOf(root1, root2), testDefaultModel)
         val doc = template.jsoupDocFor(viewModel)
