@@ -1,12 +1,21 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.io.File
 
-class FileTests {
+class FileTests
+{
+
+    @After
+    fun cleanup()
+    {
+        File("documents").deleteRecursively()
+    }
 
     private val useResourceDir = File("${AppConfig()["orderly.root"]}archive/use_resource/").absolutePath
 
@@ -18,22 +27,18 @@ class FileTests {
     }
 
     @Test
-    fun `can getChildFiles`()
+    fun `can getAllChildren`()
     {
-        val folders = Files().getChildFolders(useResourceDir)
-        val files = Files().getChildFiles(folders[0])
-        assertThat(files.count()).isEqualTo(6)
-        assertThat(files).contains("${folders[0]}/mygraph.png")
-        assertThat(files).contains("${folders[0]}/orderly.yml")
-    }
+        File("documents/child/grandchild").mkdirs()
+        File("documents/childFile.csv").createNewFile()
 
-    @Test
-    fun `can getChildFolders`()
-    {
-        //expect a single child folder
-        val folders = Files().getChildFolders(useResourceDir)
-        assertThat(folders.count()).isEqualTo(1)
-        assertThat(folders[0]).startsWith(useResourceDir)
+        val root = File("documents").absolutePath
+        val children = Files().getAllChildren(root, root).sortedBy { it.name }
+        assertThat(children.count()).isEqualTo(2)
+        assertThat(children[0]).isEqualToComparingFieldByField(DocumentDetails("child", "$root/child", "/child"))
+        assertThat(children[1])
+                .isEqualToComparingFieldByField(
+                        DocumentDetails("childFile.csv", "$root/childFile.csv", "/childFile.csv"))
     }
 
     @Test

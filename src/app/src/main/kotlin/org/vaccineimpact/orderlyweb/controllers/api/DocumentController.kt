@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -14,7 +15,7 @@ import java.io.File
 class DocumentController(context: ActionContext,
                          private val fileSystem: FileSystem,
                          config: Config,
-                         private val repo: DocumentRepository): Controller(context)
+                         private val repo: DocumentRepository) : Controller(context)
 {
     constructor(context: ActionContext) :
             this(context,
@@ -22,106 +23,48 @@ class DocumentController(context: ActionContext,
                     AppConfig(),
                     OrderlyDocumentRepository())
 
-    private val topLevelFolder = fileSystem.getAbsolutePath(config["documents.root"])
+    private val documentsRoot = fileSystem.getAbsolutePath(config["documents.root"])
 
-    fun refreshDocuments(): String {
+    fun refreshDocuments(): String
+    {
         val allDocs = repo.getAllFlat()
-
+        val root = DocumentDetails("root", documentsRoot, null)
         val unrefreshedDocs = allDocs.toMutableList()
-
-        val topLevelDir = unrefreshedDocs.find{it.path == relativePath(topLevelFolder)}
-        if ( topLevelDir == null)
-        {
-            repo.add(relativePath(topLevelFolder), documentName(topLevelFolder), false, null)
-        }
-        else
-        {
-            unrefreshedDocs.remove(topLevelDir)
-        }
-        refreshDocumentsInDir(topLevelFolder,  unrefreshedDocs)
+        refreshDocumentsInDir(root, unrefreshedDocs)
 
         //Hide all known docs which were not found
-        unrefreshedDocs.filter{ it.show }.forEach{ repo.setVisibility(it, false) }
+        unrefreshedDocs.forEach { repo.setVisibility(it, false) }
 
         return okayResponse()
     }
 
-    private fun refreshDocumentsInDir(absolutePath: String,
+    private fun refreshDocumentsInDir(document: DocumentDetails,
                                       unrefreshedDocs: MutableList<Document>)
     {
-        val files = fileSystem.getChildFiles(absolutePath)
-        val folders = fileSystem.getChildFolders(absolutePath)
-
-        refreshDirChildren(absolutePath, files, false, unrefreshedDocs)
-        refreshDirChildren(absolutePath, folders, true, unrefreshedDocs)
+        val files = fileSystem.getAllChildren(document.absolutePath, documentsRoot)
+        refreshDirChildren(document, files, unrefreshedDocs)
     }
 
-    private fun refreshDirChildren(dirAbsolutePath: String,
-                                   children: List<String>,
-                                   areFolders: Boolean,
+    private fun refreshDirChildren(parent: DocumentDetails,
+                                   children: List<DocumentDetails>,
                                    unrefreshedDocs: MutableList<Document>)
     {
-        val relativeParent = formatFolder(relativePath(dirAbsolutePath))
-
-        for (childPath in children)
+        for (child in children)
         {
-            var child = relativePath(childPath)
-            if (areFolders)
-            {
-                child = formatFolder(child);
-            }
-
-            val docForChild = unrefreshedDocs.find { it.path == child }
+            val docForChild = unrefreshedDocs.find { it.path == child.pathFragment }
 
             if (docForChild != null)
             {
-                if (!docForChild.show)
-                {
-                    repo.setVisibility(docForChild, true)
-                }
+                repo.setVisibility(docForChild, true)
                 unrefreshedDocs.remove(docForChild)
             }
             else
             {
-                repo.add(child, documentName(child), !areFolders, relativeParent)
+                repo.add(child.pathFragment!!, child.name, File(child.absolutePath).isFile, parent.pathFragment)
             }
 
-            if (areFolders)
-            {
-                refreshDocumentsInDir(childPath, unrefreshedDocs)
-            }
+            refreshDocumentsInDir(child, unrefreshedDocs)
         }
-    }
-
-    private fun relativePath(absolutePath: String): String
-    {
-        var result =  absolutePath.removePrefix(topLevelFolder)
-        if (!result.startsWith("/"))
-        {
-            result = "/$result";
-        }
-        return result
-    }
-
-    private fun formatFolder(folder: String): String
-    {
-        var result = folder
-        if (!result.startsWith("/"))
-        {
-            result = "/$result";
-        }
-        if (!result.endsWith("/"))
-        {
-            result = "$result/"
-        }
-
-        return result;
-    }
-
-    private fun documentName(path: String): String
-    {
-        val result = path.removeSuffix("/").split("/").last()
-        return result.removeSuffix("/")
     }
 
 }
