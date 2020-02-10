@@ -67,6 +67,7 @@ class DocumentControllerTests : ControllerTest()
         }
 
         val flatDocs = listOf(
+                Document("root", "/", false, true, listOf()),
                 Document("stillExists.csv", "/stillExists.csv", true, true, listOf()),
                 Document("deleted.csv", "/deleted.csv", true, true, listOf()),
                 Document("reAdded.csv", "/reAdded.csv", true, false, listOf()),
@@ -91,10 +92,10 @@ class DocumentControllerTests : ControllerTest()
         val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
         sut.refreshDocuments()
 
-        verify(mockRepo).setVisibility(flatDocs[1], false) //deleted file
-        verify(mockRepo).setVisibility(flatDocs[2], true) //re-added file
-        verify(mockRepo).setVisibility(flatDocs[5], false) //deleted folder
-        verify(mockRepo).setVisibility(flatDocs[6], true) //re-added folder
+        verify(mockRepo).setVisibility(flatDocs[2], false) //deleted file
+        verify(mockRepo).setVisibility(flatDocs[3], true) //re-added file
+        verify(mockRepo).setVisibility(flatDocs[6], false) //deleted folder
+        verify(mockRepo).setVisibility(flatDocs[7], true) //re-added folder
 
         verify(mockRepo, times(4)).setVisibility(any(), any())
         verify(mockRepo, times(0)).add(any(), any(), any(), any())
