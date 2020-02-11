@@ -8,7 +8,7 @@ data class DocumentsViewModel(val docs: List<Document>, val appViewModel: AppVie
 {
     companion object
     {
-        val breadcrumb = Breadcrumb("Docs", "${AppConfig()["app.url"]}/docs")
+        val breadcrumb = Breadcrumb("Project documentation", "${AppConfig()["app.url"]}/project-docs")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel {
             return DocumentsViewModel(docs, DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))

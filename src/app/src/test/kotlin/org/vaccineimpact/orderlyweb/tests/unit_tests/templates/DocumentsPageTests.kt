@@ -49,7 +49,7 @@ class DocumentsPageTests : TeamcityTests()
         assertLinkListItem(secondLevelMenu.selectFirst("li"), "file.csv", "some/file.csv")
         assertThat(secondLevelMenu.select("li")[1].selectFirst("span").text()).isEqualTo("empty")
         assertThat(secondLevelMenu.select("li")[2].selectFirst("span").text()).isEqualTo("path")
-        
+
         val thirdLevelMenu = secondLevelMenu.select("li")[2].selectFirst("ul")
         assertLinkListItem(thirdLevelMenu.selectFirst("li"), "file.doc", "some/path/file.doc")
     }
