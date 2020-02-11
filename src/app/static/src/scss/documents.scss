@@ -1,0 +1,23 @@
+@import "style";
+
+ul {
+  padding-left: 30px;
+  position: relative;
+  list-style: none;
+
+  li {
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      border-right: 2px solid black;
+      border-bottom: 2px solid black;
+      width: 7px;
+      height: 7px;
+      top: 11px;
+      left: -15px;
+      transform: translateY(-50%) rotate(-45deg);
+    }
+  }
+}

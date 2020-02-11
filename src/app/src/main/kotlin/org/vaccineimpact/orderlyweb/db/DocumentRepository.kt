@@ -17,10 +17,9 @@ class OrderlyDocumentRepository : DocumentRepository {
                     .where(ORDERLYWEB_DOCUMENT.PARENT.isNull)
                     .and(ORDERLYWEB_DOCUMENT.SHOW.eq(1))
                     .fetch()
-                    .sortAsc(ORDERLYWEB_DOCUMENT.NAME)
             return rootNodes.map {
                 mapDocument(db, it)
-            }
+            }.sortedBy { it.displayName }
         }
     }
 
@@ -29,10 +28,9 @@ class OrderlyDocumentRepository : DocumentRepository {
         return db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
                 .where(ORDERLYWEB_DOCUMENT.PARENT.eq(node.path))
                 .and(ORDERLYWEB_DOCUMENT.SHOW.eq(1))
-                .fetch()
-                .sortAsc(ORDERLYWEB_DOCUMENT.NAME).map {
+                .fetch().map {
                     mapDocument(db, it)
-                }
+                }.sortedBy { it.displayName }
     }
 
     private fun mapDocument(db: JooqContext, record: Record) : Document {
