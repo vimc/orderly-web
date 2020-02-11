@@ -5,7 +5,14 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
 import org.vaccineimpact.orderlyweb.models.Document
 
 interface DocumentRepository {
+
     fun getAllVisibleDocuments(): List<Document>
+
+    fun getAllFlat(): List<Document>
+
+    fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
+    fun setVisibility(documents: List<Document>, show: Boolean)
+
 }
 
 class OrderlyDocumentRepository : DocumentRepository {
@@ -20,6 +27,43 @@ class OrderlyDocumentRepository : DocumentRepository {
             return rootNodes.map {
                 mapDocument(db, it)
             }.sortedBy { it.displayName }
+        }
+    }
+
+    override fun getAllFlat(): List<Document> {
+        JooqContext().use { db ->
+            val result =  db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
+                    .fetch()
+            return result.map{ Document(
+                    it[ORDERLYWEB_DOCUMENT.DISPLAY_NAME] ?: it[ORDERLYWEB_DOCUMENT.NAME],
+                    it[ORDERLYWEB_DOCUMENT.PATH],
+                    it[ORDERLYWEB_DOCUMENT.IS_FILE]==1,
+                    listOf()
+            ) }
+        }
+    }
+
+    override fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
+    {
+        JooqContext().use { db ->
+            db.dsl.insertInto(ORDERLYWEB_DOCUMENT)
+                    .set(ORDERLYWEB_DOCUMENT.PATH, path)
+                    .set(ORDERLYWEB_DOCUMENT.NAME, name)
+                    .set(ORDERLYWEB_DOCUMENT.IS_FILE, isFile.toInt())
+                    .set(ORDERLYWEB_DOCUMENT.PARENT, parentPath)
+                    .set(ORDERLYWEB_DOCUMENT.SHOW, 1)
+                    .execute()
+        }
+    }
+
+    override fun setVisibility(documents: List<Document>, show: Boolean)
+    {
+        val paths = documents.map{ it.path }
+        JooqContext().use { db ->
+            db.dsl.update(ORDERLYWEB_DOCUMENT)
+                    .set(ORDERLYWEB_DOCUMENT.SHOW, show.toInt())
+                    .where(ORDERLYWEB_DOCUMENT.PATH.`in`(paths))
+                    .execute()
         }
     }
 
@@ -39,4 +83,8 @@ class OrderlyDocumentRepository : DocumentRepository {
         return doc.copy(children = getChildren(db, doc))
     }
 
+    private fun Boolean.toInt(): Int
+    {
+        return if (this) 1 else 0
+    }
 }
