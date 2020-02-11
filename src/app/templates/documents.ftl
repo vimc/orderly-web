@@ -5,7 +5,8 @@
 
     <#macro listDoc doc>
         <#if doc.file>
-            <a href="${appUrl}/documents/${doc.path}">${doc.displayName}</a>
+            ${doc.displayName}
+            <a href="${appUrl}/project-docs/${doc.path}?inline=true">open</a>/<a href="${appUrl}/project-docs/${doc.path}">download</a>
         <#else>
             <span>${doc.displayName}</span>
         </#if>

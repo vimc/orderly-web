@@ -47,13 +47,13 @@ class DocumentsPageTests : TeamcityTests()
         val secondLevelMenu = topLevelMenu.select("li")[1].select("ul")
         assertThat(secondLevelMenu.select("li")[0].selectFirst("a").text()).isEqualTo("file.csv")
         assertThat(secondLevelMenu.select("li")[0].selectFirst("a").attr("href"))
-                .isEqualTo("http://localhost:8888/documents/some/file.csv")
+                .isEqualTo("http://localhost:8888/project-docs/some/file.csv")
         assertThat(secondLevelMenu.select("li")[1].selectFirst("span").text()).isEqualTo("empty")
         assertThat(secondLevelMenu.select("li")[2].selectFirst("span").text()).isEqualTo("path")
 
         val thirdLevelMenu = secondLevelMenu.select("li")[2].selectFirst("ul")
         assertThat(thirdLevelMenu.selectFirst("li").selectFirst("a").text()).isEqualTo("file.csv")
         assertThat(thirdLevelMenu.selectFirst("li").selectFirst("a").attr("href"))
-                .isEqualTo("http://localhost:8888/documents/some/path/file.doc")
+                .isEqualTo("http://localhost:8888/project-docs/some/path/file.doc")
     }
 }
