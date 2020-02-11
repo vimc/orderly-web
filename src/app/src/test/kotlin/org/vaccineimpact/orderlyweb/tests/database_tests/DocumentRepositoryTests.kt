@@ -81,25 +81,29 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         insertDocuments()
         val sut = OrderlyDocumentRepository()
 
-        val document = sut.getAllFlat()[0]
+        val document1 = sut.getAllFlat().filter{it.path == "/some/"}[0]
+        val document2 = sut.getAllFlat().filter{it.path == "/some/path/"}[0]
 
         JooqContext().use {
             val query = it.dsl.select(Tables.ORDERLYWEB_DOCUMENT.SHOW)
                     .from(Tables.ORDERLYWEB_DOCUMENT)
-                    .where(Tables.ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+                    .where(Tables.ORDERLYWEB_DOCUMENT.PATH.`in`(document1.path, document2.path))
 
-            var show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
-            assertThat(show).isEqualTo(1)
+            var show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(1)
+            assertThat(show[1]).isEqualTo(1)
 
-            sut.setVisibility(document, false)
+            sut.setVisibility(listOf(document1, document2), false)
 
-            show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
-            assertThat(show).isEqualTo(0)
+            show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(0)
+            assertThat(show[1]).isEqualTo(0)
 
-            sut.setVisibility(document, true)
+            sut.setVisibility(listOf(document1, document2), true)
 
-            show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
-            assertThat(show).isEqualTo(1)
+            show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(1)
+            assertThat(show[1]).isEqualTo(1)
         }
     }
 

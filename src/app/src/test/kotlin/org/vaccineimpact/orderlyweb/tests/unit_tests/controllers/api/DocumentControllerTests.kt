@@ -90,12 +90,12 @@ class DocumentControllerTests : ControllerTest()
         val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
         sut.refreshDocuments()
 
-        verify(mockRepo).setVisibility(flatDocs[0], true) // still exists
-        verify(mockRepo).setVisibility(flatDocs[1], false) //deleted file
-        verify(mockRepo).setVisibility(flatDocs[2], true) //re-added file
-        verify(mockRepo).setVisibility(flatDocs[3], true) //still exists
-        verify(mockRepo).setVisibility(flatDocs[4], false) //deleted folder
-        verify(mockRepo).setVisibility(flatDocs[5], true) //re-added folder
+        verify(mockRepo).setVisibility(listOf(flatDocs[0]), true) // still exists
+        verify(mockRepo).setVisibility(listOf(flatDocs[2]), true) //re-added file
+        verify(mockRepo).setVisibility(listOf(flatDocs[3]), true) //still exists
+        verify(mockRepo).setVisibility(listOf(flatDocs[5]), true) //re-added folder
+
+        verify(mockRepo).setVisibility(listOf(flatDocs[1], flatDocs[4]), false) //deleted folder
 
         verify(mockRepo, times(0)).add(any(), any(), any(), any())
 

@@ -9,7 +9,7 @@ interface DocumentRepository {
     fun getAllFlat(): List<Document>
 
     fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
-    fun setVisibility(document: Document, show: Boolean)
+    fun setVisibility(documents: List<Document>, show: Boolean)
 }
 
 class OrderlyDocumentRepository : DocumentRepository {
@@ -53,12 +53,13 @@ class OrderlyDocumentRepository : DocumentRepository {
         }
     }
 
-    override fun setVisibility(document: Document, show: Boolean)
+    override fun setVisibility(documents: List<Document>, show: Boolean)
     {
+        val paths = documents.map{ it.path }
         JooqContext().use { db ->
             db.dsl.update(ORDERLYWEB_DOCUMENT)
                     .set(ORDERLYWEB_DOCUMENT.SHOW, show.toInt())
-                    .where(ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+                    .where(ORDERLYWEB_DOCUMENT.PATH.`in`(paths))
                     .execute()
         }
     }

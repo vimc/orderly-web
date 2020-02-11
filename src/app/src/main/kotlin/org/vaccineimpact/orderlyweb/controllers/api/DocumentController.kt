@@ -32,7 +32,7 @@ class DocumentController(context: ActionContext,
         refreshDocumentsInDir(root, unrefreshedDocs)
 
         //Hide all known docs which were not found
-        unrefreshedDocs.forEach { repo.setVisibility(it, false) }
+        repo.setVisibility(unrefreshedDocs, false)
 
         return okayResponse()
     }
@@ -47,7 +47,7 @@ class DocumentController(context: ActionContext,
 
             if (docForChild != null)
             {
-                repo.setVisibility(docForChild, true)
+                repo.setVisibility(listOf(docForChild), true)
                 unrefreshedDocs.remove(docForChild)
             }
             else
