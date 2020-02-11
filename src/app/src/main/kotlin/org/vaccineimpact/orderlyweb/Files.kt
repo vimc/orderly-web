@@ -63,7 +63,8 @@ class Files : FileSystem
                 .map {
                     DocumentDetails(it.name,
                             it.absolutePath,
-                            it.absolutePath.removePrefix(documentsRoot))
+                            it.absolutePath.removePrefix(documentsRoot),
+                            it.isFile)
                 }
     }
 
@@ -91,4 +92,4 @@ class Files : FileSystem
     }
 }
 
-class DocumentDetails(val name: String, val absolutePath: String, val pathFragment: String?)
+class DocumentDetails(val name: String, val absolutePath: String, val pathFragment: String?, val isFile: Boolean)

@@ -1,23 +1,16 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
-import org.junit.After
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.Files
+import org.vaccineimpact.orderlyweb.DocumentDetails
+import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.DocumentController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.DocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
-import java.io.File
 
 class DocumentControllerTests : ControllerTest()
 {
-    @After
-    fun cleanup()
-    {
-        File("documents").deleteRecursively()
-    }
-
     @Test
     fun `refreshDocuments populates all docs when there are none pre-existing`()
     {
@@ -29,12 +22,27 @@ class DocumentControllerTests : ControllerTest()
             on { getAllFlat() } doReturn listOf<Document>()
         }
 
-        File("documents/child1/grandchild").mkdirs()
-        File("documents/child2").mkdirs()
-        File("documents/child1/grandchild/grandchildFile1.csv").createNewFile()
-        File("documents/rootFile1.csv").createNewFile()
+        val mockFiles = mock<FileSystem> {
+            on { getAbsolutePath("documents") } doReturn("/documents")
 
-        val sut = DocumentController(mock(), Files(), mockConfig, mockRepo)
+            on { getAllChildren("/documents", "/documents") } doReturn listOf(
+                DocumentDetails("child1", "/documents/child1", "/child1", false),
+                DocumentDetails("child2", "/documents/child2", "/child2", false),
+                DocumentDetails("rootFile1.csv", "/documents/rootFile1.csv", "/rootFile1.csv", true)
+            )
+
+            on { getAllChildren("/documents/child1", "/documents") } doReturn listOf(
+                DocumentDetails("grandchild", "/documents/child1/grandchild", "/child1/grandchild", false)
+            )
+            on { getAllChildren("/documents/child2", "/documents") } doReturn listOf<DocumentDetails>()
+
+            on { getAllChildren("/documents/child1/grandchild", "/documents") } doReturn listOf(
+                    DocumentDetails("grandchildFile1.csv", "/documents/child1/grandchild/grandchildFile1.csv",
+                            "/child1/grandchild/grandchildFile1.csv", true)
+            )
+        }
+
+        val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
         sut.refreshDocuments()
 
         //Expect create
@@ -52,10 +60,19 @@ class DocumentControllerTests : ControllerTest()
             on { get("documents.root") } doReturn "documents"
         }
 
-        File("documents/stillExists").mkdirs()
-        File("documents/reAdded").mkdirs()
-        File("documents/stillExists.csv").createNewFile()
-        File("documents/reAdded.csv").createNewFile()
+        val mockFiles = mock<FileSystem>{
+            on { getAbsolutePath("documents") } doReturn("/documents")
+
+            on { getAllChildren("/documents", "/documents") } doReturn listOf(
+                    DocumentDetails("stillExists", "/documents/stillExists", "/stillExists", false),
+                    DocumentDetails("reAdded", "/documents/reAdded", "/reAdded", false),
+                    DocumentDetails("stillExists.csv", "/documents/stillExists.csv", "/stillExists.csv", true),
+                    DocumentDetails("reAdded.csv", "/documents/reAdded.csv", "/reAdded.csv", true)
+            )
+
+            on { getAllChildren("/documents/stillExists", "/documents") } doReturn listOf<DocumentDetails>()
+            on { getAllChildren("/documents/reAdded", "/documents") } doReturn listOf<DocumentDetails>()
+        }
 
         val flatDocs = listOf(
                 Document("stillExists.csv", "/stillExists.csv", true, listOf()),
@@ -70,7 +87,7 @@ class DocumentControllerTests : ControllerTest()
             on { getAllFlat() } doReturn flatDocs
         }
 
-        val sut = DocumentController(mock(), Files(), mockConfig, mockRepo)
+        val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
         sut.refreshDocuments()
 
         verify(mockRepo).setVisibility(flatDocs[0], true) // still exists

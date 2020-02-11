@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.DocumentRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
-import java.io.File
 
 class DocumentController(context: ActionContext,
                          private val fileSystem: FileSystem,
@@ -28,7 +27,7 @@ class DocumentController(context: ActionContext,
     fun refreshDocuments(): String
     {
         val allDocs = repo.getAllFlat()
-        val root = DocumentDetails("root", documentsRoot, null)
+        val root = DocumentDetails("root", documentsRoot, null, false)
         val unrefreshedDocs = allDocs.toMutableList()
         refreshDocumentsInDir(root, unrefreshedDocs)
 
@@ -38,17 +37,10 @@ class DocumentController(context: ActionContext,
         return okayResponse()
     }
 
-    private fun refreshDocumentsInDir(document: DocumentDetails,
+    private fun refreshDocumentsInDir(dir: DocumentDetails,
                                       unrefreshedDocs: MutableList<Document>)
     {
-        val files = fileSystem.getAllChildren(document.absolutePath, documentsRoot)
-        refreshDirChildren(document, files, unrefreshedDocs)
-    }
-
-    private fun refreshDirChildren(parent: DocumentDetails,
-                                   children: List<DocumentDetails>,
-                                   unrefreshedDocs: MutableList<Document>)
-    {
+        val children = fileSystem.getAllChildren(dir.absolutePath, documentsRoot)
         for (child in children)
         {
             val docForChild = unrefreshedDocs.find { it.path == child.pathFragment }
@@ -60,10 +52,13 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                repo.add(child.pathFragment!!, child.name, File(child.absolutePath).isFile, parent.pathFragment)
+                repo.add(child.pathFragment!!, child.name, child.isFile, dir.pathFragment)
             }
 
-            refreshDocumentsInDir(child, unrefreshedDocs)
+            if (!child.isFile)
+            {
+                refreshDocumentsInDir(child, unrefreshedDocs)
+            }
         }
     }
 

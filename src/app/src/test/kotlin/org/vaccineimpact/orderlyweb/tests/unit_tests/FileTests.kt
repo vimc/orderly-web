@@ -35,10 +35,10 @@ class FileTests
         val root = File("documents").absolutePath
         val children = Files().getAllChildren(root, root).sortedBy { it.name }
         assertThat(children.count()).isEqualTo(2)
-        assertThat(children[0]).isEqualToComparingFieldByField(DocumentDetails("child", "$root/child", "/child"))
+        assertThat(children[0]).isEqualToComparingFieldByField(DocumentDetails("child", "$root/child", "/child", false))
         assertThat(children[1])
                 .isEqualToComparingFieldByField(
-                        DocumentDetails("childFile.csv", "$root/childFile.csv", "/childFile.csv"))
+                        DocumentDetails("childFile.csv", "$root/childFile.csv", "/childFile.csv", true))
     }
 
     @Test
