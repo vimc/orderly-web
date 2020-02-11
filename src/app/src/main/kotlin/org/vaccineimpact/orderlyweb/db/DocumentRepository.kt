@@ -9,7 +9,7 @@ interface DocumentRepository {
     fun getAllFlat(): List<Document>
 
     fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
-    fun setVisibility(document: Document, show: Boolean)
+    fun setVisibility(documents: List<Document>, show: Boolean)
 }
 
 class OrderlyDocumentRepository : DocumentRepository {
@@ -35,7 +35,6 @@ class OrderlyDocumentRepository : DocumentRepository {
                     it[ORDERLYWEB_DOCUMENT.DISPLAY_NAME] ?: it[ORDERLYWEB_DOCUMENT.NAME],
                     it[ORDERLYWEB_DOCUMENT.PATH],
                     it[ORDERLYWEB_DOCUMENT.IS_FILE]==1,
-                    it[ORDERLYWEB_DOCUMENT.SHOW]==1,
                     listOf()
             ) }
         }
@@ -54,12 +53,13 @@ class OrderlyDocumentRepository : DocumentRepository {
         }
     }
 
-    override fun setVisibility(document: Document, show: Boolean)
+    override fun setVisibility(documents: List<Document>, show: Boolean)
     {
+        val paths = documents.map{ it.path }
         JooqContext().use { db ->
             db.dsl.update(ORDERLYWEB_DOCUMENT)
                     .set(ORDERLYWEB_DOCUMENT.SHOW, show.toInt())
-                    .where(ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+                    .where(ORDERLYWEB_DOCUMENT.PATH.`in`(paths))
                     .execute()
         }
     }
@@ -76,7 +76,7 @@ class OrderlyDocumentRepository : DocumentRepository {
 
     private fun mapDocument(db: JooqContext, record: Record) : Document {
         val doc = Document(record[ORDERLYWEB_DOCUMENT.DISPLAY_NAME]?: record[ORDERLYWEB_DOCUMENT.NAME], record[ORDERLYWEB_DOCUMENT.PATH],
-                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, record[ORDERLYWEB_DOCUMENT.SHOW] == 1, listOf())
+                record[ORDERLYWEB_DOCUMENT.IS_FILE] == 1, listOf())
         return doc.copy(children = getChildren(db, doc))
     }
 

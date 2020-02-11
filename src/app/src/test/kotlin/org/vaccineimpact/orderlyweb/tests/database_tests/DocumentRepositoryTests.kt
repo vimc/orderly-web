@@ -13,16 +13,15 @@ class DocumentRepositoryTests : CleanDatabaseTests()
     @Test
     fun `can build document tree`()
     {
-
         insertDocuments()
         val sut = OrderlyDocumentRepository()
         val result = sut.getAll()
-        val expectedLeaf1 = Document("first.csv", "/some/first.csv", true, true, listOf())
-        val expectedLeaf2 = Document("file.csv", "/some/path/file.csv", true, true, listOf())
-        val expectedLeaf3 = Document("empty", "/some/empty/", false, true, listOf())
-        val expectedRoot1 = Document("root", "/root/", false, false, listOf())
-        val expectedRoot2 = Document("some", "/some/", false, true,
-                listOf(expectedLeaf3, expectedLeaf1, Document("path", "/some/path/", false, true, listOf(expectedLeaf2))))
+        val expectedLeaf1 = Document("first.csv", "/some/first.csv", true, listOf())
+        val expectedLeaf2 = Document("file.csv", "/some/path/file.csv", true, listOf())
+        val expectedLeaf3 = Document("empty", "/some/empty/", false, listOf())
+        val expectedRoot1 = Document("root", "/root/", false, listOf())
+        val expectedRoot2 = Document("some", "/some/", false,
+                listOf(expectedLeaf3, expectedLeaf1, Document("path", "/some/path/", false, listOf(expectedLeaf2))))
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result.first()).isEqualTo(expectedRoot1)
@@ -36,12 +35,12 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyDocumentRepository()
         val result = sut.getAllFlat().sortedBy { it.path }
         assertThat(result.count()).isEqualTo(6)
-        assertThat(result[0]).isEqualTo(Document("root", "/root/", false, false, listOf()))
-        assertThat(result[1]).isEqualTo(Document("some", "/some/", false, true, listOf()))
-        assertThat(result[2]).isEqualTo(Document("empty", "/some/empty/", false, true, listOf()))
-        assertThat(result[3]).isEqualTo(Document("first.csv", "/some/first.csv", true, true, listOf()))
-        assertThat(result[4]).isEqualTo(Document("path", "/some/path/", false, true, listOf()))
-        assertThat(result[5]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, true, listOf()))
+        assertThat(result[0]).isEqualTo(Document("root", "/root/", false, listOf()))
+        assertThat(result[1]).isEqualTo(Document("some", "/some/", false, listOf()))
+        assertThat(result[2]).isEqualTo(Document("empty", "/some/empty/", false, listOf()))
+        assertThat(result[3]).isEqualTo(Document("first.csv", "/some/first.csv", true, listOf()))
+        assertThat(result[4]).isEqualTo(Document("path", "/some/path/", false, listOf()))
+        assertThat(result[5]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, listOf()))
     }
 
     @Test
@@ -82,23 +81,29 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         insertDocuments()
         val sut = OrderlyDocumentRepository()
 
-        val document = sut.getAllFlat()[0]
-        assertThat(document.show).isEqualTo(true)
-
-        sut.setVisibility(document, false)
+        val document1 = sut.getAllFlat().filter{it.path == "/some/"}[0]
+        val document2 = sut.getAllFlat().filter{it.path == "/some/path/"}[0]
 
         JooqContext().use {
             val query = it.dsl.select(Tables.ORDERLYWEB_DOCUMENT.SHOW)
                     .from(Tables.ORDERLYWEB_DOCUMENT)
-                    .where(Tables.ORDERLYWEB_DOCUMENT.PATH.eq(document.path))
+                    .where(Tables.ORDERLYWEB_DOCUMENT.PATH.`in`(document1.path, document2.path))
 
-            var show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
-            assertThat(show).isEqualTo(0)
+            var show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(1)
+            assertThat(show[1]).isEqualTo(1)
 
-            sut.setVisibility(document, true)
+            sut.setVisibility(listOf(document1, document2), false)
 
-            show = query.fetchOne()[Tables.ORDERLYWEB_DOCUMENT.SHOW]
-            assertThat(show).isEqualTo(1)
+            show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(0)
+            assertThat(show[1]).isEqualTo(0)
+
+            sut.setVisibility(listOf(document1, document2), true)
+
+            show = query.fetch().map{ it[Tables.ORDERLYWEB_DOCUMENT.SHOW] }
+            assertThat(show[0]).isEqualTo(1)
+            assertThat(show[1]).isEqualTo(1)
         }
     }
 
