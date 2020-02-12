@@ -8,8 +8,11 @@ object WebDocumentRouteConfig : RouteConfig
 {
     private val readDocuments = setOf("*/documents.read")
     override val endpoints: List<EndpointDefinition> = listOf(
-            WebEndpoint("/documents/*",
+            WebEndpoint("/project-docs/*",
                     DocumentController::class, "getDocument", contentType = ContentTypes.binarydata)
+                    .secure(readDocuments),
+            WebEndpoint("/project-docs/",
+                    DocumentController::class, "getAll")
                     .secure(readDocuments))
 
 }

@@ -5,25 +5,28 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
 import org.vaccineimpact.orderlyweb.models.Document
 
 interface DocumentRepository {
-    fun getAll(): List<Document>
+
+    fun getAllVisibleDocuments(): List<Document>
+
     fun getAllFlat(): List<Document>
 
     fun add(path: String, name: String, isFile: Boolean, parentPath: String?)
     fun setVisibility(documents: List<Document>, show: Boolean)
+
 }
 
 class OrderlyDocumentRepository : DocumentRepository {
 
-    override fun getAll(): List<Document> {
+    override fun getAllVisibleDocuments(): List<Document> {
         JooqContext().use {
             db ->
             val rootNodes = db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
                     .where(ORDERLYWEB_DOCUMENT.PARENT.isNull)
+                    .and(ORDERLYWEB_DOCUMENT.SHOW.eq(1))
                     .fetch()
-                    .sortAsc(ORDERLYWEB_DOCUMENT.NAME)
             return rootNodes.map {
                 mapDocument(db, it)
-            }
+            }.sortedBy { it.displayName }
         }
     }
 
@@ -68,10 +71,10 @@ class OrderlyDocumentRepository : DocumentRepository {
 
         return db.dsl.selectFrom(ORDERLYWEB_DOCUMENT)
                 .where(ORDERLYWEB_DOCUMENT.PARENT.eq(node.path))
-                .fetch()
-                .sortAsc(ORDERLYWEB_DOCUMENT.NAME).map {
+                .and(ORDERLYWEB_DOCUMENT.SHOW.eq(1))
+                .fetch().map {
                     mapDocument(db, it)
-                }
+                }.sortedBy { it.displayName }
     }
 
     private fun mapDocument(db: JooqContext, record: Record) : Document {

@@ -13,13 +13,11 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
-import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 
 class TemplateObjectWrapperTests : TeamcityTests()
@@ -80,7 +78,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
-            on { hasPermission(any())} doReturn true
+            on { hasPermission(any()) } doReturn true
         }
         val model = IndexViewModel(mockContext, listOf(), listOf())
 
@@ -96,5 +94,20 @@ class TemplateObjectWrapperTests : TeamcityTests()
         assertThat((result["fineGrainedAuth"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
         assertThat((result["reports"])).isNotNull()
         assertThat((result["pinnedReports"])).isNotNull()
+    }
+
+    @Test
+    fun `wraps DocumentsViewModel correctly`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
+            on { hasPermission(any()) } doReturn true
+        }
+        val model = DocumentsViewModel.build(mockContext, listOf(Document("name", "path", true, listOf())))
+
+        val sut = TemplateObjectWrapper()
+        val result = sut.wrap(model) as SimpleHash
+        val doc = ((result["docs"] as SimpleSequence)[0] as StringModel)
+        assertThat((doc["file"] as TemplateBooleanModel).asBoolean).isEqualTo(true)
     }
 }

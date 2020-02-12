@@ -29,7 +29,7 @@ class DocumentTests : IntegrationTest()
     @Test
     fun `only document readers can download documents`()
     {
-        val url = "/documents/some/path/file.csv"
+        val url = "/project-docs/some/path/file.csv"
         assertWebUrlSecured(url, readDocuments, contentType = ContentTypes.binarydata)
     }
 
@@ -38,11 +38,18 @@ class DocumentTests : IntegrationTest()
     {
         File("documents/some/path/file.csv").writeText("TEST")
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readDocuments)
-        val response = webRequestHelper.requestWithSessionCookie("/documents/some/path/file.csv", sessionCookie,
+        val response = webRequestHelper.requestWithSessionCookie("/project-docs/some/path/file.csv", sessionCookie,
                 ContentTypes.binarydata)
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/csv")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"some/path/file.csv\"")
         Assertions.assertThat(response.text).isEqualTo("TEST")
+    }
+
+    @Test
+    fun `only document readers can visit document index page`()
+    {
+        val url = "/project-docs/"
+        assertWebUrlSecured(url, readDocuments)
     }
 }

@@ -6,15 +6,26 @@ import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.DocumentRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.guessFileType
+import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 
 class DocumentController(context: ActionContext,
                          private val config: Config,
-                         private val files: FileSystem) : Controller(context)
+                         private val files: FileSystem,
+                         private val docsRepo: DocumentRepository) : Controller(context)
 {
-    constructor(context: ActionContext) : this(context, AppConfig(), Files())
+    constructor(context: ActionContext) : this(context, AppConfig(), Files(), OrderlyDocumentRepository())
+
+    @Template("documents.ftl")
+    fun getAll(): DocumentsViewModel
+    {
+        return DocumentsViewModel.build(context, docsRepo.getAllVisibleDocuments())
+    }
+
     fun getDocument(): Boolean
     {
         val path = context.splat()?.joinToString("/")

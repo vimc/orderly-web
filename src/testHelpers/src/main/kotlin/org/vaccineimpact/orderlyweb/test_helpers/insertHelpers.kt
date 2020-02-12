@@ -150,8 +150,7 @@ fun insertGlobalPinnedReport(reportName: String, ordering: Int)
 
 fun giveUserGroupGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
 {
-
-    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply {
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply{
         this.userGroup = userGroup
         this.permission = permissionName
     }.insert()
