@@ -29,12 +29,15 @@ class Orderly(val isReviewer: Boolean,
                         val id = a[REPORT_VERSION_ARTEFACT.ID]
                         val format = a[REPORT_VERSION_ARTEFACT.FORMAT]
                         val description = a[REPORT_VERSION_ARTEFACT.DESCRIPTION]
-                        val fileNames = it.dsl.select(FILE_ARTEFACT.FILENAME)
+                        val files = it.dsl.select(FILE_ARTEFACT.FILENAME, FILE.SIZE)
                                 .from(FILE_ARTEFACT)
+                                .innerJoin(FILE)
+                                .on(FILE_ARTEFACT.FILE_HASH.eq(FILE.HASH))
                                 .where(FILE_ARTEFACT.ARTEFACT.eq(id))
-                                .fetchInto(String::class.java)
+                                .fetch()
+                                .map{ r -> File(r[FILE_ARTEFACT.FILENAME], r[FILE.SIZE]) }
 
-                        Artefact(parseEnum(format), description, fileNames)
+                        Artefact(parseEnum(format), description, files)
                     }
         }
     }
