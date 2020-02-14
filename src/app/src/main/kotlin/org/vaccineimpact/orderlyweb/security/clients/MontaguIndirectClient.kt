@@ -8,6 +8,7 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.redirect.RedirectAction
 import org.pac4j.core.redirect.RedirectActionBuilder
 import org.pac4j.http.credentials.extractor.CookieExtractor
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
@@ -72,6 +73,7 @@ class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: M
         }
         catch (e: Exception)
         {
+            LoggerFactory.getLogger(MontaguIndirectClientRedirectActionBuilder::class.java).error(e.message)
             // not already logged in to Montagu so redirect to Montagu
             "${appConfig["montagu.url"]}?redirectTo=${URLEncoder.encode(loginCallbackUrl, "utf-8")}"
         }
