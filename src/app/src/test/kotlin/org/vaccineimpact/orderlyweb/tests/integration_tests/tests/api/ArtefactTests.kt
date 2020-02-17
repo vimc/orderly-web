@@ -5,6 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
@@ -136,7 +137,7 @@ class ArtefactTests : IntegrationTest()
         val token = apiRequestHelper.generateOnetimeToken(url)
 
         insertReport("testname", "testversion")
-        insertArtefact("testversion", fileNames = listOf(fakeartefact))
+        insertArtefact("testversion", files = listOf(FileInfo(fakeartefact, 1)))
         val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
         assertJsonContentType(response)

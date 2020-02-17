@@ -88,7 +88,7 @@ class VersionPageTests : TeamcityTests()
             testArtefactViewModels,
             testDataLinks,
             testResources,
-            DownloadableFileViewModel("zipFileName", "http://zipFileUrl"),
+            DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
             listOf(),
             listOf(),
             testDefaultModel)
@@ -182,12 +182,12 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(artefact1FileLinks[0].attr("href")).isEqualTo("http://a1file1")
         Assertions.assertThat(artefact1FileLinks[0].text()).isEqualTo("a1file1.png")
         Assertions.assertThat(artefact1FileLinks[0].select("span.download-icon").count()).isEqualTo(1)
-        Assertions.assertThat(artefact1FileSizeSpans[0].text()).isEqualTo("19 K")
+        Assertions.assertThat(artefact1FileSizeSpans[0].text()).isEqualTo("(19 KB)")
 
         Assertions.assertThat(artefact1FileLinks[1].attr("href")).isEqualTo("http://a1file2")
         Assertions.assertThat(artefact1FileLinks[1].text()).isEqualTo("a1file2.pdf")
         Assertions.assertThat(artefact1FileLinks[1].select("span.download-icon").count()).isEqualTo(1)
-        Assertions.assertThat(artefact1FileSizeSpans[0].text()).isEqualTo("123 bytes")
+        Assertions.assertThat(artefact1FileSizeSpans[1].text()).isEqualTo("(123 bytes)")
 
 
         val artefactEl2 = artefactCards[1]
@@ -195,13 +195,13 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(artefactEl2.select("img").count()).isEqualTo(0)
 
         val artefact2FileLinks = artefactEl2.select(".card-body div a")
-        val artefact2FileSizeSpans = artefactEl1.select("span.file-size")
+        val artefact2FileSizeSpans = artefactEl2.select("span.file-size")
         Assertions.assertThat(artefact2FileLinks.count()).isEqualTo(1)
         Assertions.assertThat(artefact2FileSizeSpans.count()).isEqualTo(1)
 
         Assertions.assertThat(artefact2FileLinks[0].attr("href")).isEqualTo("http://a2file1")
         Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a2file1.xls")
-        Assertions.assertThat(artefact2FileSizeSpans[0].text()).isEqualTo("2 MB")
+        Assertions.assertThat(artefact2FileSizeSpans[0].text()).isEqualTo("(2.2 MB)")
     }
 
     @Test
@@ -221,24 +221,25 @@ class VersionPageTests : TeamcityTests()
         val linkRow1Csv = linkRow1.select("ul li")[0]
         Assertions.assertThat(linkRow1Csv.select("a").attr("href")).isEqualTo("http://key1/csv")
         Assertions.assertThat(linkRow1Csv.select("a").text()).isEqualTo("key1.csv")
-        Assertions.assertThat(linkRow1Csv.select("span.file-link").text()).isEqualTo("2 MB")
+        //Currently failing because of weird commons ui rounding behaviour...
+        Assertions.assertThat(linkRow1Csv.select("span.file-size").text()).isEqualTo("(1.6 MB)")
 
         val linkRow1Rds = linkRow1.select("ul li")[1]
         Assertions.assertThat(linkRow1Rds.select("a").attr("href")).isEqualTo("http://key1/rds")
         Assertions.assertThat(linkRow1Rds.select("a").text()).isEqualTo("key1.rds")
-        Assertions.assertThat(linkRow1Rds.select("span.file-link").text()).isEqualTo("4 MB")
+        Assertions.assertThat(linkRow1Rds.select("span.file-size").text()).isEqualTo("(3.9 MB)")
 
         val linkRow2 = linkRows[1]
         Assertions.assertThat(linkRow2.select(".data-link-key").text()).isEqualTo("key2")
         val linkRow2Csv = linkRow2.select("ul li")[0]
         Assertions.assertThat(linkRow2Csv.select("a").attr("href")).isEqualTo("http://key2/csv")
         Assertions.assertThat(linkRow2Csv.select("a").text()).isEqualTo("key2.csv")
-        Assertions.assertThat(linkRow2Csv.select("span.file-link").text()).isEqualTo("3 KB")
+        Assertions.assertThat(linkRow2Csv.select("span.file-size").text()).isEqualTo("(3.0 KB)")
 
         val linkRow2Rds = linkRow2.select("ul li")[1]
         Assertions.assertThat(linkRow2Rds.select("a").attr("href")).isEqualTo("http://key2/rds")
         Assertions.assertThat(linkRow2Rds.select("a").text()).isEqualTo("key2.rds")
-        Assertions.assertThat(linkRow2Rds.select("span.file-link").text()).isEqualTo("4 KB")
+        Assertions.assertThat(linkRow2Rds.select("span.file-size").text()).isEqualTo("(4.5 KB)")
     }
 
     @Test
@@ -269,13 +270,12 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(resourceLinks[0].attr("href")).isEqualTo("http://resource1/csv")
         Assertions.assertThat(resourceLinks[0].text()).isEqualTo("resource1.csv")
         Assertions.assertThat(resourceLinks[0].select("span.download-icon").count()).isEqualTo(1)
-        Assertions.assertThat(resourceFileSizeSpans[0].text()).isEqualTo("1 KB")
+        Assertions.assertThat(resourceFileSizeSpans[0].text()).isEqualTo("(1.2 KB)")
 
         Assertions.assertThat(resourceLinks[1].attr("href")).isEqualTo("http://resource2/csv")
         Assertions.assertThat(resourceLinks[1].text()).isEqualTo("resource2.csv")
         Assertions.assertThat(resourceLinks[1].select("span.download-icon").count()).isEqualTo(1)
-        Assertions.assertThat(resourceFileSizeSpans[1].text()).isEqualTo("2 KB")
-
+        Assertions.assertThat(resourceFileSizeSpans[1].text()).isEqualTo("(2.3 KB)")
     }
 
     @Test

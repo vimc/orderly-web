@@ -40,9 +40,9 @@ class IndexTests : TeamcityTests()
     {
         val testModel = IndexViewModel(mock(), listOf(), listOf(
                 PinnedReportViewModel("report1", "version1", "display1", "date1",
-                        DownloadableFileViewModel("zip file 1", "zip file url 1")),
+                        DownloadableFileViewModel("zip file 1", "zip file url 1", 1)),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
-                        DownloadableFileViewModel("zip file 2", "zip file url 2"))
+                        DownloadableFileViewModel("zip file 2", "zip file url 2", 1))
         ))
 
         val doc = template.jsoupDocFor(testModel)

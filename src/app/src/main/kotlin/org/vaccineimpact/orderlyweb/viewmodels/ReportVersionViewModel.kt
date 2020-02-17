@@ -8,8 +8,8 @@ import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.apache.commons.io.FileUtils
 import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
@@ -173,7 +173,7 @@ data class DownloadableFileViewModel(val name: String, val url: String, val size
     val formattedSize get() =
         if (size != null)
         {
-            FileUtils.byteCountToDisplaySize(size)
+            byteCountToDisplaySize(size)
         }
         else
         {
