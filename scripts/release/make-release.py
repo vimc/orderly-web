@@ -63,13 +63,13 @@ def write_release_log(message, test_run):
         f.write("\n")
 
 
-def commit_and_tag(test_run):
+def commit_and_tag(release_message, test_run):
     if test_run:
         print("* --test-run is enabled: Skipping commit and tag")
         return
 
     run("git add RELEASE_LOG.md")
-    run("git commit -m \"{msg}\"".format(msg=release_message))
+    run("git commit -m \"{msg}\"".format(msg=release_message.replace('"','\"').replace('','\'')))
     print("* Tagging")
     tag(new_tag, release_message)
 
@@ -112,7 +112,7 @@ if __name__ == "__main__":
         print("* Writing release log for " + new_tag)
         release_message = make_release_message(new_tag, branches_and_tickets)
         write_release_log(release_message, test_run)
-        commit_and_tag(test_run)
+        commit_and_tag(release_message, test_run)
         update_youtrack(branches_and_tickets, test_run)
 
         print("""---------------------------------------------------------------
