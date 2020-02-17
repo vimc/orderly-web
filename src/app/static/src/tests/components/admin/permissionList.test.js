@@ -183,6 +183,6 @@ describe("permission list", () => {
         expect(rendered.findAll(".remove").length).toBe(0);
         expect(rendered.findAll("span").length).toBe(2);
         expect(rendered.findAll("span").at(1).classes()).toContain("text-muted");
-        expect(rendered.findAll("span").at(1).text()).toBe("(something else)");
+        expect(rendered.findAll("span").at(1).text()).toBe("(via something else)");
     });
 });
