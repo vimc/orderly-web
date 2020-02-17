@@ -40,18 +40,16 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val focalArtefactUrl = getFocalArtefactUrl(fileViewModelBuilder, report.artefacts)
 
-            val dataViewModels = report.dataHashes.map {
+            val dataViewModels = report.dataInfo.map {
                 InputDataViewModel(
-                        it.key,
-                        //TODO input data size
-                        fileViewModelBuilder.buildDataFileViewModel(it.key, "csv", 0),
-                        fileViewModelBuilder.buildDataFileViewModel(it.key, "rds", 0))
+                        it.name,
+                        fileViewModelBuilder.buildDataFileViewModel(it.name, "csv", it.csvSize),
+                        fileViewModelBuilder.buildDataFileViewModel(it.name, "rds", it.rdsSize))
             }
 
             val resourceViewModels = report.resources.map {
-                //TODO resource size
                 fileViewModelBuilder
-                        .buildResourceFileViewModel(it, 0)
+                        .buildResourceFileViewModel(it)
             }
 
             val zipFile = fileViewModelBuilder
@@ -181,7 +179,7 @@ data class DownloadableFileViewModel(val name: String, val url: String, val size
         }
         else
         {
-            ""
+            null
         }
 }
 

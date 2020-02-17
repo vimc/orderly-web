@@ -16,18 +16,17 @@ class ReportFileViewModelBuilder(private val reportName: String,
     fun buildArtefactFileViewModel(file: File): DownloadableFileViewModel
     {
         val encodedFileName = encodeFilename(file.name)
-        //TODO: Make DownalodableFileViewModel take File as param
         return DownloadableFileViewModel(file.name,
                 "${baseUrl}artefacts/$encodedFileName?inline=$inline",
                 file.size)
     }
 
-    fun buildResourceFileViewModel(fileName: String, size: Long): DownloadableFileViewModel
+    fun buildResourceFileViewModel(file: File): DownloadableFileViewModel
     {
-        val encodedFileName = encodeFilename(fileName)
-        return DownloadableFileViewModel(fileName,
+        val encodedFileName = encodeFilename(file.name)
+        return DownloadableFileViewModel(file.name,
                 "${baseUrl}resources/$encodedFileName",
-                size)
+                file.size)
     }
 
     fun buildZipFileViewModel(): DownloadableFileViewModel
