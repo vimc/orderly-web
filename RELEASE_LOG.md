@@ -125,3 +125,9 @@
 * migrate-local-pwd
 * simplify_suggestions
 
+# v1.2.3
+
+## Tickets
+
+## Other branches merged in this release
+
