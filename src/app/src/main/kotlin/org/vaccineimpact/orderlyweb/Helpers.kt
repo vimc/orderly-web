@@ -44,7 +44,7 @@ fun encodeFilename(filename: String): String
 
 fun isImage(fileName: String): Boolean
 {
-    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf"))
+    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg"))
 }
 
 fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
