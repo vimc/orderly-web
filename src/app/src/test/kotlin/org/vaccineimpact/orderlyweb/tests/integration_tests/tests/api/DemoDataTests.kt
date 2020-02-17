@@ -54,8 +54,9 @@ class DemoDataTests : IntegrationTest()
         val artefactsArray = dataObj.get("artefacts") as ArrayNode
         val dataArtefactObj = (artefactsArray[0] as ObjectNode)
         assertThat(dataArtefactObj.get("description").asText()).isEqualTo("A summary table")
-        val fileNamesArray = dataArtefactObj.get("files") as ArrayNode
-        assertThat(fileNamesArray[0].asText()).isEqualTo("summary.csv")
+        val fileArray = dataArtefactObj.get("files") as ArrayNode
+        val fileObj = fileArray[0] as ObjectNode
+        assertThat(fileObj.get("name").asText()).isEqualTo("summary.csv")
     }
 
     @Test
