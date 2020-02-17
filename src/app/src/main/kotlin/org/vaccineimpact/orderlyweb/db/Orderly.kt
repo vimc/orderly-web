@@ -267,9 +267,9 @@ class Orderly(val isReviewer: Boolean,
     override fun togglePublishStatus(name: String, version: String)
     {
         JooqContext().use {
-            getReportVersion(name, version, it)
+            val existing = getReportVersion(name, version, it)
             it.dsl.update(REPORT_VERSION)
-                    .set(REPORT_VERSION.PUBLISHED, REPORT_VERSION.PUBLISHED.neg())
+                    .set(REPORT_VERSION.PUBLISHED, !existing.published)
                     .where(REPORT_VERSION.ID.eq(version))
                     .execute()
         }

@@ -209,4 +209,21 @@ class ReportTests : CleanDatabaseTests()
 
     }
 
+    @Test
+    fun `can toggle publish status`()
+    {
+        insertReport("test", "version1", published = true)
+
+        val sut = createSut(isReviewer = true)
+
+        sut.togglePublishStatus("test", "version1")
+
+        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isFalse()
+
+        sut.togglePublishStatus("test", "version1")
+
+        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
+
+    }
+
 }
