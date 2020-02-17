@@ -69,7 +69,7 @@ def commit_and_tag(release_message, test_run):
         return
 
     run("git add RELEASE_LOG.md")
-    run("git commit -m \"{msg}\"".format(msg=release_message.replace('"','\"').replace('','\'')))
+    run("git commit -m \"{msg}\"".format(msg=release_message.replace('"','\"').replace("'",'\'')))
     print("* Tagging")
     tag(new_tag, release_message)
 
