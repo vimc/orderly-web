@@ -4,7 +4,6 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
@@ -96,7 +95,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             }
             else
             {
-                //TODO: artefact size
                 builder
                         .inline()
                         .buildArtefactFileViewModel(focalArtefactFile)
@@ -126,7 +124,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             return ArtefactViewModel(artefact, files, inline)
         }
 
-        private fun getInlineFigureFile(files: List<File>): File?
+        private fun getInlineFigureFile(files: List<FileInfo>): FileInfo?
         {
             //reproducing existing reportle behaviour - show the first file inline if it is an image
             return if (files.count() > 0 && isImage(files[0].name))

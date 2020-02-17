@@ -36,9 +36,9 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 "dr author",
                 "ms funder",
                 "a fake report",
-                listOf(Artefact(ArtefactFormat.DATA, "a graph", listOf("graph.png"))),
+                listOf(Artefact(ArtefactFormat.DATA, "a graph", listOf(FileInfo("graph.png", 1234)))),
                 listOf(),
-                mapOf("hash" to "data.csv"))
+                listOf(DataInfo("hash", 1234, 2345)))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash

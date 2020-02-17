@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.File
+import org.vaccineimpact.orderlyweb.models.FileInfo
 import java.sql.Timestamp
 
 class Orderly(val isReviewer: Boolean,
@@ -36,7 +36,7 @@ class Orderly(val isReviewer: Boolean,
                                 .on(FILE_ARTEFACT.FILE_HASH.eq(FILE.HASH))
                                 .where(FILE_ARTEFACT.ARTEFACT.eq(id))
                                 .fetch()
-                                .map{ r -> File(r[FILE_ARTEFACT.FILENAME], r[FILE.SIZE]) }
+                                .map{ r -> FileInfo(r[FILE_ARTEFACT.FILENAME], r[FILE.SIZE]) }
 
                         Artefact(parseEnum(format), description, files)
                     }
@@ -286,7 +286,7 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    private fun getResourceFiles(name: String, version: String): List<File>
+    private fun getResourceFiles(name: String, version: String): List<FileInfo>
     {
         return JooqContext().use { ctx ->
             getReportVersion(name, version, ctx)
@@ -297,7 +297,7 @@ class Orderly(val isReviewer: Boolean,
                     .where(FILE_INPUT.REPORT_VERSION.eq(version))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetch()
-                    .map { File( it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
+                    .map { FileInfo( it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
         }
     }
 

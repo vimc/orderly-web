@@ -15,8 +15,6 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.*
@@ -44,21 +42,21 @@ class VersionPageTests : TeamcityTests()
             description = "description",
             artefacts = listOf(),
             resources = listOf(),
-            dataHashes = mapOf())
+            dataInfo = listOf())
 
     private val testArtefactViewModels = listOf(
             ArtefactViewModel(
                     Artefact(ArtefactFormat.DATA, "artefact1", listOf()),
                     listOf(
-                            DownloadableFileViewModel("a1file1.png", "http://a1file1"),
-                            DownloadableFileViewModel("a1file2.pdf", "http://a1file2")
+                            DownloadableFileViewModel("a1file1.png", "http://a1file1", 19876),
+                            DownloadableFileViewModel("a1file2.pdf", "http://a1file2", 123)
                     ),
                     "inlinesrc.png"
             ),
             ArtefactViewModel(
                     Artefact(ArtefactFormat.DATA, "artefact2", listOf()),
                     listOf(
-                            DownloadableFileViewModel("a2file1.xls", "http://a2file1")
+                            DownloadableFileViewModel("a2file1.xls", "http://a2file1", 2300000)
                     ),
                     null
             )
@@ -66,16 +64,16 @@ class VersionPageTests : TeamcityTests()
 
     private val testDataLinks = listOf(
             InputDataViewModel("key1",
-                    DownloadableFileViewModel("key1.csv", "http://key1/csv"),
-                    DownloadableFileViewModel("key1.rds", "http://key1/rds")),
+                    DownloadableFileViewModel("key1.csv", "http://key1/csv", 1720394),
+                    DownloadableFileViewModel("key1.rds", "http://key1/rds", 4123451)),
             InputDataViewModel("key2",
-                    DownloadableFileViewModel("key2.csv", "http://key2/csv"),
-                    DownloadableFileViewModel("key2.rds", "http://key2/rds"))
+                    DownloadableFileViewModel("key2.csv", "http://key2/csv", 3123),
+                    DownloadableFileViewModel("key2.rds", "http://key2/rds", 4562))
     )
 
     private val testResources = listOf(
-            DownloadableFileViewModel("resource1.csv", "http://resource1/csv"),
-            DownloadableFileViewModel("resource2.csv", "http://resource2/csv")
+            DownloadableFileViewModel("resource1.csv", "http://resource1/csv", 1234),
+            DownloadableFileViewModel("resource2.csv", "http://resource2/csv", 2345)
     )
 
     private val testDefaultModel = DefaultViewModel(true, "username",
@@ -176,23 +174,34 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(artefactEl1.select(".card-header").text()).isEqualTo("artefact1")
         Assertions.assertThat(artefactEl1.select("img").attr("src")).isEqualTo("inlinesrc.png")
         val artefact1FileLinks = artefactEl1.select(".card-body div a")
+        val artefact1FileSizeSpans = artefactEl1.select("span.file-size")
 
         Assertions.assertThat(artefact1FileLinks.count()).isEqualTo(2)
+        Assertions.assertThat(artefact1FileSizeSpans.count()).isEqualTo(2)
+
         Assertions.assertThat(artefact1FileLinks[0].attr("href")).isEqualTo("http://a1file1")
         Assertions.assertThat(artefact1FileLinks[0].text()).isEqualTo("a1file1.png")
         Assertions.assertThat(artefact1FileLinks[0].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(artefact1FileSizeSpans[0].text()).isEqualTo("19 K")
+
         Assertions.assertThat(artefact1FileLinks[1].attr("href")).isEqualTo("http://a1file2")
         Assertions.assertThat(artefact1FileLinks[1].text()).isEqualTo("a1file2.pdf")
         Assertions.assertThat(artefact1FileLinks[1].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(artefact1FileSizeSpans[0].text()).isEqualTo("123 bytes")
 
 
         val artefactEl2 = artefactCards[1]
         Assertions.assertThat(artefactEl2.select(".card-header").text()).isEqualTo("artefact2")
         Assertions.assertThat(artefactEl2.select("img").count()).isEqualTo(0)
+
         val artefact2FileLinks = artefactEl2.select(".card-body div a")
+        val artefact2FileSizeSpans = artefactEl1.select("span.file-size")
         Assertions.assertThat(artefact2FileLinks.count()).isEqualTo(1)
+        Assertions.assertThat(artefact2FileSizeSpans.count()).isEqualTo(1)
+
         Assertions.assertThat(artefact2FileLinks[0].attr("href")).isEqualTo("http://a2file1")
         Assertions.assertThat(artefact2FileLinks[0].text()).isEqualTo("a2file1.xls")
+        Assertions.assertThat(artefact2FileSizeSpans[0].text()).isEqualTo("2 MB")
     }
 
     @Test
@@ -208,21 +217,28 @@ class VersionPageTests : TeamcityTests()
 
         val linkRow1 = linkRows[0]
         Assertions.assertThat(linkRow1.select(".data-link-key").text()).isEqualTo("key1")
+
         val linkRow1Csv = linkRow1.select("ul li")[0]
         Assertions.assertThat(linkRow1Csv.select("a").attr("href")).isEqualTo("http://key1/csv")
         Assertions.assertThat(linkRow1Csv.select("a").text()).isEqualTo("key1.csv")
+        Assertions.assertThat(linkRow1Csv.select("span.file-link").text()).isEqualTo("2 MB")
+
         val linkRow1Rds = linkRow1.select("ul li")[1]
         Assertions.assertThat(linkRow1Rds.select("a").attr("href")).isEqualTo("http://key1/rds")
         Assertions.assertThat(linkRow1Rds.select("a").text()).isEqualTo("key1.rds")
+        Assertions.assertThat(linkRow1Rds.select("span.file-link").text()).isEqualTo("4 MB")
 
         val linkRow2 = linkRows[1]
         Assertions.assertThat(linkRow2.select(".data-link-key").text()).isEqualTo("key2")
         val linkRow2Csv = linkRow2.select("ul li")[0]
         Assertions.assertThat(linkRow2Csv.select("a").attr("href")).isEqualTo("http://key2/csv")
         Assertions.assertThat(linkRow2Csv.select("a").text()).isEqualTo("key2.csv")
+        Assertions.assertThat(linkRow2Csv.select("span.file-link").text()).isEqualTo("3 KB")
+
         val linkRow2Rds = linkRow2.select("ul li")[1]
         Assertions.assertThat(linkRow2Rds.select("a").attr("href")).isEqualTo("http://key2/rds")
         Assertions.assertThat(linkRow2Rds.select("a").text()).isEqualTo("key2.rds")
+        Assertions.assertThat(linkRow2Rds.select("span.file-link").text()).isEqualTo("4 KB")
     }
 
     @Test
@@ -245,13 +261,21 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(resourcesEl.select(".card-header").text()).isEqualTo("Resources")
 
         val resourceLinks = resourcesEl.select(".card-body div a")
+        val resourceFileSizeSpans = resourcesEl.select(".card-body div span.file-size")
+
         Assertions.assertThat(resourceLinks.count()).isEqualTo(2)
+        Assertions.assertThat(resourceFileSizeSpans.count()).isEqualTo(2)
+
         Assertions.assertThat(resourceLinks[0].attr("href")).isEqualTo("http://resource1/csv")
         Assertions.assertThat(resourceLinks[0].text()).isEqualTo("resource1.csv")
         Assertions.assertThat(resourceLinks[0].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(resourceFileSizeSpans[0].text()).isEqualTo("1 KB")
+
         Assertions.assertThat(resourceLinks[1].attr("href")).isEqualTo("http://resource2/csv")
         Assertions.assertThat(resourceLinks[1].text()).isEqualTo("resource2.csv")
         Assertions.assertThat(resourceLinks[1].select("span.download-icon").count()).isEqualTo(1)
+        Assertions.assertThat(resourceFileSizeSpans[1].text()).isEqualTo("2 KB")
+
     }
 
     @Test
@@ -264,6 +288,8 @@ class VersionPageTests : TeamcityTests()
         Assertions.assertThat(zipFileLink.attr("href")).isEqualTo("http://zipFileUrl")
         Assertions.assertThat(zipFileLink.text()).isEqualTo("zipFileName")
         Assertions.assertThat(zipFileLink.select("span.download-icon").count()).isEqualTo(1)
+        //should not have rendered size link, as no size info
+        Assertions.assertThat(zipFileEl.select("span.file-link").count()).isEqualTo(0)
     }
 
     @Test

@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.encodeFilename
-import org.vaccineimpact.orderlyweb.models.File
+import org.vaccineimpact.orderlyweb.models.FileInfo
 
 class ReportFileViewModelBuilder(private val reportName: String,
                                  private val reportVersion: String,
@@ -13,7 +13,7 @@ class ReportFileViewModelBuilder(private val reportName: String,
 
     val baseUrl = "${appConfig["app.url"]}/report/${reportName}/version/${reportVersion}/"
 
-    fun buildArtefactFileViewModel(file: File): DownloadableFileViewModel
+    fun buildArtefactFileViewModel(file: FileInfo): DownloadableFileViewModel
     {
         val encodedFileName = encodeFilename(file.name)
         return DownloadableFileViewModel(file.name,
@@ -21,7 +21,7 @@ class ReportFileViewModelBuilder(private val reportName: String,
                 file.size)
     }
 
-    fun buildResourceFileViewModel(file: File): DownloadableFileViewModel
+    fun buildResourceFileViewModel(file: FileInfo): DownloadableFileViewModel
     {
         val encodedFileName = encodeFilename(file.name)
         return DownloadableFileViewModel(file.name,
