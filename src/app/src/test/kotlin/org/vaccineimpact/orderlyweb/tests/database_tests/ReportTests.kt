@@ -190,7 +190,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[2].name).isEqualTo("test3")
     }
 
-
     @Test
     fun `reviewer can get all published and unpublished report versions for report`()
     {

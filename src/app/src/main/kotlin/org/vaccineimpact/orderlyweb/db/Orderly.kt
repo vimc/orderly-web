@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.jooq.impl.DSL.select
-import org.jooq.impl.DSL.trueCondition
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -262,6 +261,17 @@ class Orderly(val isReviewer: Boolean,
     {
         JooqContext().use {
             getReportVersion(name, version, it)
+        }
+    }
+
+    override fun togglePublishStatus(name: String, version: String)
+    {
+        JooqContext().use {
+            getReportVersion(name, version, it)
+            it.dsl.update(REPORT_VERSION)
+                    .set(REPORT_VERSION.PUBLISHED, REPORT_VERSION.PUBLISHED.neg())
+                    .where(REPORT_VERSION.ID.eq(version))
+                    .execute()
         }
     }
 

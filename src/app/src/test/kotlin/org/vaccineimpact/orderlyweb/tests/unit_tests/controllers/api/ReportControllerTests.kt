@@ -29,12 +29,6 @@ class ReportControllerTests : ControllerTest()
 
     private val reportName = "report1"
 
-    private val permissionSetForSingleReport = PermissionSet(
-            setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName))))
-
-    private val permissionSetGlobal = PermissionSet(
-            setOf(ReifiedPermission("reports.read", Scope.Global())))
-
     private val reports = listOf(Report(reportName, "test full name 1", "v1"),
             Report("testname2", "test full name 2", "v1"))
 
@@ -68,7 +62,7 @@ class ReportControllerTests : ControllerTest()
         }
 
         val sut = ReportController(actionContext, mock<OrderlyClient>(),
-                mock<ZipClient>(), apiClient, mockConfig)
+               apiClient, mockConfig)
 
         val result = sut.run()
 
@@ -82,7 +76,7 @@ class ReportControllerTests : ControllerTest()
             on { it.permissions } doReturn PermissionSet()
         }
 
-        val sut = ReportController(mockContext, mockOrderly, mock(),
+        val sut = ReportController(mockContext, mockOrderly,
                 mock(),
                 mockConfig)
 
@@ -99,7 +93,7 @@ class ReportControllerTests : ControllerTest()
         }
 
         val sut = ReportController(mockContext, mock(), mock(),
-                mock(), mockConfig)
+                mockConfig)
 
         assertThatThrownBy { sut.getAllVersions() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
@@ -120,7 +114,7 @@ class ReportControllerTests : ControllerTest()
             on { it.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+        val sut = ReportController(mockContext, orderly,
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
@@ -146,7 +140,7 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(mockContext, orderly, mock<ZipClient>(),
+        val sut = ReportController(mockContext, orderly,
                 mock<OrderlyServerAPI>(),
                 mockConfig)
 
