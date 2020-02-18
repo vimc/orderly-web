@@ -33,12 +33,11 @@ class ReportController(context: ActionContext,
         return passThroughResponse(response)
     }
 
-    fun publish(): String
+    fun publish(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        orderly.togglePublishStatus(name, version)
-        return okayResponse()
+        return orderly.togglePublishStatus(name, version)
     }
 
     fun status(): String

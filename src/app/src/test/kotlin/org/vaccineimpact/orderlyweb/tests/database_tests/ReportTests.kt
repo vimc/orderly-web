@@ -216,11 +216,13 @@ class ReportTests : CleanDatabaseTests()
 
         val sut = createSut(isReviewer = true)
 
-        sut.togglePublishStatus("test", "version1")
+        var result = sut.togglePublishStatus("test", "version1")
 
         assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isFalse()
+        assertThat(result).isFalse()
 
-        sut.togglePublishStatus("test", "version1")
+        result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isTrue()
 
         assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
 

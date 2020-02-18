@@ -158,7 +158,9 @@ class ReportControllerTests : ControllerTest()
     {
         val name = "reportName"
         val version = "v1"
-        val orderly = mock<OrderlyClient>()
+        val orderly = mock<OrderlyClient>() {
+            on {togglePublishStatus(name, version)} doReturn false
+        }
 
         val mockContext = mock<ActionContext> {
             on { this.params(":version") } doReturn version
@@ -171,7 +173,7 @@ class ReportControllerTests : ControllerTest()
 
         val result = sut.publish()
 
-        assertThat(result).isEqualTo("OK")
+        assertThat(result).isEqualTo(false)
 
         verify(orderly).togglePublishStatus(name, version)
     }
