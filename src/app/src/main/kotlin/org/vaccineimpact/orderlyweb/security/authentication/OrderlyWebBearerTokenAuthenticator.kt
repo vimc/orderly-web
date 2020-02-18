@@ -4,13 +4,21 @@ import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
+import java.text.ParseException
 
 open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureConfiguration, expectedIssuer: String)
     : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {
-        super.createJwtProfile(credentials, jwt)
+        try
+        {
+            super.createJwtProfile(credentials, jwt)
+        }
+        catch (e: ParseException)
+        {
+            throw CredentialsException("Token is invalid.")
+        }
         if (credentials.userProfile == null)
         {
             throw CredentialsException("Token has expired. Please request a new one.")
