@@ -18,7 +18,6 @@ class VersionTests : IntegrationTest()
     fun `only report reviewers can publish report version`()
     {
         val version = JooqContext().use {
-
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
                     .fetchAny()
@@ -29,7 +28,8 @@ class VersionTests : IntegrationTest()
 
         val url = "/report/$reportName/version/$versionId/publish/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post,
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global()),
+                ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post,
                 contentType = ContentTypes.json)
     }
 
