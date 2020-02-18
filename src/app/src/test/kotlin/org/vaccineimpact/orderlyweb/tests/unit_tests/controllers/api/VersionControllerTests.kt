@@ -35,7 +35,7 @@ class VersionControllerTests : ControllerTest()
         val report = ReportVersionDetails(author = "author", displayName = "displayName", id = "id", date = Instant.now(),
                 name = "name", published = true, requester = "requester", description = "description",
                 artefacts = listOf(),
-                resources = listOf(), dataHashes = mapOf())
+                resources = listOf(), dataInfo = listOf())
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
