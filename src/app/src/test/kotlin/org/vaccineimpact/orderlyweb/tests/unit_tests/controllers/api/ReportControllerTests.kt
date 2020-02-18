@@ -1,23 +1,24 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
-import com.nhaarman.mockito_kotlin.*
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.ZipClient
 import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import java.time.Instant
 
 class ReportControllerTests : ControllerTest()
@@ -62,7 +63,7 @@ class ReportControllerTests : ControllerTest()
         }
 
         val sut = ReportController(actionContext, mock<OrderlyClient>(),
-               apiClient, mockConfig)
+                apiClient, mockConfig)
 
         val result = sut.run()
 
@@ -150,6 +151,29 @@ class ReportControllerTests : ControllerTest()
         {
             assertThat(result[i]).isEqualTo(changelogs[i])
         }
+    }
+
+    @Test
+    fun `publishes report`()
+    {
+        val name = "reportName"
+        val version = "v1"
+        val orderly = mock<OrderlyClient>()
+
+        val mockContext = mock<ActionContext> {
+            on { this.params(":version") } doReturn version
+            on { this.params(":name") } doReturn name
+        }
+
+        val sut = ReportController(mockContext, orderly,
+                mock(),
+                mockConfig)
+
+        val result = sut.publish()
+
+        assertThat(result).isEqualTo("OK")
+
+        verify(orderly).togglePublishStatus(name, version)
     }
 
 }
