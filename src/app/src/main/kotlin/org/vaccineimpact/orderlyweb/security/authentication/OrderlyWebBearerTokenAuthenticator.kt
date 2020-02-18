@@ -4,24 +4,18 @@ import com.nimbusds.jwt.JWT
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.jwt.config.signature.SignatureConfiguration
-import java.text.ParseException
+import org.vaccineimpact.orderlyweb.errors.ExpiredToken
 
 open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureConfiguration, expectedIssuer: String)
     : OrderlyWebTokenAuthenticator(signatureConfiguration, expectedIssuer)
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {
-        try
-        {
-            super.createJwtProfile(credentials, jwt)
-        }
-        catch (e: ParseException)
-        {
-            throw CredentialsException("Token is invalid.")
-        }
+        super.createJwtProfile(credentials, jwt)
+
         if (credentials.userProfile == null)
         {
-            throw CredentialsException("Token has expired. Please request a new one.")
+            throw ExpiredToken()
         }
         val claims = jwt.jwtClaimsSet
         val issuer = claims.issuer

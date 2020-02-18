@@ -4,6 +4,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
 import org.pac4j.http.client.direct.HeaderClient
+import org.vaccineimpact.orderlyweb.errors.ExpiredToken
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.authentication.RSATokenVerifier
@@ -26,32 +27,13 @@ class JWTHeaderClient(helper: RSATokenVerifier) : OrderlyWebTokenCredentialClien
 
     override fun retrieveCredentials(context: WebContext): TokenCredentials?
     {
-        // this method is the same as the base class except that it adds the
-        // credentials exception to the session store for later retrieval and
-        // return to the client
         return try
         {
-            val credentials = credentialsExtractor.extract(context) ?: return null
-            val t0 = System.currentTimeMillis()
-            try
-            {
-                authenticator.validate(credentials, context)
-            } finally
-            {
-                val t1 = System.currentTimeMillis()
-                logger.debug("Credentials validation took: {} ms", t1 - t0)
-            }
-            credentials
+            super.retrieveCredentials(context)
         }
-        catch (e: CredentialsException)
+        catch (e: ExpiredToken)
         {
-            logger.info("Failed to retrieve or validate credentials: {}", e.message)
-            logger.debug("Failed to retrieve or validate credentials", e)
-            if (e.message != null)
-            {
-                val errorInfo = ErrorInfo("bearer-token-invalid", e.message!!)
-                context.sessionStore.set(context, "credentials_exception", errorInfo)
-            }
+            context.sessionStore.set(context, "token_exception", e)
             null
         }
     }

@@ -39,7 +39,7 @@ class SecurityTests : IntegrationTest()
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateError(response.text, "bearer-token-invalid",
-                "Token is invalid.")
+                "Bearer token not supplied in Authorization header, or bearer token was invalid")
     }
 
     @Test
