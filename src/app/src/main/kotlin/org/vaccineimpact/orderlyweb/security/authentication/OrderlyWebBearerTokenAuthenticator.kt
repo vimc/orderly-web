@@ -11,6 +11,10 @@ open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureC
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {
         super.createJwtProfile(credentials, jwt)
+        if (credentials.userProfile == null)
+        {
+            throw CredentialsException("Token has expired. Please request a new one.")
+        }
         val claims = jwt.jwtClaimsSet
         val issuer = claims.issuer
         if (issuer != expectedIssuer)
