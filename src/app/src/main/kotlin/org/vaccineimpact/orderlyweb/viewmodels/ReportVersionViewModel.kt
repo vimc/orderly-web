@@ -170,7 +170,7 @@ data class InputDataViewModel(val key: String,
 
 data class DownloadableFileViewModel(val name: String, val url: String, val size: Long?)
 {
-    val formattedSize get() =
+    val formattedSize =
         if (size != null)
         {
             byteCountToDisplaySize(size)
