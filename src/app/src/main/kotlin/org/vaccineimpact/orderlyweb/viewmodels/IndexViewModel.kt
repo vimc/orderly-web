@@ -14,13 +14,15 @@ import java.time.format.DateTimeFormatter
 
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
                           val pinnedReports: List<PinnedReportViewModel>,
+                          val customFieldKeys: List<String>,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
-                pinnedReports: List<PinnedReportViewModel>)
-            : this(reports, pinnedReports, DefaultViewModel(context, breadcrumb))
+                pinnedReports: List<PinnedReportViewModel>,
+                customFieldKeys: List<String>)
+            : this(reports, pinnedReports, customFieldKeys, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -45,7 +47,15 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
 
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels)
+            val customFieldsKeys = if (reports.count() > 0)
+            {
+                reports[0].customFields.keys
+            }
+            else {
+                setOf()
+            }
+
+            return IndexViewModel(context, reportRows, pinnedReportsViewModels, customFieldsKeys.sorted())
         }
     }
 }
@@ -69,8 +79,7 @@ data class ReportRowViewModel(val ttKey: Int,
                               val date: String?,
                               val numVersions: Int,
                               val published: Boolean?,
-                              val author: String?,
-                              val requester: String?)
+                              val customFields: Map<String, String>)
 {
     companion object
     {
@@ -80,7 +89,7 @@ data class ReportRowViewModel(val ttKey: Int,
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, null, null)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, mapOf())
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
@@ -96,8 +105,7 @@ data class ReportRowViewModel(val ttKey: Int,
                     dateString,
                     parent.numVersions,
                     version.published,
-                    version.author,
-                    version.requester)
+                    version.customFields)
 
         }
     }

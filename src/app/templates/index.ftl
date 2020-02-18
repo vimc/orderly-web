@@ -28,14 +28,13 @@
                 <th style="width:100px"><label for="status-filter">Status</label>
                 </th>
             </#if>
-            <th>
-                <label for="author-filter">Author</label>
 
-            </th>
-            <th>
-                <label for="requester-filter">Requester</label>
+            <#list customFieldKeys as customField>
+                <th>
+                    <label for="${customField}-filter">${customField?cap_first}</label>
 
-            </th>
+                </th>
+            </#list>
         </tr>
         <tr>
             <th>
@@ -62,23 +61,25 @@
                     </select>
                 </th>
             </#if>
-            <th>
-                <input class="form-control" type="text" id="author-filter"
-                       placeholder="Type to filter..."
-                       data-role="standard-filter"
-                       data-col="<@if isReviewer "4" "3"/>"/>
-            </th>
-            <th>
-                <input class="form-control" type="text" id="requester-filter"
-                       placeholder="Type to filter..."
-                       data-role="standard-filter"
-                       data-col="<@if isReviewer "5" "4"/>"/>
-            </th>
+            <#list customFieldKeys as customField>
+                <th>
+                    <input class="form-control" type="text" id="${customField}-filter"
+                           placeholder="Type to filter..."
+                           data-role="standard-filter"
+                           <#if isReviewer>
+                               data-col="${customField?index + 4}"
+                           <#else>
+                               data-col="${customField?index + 3}"
+                           </#if>
+                    />
+                </th>
+            </#list>
         </tr>
         </thead>
     </table>
     <#macro scripts>
         <script type="text/javascript">
+            var customFields = [<#list customFieldKeys as customField>"${customField}",</#list>];
             var reports = ${reportsJson}
             <#if isReviewer>
             var canReview = true;

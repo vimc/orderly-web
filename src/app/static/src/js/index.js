@@ -6,11 +6,11 @@ require("datatables.net-dt")(window, $);
 require('datatables.net-bs4')(window, $);
 require("treetables")(window, $);
 
-export const initReportTable = (isReviewer, reports) => {
+export const initReportTable = (isReviewer, reports, customFields) => {
 
     const $table = $('#reports-table');
 
-    $table.treeTable(options(isReviewer, reports));
+    $table.treeTable(options(isReviewer, reports, customFields));
     const dt = $table.DataTable();
 
     if (isReviewer) {
@@ -57,5 +57,5 @@ export const initReportTable = (isReviewer, reports) => {
 
 $(document).ready(() => {
     const isReviewer = typeof canReview !== "undefined";
-    initReportTable(isReviewer, reports)
+    initReportTable(isReviewer, reports, customFields)
 });

@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.jooq.Record
 import org.jooq.Record6
 import org.jooq.Result
 import org.jooq.impl.DSL.select
@@ -11,6 +10,8 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import java.sql.Timestamp
+
+typealias GenericReportVersionRecord = Record6<String, String, String, Boolean, Timestamp, String>
 
 class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
@@ -102,34 +103,6 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    private fun mapToReportVersionsWithCustomFields(ctx: JooqContext, versions: Result<Record>): List<ReportVersion>
-    {
-        val versionIds = versions.map{ v -> v[REPORT_VERSION.ID] }
-        val customFields = ctx.dsl.select(
-                REPORT_VERSION_CUSTOM_FIELDS.KEY,
-                REPORT_VERSION_CUSTOM_FIELDS.VALUE,
-                REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION
-        )
-                .from(REPORT_VERSION_CUSTOM_FIELDS)
-                .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
-                .fetch()
-                .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
-
-        return versions.map{
-            val id = it[REPORT_VERSION.ID]
-            val versionCustomFields = customFields[id]!!
-                    .associate {f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE]}
-
-            ReportVersion(it[REPORT_VERSION.REPORT],
-                    it[REPORT_VERSION.DISPLAYNAME],
-                    it[REPORT_VERSION.ID],
-                    it["latestVersion"] as String,
-                    it[REPORT_VERSION.PUBLISHED],
-                    it[REPORT_VERSION.DATE].toInstant(),
-                    versionCustomFields)
-        }
-    }
-
     override fun getAllReports(): List<Report>
     {
         JooqContext().use {
@@ -180,11 +153,11 @@ class Orderly(val isReviewer: Boolean,
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
-                    author = reportVersionResult.author,
+                    //author = reportVersionResult.author,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
-                    requester = reportVersionResult.requester,
+                    //requester = reportVersionResult.requester,
                     artefacts = aretefacts,
                     resources = getResourceHashes(name, version).keys.toList(),
                     dataHashes = getData(name, version))
@@ -299,6 +272,46 @@ class Orderly(val isReviewer: Boolean,
     {
         JooqContext().use {
             getReportVersion(name, version, it)
+        }
+    }
+
+    private fun mapToReportVersionsWithCustomFields(ctx: JooqContext,
+                                                    versions: Result<GenericReportVersionRecord>): List<ReportVersion>
+    {
+        val allCustomFieldKeys = ctx.dsl.select(
+                CUSTOM_FIELDS.ID)
+                .from(CUSTOM_FIELDS)
+                .fetch()
+                .getValues(CUSTOM_FIELDS.ID)
+
+        val versionIds = versions.map{ v -> v[REPORT_VERSION.ID] }
+        val customFields = ctx.dsl.select(
+                REPORT_VERSION_CUSTOM_FIELDS.KEY,
+                REPORT_VERSION_CUSTOM_FIELDS.VALUE,
+                REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
+                .from(REPORT_VERSION_CUSTOM_FIELDS)
+                .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
+                .fetch()
+                .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
+
+        return versions.map{
+            val id = it[REPORT_VERSION.ID]
+
+            val pairs = allCustomFieldKeys.map{ k -> k to ""}.toTypedArray()
+            val allCustomFields = mutableMapOf(*pairs)
+
+            val versionCustomFields = customFields[id]!!
+                    .associate {f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE]}
+
+            allCustomFields.putAll(versionCustomFields)
+
+            ReportVersion(it[REPORT_VERSION.REPORT],
+                    it[REPORT_VERSION.DISPLAYNAME],
+                    it[REPORT_VERSION.ID],
+                    it["latestVersion"] as String,
+                    it[REPORT_VERSION.PUBLISHED],
+                    it[REPORT_VERSION.DATE].toInstant(),
+                    allCustomFields)
         }
     }
 

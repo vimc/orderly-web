@@ -55,7 +55,7 @@ function buildStatusCell(data, type, full) {
     }
 }
 
-export const options = (isReviewer, reports) => {
+export const options = (isReviewer, reports, customFields) => {
 
     let cols = [
         {
@@ -72,22 +72,23 @@ export const options = (isReviewer, reports) => {
             "render": buildStatusCell
         })
     }
+
+    for (const customField of customFields) {
+        cols.push({
+            "data": `custom_fields.${customField}`,
+            "render": buildBasicCell,
+            "orderable": false
+        })
+    }
+
     cols = cols.concat([
-        {
-            "data": "author",
-            "render": buildBasicCell,
-            "orderable": false
-        },
-        {
-            "data": "requester",
-            "render": buildBasicCell,
-            "orderable": false
-        },
         {
             "data": "display_name",
             "visible": false,
             "searchable": true
         }]);
+
+
 
     return {
         "dom": '<"top">rt<"bottom"lp><"clear">',
