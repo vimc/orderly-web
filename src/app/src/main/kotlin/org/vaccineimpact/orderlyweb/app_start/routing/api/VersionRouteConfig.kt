@@ -39,6 +39,7 @@ object VersionRouteConfig : RouteConfig
             APIEndpoint("/reports/:name/versions/:version/publish/", reportController, "publish",
                     method = HttpMethod.post)
                     .json()
+                    .transform()
                     .secure(reviewReports),
             APIEndpoint("/reports/:name/versions/:version/changelog/", versionController, "getChangelogByNameAndVersion")
                     .json()
