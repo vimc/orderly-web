@@ -17,7 +17,7 @@ class VersionTests : IntegrationTest()
     @Test
     fun `only report reviewers can publish report version`()
     {
-        val version = JooqContext("git/orderly.sqlite").use {
+        val version = JooqContext().use {
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
