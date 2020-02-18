@@ -4,15 +4,12 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.isImage
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
@@ -42,11 +39,11 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
             val focalArtefactUrl = getFocalArtefactUrl(fileViewModelBuilder, report.artefacts)
 
-            val dataViewModels = report.dataHashes.map {
+            val dataViewModels = report.dataInfo.map {
                 InputDataViewModel(
-                        it.key,
-                        fileViewModelBuilder.buildDataFileViewModel(it.key, "csv"),
-                        fileViewModelBuilder.buildDataFileViewModel(it.key, "rds"))
+                        it.name,
+                        fileViewModelBuilder.buildDataFileViewModel(it.name, "csv", it.csvSize),
+                        fileViewModelBuilder.buildDataFileViewModel(it.name, "rds", it.rdsSize))
             }
 
             val resourceViewModels = report.resources.map {
@@ -83,7 +80,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         private fun getFocalArtefactUrl(builder: ReportFileViewModelBuilder, artefacts: List<Artefact>): String?
         {
             //reproducing existing reportle behaviour - show the first artefact inline if it is possible
-            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0]))
+            val focalArtefactFile = if (artefacts.any() && artefacts[0].files.any() && canRenderInBrowser(artefacts[0].files[0].name))
             {
                 artefacts[0].files[0]
             }
@@ -107,8 +104,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
         private fun buildArtefact(fileBuilder: ReportFileViewModelBuilder, artefact: Artefact): ArtefactViewModel
         {
-            val inlineFileName = getInlineFigureFile(artefact.files)
-            val inline = if (inlineFileName == null)
+            val inlineFile = getInlineFigureFile(artefact.files)
+            val inline = if (inlineFile == null)
             {
                 null
             }
@@ -116,7 +113,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             {
                 fileBuilder
                         .inline()
-                        .buildArtefactFileViewModel(inlineFileName)
+                        .buildArtefactFileViewModel(inlineFile)
                         .url
             }
 
@@ -127,10 +124,10 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             return ArtefactViewModel(artefact, files, inline)
         }
 
-        private fun getInlineFigureFile(files: List<String>): String?
+        private fun getInlineFigureFile(files: List<FileInfo>): FileInfo?
         {
             //reproducing existing reportle behaviour - show the first file inline if it is an image
-            return if (files.count() > 0 && isImage(files[0]))
+            return if (files.count() > 0 && isImage(files[0].name))
             {
                 files[0]
             }
@@ -171,7 +168,18 @@ data class InputDataViewModel(val key: String,
                               val csv: DownloadableFileViewModel,
                               val rds: DownloadableFileViewModel)
 
-data class DownloadableFileViewModel(val name: String, val url: String)
+data class DownloadableFileViewModel(val name: String, val url: String, val size: Long?)
+{
+    val formattedSize =
+        if (size != null)
+        {
+            byteCountToDisplaySize(size)
+        }
+        else
+        {
+            null
+        }
+}
 
 data class ChangelogViewModel(val date: String, val version: String, val entries: List<ChangelogItemViewModel>)
 {

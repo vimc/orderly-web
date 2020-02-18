@@ -7,6 +7,7 @@ import freemarker.ext.beans.StringModel
 import freemarker.template.SimpleHash
 import freemarker.template.SimpleSequence
 import freemarker.template.TemplateBooleanModel
+import freemarker.template.TemplateModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
@@ -28,6 +29,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
     fun `can wrap complex properties`()
     {
         val now = Instant.now()
+        val artFiles = listOf(FileInfo("graph.png", 1234))
         val report = ReportVersionDetails("r1",
                 "first report",
                 "v1",
@@ -36,9 +38,9 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 "dr author",
                 "ms funder",
                 "a fake report",
-                listOf(Artefact(ArtefactFormat.DATA, "a graph", listOf("graph.png"))),
+                listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
-                mapOf("hash" to "data.csv"))
+                listOf(DataInfo("hash", 1234, 2345)))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash
@@ -55,10 +57,14 @@ class TemplateObjectWrapperTests : TeamcityTests()
         assertThat(wrappedArtefact["description"].toString()).isEqualTo("a graph")
 
         val files = wrappedArtefact["files"] as SimpleSequence
-        assertThat(files[0].toString()).isEqualTo("graph.png")
+        val fileModel = files[0] as StringModel
+        assertThat(fileModel["name"].toString()).isEqualTo("graph.png")
+        assertThat(fileModel["size"].toString()).isEqualTo("1234")
 
-        val data = result["dataHashes"] as SimpleHash
-        assertThat(data["hash"].toString()).isEqualTo("data.csv")
+        val data = result["dataInfo"] as SimpleSequence
+        val dataModel = data[0] as StringModel
+        assertThat(dataModel["name"].toString()).isEqualTo("hash")
+        assertThat(dataModel["csvSize"].toString()).isEqualTo("1234")
     }
 
     @Test

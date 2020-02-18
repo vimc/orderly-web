@@ -131,3 +131,9 @@
 
 ## Other branches merged in this release
 
+# v1.2.4
+
+## Tickets
+
+## Other branches merged in this release
+

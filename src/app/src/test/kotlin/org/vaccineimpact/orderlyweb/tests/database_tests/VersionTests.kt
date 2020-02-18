@@ -3,12 +3,10 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
@@ -31,13 +29,13 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test", "version1", date = now,
                 author = "dr author", requester = "ms requester")
 
-        insertFileInput("version1", "file.csv", FilePurpose.RESOURCE)
-        insertFileInput("version1", "graph.png", FilePurpose.RESOURCE)
+        insertFileInput("version1", "file.csv", FilePurpose.RESOURCE, 2345)
+        insertFileInput("version1", "graph.png", FilePurpose.RESOURCE, 3456)
 
-        insertData("version1", "dat", "some sql", "testdb",  "somehash")
+        insertData("version1", "dat", "some sql", "testdb",  "somehash", 9876, 7654)
 
         insertArtefact("version1", "some artefact",
-                ArtefactFormat.DATA, fileNames = listOf("artefactfile.csv"))
+                ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
@@ -49,12 +47,10 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.requester).isEqualTo("ms requester")
         assertThat(result.date).isEqualTo(now.toInstant())
         assertThat(result.published).isTrue()
-        assertThat(result.resources).hasSameElementsAs(listOf("file.csv", "graph.png"))
+        assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
-                "some artefact", listOf("artefactfile.csv")))
-        assertThat(result.dataHashes.keys).containsExactly("dat")
-        assertThat(result.dataHashes["dat"]).isEqualTo("somehash")
-
+                "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
+        assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
     }
 
     @Test
