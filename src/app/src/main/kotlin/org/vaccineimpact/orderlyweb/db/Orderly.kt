@@ -247,7 +247,6 @@ class Orderly(val isReviewer: Boolean,
             return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
 
         }
-
     }
 
     override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
@@ -279,6 +278,7 @@ class Orderly(val isReviewer: Boolean,
                     .execute()
 
             return newStatus
+        }
     }
       
     private fun getDataInfo(name: String, version: String): List<DataInfo>
