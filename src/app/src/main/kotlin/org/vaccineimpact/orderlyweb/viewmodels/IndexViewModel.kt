@@ -32,10 +32,18 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                   pinnedReports: List<ReportVersion>,
                   context: ActionContext): IndexViewModel
         {
+            val customFieldKeys = if (reports.count() > 0)
+            {
+                reports[0].customFields.keys
+            }
+            else {
+                setOf()
+            }
+
             var currentKey = 0
             val reportRows = reports.groupBy { it.name }.flatMap {
                 currentKey += 1
-                val parent = ReportRowViewModel.buildParent(currentKey, it.value)
+                val parent = ReportRowViewModel.buildParent(currentKey, it.value, customFieldKeys)
 
                 val children = it.value.sortedByDescending { v -> v.date }.map { version ->
                     currentKey += 1
@@ -47,15 +55,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
 
-            val customFieldsKeys = if (reports.count() > 0)
-            {
-                reports[0].customFields.keys
-            }
-            else {
-                setOf()
-            }
-
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels, customFieldsKeys.sorted())
+            return IndexViewModel(context, reportRows, pinnedReportsViewModels, customFieldKeys.sorted())
         }
     }
 }
@@ -79,17 +79,22 @@ data class ReportRowViewModel(val ttKey: Int,
                               val date: String?,
                               val numVersions: Int,
                               val published: Boolean?,
-                              val customFields: Map<String, String>)
+                              val customFields: Map<String, String?>)
 {
     companion object
     {
-        fun buildParent(key: Int, versions: List<ReportVersion>): ReportRowViewModel
+        fun buildParent(key: Int, versions: List<ReportVersion>, customFieldKeys: Set<String>): ReportRowViewModel
         {
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
+
+
+            val pairs = customFieldKeys.map{ k -> k to null as String?}.toTypedArray()
+            val emptyCustomFields = mutableMapOf(*pairs)
+
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, mapOf())
+                    latestVersion.id, latestVersion.id, null, numVersions, null, emptyCustomFields)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
