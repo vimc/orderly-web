@@ -26,6 +26,9 @@ class JWTHeaderClient(helper: RSATokenVerifier) : OrderlyWebTokenCredentialClien
 
     override fun retrieveCredentials(context: WebContext): TokenCredentials?
     {
+        // this method is the same as the base class except that it adds the
+        // credentials exception to the session store for later retrieval and
+        // return to the client
         return try
         {
             val credentials = credentialsExtractor.extract(context) ?: return null
