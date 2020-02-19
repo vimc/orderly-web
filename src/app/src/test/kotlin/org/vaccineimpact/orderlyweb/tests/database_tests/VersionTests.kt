@@ -8,7 +8,6 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertCustomFields
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
@@ -27,7 +26,6 @@ class VersionTests : CleanDatabaseTests()
     fun `reader can get published report version details`()
     {
         val now = Timestamp(System.currentTimeMillis())
-        insertCustomFields()
         insertReport("test", "version1", date = now,
                 author = "dr author", requester = "ms requester")
 
@@ -56,7 +54,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `getDetailsByNameAndVersion throws unknown object error if report version not published`()
     {
-        insertCustomFields()
         insertReport("test", "version1", published = false)
 
         val sut = createSut()
@@ -67,7 +64,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `getDetailsByNameAndVersion throws unknown object error if report version doesnt exist`()
     {
-        insertCustomFields()
         insertReport("test", "version1")
 
         val sut = createSut()
@@ -80,7 +76,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `getDetailsByNameAndVersion throws unknown object error if report name not found`()
     {
-        insertCustomFields()
         insertReport("test", "version1")
 
         val sut = createSut()
@@ -92,7 +87,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get unpublished version details`()
     {
-        insertCustomFields()
         insertReport("test", "version1", published = false)
 
         val sut = createSut(isReviewer = true)
@@ -107,7 +101,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reader can get all published report versions`()
     {
-        insertCustomFields()
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -155,7 +148,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get all published and unpublished report versions`()
     {
-        insertCustomFields()
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -206,7 +198,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reader can get latest published versions of pinned reports`()
     {
-        insertCustomFields()
         insertReport("test1", "test1_1_pub")
         insertReport("test1", "test1_2_pub")
         insertReport("test1", "test1_3_unpub", published = false)
@@ -235,7 +226,6 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get latest published and unpublished versions of pinned reports`()
     {
-        insertCustomFields()
         insertReport("test1", "test1_1_pub")
         insertReport("test1", "test1_2_pub")
         insertReport("test1", "test1_3_unpub", published = false)
