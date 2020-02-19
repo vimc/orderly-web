@@ -44,6 +44,28 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
     }
 }
 
+fun insertCustomFields(customFields: Array<String> = arrayOf("author", "requester"))
+{
+    JooqContext().use {
+        for (customField in customFields)
+        {
+            val customFieldRecord = it.dsl.newRecord(Tables.CUSTOM_FIELDS)
+                    .apply {
+                        this.id = customField
+                    }
+            customFieldRecord.store()
+        }
+    }
+}
+
+
+private var fieldId = 0
+private fun getFieldId(): Int
+{
+    fieldId++
+    return fieldId
+}
+
 fun insertReport(name: String,
                  version: String,
                  published: Boolean = true,
@@ -88,6 +110,7 @@ fun insertReport(name: String,
 
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
                 .apply{
+                    this.id = getFieldId()
                     this.reportVersion = version
                     this.key = "author"
                     this.value = author
@@ -96,6 +119,7 @@ fun insertReport(name: String,
 
         val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
                 .apply{
+                    this.id = getFieldId()
                     this.reportVersion = version
                     this.key = "requester"
                     this.value = requester

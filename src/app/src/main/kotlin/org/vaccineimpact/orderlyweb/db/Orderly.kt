@@ -295,10 +295,12 @@ class Orderly(val isReviewer: Boolean,
             val pairs = allCustomFieldKeys.map{ k -> k to null as String?}.toTypedArray()
             val allCustomFields = mutableMapOf(*pairs)
 
-            val versionCustomFields = customFields[id]!!
-                    .associate {f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE]}
-
-            allCustomFields.putAll(versionCustomFields)
+            if (customFields.containsKey(id))
+            {
+                val versionCustomFields = customFields[id]!!
+                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] }
+                allCustomFields.putAll(versionCustomFields)
+            }
 
             ReportVersion(it[REPORT_VERSION.REPORT],
                     it[REPORT_VERSION.DISPLAYNAME],

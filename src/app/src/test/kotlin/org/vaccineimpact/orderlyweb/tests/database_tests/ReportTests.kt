@@ -14,6 +14,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertCustomFields
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
@@ -27,6 +28,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `reader can get all published reports`()
     {
+        insertCustomFields()
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -52,6 +54,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getAllReports returns report names user is authorized to see`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("badname", "vb")
 
@@ -69,6 +72,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getAllReports returns all report names if user has global read permissions`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("badname", "vb")
 
@@ -85,6 +89,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getGlobalPinnedReports returns report names user is authorized to see`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("badname", "vb")
         insertGlobalPinnedReport("goodname", 0)
@@ -104,6 +109,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getGlobalPinnedReports returns all report names if user has global read permissions`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("anothername", "vb")
         insertGlobalPinnedReport("goodname", 0)
@@ -122,6 +128,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getAllReportVersions returns report names user is authorized to see`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("badname", "vb")
 
@@ -139,6 +146,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `getAllReportVersions returns all report names if user has global read permissions`()
     {
+        insertCustomFields()
         insertReport("goodname", "va")
         insertReport("anothername", "vb")
 
@@ -155,6 +163,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `reader can get all published report versions for report`()
     {
+        insertCustomFields()
         insertReport("test", "version1")
         insertReport("test", "version2")
         insertReport("test", "version3", published = false)
@@ -172,6 +181,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get all published and unpublished reports`()
     {
+        insertCustomFields()
         insertReport("test", "va")
         insertReport("test", "vz")
         insertReport("test2", "vc")
@@ -194,7 +204,7 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get all published and unpublished report versions for report`()
     {
-
+        insertCustomFields()
         insertReport("test", "version1")
         insertReport("test", "version2")
         insertReport("test", "version3", published = false)
