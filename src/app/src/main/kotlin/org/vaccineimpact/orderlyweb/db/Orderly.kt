@@ -49,7 +49,6 @@ class Orderly(val isReviewer: Boolean,
             // create a temp table containing the latest version ID for each report name
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
-            //Use relational schema
             val versions =
                     it.dsl.withTemporaryTable(latestVersionForEachReport)
                             .select(REPORT_VERSION.REPORT,
@@ -57,8 +56,6 @@ class Orderly(val isReviewer: Boolean,
                                     REPORT_VERSION.ID,
                                     REPORT_VERSION.PUBLISHED,
                                     REPORT_VERSION.DATE,
-                                    //REPORT_VERSION.AUTHOR,
-                                    //REPORT_VERSION.REQUESTER,
                                     latestVersionForEachReport.field<String>("latestVersion")
                             )
                             .from(REPORT_VERSION)
@@ -67,7 +64,6 @@ class Orderly(val isReviewer: Boolean,
                             .where(shouldIncludeReportVersion)
                             .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                             .fetch()
-            //.fetchInto(ReportVersion::class.java)
 
             return mapToReportVersionsWithCustomFields(it, versions)
         }
@@ -81,13 +77,11 @@ class Orderly(val isReviewer: Boolean,
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             val versions =  it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
+                    .select(REPORT_VERSION.REPORT,
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID,
                             REPORT_VERSION.PUBLISHED,
                             REPORT_VERSION.DATE,
-                            //REPORT_VERSION.AUTHOR,
-                            //REPORT_VERSION.REQUESTER,
                             latestVersionForEachReport.field<String>("latestVersion")
                     )
                     .from(REPORT_VERSION)
@@ -96,7 +90,6 @@ class Orderly(val isReviewer: Boolean,
                     .join(ORDERLYWEB_PINNED_REPORT_GLOBAL)
                     .on(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.eq(REPORT_VERSION.REPORT))
                     .orderBy(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING)
-                    //.fetchInto(ReportVersion::class.java)
                     .fetch()
 
             return mapToReportVersionsWithCustomFields(it, versions)
@@ -153,11 +146,9 @@ class Orderly(val isReviewer: Boolean,
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
-                    //author = reportVersionResult.author,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
-                    //requester = reportVersionResult.requester,
                     artefacts = aretefacts,
                     resources = getResourceHashes(name, version).keys.toList(),
                     dataHashes = getData(name, version))
@@ -297,7 +288,7 @@ class Orderly(val isReviewer: Boolean,
         return versions.map{
             val id = it[REPORT_VERSION.ID]
 
-            val pairs = allCustomFieldKeys.map{ k -> k to ""}.toTypedArray()
+            val pairs = allCustomFieldKeys.map{ k -> k to null as String?}.toTypedArray()
             val allCustomFields = mutableMapOf(*pairs)
 
             val versionCustomFields = customFields[id]!!

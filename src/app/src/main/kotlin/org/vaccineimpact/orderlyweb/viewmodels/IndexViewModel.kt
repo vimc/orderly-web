@@ -86,7 +86,6 @@ data class ReportRowViewModel(val ttKey: Int,
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
 
-
             val pairs = customFieldKeys.map{ k -> k to null as String?}.toTypedArray()
             val emptyCustomFields = mutableMapOf(*pairs)
 
