@@ -25,7 +25,7 @@ export const initReportTable = (isReviewer, reports, customFields) => {
     }
 
     $.fn.dataTable.ext.search.push((settings, data) => {
-        const displayNameReviewerIdx = customFields.length + 3;
+        const displayNameReviewerIdx = customFields.length + 4;
         const displayName = isReviewer ? displayNameReviewerIdx : displayNameReviewerIdx-1;
         const value = $('#name-filter').val();
         return nameFilter(displayName, value, data);

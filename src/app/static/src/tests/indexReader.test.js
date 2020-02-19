@@ -58,7 +58,7 @@ describe("index page as report reader", () => {
         published: true
     }];
 
-    initReportTable(false, reports);
+    initReportTable(false, reports, ["author", "requester"]);
 
     it("wires up name filter", () => {
 
@@ -80,6 +80,7 @@ describe("index page as report reader", () => {
         $filter.keyup();
 
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
+
     });
 
     it("wires up version filter", () => {
