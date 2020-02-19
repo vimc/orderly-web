@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.jooq.impl.DSL.select
-import org.jooq.impl.DSL.trueCondition
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -248,7 +247,6 @@ class Orderly(val isReviewer: Boolean,
             return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
 
         }
-
     }
 
     override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
@@ -269,6 +267,20 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
+    override fun togglePublishStatus(name: String, version: String): Boolean
+    {
+        JooqContext().use {
+            val existing = getReportVersion(name, version, it)
+            val newStatus = !existing.published
+            it.dsl.update(REPORT_VERSION)
+                    .set(REPORT_VERSION.PUBLISHED, newStatus)
+                    .where(REPORT_VERSION.ID.eq(version))
+                    .execute()
+
+            return newStatus
+        }
+    }
+      
     private fun getDataInfo(name: String, version: String): List<DataInfo>
     {
         JooqContext().use {
@@ -298,6 +310,7 @@ class Orderly(val isReviewer: Boolean,
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetch()
                     .map { FileInfo( it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
+
         }
     }
 

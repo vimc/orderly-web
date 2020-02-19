@@ -190,7 +190,6 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[2].name).isEqualTo("test3")
     }
 
-
     @Test
     fun `reviewer can get all published and unpublished report versions for report`()
     {
@@ -207,6 +206,25 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[0]).isEqualTo("version1")
         assertThat(results[1]).isEqualTo("version2")
         assertThat(results[2]).isEqualTo("version3")
+
+    }
+
+    @Test
+    fun `can toggle publish status`()
+    {
+        insertReport("test", "version1", published = true)
+
+        val sut = createSut(isReviewer = true)
+
+        var result = sut.togglePublishStatus("test", "version1")
+
+        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isFalse()
+        assertThat(result).isFalse()
+
+        result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isTrue()
+
+        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
 
     }
 

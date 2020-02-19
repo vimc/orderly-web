@@ -17,14 +17,12 @@ import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 
 class ReportController(context: ActionContext,
                        private val orderly: OrderlyClient,
-                       private val zip: ZipClient,
                        private val orderlyServerAPI: OrderlyServerAPI,
-                       private val config: Config) : Controller(context, config)
+                       config: Config) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(context,
                     Orderly(context),
-                    Zip(),
                     OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
 
@@ -35,14 +33,12 @@ class ReportController(context: ActionContext,
         return passThroughResponse(response)
     }
 
-    fun publish(): String
+    fun publish(): Boolean
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        val response = orderlyServerAPI.post("/reports/$name/$version/publish/", context)
-        return passThroughResponse(response)
+        return orderly.togglePublishStatus(name, version)
     }
-
 
     fun status(): String
     {

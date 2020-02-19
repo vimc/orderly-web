@@ -49,4 +49,6 @@ interface OrderlyClient
     fun getLatestChangelogByName(name: String): List<Changelog>
 
     fun getReadme(name: String, version: String): Map<String, String>
+
+    fun togglePublishStatus(name: String, version: String): Boolean
 }
