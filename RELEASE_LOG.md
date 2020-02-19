@@ -99,3 +99,41 @@
 
 ## Other branches merged in this release
 
+# v1.2.2
+
+## Tickets
+* mrc-1332: Show role permissions as well as direct permissions
+* mrc-1333: Front-end integration tests for admin page components
+* mrc-1337: Add admin role to migrations
+* mrc-1338: Show expander icons for empty list controls which contain an 'Add..' component
+* mrc-1339: Bug: Manage role perms: cannot expand role if it has no permissions
+* mrc-1342: Create database schema
+* mrc-1343: Endpoint to update database tables
+* mrc-1344: Documentation index page
+* mrc-1344_altschema: Documentation index page
+* mrc-1345: Endpoint to serve a static documentation file
+* mrc-1345_altschema: Endpoint to serve a static documentation file
+* mrc-1346: Add new permission documents.read
+* mrc-1349: Endpoint to remove a role
+* mrc-1350: Make roles removable in UI
+* mrc-1351: Change "Admin" to "Manage access"
+* mrc-1352: Refresh roles/users when permissions change
+* mrc-1353: Regenerate db interface with new schema
+* mrc-1356: Bug: PDF artefact not rendered for DALYs Guidance report in Downloads tab
+
+## Other branches merged in this release
+* migrate-local-pwd
+* simplify_suggestions
+
+# v1.2.3
+
+## Tickets
+
+## Other branches merged in this release
+
+# v1.2.4
+
+## Tickets
+
+## Other branches merged in this release
+

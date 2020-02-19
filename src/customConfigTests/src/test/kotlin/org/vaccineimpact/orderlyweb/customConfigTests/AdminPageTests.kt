@@ -161,7 +161,7 @@ class AdminPageTests : SeleniumTest()
         val permissionsListItems = userListItem.findElements(By.tagName("li"))
         assertThat(permissionsListItems.size).isEqualTo(3)
         assertThat(permissionsListItems[0].findElement(By.className("name")).text).isEqualTo("reports.read")
-        assertThat(permissionsListItems[0].findElement(By.className("source")).text).isEqualTo("(Funders)")
+        assertThat(permissionsListItems[0].findElement(By.className("source")).text).isEqualTo("(via Funders)")
         assertThat(permissionsListItems[1].findElement(By.className("name")).text).isEqualTo("reports.review")
         assertThat(permissionsListItems[2].findElement(By.className("name")).text).isEqualTo("users.manage")
 

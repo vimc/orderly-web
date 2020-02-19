@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.models.FileInfo
 import java.sql.Timestamp
 
 typealias GenericReportVersionRecord = Record6<String, String, String, Boolean, Timestamp, String>
@@ -33,12 +34,15 @@ class Orderly(val isReviewer: Boolean,
                         val id = a[REPORT_VERSION_ARTEFACT.ID]
                         val format = a[REPORT_VERSION_ARTEFACT.FORMAT]
                         val description = a[REPORT_VERSION_ARTEFACT.DESCRIPTION]
-                        val fileNames = it.dsl.select(FILE_ARTEFACT.FILENAME)
+                        val files = it.dsl.select(FILE_ARTEFACT.FILENAME, FILE.SIZE)
                                 .from(FILE_ARTEFACT)
+                                .innerJoin(FILE)
+                                .on(FILE_ARTEFACT.FILE_HASH.eq(FILE.HASH))
                                 .where(FILE_ARTEFACT.ARTEFACT.eq(id))
-                                .fetchInto(String::class.java)
+                                .fetch()
+                                .map{ r -> FileInfo(r[FILE_ARTEFACT.FILENAME], r[FILE.SIZE]) }
 
-                        Artefact(parseEnum(format), description, fileNames)
+                        Artefact(parseEnum(format), description, files)
                     }
         }
     }
@@ -150,8 +154,8 @@ class Orderly(val isReviewer: Boolean,
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
                     artefacts = aretefacts,
-                    resources = getResourceHashes(name, version).keys.toList(),
-                    dataHashes = getData(name, version))
+                    resources = getResourceFiles(name, version),
+                    dataInfo = getDataInfo(name, version))
         }
     }
 
@@ -303,6 +307,38 @@ class Orderly(val isReviewer: Boolean,
                     it[REPORT_VERSION.PUBLISHED],
                     it[REPORT_VERSION.DATE].toInstant(),
                     allCustomFields)
+        }
+    }
+
+    private fun getDataInfo(name: String, version: String): List<DataInfo>
+    {
+        JooqContext().use {
+            getReportVersion(name, version, it)
+            return it.dsl.select(
+                    REPORT_VERSION_DATA.NAME,
+                    DATA.SIZE_CSV,
+                    DATA.SIZE_RDS)
+                    .from(REPORT_VERSION_DATA)
+                    .innerJoin(DATA)
+                    .on(REPORT_VERSION_DATA.HASH.eq(DATA.HASH))
+                    .where(REPORT_VERSION_DATA.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .map{ r -> DataInfo(r[REPORT_VERSION_DATA.NAME], r[DATA.SIZE_CSV], r[DATA.SIZE_RDS])}
+        }
+    }
+
+    private fun getResourceFiles(name: String, version: String): List<FileInfo>
+    {
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            ctx.dsl.select(FILE_INPUT.FILENAME, FILE.SIZE)
+                    .from(FILE_INPUT)
+                    .innerJoin(FILE)
+                    .on(FILE_INPUT.FILE_HASH.eq(FILE.HASH))
+                    .where(FILE_INPUT.REPORT_VERSION.eq(version))
+                    .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
+                    .fetch()
+                    .map { FileInfo( it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
         }
     }
 

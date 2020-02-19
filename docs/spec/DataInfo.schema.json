@@ -1,0 +1,10 @@
+{
+  "id": "DataInfo",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string"},
+    "csvSize": {"type": "number"},
+    "rdsSize": {"type": "number"}
+  },
+  "additionalProperties": false
+}

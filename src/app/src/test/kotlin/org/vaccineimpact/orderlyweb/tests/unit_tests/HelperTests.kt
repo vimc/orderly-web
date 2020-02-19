@@ -2,8 +2,10 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 
 class HelperTests : TeamcityTests()
 {
@@ -41,5 +43,22 @@ class HelperTests : TeamcityTests()
         Assertions.assertThat(jpeg).isTrue()
         Assertions.assertThat(JPG).isTrue()
         Assertions.assertThat(svg).isTrue()
+    }
+
+    @Test
+    fun `byteCountToDisplaySize returns expected formatted strings`()
+    {
+        Assertions.assertThat(byteCountToDisplaySize(11)).isEqualTo("11 bytes")
+
+        Assertions.assertThat(byteCountToDisplaySize(1024)).isEqualTo("1.0 KB")
+        Assertions.assertThat(byteCountToDisplaySize(1100)).isEqualTo("1.1 KB")
+        Assertions.assertThat(byteCountToDisplaySize(1120)).isEqualTo("1.1 KB")
+        Assertions.assertThat(byteCountToDisplaySize(30720)).isEqualTo("30 KB")
+        Assertions.assertThat(byteCountToDisplaySize(307200)).isEqualTo("300 KB")
+        Assertions.assertThat(byteCountToDisplaySize(337920)).isEqualTo("330 KB")
+
+        Assertions.assertThat(byteCountToDisplaySize(1150000)).isEqualTo("1.1 MB")
+
+        Assertions.assertThat(byteCountToDisplaySize(1150000000)).isEqualTo("1.1 GB")
     }
 }

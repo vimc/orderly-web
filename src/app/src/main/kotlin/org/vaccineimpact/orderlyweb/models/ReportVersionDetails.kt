@@ -9,6 +9,6 @@ data class ReportVersionDetails(val name: String,
                                 val date: Instant,
                                 val description: String?,
                                 val artefacts: List<Artefact>,
-                                val resources: List<String>,
-                                val dataHashes: Map<String, String>)
+                                val resources: List<FileInfo>,
+                                val dataInfo: List<DataInfo>)
 

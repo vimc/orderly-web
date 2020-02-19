@@ -10,7 +10,7 @@
         "published":  {"type" :"boolean"},
         "artefacts": { "type": "array", "items": { "$ref": "Artefact.schema.json"}},
         "resources": {"type": "array", "items": {"type": "string"}},
-        "data_hashes": {"$ref" :"Dictionary.schema.json"}
+        "data_info": {"type":  "array", "items":  {"$ref": "DataInfo.schema.json"}}
 	},
 	"additionalProperties": false,
 	"required": ["name", "id", "display_name", "description", "date", "published"]

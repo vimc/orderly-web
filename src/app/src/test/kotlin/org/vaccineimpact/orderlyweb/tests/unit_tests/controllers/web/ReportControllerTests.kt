@@ -28,7 +28,7 @@ class ReportControllerTests : TeamcityTests()
             "a fake report",
             listOf(),
             listOf(),
-            mapOf())
+            listOf())
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
             Changelog("20160103-143015-1234abcd", "public", "something public", true),
@@ -155,7 +155,7 @@ class ReportControllerTests : TeamcityTests()
     fun `focalArtefactUrl is null if first artefact is not suitable`()
     {
         val unsuitableArtefacts = listOf(Artefact(ArtefactFormat.DATA, "desc",
-                listOf("unsuitable.csv", "suitable.png")))
+                listOf(FileInfo("unsuitable.csv", 1), FileInfo("suitable.png",1))))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
@@ -172,8 +172,8 @@ class ReportControllerTests : TeamcityTests()
     fun `focalArtefactUrl is url of first artefact if suitable`()
     {
         val artefacts = listOf(Artefact(ArtefactFormat.DATA,
-                "desc", listOf("subdir/suitable.png", "another.csv")),
-                Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")))
+                "desc", listOf(FileInfo("subdir/suitable.png", 1), FileInfo("another.csv", 1))),
+                Artefact(ArtefactFormat.DATA, "desc", listOf(FileInfo("unsuitable.csv", 1))))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
@@ -187,10 +187,12 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `artefacts have expected urls`()
+    fun `artefacts have expected urls and size`()
     {
-        val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv")),
-                Artefact(ArtefactFormat.DATA, "desc", listOf("subdir/another.csv", "suitable.png")))
+        val artefacts = listOf(
+                Artefact(ArtefactFormat.DATA, "desc", listOf(FileInfo("unsuitable.csv", 100))),
+                Artefact(ArtefactFormat.DATA, "desc", listOf(
+                        FileInfo("subdir/another.csv", 200), FileInfo( "suitable.png", 2000))))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
@@ -206,21 +208,27 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.artefacts[0].files.count()).isEqualTo(1)
         assertThat(result.artefacts[0].files[0].name).isEqualTo("unsuitable.csv")
         assertThat(result.artefacts[0].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/unsuitable.csv?inline=false")
+        assertThat(result.artefacts[0].files[0].size).isEqualTo(100)
 
         assertThat(result.artefacts[1].artefact).isEqualTo(artefacts[1])
         assertThat(result.artefacts[1].files.count()).isEqualTo(2)
         assertThat(result.artefacts[1].files[0].name).isEqualTo("subdir/another.csv")
         assertThat(result.artefacts[1].files[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Aanother.csv?inline=false")
+        assertThat(result.artefacts[1].files[0].size).isEqualTo(200)
         assertThat(result.artefacts[1].files[1].name).isEqualTo("suitable.png")
         assertThat(result.artefacts[1].files[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/suitable.png?inline=false")
+        assertThat(result.artefacts[1].files[1].size).isEqualTo(2000)
     }
 
     @Test
     fun `artefacts have expected inline figures`()
     {
         //Expect only the first file in an artefact to be considered for inline figure
-        val artefacts = listOf(Artefact(ArtefactFormat.DATA, "desc", listOf("unsuitable.csv", "suitable.png")),
-                Artefact(ArtefactFormat.DATA, "desc", listOf("suitable.jpg", "another.csv")))
+        val artefacts = listOf(
+                Artefact(ArtefactFormat.DATA, "desc",
+                    listOf(FileInfo("unsuitable.csv", 1), FileInfo( "suitable.png", 1))),
+                Artefact(ArtefactFormat.DATA, "desc",
+                        listOf(FileInfo("suitable.jpg", 1), FileInfo("another.csv", 1))))
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
@@ -235,11 +243,13 @@ class ReportControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `dataLinks have expected urls`()
+    fun `dataLinks have expected urls and size`()
     {
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
-                    mockReportDetails.copy(dataHashes = mapOf("data1" to "1234/567", "data2" to "987&654"))
+                    mockReportDetails.copy(dataInfo = listOf(
+                            DataInfo("data1", 100, 1000),
+                            DataInfo("data2", 200, 2000)))
         }
 
         val sut = ReportController(mockActionContext, orderly)
@@ -250,22 +260,26 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.dataLinks[0].key).isEqualTo("data1")
         assertThat(result.dataLinks[0].csv.name).isEqualTo("csv")
         assertThat(result.dataLinks[0].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=csv")
+        assertThat(result.dataLinks[0].csv.size).isEqualTo(100)
         assertThat(result.dataLinks[0].rds.name).isEqualTo("rds")
         assertThat(result.dataLinks[0].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data1/?type=rds")
+        assertThat(result.dataLinks[0].rds.size).isEqualTo(1000)
 
         assertThat(result.dataLinks[1].key).isEqualTo("data2")
         assertThat(result.dataLinks[1].csv.name).isEqualTo("csv")
         assertThat(result.dataLinks[1].csv.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=csv")
+        assertThat(result.dataLinks[1].csv.size).isEqualTo(200)
         assertThat(result.dataLinks[1].rds.name).isEqualTo("rds")
         assertThat(result.dataLinks[1].rds.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/data/data2/?type=rds")
+        assertThat(result.dataLinks[1].rds.size).isEqualTo(2000)
     }
 
     @Test
-    fun `resources have expected urls`()
+    fun `resources have expected urls and size`()
     {
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
-                    mockReportDetails.copy(resources = listOf("resource1.Rmd", "subdir/resource2.Rmd"))
+                    mockReportDetails.copy(resources = listOf(FileInfo("resource1.Rmd", 100), FileInfo( "subdir/resource2.Rmd", 200)))
         }
 
         val sut = ReportController(mockActionContext, orderly)
@@ -274,8 +288,10 @@ class ReportControllerTests : TeamcityTests()
         assertThat(result.resources.count()).isEqualTo(2)
         assertThat(result.resources[0].name).isEqualTo("resource1.Rmd")
         assertThat(result.resources[0].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/resource1.Rmd")
+        assertThat(result.resources[0].size).isEqualTo(100)
         assertThat(result.resources[1].name).isEqualTo("subdir/resource2.Rmd")
         assertThat(result.resources[1].url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/resources/subdir%3Aresource2.Rmd")
+        assertThat(result.resources[1].size).isEqualTo(200)
     }
 
     @Test
@@ -286,6 +302,7 @@ class ReportControllerTests : TeamcityTests()
 
         assertThat(result.zipFile.name).isEqualTo("r1-$versionId.zip")
         assertThat(result.zipFile.url).isEqualTo("http://localhost:8888/report/r1/version/$versionId/all/")
+        assertThat(result.zipFile.size).isEqualTo(null)
     }
 
     @Test

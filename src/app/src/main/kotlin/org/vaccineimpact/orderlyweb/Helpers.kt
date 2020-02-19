@@ -4,6 +4,8 @@ import spark.Filter
 import spark.Request
 import spark.Response
 import java.io.File
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.net.URLDecoder
 import java.net.URLEncoder
 import javax.servlet.http.HttpServletResponse
@@ -71,4 +73,40 @@ fun guessFileType(filename: String): String
 fun canRenderInBrowser(fileName: String): Boolean
 {
     return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
+}
+
+//Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
+//Improved version of the same method in commons.io FileUtils, supporting greater precision
+//and rounding up as well as down
+private enum class SizeSuffix
+{
+    bytes, KB, MB, GB, TB, PB, EB, ZB, YB
+}
+fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
+{
+    val KILO_DIVISOR = BigDecimal(1024L)
+
+    var displaySize: String
+    var bdSize = BigDecimal(size)
+    var selectedSuffix = SizeSuffix.bytes
+    for (sizeSuffix in SizeSuffix.values())
+    {
+        if (sizeSuffix.equals(SizeSuffix.bytes))
+        {
+            continue
+        }
+        if (bdSize.setScale(0, RoundingMode.HALF_UP).toString().length <= maxChars)
+        {
+            break
+        }
+        selectedSuffix = sizeSuffix
+        bdSize = bdSize.divide(KILO_DIVISOR)
+    }
+    displaySize = bdSize.setScale(0, RoundingMode.HALF_UP).toString()
+    if (displaySize.length < maxChars - 1)
+    {
+        displaySize = bdSize.setScale(
+                maxChars - 1 - displaySize.length, RoundingMode.HALF_UP).toString()
+    }
+    return displaySize + " " + selectedSuffix.toString()
 }
