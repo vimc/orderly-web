@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.test_helpers
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -47,6 +46,7 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
 fun insertCustomFields(customFields: Array<String> = arrayOf("author", "requester"))
 {
     JooqContext().use {
+
         for (customField in customFields)
         {
             val customFieldRecord = it.dsl.newRecord(Tables.CUSTOM_FIELDS)
@@ -59,11 +59,12 @@ fun insertCustomFields(customFields: Array<String> = arrayOf("author", "requeste
 }
 
 
-private var fieldId = 0
-private fun getFieldId(): Int
+private fun getNewCustomFieldId(ctx: JooqContext): Int
 {
-    fieldId++
-    return fieldId
+    val maxFieldId = ctx.dsl.select(Tables.REPORT_VERSION_CUSTOM_FIELDS.ID.max())
+            .from(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+            .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
 }
 
 fun insertReport(name: String,
@@ -110,7 +111,7 @@ fun insertReport(name: String,
 
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
                 .apply{
-                    this.id = getFieldId()
+                    this.id = getNewCustomFieldId(it)
                     this.reportVersion = version
                     this.key = "author"
                     this.value = author
@@ -119,7 +120,7 @@ fun insertReport(name: String,
 
         val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
                 .apply{
-                    this.id = getFieldId()
+                    this.id = getNewCustomFieldId(it)
                     this.reportVersion = version
                     this.key = "requester"
                     this.value = requester
