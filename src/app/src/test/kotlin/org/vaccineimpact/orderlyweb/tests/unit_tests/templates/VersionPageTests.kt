@@ -37,8 +37,6 @@ class VersionPageTests : TeamcityTests()
             id = "r1-v1",
             published = true,
             date = Timestamp(System.currentTimeMillis()).toInstant(),
-            author = "an author",
-            requester = "a requester",
             description = "description",
             artefacts = listOf(),
             resources = listOf(),

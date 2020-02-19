@@ -79,12 +79,28 @@ fun insertReport(name: String,
                     this.date = date
                     this.displayname = displayname
                     this.description = "description $name"
-                    this.requester = requester
-                    this.author = author
+                    this.requester = ""
+                    this.author = ""
                     this.published = published
                     this.connection = false
                 }
         reportVersionRecord.store()
+
+        val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply{
+                    this.reportVersion = version
+                    this.key = "author"
+                    this.value = author
+                }
+        authorFieldRecord.store()
+
+        val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply{
+                    this.reportVersion = version
+                    this.key = "requester"
+                    this.value = requester
+                }
+        requesterFieldRecord.store()
 
         //Update latest version of Report
         it.dsl.update(Tables.REPORT)

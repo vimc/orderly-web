@@ -23,8 +23,6 @@ class ReportControllerTests : TeamcityTests()
             versionId,
             true,
             Instant.now(),
-            "dr author",
-            "ms funder",
             "a fake report",
             listOf(),
             listOf(),
