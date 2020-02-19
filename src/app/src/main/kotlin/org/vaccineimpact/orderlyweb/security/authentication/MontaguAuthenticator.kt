@@ -24,16 +24,27 @@ class MontaguAuthenticator(private val userRepository: UserRepository,
 
         val token = credentials.token
 
+
         if (CommonHelper.isBlank(token))
         {
             throw CredentialsException("Token cannot be blank")
         }
 
-        val email = validate(token)
+        if (token == "anon")
+        {
+            credentials.userProfile = CommonProfile().apply {
+                this.addAttribute("url", "*")
+                this.id = "anon"
+            }
+        }
+        else
+        {
+            val email = validate(token)
 
-        credentials.userProfile = CommonProfile().apply {
-            this.addAttribute("url", "*")
-            this.id = email
+            credentials.userProfile = CommonProfile().apply {
+                this.addAttribute("url", "*")
+                this.id = email
+            }
         }
     }
 

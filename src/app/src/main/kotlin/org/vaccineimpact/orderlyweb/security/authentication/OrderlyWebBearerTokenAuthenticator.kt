@@ -10,6 +10,9 @@ open class OrderlyWebBearerTokenAuthenticator(signatureConfiguration: SignatureC
 {
     override fun createJwtProfile(credentials: TokenCredentials, jwt: JWT)
     {
+        if (credentials.token == "anon"){
+
+        }
         super.createJwtProfile(credentials, jwt)
         val claims = jwt.jwtClaimsSet
         val issuer = claims.issuer

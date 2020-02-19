@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.http.client.direct.CookieClient
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
@@ -27,4 +29,6 @@ class JWTCookieClient(helper: TokenVerifier) : OrderlyWebTokenCredentialClient, 
             "cookie-bearer-token-invalid",
             "Bearer token not supplied in cookie '$cookie', or bearer token was invalid"
     )
+
+
 }
