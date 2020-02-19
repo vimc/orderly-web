@@ -75,7 +75,7 @@ export const options = (isReviewer, reports, customFields) => {
 
     for (const customField of customFields) {
         cols.push({
-            "data": `custom_fields.${customField}`,
+            "data": customField,
             "render": buildBasicCell,
             "orderable": false
         })

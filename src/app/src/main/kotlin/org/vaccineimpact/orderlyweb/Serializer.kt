@@ -1,12 +1,16 @@
 package org.vaccineimpact.orderlyweb
 
+import com.github.salomonbrys.kotson.addProperty
 import com.github.salomonbrys.kotson.jsonSerializer
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
+import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
+import kotlin.reflect.full.memberProperties
 
 open class Serializer
 {
@@ -17,6 +21,26 @@ open class Serializer
 
     private val toStringSerializer = jsonSerializer<Any> { JsonPrimitive(it.src.toString()) }
     private val enumSerializer = jsonSerializer<Any> { JsonPrimitive(serializeEnum(it.src)) }
+
+    private val reportRowViewModelSerializer = jsonSerializer<ReportRowViewModel> {
+
+        val obj = JsonObject()
+
+        for(prop in ReportRowViewModel::class.memberProperties)
+        {
+            if (prop.name != "customFields")
+            {
+                obj.addProperty(convertFieldName(prop.name), prop.get(it.src), it.context)
+            }
+        }
+
+        for(key in it.src.customFields.keys)
+        {
+            obj.addProperty(key, it.src.customFields[key])
+        }
+
+        obj
+    }
 
     val gson: Gson
 
@@ -30,6 +54,7 @@ open class Serializer
                 .registerTypeAdapter<java.time.LocalDate>(toStringSerializer)
                 .registerTypeAdapter<java.time.Instant>(toStringSerializer)
                 .registerTypeAdapter<ResultStatus>(enumSerializer)
+                .registerTypeAdapter<ReportRowViewModel>(reportRowViewModelSerializer)
                 .create()
     }
 

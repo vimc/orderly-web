@@ -6,9 +6,8 @@
     "id": {"type" :"string"},
     "display_name": {"type": [ "string", "null"] },
     "date": {"type" :"string"},
-    "published":  {"type": "boolean"},
-    "customFields": {"type": "object"}
+    "published":  {"type": "boolean"}
   },
-  "additionalProperties": false,
-  "required": ["name", "id", "display_name", "date", "published", "customFields"]
+  "additionalProperties": true,
+  "required": ["name", "id", "display_name", "date", "published"]
 }
