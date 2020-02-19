@@ -1,6 +1,9 @@
 package org.vaccineimpact.orderlyweb.security.clients
 
+import org.pac4j.core.context.WebContext
+import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.oauth.client.GitHubClient
+import org.pac4j.oauth.credentials.OAuth20Credentials
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator

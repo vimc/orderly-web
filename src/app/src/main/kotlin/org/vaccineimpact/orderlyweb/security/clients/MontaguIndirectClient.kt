@@ -48,22 +48,6 @@ class MontaguIndirectClient : IndirectClient<TokenCredentials, CommonProfile>(),
             "montagu-cookie-bearer-token-invalid",
             "Montagu bearer token not supplied in cookie '$cookie', or bearer token was invalid"
     )
-
-    override fun retrieveCredentials(context: WebContext): TokenCredentials
-    {
-        val cred = this.credentialsExtractor.extract(context)
-        if (cred == null || cred.token.isNullOrEmpty())
-        {
-            val credentials = TokenCredentials("anon")
-            authenticator.validate(credentials, context)
-            return credentials
-        }
-        else
-        {
-            return super.retrieveCredentials(context)
-        }
-    }
-
 }
 
 class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: MontaguAPIClient,
@@ -76,19 +60,14 @@ class MontaguIndirectClientRedirectActionBuilder(private val montaguAPIClient: M
 
         val redirectUrl = try
         {
-            val credentials = cookieExtractor
+            val token = cookieExtractor
                     .extract(context)
+                    .token
 
-            if (credentials == null || credentials.token.isNullOrEmpty())
-            {
-                loginCallbackUrl
-            }
-            else
-            {
-                montaguAPIClient.getUserDetails(credentials.token)
-                // already logged in to Montagu, so send user straight to the login callback
-                loginCallbackUrl
-            }
+            montaguAPIClient.getUserDetails(token)
+            // already logged in to Montagu, so send user straight to the login callback
+            loginCallbackUrl
+
         }
         catch (e: Exception)
         {

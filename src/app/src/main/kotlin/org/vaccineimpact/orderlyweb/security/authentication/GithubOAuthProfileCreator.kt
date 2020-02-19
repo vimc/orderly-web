@@ -22,7 +22,7 @@ class GithubOAuthProfileCreator(config: OAuth20Configuration,
 {
     override fun retrieveUserProfileFromToken(context: WebContext, accessToken: OAuth2AccessToken) : GitHubProfile
     {
-        var result = super.retrieveUserProfileFromToken(context, accessToken)
+        val result = super.retrieveUserProfileFromToken(context, accessToken)
 
         githubAuthHelper.authenticate(accessToken.accessToken)
         val user = githubAuthHelper.getUser()
