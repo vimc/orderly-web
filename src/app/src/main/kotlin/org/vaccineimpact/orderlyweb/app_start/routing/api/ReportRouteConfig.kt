@@ -33,6 +33,7 @@ object ReportRouteConfig : RouteConfig
             APIEndpoint("/reports/:key/status/", controller, "status")
                     .json()
                     .secure(runReports),
+
             APIEndpoint("/reports/:name/latest/changelog/", controller, "getLatestChangelogByName")
                     .json()
                     .transform()

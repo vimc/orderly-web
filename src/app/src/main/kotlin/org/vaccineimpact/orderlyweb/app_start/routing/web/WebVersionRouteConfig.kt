@@ -26,6 +26,7 @@ object WebVersionRouteConfig : RouteConfig
             WebEndpoint("/report/:name/version/:version/publish/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "publish",
                     method = HttpMethod.post)
+                    .transform()
                     .json()
                     .secure(reviewReports),
             WebEndpoint("/report/:name/version/:version/data/:data/",

@@ -23,7 +23,7 @@ class VersionTests : IntegrationTest()
     @Test // method name prefixed with A so runs first
     fun `A publishes report`()
     {
-        val unpublishedVersion = JooqContext("git/orderly.sqlite").use {
+        val unpublishedVersion = JooqContext().use {
 
             it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(Tables.REPORT_VERSION)
@@ -41,7 +41,7 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(true)
 
-        val publishStatus = JooqContext("git/orderly.sqlite").use {
+        val publishStatus = JooqContext().use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
                     .from(Tables.REPORT_VERSION)
@@ -57,7 +57,7 @@ class VersionTests : IntegrationTest()
     @Test // method name prefixed with B so runs first
     fun `B unpublishes report`()
     {
-        val publishedVersion = JooqContext("git/orderly.sqlite").use {
+        val publishedVersion = JooqContext().use {
 
             it.dsl.select(Tables.REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(Tables.REPORT_VERSION)
@@ -78,7 +78,7 @@ class VersionTests : IntegrationTest()
         val data = JSONValidator.getData(response.text).asBoolean()
         assertThat(data).isEqualTo(false)
 
-        val publishStatus = JooqContext("git/orderly.sqlite").use {
+        val publishStatus = JooqContext().use {
 
             it.dsl.select(Tables.REPORT_VERSION.PUBLISHED)
                     .from(Tables.REPORT_VERSION)
