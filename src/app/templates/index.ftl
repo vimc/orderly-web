@@ -80,7 +80,8 @@
     <#macro scripts>
         <script type="text/javascript">
             var customFields = [<#list customFieldKeys as customField>"${customField}",</#list>];
-            var reports = reports.map(r => ({...r, ...r.customFields}));
+            var rawReports = ${reportsJson};
+            var reports = rawReports.map(r => ({...r, ...r.custom_fields}));
             <#if isReviewer>
             var canReview = true;
             </#if>
