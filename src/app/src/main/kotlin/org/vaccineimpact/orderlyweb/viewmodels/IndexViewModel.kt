@@ -76,7 +76,8 @@ data class ReportRowViewModel(val ttKey: Int,
                               val date: String?,
                               val numVersions: Int,
                               val published: Boolean?,
-                              val customFields: Map<String, String?>)
+                              val customFields: Map<String, String?>,
+                              val parameterValues: String?)
 {
     companion object
     {
@@ -87,7 +88,7 @@ data class ReportRowViewModel(val ttKey: Int,
             val displayName = latestVersion.displayName?: latestVersion.name
 
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, customFields)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
@@ -103,7 +104,8 @@ data class ReportRowViewModel(val ttKey: Int,
                     dateString,
                     parent.numVersions,
                     version.published,
-                    version.customFields)
+                    version.customFields,
+                    version.parameterValues)
 
         }
     }
