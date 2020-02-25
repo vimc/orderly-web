@@ -67,6 +67,14 @@ private fun getNewCustomFieldId(ctx: JooqContext): Int
     return (maxFieldId ?: 0) + 1
 }
 
+private fun getNewParameterId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.PARAMETERS.ID.max())
+            .from(Tables.PARAMETERS)
+            .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
 fun insertReportWithCustomFields(name: String,
                                  version: String,
                                  customFields: Map<String, String>,
@@ -116,6 +124,40 @@ fun insertReport(name: String,
                     this.value = requester
                 }
         requesterFieldRecord.store()
+    }
+}
+
+fun insertVersionParameterValues(version: String,
+                                 parameterValues: Map<String, String>)
+{
+    JooqContext().use {
+
+        val typeExists = it.dsl.selectFrom(Tables.PARAMETERS_TYPE)
+                .where(Tables.PARAMETERS_TYPE.NAME.eq("text"))
+                .fetch()
+                .count() > 0
+
+        if (!typeExists)
+        {
+            val typeRecord = it.dsl.newRecord(Tables.PARAMETERS_TYPE)
+                    .apply{
+                        this.name = "text"
+                    }
+            typeRecord.store()
+        }
+
+        for ((k,v) in parameterValues)
+        {
+            val parameterRecord = it.dsl.newRecord(Tables.PARAMETERS)
+                    .apply {
+                        this.id = getNewParameterId(it)
+                        this.reportVersion = version
+                        this.name = k
+                        this.type = "text"
+                        this.value = v
+                    }
+            parameterRecord.store()
+        }
     }
 }
 
