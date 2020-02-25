@@ -71,7 +71,7 @@ describe("index page as report reviewer", () => {
         published: true
     }];
 
-    initReportTable(true, reports);
+    initReportTable(true, reports, ["author", "requester"]);
 
     it("wires up name filter", () => {
 
