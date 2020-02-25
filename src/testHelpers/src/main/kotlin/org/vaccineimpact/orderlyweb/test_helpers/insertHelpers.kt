@@ -67,6 +67,28 @@ private fun getNewCustomFieldId(ctx: JooqContext): Int
     return (maxFieldId ?: 0) + 1
 }
 
+fun insertReportWithCustomFields(name: String,
+                                 version: String,
+                                 customFields: Map<String, String>,
+                                 published: Boolean = true,
+                                 date: Timestamp = Timestamp(System.currentTimeMillis()))
+{
+    insertReportAndVersion(name, version, published, date)
+    JooqContext().use {
+        for ((key, value) in customFields)
+        {
+            val fieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                    .apply {
+                        this.id = getNewCustomFieldId(it)
+                        this.reportVersion = version
+                        this.key = key
+                        this.value = value
+                    }
+            fieldRecord.store()
+        }
+    }
+}
+
 fun insertReport(name: String,
                  version: String,
                  published: Boolean = true,
@@ -74,7 +96,34 @@ fun insertReport(name: String,
                  author: String = "author authorson",
                  requester: String = "requester mcfunder")
 {
+    insertReportAndVersion(name, version, published, date)
 
+    JooqContext().use {
+        val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.reportVersion = version
+                    this.key = "author"
+                    this.value = author
+                }
+        authorFieldRecord.store()
+
+        val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.reportVersion = version
+                    this.key = "requester"
+                    this.value = requester
+                }
+        requesterFieldRecord.store()
+    }
+}
+
+private fun insertReportAndVersion(name: String,
+                                   version: String,
+                                   published: Boolean,
+                                   date: Timestamp)
+{
     JooqContext().use {
 
         val displayname = "display name $name"
@@ -108,24 +157,6 @@ fun insertReport(name: String,
                     this.connection = false
                 }
         reportVersionRecord.store()
-
-        val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
-                .apply{
-                    this.id = getNewCustomFieldId(it)
-                    this.reportVersion = version
-                    this.key = "author"
-                    this.value = author
-                }
-        authorFieldRecord.store()
-
-        val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
-                .apply{
-                    this.id = getNewCustomFieldId(it)
-                    this.reportVersion = version
-                    this.key = "requester"
-                    this.value = requester
-                }
-        requesterFieldRecord.store()
 
         //Update latest version of Report
         it.dsl.update(Tables.REPORT)

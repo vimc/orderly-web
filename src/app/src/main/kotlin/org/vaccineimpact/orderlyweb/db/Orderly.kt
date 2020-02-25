@@ -271,14 +271,14 @@ class Orderly(val isReviewer: Boolean,
     private fun mapToReportVersionsWithCustomFields(ctx: JooqContext,
                                                     versions: Result<GenericReportVersionRecord>): List<ReportVersion>
     {
-        val allCustomFieldKeys = ctx.dsl.select(
+        val allCustomFields = ctx.dsl.select(
                 CUSTOM_FIELDS.ID)
                 .from(CUSTOM_FIELDS)
                 .fetch()
-                .getValues(CUSTOM_FIELDS.ID)
+                .associate { r -> r[CUSTOM_FIELDS.ID] to null as String? }
 
         val versionIds = versions.map{ v -> v[REPORT_VERSION.ID] }
-        val customFields = ctx.dsl.select(
+        val customFieldsForVersions = ctx.dsl.select(
                 REPORT_VERSION_CUSTOM_FIELDS.KEY,
                 REPORT_VERSION_CUSTOM_FIELDS.VALUE,
                 REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
@@ -288,16 +288,15 @@ class Orderly(val isReviewer: Boolean,
                 .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
 
         return versions.map{
-            val id = it[REPORT_VERSION.ID]
+            val versionId = it[REPORT_VERSION.ID]
 
-            val pairs = allCustomFieldKeys.map{ k -> k to null as String?}.toTypedArray()
-            val allCustomFields = mutableMapOf(*pairs)
+            val versionCustomFields = mutableMapOf<String, String?>()
 
-            if (customFields.containsKey(id))
+            versionCustomFields.putAll(allCustomFields)
+            if (customFieldsForVersions.containsKey(versionId))
             {
-                val versionCustomFields = customFields[id]!!
-                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] }
-                allCustomFields.putAll(versionCustomFields)
+                versionCustomFields.putAll(customFieldsForVersions[versionId]!!
+                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
             }
 
             ReportVersion(it[REPORT_VERSION.REPORT],
@@ -306,7 +305,7 @@ class Orderly(val isReviewer: Boolean,
                     it["latestVersion"] as String,
                     it[REPORT_VERSION.PUBLISHED],
                     it[REPORT_VERSION.DATE].toInstant(),
-                    allCustomFields)
+                    versionCustomFields)
         }
     }
 
