@@ -94,6 +94,14 @@ data class ReportRowViewModel(val ttKey: Int,
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
+            val parameterValues = if (version.parameterValues.keys.count() > 0)
+            {
+                version.parameterValues.keys.joinToString(", ") { "$it=${version.parameterValues[it]}" }
+            }
+            else
+            {
+                null
+            }
 
             return ReportRowViewModel(key,
                     parent.ttKey,
@@ -105,7 +113,7 @@ data class ReportRowViewModel(val ttKey: Int,
                     parent.numVersions,
                     version.published,
                     version.customFields,
-                    version.parameterValues)
+                    parameterValues)
 
         }
     }

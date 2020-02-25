@@ -18,4 +18,4 @@ constructor(val name: String,
             val published: Boolean,
             val date: Instant,
             val customFields: Map<String, String?>,
-            val parameterValues: String?)
+            val parameterValues: Map<String, String>)

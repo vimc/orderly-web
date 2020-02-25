@@ -303,11 +303,11 @@ class Orderly(val isReviewer: Boolean,
 
             val versionParameters = if (parametersForVersions.containsKey(versionId))
             {
-                parametersForVersions[versionId]
+                parametersForVersions[versionId]!!
             }
             else
             {
-                null
+                mapOf()
             }
 
             ReportVersion(it[REPORT_VERSION.REPORT],
@@ -335,7 +335,7 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    private fun getParametersForVersions(versionIds: List<String>): Map<String, String>
+    private fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
     {
         JooqContext().use { ctx ->
             return ctx.dsl.select(
@@ -346,8 +346,7 @@ class Orderly(val isReviewer: Boolean,
                     .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
                     .fetch()
                     .groupBy{it[PARAMETERS.REPORT_VERSION]}
-                    .mapValues{ it.value.map{ r -> "${r[PARAMETERS.NAME]}=${r[PARAMETERS.VALUE]}"}.joinToString(", ")}
-
+                    .mapValues{it.value.associate{r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE]}}
         }
     }
 
