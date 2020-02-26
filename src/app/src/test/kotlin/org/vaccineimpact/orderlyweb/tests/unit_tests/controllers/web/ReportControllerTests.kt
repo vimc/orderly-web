@@ -26,7 +26,8 @@ class ReportControllerTests : TeamcityTests()
             "a fake report",
             listOf(),
             listOf(),
-            listOf())
+            listOf(),
+            mapOf("p1" to "v1", "p2" to "v2"))
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
             Changelog("20160103-143015-1234abcd", "public", "something public", true),
@@ -67,6 +68,27 @@ class ReportControllerTests : TeamcityTests()
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
+    }
+
+    @Test
+    fun `builds parameter values`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.parameterValues).isEqualTo("p1=v1, p2=v2")
+    }
+
+    @Test
+    fun `builds empty parameter values`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+                    mockReportDetails.copy(parameterValues = mapOf())
+        }
+
+        val sut = ReportController(mockActionContext, orderly)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.parameterValues).isEqualTo(null)
     }
 
     @Test

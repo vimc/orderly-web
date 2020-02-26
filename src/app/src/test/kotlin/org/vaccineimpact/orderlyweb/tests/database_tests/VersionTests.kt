@@ -39,6 +39,8 @@ class VersionTests : CleanDatabaseTests()
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
+        insertVersionParameterValues("version1", mapOf("p1" to "v1", "p2" to "v2"))
+
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
@@ -51,6 +53,9 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
         assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
+        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
+        assertThat(result.parameterValues["p1"]).isEqualTo("v1")
+        assertThat(result.parameterValues["p2"]).isEqualTo("v2")
     }
 
     @Test

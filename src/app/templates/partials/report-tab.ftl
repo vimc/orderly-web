@@ -3,7 +3,7 @@
 
 <#include "report-title.ftl">
 <#if parameterValues??>
-    <p><span class="text-muted">Parameter values:</span> ${parameterValues}</p>
+    <p id="param-values"><span class="text-muted">Parameter values:</span> ${parameterValues}</p>
 </#if>
 <#if focalArtefactUrl?has_content>
     <iframe src="${focalArtefactUrl}"
