@@ -144,7 +144,7 @@ class VersionPageTests : TeamcityTests()
         assertThat(xmlResponse, hasXPath("$xPathRoot/p[1]/text()",
                 equalToCompressingWhiteSpace("r1-v1")))
 
-        assertThat(xmlResponse, hasXPath("$xPathRoot/p[id='param-values']", equalTo("Parameter values: p1=v1, p2=v2")))
+        assertThat(xmlResponse, hasXPath("$xPathRoot/p[@id='param-values']", equalToCompressingWhiteSpace("Parameter values: p1=v1, p2=v2")))
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/iframe/@src", equalTo("/testFocalArtefactUrl")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/text()",
