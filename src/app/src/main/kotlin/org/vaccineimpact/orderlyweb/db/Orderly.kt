@@ -144,7 +144,8 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
-            val aretefacts = getArtefacts(name, version)
+            val artefacts = getArtefacts(name, version)
+            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
@@ -152,9 +153,10 @@ class Orderly(val isReviewer: Boolean,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
-                    artefacts = aretefacts,
+                    artefacts = artefacts,
                     resources = getResourceFiles(name, version),
-                    dataInfo = getDataInfo(name, version))
+                    dataInfo = getDataInfo(name, version),
+                    parameterValues = parameterValues)
         }
     }
 

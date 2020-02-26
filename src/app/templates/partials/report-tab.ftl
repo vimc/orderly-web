@@ -2,7 +2,9 @@
 <#-- @ftlvariable name="focalArtefactUrl" type="String" -->
 
 <#include "report-title.ftl">
-
+<#if parameterValues??>
+    <p><span class="text-muted">Parameter values:</span> ${parameterValues}</p>
+</#if>
 <#if focalArtefactUrl?has_content>
     <iframe src="${focalArtefactUrl}"
             width="100%" height="600px" class="border border-dark p-3"></iframe>
