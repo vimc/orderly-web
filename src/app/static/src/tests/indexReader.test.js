@@ -15,6 +15,9 @@ describe("index page as report reader", () => {
         '            </th>\n' +
         '            <th><label for="status-filter">Status</label>\n' +
         '            </th>\n' +
+        '            <th>' +
+        '               <label for="parameter-values-filter">Parameter Values</label>\n' +
+        '            </th>\n' +
         '            <th>\n' +
         '                <label for="author-filter">Author</label>\n' +
         '            </th>\n' +
@@ -32,14 +35,19 @@ describe("index page as report reader", () => {
         '                       data-col="2"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <input class="form-control" type="text" id="author-filter"\n' +
+        '                <input class="form-control" type="text" id="parameter-values-filter"\n' +
         '                       data-role="standard-filter"\n' +
         '                       data-col="3"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <input class="form-control" type="text" id="requester-filter"\n' +
+        '                <input class="form-control" type="text" id="author-filter"\n' +
         '                       data-role="standard-filter"\n' +
         '                       data-col="4"/>\n' +
+        '            </th>\n' +
+        '            <th>\n' +
+        '                <input class="form-control" type="text" id="requester-filter"\n' +
+        '                       data-role="standard-filter"\n' +
+        '                       data-col="5"/>\n' +
         '            </th>\n' +
         '        </tr>\n' +
         '        </thead>\n' +
@@ -55,7 +63,8 @@ describe("index page as report reader", () => {
         latest_version: "20181112-152443-4de0c811",
         author: "author",
         requester: "requester",
-        published: true
+        published: true,
+        parameter_values: "p1=v1"
     }];
 
     initReportTable(false, reports, ["author", "requester"]);
@@ -99,6 +108,23 @@ describe("index page as report reader", () => {
 
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
 
+    });
+
+    it("wires up parameter values filter", () => {
+
+        const $table = $('#reports-table');
+        const $filter = $('#parameter-values-filter');
+        expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
+
+        $filter.val("r1");
+        $filter.keyup();
+
+        expect($table.find("tbody tr td")[0].innerHTML).toBe("No matching records found");
+
+        $filter.val("p1");
+        $filter.keyup();
+
+        expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
     });
 
     it("wires up author filter", () => {
