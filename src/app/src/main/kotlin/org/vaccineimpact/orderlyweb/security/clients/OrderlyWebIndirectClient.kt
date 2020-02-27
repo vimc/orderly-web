@@ -41,16 +41,6 @@ class OrderlyWebIndirectClientRedirectActionBuilder: RedirectActionBuilder
 {
     override fun redirect(context: WebContext) : RedirectAction
     {
-        val profile = CommonProfile().apply { id = "anon" }
-
-        val permissions = OrderlyAuthorizationRepository()
-                .getPermissionsForUser("anon")
-
-        profile.orderlyWebPermissions = permissions.plus(ReifiedPermission("reports.read",
-                Scope.Specific("report", "minimal")))
-
-        val manager = ProfileManager<CommonProfile>(context)
-        manager.save(true, profile, false)
         return RedirectAction.redirect(context.fullRequestURL)
     }
 }
