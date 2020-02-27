@@ -21,6 +21,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val zipFile: DownloadableFileViewModel,
                                       val versions: List<VersionPickerViewModel>,
                                       val changelog: List<ChangelogViewModel>,
+                                      val parameterValues: String?,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -65,6 +66,15 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                         ChangelogViewModel.build(it.key, it.value)
                     }
 
+            val parameterValues = if (report.parameterValues.keys.count() > 0)
+            {
+                report.parameterValues.keys.joinToString(", ") { "$it=${report.parameterValues[it]}" }
+            }
+            else
+            {
+                null
+            }
+
             return ReportVersionPageViewModel(report.copy(displayName = displayName),
                     focalArtefactUrl,
                     isRunner,
@@ -74,6 +84,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     zipFile,
                     versions.sortedByDescending { it }.map { buildVersionPickerViewModel(report.name, report.id, it) },
                     changelogViewModel,
+                    parameterValues,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 

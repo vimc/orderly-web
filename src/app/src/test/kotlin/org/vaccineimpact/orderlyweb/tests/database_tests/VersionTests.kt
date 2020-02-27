@@ -14,6 +14,7 @@ import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
+import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 import java.sql.Timestamp
 
 class VersionTests : CleanDatabaseTests()
@@ -38,6 +39,8 @@ class VersionTests : CleanDatabaseTests()
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
+        insertVersionParameterValues("version1", mapOf("p1" to "v1", "p2" to "v2"))
+
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
@@ -50,6 +53,9 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
         assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
+        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
+        assertThat(result.parameterValues["p1"]).isEqualTo("v1")
+        assertThat(result.parameterValues["p2"]).isEqualTo("v2")
     }
 
     @Test
@@ -103,7 +109,10 @@ class VersionTests : CleanDatabaseTests()
     fun `reader can get all published report versions`()
     {
         insertReport("test", "va")
+
         insertReport("test", "vz")
+        insertVersionParameterValues("vz", mapOf("p1" to "v1", "p2" to "v2"))
+
         insertReport("test2", "vc")
         insertReport("test2", "vb")
         insertReportWithCustomFields("test2", "vd", mapOf("author" to "test2 author"))
@@ -124,10 +133,14 @@ class VersionTests : CleanDatabaseTests()
         Assertions.assertThat(results[0].customFields.keys.count()).isEqualTo(2)
         Assertions.assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
         Assertions.assertThat(results[0].customFields["requester"]).isEqualTo("requester mcfunder")
+        Assertions.assertThat(results[0].parameterValues.keys.count()).isEqualTo(0)
 
         Assertions.assertThat(results[1].name).isEqualTo("test")
         Assertions.assertThat(results[1].id).isEqualTo("vz")
         Assertions.assertThat(results[1].latestVersion).isEqualTo("vz")
+        Assertions.assertThat(results[1].parameterValues.keys.count()).isEqualTo(2)
+        Assertions.assertThat(results[1].parameterValues["p1"]).isEqualTo("v1")
+        Assertions.assertThat(results[1].parameterValues["p2"]).isEqualTo("v2")
 
         Assertions.assertThat(results[2].name).isEqualTo("test2")
         Assertions.assertThat(results[2].id).isEqualTo("vb")

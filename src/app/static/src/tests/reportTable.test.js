@@ -8,19 +8,19 @@ describe("reportsTable", () => {
 
     it("has expected columns when user is reviewer", () => {
         const cols = options(true, [], customFields).columns;
-        expect(cols.length).toBe(6);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "author", "requester", "display_name"])
+        expect(cols.length).toBe(7);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has expected columns when user is not a reviewer", () => {
         const cols = options(false, [], customFields).columns;
-        expect(cols.length).toBe(5);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "author", "requester", "display_name"])
+        expect(cols.length).toBe(6);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has invisible display name col", () => {
         const cols = options(false, [], customFields).columns;
-        expect(cols[4].visible).toBe(false);
+        expect(cols[5].visible).toBe(false);
     });
 
     it("is ordered by version desc", () => {
@@ -152,15 +152,39 @@ describe("reportsTable", () => {
 
     });
 
+    describe("parameter values cell", () => {
+
+        it("is not orderable", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.orderable).toBe(false);
+        });
+
+        it("is empty for parent rows", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.data).toBe("parameter_values");
+
+            const result = paramValsCol.render("parameter_values", null, {tt_parent: 0});
+            expect(result).toBe("");
+        });
+
+        it("shows parameter values for child row", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.data).toBe("parameter_values");
+
+            const result = paramValsCol.render("parameter_values", null, {tt_parent: 1});
+            expect(result).toBe("parameter_values");
+        });
+    });
+
     describe("author cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, [], customFields).columns[2];
+            const requesterCol = options(false, [], customFields).columns[3];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const authorCol = options(false, [], customFields).columns[2];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 0});
@@ -168,7 +192,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const authorCol = options(false, [], customFields).columns[2];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 1});
@@ -179,12 +203,12 @@ describe("reportsTable", () => {
     describe("requester cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, [], customFields).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const requesterCol = options(false, [], customFields).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 0});
@@ -192,7 +216,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const requesterCol = options(false, [], customFields).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 1});
@@ -202,11 +226,11 @@ describe("reportsTable", () => {
 
     describe("filtering", () => {
 
-        const internal = [null, "r1", "v1", false, "author", "requester", "displaya"];
-        const published = [null, "r2", "v1", true, "author", "requester", "displayb"];
-        const parentBoth = [null, "r2,r1", "v1,v1", "true,false", "author", "requester", "displaya,displayb"];
-        const parentInternalOnly = [null, "", "", "false,false", "", "", ""];
-        const parentPublishedOnly = [null, "", "", "true,true", "", "", ""];
+        const internal = [null, "r1", "v1", false, "p1=v1", "author", "requester", "displaya"];
+        const published = [null, "r2", "v1", true, "p1=v2", "author", "requester", "displayb"];
+        const parentBoth = [null, "r2,r1", "v1,v1", "true,false", null,  "author", "requester", "displaya,displayb"];
+        const parentInternalOnly = [null, "", "", "false,false", null, "", "", ""];
+        const parentPublishedOnly = [null, "", "", "true,true", null, "", "", ""];
 
         it("can return reports with any status", () => {
             expect(statusFilter("all", internal)).toBe(true);
@@ -233,15 +257,15 @@ describe("reportsTable", () => {
         });
 
         it("can filter by name", () => {
-            expect(nameFilter(6, "2", internal)).toBe(false);
-            expect(nameFilter(6, "2", published)).toBe(true);
-            expect(nameFilter(6, "2", parentBoth)).toBe(true);
+            expect(nameFilter(7, "2", internal)).toBe(false);
+            expect(nameFilter(7, "2", published)).toBe(true);
+            expect(nameFilter(7, "2", parentBoth)).toBe(true);
         });
 
         it("can filter by display name", () => {
-            expect(nameFilter(6, "aya", internal)).toBe(true);
-            expect(nameFilter(6, "aya", published)).toBe(false);
-            expect(nameFilter(6, "aya", parentBoth)).toBe(true);
+            expect(nameFilter(7, "aya", internal)).toBe(true);
+            expect(nameFilter(7, "aya", published)).toBe(false);
+            expect(nameFilter(7, "aya", parentBoth)).toBe(true);
         });
     });
 

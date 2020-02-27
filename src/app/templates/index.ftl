@@ -29,6 +29,11 @@
                 </th>
             </#if>
 
+            <th>
+                <label for="parameter-values-filter">Parameter Values</label>
+
+            </th>
+
             <#list customFieldKeys as customField>
                 <th>
                     <label for="${customField}-filter">${customField?cap_first}</label>
@@ -61,15 +66,25 @@
                     </select>
                 </th>
             </#if>
+            <th>
+                <input class="form-control" type="text" id="parameter-values-filter"
+                       placeholder="Type to filter..."
+                       data-role="standard-filter"
+                        <#if isReviewer>
+                            data-col="4"
+                        <#else>
+                            data-col="3"
+                        </#if>
+                />
             <#list customFieldKeys as customField>
                 <th>
                     <input class="form-control" type="text" id="${customField}-filter"
                            placeholder="Type to filter..."
                            data-role="standard-filter"
                            <#if isReviewer>
-                               data-col="${customField?index + 4}"
+                               data-col="${customField?index + 5}"
                            <#else>
-                               data-col="${customField?index + 3}"
+                               data-col="${customField?index + 4}"
                            </#if>
                     />
                 </th>

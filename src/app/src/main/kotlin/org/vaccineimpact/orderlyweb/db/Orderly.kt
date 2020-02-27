@@ -68,7 +68,7 @@ class Orderly(val isReviewer: Boolean,
                             .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                             .fetch()
 
-            return mapToReportVersionsWithCustomFields(it, versions)
+            return mapToReportVersions(it, versions)
         }
     }
 
@@ -95,7 +95,7 @@ class Orderly(val isReviewer: Boolean,
                     .orderBy(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING)
                     .fetch()
 
-            return mapToReportVersionsWithCustomFields(it, versions)
+            return mapToReportVersions(it, versions)
         }
     }
 
@@ -144,7 +144,8 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
-            val aretefacts = getArtefacts(name, version)
+            val artefacts = getArtefacts(name, version)
+            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
@@ -152,9 +153,10 @@ class Orderly(val isReviewer: Boolean,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
-                    artefacts = aretefacts,
+                    artefacts = artefacts,
                     resources = getResourceFiles(name, version),
-                    dataInfo = getDataInfo(name, version))
+                    dataInfo = getDataInfo(name, version),
+                    parameterValues = parameterValues)
         }
     }
 
@@ -268,8 +270,8 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    private fun mapToReportVersionsWithCustomFields(ctx: JooqContext,
-                                                    versions: Result<GenericReportVersionRecord>): List<ReportVersion>
+    private fun mapToReportVersions(ctx: JooqContext,
+                                    versions: Result<GenericReportVersionRecord>): List<ReportVersion>
     {
         val allCustomFields = ctx.dsl.select(
                 CUSTOM_FIELDS.ID)
@@ -287,6 +289,8 @@ class Orderly(val isReviewer: Boolean,
                 .fetch()
                 .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
 
+        val parametersForVersions = getParametersForVersions(versionIds)
+
         return versions.map{
             val versionId = it[REPORT_VERSION.ID]
 
@@ -299,13 +303,23 @@ class Orderly(val isReviewer: Boolean,
                         .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
             }
 
+            val versionParameters = if (parametersForVersions.containsKey(versionId))
+            {
+                parametersForVersions[versionId]!!
+            }
+            else
+            {
+                mapOf()
+            }
+
             ReportVersion(it[REPORT_VERSION.REPORT],
                     it[REPORT_VERSION.DISPLAYNAME],
                     it[REPORT_VERSION.ID],
                     it["latestVersion"] as String,
                     it[REPORT_VERSION.PUBLISHED],
                     it[REPORT_VERSION.DATE].toInstant(),
-                    versionCustomFields)
+                    versionCustomFields,
+                    versionParameters)
         }
     }
 
@@ -320,6 +334,21 @@ class Orderly(val isReviewer: Boolean,
                     .execute()
 
             return newStatus
+        }
+    }
+
+    private fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    PARAMETERS.REPORT_VERSION,
+                    PARAMETERS.NAME,
+                    PARAMETERS.VALUE)
+                    .from(PARAMETERS)
+                    .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
+                    .fetch()
+                    .groupBy{it[PARAMETERS.REPORT_VERSION]}
+                    .mapValues{it.value.associate{r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE]}}
         }
     }
 

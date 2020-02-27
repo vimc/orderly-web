@@ -73,6 +73,12 @@ export const options = (isReviewer, reports, customFields) => {
         })
     }
 
+    cols.push({
+        "data": "parameter_values",
+        "render": buildBasicCell,
+        "orderable": false
+    });
+
     for (const customField of customFields) {
         cols.push({
             "data": customField,
