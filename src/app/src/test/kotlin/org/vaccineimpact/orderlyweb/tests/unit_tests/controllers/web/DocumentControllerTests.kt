@@ -86,7 +86,7 @@ class DocumentControllerTests : ControllerTest()
     fun `creates correct breadcrumbs`()
     {
         val mockRepo = mock<DocumentRepository> {
-            on { getAllVisibleDocuments() } doReturn listOf(Document("name", "path", true, listOf()))
+            on { getAllVisibleDocuments() } doReturn listOf(Document("name", "path", true, false, listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getAll()

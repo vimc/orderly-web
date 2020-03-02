@@ -28,12 +28,12 @@ class DocumentsPageTests : TeamcityTests()
     @Test
     fun `renders list of docs`()
     {
-        val leaf1 = Document("file.csv", "some/file.csv", true, listOf())
-        val leaf2 = Document("empty", "some/empty/", false, listOf())
-        val leaf3 = Document("file.doc", "some/path/file.doc", true, listOf())
-        val root1 = Document("root", "root/", false, listOf())
-        val root2 = Document("some", "some/", false,
-                listOf(leaf1, leaf2, Document("path", "some/path/", false, listOf(leaf3))))
+        val leaf1 = Document("file.csv", "some/file.csv", true, false, listOf())
+        val leaf2 = Document("empty", "some/empty/", false, false, listOf())
+        val leaf3 = Document("file.doc", "some/path/file.doc", true, false, listOf())
+        val root1 = Document("root", "root/", false, false, listOf())
+        val root2 = Document("some", "some/", false, false,
+                listOf(leaf1, leaf2, Document("path", "some/path/", false, false, listOf(leaf3))))
 
         val viewModel = DocumentsViewModel(listOf(root1, root2), testDefaultModel)
         val doc = template.jsoupDocFor(viewModel)
@@ -54,7 +54,8 @@ class DocumentsPageTests : TeamcityTests()
         assertLinkListItem(thirdLevelMenu.selectFirst("li"), "file.doc", "some/path/file.doc")
     }
 
-    private fun assertLinkListItem(listItem: Element, name: String, href: String) {
+    private fun assertLinkListItem(listItem: Element, name: String, href: String)
+    {
         assertThat(listItem.selectFirst("span").text()).isEqualTo("$name:")
         assertThat(listItem.selectFirst("a").text()).isEqualTo("open")
         assertThat(listItem.selectFirst("a").attr("href"))

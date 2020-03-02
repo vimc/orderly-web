@@ -60,12 +60,24 @@ class Files : FileSystem
         val source = File(sourceAbsolutePath)
         val children = source.list() ?: arrayOf()
         return children.map { File(source, it) }
-                .map {
-                    DocumentDetails(it.name,
-                            it.absolutePath,
-                            it.absolutePath.removePrefix(documentsRoot),
-                            it.isFile)
-                }
+                .map { getDocumentDetails(it, documentsRoot) }
+    }
+
+    private fun getDocumentDetails(file: File, documentsRoot: String): DocumentDetails
+    {
+        return if (file.extension == "url")
+        {
+            val url = file.readText().trim('\n').trim().split("URL=").last()
+            DocumentDetails(url, url, url, true, true)
+        }
+        else
+        {
+            DocumentDetails(file.name,
+                    file.absolutePath,
+                    file.absolutePath.removePrefix(documentsRoot),
+                    file.isFile,
+                    false)
+        }
     }
 
     override fun getAbsolutePath(sourcePath: String): String
@@ -92,4 +104,8 @@ class Files : FileSystem
     }
 }
 
-class DocumentDetails(val name: String, val absolutePath: String, val pathFragment: String?, val isFile: Boolean)
+class DocumentDetails(val name: String,
+                      val absolutePath: String,
+                      val pathFragment: String?,
+                      val isFile: Boolean,
+                      val external: Boolean)
