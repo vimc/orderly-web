@@ -43,7 +43,7 @@ class OrderlyDocumentRepository : DocumentRepository
                         it[ORDERLYWEB_DOCUMENT.DISPLAY_NAME] ?: it[ORDERLYWEB_DOCUMENT.NAME],
                         it[ORDERLYWEB_DOCUMENT.PATH],
                         it[ORDERLYWEB_DOCUMENT.IS_FILE] == 1,
-                        it[ORDERLYWEB_DOCUMENT.IS_FILE] == 1,
+                        it[ORDERLYWEB_DOCUMENT.EXTERNAL] == 1,
                         listOf()
                 )
             }
