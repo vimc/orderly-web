@@ -10,9 +10,12 @@ data class DocumentViewModel(val displayName: String,
                              val path: String,
                              val url: String,
                              val isFile: Boolean,
-                             val children: List<DocumentViewModel>){
-    companion object {
-        fun build(doc: Document, appConfig: Config = AppConfig()): DocumentViewModel {
+                             val children: List<DocumentViewModel>)
+{
+    companion object
+    {
+        fun build(doc: Document, appConfig: Config = AppConfig()): DocumentViewModel
+        {
             return DocumentViewModel(doc.displayName, doc.path, "${appConfig["app.url"]}/project-docs/${doc.path}",
                     doc.file, doc.children.map { build(it) })
         }
@@ -27,8 +30,13 @@ data class DocumentsViewModel(@Serialise("documentList")
     {
         val breadcrumb = Breadcrumb("Project documentation", "${AppConfig()["app.url"]}/project-docs")
 
-        fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel {
-            return DocumentsViewModel(docs.map { DocumentViewModel.build (it)},
+        fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel
+        {
+            val docVms = docs.filter { it.file || it.children.any() } // don't include empty folders
+                    .map { DocumentViewModel.build(it) }
+                    .sortedBy { it.isFile }
+
+            return DocumentsViewModel(docVms,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
     }

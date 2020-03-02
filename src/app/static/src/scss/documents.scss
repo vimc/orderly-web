@@ -3,9 +3,17 @@
 ul {
   padding-left: 10px;
   list-style: none;
+  padding-bottom: 10px;
+}
+
+.octicon-file {
+  vertical-align: text-top;
 }
 
 li {
+
+  padding-left: 8px;
+
   .expander {
 
     &::after {
@@ -15,8 +23,8 @@ li {
     }
   }
 
-  span {
-    padding-left: 15px;
+  span.folder-name {
+    padding-left: 17px;
   }
 
   cursor: default;
@@ -43,7 +51,7 @@ li {
     }
 
     &.open {
-      .expander::after {
+      >.expander::after {
         -webkit-transform: rotate(0);
         transform: rotate(0);
       }

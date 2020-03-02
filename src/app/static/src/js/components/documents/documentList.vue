@@ -3,22 +3,22 @@
         <li v-for="doc in docs"
             v-bind:id="doc.path"
             v-bind:class="[{'has-children': doc.children.length > 0}, {'open':expanded[doc.path]}]">
-            <div v-if="!doc.isFile" class="expander" v-on:click="toggle(doc.path)"></div>
-            <span v-if="!doc.isFile" v-text="doc.displayName" v-on:click="toggle(doc.path)"></span>
-            <span v-if="doc.isFile">{{doc.displayName}}:
-                <a :href="doc.url + '?inline'">open</a>/<a :href="doc.url">download</a>
-            </span>
-            <ul v-if="doc.children.length > 0" v-show="expanded[doc.path]">
-                <li v-for="child in doc.children">
-                    <document-list :docs="doc.children"></document-list>
-                </li>
-            </ul>
+            <div v-if="!doc.is_file"
+                 class="expander"
+                 v-on:click="toggle(doc.path)"></div>
+            <span v-if="!doc.is_file"
+                  class="folder-name"
+                  v-text="doc.display_name"
+                  v-on:click="toggle(doc.path)"></span>
+            <file v-if="doc.is_file" :doc="doc"></file>
+            <document-list v-show="expanded[doc.path]" :docs="doc.children"></document-list>
         </li>
     </ul>
 </template>
 
 <script>
     import Vue from "vue";
+    import file from "./file.vue";
 
     export default {
         name: "document-list",
@@ -32,6 +32,9 @@
             toggle(path) {
                 Vue.set(this.expanded, path, !this.expanded[path]);
             }
+        },
+        components: {
+            file
         }
     }
 
