@@ -34,6 +34,7 @@ data class DocumentsViewModel(@Serialise("documentList")
         {
             val docVms = docs.filter { it.file || it.children.any() } // don't include empty folders
                     .map { DocumentViewModel.build(it) }
+                    .sortedBy { it.displayName }
                     .sortedBy { it.isFile }
 
             return DocumentsViewModel(docVms,

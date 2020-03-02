@@ -2,7 +2,7 @@
     <div>
         <file-icon></file-icon>
         <span>{{doc.display_name}}:</span>
-        <a :href="doc.url + '?inline'">open</a>/<a :href="doc.url">download</a>
+        <a :href="doc.url + '?inline=true'">open</a>/<a :href="doc.url">download</a>
     </div>
 </template>
 
