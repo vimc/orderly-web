@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.openqa.selenium.By
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertDocument
 
 class DocumentPageTests : SeleniumTest()
@@ -20,12 +22,13 @@ class DocumentPageTests : SeleniumTest()
             insertDocument(it, "child", 1, "/name")
         }
 
+        addUserWithPermissions(listOf(ReifiedPermission("documents.read", Scope.Global())))
+
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl + "/project-docs/")
 
-        val docsList = driver.findElement(By.cssSelector("ul"))
-        Assertions.assertThat(docsList.findElement(By.cssSelector(".folder-name")).text).isEqualTo("/name")
-        Assertions.assertThat(docsList.findElements(By.cssSelector(".octicon-file")).count()).isEqualTo(1)
+        Assertions.assertThat(driver.findElement(By.cssSelector(".folder-name")).text).isEqualTo("/name")
+        Assertions.assertThat(driver.findElements(By.cssSelector(".octicon-file")).count()).isEqualTo(1)
     }
 
 }
