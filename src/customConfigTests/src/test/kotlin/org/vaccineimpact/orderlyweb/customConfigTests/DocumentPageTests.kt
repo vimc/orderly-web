@@ -8,8 +8,10 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertDocument
 
 class DocumentPageTests : SeleniumTest()
 {
+    // this is just a basic test that the docs are making it onto the page and into the vue component
+    // all other functionality is under test in the front-end unit tests
     @Test
-    fun `can publish report`()
+    fun `documents are rendered`()
     {
         startApp("auth.provider=montagu")
 
@@ -22,8 +24,8 @@ class DocumentPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/project-docs/")
 
         val docsList = driver.findElement(By.cssSelector("ul"))
-        Assertions.assertThat(docsList.findElement(By.cssSelector("folder-name")).text).isEqualTo("/name")
-        Assertions.assertThat(docsList.findElements(By.cssSelector("octicon-file")).count()).isEqualTo(1)
+        Assertions.assertThat(docsList.findElement(By.cssSelector(".folder-name")).text).isEqualTo("/name")
+        Assertions.assertThat(docsList.findElements(By.cssSelector(".octicon-file")).count()).isEqualTo(1)
     }
 
 }
