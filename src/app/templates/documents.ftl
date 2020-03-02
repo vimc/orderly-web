@@ -3,25 +3,15 @@
         <link rel="stylesheet" href="${appUrl}/css/documents.min.css"/>
     </#macro>
 
-    <#macro listDoc doc>
-        <#if doc.file>
-            <span>${doc.displayName}:</span>
-            <a href="${appUrl}/project-docs/${doc.path}?inline=true">open</a>/<a href="${appUrl}/project-docs/${doc.path}">download</a>
-        <#else>
-            <span>${doc.displayName}</span>
-        </#if>
-        <#if doc.children?size != 0>
-            <ul>
-                <#list doc.children as child>
-                    <li><@listDoc child /></li>
-                </#list>
-            </ul>
-        </#if>
-    </#macro>
+    <div id="app">
+        <document-list :docs="docs"></document-list>
+    </div>
 
-    <ul>
-        <#list docs as doc>
-            <li><@listDoc doc></@listDoc></li>
-        </#list>
-    </ul>
+    <#macro scripts>
+        <script type="text/javascript">
+            var docs = ${documentList};
+        </script>
+
+        <script type="text/javascript" src="${appUrl}/js/documents.bundle.js"></script>
+    </#macro>
 </@layout>
