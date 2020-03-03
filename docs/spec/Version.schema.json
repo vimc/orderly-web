@@ -6,10 +6,8 @@
     "id": {"type" :"string"},
     "display_name": {"type": [ "string", "null"] },
     "date": {"type" :"string"},
-    "published":  {"type" :"boolean"},
-    "requester":  {"type" :"string"},
-    "author":  {"type" :"string"}
+    "published":  {"type": "boolean"}
   },
-  "additionalProperties": false,
-  "required": ["name", "id", "display_name", "date", "published", "requester", "author"]
+  "additionalProperties": true,
+  "required": ["name", "id", "display_name", "date", "published"]
 }

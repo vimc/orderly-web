@@ -34,7 +34,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebDocumentRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
 
-    private static final long serialVersionUID = 224470905;
+    private static final long serialVersionUID = -345668014;
 
     /**
      * The reference instance of <code>orderlyweb_document</code>
@@ -83,6 +83,11 @@ public class OrderlywebDocument extends TableImpl<OrderlywebDocumentRecord> {
      * The column <code>orderlyweb_document.is_file</code>.
      */
     public final TableField<OrderlywebDocumentRecord, Integer> IS_FILE = createField("is_file", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("1", org.jooq.impl.SQLDataType.INTEGER)), this, "");
+
+    /**
+     * The column <code>orderlyweb_document.external</code>.
+     */
+    public final TableField<OrderlywebDocumentRecord, Integer> EXTERNAL = createField("external", org.jooq.impl.SQLDataType.INTEGER.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.INTEGER)), this, "");
 
     /**
      * Create a <code>orderlyweb_document</code> table reference

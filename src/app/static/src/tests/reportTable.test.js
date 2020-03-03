@@ -4,36 +4,38 @@ const $ = require('jquery');
 
 describe("reportsTable", () => {
 
+    const customFields = ["author", "requester"]
+
     it("has expected columns when user is reviewer", () => {
-        const cols = options(true, []).columns;
-        expect(cols.length).toBe(6);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "author", "requester", "display_name"])
+        const cols = options(true, [], customFields).columns;
+        expect(cols.length).toBe(7);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "published", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has expected columns when user is not a reviewer", () => {
-        const cols = options(false, []).columns;
-        expect(cols.length).toBe(5);
-        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "author", "requester", "display_name"])
+        const cols = options(false, [], customFields).columns;
+        expect(cols.length).toBe(6);
+        expect(cols.map(c => c.data)).toStrictEqual(["name", "id", "parameter_values", "author", "requester", "display_name"])
     });
 
     it("has invisible display name col", () => {
-        const cols = options(false, []).columns;
-        expect(cols[4].visible).toBe(false);
+        const cols = options(false, [], customFields).columns;
+        expect(cols[5].visible).toBe(false);
     });
 
     it("is ordered by version desc", () => {
-        const opts = options(false, []);
+        const opts = options(false, [], customFields);
         expect(opts.order).toStrictEqual([[2, "desc"]]);
         expect(opts.columns[1].data).toBe("id");
     });
 
     it("has expected dom structure", () => {
-        const dom = options(true, []).dom;
+        const dom = options(true, [], customFields).dom;
         expect(dom).toBe('<"top">rt<"bottom"lp><"clear">',);
     });
 
     it("has expected options", () => {
-        const opts = options(true, []);
+        const opts = options(true, [], customFields);
         expect(opts.pageLength).toBe(50);
         expect(opts.autoWidth).toBe(false);
     });
@@ -41,13 +43,13 @@ describe("reportsTable", () => {
     describe("name cell", () => {
 
         it("contains display name for parent", () => {
-            const nameCol = options(false, []).columns[0];
+            const nameCol = options(false, [], customFields).columns[0];
             const $result = $(nameCol.render("r1", null, {display_name: "report name", tt_parent: 0}));
             expect($($result.find("span")[0]).text()).toBe("report name");
         });
 
         it("contains link to latest version for parent", () => {
-            const nameCol = options(false, []).columns[0];
+            const nameCol = options(false, [], customFields).columns[0];
             const $result = $(nameCol.render("r1", null, {
                 display_name: "report name", latest_version: "v1",
                 name: "r1", tt_parent: 0
@@ -59,7 +61,7 @@ describe("reportsTable", () => {
         });
 
         it("contains number of versions for parent", () => {
-            const nameCol = options(false, []).columns[0];
+            const nameCol = options(false, [], customFields).columns[0];
             let $result = $(nameCol.render("r1", null, {display_name: "report name", num_versions: 1, tt_parent: 0}));
             expect($result.find("span.text-muted").text()).toBe("1 version: ");
 
@@ -68,7 +70,7 @@ describe("reportsTable", () => {
         });
 
         it("is empty for child", () => {
-            const nameCol = options(false, []).columns[0];
+            const nameCol = options(false, [], customFields).columns[0];
             const $result = $(nameCol.render("name", null, {tt_parent: 1, display_name: "report name"}));
             expect($result.text()).toBe("")
         });
@@ -77,13 +79,13 @@ describe("reportsTable", () => {
     describe("version cell", () => {
 
         it("is empty for parent rows", () => {
-            const versionColDefinition = options(false, []).columns[1];
+            const versionColDefinition = options(false, [], customFields).columns[1];
             const result = versionColDefinition.render("some-id", null, {tt_parent: 0});
             expect(result).toBe("");
         });
 
         it("contains link to report version page for child", () => {
-            const versionColDefinition = options(false, []).columns[1];
+            const versionColDefinition = options(false, [], customFields).columns[1];
             const $result = $(versionColDefinition.render("some-id", null, {
                 tt_parent: 1,
                 name: "r1",
@@ -96,7 +98,7 @@ describe("reportsTable", () => {
         });
 
         it("contains latest badge if version is latest", () => {
-            const versionColDefinition = options(false, []).columns[1];
+            const versionColDefinition = options(false, [], customFields).columns[1];
             const $result = $(versionColDefinition.render("v1", null, {
                 tt_parent: 1,
                 name: "r1",
@@ -111,7 +113,7 @@ describe("reportsTable", () => {
 
 
         it("contains out-dated badge if version is out-dated", () => {
-            const versionColDefinition = options(false, []).columns[1];
+            const versionColDefinition = options(false, [], customFields).columns[1];
             const $result = $(versionColDefinition.render("v1", null, {
                 tt_parent: 1,
                 name: "r1",
@@ -129,20 +131,20 @@ describe("reportsTable", () => {
     describe("status cell", () => {
 
         it("is empty for parent rows", () => {
-            const statusCol = options(true, []).columns[2];
+            const statusCol = options(true, [], customFields).columns[2];
             const result = statusCol.render("some-id", null, {tt_parent: 0});
             expect(result).toBe("");
         });
 
         it("renders published badge", () => {
-            const statusCol = options(true, []).columns[2];
+            const statusCol = options(true, [], customFields).columns[2];
             const $result = $(statusCol.render(true, null, {tt_parent: 1}));
             expect($result.text()).toBe("published");
             expect($result.attr("class")).toBe("badge-published badge float-left");
         });
 
         it("renders internal badge", () => {
-            const statusCol = options(true, []).columns[2];
+            const statusCol = options(true, [], customFields).columns[2];
             const $result = $(statusCol.render(false, null, {tt_parent: 1}));
             expect($result.text()).toBe("internal");
             expect($result.attr("class")).toBe("badge-internal badge float-left");
@@ -150,15 +152,39 @@ describe("reportsTable", () => {
 
     });
 
+    describe("parameter values cell", () => {
+
+        it("is not orderable", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.orderable).toBe(false);
+        });
+
+        it("is empty for parent rows", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.data).toBe("parameter_values");
+
+            const result = paramValsCol.render("parameter_values", null, {tt_parent: 0});
+            expect(result).toBe("");
+        });
+
+        it("shows parameter values for child row", () => {
+            const paramValsCol = options(false, [], customFields).columns[2];
+            expect(paramValsCol.data).toBe("parameter_values");
+
+            const result = paramValsCol.render("parameter_values", null, {tt_parent: 1});
+            expect(result).toBe("parameter_values");
+        });
+    });
+
     describe("author cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, []).columns[2];
+            const requesterCol = options(false, [], customFields).columns[3];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const authorCol = options(false, []).columns[2];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 0});
@@ -166,7 +192,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const authorCol = options(false, []).columns[2];
+            const authorCol = options(false, [], customFields).columns[3];
             expect(authorCol.data).toBe("author");
 
             const result = authorCol.render("author", null, {tt_parent: 1});
@@ -177,12 +203,12 @@ describe("reportsTable", () => {
     describe("requester cell", () => {
 
         it("is not orderable", () => {
-            const requesterCol = options(false, []).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.orderable).toBe(false);
         });
 
         it("is empty for parent rows", () => {
-            const requesterCol = options(false, []).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 0});
@@ -190,7 +216,7 @@ describe("reportsTable", () => {
         });
 
         it("shows author for child row", () => {
-            const requesterCol = options(false, []).columns[3];
+            const requesterCol = options(false, [], customFields).columns[4];
             expect(requesterCol.data).toBe("requester");
 
             const result = requesterCol.render("requester", null, {tt_parent: 1});
@@ -200,11 +226,11 @@ describe("reportsTable", () => {
 
     describe("filtering", () => {
 
-        const internal = [null, "r1", "v1", false, "author", "requester", "displaya"];
-        const published = [null, "r2", "v1", true, "author", "requester", "displayb"];
-        const parentBoth = [null, "r2,r1", "v1,v1", "true,false", "author", "requester", "displaya,displayb"];
-        const parentInternalOnly = [null, "", "", "false,false", "", "", ""];
-        const parentPublishedOnly = [null, "", "", "true,true", "", "", ""];
+        const internal = [null, "r1", "v1", false, "p1=v1", "author", "requester", "displaya"];
+        const published = [null, "r2", "v1", true, "p1=v2", "author", "requester", "displayb"];
+        const parentBoth = [null, "r2,r1", "v1,v1", "true,false", null,  "author", "requester", "displaya,displayb"];
+        const parentInternalOnly = [null, "", "", "false,false", null, "", "", ""];
+        const parentPublishedOnly = [null, "", "", "true,true", null, "", "", ""];
 
         it("can return reports with any status", () => {
             expect(statusFilter("all", internal)).toBe(true);
@@ -231,15 +257,15 @@ describe("reportsTable", () => {
         });
 
         it("can filter by name", () => {
-            expect(nameFilter(6, "2", internal)).toBe(false);
-            expect(nameFilter(6, "2", published)).toBe(true);
-            expect(nameFilter(6, "2", parentBoth)).toBe(true);
+            expect(nameFilter(7, "2", internal)).toBe(false);
+            expect(nameFilter(7, "2", published)).toBe(true);
+            expect(nameFilter(7, "2", parentBoth)).toBe(true);
         });
 
         it("can filter by display name", () => {
-            expect(nameFilter(6, "aya", internal)).toBe(true);
-            expect(nameFilter(6, "aya", published)).toBe(false);
-            expect(nameFilter(6, "aya", parentBoth)).toBe(true);
+            expect(nameFilter(7, "aya", internal)).toBe(true);
+            expect(nameFilter(7, "aya", published)).toBe(false);
+            expect(nameFilter(7, "aya", parentBoth)).toBe(true);
         });
     });
 

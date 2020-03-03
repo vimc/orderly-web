@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb.db
 
+import org.jooq.Record6
+import org.jooq.Result
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.*
@@ -8,6 +10,8 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import java.sql.Timestamp
+
+typealias GenericReportVersionRecord = Record6<String, String, String, Boolean, Timestamp, String>
 
 class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
@@ -45,27 +49,26 @@ class Orderly(val isReviewer: Boolean,
     override fun getAllReportVersions(): List<ReportVersion>
     {
         JooqContext().use {
-
             // create a temp table containing the latest version ID for each report name
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
-            //Use relational schema
-            return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
-                            REPORT_VERSION.AUTHOR,
-                            REPORT_VERSION.REQUESTER,
-                            latestVersionForEachReport.field<String>("latestVersion")
-                    )
-                    .from(REPORT_VERSION)
-                    .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fetchInto(ReportVersion::class.java)
+            val versions =
+                    it.dsl.withTemporaryTable(latestVersionForEachReport)
+                            .select(REPORT_VERSION.REPORT,
+                                    REPORT_VERSION.DISPLAYNAME,
+                                    REPORT_VERSION.ID,
+                                    REPORT_VERSION.PUBLISHED,
+                                    REPORT_VERSION.DATE,
+                                    latestVersionForEachReport.field<String>("latestVersion")
+                            )
+                            .from(REPORT_VERSION)
+                            .join(latestVersionForEachReport.tableName)
+                            .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+                            .where(shouldIncludeReportVersion)
+                            .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
+                            .fetch()
+
+            return mapToReportVersions(it, versions)
         }
     }
 
@@ -76,14 +79,12 @@ class Orderly(val isReviewer: Boolean,
             // create a temp table containing the latest visible version ID for each report name
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
-            return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
+            val versions =  it.dsl.withTemporaryTable(latestVersionForEachReport)
+                    .select(REPORT_VERSION.REPORT,
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID,
                             REPORT_VERSION.PUBLISHED,
                             REPORT_VERSION.DATE,
-                            REPORT_VERSION.AUTHOR,
-                            REPORT_VERSION.REQUESTER,
                             latestVersionForEachReport.field<String>("latestVersion")
                     )
                     .from(REPORT_VERSION)
@@ -92,7 +93,9 @@ class Orderly(val isReviewer: Boolean,
                     .join(ORDERLYWEB_PINNED_REPORT_GLOBAL)
                     .on(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.eq(REPORT_VERSION.REPORT))
                     .orderBy(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING)
-                    .fetchInto(ReportVersion::class.java)
+                    .fetch()
+
+            return mapToReportVersions(it, versions)
         }
     }
 
@@ -141,19 +144,19 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
-            val aretefacts = getArtefacts(name, version)
+            val artefacts = getArtefacts(name, version)
+            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
-                    author = reportVersionResult.author,
                     date = reportVersionResult.date.toInstant(),
                     description = reportVersionResult.description,
                     published = reportVersionResult.published,
-                    requester = reportVersionResult.requester,
-                    artefacts = aretefacts,
+                    artefacts = artefacts,
                     resources = getResourceFiles(name, version),
-                    dataInfo = getDataInfo(name, version))
+                    dataInfo = getDataInfo(name, version),
+                    parameterValues = parameterValues)
         }
     }
 
@@ -267,6 +270,59 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
+    private fun mapToReportVersions(ctx: JooqContext,
+                                    versions: Result<GenericReportVersionRecord>): List<ReportVersion>
+    {
+        val allCustomFields = ctx.dsl.select(
+                CUSTOM_FIELDS.ID)
+                .from(CUSTOM_FIELDS)
+                .fetch()
+                .associate { r -> r[CUSTOM_FIELDS.ID] to null as String? }
+
+        val versionIds = versions.map{ v -> v[REPORT_VERSION.ID] }
+        val customFieldsForVersions = ctx.dsl.select(
+                REPORT_VERSION_CUSTOM_FIELDS.KEY,
+                REPORT_VERSION_CUSTOM_FIELDS.VALUE,
+                REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
+                .from(REPORT_VERSION_CUSTOM_FIELDS)
+                .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
+                .fetch()
+                .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
+
+        val parametersForVersions = getParametersForVersions(versionIds)
+
+        return versions.map{
+            val versionId = it[REPORT_VERSION.ID]
+
+            val versionCustomFields = mutableMapOf<String, String?>()
+
+            versionCustomFields.putAll(allCustomFields)
+            if (customFieldsForVersions.containsKey(versionId))
+            {
+                versionCustomFields.putAll(customFieldsForVersions[versionId]!!
+                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
+            }
+
+            val versionParameters = if (parametersForVersions.containsKey(versionId))
+            {
+                parametersForVersions[versionId]!!
+            }
+            else
+            {
+                mapOf()
+            }
+
+            ReportVersion(it[REPORT_VERSION.REPORT],
+                    it[REPORT_VERSION.DISPLAYNAME],
+                    it[REPORT_VERSION.ID],
+                    it["latestVersion"] as String,
+                    it[REPORT_VERSION.PUBLISHED],
+                    it[REPORT_VERSION.DATE].toInstant(),
+                    versionCustomFields,
+                    versionParameters)
+        }
+    }
+
     override fun togglePublishStatus(name: String, version: String): Boolean
     {
         JooqContext().use {
@@ -280,7 +336,22 @@ class Orderly(val isReviewer: Boolean,
             return newStatus
         }
     }
-      
+
+    private fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    PARAMETERS.REPORT_VERSION,
+                    PARAMETERS.NAME,
+                    PARAMETERS.VALUE)
+                    .from(PARAMETERS)
+                    .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
+                    .fetch()
+                    .groupBy{it[PARAMETERS.REPORT_VERSION]}
+                    .mapValues{it.value.associate{r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE]}}
+        }
+    }
+
     private fun getDataInfo(name: String, version: String): List<DataInfo>
     {
         JooqContext().use {

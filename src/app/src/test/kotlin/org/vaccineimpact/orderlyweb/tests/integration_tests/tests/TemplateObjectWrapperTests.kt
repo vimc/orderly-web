@@ -35,12 +35,11 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 "v1",
                 true,
                 now,
-                "dr author",
-                "ms funder",
                 "a fake report",
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
-                listOf(DataInfo("hash", 1234, 2345)))
+                listOf(DataInfo("hash", 1234, 2345)),
+                mapOf("param" to "value"))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash
@@ -86,7 +85,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
             on { hasPermission(any()) } doReturn true
         }
-        val model = IndexViewModel(mockContext, listOf(), listOf())
+        val model = IndexViewModel(mockContext, listOf(), listOf(), listOf())
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash

@@ -9,6 +9,9 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHe
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import sun.security.jca.GetInstance
+import java.time.Instant
+import java.util.*
 
 class SecurityTests : IntegrationTest()
 {
@@ -37,7 +40,6 @@ class SecurityTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateError(response.text, "bearer-token-invalid",
                 "Bearer token not supplied in Authorization header, or bearer token was invalid")
-
     }
 
     @Test
@@ -50,6 +52,22 @@ class SecurityTests : IntegrationTest()
         JSONValidator.validateError(response.text, "forbidden",
                 "You do not have sufficient permissions to access this resource. Missing these permissions: */reports.read")
 
+    }
+
+    @Test
+    fun `returns 401 if bearer token is expired`()
+    {
+        val alreadyExpired = Date.from(Instant.now())
+        val claims = WebTokenHelper.instance.issuer.bearerTokenClaims(fakeGlobalReportReviewer())
+        val expiredClaims = claims.filter { it.component1() != "exp" } + mapOf("exp" to alreadyExpired)
+        val expiredToken = WebTokenHelper.instance.issuer.generator.generate(expiredClaims)
+
+        val response = apiRequestHelper.getWithToken("/reports/", expiredToken)
+
+        assertJsonContentType(response)
+        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        JSONValidator.validateError(response.text, "bearer-token-invalid",
+                "Token has expired. Please request a new one.")
     }
 
     /**  Access token tests */

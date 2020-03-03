@@ -37,12 +37,11 @@ class VersionPageTests : TeamcityTests()
             id = "r1-v1",
             published = true,
             date = Timestamp(System.currentTimeMillis()).toInstant(),
-            author = "an author",
-            requester = "a requester",
             description = "description",
             artefacts = listOf(),
             resources = listOf(),
-            dataInfo = listOf())
+            dataInfo = listOf(),
+            parameterValues = mapOf("p1" to "v1", "p2" to "v2"))
 
     private val testArtefactViewModels = listOf(
             ArtefactViewModel(
@@ -91,6 +90,7 @@ class VersionPageTests : TeamcityTests()
             DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
             listOf(),
             listOf(),
+            "p1=v1, p2=v2",
             testDefaultModel)
 
     @Test
@@ -143,6 +143,8 @@ class VersionPageTests : TeamcityTests()
                 equalToCompressingWhiteSpace("r1 display")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/p[1]/text()",
                 equalToCompressingWhiteSpace("r1-v1")))
+
+        assertThat(xmlResponse, hasXPath("$xPathRoot/p[@id='param-values']", equalToCompressingWhiteSpace("Parameter values: p1=v1, p2=v2")))
 
         assertThat(xmlResponse, hasXPath("$xPathRoot/iframe/@src", equalTo("/testFocalArtefactUrl")))
         assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/text()",

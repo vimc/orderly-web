@@ -43,6 +43,60 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
     }
 }
 
+fun insertCustomFields(customFields: Array<String> = arrayOf("author", "requester"))
+{
+    JooqContext().use {
+
+        for (customField in customFields)
+        {
+            val customFieldRecord = it.dsl.newRecord(Tables.CUSTOM_FIELDS)
+                    .apply {
+                        this.id = customField
+                    }
+            customFieldRecord.store()
+        }
+    }
+}
+
+
+private fun getNewCustomFieldId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.REPORT_VERSION_CUSTOM_FIELDS.ID.max())
+            .from(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+            .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
+private fun getNewParameterId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.PARAMETERS.ID.max())
+            .from(Tables.PARAMETERS)
+            .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
+fun insertReportWithCustomFields(name: String,
+                                 version: String,
+                                 customFields: Map<String, String>,
+                                 published: Boolean = true,
+                                 date: Timestamp = Timestamp(System.currentTimeMillis()))
+{
+    insertReportAndVersion(name, version, published, date)
+    JooqContext().use {
+        for ((key, value) in customFields)
+        {
+            val fieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                    .apply {
+                        this.id = getNewCustomFieldId(it)
+                        this.reportVersion = version
+                        this.key = key
+                        this.value = value
+                    }
+            fieldRecord.store()
+        }
+    }
+}
+
 fun insertReport(name: String,
                  version: String,
                  published: Boolean = true,
@@ -50,7 +104,68 @@ fun insertReport(name: String,
                  author: String = "author authorson",
                  requester: String = "requester mcfunder")
 {
+    insertReportAndVersion(name, version, published, date)
 
+    JooqContext().use {
+        val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.reportVersion = version
+                    this.key = "author"
+                    this.value = author
+                }
+        authorFieldRecord.store()
+
+        val requesterFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.reportVersion = version
+                    this.key = "requester"
+                    this.value = requester
+                }
+        requesterFieldRecord.store()
+    }
+}
+
+fun insertVersionParameterValues(version: String,
+                                 parameterValues: Map<String, String>)
+{
+    JooqContext().use {
+
+        val typeExists = it.dsl.selectFrom(Tables.PARAMETERS_TYPE)
+                .where(Tables.PARAMETERS_TYPE.NAME.eq("text"))
+                .fetch()
+                .count() > 0
+
+        if (!typeExists)
+        {
+            val typeRecord = it.dsl.newRecord(Tables.PARAMETERS_TYPE)
+                    .apply{
+                        this.name = "text"
+                    }
+            typeRecord.store()
+        }
+
+        for ((k,v) in parameterValues)
+        {
+            val parameterRecord = it.dsl.newRecord(Tables.PARAMETERS)
+                    .apply {
+                        this.id = getNewParameterId(it)
+                        this.reportVersion = version
+                        this.name = k
+                        this.type = "text"
+                        this.value = v
+                    }
+            parameterRecord.store()
+        }
+    }
+}
+
+private fun insertReportAndVersion(name: String,
+                                   version: String,
+                                   published: Boolean,
+                                   date: Timestamp)
+{
     JooqContext().use {
 
         val displayname = "display name $name"
@@ -78,8 +193,8 @@ fun insertReport(name: String,
                     this.date = date
                     this.displayname = displayname
                     this.description = "description $name"
-                    this.requester = requester
-                    this.author = author
+                    this.requester = ""
+                    this.author = ""
                     this.published = published
                     this.connection = false
                 }

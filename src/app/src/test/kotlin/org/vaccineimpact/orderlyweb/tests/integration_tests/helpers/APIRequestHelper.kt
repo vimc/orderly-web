@@ -52,6 +52,12 @@ class APIRequestHelper: RequestHelper()
         return get(baseUrl + url, headers)
     }
 
+    fun getWithToken(url: String, bearerToken: String): Response
+    {
+        val headers = standardHeaders(ContentTypes.json).withAuthorizationHeader(bearerToken)
+        return get(baseUrl + url, headers)
+    }
+
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
         val token = generateToken("bademail@gmail.com")
