@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -16,16 +15,14 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
-import java.security.Permission
 import java.time.Duration
 import java.time.Instant
 
 class IndexControllerTests : TeamcityTests()
 {
-    private val reportName = "r1"
-    private val specificReaderContext = mock<ActionContext> {
-        on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read",
-                Scope.Specific("report", reportName))))
+    private val documentReaderContext = mock<ActionContext> {
+        on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("documents.read",
+                Scope.Global())))
     }
 
     private val globalReaderContext = mock<ActionContext> {
@@ -77,7 +74,7 @@ class IndexControllerTests : TeamcityTests()
                 published = false,
                 date = "Fri May 24 2019",
                 customFields = mapOf("author" to "author1", "requester" to "requester1"),
-                parameterValues =  "p1=v1, p2=v2"
+                parameterValues = "p1=v1, p2=v2"
         )
 
         val r1v2Expected = r1v1Expected.copy(
@@ -149,6 +146,22 @@ class IndexControllerTests : TeamcityTests()
         (0..1).map {
             assertThat(result[it]).isEqualToComparingFieldByField(expected[it])
         }
+    }
+
+    @Test
+    fun `showProjectDocs if user has document reading permission`()
+    {
+        val mockOrderly = mock<OrderlyClient> {
+            on { this.getGlobalPinnedReports() } doReturn listOf<ReportVersion>()
+        }
+
+        var sut = IndexController(documentReaderContext, mockOrderly)
+        var result = sut.index()
+        assertThat(result.showProjectDocs).isTrue()
+
+        sut = IndexController(globalReaderContext, mockOrderly)
+        result = sut.index()
+        assertThat(result.showProjectDocs).isFalse()
     }
 
 }
