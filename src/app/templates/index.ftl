@@ -28,14 +28,18 @@
                 <th style="width:100px"><label for="status-filter">Status</label>
                 </th>
             </#if>
+
             <th>
-                <label for="author-filter">Author</label>
+                <label for="parameter-values-filter">Parameter Values</label>
 
             </th>
-            <th>
-                <label for="requester-filter">Requester</label>
 
-            </th>
+            <#list customFieldKeys as customField>
+                <th>
+                    <label for="${customField}-filter">${customField?cap_first}</label>
+
+                </th>
+            </#list>
         </tr>
         <tr>
             <th>
@@ -63,23 +67,36 @@
                 </th>
             </#if>
             <th>
-                <input class="form-control" type="text" id="author-filter"
+                <input class="form-control" type="text" id="parameter-values-filter"
                        placeholder="Type to filter..."
                        data-role="standard-filter"
-                       data-col="<@if isReviewer "4" "3"/>"/>
-            </th>
-            <th>
-                <input class="form-control" type="text" id="requester-filter"
-                       placeholder="Type to filter..."
-                       data-role="standard-filter"
-                       data-col="<@if isReviewer "5" "4"/>"/>
-            </th>
+                        <#if isReviewer>
+                            data-col="4"
+                        <#else>
+                            data-col="3"
+                        </#if>
+                />
+            <#list customFieldKeys as customField>
+                <th>
+                    <input class="form-control" type="text" id="${customField}-filter"
+                           placeholder="Type to filter..."
+                           data-role="standard-filter"
+                           <#if isReviewer>
+                               data-col="${customField?index + 5}"
+                           <#else>
+                               data-col="${customField?index + 4}"
+                           </#if>
+                    />
+                </th>
+            </#list>
         </tr>
         </thead>
     </table>
     <#macro scripts>
         <script type="text/javascript">
-            var reports = ${reportsJson}
+            var customFields = [<#list customFieldKeys as customField>"${customField}",</#list>];
+            var rawReports = ${reportsJson};
+            var reports = rawReports.map(r => ({...r, ...r.custom_fields}));
             <#if isReviewer>
             var canReview = true;
             </#if>

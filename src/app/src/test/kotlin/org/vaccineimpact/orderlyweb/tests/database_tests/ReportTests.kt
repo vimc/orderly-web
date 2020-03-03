@@ -193,7 +193,6 @@ class ReportTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get all published and unpublished report versions for report`()
     {
-
         insertReport("test", "version1")
         insertReport("test", "version2")
         insertReport("test", "version3", published = false)
@@ -227,5 +226,4 @@ class ReportTests : CleanDatabaseTests()
         assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
 
     }
-
 }

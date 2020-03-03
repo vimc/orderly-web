@@ -38,7 +38,8 @@ class IndexControllerTests : TeamcityTests()
     {
         val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
 
-        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate,
+                mapOf("author" to "author1", "requester" to "requester1"), mapOf("p1" to "v1", "p2" to "v2"))
         val r1v2 = r1v1.copy(
                 id = "v2",
                 displayName = "r1 display name",
@@ -46,7 +47,7 @@ class IndexControllerTests : TeamcityTests()
                 date = someDate.plus(Duration.ofDays(1)))
 
         val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
-                "another author", "another requester")
+                mapOf("author" to "another author", "requester" to "another requester"), mapOf())
 
         val fakeReports = listOf(r1v1, r1v2, r2v1)
 
@@ -63,20 +64,20 @@ class IndexControllerTests : TeamcityTests()
                 name = "r1",
                 displayName = "r1 display name",
                 date = null,
-                author = null,
-                requester = null,
                 latestVersion = "v2",
                 id = "v2",
                 published = null,
-                numVersions = 2)
+                numVersions = 2,
+                customFields = mapOf("author" to null, "requester" to null),
+                parameterValues = null)
 
         val r1v1Expected = r1Expected.copy(
                 ttKey = 2,
                 ttParent = 1,
                 published = false,
-                author = "author1",
-                requester = "requester1",
-                date = "Fri May 24 2019"
+                date = "Fri May 24 2019",
+                customFields = mapOf("author" to "author1", "requester" to "requester1"),
+                parameterValues =  "p1=v1, p2=v2"
         )
 
         val r1v2Expected = r1v1Expected.copy(
@@ -92,12 +93,12 @@ class IndexControllerTests : TeamcityTests()
                         name = "r2",
                         displayName = "r2",
                         date = null,
-                        author = null,
-                        requester = null,
                         latestVersion = "r2v1",
                         id = "r2v1",
                         published = null,
-                        numVersions = 1)
+                        numVersions = 1,
+                        customFields = mapOf("author" to null, "requester" to null),
+                        parameterValues = null)
 
         val r2v1Expected =
                 r2Expected.copy(
@@ -105,8 +106,8 @@ class IndexControllerTests : TeamcityTests()
                         ttParent = 4,
                         date = "Tue May 21 2019",
                         published = true,
-                        author = "another author",
-                        requester = "another requester")
+                        customFields = mapOf("author" to "another author", "requester" to "another requester"),
+                        parameterValues = null)
 
         val expected = listOf(r1Expected, r1v1Expected, r1v2Expected, r2Expected, r2v1Expected)
         assertThat(result.count()).isEqualTo(5)
@@ -120,7 +121,8 @@ class IndexControllerTests : TeamcityTests()
     {
         val someDate = Instant.parse("2019-06-07T12:31:00.613Z")
 
-        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate, "author1", "requester1")
+        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate,
+                mapOf("author" to "author1", "requester" to "requester1"), mapOf("p" to "v"))
         val r1v2 = r1v1.copy(
                 name = "r2",
                 id = "v2",

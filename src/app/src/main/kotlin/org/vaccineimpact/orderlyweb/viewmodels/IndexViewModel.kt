@@ -3,10 +3,7 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -14,13 +11,15 @@ import java.time.format.DateTimeFormatter
 
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
                           val pinnedReports: List<PinnedReportViewModel>,
+                          val customFieldKeys: List<String>,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
-                pinnedReports: List<PinnedReportViewModel>)
-            : this(reports, pinnedReports, DefaultViewModel(context, breadcrumb))
+                pinnedReports: List<PinnedReportViewModel>,
+                customFieldKeys: List<String>)
+            : this(reports, pinnedReports, customFieldKeys, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -30,10 +29,18 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                   pinnedReports: List<ReportVersion>,
                   context: ActionContext): IndexViewModel
         {
+            val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
+            {
+                reports[0].customFields.mapValues{ null }
+            }
+            else {
+                mapOf()
+            }
+
             var currentKey = 0
             val reportRows = reports.groupBy { it.name }.flatMap {
                 currentKey += 1
-                val parent = ReportRowViewModel.buildParent(currentKey, it.value)
+                val parent = ReportRowViewModel.buildParent(currentKey, it.value, emptyCustomFields)
 
                 val children = it.value.sortedByDescending { v -> v.date }.map { version ->
                     currentKey += 1
@@ -45,7 +52,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
 
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels)
+            return IndexViewModel(context, reportRows, pinnedReportsViewModels, emptyCustomFields.keys.sorted())
         }
     }
 }
@@ -69,23 +76,32 @@ data class ReportRowViewModel(val ttKey: Int,
                               val date: String?,
                               val numVersions: Int,
                               val published: Boolean?,
-                              val author: String?,
-                              val requester: String?)
+                              val customFields: Map<String, String?>,
+                              val parameterValues: String?)
 {
     companion object
     {
-        fun buildParent(key: Int, versions: List<ReportVersion>): ReportRowViewModel
+        fun buildParent(key: Int, versions: List<ReportVersion>, customFields: Map<String, String?>): ReportRowViewModel
         {
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
             val displayName = latestVersion.displayName?: latestVersion.name
+
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, null, null)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null)
         }
 
         fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
+            val parameterValues = if (version.parameterValues.keys.count() > 0)
+            {
+                version.parameterValues.keys.joinToString(", ") { "$it=${version.parameterValues[it]}" }
+            }
+            else
+            {
+                null
+            }
 
             return ReportRowViewModel(key,
                     parent.ttKey,
@@ -96,8 +112,8 @@ data class ReportRowViewModel(val ttKey: Int,
                     dateString,
                     parent.numVersions,
                     version.published,
-                    version.author,
-                    version.requester)
+                    version.customFields,
+                    parameterValues)
 
         }
     }

@@ -8,12 +8,11 @@
 		"description": {"type": [ "string", "null"] },
         "date": {"type" :"string"},
         "published":  {"type" :"boolean"},
-        "requester":  {"type" :"string"},
-        "author":  {"type" :"string"},
         "artefacts": { "type": "array", "items": { "$ref": "Artefact.schema.json"}},
         "resources": {"type": "array", "items": {"type": "string"}},
-        "data_info": {"type":  "array", "items":  {"$ref": "DataInfo.schema.json"}}
+        "data_info": {"type":  "array", "items":  {"$ref": "DataInfo.schema.json"}},
+		"parameter_values": {"type":  "object"}
 	},
 	"additionalProperties": false,
-	"required": ["name", "id", "display_name", "description", "date", "published", "requester", "author"]
+	"required": ["name", "id", "display_name", "description", "date", "published", "parameter_values"]
 }
