@@ -22,7 +22,7 @@ data class DocumentViewModel(val displayName: String,
             }
             else
             {
-                "${appConfig["app.url"]}/project-docs/${doc.path}"
+                "${appConfig["app.url"]}/project-docs${doc.path}"
             }
 
             val vm = DocumentViewModel(doc.displayName,

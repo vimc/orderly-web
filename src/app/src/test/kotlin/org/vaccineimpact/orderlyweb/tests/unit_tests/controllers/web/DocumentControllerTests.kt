@@ -100,7 +100,8 @@ class DocumentControllerTests : ControllerTest()
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
                     listOf(Document("name", "/path", false, false, listOf(
-                            Document("child", "/childpath", true, false, listOf())
+                            Document("child", "/childpath", true, false, listOf()),
+                                    Document("www.externalchild.com", "/childpath.url", true, true, listOf())
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
@@ -109,13 +110,20 @@ class DocumentControllerTests : ControllerTest()
         assertThat(result.docs[0].path).isEqualTo("/path")
         assertThat(result.docs[0].isFile).isFalse()
         assertThat(result.docs[0].url).isEqualTo("http://localhost:8888/project-docs/path")
-        assertThat(result.docs[0].children.count()).isEqualTo(1)
+        assertThat(result.docs[0].children.count()).isEqualTo(2)
 
-        val child = result.docs[0].children[0]
+        var child = result.docs[0].children[0]
         assertThat(child.displayName).isEqualTo("child")
         assertThat(child.path).isEqualTo("/childpath")
         assertThat(child.isFile).isTrue()
         assertThat(child.url).isEqualTo("http://localhost:8888/project-docs/childpath")
+        assertThat(child.children.count()).isEqualTo(0)
+
+        child = result.docs[0].children[1]
+        assertThat(child.displayName).isEqualTo("www.externalchild.com")
+        assertThat(child.path).isEqualTo("/childpath.url")
+        assertThat(child.isFile).isTrue()
+        assertThat(child.url).isEqualTo("www.externalchild.com")
         assertThat(child.children.count()).isEqualTo(0)
     }
 
