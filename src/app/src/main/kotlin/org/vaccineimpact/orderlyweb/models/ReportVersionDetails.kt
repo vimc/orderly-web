@@ -7,10 +7,9 @@ data class ReportVersionDetails(val name: String,
                                 val id: String,
                                 val published: Boolean,
                                 val date: Instant,
-                                val author: String,
-                                val requester: String,
                                 val description: String?,
                                 val artefacts: List<Artefact>,
                                 val resources: List<FileInfo>,
-                                val dataInfo: List<DataInfo>)
+                                val dataInfo: List<DataInfo>,
+                                val parameterValues: Map<String, String>)
 

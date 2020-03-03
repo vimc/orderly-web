@@ -124,8 +124,6 @@ class DemoDataTests : IntegrationTest()
         assertThat(dataObj.get("id").asText()).isEqualTo(reportVersion)
 
         assertThat(dataObj.get("published").asInt()).isEqualTo(1)
-        assertThat(dataObj.get("requester").asText()).isEqualTo("ACME")
-        assertThat(dataObj.get("author").asText()).isEqualTo("Dr Serious")
 
     }
 

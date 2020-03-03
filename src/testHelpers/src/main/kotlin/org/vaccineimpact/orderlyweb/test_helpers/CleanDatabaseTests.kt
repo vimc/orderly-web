@@ -30,6 +30,8 @@ abstract class CleanDatabaseTests : DatabaseTests()
             }
 
         }
+
+        insertCustomFields()
     }
 
 }

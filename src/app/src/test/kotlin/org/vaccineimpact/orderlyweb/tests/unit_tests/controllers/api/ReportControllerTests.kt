@@ -36,9 +36,9 @@ class ReportControllerTests : ControllerTest()
 
     private val reportVersions = listOf(
             ReportVersion(reportName, "display1", "v1", "v1", true, Instant.now(),
-                    "auth", "req"),
+                    mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1")),
             ReportVersion("r2", "display2", "v2", "v2", true, Instant.now(),
-                    "auth", "req")
+                    mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1", "p2" to "v2"))
     )
 
     private val mockOrderly = mock<OrderlyClient> {
