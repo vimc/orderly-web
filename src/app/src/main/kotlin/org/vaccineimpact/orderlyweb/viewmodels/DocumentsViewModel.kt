@@ -14,18 +14,31 @@ data class DocumentViewModel(val displayName: String,
 {
     companion object
     {
-        fun build(doc: Document, appConfig: Config = AppConfig()): DocumentViewModel
+        fun build(doc: Document, appConfig: Config = AppConfig()): DocumentViewModel?
         {
             val url = if (doc.external)
             {
-                doc.path
+                doc.displayName
             }
             else
             {
                 "${appConfig["app.url"]}/project-docs/${doc.path}"
             }
-            return DocumentViewModel(doc.displayName, doc.path, "${appConfig["app.url"]}/project-docs/${doc.path}",
-                    doc.file, doc.children.map { build(it) })
+
+            val vm = DocumentViewModel(doc.displayName,
+                    doc.path,
+                    url,
+                    doc.file,
+                    doc.children.map { build(it) }.filterNotNull())
+
+            return if (vm.isFile || vm.children.any())
+            {
+                vm
+            }
+            else
+            {
+                null
+            }
         }
     }
 }
@@ -40,8 +53,9 @@ data class DocumentsViewModel(@Serialise("documentList")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel
         {
-            val docVms = docs.filter { it.file || it.children.any() } // don't include empty folders
+            val docVms = docs
                     .map { DocumentViewModel.build(it) }
+                    .filterNotNull()
                     .sortedBy { it.displayName }
                     .sortedBy { it.isFile }
 
