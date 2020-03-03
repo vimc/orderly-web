@@ -58,9 +58,13 @@ fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
 fun guessFileType(filename: String): String
 {
     val ext = File(filename).extension
-    return when (ext)
+    return when (ext.toLowerCase())
     {
+        "bmp" -> "image/bmp"
         "csv" -> "text/csv"
+        "gif" -> "image/gif"
+        "jpeg" -> "image/jpeg"
+        "jpg" -> "image/jpg"
         "png" -> "image/png"
         "svg" -> "image/svg+xml"
         "pdf" -> "application/pdf"
