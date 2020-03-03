@@ -44,7 +44,7 @@ class FileTests
                         DocumentDetails("childFile.csv", "$root/childFile.csv", "/childFile.csv", true, false))
         assertThat(children[2])
                 .isEqualToComparingFieldByField(
-                        DocumentDetails("https://external.com", "https://external.com", "https://external.com", true, true))
+                        DocumentDetails("https://external.com", "$root/link.web.url", "/link.web.url", true, true))
     }
 
     @Test
