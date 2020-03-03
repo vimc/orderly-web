@@ -72,10 +72,10 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         assertThat(result[0]).isEqualTo(Document("root", "/root/", false, false, listOf()))
         assertThat(result[1]).isEqualTo(Document("some", "/some/", false, false, listOf()))
         assertThat(result[2]).isEqualTo(Document("empty", "/some/empty/", false, false, listOf()))
-        assertThat(result[3]).isEqualTo(Document("first.csv", "/some/first.csv", true, false, listOf()))
-        assertThat(result[4]).isEqualTo(Document("path", "/some/path/", false, false, listOf()))
-        assertThat(result[5]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, false, listOf()))
-        assertThat(result[6]).isEqualTo(Document("http://external.com", "/some/external.web.url", true, true, listOf()))
+        assertThat(result[3]).isEqualTo(Document("http://external.com", "/some/external.web.url", true, true, listOf()))
+        assertThat(result[4]).isEqualTo(Document("first.csv", "/some/first.csv", true, false, listOf()))
+        assertThat(result[5]).isEqualTo(Document("path", "/some/path/", false, false, listOf()))
+        assertThat(result[6]).isEqualTo(Document("file.csv", "/some/path/file.csv", true, false, listOf()))
     }
 
     @Test
@@ -84,7 +84,7 @@ class DocumentRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyDocumentRepository()
         sut.add("/root/", "root", false, false, null)
         sut.add("/root/file.csv", "file.csv", true, false, "/root/")
-        sut.add("http://external.com", "http://external.com", true, true, "/root/")
+        sut.add("/root/some.web.url", "http://external.com", true, true, "/root/")
 
         JooqContext().use {
             val result = it.dsl.selectFrom(Tables.ORDERLYWEB_DOCUMENT)
@@ -110,7 +110,7 @@ class DocumentRepositoryTests : CleanDatabaseTests()
             assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.EXTERNAL]).isEqualTo(0)
             assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/root/")
 
-            assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/some/external.web.url")
+            assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/root/some.web.url")
             assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
             assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.DISPLAY_NAME]).isEqualTo(null)
             assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.DESCRIPTION]).isEqualTo(null)
