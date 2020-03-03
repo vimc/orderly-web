@@ -101,7 +101,8 @@ class DocumentControllerTests : ControllerTest()
             on { getAllVisibleDocuments() } doReturn
                     listOf(Document("name", "/path", false, false, listOf(
                             Document("child", "/childpath", true, false, listOf()),
-                                    Document("www.externalchild.com", "/childpath.url", true, true, listOf())
+                            Document("www.externalchild.com", "/childpath.url", true, true, listOf())
+
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
