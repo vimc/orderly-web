@@ -111,7 +111,7 @@ describe("manage users", () => {
 
     it("passes both role and direct permissions to permission list", async () => {
         const rendered = shallowMountedComponent();
-        rendered.setData({allUsers: mockUsers});
+        rendered.setProps({allUsers: mockUsers});
         rendered.find("input").setValue("example");
 
         await Vue.nextTick();

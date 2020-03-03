@@ -264,7 +264,7 @@ fun insertGlobalPinnedReport(reportName: String, ordering: Int)
 
 fun giveUserGroupGlobalPermission(db: JooqContext, userGroup: String, permissionName: String)
 {
-    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply{
+    db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_PERMISSION).apply {
         this.userGroup = userGroup
         this.permission = permissionName
     }.insert()
@@ -278,4 +278,15 @@ fun giveUserGroupGlobalPermission(db: JooqContext, userGroup: String, permission
     db.dsl.newRecord(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION).apply {
         this.id = id
     }.insert()
+}
+
+fun insertDocument(db: JooqContext, path: String, isFile: Int, parent: String? = null)
+{
+    db.dsl.insertInto(Tables.ORDERLYWEB_DOCUMENT)
+            .set(Tables.ORDERLYWEB_DOCUMENT.NAME, path)
+            .set(Tables.ORDERLYWEB_DOCUMENT.PATH, path)
+            .set(Tables.ORDERLYWEB_DOCUMENT.IS_FILE, isFile)
+            .set(Tables.ORDERLYWEB_DOCUMENT.SHOW, 1)
+            .set(Tables.ORDERLYWEB_DOCUMENT.PARENT, parent)
+            .execute()
 }
