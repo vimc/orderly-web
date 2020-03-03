@@ -63,11 +63,12 @@ fun guessFileType(filename: String): String
         "bmp" -> "image/bmp"
         "csv" -> "text/csv"
         "gif" -> "image/gif"
-        "jpeg" -> "image/jpeg"
+        "jpeg" -> "image/jpg"
         "jpg" -> "image/jpg"
         "png" -> "image/png"
         "svg" -> "image/svg+xml"
         "pdf" -> "application/pdf"
+        "htm" -> "text/html"
         "html" -> "text/html"
         "css" -> "text/css"
         else -> ContentTypes.binarydata
