@@ -99,21 +99,21 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("name", "path", false, listOf(
-                            Document("child", "childpath", true, listOf())
+                    listOf(Document("name", "/path", false, listOf(
+                            Document("child", "/childpath", true, listOf())
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getAll()
         assertThat(result.docs[0].displayName).isEqualTo("name")
-        assertThat(result.docs[0].path).isEqualTo("path")
+        assertThat(result.docs[0].path).isEqualTo("/path")
         assertThat(result.docs[0].isFile).isFalse()
         assertThat(result.docs[0].url).isEqualTo("http://localhost:8888/project-docs/path")
         assertThat(result.docs[0].children.count()).isEqualTo(1)
 
         val child = result.docs[0].children[0]
         assertThat(child.displayName).isEqualTo("child")
-        assertThat(child.path).isEqualTo("childpath")
+        assertThat(child.path).isEqualTo("/childpath")
         assertThat(child.isFile).isTrue()
         assertThat(child.url).isEqualTo("http://localhost:8888/project-docs/childpath")
         assertThat(child.children.count()).isEqualTo(0)
@@ -124,11 +124,25 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("name", "path", false, listOf()))
+                    listOf(Document("toplevelwithonenonemptychild", "toplevelwithonenonemptychild", false, listOf(
+                            Document("emptychild", "emptychild", false, listOf()),
+                            Document("file", "file", true, listOf())
+                    )),
+                            Document("toplevelempty", "toplevelempty", false, listOf()),
+                            Document("toplevelwithemptychild", "toplevelwithemptychild", false,
+                                    listOf(Document("emptychild", "emptychild   ", false, listOf()))),
+                            Document("toplevelwithemptygrandchild", "toplevelwithemptygrandchild", false,
+                                    listOf(Document("childwithemptygrandchild", "childwithemptygrandchild", false, listOf(
+                                            Document("grandchildempty", "grandchildempty", false, listOf())
+                                    )))))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getAll()
-        assertThat(result.docs.count()).isEqualTo(0)
+        assertThat(result.docs.count()).isEqualTo(1)
+        val doc = result.docs[0]
+        assertThat(doc.displayName).isEqualTo("toplevelwithonenonemptychild")
+        assertThat(doc.children.count()).isEqualTo(1)
+        assertThat(doc.children[0].displayName).isEqualTo("file")
     }
 
     @Test
