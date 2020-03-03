@@ -20,10 +20,6 @@ import java.time.Instant
 
 class IndexControllerTests : TeamcityTests()
 {
-    private val documentReaderContext = mock<ActionContext> {
-        on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("documents.read",
-                Scope.Global())))
-    }
 
     private val globalReaderContext = mock<ActionContext> {
         on { permissions } doReturn PermissionSet(setOf(ReifiedPermission("reports.read",
@@ -151,15 +147,23 @@ class IndexControllerTests : TeamcityTests()
     @Test
     fun `showProjectDocs if user has document reading permission`()
     {
+        val documentReaderContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
+        }
+
         val mockOrderly = mock<OrderlyClient> {
             on { this.getGlobalPinnedReports() } doReturn listOf<ReportVersion>()
+        }
+
+        val noPermsContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn false
         }
 
         var sut = IndexController(documentReaderContext, mockOrderly)
         var result = sut.index()
         assertThat(result.showProjectDocs).isTrue()
 
-        sut = IndexController(globalReaderContext, mockOrderly)
+        sut = IndexController(noPermsContext, mockOrderly)
         result = sut.index()
         assertThat(result.showProjectDocs).isFalse()
     }
