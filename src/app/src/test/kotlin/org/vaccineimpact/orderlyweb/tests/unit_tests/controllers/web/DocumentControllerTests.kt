@@ -99,8 +99,8 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("name", "/path", false, listOf(
-                            Document("child", "/childpath", true, listOf())
+                    listOf(Document("name", "/path", false, false, listOf(
+                            Document("child", "/childpath", true, false, listOf())
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
@@ -124,16 +124,16 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("toplevelwithonenonemptychild", "toplevelwithonenonemptychild", false, listOf(
-                            Document("emptychild", "emptychild", false, listOf()),
-                            Document("file", "file", true, listOf())
+                    listOf(Document("toplevelwithonenonemptychild", "toplevelwithonenonemptychild", false, false, listOf(
+                            Document("emptychild", "emptychild", false, false, listOf()),
+                            Document("file", "file", true, false, listOf())
                     )),
-                            Document("toplevelempty", "toplevelempty", false, listOf()),
-                            Document("toplevelwithemptychild", "toplevelwithemptychild", false,
-                                    listOf(Document("emptychild", "emptychild   ", false, listOf()))),
-                            Document("toplevelwithemptygrandchild", "toplevelwithemptygrandchild", false,
-                                    listOf(Document("childwithemptygrandchild", "childwithemptygrandchild", false, listOf(
-                                            Document("grandchildempty", "grandchildempty", false, listOf())
+                            Document("toplevelempty", "toplevelempty", false, false, listOf()),
+                            Document("toplevelwithemptychild", "toplevelwithemptychild", false, false,
+                                    listOf(Document("emptychild", "emptychild   ", false, false, listOf()))),
+                            Document("toplevelwithemptygrandchild", "toplevelwithemptygrandchild", false, false,
+                                    listOf(Document("childwithemptygrandchild", "childwithemptygrandchild", false, false, listOf(
+                                            Document("grandchildempty", "grandchildempty", false, false, listOf())
                                     )))))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
@@ -150,10 +150,10 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("folder", "path", false, listOf(Document("file", "path", true, listOf()))),
-                            Document("file", "path", true, listOf()),
-                            Document("anotherfolder", "path", false, listOf(Document("file", "path", true, listOf()))),
-                            Document("anotherfile", "path", true, listOf()))
+                    listOf(Document("folder", "path", false, false, listOf(Document("file", "path", true, false, listOf()))),
+                            Document("file", "path", true, false, listOf()),
+                            Document("anotherfolder", "path", false, false, listOf(Document("file", "path", true, false, listOf()))),
+                            Document("anotherfile", "path", true, false, listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getAll()
