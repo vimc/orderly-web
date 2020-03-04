@@ -29,6 +29,8 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportTag;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
@@ -61,7 +63,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -1123231404;
+    private static final long serialVersionUID = 1246473712;
 
     /**
      * The reference instance of <code></code>
@@ -147,6 +149,16 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>orderlyweb_pinned_report_global</code>.
      */
     public final OrderlywebPinnedReportGlobal ORDERLYWEB_PINNED_REPORT_GLOBAL = org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL;
+
+    /**
+     * The table <code>orderlyweb_report_tag</code>.
+     */
+    public final OrderlywebReportTag ORDERLYWEB_REPORT_TAG = org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportTag.ORDERLYWEB_REPORT_TAG;
+
+    /**
+     * The table <code>orderlyweb_report_version_tag</code>.
+     */
+    public final OrderlywebReportVersionTag ORDERLYWEB_REPORT_VERSION_TAG = org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG;
 
     /**
      * The table <code>orderlyweb_user</code>.
@@ -274,6 +286,8 @@ public class DefaultSchema extends SchemaImpl {
             OrderlywebDocument.ORDERLYWEB_DOCUMENT,
             OrderlywebPermission.ORDERLYWEB_PERMISSION,
             OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL,
+            OrderlywebReportTag.ORDERLYWEB_REPORT_TAG,
+            OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG,
             OrderlywebUser.ORDERLYWEB_USER,
             OrderlywebUserGroup.ORDERLYWEB_USER_GROUP,
             OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION,
