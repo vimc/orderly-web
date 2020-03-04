@@ -23,7 +23,7 @@ class OrderlyWebAuthorizationRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyAuthorizationRepository()
         val result = sut.getPermissionNames()
         assertThat(result).containsExactly("documents.read", "reports.read", "reports.review", "reports.run",
-                "users.manage")
+                "tags.manage", "users.manage")
     }
 
     @Test
