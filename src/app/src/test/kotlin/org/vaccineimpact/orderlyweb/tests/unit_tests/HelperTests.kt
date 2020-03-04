@@ -37,6 +37,7 @@ class HelperTests : TeamcityTests()
         val jpg = canRenderInBrowser("test.jpg")
         val JPG = canRenderInBrowser("test.JPG")
         val svg = canRenderInBrowser("test.svg")
+        val bmp = canRenderInBrowser("test.BMP")
 
         Assertions.assertThat(png).isTrue()
         Assertions.assertThat(gif).isTrue()
@@ -44,6 +45,7 @@ class HelperTests : TeamcityTests()
         Assertions.assertThat(jpeg).isTrue()
         Assertions.assertThat(JPG).isTrue()
         Assertions.assertThat(svg).isTrue()
+        Assertions.assertThat(bmp).isTrue()
     }
 
     @Test

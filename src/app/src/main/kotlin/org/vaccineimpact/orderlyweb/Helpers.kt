@@ -77,7 +77,7 @@ fun guessFileType(filename: String): String
 
 fun canRenderInBrowser(fileName: String): Boolean
 {
-    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
+    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
 //Mostly stolen from here https://issues.apache.org/jira/browse/IO-373
