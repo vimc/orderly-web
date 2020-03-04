@@ -49,7 +49,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
                 val parentTags = if (reportTags.containsKey(it.key))
                 {
-                    reportTags[it.key]
+                    reportTags[it.key]!!
                 }
                 else
                 {

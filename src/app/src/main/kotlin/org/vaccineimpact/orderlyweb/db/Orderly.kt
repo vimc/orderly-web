@@ -290,6 +290,7 @@ class Orderly(val isReviewer: Boolean,
                 .groupBy{ it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
 
         val parametersForVersions = getParametersForVersions(versionIds)
+        val tagsForVersions = getTagsForVersions(versionIds)
 
         return versions.map{
             val versionId = it[REPORT_VERSION.ID]
@@ -312,6 +313,15 @@ class Orderly(val isReviewer: Boolean,
                 mapOf()
             }
 
+            val versionTags = if (tagsForVersions.containsKey(versionId))
+            {
+                tagsForVersions[versionId]!!
+            }
+            else
+            {
+                listOf()
+            }
+
             ReportVersion(it[REPORT_VERSION.REPORT],
                     it[REPORT_VERSION.DISPLAYNAME],
                     it[REPORT_VERSION.ID],
@@ -319,7 +329,8 @@ class Orderly(val isReviewer: Boolean,
                     it[REPORT_VERSION.PUBLISHED],
                     it[REPORT_VERSION.DATE].toInstant(),
                     versionCustomFields,
-                    versionParameters)
+                    versionParameters,
+                    versionTags)
         }
     }
 
@@ -349,6 +360,19 @@ class Orderly(val isReviewer: Boolean,
                     .fetch()
                     .groupBy{it[PARAMETERS.REPORT_VERSION]}
                     .mapValues{it.value.associate{r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE]}}
+        }
+    }
+
+    private fun getTagsForVersions(versionIds: List<String>): Map<String, List<String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+                    .groupBy{it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION]}
+                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG]}}
         }
     }
 
