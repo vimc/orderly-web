@@ -120,6 +120,28 @@ class DocumentControllerTests : ControllerTest()
     }
 
     @Test
+    fun `sets canOpen correctly`()
+    {
+        val mockRepo = mock<DocumentRepository> {
+            on { getAllVisibleDocuments() } doReturn
+                    listOf(Document("name", "/path", false, false, listOf(
+                            Document("image", "/image.png", true, false, listOf()),
+                            Document("table", "/table.csv", true, false, listOf())
+                    )))
+        }
+        val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
+        val result = sut.getAll()
+        assertThat(result.docs[0].displayName).isEqualTo("name")
+        assertThat(result.docs[0].canOpen).isFalse()
+
+        val children = result.docs[0].children
+        assertThat(children[0].displayName).isEqualTo("image")
+        assertThat(children[0].canOpen).isTrue()
+        assertThat(children[1].displayName).isEqualTo("table")
+        assertThat(children[1].canOpen).isFalse()
+    }
+
+    @Test
     fun `does not include empty folders`()
     {
         val mockRepo = mock<DocumentRepository> {

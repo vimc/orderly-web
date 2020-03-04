@@ -8,10 +8,11 @@ describe("file", () => {
             propsData: {
                 doc: {
                     display_name: "toplevelfile",
-                    path: "toplevelfilepath",
+                    path: "toplevelfilepath.png",
                     url: "toplevelfileurl",
                     children: [],
-                    is_file: true
+                    is_file: true,
+                    can_open: true
                 }
             }
         });
@@ -21,6 +22,25 @@ describe("file", () => {
         expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl?inline=true");
         expect(rendered.findAll("a").at(1).text()).toBe("download");
         expect(rendered.findAll("a").at(1).attributes("href")).toBe("toplevelfileurl");
+    });
+
+    it("does not render open link when can_open is false", () => {
+        const rendered = shallowMount(File, {
+            propsData: {
+                doc: {
+                    display_name: "toplevelfile",
+                    path: "toplevelfilepath.png",
+                    url: "toplevelfileurl",
+                    children: [],
+                    is_file: true,
+                    can_open: false
+                }
+            }
+        });
+
+        expect(rendered.findAll("a").length).toBe(1);
+        expect(rendered.findAll("a").at(0).text()).toBe("download");
+        expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl");
     });
 
 });
