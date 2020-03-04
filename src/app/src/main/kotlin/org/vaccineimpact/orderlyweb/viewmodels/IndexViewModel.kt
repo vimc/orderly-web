@@ -30,6 +30,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
         val breadcrumb = Breadcrumb("Main menu", AppConfig()["app.url"])
 
         fun build(reports: List<ReportVersion>,
+                  reportTags: Map<String, List<String>>,
                   pinnedReports: List<ReportVersion>,
                   context: ActionContext): IndexViewModel
         {
@@ -45,7 +46,17 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             var currentKey = 0
             val reportRows = reports.groupBy { it.name }.flatMap {
                 currentKey += 1
-                val parent = ReportRowViewModel.buildParent(currentKey, it.value, emptyCustomFields)
+
+                val parentTags = if (reportTags.containsKey(it.key))
+                {
+                    reportTags[it.key]
+                }
+                else
+                {
+                    listOf()
+                }
+
+                val parent = ReportRowViewModel.buildParent(currentKey, it.value, emptyCustomFields, parentTags)
 
                 val children = it.value.sortedByDescending { v -> v.date }.map { version ->
                     currentKey += 1
@@ -82,21 +93,26 @@ data class ReportRowViewModel(val ttKey: Int,
                               val numVersions: Int,
                               val published: Boolean?,
                               val customFields: Map<String, String?>,
-                              val parameterValues: String?)
+                              val parameterValues: String?,
+                              val tags: List<String>)
 {
     companion object
     {
-        fun buildParent(key: Int, versions: List<ReportVersion>, customFields: Map<String, String?>): ReportRowViewModel
+        fun buildParent(key: Int,
+                        versions: List<ReportVersion>,
+                        customFields: Map<String, String?>,
+                        tags: List<String>): ReportRowViewModel
         {
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
             val displayName = latestVersion.displayName ?: latestVersion.name
 
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
-                    latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null)
+                    latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null,
+                    tags)
         }
 
-        fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
+        fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel, tags: List<String>): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
             val parameterValues = if (version.parameterValues.keys.count() > 0)
@@ -118,7 +134,8 @@ data class ReportRowViewModel(val ttKey: Int,
                     parent.numVersions,
                     version.published,
                     version.customFields,
-                    parameterValues)
+                    parameterValues,
+                    tags)
 
         }
     }

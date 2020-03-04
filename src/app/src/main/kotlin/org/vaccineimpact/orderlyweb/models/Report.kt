@@ -18,4 +18,5 @@ constructor(val name: String,
             val published: Boolean,
             val date: Instant,
             val customFields: Map<String, String?>,
-            val parameterValues: Map<String, String>)
+            val parameterValues: Map<String, String>,
+            val tags: List<String>)
