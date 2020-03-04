@@ -163,6 +163,12 @@ Defines the membership for a user of a user group
 ### orderlyweb_permission
 Defines a type of permission e.g. 'run reports'
 
+### orderlyweb_report_tag
+Defines tags at a report level
+
+### orderlyweb_report_version_tag
+Defines tags at a report version level
+
 ### orderlyweb_user_group_permission
 Links a user group to a permission to define that the user group has that permission. However that permission needs 
 context to be fully specified, which may be either global level, report level or report version level, which will be 
