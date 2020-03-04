@@ -4,6 +4,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -12,14 +14,16 @@ import java.time.format.DateTimeFormatter
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
                           val pinnedReports: List<PinnedReportViewModel>,
                           val customFieldKeys: List<String>,
+                          val showProjectDocs: Boolean,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
                 pinnedReports: List<PinnedReportViewModel>,
-                customFieldKeys: List<String>)
-            : this(reports, pinnedReports, customFieldKeys, DefaultViewModel(context, breadcrumb))
+                customFieldKeys: List<String>,
+                showProjectDocs: Boolean)
+            : this(reports, pinnedReports, customFieldKeys, showProjectDocs, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -31,9 +35,10 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
             {
-                reports[0].customFields.mapValues{ null }
+                reports[0].customFields.mapValues { null }
             }
-            else {
+            else
+            {
                 mapOf()
             }
 
@@ -51,8 +56,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             }
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
-
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels, emptyCustomFields.keys.sorted())
+            val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
+            return IndexViewModel(context, reportRows, pinnedReportsViewModels, emptyCustomFields.keys.sorted(), showDocs)
         }
     }
 }
@@ -85,7 +90,7 @@ data class ReportRowViewModel(val ttKey: Int,
         {
             val latestVersion = versions.sortedByDescending { it.date }.first()
             val numVersions = versions.count()
-            val displayName = latestVersion.displayName?: latestVersion.name
+            val displayName = latestVersion.displayName ?: latestVersion.name
 
             return ReportRowViewModel(key, 0, latestVersion.name, displayName,
                     latestVersion.id, latestVersion.id, null, numVersions, null, customFields, null)
@@ -129,12 +134,12 @@ data class PinnedReportViewModel(val name: String,
     {
         fun buildList(versions: List<ReportVersion>): List<PinnedReportViewModel>
         {
-            return versions.map{
+            return versions.map {
 
                 val reportFileViewModelBuilder = ReportFileViewModelBuilder(it.name, it.id)
                 PinnedReportViewModel(it.name,
                         it.id,
-                        it.displayName?:it.name,
+                        it.displayName ?: it.name,
                         IndexViewDateFormatter.format(it.date),
                         reportFileViewModelBuilder.buildZipFileViewModel())
             }

@@ -8,19 +8,62 @@ describe("file", () => {
             propsData: {
                 doc: {
                     display_name: "toplevelfile",
-                    path: "toplevelfilepath",
+                    path: "toplevelfilepath.png",
                     url: "toplevelfileurl",
                     children: [],
-                    is_file: true
+                    is_file: true,
+                    can_open: true
                 }
             }
         });
 
-        expect(rendered.find("span").text()).toBe("toplevelfile:");
+        expect(rendered.findAll("span").at(0).text()).toBe("toplevelfile:");
         expect(rendered.findAll("a").at(0).text()).toBe("open");
         expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl?inline=true");
+        expect(rendered.findAll("span").at(1).text()).toBe("/");
         expect(rendered.findAll("a").at(1).text()).toBe("download");
         expect(rendered.findAll("a").at(1).attributes("href")).toBe("toplevelfileurl");
+    });
+
+    it("does not render open link when can_open is false", () => {
+        const rendered = shallowMount(File, {
+            propsData: {
+                doc: {
+                    display_name: "toplevelfile",
+                    path: "toplevelfilepath.png",
+                    url: "toplevelfileurl",
+                    children: [],
+                    is_file: true,
+                    can_open: false
+                }
+            }
+        });
+
+        expect(rendered.findAll("a").length).toBe(1);
+        expect(rendered.findAll("a").at(0).text()).toBe("download");
+        expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl");
+        expect(rendered.findAll("span").length).toBe(1); // the <span>/</span> element should not be present
+    });
+
+    it("does not render download link when doc is external", () => {
+        const rendered = shallowMount(File, {
+            propsData: {
+                doc: {
+                    display_name: "toplevelfile",
+                    path: "toplevelfilepath.png",
+                    url: "toplevelfileurl",
+                    children: [],
+                    is_file: true,
+                    can_open: true,
+                    external: true
+                }
+            }
+        });
+
+        expect(rendered.findAll("a").length).toBe(1);
+        expect(rendered.findAll("a").at(0).text()).toBe("open");
+        expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl");
+        expect(rendered.findAll("span").length).toBe(1); // the <span>/</span> element should not be present
     });
 
 });

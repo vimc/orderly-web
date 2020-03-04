@@ -58,12 +58,17 @@ fun extensionIsOneOf(fileName: String, extensions: Array<String>): Boolean
 fun guessFileType(filename: String): String
 {
     val ext = File(filename).extension
-    return when (ext)
+    return when (ext.toLowerCase())
     {
+        "bmp" -> "image/bmp"
         "csv" -> "text/csv"
+        "gif" -> "image/gif"
+        "jpeg" -> "image/jpg"
+        "jpg" -> "image/jpg"
         "png" -> "image/png"
         "svg" -> "image/svg+xml"
         "pdf" -> "application/pdf"
+        "htm" -> "text/html"
         "html" -> "text/html"
         "css" -> "text/css"
         else -> ContentTypes.binarydata
@@ -72,7 +77,7 @@ fun guessFileType(filename: String): String
 
 fun canRenderInBrowser(fileName: String): Boolean
 {
-    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm"))
+    return extensionIsOneOf(fileName, arrayOf("png", "jpg", "jpeg", "gif", "svg", "pdf", "html", "htm", "bmp"))
 }
 
 //Mostly stolen from here https://issues.apache.org/jira/browse/IO-373

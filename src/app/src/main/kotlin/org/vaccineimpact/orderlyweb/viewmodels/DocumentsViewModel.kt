@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -10,7 +11,8 @@ data class DocumentViewModel(val displayName: String,
                              val path: String,
                              val url: String,
                              val isFile: Boolean,
-                             val children: List<DocumentViewModel>)
+                             val children: List<DocumentViewModel>,
+                             val canOpen: Boolean)
 {
     companion object
     {
@@ -18,6 +20,10 @@ data class DocumentViewModel(val displayName: String,
         {
             val url = if (doc.external)
             {
+                // displayName = name for now
+                // once actual display names are implemented name
+                // should be added to the document model and this
+                // should be doc.name
                 doc.displayName
             }
             else
@@ -25,11 +31,14 @@ data class DocumentViewModel(val displayName: String,
                 "${appConfig["app.url"]}/project-docs${doc.path}"
             }
 
+            val canOpen = doc.file && canRenderInBrowser(doc.path)
+
             val vm = DocumentViewModel(doc.displayName,
                     doc.path,
                     url,
                     doc.file,
-                    doc.children.map { build(it) }.filterNotNull())
+                    doc.children.map { build(it) }.filterNotNull(),
+                    canOpen)
 
             return if (vm.isFile || vm.children.any())
             {
