@@ -1,15 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.jsoup.nodes.Element
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.DocumentViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 
 class DocumentsPageTests : TeamcityTests()
@@ -30,10 +27,10 @@ class DocumentsPageTests : TeamcityTests()
     fun `renders vue app`()
     {
         val viewModel = DocumentsViewModel(listOf(), testDefaultModel)
+
         val doc = template.jsoupDocFor(viewModel)
 
         val app = doc.selectFirst("#app")
         assertThat(app.html()).isEqualTo("<document-list :docs=\"docs\"></document-list>")
     }
-
 }

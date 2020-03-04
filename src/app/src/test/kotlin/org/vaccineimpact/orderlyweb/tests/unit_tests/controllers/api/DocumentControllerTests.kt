@@ -23,22 +23,24 @@ class DocumentControllerTests : ControllerTest()
         }
 
         val mockFiles = mock<FileSystem> {
-            on { getAbsolutePath("documents") } doReturn("/documents")
+            on { getAbsolutePath("documents") } doReturn ("/documents")
 
             on { getAllChildren("/documents", "/documents") } doReturn listOf(
-                DocumentDetails("child1", "/documents/child1", "/child1", false),
-                DocumentDetails("child2", "/documents/child2", "/child2", false),
-                DocumentDetails("rootFile1.csv", "/documents/rootFile1.csv", "/rootFile1.csv", true)
+                    DocumentDetails("child1", "/documents/child1", "/child1", false, false),
+                    DocumentDetails("child2", "/documents/child2", "/child2", false, false),
+                    DocumentDetails("rootFile1.csv", "/documents/rootFile1.csv", "/rootFile1.csv", true, false)
             )
 
             on { getAllChildren("/documents/child1", "/documents") } doReturn listOf(
-                DocumentDetails("grandchild", "/documents/child1/grandchild", "/child1/grandchild", false)
+                    DocumentDetails("grandchild", "/documents/child1/grandchild", "/child1/grandchild", false, false)
             )
-            on { getAllChildren("/documents/child2", "/documents") } doReturn listOf<DocumentDetails>()
+            on { getAllChildren("/documents/child2", "/documents") } doReturn listOf(
+                    DocumentDetails("http://external.com", "http://external.com", "http://external.com", true, true)
+            )
 
             on { getAllChildren("/documents/child1/grandchild", "/documents") } doReturn listOf(
                     DocumentDetails("grandchildFile1.csv", "/documents/child1/grandchild/grandchildFile1.csv",
-                            "/child1/grandchild/grandchildFile1.csv", true)
+                            "/child1/grandchild/grandchildFile1.csv", true, false)
             )
         }
 
@@ -46,11 +48,12 @@ class DocumentControllerTests : ControllerTest()
         sut.refreshDocuments()
 
         //Expect create
-        verify(mockRepo).add("/child1", "child1", false, null)
-        verify(mockRepo).add("/child2", "child2", false, null)
-        verify(mockRepo).add("/rootFile1.csv", "rootFile1.csv", true, null)
-        verify(mockRepo).add("/child1/grandchild", "grandchild", false, "/child1")
-        verify(mockRepo).add("/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", true, "/child1/grandchild")
+        verify(mockRepo).add("/child1", "child1", false, false, null)
+        verify(mockRepo).add("/child2", "child2", false, false, null)
+        verify(mockRepo).add("http://external.com", "http://external.com", true, true, "/child2")
+        verify(mockRepo).add("/rootFile1.csv", "rootFile1.csv", true, false, null)
+        verify(mockRepo).add("/child1/grandchild", "grandchild", false, false, "/child1")
+        verify(mockRepo).add("/child1/grandchild/grandchildFile1.csv", "grandchildFile1.csv", true, false, "/child1/grandchild")
     }
 
     @Test
@@ -60,14 +63,14 @@ class DocumentControllerTests : ControllerTest()
             on { get("documents.root") } doReturn "documents"
         }
 
-        val mockFiles = mock<FileSystem>{
-            on { getAbsolutePath("documents") } doReturn("/documents")
+        val mockFiles = mock<FileSystem> {
+            on { getAbsolutePath("documents") } doReturn ("/documents")
 
             on { getAllChildren("/documents", "/documents") } doReturn listOf(
-                    DocumentDetails("stillExists", "/documents/stillExists", "/stillExists", false),
-                    DocumentDetails("reAdded", "/documents/reAdded", "/reAdded", false),
-                    DocumentDetails("stillExists.csv", "/documents/stillExists.csv", "/stillExists.csv", true),
-                    DocumentDetails("reAdded.csv", "/documents/reAdded.csv", "/reAdded.csv", true)
+                    DocumentDetails("stillExists", "/documents/stillExists", "/stillExists", false, false),
+                    DocumentDetails("reAdded", "/documents/reAdded", "/reAdded", false, false),
+                    DocumentDetails("stillExists.csv", "/documents/stillExists.csv", "/stillExists.csv", true, false),
+                    DocumentDetails("reAdded.csv", "/documents/reAdded.csv", "/reAdded.csv", true, false)
             )
 
             on { getAllChildren("/documents/stillExists", "/documents") } doReturn listOf<DocumentDetails>()
@@ -75,13 +78,13 @@ class DocumentControllerTests : ControllerTest()
         }
 
         val flatDocs = listOf(
-                Document("stillExists.csv", "/stillExists.csv", true, listOf()),
-                Document("deleted.csv", "/deleted.csv", true, listOf()),
-                Document("reAdded.csv", "/reAdded.csv", true, listOf()),
+                Document("stillExists.csv", "/stillExists.csv", true, false, listOf()),
+                Document("deleted.csv", "/deleted.csv", true, false, listOf()),
+                Document("reAdded.csv", "/reAdded.csv", true, false, listOf()),
 
-                Document("stillExists", "/stillExists", false, listOf()),
-                Document("deleted", "/deleted", false, listOf()),
-                Document("reAdded", "/reAdded", false, listOf())
+                Document("stillExists", "/stillExists", false, false, listOf()),
+                Document("deleted", "/deleted", false, false, listOf()),
+                Document("reAdded", "/reAdded", false, false, listOf())
         )
         val mockRepo = mock<DocumentRepository> {
             on { getAllFlat() } doReturn flatDocs
@@ -97,7 +100,7 @@ class DocumentControllerTests : ControllerTest()
 
         verify(mockRepo).setVisibility(listOf(flatDocs[1], flatDocs[4]), false) //deleted folder
 
-        verify(mockRepo, times(0)).add(any(), any(), any(), any())
+        verify(mockRepo, times(0)).add(any(), any(), any(), any(), any())
 
     }
 }
