@@ -110,6 +110,7 @@ class DocumentControllerTests : ControllerTest()
         assertThat(result.docs[0].displayName).isEqualTo("name")
         assertThat(result.docs[0].path).isEqualTo("/path")
         assertThat(result.docs[0].isFile).isFalse()
+        assertThat(result.docs[0].external).isFalse()
         assertThat(result.docs[0].url).isEqualTo("http://localhost:8888/project-docs/path")
         assertThat(result.docs[0].children.count()).isEqualTo(2)
 
@@ -117,6 +118,7 @@ class DocumentControllerTests : ControllerTest()
         assertThat(child.displayName).isEqualTo("child")
         assertThat(child.path).isEqualTo("/childpath")
         assertThat(child.isFile).isTrue()
+        assertThat(child.external).isFalse()
         assertThat(child.url).isEqualTo("http://localhost:8888/project-docs/childpath")
         assertThat(child.children.count()).isEqualTo(0)
 
@@ -124,6 +126,7 @@ class DocumentControllerTests : ControllerTest()
         assertThat(child.displayName).isEqualTo("www.externalchild.com")
         assertThat(child.path).isEqualTo("/childpath.url")
         assertThat(child.isFile).isTrue()
+        assertThat(child.external).isTrue()
         assertThat(child.url).isEqualTo("www.externalchild.com")
         assertThat(child.children.count()).isEqualTo(0)
     }
@@ -135,6 +138,7 @@ class DocumentControllerTests : ControllerTest()
             on { getAllVisibleDocuments() } doReturn
                     listOf(Document("name", "/path", false, false, listOf(
                             Document("image", "/image.png", true, false, listOf()),
+                            Document("external", "www.external.com", true, true, listOf()),
                             Document("table", "/table.csv", true, false, listOf())
                     )))
         }
@@ -146,8 +150,10 @@ class DocumentControllerTests : ControllerTest()
         val children = result.docs[0].children
         assertThat(children[0].displayName).isEqualTo("image")
         assertThat(children[0].canOpen).isTrue()
-        assertThat(children[1].displayName).isEqualTo("table")
-        assertThat(children[1].canOpen).isFalse()
+        assertThat(children[1].displayName).isEqualTo("external")
+        assertThat(children[1].canOpen).isTrue()
+        assertThat(children[2].displayName).isEqualTo("table")
+        assertThat(children[2].canOpen).isFalse()
     }
 
     @Test
