@@ -19,8 +19,9 @@ class IndexController : OrderlyDataController
     fun index(): IndexViewModel
     {
         val reports = orderly.getAllReportVersions()
+        val reportTags = orderly.getAllReportTags()
         val pinnedReports = orderly.getGlobalPinnedReports()
-        return IndexViewModel.build(reports, pinnedReports, context)
+        return IndexViewModel.build(reports, reportTags, pinnedReports, context)
     }
 
     fun metrics(): String

@@ -60,7 +60,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
                 val children = it.value.sortedByDescending { v -> v.date }.map { version ->
                     currentKey += 1
-                    ReportRowViewModel.buildVersion(version, currentKey, parent)
+                    ReportRowViewModel.buildVersion(version, currentKey, parent, version.tags)
                 }
 
                 children + parent

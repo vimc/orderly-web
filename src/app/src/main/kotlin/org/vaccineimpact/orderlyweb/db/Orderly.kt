@@ -270,6 +270,18 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
+    override fun getAllReportTags(): Map<String, List<String>>
+    {
+        JooqContext().use{ ctx ->
+            return ctx.dsl.select(
+                    ORDERLYWEB_REPORT_TAG.REPORT,
+                    ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .groupBy{it[ORDERLYWEB_REPORT_TAG.REPORT]}
+                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_TAG.TAG]}.sorted()}
+        }
+    }
+
     private fun mapToReportVersions(ctx: JooqContext,
                                     versions: Result<GenericReportVersionRecord>): List<ReportVersion>
     {
@@ -372,7 +384,7 @@ class Orderly(val isReviewer: Boolean,
                     .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
                     .groupBy{it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION]}
-                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG]}}
+                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG]}.sorted()}
         }
     }
 
@@ -422,7 +434,6 @@ class Orderly(val isReviewer: Boolean,
 
     private fun getLatestVersionsForReports(db: JooqContext): TempTable
     {
-
         return db.dsl.select(
                 REPORT_VERSION.REPORT,
                 REPORT_VERSION.ID.`as`("latestVersion"),

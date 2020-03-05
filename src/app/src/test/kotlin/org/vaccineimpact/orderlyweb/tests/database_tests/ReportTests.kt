@@ -5,17 +5,9 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.ZipClient
-import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.*
 
 class ReportTests : CleanDatabaseTests()
 {
@@ -117,6 +109,31 @@ class ReportTests : CleanDatabaseTests()
 
         val results = sut.getGlobalPinnedReports()
         assertThat(results.count()).isEqualTo(2)
+    }
+
+    @Test
+    fun `getAllReportVersions returns tags`()
+    {
+        insertReport("report", "v1")
+        insertVersionTags("v1", listOf("c-tag", "a-tag", "b-tag"))
+
+        insertReport("report", "v2")
+        insertVersionTags("v2", listOf("aa-tag"))
+
+        insertReport("report", "v3")
+
+        val sut = createSut(isReviewer = true)
+        val results = sut.getAllReportVersions()
+
+        assertThat(results[0].id).isEqualTo("v1")
+        //tags should be sorted
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
+
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
+
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags.count()).isEqualTo(0)
     }
 
     @Test
@@ -225,5 +242,25 @@ class ReportTests : CleanDatabaseTests()
 
         assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
 
+    }
+
+    @Test
+    fun `can get all report tags`()
+    {
+        insertReport("r1", "v1")
+        insertReportTags("r1", listOf("c-tag", "b-tag", "a-tag"))
+
+        insertReport("r2", "v2")
+        insertReportTags("r2", listOf("d-tag", "c-tag"))
+
+        insertReport("r3", "v3")
+
+        val sut = createSut(isReviewer = true)
+
+        val result = sut.getAllReportTags()
+
+        assertThat(result.keys.count()).isEqualTo(2)
+        assertThat(result["r1"]).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
+        assertThat(result["r2"]).containsExactlyElementsOf(listOf("c-tag", "d-tag"))
     }
 }
