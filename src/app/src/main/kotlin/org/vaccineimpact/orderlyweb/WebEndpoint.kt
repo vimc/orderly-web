@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.config.ConfigFactory
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
@@ -42,6 +43,7 @@ data class WebEndpoint(
         //If Montagu Auth, OrderlyWeb auth should be fully synchronised with the external login provider, and login
         //page should not be seen
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
+                && !authenticationConfig.allowAnonUser
 
         val client =
             if (externalAuth || synchronisedAuth)
@@ -64,7 +66,7 @@ data class WebEndpoint(
                 client.javaClass.simpleName,
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
-        ))
+        ).apply { securityLogic = OrderlyWebSecurityLogic() })
     }
 
 }

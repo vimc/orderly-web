@@ -10,6 +10,8 @@ import org.vaccineimpact.orderlyweb.security.clients.*
 open class AuthenticationConfig(val appConfig: Config = AppConfig())
 {
 
+    val allowAnonUser = appConfig.getBool("auth.allow_anon")
+
     open fun getConfiguredProvider(): AuthenticationProvider {
 
         val configuredValue = appConfig["auth.provider"]
