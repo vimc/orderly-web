@@ -2,7 +2,9 @@
     <div>
         <file-icon></file-icon>
         <span>{{doc.display_name}}:</span>
-        <span v-if="doc.can_open"><a :href="doc.url + '?inline=true'">open</a>/</span><a :href="doc.url">download</a>
+        <a v-if="doc.can_open" :href="openUrl">open</a>
+        <span v-if="canOpenAndDownload">/</span>
+        <a v-if="!doc.external" :href="doc.url">download</a>
     </div>
 </template>
 
@@ -14,6 +16,14 @@
         name: "file",
         components: {
             fileIcon
+        },
+        computed: {
+            openUrl() {
+              return this.doc.external ? this.doc.url : this.doc.url + "?inline=true"
+            },
+            canOpenAndDownload() {
+                return this.doc.can_open && !this.doc.external
+            }
         }
     }
 </script>

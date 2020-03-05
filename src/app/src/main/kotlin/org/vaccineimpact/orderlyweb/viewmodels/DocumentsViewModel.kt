@@ -12,20 +12,35 @@ data class DocumentViewModel(val displayName: String,
                              val url: String,
                              val isFile: Boolean,
                              val children: List<DocumentViewModel>,
-                             val canOpen: Boolean)
+                             val canOpen: Boolean,
+                             val external: Boolean)
 {
     companion object
     {
         fun build(doc: Document, appConfig: Config = AppConfig()): DocumentViewModel?
         {
-            val canOpen = doc.file && canRenderInBrowser(doc.path)
+            val url = if (doc.external)
+            {
+                // displayName = name for now
+                // once actual display names are implemented name
+                // should be added to the document model and this
+                // should be doc.name
+                doc.displayName
+            }
+            else
+            {
+                "${appConfig["app.url"]}/project-docs${doc.path}"
+            }
+
+            val canOpen = doc.file && (canRenderInBrowser(doc.path) || doc.external)
 
             val vm = DocumentViewModel(doc.displayName,
                     doc.path,
-                    "${appConfig["app.url"]}/project-docs${doc.path}",
+                    url,
                     doc.file,
                     doc.children.map { build(it) }.filterNotNull(),
-                    canOpen)
+                    canOpen,
+                    doc.external)
 
             return if (vm.isFile || vm.children.any())
             {

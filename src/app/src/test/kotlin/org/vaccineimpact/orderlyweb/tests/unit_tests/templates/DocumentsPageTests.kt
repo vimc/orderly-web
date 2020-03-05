@@ -27,10 +27,10 @@ class DocumentsPageTests : TeamcityTests()
     fun `renders vue app`()
     {
         val viewModel = DocumentsViewModel(listOf(), testDefaultModel)
-
         val doc = template.jsoupDocFor(viewModel)
 
         val app = doc.selectFirst("#app")
         assertThat(app.html()).isEqualTo("<document-list :docs=\"docs\"></document-list>")
     }
+
 }
