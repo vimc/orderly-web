@@ -112,7 +112,7 @@ class ReportTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getAllReportVersions returns tags`()
+    fun `getAllReportVersions returns version tags`()
     {
         insertReport("report", "v1")
         insertVersionTags("v1", listOf("c-tag", "a-tag", "b-tag"))
@@ -134,6 +134,32 @@ class ReportTests : CleanDatabaseTests()
 
         assertThat(results[2].id).isEqualTo("v3")
         assertThat(results[2].tags.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `getAllReportVersions includes report tags`()
+    {
+        insertReport("report", "v1")
+        insertReportTags("report", listOf("d-tag", "b-tag"))
+        insertVersionTags("v1", listOf("c-tag", "a-tag", "b-tag"))
+
+        insertReport("report2", "v2")
+        insertVersionTags("v2", listOf("aa-tag"))
+
+        insertReport("report3", "v3")
+        insertReportTags("report3", listOf("a-tag"))
+
+        val sut = createSut(isReviewer = true)
+        val results = sut.getAllReportVersions()
+
+        assertThat(results[0].id).isEqualTo("v1")
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag", "d-tag"))
+
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
+
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags).containsExactlyElementsOf(listOf("a-tag"))
     }
 
     @Test
@@ -255,9 +281,12 @@ class ReportTests : CleanDatabaseTests()
 
         insertReport("r3", "v3")
 
+        insertReport("not-returned", "v4")
+        insertReportTags("not-returned", listOf("nor-returned-tag"))
+
         val sut = createSut(isReviewer = true)
 
-        val result = sut.getAllReportTags()
+        val result = sut.getReportTags(listOf("r1", "r2"))
 
         assertThat(result.keys.count()).isEqualTo(2)
         assertThat(result["r1"]).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))

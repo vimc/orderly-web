@@ -46,6 +46,7 @@ class IndexControllerTests : TeamcityTests()
 
         val mockOrderly = mock<OrderlyClient> {
             on { this.getAllReportVersions() } doReturn fakeReports
+            on { this.getReportTags(listOf("r1", "r2")) } doReturn mapOf("r1" to listOf("report tag"))
         }
         val sut = IndexController(globalReaderContext, mockOrderly)
 
@@ -63,7 +64,7 @@ class IndexControllerTests : TeamcityTests()
                 numVersions = 2,
                 customFields = mapOf("author" to null, "requester" to null),
                 parameterValues = null,
-                tags = listOf())
+                tags = listOf("report tag"))
 
         val r1v1Expected = r1Expected.copy(
                 ttKey = 2,

@@ -19,7 +19,8 @@ class IndexController : OrderlyDataController
     fun index(): IndexViewModel
     {
         val reports = orderly.getAllReportVersions()
-        val reportTags = orderly.getAllReportTags()
+        val reportNames = reports.map{it.name}.distinct()
+        val reportTags = orderly.getReportTags(reportNames)
         val pinnedReports = orderly.getGlobalPinnedReports()
         return IndexViewModel.build(reports, reportTags, pinnedReports, context)
     }

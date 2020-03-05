@@ -270,13 +270,14 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    override fun getAllReportTags(): Map<String, List<String>>
+    override fun getReportTags(reportNames: List<String>): Map<String, List<String>>
     {
         JooqContext().use{ ctx ->
             return ctx.dsl.select(
                     ORDERLYWEB_REPORT_TAG.REPORT,
                     ORDERLYWEB_REPORT_TAG.TAG)
                     .from(ORDERLYWEB_REPORT_TAG)
+                    .where(ORDERLYWEB_REPORT_TAG.REPORT.`in`(reportNames))
                     .groupBy{it[ORDERLYWEB_REPORT_TAG.REPORT]}
                     .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_TAG.TAG]}.sorted()}
         }
@@ -378,13 +379,39 @@ class Orderly(val isReviewer: Boolean,
     private fun getTagsForVersions(versionIds: List<String>): Map<String, List<String>>
     {
         JooqContext().use { ctx ->
-            return ctx.dsl.select(
+            val versionTags = ctx.dsl.select(
                     ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
                     ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                     .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-                    .groupBy{it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION]}
-                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG]}.sorted()}
+                    .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
+                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] }.sorted() }
+
+            val allReportTags = ctx.dsl.select(
+                    ORDERLYWEB_REPORT_TAG.TAG,
+                    REPORT_VERSION.ID)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .innerJoin(REPORT_VERSION)
+                    .on(ORDERLYWEB_REPORT_TAG.REPORT.eq(REPORT_VERSION.REPORT))
+                    .where(REPORT_VERSION.ID.`in`(versionIds))
+                    .groupBy { it[REPORT_VERSION.ID] }
+                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_TAG.TAG] } }
+
+
+            val result = versionTags.toMutableMap();
+            for (reportTags in allReportTags)
+            {
+                if (versionTags.containsKey(reportTags.key))
+                {
+                    result[reportTags.key] = (result[reportTags.key]!! + reportTags.value).distinct().sorted()
+                }
+                else
+                {
+                    result[reportTags.key] = reportTags.value.sorted()
+                }
+            }
+
+            return result
         }
     }
 
