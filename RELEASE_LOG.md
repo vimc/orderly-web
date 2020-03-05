@@ -137,3 +137,23 @@
 
 ## Other branches merged in this release
 
+# v1.2.5
+
+## Tickets
+* mrc-1358: Add all custom fields to the report index table
+* mrc-1367: OrderlyWeb release script should handle 'single' and "double" quotes in ticket names
+* mrc-1368: Move all logic for publishing reports into the reporting API
+* mrc-1370: Render parameters in table view
+* mrc-1380: make static documentation tree view collapsible
+* mrc-1381: Only show "open" link for documents that can be opened in the browser
+* mrc-1382_backend: Come up with way to serve external links as static documentation
+* mrc-1382_frontend: Come up with way to serve external links as static documentation
+* mrc-1382_schema: Come up with way to serve external links as static documentation
+* mrc-1383: Add link to project docs from landing page
+* mrc-1388: Tags: OrderlyWeb DB schema
+* mrc-1389: Tags: Add permission
+* mrc-424: Expired token leads to error
+* vimc-3381: Add file size to the download page on the Reporting Portal
+
+## Other branches merged in this release
+
