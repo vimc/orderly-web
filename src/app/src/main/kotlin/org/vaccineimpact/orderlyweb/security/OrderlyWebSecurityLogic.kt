@@ -7,14 +7,14 @@ import org.pac4j.core.http.adapter.HttpActionAdapter
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
+import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import java.util.*
 
-class OrderlyWebSecurityLogic : DefaultSecurityLogic<Any?, SparkWebContext>()
+class OrderlyWebSecurityLogic(private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
+    : DefaultSecurityLogic<Any?, SparkWebContext>()
 {
     override fun perform(context: SparkWebContext?,
                          config: Config?,
@@ -35,9 +35,9 @@ class OrderlyWebSecurityLogic : DefaultSecurityLogic<Any?, SparkWebContext>()
                 matchers, inputMultiProfile, *parameters)
     }
 
-    private fun updateProfile(context: SparkWebContext?,
-                              config: Config?,
-                              clients: String?)
+    fun updateProfile(context: SparkWebContext?,
+                      config: Config?,
+                      clients: String?)
     {
         val client = clientFinder.find(config?.clients, context, clients).first()
         val manager = ProfileManager<CommonProfile>(context)
@@ -62,9 +62,9 @@ class OrderlyWebSecurityLogic : DefaultSecurityLogic<Any?, SparkWebContext>()
     private fun addOrUpdateAnonProfile(currentProfile: Optional<CommonProfile>,
                                        profileManager: ProfileManager<CommonProfile>)
     {
-        val permissions = OrderlyAuthorizationRepository()
-                .getPermissionsForUser("anon").plus(ReifiedPermission("reports.read",
-                        Scope.Specific("report", "minimal")))
+        val permissions = authRepo
+                .getPermissionsForUser("anon")
+
         if (!currentProfile.isPresent)
         {
             val profile = CommonProfile().apply {

@@ -40,7 +40,7 @@
         </div>
     </#if>
     <#if isAnon>
-    <div class="logout">
+    <div class="login">
         <span>
             <a href="${appUrl}/weblogin">Login</a>
         </span>
