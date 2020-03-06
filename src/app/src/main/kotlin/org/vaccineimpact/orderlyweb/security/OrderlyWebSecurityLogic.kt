@@ -9,6 +9,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import java.util.*
@@ -62,8 +63,8 @@ class OrderlyWebSecurityLogic(private val authRepo: AuthorizationRepository = Or
     private fun addOrUpdateAnonProfile(currentProfile: Optional<CommonProfile>,
                                        profileManager: ProfileManager<CommonProfile>)
     {
-        val permissions = authRepo
-                .getPermissionsForUser("anon")
+        val permissions = PermissionSet(authRepo
+                .getPermissionsForGroup("anon"))
 
         if (!currentProfile.isPresent)
         {

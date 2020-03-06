@@ -10,7 +10,9 @@ import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
@@ -26,7 +28,7 @@ class OrderlyWebSecurityLogicTests : TeamcityTests()
     private val anonUser = CommonProfile().apply { id = "anon" }
 
     private val authRepo = mock<AuthorizationRepository> {
-        on {getPermissionsForUser("anon")} doReturn PermissionSet("*/reports.read")
+        on {getPermissionsForGroup("anon")} doReturn listOf(ReifiedPermission("reports.read", Scope.Global()))
     }
 
     private fun setupSessionStore(user: CommonProfile? = null): Pair<SparkWebContext, J2ESessionStore>
