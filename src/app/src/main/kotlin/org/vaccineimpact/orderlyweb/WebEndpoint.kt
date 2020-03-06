@@ -1,14 +1,14 @@
 package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.config.ConfigFactory
+import org.pac4j.sparkjava.SecurityFilter
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
-
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
 
@@ -46,29 +46,32 @@ data class WebEndpoint(
                 && !authenticationConfig.allowAnonUser
 
         val client =
-            if (externalAuth || synchronisedAuth)
-            {
-                authenticationConfig.getAuthenticationIndirectClient()
-            }
-            else
-            {
-                OrderlyWebIndirectClient()
-            }
+                if (externalAuth || synchronisedAuth)
+                {
+                    authenticationConfig.getAuthenticationIndirectClient()
+                }
+                else
+                {
+                    OrderlyWebIndirectClient()
+                }
 
         val factory = configFactory ?: WebSecurityConfigFactory(
                 client,
                 this.requiredPermissions.toSet())
 
         val config = factory.build()
-
-        spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+        val filter = SecurityFilter(
                 config,
                 client.javaClass.simpleName,
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
-        ).apply { securityLogic = OrderlyWebSecurityLogic() })
+        )
+        if (authenticationConfig.allowAnonUser)
+        {
+            filter.apply { securityLogic = OrderlyWebSecurityLogic() }
+        }
+        spark.before(url, filter)
     }
-
 }
 
 fun WebEndpoint.secure(permissions: Set<String> = setOf(), externalAuth: Boolean = false): WebEndpoint
