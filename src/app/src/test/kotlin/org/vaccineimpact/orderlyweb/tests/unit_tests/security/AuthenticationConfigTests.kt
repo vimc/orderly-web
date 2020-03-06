@@ -6,7 +6,7 @@ import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.authentication.UnknownAuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.GitHubDirectClient
@@ -23,7 +23,7 @@ class AuthenticationConfigTests : TeamcityTests()
         var fakeConfig = mock<Config>() {
             on { get("auth.provider") } doReturn "Montagu"
         }
-        var sut = AuthenticationConfig(fakeConfig)
+        var sut = OrderlyWebAuthenticationConfig(fakeConfig)
         var result = sut.getConfiguredProvider()
 
         assertThat(result).isEqualTo(AuthenticationProvider.Montagu)
@@ -31,7 +31,7 @@ class AuthenticationConfigTests : TeamcityTests()
         fakeConfig = mock {
             on { get("auth.provider") } doReturn "montagu"
         }
-        sut = AuthenticationConfig(fakeConfig)
+        sut = OrderlyWebAuthenticationConfig(fakeConfig)
         result = sut.getConfiguredProvider()
 
         assertThat(result).isEqualTo(AuthenticationProvider.Montagu)
@@ -39,7 +39,7 @@ class AuthenticationConfigTests : TeamcityTests()
         fakeConfig = mock {
             on { get("auth.provider") } doReturn "github"
         }
-        sut = AuthenticationConfig(fakeConfig)
+        sut = OrderlyWebAuthenticationConfig(fakeConfig)
         result = sut.getConfiguredProvider()
 
         assertThat(result).isEqualTo(AuthenticationProvider.GitHub)
@@ -51,7 +51,7 @@ class AuthenticationConfigTests : TeamcityTests()
         val fakeConfig = mock<Config> {
             on { get("auth.provider") } doReturn "nonsense"
         }
-        val sut = AuthenticationConfig(fakeConfig)
+        val sut = OrderlyWebAuthenticationConfig(fakeConfig)
 
         assertThatThrownBy { sut.getConfiguredProvider() }
                 .isInstanceOf(UnknownAuthenticationProvider::class.java)
@@ -63,7 +63,7 @@ class AuthenticationConfigTests : TeamcityTests()
         val fakeConfig = mock<Config> {
             on { get("auth.provider") } doReturn "montagu"
         }
-        val sut = AuthenticationConfig(fakeConfig)
+        val sut = OrderlyWebAuthenticationConfig(fakeConfig)
         val result = sut.getAuthenticationIndirectClient()
 
         assertThat(result is MontaguIndirectClient).isTrue()
@@ -77,7 +77,7 @@ class AuthenticationConfigTests : TeamcityTests()
             on { get("auth.github_key") } doReturn "key"
             on { get("auth.github_secret") } doReturn "secret"
         }
-        val sut = AuthenticationConfig(fakeConfig)
+        val sut = OrderlyWebAuthenticationConfig(fakeConfig)
         val result = sut.getAuthenticationIndirectClient()
 
         assertThat(result is GithubIndirectClient).isTrue()
@@ -89,7 +89,7 @@ class AuthenticationConfigTests : TeamcityTests()
         val fakeConfig = mock<Config> {
             on { get("auth.provider") } doReturn "montagu"
         }
-        val sut = AuthenticationConfig(fakeConfig)
+        val sut = OrderlyWebAuthenticationConfig(fakeConfig)
         val result = sut.getAuthenticationDirectClient()
 
         assertThat(result is MontaguDirectClient).isTrue()
@@ -103,7 +103,7 @@ class AuthenticationConfigTests : TeamcityTests()
             on { get("auth.github_key") } doReturn "key"
             on { get("auth.github_secret") } doReturn "secret"
         }
-        val sut = AuthenticationConfig(fakeConfig)
+        val sut = OrderlyWebAuthenticationConfig(fakeConfig)
         val result = sut.getAuthenticationDirectClient()
 
         assertThat(result is GitHubDirectClient).isTrue()

@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.OrderlyAuthenticationRouteBuilder
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
@@ -16,7 +16,7 @@ class AuthenticationRouteBuilderTests : TeamcityTests()
     @Test
     fun `creates GitHub logout callback`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig>() {
+        val mockAuthConfig = mock<OrderlyWebAuthenticationConfig>() {
             on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
             on { getAuthenticationIndirectClient() } doReturn GithubIndirectClient("fakekey", "fakesecret")
         }
@@ -32,7 +32,7 @@ class AuthenticationRouteBuilderTests : TeamcityTests()
     @Test
     fun `creates Montagu logout callback`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig>() {
+        val mockAuthConfig = mock<OrderlyWebAuthenticationConfig>() {
             on { getConfiguredProvider() } doReturn AuthenticationProvider.Montagu
             on { getAuthenticationIndirectClient() } doReturn MontaguIndirectClient()
         }

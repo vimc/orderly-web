@@ -4,17 +4,12 @@ import org.pac4j.core.config.Config
 import org.pac4j.core.engine.DefaultSecurityLogic
 import org.pac4j.core.engine.SecurityGrantedAccessAdapter
 import org.pac4j.core.http.adapter.HttpActionAdapter
-import org.pac4j.core.profile.CommonProfile
-import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
-import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
-import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
-import java.util.*
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 
-class OrderlyWebSecurityLogic(private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository())
+class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig(),
+                              private val anonUserManager: AnonUserManager = OrderlyWebAnonUserManager())
     : DefaultSecurityLogic<Any?, SparkWebContext>()
 {
     override fun perform(context: SparkWebContext?,
@@ -27,7 +22,10 @@ class OrderlyWebSecurityLogic(private val authRepo: AuthorizationRepository = Or
                          inputMultiProfile: Boolean?,
                          vararg parameters: Any?): Any?
     {
-        updateProfile(context, config, clients)
+        if (authenticationConfig.allowAnonUser)
+        {
+            anonUserManager.updateProfile(context, config, clients)
+        }
         return super.perform(context,
                 config,
                 securityGrantedAccessAdapter,
@@ -36,48 +34,4 @@ class OrderlyWebSecurityLogic(private val authRepo: AuthorizationRepository = Or
                 matchers, inputMultiProfile, *parameters)
     }
 
-    fun updateProfile(context: SparkWebContext?,
-                      config: Config?,
-                      clients: String?)
-    {
-        val client = clientFinder.find(config?.clients, context, clients).first()
-        val manager = ProfileManager<CommonProfile>(context)
-        val currentProfile = manager.get(true)
-
-        if (currentProfile.isPresent && currentProfile.get().id != "anon")
-        {
-            // a user is logged in, so leave their profile as is
-            return
-        }
-
-        if (client is OrderlyWebIndirectClient)
-        {
-            addOrUpdateAnonProfile(currentProfile, manager)
-        }
-        else
-        {
-            manager.remove(true)
-        }
-    }
-
-    private fun addOrUpdateAnonProfile(currentProfile: Optional<CommonProfile>,
-                                       profileManager: ProfileManager<CommonProfile>)
-    {
-        val permissions = PermissionSet(authRepo
-                .getPermissionsForGroup("anon"))
-
-        if (!currentProfile.isPresent)
-        {
-            val profile = CommonProfile().apply {
-                id = "anon"
-                orderlyWebPermissions = permissions
-            }
-
-            profileManager.save(true, profile, false)
-        }
-        else
-        {
-            currentProfile.get().orderlyWebPermissions = permissions
-        }
-    }
 }

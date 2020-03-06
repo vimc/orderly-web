@@ -6,7 +6,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 
 data class Breadcrumb(val name: String, val url: String?)
 
@@ -36,7 +36,7 @@ data class DefaultViewModel(override val loggedIn: Boolean,
 
     override val fineGrainedAuth = appConfig.authorizationEnabled
 
-    override val authProvider = AuthenticationConfig().getConfiguredProvider().toString()
+    override val authProvider = OrderlyWebAuthenticationConfig().getConfiguredProvider().toString()
 
     init
     {

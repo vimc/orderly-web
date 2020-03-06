@@ -8,7 +8,7 @@ import org.pac4j.core.authorization.authorizer.AbstractRequireElementAuthorizer
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -55,7 +55,7 @@ class APISecurityClientsConfigFactoryTests: TeamcityTests()
     @Test
     fun `allows external authentication with Montagu if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<OrderlyWebAuthenticationConfig> () {
             on { getAuthenticationDirectClient() } doReturn MontaguDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)
@@ -70,7 +70,7 @@ class APISecurityClientsConfigFactoryTests: TeamcityTests()
     @Test
     fun `allows external authentication with GitHub if configured auth provider`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig> () {
+        val mockAuthConfig = mock<OrderlyWebAuthenticationConfig> () {
             on { getAuthenticationDirectClient() } doReturn GitHubDirectClient()
         }
         val sut = APISecurityClientsConfigFactory(mockAuthConfig)
