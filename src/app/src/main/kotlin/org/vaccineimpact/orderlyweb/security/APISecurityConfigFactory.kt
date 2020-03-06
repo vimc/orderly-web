@@ -9,9 +9,13 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
-import org.vaccineimpact.orderlyweb.security.clients.*
+import org.vaccineimpact.orderlyweb.security.clients.APIActionAdaptor
+import org.vaccineimpact.orderlyweb.security.clients.JWTHeaderClient
+import org.vaccineimpact.orderlyweb.security.clients.JWTParameterClient
+import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebTokenCredentialClient
 
 interface APISecurityConfigFactory : ConfigFactory
 {
@@ -22,8 +26,9 @@ interface APISecurityConfigFactory : ConfigFactory
 }
 
 
-class APISecurityClientsConfigFactory(val authenticationConfig: OrderlyWebAuthenticationConfig =
-                                              OrderlyWebAuthenticationConfig()) : APISecurityConfigFactory
+class APISecurityClientsConfigFactory(
+        private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig())
+    : APISecurityConfigFactory
 {
     companion object
     {
