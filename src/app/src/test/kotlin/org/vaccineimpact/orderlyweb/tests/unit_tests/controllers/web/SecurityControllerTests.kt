@@ -13,10 +13,6 @@ import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerT
 
 class SecurityControllerTests : ControllerTest()
 {
-    private val mockConfig = mock<Config> {
-        on { this.get("orderly.root") } doReturn "root/"
-    }
-
     @Test
     fun `returns expected model on web login`()
     {
@@ -31,12 +27,12 @@ class SecurityControllerTests : ControllerTest()
     }
 
     @Test
-    fun `returns expected model on web login when no requested url`()
+    fun `defaults to homepage as requestedUrl when no url is explicitly requested`()
     {
         val sut = SecurityController(mock())
 
         val result = sut.weblogin()
-        Assertions.assertThat(result.requestedUrl).isEqualTo("")
+        Assertions.assertThat(result.requestedUrl).isEqualTo("/")
     }
 
     @Test
@@ -53,7 +49,4 @@ class SecurityControllerTests : ControllerTest()
         sut.webloginExternal()
         verify(mockResponse).redirect("testUrl")
     }
-
-
-
 }
