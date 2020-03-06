@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
@@ -24,7 +25,7 @@ data class WebEndpoint(
         val externalAuth: Boolean = false,
         val spark: SparkWrapper = SparkServiceWrapper(),
         val configFactory: ConfigFactory? = null,
-        val authenticationConfig: OrderlyWebAuthenticationConfig = OrderlyWebAuthenticationConfig()
+        val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()
 ) : EndpointDefinition
 {
     override val allowParameterAuthentication = false

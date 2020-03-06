@@ -19,7 +19,7 @@ import org.vaccineimpact.orderlyweb.transform
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
-import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
@@ -127,7 +127,7 @@ class WebEndpointTests: TeamcityTests()
             on { build() } doReturn(mockConfig)
         }
 
-        val mockAuthConfig = mock<OrderlyWebAuthenticationConfig>{
+        val mockAuthConfig = mock<AuthenticationConfig>{
             on { getConfiguredProvider() } doReturn AuthenticationProvider.GitHub
         }
 
