@@ -161,6 +161,36 @@ fun insertVersionParameterValues(version: String,
     }
 }
 
+fun insertVersionTags(version: String, tags: List<String>)
+{
+    JooqContext().use{
+        for(tag in tags)
+        {
+            val tagRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
+                    .apply{
+                        this.reportVersion = version
+                        this.tag = tag
+                    }
+            tagRecord.store()
+        }
+    }
+}
+
+fun insertReportTags(report: String, tags: List<String>)
+{
+    JooqContext().use{
+        for(tag in tags)
+        {
+            val tagRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_TAG)
+                    .apply{
+                        this.report = report
+                        this.tag = tag
+                    }
+            tagRecord.store()
+        }
+    }
+}
+
 private fun insertReportAndVersion(name: String,
                                    version: String,
                                    published: Boolean,
