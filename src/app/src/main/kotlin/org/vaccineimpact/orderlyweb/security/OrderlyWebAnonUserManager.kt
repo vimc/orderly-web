@@ -24,7 +24,6 @@ class OrderlyWebAnonUserManager(
         private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : AnonUserManager
 {
     private val clientFinder = DefaultSecurityClientFinder()
-    val logger = LoggerFactory.getLogger("OrderlyWebAnonUserManager")
     override fun updateProfile(context: SparkWebContext?,
                                config: Config?,
                                clients: String?)
@@ -35,19 +34,16 @@ class OrderlyWebAnonUserManager(
 
         if (currentProfile.isPresent && currentProfile.get().id != "anon")
         {
-            logger.info("there is a user logged in")
             // a user is logged in, so leave their profile as is
             return
         }
 
         if (client is OrderlyWebIndirectClient)
         {
-            logger.info("adding or updating anon profile")
             addOrUpdateAnonProfile(currentProfile, manager)
         }
         else
         {
-            logger.info("external client, so removing anon profile")
             manager.remove(true)
         }
     }
@@ -59,7 +55,6 @@ class OrderlyWebAnonUserManager(
 
         if (!currentProfile.isPresent)
         {
-            logger.info("adding anon")
             val profile = CommonProfile().apply {
                 id = "anon"
                 orderlyWebPermissions = permissions
@@ -69,7 +64,6 @@ class OrderlyWebAnonUserManager(
         }
         else
         {
-            logger.info("updating anon permissions")
             currentProfile.get().orderlyWebPermissions = permissions
         }
     }
