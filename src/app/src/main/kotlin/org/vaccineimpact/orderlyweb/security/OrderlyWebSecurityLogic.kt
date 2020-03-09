@@ -33,9 +33,10 @@ class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationCo
             anonUserManager.updateProfile(context, config, clients)
         }
 
-        val client = clientFinder.find(config?.clients, context, clients).first()
         val manager = ProfileManager<CommonProfile>(context)
         val currentProfile = manager.get(true)
+        logger.info("clients: $clients")
+        logger.info("url: ${context!!.request.requestURL}")
         if (currentProfile.isPresent)
         {
             logger.info("currentprofile: ${currentProfile.get().id}")

@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.sparkjava.SecurityFilter
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
@@ -11,6 +12,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthentica
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import spark.route.HttpMethod
+import kotlin.math.log
 import kotlin.reflect.KClass
 
 data class WebEndpoint(
@@ -49,6 +51,13 @@ data class WebEndpoint(
         val client =
                 if (externalAuth || synchronisedAuth)
                 {
+                    val logger = LoggerFactory.getLogger("WebEndpoint")
+                    if (externalAuth) {
+                        logger.info("external auth set for url: $urlFragment")
+                    }
+                    else {
+                        logger.info("synchronised auth is true")
+                    }
                     authenticationConfig.getAuthenticationIndirectClient()
                 }
                 else
