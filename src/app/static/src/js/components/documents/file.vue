@@ -1,6 +1,7 @@
 <template>
     <div>
-        <file-icon></file-icon>
+        <file-icon v-if="!doc.external"></file-icon>
+        <web-icon v-if="doc.external"></web-icon>
         <span>{{doc.display_name}}:</span>
         <a v-if="doc.can_open" :href="openUrl">open</a>
         <span v-if="canOpenAndDownload">/</span>
@@ -10,16 +11,18 @@
 
 <script>
     import fileIcon from "./fileIcon";
+    import webIcon from "./webIcon";
 
     export default {
         props: ["doc"],
         name: "file",
         components: {
-            fileIcon
+            fileIcon,
+            webIcon
         },
         computed: {
             openUrl() {
-              return this.doc.external ? this.doc.url : this.doc.url + "?inline=true"
+                return this.doc.external ? this.doc.url : this.doc.url + "?inline=true"
             },
             canOpenAndDownload() {
                 return this.doc.can_open && !this.doc.external
