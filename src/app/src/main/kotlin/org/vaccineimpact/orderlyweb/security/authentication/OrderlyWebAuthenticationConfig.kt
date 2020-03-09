@@ -18,14 +18,10 @@ interface AuthenticationConfig
 
 class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()) : AuthenticationConfig
 {
-    val logger = LoggerFactory.getLogger("OrderlyWebAuthenticationConfig")
-
     override val allowAnonUser: Boolean
         get()
         {
-            val result = appConfig.getBool("auth.allow_anon")
-            logger.info("allow anon is ${result}")
-            return result
+            return appConfig.getBool("auth.allow_anon")
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider

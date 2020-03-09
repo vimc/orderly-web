@@ -2,18 +2,15 @@ package org.vaccineimpact.orderlyweb
 
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.sparkjava.SecurityFilter
-import org.slf4j.LoggerFactory
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import spark.route.HttpMethod
-import kotlin.math.log
 import kotlin.reflect.KClass
 
 data class WebEndpoint(
@@ -44,27 +41,14 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        val logger = LoggerFactory.getLogger("WebEndpoint")
-        val allowAnon =  authenticationConfig.allowAnonUser
-        val test = AppConfig().getBool("auth.allow_anon")
-        logger.info("allow anon from authConfig is $allowAnon")
-        logger.info("allow anon from appConfig is $test")
-
         //If Montagu Auth and if anon users are not allowed, OrderlyWeb auth should be fully synchronised
         // with the external login provider, and login page should not be seen
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
-                && !allowAnon
+                && !authenticationConfig.allowAnonUser
 
         val client =
                 if (externalAuth || synchronisedAuth)
                 {
-
-                    if (externalAuth) {
-                        logger.info("external auth set for url: $urlFragment")
-                    }
-                    else {
-                        logger.info("synchronised auth is true")
-                    }
                     authenticationConfig.getAuthenticationIndirectClient()
                 }
                 else
