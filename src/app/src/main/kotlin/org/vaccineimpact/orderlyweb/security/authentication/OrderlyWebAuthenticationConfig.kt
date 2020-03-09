@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.security.authentication
 import org.pac4j.core.client.IndirectClient
 import org.pac4j.core.credentials.Credentials
 import org.pac4j.core.profile.CommonProfile
+import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.clients.*
@@ -18,7 +19,9 @@ interface AuthenticationConfig
 class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()): AuthenticationConfig
 {
     override val allowAnonUser by lazy {
-        appConfig.getBool("auth.allow_anon")
+        val result = appConfig.getBool("auth.allow_anon")
+        LoggerFactory.getLogger("OrderlyWebAuthenticationConfig").info("allow anon is ${result}")
+        result
     }
 
     override fun getConfiguredProvider(): AuthenticationProvider
