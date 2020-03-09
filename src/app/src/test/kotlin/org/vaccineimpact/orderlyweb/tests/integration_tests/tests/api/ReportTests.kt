@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class ReportTests : IntegrationTest()
 {
@@ -38,7 +39,10 @@ class ReportTests : IntegrationTest()
     fun `only report runners can run report`()
     {
         val url = "/reports/minimal/run/"
-        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())), ContentTypes.json)
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.post,
+                contentType = ContentTypes.json)
     }
 
     @Test

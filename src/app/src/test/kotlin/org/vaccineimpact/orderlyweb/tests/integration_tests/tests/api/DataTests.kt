@@ -6,8 +6,8 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.io.File
@@ -32,12 +32,14 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `dict of data names is secured to report readers`()
+    fun `dict of data names is securedbn to report readers`()
     {
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/data/"
 
-        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))))
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
+                contentType = ContentTypes.json)
     }
 
     @Test

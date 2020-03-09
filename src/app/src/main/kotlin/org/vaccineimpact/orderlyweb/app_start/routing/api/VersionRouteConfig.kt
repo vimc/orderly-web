@@ -70,9 +70,11 @@ object VersionRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(readReports),
+
             APIEndpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData")
                     .secure(readReports)
                     .allowParameterAuthentication(),
+
             APIEndpoint("/reports/:name/versions/:version/data/:data/", dataController, "downloadData",
                     contentType = ContentTypes.csv)
                     .secure(readReports)
