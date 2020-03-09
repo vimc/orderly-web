@@ -113,13 +113,14 @@ class IndexTests : TeamcityTests()
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(6)
+        assertThat(header.select("th").count()).isEqualTo(7)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
         assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Status")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Tags")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[6].selectFirst("label").text()).isEqualTo("Requester")
     }
 
     @Test
@@ -130,12 +131,13 @@ class IndexTests : TeamcityTests()
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(5)
+        assertThat(header.select("th").count()).isEqualTo(6)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
-        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Tags")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
 
     }
 
@@ -147,12 +149,13 @@ class IndexTests : TeamcityTests()
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
-        assertThat(filters.select("th").count()).isEqualTo(6)
+        assertThat(filters.select("th").count()).isEqualTo(7)
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
         assertThat(filters.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
         assertThat(filters.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
-        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("parameter-values-filter")
-        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("author-filter")
-        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("requester-filter")
+        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("tags-filter")
+        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("parameter-values-filter")
+        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("author-filter")
+        assertThat(filters.select("th")[6].selectFirst("input").id()).isEqualTo("requester-filter")
     }
 }
