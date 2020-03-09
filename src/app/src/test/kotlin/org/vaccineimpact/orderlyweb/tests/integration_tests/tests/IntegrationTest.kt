@@ -96,7 +96,8 @@ abstract class IntegrationTest : TeamcityTests()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
     }
 
-    protected fun assertWebUrlSecured(url: String, requiredPermissions: Set<ReifiedPermission>,
+    protected fun assertWebUrlSecured(url: String,
+                                      requiredPermissions: Set<ReifiedPermission>,
                                       contentType: String = ContentTypes.html,
                                       method: HttpMethod = HttpMethod.get,
                                       postData: Map<String, String>? = null)
