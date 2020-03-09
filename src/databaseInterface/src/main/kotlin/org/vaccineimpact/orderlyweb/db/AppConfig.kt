@@ -28,7 +28,7 @@ class AppConfig : Config
 
     override operator fun get(key: String): String
     {
-        val x = AppConfig.properties[key]
+        val x = properties[key]
         if (x != null)
         {
             val value = x as String

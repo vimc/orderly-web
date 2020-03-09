@@ -17,7 +17,9 @@ interface AuthenticationConfig
 
 class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()): AuthenticationConfig
 {
-    override val allowAnonUser = appConfig.getBool("auth.allow_anon")
+    override val allowAnonUser by lazy {
+        appConfig.getBool("auth.allow_anon")
+    }
 
     override fun getConfiguredProvider(): AuthenticationProvider
     {
