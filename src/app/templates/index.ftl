@@ -104,8 +104,7 @@
                             data-col="5"
                         <#else>
                             data-col="4"
-                        </#if>
-                />
+                        </#if>/>
             </th>
             <#list customFieldKeys as customField>
                 <th>
