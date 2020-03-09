@@ -317,23 +317,9 @@ class Orderly(val isReviewer: Boolean,
                         .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
             }
 
-            val versionParameters = if (parametersForVersions.containsKey(versionId))
-            {
-                parametersForVersions[versionId]!!
-            }
-            else
-            {
-                mapOf()
-            }
+            val versionParameters = parametersForVersions[versionId] ?: mapOf()
 
-            val versionTags = if (tagsForVersions.containsKey(versionId))
-            {
-                tagsForVersions[versionId]!!
-            }
-            else
-            {
-                listOf()
-            }
+            val versionTags = tagsForVersions[versionId]?: listOf()
 
             ReportVersion(it[REPORT_VERSION.REPORT],
                     it[REPORT_VERSION.DISPLAYNAME],

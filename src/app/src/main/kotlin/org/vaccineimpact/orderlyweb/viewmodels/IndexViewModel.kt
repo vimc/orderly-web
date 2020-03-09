@@ -47,20 +47,13 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val reportRows = reports.groupBy { it.name }.flatMap {
                 currentKey += 1
 
-                val parentTags = if (reportTags.containsKey(it.key))
-                {
-                    reportTags[it.key]!!
-                }
-                else
-                {
-                    listOf()
-                }
+                val parentTags = reportTags[it.key] ?: listOf()
 
                 val parent = ReportRowViewModel.buildParent(currentKey, it.value, emptyCustomFields, parentTags)
 
                 val children = it.value.sortedByDescending { v -> v.date }.map { version ->
                     currentKey += 1
-                    ReportRowViewModel.buildVersion(version, currentKey, parent, version.tags)
+                    ReportRowViewModel.buildVersion(version, currentKey, parent)
                 }
 
                 children + parent
@@ -112,7 +105,7 @@ data class ReportRowViewModel(val ttKey: Int,
                     tags)
         }
 
-        fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel, tags: List<String>): ReportRowViewModel
+        fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
             val parameterValues = if (version.parameterValues.keys.count() > 0)
@@ -135,7 +128,7 @@ data class ReportRowViewModel(val ttKey: Int,
                     version.published,
                     version.customFields,
                     parameterValues,
-                    tags)
+                    version.tags)
 
         }
     }
