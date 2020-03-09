@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
+import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
 import spark.Request
 import spark.Response
@@ -114,4 +116,22 @@ fun byteCountToDisplaySize(size: Long, maxChars: Int = 3): String
                 maxChars - 1 - displaySize.length, RoundingMode.HALF_UP).toString()
     }
     return displaySize + " " + selectedSuffix.toString()
+}
+
+fun Controller.downloadFile(files: FileSystem,
+                            absoluteFilePath: String,
+                            filename: String,
+                            contentType: String): Boolean
+{
+    if (!files.fileExists(absoluteFilePath))
+        throw OrderlyFileNotFoundError(filename)
+
+    val response = context.getSparkResponse().raw()
+
+    context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
+    context.addDefaultResponseHeaders(contentType)
+
+    files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
+
+    return true
 }
