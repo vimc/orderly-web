@@ -106,18 +106,19 @@
                             data-col="4"
                         </#if>
                 />
-                <#list customFieldKeys as customField>
-            <th>
-                <input class="form-control" type="text" id="${customField}-filter"
-                       placeholder="Type to filter..."
-                       data-role="standard-filter"
-                        <#if isReviewer>
-                            data-col="${customField?index + 6}"
-                        <#else>
-                            data-col="${customField?index + 5}"
-                        </#if>
-                />
             </th>
+            <#list customFieldKeys as customField>
+                <th>
+                    <input class="form-control" type="text" id="${customField}-filter"
+                           placeholder="Type to filter..."
+                           data-role="standard-filter"
+                            <#if isReviewer>
+                                data-col="${customField?index + 6}"
+                            <#else>
+                                data-col="${customField?index + 5}"
+                            </#if>
+                    />
+                </th>
             </#list>
         </tr>
         </thead>
