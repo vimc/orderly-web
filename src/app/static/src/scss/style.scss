@@ -73,6 +73,12 @@ select.form-control {
   color: white;
 }
 
+.badge-tag {
+  background-color: $primary;
+  color: white;
+  white-space: inherit;
+}
+
 .datestring-column {
   min-width: 10em;
 }

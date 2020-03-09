@@ -58,7 +58,7 @@ function buildStatusCell(data, type, full) {
 function buildTagsCell(data) {
     const result = [];
     for (const tag of data) {
-        result.push(`<span class="badge-primary badge float-left mr-1">${tag}</span>`)
+        result.push(`<span class="badge badge-tag float-left mr-1 mb-1">${tag}</span>`)
     }
     return result.join('');
 }
