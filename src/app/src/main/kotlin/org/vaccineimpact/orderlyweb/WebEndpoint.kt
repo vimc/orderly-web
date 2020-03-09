@@ -43,15 +43,19 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
+        val logger = LoggerFactory.getLogger("WebEndpoint")
+        val allowAnon =  authenticationConfig.allowAnonUser
+        logger.info("allow anon is $allowAnon")
+
         //If Montagu Auth and if anon users are not allowed, OrderlyWeb auth should be fully synchronised
         // with the external login provider, and login page should not be seen
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
-                && !authenticationConfig.allowAnonUser
+                && !allowAnon
 
         val client =
                 if (externalAuth || synchronisedAuth)
                 {
-                    val logger = LoggerFactory.getLogger("WebEndpoint")
+
                     if (externalAuth) {
                         logger.info("external auth set for url: $urlFragment")
                     }
