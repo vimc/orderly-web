@@ -22,6 +22,19 @@ object GitRouteConfig : RouteConfig {
 
             APIEndpoint("/git/fetch/", controller, "fetch", method = HttpMethod.post)
                     .json()
+                    .secure(runReports),
+
+            // deprecated
+            APIEndpoint("/reports/git/status/", controller, "status")
+                    .json()
+                    .secure(runReports),
+            // deprecated
+            APIEndpoint("/reports/git/pull/", controller, "pull", method = HttpMethod.post)
+                    .json()
+                    .secure(runReports),
+            // deprecated
+            APIEndpoint("/reports/git/fetch/", controller, "fetch", method = HttpMethod.post)
+                    .json()
                     .secure(runReports)
     )
 
