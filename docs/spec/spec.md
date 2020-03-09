@@ -276,7 +276,7 @@ Schema: [`Publish.schema.json`](Publish.schema.json)
 true
 ```
 
-## GET /reports/git/status/
+## GET /git/status/
 
 Get git status.  This does not quite map onto `git status` but includes output from `git status --porcelain=v1` along with branch and hash information.  When running on a server, ideally the `output` section will be an empty array (otherwise branch changing is disabled)
 
@@ -295,7 +295,7 @@ Schema: [`GitStatus.schema.json`](GitStatus.schema.json)
 }
 ```
 
-## POST /reports/git/fetch/
+## POST /git/fetch/
 
 Fetch from remote git.  This is required before accessing an updated reference (e.g. a remote branch) or a hash not present in the local git tree.  It's always safe because it does not change the working tree
 
@@ -312,7 +312,7 @@ Schema: [`GitFetch.schema.json`](GitFetch.schema.json)
 ]
 ```
 
-## POST /reports/git/pull/
+## POST /git/pull/
 
 Pull from remote git.  This updates the working tree.
 

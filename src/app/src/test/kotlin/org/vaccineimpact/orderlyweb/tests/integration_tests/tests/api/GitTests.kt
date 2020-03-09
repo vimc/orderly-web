@@ -9,7 +9,7 @@ class GitTests : IntegrationTest()
     @Test
     fun `gets git status`()
     {
-        val response = apiRequestHelper.get("/reports/git/status/", userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get("/git/status/", userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -17,9 +17,9 @@ class GitTests : IntegrationTest()
     }
 
     @Test
-    fun `pulls`()
+    fun pulls()
     {
-        val response = apiRequestHelper.post("/reports/git/pull/", mapOf(), userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/pull/", mapOf(), userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -27,9 +27,9 @@ class GitTests : IntegrationTest()
     }
 
     @Test
-    fun `fetches`()
+    fun fetches()
     {
-        val response = apiRequestHelper.post("/reports/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)

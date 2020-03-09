@@ -12,15 +12,15 @@ object GitRouteConfig : RouteConfig {
     private val controller = GitController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
-            APIEndpoint("/reports/git/status/", controller, "status")
+            APIEndpoint("/git/status/", controller, "status")
                     .json()
                     .secure(runReports),
 
-            APIEndpoint("/reports/git/pull/", controller, "pull", method = HttpMethod.post)
+            APIEndpoint("/git/pull/", controller, "pull", method = HttpMethod.post)
                     .json()
                     .secure(runReports),
 
-            APIEndpoint("/reports/git/fetch/", controller, "fetch", method = HttpMethod.post)
+            APIEndpoint("/git/fetch/", controller, "fetch", method = HttpMethod.post)
                     .json()
                     .secure(runReports)
     )
