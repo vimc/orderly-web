@@ -55,6 +55,14 @@ function buildStatusCell(data, type, full) {
     }
 }
 
+function buildTagsCell(data) {
+    const result = [];
+    for (const tag of data.split(" ")) {
+        result.push(`<span class="badge-primary badge float-left">${tag}</span>`)
+    }
+    return result.join('');
+}
+
 export const options = (isReviewer, reports, customFields) => {
 
     let cols = [
@@ -72,6 +80,12 @@ export const options = (isReviewer, reports, customFields) => {
             "render": buildStatusCell
         })
     }
+
+    cols.push({
+        "data": "tags",
+        "render": buildTagsCell,
+        "orderable": false
+    });
 
     cols.push({
         "data": "parameter_values",
