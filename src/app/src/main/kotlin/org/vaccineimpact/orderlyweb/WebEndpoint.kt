@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb
 import org.pac4j.core.config.ConfigFactory
 import org.pac4j.sparkjava.SecurityFilter
 import org.slf4j.LoggerFactory
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
@@ -45,7 +46,9 @@ data class WebEndpoint(
     {
         val logger = LoggerFactory.getLogger("WebEndpoint")
         val allowAnon =  authenticationConfig.allowAnonUser
-        logger.info("allow anon is $allowAnon")
+        val test = AppConfig().getBool("auth.allow_anon")
+        logger.info("allow anon from authConfig is $allowAnon")
+        logger.info("allow anon from appConfig is $test")
 
         //If Montagu Auth and if anon users are not allowed, OrderlyWeb auth should be fully synchronised
         // with the external login provider, and login page should not be seen

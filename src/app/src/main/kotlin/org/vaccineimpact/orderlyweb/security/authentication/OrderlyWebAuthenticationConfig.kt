@@ -16,17 +16,20 @@ interface AuthenticationConfig
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
-class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()): AuthenticationConfig
+class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()) : AuthenticationConfig
 {
-    override val allowAnonUser by lazy {
-        val result = appConfig.getBool("auth.allow_anon")
-        LoggerFactory.getLogger("OrderlyWebAuthenticationConfig").info("allow anon is ${result}")
-        result
-    }
+    val logger = LoggerFactory.getLogger("OrderlyWebAuthenticationConfig")
+
+    override val allowAnonUser: Boolean
+        get()
+        {
+            val result = appConfig.getBool("auth.allow_anon")
+            logger.info("allow anon is ${result}")
+            return result
+        }
 
     override fun getConfiguredProvider(): AuthenticationProvider
     {
-
         val configuredValue = appConfig["auth.provider"]
 
         return when (configuredValue.toLowerCase())
