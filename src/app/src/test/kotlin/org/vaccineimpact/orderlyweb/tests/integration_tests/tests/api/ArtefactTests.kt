@@ -3,11 +3,13 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.models.FileInfo
-import org.vaccineimpact.orderlyweb.tests.insertArtefact
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -29,13 +31,12 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `cant get artefacts dict if report not within report reading scope`()
+    fun `artefacts dict endpoint is secured`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
-                userEmail = fakeReportReader("badreportname"))
-
-        assertUnauthorized(response, "testname")
+        assertAPIUrlSecured("/reports/testname/versions/testversion/artefacts/",
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
+                ContentTypes.json)
     }
 
     @Test
@@ -92,27 +93,15 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `can get artefact file with scoped report reading permission`()
+    fun `artefact file endpoint secured to report reading permission`()
     {
         val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
-                userEmail = fakeReportReader("other"))
 
-        assertSuccessful(response)
-    }
-
-    @Test
-    fun `can't get artefact file if report not within report reading scope`()
-    {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
-
-        val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
-        val response = apiRequestHelper.get(url, ContentTypes.binarydata,
-                userEmail = fakeReportReader("badreportname"))
-
-        assertUnauthorized(response, "other")
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "other"))),
+                ContentTypes.binarydata)
     }
 
     @Test

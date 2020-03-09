@@ -4,6 +4,8 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
@@ -12,9 +14,8 @@ import java.io.File
 
 class DataTests : IntegrationTest()
 {
-
     @Test
-    fun `gets dict of data names to hashes with scoped report reading permission`()
+    fun `gets dict of data names to hashes`()
     {
         insertReport("testname", "testversion")
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", "123456")
@@ -31,13 +32,12 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `can't get dict of data names if report not within report reading scope`()
+    fun `dict of data names is secured to report readers`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/data/",
-                userEmail = fakeReportReader("badreportname"))
+        val url = "/reports/testname/versions/testversion/data/"
 
-        assertUnauthorized(response, "testname")
+        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))))
     }
 
     @Test
@@ -60,7 +60,7 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `can't get csv data file if report not in scoped permissions`()
+    fun `csv data endpoint secured to report readers`()
     {
         var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)
@@ -69,10 +69,8 @@ class DataTests : IntegrationTest()
         insertData("testversion", "testdata", "SELECT * FROM thing", "testdb", demoCSV)
 
         val url = "/reports/testname/versions/testversion/data/testdata/"
-        val response = apiRequestHelper.get(url, ContentTypes.csv,
-                userEmail = fakeReportReader("badreportname"))
-
-        assertUnauthorized(response, "testname")
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))))
     }
 
     @Test

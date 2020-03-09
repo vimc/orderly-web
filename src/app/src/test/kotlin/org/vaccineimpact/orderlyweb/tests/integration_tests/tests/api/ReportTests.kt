@@ -1,8 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -32,6 +35,13 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
+    fun `only report runners can run report`()
+    {
+        val url = "/reports/minimal/run/"
+        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())), ContentTypes.json)
+    }
+
+    @Test
     fun `gets report status`()
     {
         val response = apiRequestHelper.get("/reports/agronomic_seahorse/status",
@@ -39,6 +49,13 @@ class ReportTests : IntegrationTest()
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Status")
+    }
+
+    @Test
+    fun `only report runners can see status`()
+    {
+        val url = "/reports/agronomic_seahorse/status"
+        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())), ContentTypes.json)
     }
 
     @Test
@@ -80,8 +97,8 @@ class ReportTests : IntegrationTest()
     fun `can get latest changelog if reader permissions only`()
     {
         //This report has been published so we should be able to see it, though it has no log items
-       val response = apiRequestHelper.get("/reports/other/latest/changelog",
-               userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get("/reports/other/latest/changelog",
+                userEmail = fakeGlobalReportReviewer())
 
         assertSuccessful(response)
         assertJsonContentType(response)
