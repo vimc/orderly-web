@@ -1,5 +1,7 @@
 import {shallowMount} from '@vue/test-utils';
 import File from "../../../js/components/documents/file.vue";
+import webIcon from "../../../js/components/documents/webIcon";
+import fileIcon from "../../../js/components/documents/fileIcon";
 
 describe("file", () => {
 
@@ -23,6 +25,42 @@ describe("file", () => {
         expect(rendered.findAll("span").at(1).text()).toBe("/");
         expect(rendered.findAll("a").at(1).text()).toBe("download");
         expect(rendered.findAll("a").at(1).attributes("href")).toBe("toplevelfileurl");
+    });
+
+    it("renders file icon if link is local file", () => {
+        const rendered = shallowMount(File, {
+            propsData: {
+                doc: {
+                    display_name: "toplevelfile",
+                    path: "toplevelfilepath.png",
+                    url: "toplevelfileurl",
+                    children: [],
+                    is_file: true,
+                    external: false
+                }
+            }
+        });
+
+        expect(rendered.findAll(fileIcon).length).toBe(1);
+        expect(rendered.findAll(webIcon).length).toBe(0);
+    });
+
+    it("renders web icon if link is external", () => {
+        const rendered = shallowMount(File, {
+            propsData: {
+                doc: {
+                    display_name: "toplevelfile",
+                    path: "toplevelfilepath.png",
+                    url: "toplevelfileurl",
+                    children: [],
+                    is_file: true,
+                    external: true
+                }
+            }
+        });
+
+        expect(rendered.findAll(fileIcon).length).toBe(0);
+        expect(rendered.findAll(webIcon).length).toBe(1);
     });
 
     it("does not render open link when can_open is false", () => {
