@@ -6,7 +6,8 @@ $border-color: rgba(0, 0, 0, 0.125);
 #reports-table {
   border: 1px solid $border-color;
   td {
-    border-color: $border-color;;
+    border-color: $border-color;
+    overflow-wrap: break-word;
   }
 
   th {
