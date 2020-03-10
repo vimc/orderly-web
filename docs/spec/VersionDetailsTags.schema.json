@@ -1,0 +1,11 @@
+{
+  "id": "VersionDetailsTags",
+  "type": "object",
+  "properties": {
+    "versionTags": {"type": "array", "items": {"type": "string"}},
+    "reportTags": {"type": "array", "items": {"type": "string"}},
+    "orderlyTags": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false,
+  "required": ["versionTags", "reportTags", "orderlyTags"]
+}

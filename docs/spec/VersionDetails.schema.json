@@ -11,8 +11,9 @@
         "artefacts": { "type": "array", "items": { "$ref": "Artefact.schema.json"}},
         "resources": {"type": "array", "items": {"type": "string"}},
         "data_info": {"type":  "array", "items":  {"$ref": "DataInfo.schema.json"}},
-		"parameter_values": {"type":  "object"}
+		"parameter_values": {"type":  "object"},
+		"tags": { "$ref": "VersionDetailsTags.schema.json"}
 	},
 	"additionalProperties": false,
-	"required": ["name", "id", "display_name", "description", "date", "published", "parameter_values"]
+	"required": ["name", "id", "display_name", "description", "date", "published", "parameter_values", "tags"]
 }
