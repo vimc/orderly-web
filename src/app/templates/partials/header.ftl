@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="appName" type="String" -->
 <#-- @ftlvariable name="loggedIn" type="Boolean" -->
+<#-- @ftlvariable name="isAnon" type="Boolean" -->
 <#-- @ftlvariable name="user" type="String" -->
 <#-- @ftlvariable name="logo" type="String" -->
 <#-- @ftlvariable name="appUrl" type="String" -->
@@ -23,7 +24,7 @@
             ${appName}
         </a>
     </div>
-    <#if loggedIn>
+    <#if loggedIn && !isAnon>
         <div class="logout">
             <#if isAdmin && fineGrainedAuth>
                 <span>
@@ -34,9 +35,16 @@
               <#if authProvider?lower_case == "montagu">
                 href="#" onclick="logoutViaMontagu()"
               <#else>
-                href="${appUrl}/logout"
-              </#if>>Logout</a></span>
+                  href="${appUrl}/logout"
+                        </#if>>Logout</a></span>
         </div>
+    </#if>
+    <#if isAnon>
+    <div class="login">
+        <span>
+            <a href="${appUrl}/weblogin">Login</a>
+        </span>
+    </div>
     </#if>
 </header>
 <#include "breadcrumbs.ftl">
