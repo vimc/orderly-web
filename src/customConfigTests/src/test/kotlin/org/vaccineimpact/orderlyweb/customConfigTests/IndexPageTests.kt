@@ -14,14 +14,11 @@ class IndexPageTests : SeleniumTest()
 {
     private fun setUpDb()
     {
-        JooqContext().use {
-            insertReport("testreport", "20170103-143015-1234abcd")
-            insertReport("testreport", "20170103-153015-1234abcd")
+        insertReport("testreport", "20170103-143015-1234abcd")
+        insertReport("testreport", "20170103-153015-1234abcd")
 
-            insertReport("testreport2", "20180103-143015-1234abcd")
-            insertReport("testreport2", "20180204-143015-1234abcd")
-
-        }
+        insertReport("testreport2", "20180103-143015-1234abcd")
+        insertReport("testreport2", "20180204-143015-1234abcd")
     }
 
     @Test
