@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
@@ -21,8 +22,10 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can get git status`()
     {
-        val url ="/reports/git/status/"
-        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())))
+        val url = "/reports/git/status/"
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                contentType = ContentTypes.json)
     }
 
     @Test
@@ -38,14 +41,16 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can pull`()
     {
-        val url ="/reports/git/pull/"
-        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())))
+        val url = "/reports/git/pull/"
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                contentType = ContentTypes.json)
     }
 
     @Test
     fun `fetches`()
     {
-        val response = apiRequestHelper.post("/reports/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/reports/git/fetch/", mapOf(), userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -55,7 +60,9 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can fetch`()
     {
-        val url ="/reports/git/fetch/"
-        assertAPIUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())))
+        val url = "/reports/git/fetch/"
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                contentType = ContentTypes.json)
     }
 }

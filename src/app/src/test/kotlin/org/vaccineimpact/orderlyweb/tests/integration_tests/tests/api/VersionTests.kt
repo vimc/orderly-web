@@ -216,8 +216,9 @@ class VersionTests : IntegrationTest()
                 userEmail = fakeGlobalReportReader())
         assertJsonContentType(response)
         // can't use the permission checker here because some security checking
-        // happens inside the controller logic rather than the routing logic
-        assertThat(response.statusCode).isEqualTo(403)
+        // happens inside the controller logic rather than the routing logic and
+        // the result of insufficient permissions is a 404 rather than a 403
+        assertThat(response.statusCode).isEqualTo(404)
     }
 
     @Test

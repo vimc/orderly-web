@@ -28,7 +28,7 @@ class VersionTests : IntegrationTest()
 
         val url = "/report/$reportName/version/$versionId/publish/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName)),
+        assertWebUrlSecured(url, setOf(
                 ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post,
                 contentType = ContentTypes.json)
     }

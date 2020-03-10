@@ -30,7 +30,7 @@ class ResourceTests : IntegrationTest()
     fun `only report readers can get dict of resource names to hashes`()
     {
         insertReport("testname", "testversion")
-        assertAPIUrlSecured("/user/add/",
+        assertAPIUrlSecured("/reports/testname/versions/testversion/resources",
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
                 contentType = ContentTypes.json)
     }
