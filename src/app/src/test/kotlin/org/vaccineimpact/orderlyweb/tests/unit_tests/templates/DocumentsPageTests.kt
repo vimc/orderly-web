@@ -11,9 +11,12 @@ import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 
 class DocumentsPageTests : TeamcityTests()
 {
-    private val testDefaultModel = DefaultViewModel(true, "username",
+    private val testDefaultModel = DefaultViewModel(
+            loggedIn = true,
+            user = "username",
             isReviewer = false,
             isAdmin = false,
+            isAnon = false,
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
     companion object
