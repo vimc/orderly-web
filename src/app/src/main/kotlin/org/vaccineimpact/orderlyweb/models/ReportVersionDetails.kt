@@ -11,5 +11,10 @@ data class ReportVersionDetails(val name: String,
                                 val artefacts: List<Artefact>,
                                 val resources: List<FileInfo>,
                                 val dataInfo: List<DataInfo>,
-                                val parameterValues: Map<String, String>)
+                                val parameterValues: Map<String, String>,
+                                val tags: VersionDetailsTags)
+
+data class VersionDetailsTags(val versionTags: List<String>,
+                              val reportTags: List<String>,
+                              val orderlyTags: List<String>)
 

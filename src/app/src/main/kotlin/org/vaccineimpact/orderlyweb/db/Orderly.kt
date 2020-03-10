@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.FileInfo
+import sun.misc.Version
 import java.sql.Timestamp
 
 typealias GenericReportVersionRecord = Record6<String, String, String, Boolean, Timestamp, String>
@@ -147,6 +148,10 @@ class Orderly(val isReviewer: Boolean,
             val artefacts = getArtefacts(name, version)
             val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
+            val versionTags = listOf<String>()
+            val reportTags = listOf<String>()
+            val orderlyTags = listOf<String>()
+
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
@@ -156,7 +161,8 @@ class Orderly(val isReviewer: Boolean,
                     artefacts = artefacts,
                     resources = getResourceFiles(name, version),
                     dataInfo = getDataInfo(name, version),
-                    parameterValues = parameterValues)
+                    parameterValues = parameterValues,
+                    tags = VersionDetailsTags(versionTags, reportTags, orderlyTags))
         }
     }
 
