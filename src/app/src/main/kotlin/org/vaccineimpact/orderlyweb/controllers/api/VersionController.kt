@@ -46,7 +46,7 @@ class VersionController(context: ActionContext,
         val version = context.params(":version")
         orderly.checkVersionExistsForReport(name, version)
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$name/$version/orderly_run.rds"
-        return downloadFile(files, absoluteFilePath, "orderly_run.rds", ContentTypes.binarydata)
+        return downloadFile(files, absoluteFilePath, "\"$name/$version/orderly_run.rds\"", ContentTypes.binarydata)
     }
 
     fun getZippedByNameAndVersion(): Boolean

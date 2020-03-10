@@ -6,17 +6,46 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.UserSource
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
-class APIRequestHelper: RequestHelper()
+class APIRequestHelper : RequestHelper()
 {
     override val baseUrl: String = "http://localhost:${AppConfig()["app.port"]}/api/v1"
+    val authRepo = OrderlyAuthorizationRepository()
+    val userRepo = OrderlyUserRepository()
 
     private val parser = JsonParser()
+
+    fun getWithPermissions(url: String,
+                           contentType: String = ContentTypes.json,
+                           withPermissions: Set<ReifiedPermission> = setOf()): Response
+    {
+        userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
+        withPermissions.forEach {
+            authRepo.ensureUserGroupHasPermission(MontaguTestUser, it)
+        }
+        return get(url, contentType, MontaguTestUser)
+    }
+
+    fun postWithPermissions(url: String,
+                            body: Map<String, String>?,
+                            contentType: String = ContentTypes.json,
+                            withPermissions: Set<ReifiedPermission> = setOf()): Response
+    {
+        userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
+        withPermissions.forEach {
+            authRepo.ensureUserGroupHasPermission(MontaguTestUser, it)
+        }
+        return post(url, body, contentType, MontaguTestUser)
+    }
 
     fun get(url: String, contentType: String = ContentTypes.json,
             userEmail: String = fakeGlobalReportReader()): Response
@@ -26,7 +55,7 @@ class APIRequestHelper: RequestHelper()
         return get(baseUrl + url, headers)
     }
 
-    fun post(url: String, body: Map<String, String>, contentType: String = ContentTypes.json,
+    fun post(url: String, body: Map<String, String>?, contentType: String = ContentTypes.json,
              userEmail: String = fakeGlobalReportReader()): Response
     {
         val token = generateToken(userEmail)
