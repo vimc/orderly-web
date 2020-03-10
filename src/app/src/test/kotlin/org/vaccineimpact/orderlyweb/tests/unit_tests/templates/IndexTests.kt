@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
@@ -109,7 +110,15 @@ class IndexTests : TeamcityTests()
     @Test
     fun `reviewers can see the status column`()
     {
-        val defaultModel = DefaultViewModel(true, "username", isReviewer = true, isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val defaultModel = DefaultViewModel(
+                true,
+                "username",
+                isReviewer = true,
+                isAdmin = false,
+                isAnon = false,
+                breadcrumbs = listOf(IndexViewModel.breadcrumb)
+        )
+
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
@@ -126,7 +135,7 @@ class IndexTests : TeamcityTests()
     fun `non-reviewers cannot see the status column`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
-                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
@@ -143,7 +152,7 @@ class IndexTests : TeamcityTests()
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
-                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 

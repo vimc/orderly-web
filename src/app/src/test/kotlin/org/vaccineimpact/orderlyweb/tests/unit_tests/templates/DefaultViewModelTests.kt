@@ -55,10 +55,12 @@ class DefaultViewModelTests : TeamcityTests()
             on { authorizationEnabled } doReturn false
         }
 
-        val sut = DefaultViewModel(true,
-                "username",
+        val sut = DefaultViewModel(
+                loggedIn = true,
+                user = "username",
                 isReviewer = true,
                 isAdmin = false,
+                isAnon = false,
                 breadcrumbs = listOf(IndexViewModel.breadcrumb),
                 appConfig = mockConfig)
 
@@ -73,10 +75,12 @@ class DefaultViewModelTests : TeamcityTests()
             on { authorizationEnabled } doReturn true
         }
 
-        val sut = DefaultViewModel(true,
-                "username",
+        val sut = DefaultViewModel(
+                loggedIn = true,
+                user = "username",
                 isReviewer = true,
                 isAdmin = false,
+                isAnon = false,
                 breadcrumbs = listOf(IndexViewModel.breadcrumb),
                 appConfig = mockConfig)
 
