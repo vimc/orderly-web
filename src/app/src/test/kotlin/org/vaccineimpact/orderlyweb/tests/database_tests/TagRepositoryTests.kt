@@ -43,7 +43,8 @@ class TagRepositoryTests : CleanDatabaseTests()
         sut.tagReport("r1", "test-tag")
 
         val tags = JooqContext().use {
-            it.dsl.selectFrom(ORDERLYWEB_REPORT_TAG)
+            it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
                     .where(ORDERLYWEB_REPORT_TAG.REPORT.eq("r1"))
                     .fetchInto(String::class.java)
         }
@@ -59,7 +60,8 @@ class TagRepositoryTests : CleanDatabaseTests()
         sut.tagVersion("v1", "test-tag")
 
         val tags = JooqContext().use {
-            it.dsl.selectFrom(ORDERLYWEB_REPORT_VERSION_TAG)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq("v1"))
                     .fetchInto(String::class.java)
         }
