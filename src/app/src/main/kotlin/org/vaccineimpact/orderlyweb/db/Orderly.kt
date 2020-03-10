@@ -161,7 +161,7 @@ class Orderly(val isReviewer: Boolean,
                     resources = getResourceFiles(name, version),
                     dataInfo = getDataInfo(name, version),
                     parameterValues = parameterValues,
-                    tags = VersionDetailsTags(versionTags, reportTags, orderlyTags))
+                    tags = VersionDetailsTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted()))
         }
     }
 

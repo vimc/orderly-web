@@ -57,9 +57,9 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.parameterValues["p1"]).isEqualTo("v1")
         assertThat(result.parameterValues["p2"]).isEqualTo("v2")
 
-        assertThat(result.tags.reportTags).hasSameElementsAs(listOf("r1"))
-        assertThat(result.tags.versionTags).hasSameElementsAs(listOf("v1", "v2"))
-        assertThat(result.tags.orderlyTags).hasSameElementsAs(listOf("o1"))
+        assertThat(result.tags.reportTags).containsExactlyElementsOf(listOf("r1"))
+        assertThat(result.tags.versionTags).containsExactlyElementsOf(listOf("v1", "v2"))
+        assertThat(result.tags.orderlyTags).containsExactlyElementsOf(listOf("o1"))
     }
 
     @Test
