@@ -6,6 +6,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class GitTests : IntegrationTest()
 {
@@ -44,6 +45,7 @@ class GitTests : IntegrationTest()
         val url = "/reports/git/pull/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.post,
                 contentType = ContentTypes.json)
     }
 
@@ -63,6 +65,7 @@ class GitTests : IntegrationTest()
         val url = "/reports/git/fetch/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.post,
                 contentType = ContentTypes.json)
     }
 }
