@@ -38,5 +38,4 @@ object WebVersionRouteConfig : RouteConfig
 
     )
 
-
 }

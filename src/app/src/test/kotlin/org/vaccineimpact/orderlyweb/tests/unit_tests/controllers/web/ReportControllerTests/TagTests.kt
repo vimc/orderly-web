@@ -45,7 +45,7 @@ class TagTests : TeamcityTests()
         val sut = ReportController(mockContext, mockOrderly, mockTagRepo)
         val result = sut.tagVersion()
         assertThat(result).isEqualTo("OK")
-        verify(mockTagRepo).tagVersion("r1", "burden-report")
+        verify(mockTagRepo).tagVersion("v1", "burden-report")
         verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
     }
 }

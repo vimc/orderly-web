@@ -372,7 +372,7 @@ class GetByNameAndVersionTests : TeamcityTests()
             on { this.isReviewer() } doReturn true
         }
 
-        val sut = ReportController(mockContext, mock(), mock())
+        val sut = ReportController(mockContext)
 
         assertThat((sut.orderly as Orderly).isReviewer).isTrue()
     }
@@ -384,7 +384,7 @@ class GetByNameAndVersionTests : TeamcityTests()
             on { this.isReviewer() } doReturn false
         }
 
-        val sut = ReportController(mockContext, mock(), mock())
+        val sut = ReportController(mockContext)
 
         assertThat((sut.orderly as Orderly).isReviewer).isFalse()
     }
