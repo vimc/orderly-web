@@ -7,5 +7,5 @@
     "orderly_tags": {"type": "array", "items": {"type": "string"}}
   },
   "additionalProperties": false,
-  "required": ["versionTags", "reportTags", "orderlyTags"]
+  "required": ["version_tags", "report_tags", "orderly_tags"]
 }
