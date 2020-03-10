@@ -39,7 +39,8 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
                 listOf(DataInfo("hash", 1234, 2345)),
-                mapOf("param" to "value"))
+                mapOf("param" to "value"),
+                VersionDetailsTags(listOf("version"), listOf("report"), listOf("orderly")))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash
@@ -64,6 +65,8 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val dataModel = data[0] as StringModel
         assertThat(dataModel["name"].toString()).isEqualTo("hash")
         assertThat(dataModel["csvSize"].toString()).isEqualTo("1234")
+
+        val tags = result["tags"]
     }
 
     @Test

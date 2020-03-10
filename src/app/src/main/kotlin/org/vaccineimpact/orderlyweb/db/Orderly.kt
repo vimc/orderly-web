@@ -148,7 +148,7 @@ class Orderly(val isReviewer: Boolean,
             val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             val versionTags = getVersionTags(listOf(version))[version]?: listOf()
-            val reportTags = getReportTags(listOf(version))[version]?: listOf()
+            val reportTags = getReportTagsForVersions(listOf(version))[version]?: listOf()
             val orderlyTags = getOrderlyTags(listOf(version))[version]?: listOf()
 
             return ReportVersionDetails(id = reportVersionResult.id,
@@ -161,7 +161,7 @@ class Orderly(val isReviewer: Boolean,
                     resources = getResourceFiles(name, version),
                     dataInfo = getDataInfo(name, version),
                     parameterValues = parameterValues,
-                    tags = VersionDetailsTags(versionTags, reportTags[], orderlyTags))
+                    tags = VersionDetailsTags(versionTags, reportTags, orderlyTags))
         }
     }
 

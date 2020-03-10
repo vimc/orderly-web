@@ -7,14 +7,10 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
+import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
-import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 import java.sql.Timestamp
 
 class VersionTests : CleanDatabaseTests()
@@ -41,6 +37,10 @@ class VersionTests : CleanDatabaseTests()
 
         insertVersionParameterValues("version1", mapOf("p1" to "v1", "p2" to "v2"))
 
+        insertReportTags("test", listOf("r1"))
+        insertVersionTags("version1", listOf("v2", "v1"))
+        insertOrderlyTags("version1", listOf("o1"))
+
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "version1")
 
@@ -56,6 +56,10 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.parameterValues.keys.count()).isEqualTo(2)
         assertThat(result.parameterValues["p1"]).isEqualTo("v1")
         assertThat(result.parameterValues["p2"]).isEqualTo("v2")
+
+        assertThat(result.tags.reportTags).hasSameElementsAs(listOf("r1"))
+        assertThat(result.tags.versionTags).hasSameElementsAs(listOf("v1", "v2"))
+        assertThat(result.tags.orderlyTags).hasSameElementsAs(listOf("o1"))
     }
 
     @Test

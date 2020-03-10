@@ -22,7 +22,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val versions: List<VersionPickerViewModel>,
                                       val changelog: List<ChangelogViewModel>,
                                       val parameterValues: String?,
-                                      val tags: VersionDetailsTags,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -86,7 +85,6 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     versions.sortedByDescending { it }.map { buildVersionPickerViewModel(report.name, report.id, it) },
                     changelogViewModel,
                     parameterValues,
-                    report.tags,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
