@@ -3,13 +3,11 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.api.UserController
-import org.vaccineimpact.orderlyweb.db.UserRepository
-import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
 

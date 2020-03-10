@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.userCLI
 
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 
 fun addUsers(options: Map<String, Any>): String

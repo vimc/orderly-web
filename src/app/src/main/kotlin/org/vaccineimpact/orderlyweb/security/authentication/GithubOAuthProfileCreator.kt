@@ -8,7 +8,7 @@ import org.pac4j.core.context.WebContext
 import org.pac4j.oauth.profile.github.GitHubProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper

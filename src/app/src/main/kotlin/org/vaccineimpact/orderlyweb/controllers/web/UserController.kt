@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
