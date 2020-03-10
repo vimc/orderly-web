@@ -310,6 +310,7 @@ class Orderly(val isReviewer: Boolean,
 
         val parametersForVersions = getParametersForVersions(versionIds)
         val tagsForVersions = getTagsForVersions(versionIds)
+        val orderlyTagsForVersions = getOrderlyTagsForVersions(versionIds)
 
         return versions.map{
             val versionId = it[REPORT_VERSION.ID]
@@ -326,6 +327,7 @@ class Orderly(val isReviewer: Boolean,
             val versionParameters = parametersForVersions[versionId] ?: mapOf()
 
             val versionTags = tagsForVersions[versionId]?: listOf()
+            val versionOrderlyTags = orderlyTagsForVersions[versionId]?: listOf()
 
             ReportVersion(it[REPORT_VERSION.REPORT],
                     it[REPORT_VERSION.DISPLAYNAME],
@@ -335,7 +337,7 @@ class Orderly(val isReviewer: Boolean,
                     it[REPORT_VERSION.DATE].toInstant(),
                     versionCustomFields,
                     versionParameters,
-                    versionTags)
+                    (versionTags + versionOrderlyTags).distinct().sorted())
         }
     }
 
@@ -377,7 +379,7 @@ class Orderly(val isReviewer: Boolean,
                     .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
                     .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
-                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] }.sorted() }
+                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
 
             val allReportTags = ctx.dsl.select(
                     ORDERLYWEB_REPORT_TAG.TAG,
@@ -395,15 +397,28 @@ class Orderly(val isReviewer: Boolean,
             {
                 if (versionTags.containsKey(reportTags.key))
                 {
-                    result[reportTags.key] = (result[reportTags.key]!! + reportTags.value).distinct().sorted()
+                    result[reportTags.key] = (result[reportTags.key]!! + reportTags.value).distinct()
                 }
                 else
                 {
-                    result[reportTags.key] = reportTags.value.sorted()
+                    result[reportTags.key] = reportTags.value
                 }
             }
 
             return result
+        }
+    }
+
+    private fun getOrderlyTagsForVersions(versionIds: List<String>): Map<String, List<String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    REPORT_VERSION_TAG.REPORT_VERSION,
+                    REPORT_VERSION_TAG.TAG)
+                    .from(REPORT_VERSION_TAG)
+                    .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+                    .groupBy{ it[REPORT_VERSION_TAG.REPORT_VERSION] }
+                    .mapValues{ it.value.map{ r -> r[REPORT_VERSION_TAG.TAG] } }
         }
     }
 
