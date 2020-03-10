@@ -13,7 +13,7 @@ class GitTests : IntegrationTest()
     @Test
     fun `gets git status`()
     {
-        val response = apiRequestHelper.get("/reports/git/status/", userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.get("/git/status/", userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -23,16 +23,16 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can get git status`()
     {
-        val url = "/reports/git/status/"
+        val url = "/git/status/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)
     }
 
     @Test
-    fun `pulls`()
+    fun pulls()
     {
-        val response = apiRequestHelper.post("/reports/git/pull/", mapOf(), userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/pull/", mapOf(), userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -42,7 +42,7 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can pull`()
     {
-        val url = "/reports/git/pull/"
+        val url = "/git/pull/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
@@ -50,9 +50,9 @@ class GitTests : IntegrationTest()
     }
 
     @Test
-    fun `fetches`()
+    fun fetches()
     {
-        val response = apiRequestHelper.post("/reports/git/fetch/", mapOf(), userEmail = fakeGlobalReportReviewer())
+        val response = apiRequestHelper.post("/git/fetch/", mapOf(),  userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
@@ -62,7 +62,7 @@ class GitTests : IntegrationTest()
     @Test
     fun `only report runners can fetch`()
     {
-        val url = "/reports/git/fetch/"
+        val url = "/git/fetch/"
         assertAPIUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
