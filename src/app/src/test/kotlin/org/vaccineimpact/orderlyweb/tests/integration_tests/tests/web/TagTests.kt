@@ -7,7 +7,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
@@ -18,22 +17,20 @@ class TagTests : IntegrationTest()
     @Test
     fun `report reviewers can tag reports`()
     {
-        insertReport("r1", "v1")
-        val url = "/report/r1/tag"
+        val url = "/report/minimal/tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
                 postData = mapOf("tag" to "test-tag"))
         assertThat(result.text).isEqualTo("OK")
-        assertReportTagExists("r1", "test-tag")
+        assertReportTagExists("minimal", "test-tag")
     }
 
     @Test
     fun `only report reviewers can tag reports`()
     {
-        insertReport("r1", "v1")
-        val url = "/report/r1/tag"
+        val url = "/report/minimal/tag"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
@@ -43,8 +40,8 @@ class TagTests : IntegrationTest()
     @Test
     fun `report reviewers can tag version`()
     {
-        insertReport("r1", "v1")
-        val url = "/report/r1/version/v1/tag"
+        val (report, id) = getAnyReportIds()
+        val url = "/report/$report/version/$id/tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
@@ -57,15 +54,16 @@ class TagTests : IntegrationTest()
     @Test
     fun `only report reviewers can tag versions`()
     {
-        insertReport("r1", "v1")
-        val url = "/report/r1/version/v1/tag"
+        val (report, id) = getAnyReportIds()
+        val url = "/report/$report/version/$id/tag"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
                 postData = mapOf("tag" to "test-tag"))
     }
 
-    private fun assertReportTagExists(reportName: String, tag: String) {
+    private fun assertReportTagExists(reportName: String, tag: String)
+    {
         val tags = JooqContext().use {
             it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
                     .from(Tables.ORDERLYWEB_REPORT_TAG)
@@ -75,7 +73,8 @@ class TagTests : IntegrationTest()
         assertThat(tags.first()).isEqualTo(tag)
     }
 
-    private fun assertVersionTagExists(versionId: String, tag: String) {
+    private fun assertVersionTagExists(versionId: String, tag: String)
+    {
         val tags = JooqContext().use {
             it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                     .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
@@ -83,5 +82,17 @@ class TagTests : IntegrationTest()
                     .fetchInto(String::class.java)
         }
         assertThat(tags.first()).isEqualTo(tag)
+    }
+
+    private fun getAnyReportIds(): Pair<String, String>
+    {
+        val report = JooqContext().use {
+
+            it.dsl.select(Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION.ID)
+                    .where(Tables.REPORT_VERSION.PUBLISHED.eq(true))
+                    .fetchAny()
+        }
+
+        return Pair(report[Tables.REPORT_VERSION.REPORT], report[Tables.REPORT_VERSION.ID])
     }
 }

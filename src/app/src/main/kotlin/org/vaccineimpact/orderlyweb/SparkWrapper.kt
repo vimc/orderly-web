@@ -10,7 +10,7 @@ import spark.route.HttpMethod
 //Make classes which use the static methods of Spark unit testable by providing a wrapper interface for them to use instead
 interface SparkWrapper
 {
-    fun before(path: String, filter: Filter)
+    fun before(path: String, acceptType: String, filter: Filter)
     fun after(path: String, acceptType: String, vararg filters: Filter)
     fun map(fullUrl: String, method: HttpMethod, acceptType: String, route: Route,
             transformer: ResponseTransformer? = null)
@@ -24,9 +24,9 @@ class SparkServiceWrapper : SparkWrapper
         Spark.get(fullUrl, route)
     }
 
-    override fun before(path: String, filter: Filter)
+    override fun before(path: String,  acceptType: String,  filter: Filter)
     {
-        Spark.before(path, filter)
+        Spark.before(path, acceptType, filter)
     }
 
     override fun after(path: String, acceptType: String, vararg filters: Filter)
