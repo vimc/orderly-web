@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import khttp.post
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -19,7 +20,7 @@ class TagTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { params(":name") } doReturn "r1"
-            on { params(":tag") } doReturn "burden-report"
+            on { postData("tag") } doReturn "burden-report"
         }
 
         val mockTagRepo = mock<TagRepository>()
@@ -36,7 +37,7 @@ class TagTests : TeamcityTests()
         val mockContext = mock<ActionContext> {
             on { params(":name") } doReturn "r1"
             on { params(":version") } doReturn "v1"
-            on { params(":tag") } doReturn "burden-report"
+            on { postData("tag") } doReturn "burden-report"
         }
 
         val mockTagRepo = mock<TagRepository>()
