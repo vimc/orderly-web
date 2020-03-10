@@ -13,11 +13,7 @@ val CommonProfile.missingPermissions: MutableSet<ReifiedPermission>
 
 var CommonProfile.orderlyWebPermissions: PermissionSet
     get() = this.getAttributeOrDefault(PERMISSIONS, PermissionSet())
-    set(value)
-    {
-        this.removeAttribute(PERMISSIONS)
-        this.addAttribute(PERMISSIONS, value)
-    }
+    set(value) = this.addAttribute(PERMISSIONS, value)
 
 var CommonProfile.mismatchedURL: String?
     get() = this.getAttribute(MISMATCHED_URL) as String?

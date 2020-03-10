@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.SecurityController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class SecurityControllerTests : ControllerTest()
 {
@@ -24,6 +25,10 @@ class SecurityControllerTests : ControllerTest()
 
         val result = sut.weblogin()
         Assertions.assertThat(result.requestedUrl).isEqualTo("testUrl")
+        Assertions.assertThat(result.breadcrumbs.count()).isEqualTo(2)
+        Assertions.assertThat(result.breadcrumbs.first()).isEqualTo(IndexViewModel.breadcrumb)
+        Assertions.assertThat(result.breadcrumbs.last().url).isEqualTo("/weblogin")
+        Assertions.assertThat(result.breadcrumbs.last().name).isEqualTo("Login")
     }
 
     @Test
