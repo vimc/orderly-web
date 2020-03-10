@@ -2,6 +2,8 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
 
 interface TagRepository
 {
@@ -10,7 +12,7 @@ interface TagRepository
     fun tagVersion(versionId: String, tag: String)
 }
 
-class OrderlyTagRepository : TagRepository
+class OrderlyWebTagRepository : TagRepository
 {
     override fun getReportTags(reportNames: List<String>): Map<String, List<String>>
     {
@@ -28,22 +30,24 @@ class OrderlyTagRepository : TagRepository
     override fun tagReport(reportName: String, tag: String)
     {
         JooqContext().use {
-            it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_TAG)
-                    .apply {
-                        this.report = reportName
-                        this.tag = tag
-                    }.store()
+            it.dsl.insertInto(ORDERLYWEB_REPORT_TAG,
+                    ORDERLYWEB_REPORT_TAG.REPORT,
+                    ORDERLYWEB_REPORT_TAG.TAG)
+                    .values(reportName, tag)
+                    .onDuplicateKeyIgnore()
+                    .execute()
         }
     }
 
     override fun tagVersion(versionId: String, tag: String)
     {
         JooqContext().use {
-            it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
-                    .apply {
-                        this.reportVersion = versionId
-                        this.tag = tag
-                    }.store()
+            it.dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
+                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .values(versionId, tag)
+                    .onDuplicateKeyIgnore()
+                    .execute()
         }
     }
 }

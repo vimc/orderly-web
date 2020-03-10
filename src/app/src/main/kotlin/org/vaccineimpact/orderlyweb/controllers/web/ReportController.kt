@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyTagRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 
@@ -13,7 +13,7 @@ class ReportController(context: ActionContext,
                        private val tagRepository: TagRepository) : Controller(context)
 {
     constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyTagRepository())
+            : this(context, Orderly(context), OrderlyWebTagRepository())
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportVersionPageViewModel
@@ -29,7 +29,7 @@ class ReportController(context: ActionContext,
     fun tagReport(): String
     {
         val reportName = context.params(":name")
-        val tag = context.params(":tag")
+        val tag = context.postData("tag")
         tagRepository.tagReport(reportName, tag)
         return okayResponse()
     }
@@ -39,7 +39,7 @@ class ReportController(context: ActionContext,
         val reportName = context.params(":name")
         val versionId = context.params(":version")
         orderly.checkVersionExistsForReport(reportName, versionId)
-        val tag = context.params(":tag")
+        val tag = context.postData("tag")
         tagRepository.tagVersion(versionId, tag)
         return okayResponse()
     }
