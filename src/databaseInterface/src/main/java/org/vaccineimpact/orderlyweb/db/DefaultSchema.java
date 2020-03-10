@@ -47,7 +47,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.Tag;
 
 
 /**
@@ -63,7 +65,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 1246473712;
+    private static final long serialVersionUID = -794635480;
 
     /**
      * The reference instance of <code></code>
@@ -241,9 +243,19 @@ public class DefaultSchema extends SchemaImpl {
     public final ReportVersionPackage REPORT_VERSION_PACKAGE = org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage.REPORT_VERSION_PACKAGE;
 
     /**
+     * The table <code>report_version_tag</code>.
+     */
+    public final ReportVersionTag REPORT_VERSION_TAG = org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag.REPORT_VERSION_TAG;
+
+    /**
      * The table <code>report_version_view</code>.
      */
     public final ReportVersionView REPORT_VERSION_VIEW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionView.REPORT_VERSION_VIEW;
+
+    /**
+     * The table <code>tag</code>.
+     */
+    public final Tag TAG = org.vaccineimpact.orderlyweb.db.tables.Tag.TAG;
 
     /**
      * No further instances allowed
@@ -304,6 +316,8 @@ public class DefaultSchema extends SchemaImpl {
             ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS,
             ReportVersionData.REPORT_VERSION_DATA,
             ReportVersionPackage.REPORT_VERSION_PACKAGE,
-            ReportVersionView.REPORT_VERSION_VIEW);
+            ReportVersionTag.REPORT_VERSION_TAG,
+            ReportVersionView.REPORT_VERSION_VIEW,
+            Tag.TAG);
     }
 }
