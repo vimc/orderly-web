@@ -129,7 +129,6 @@ data class ReportRowViewModel(val ttKey: Int,
                     version.customFields,
                     parameterValues,
                     version.tags)
-
         }
     }
 }
