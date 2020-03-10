@@ -40,7 +40,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.Tag;
 
 
 /**
@@ -227,7 +229,17 @@ public class Tables {
     public static final ReportVersionPackage REPORT_VERSION_PACKAGE = org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage.REPORT_VERSION_PACKAGE;
 
     /**
+     * The table <code>report_version_tag</code>.
+     */
+    public static final ReportVersionTag REPORT_VERSION_TAG = org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag.REPORT_VERSION_TAG;
+
+    /**
      * The table <code>report_version_view</code>.
      */
     public static final ReportVersionView REPORT_VERSION_VIEW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionView.REPORT_VERSION_VIEW;
+
+    /**
+     * The table <code>tag</code>.
+     */
+    public static final Tag TAG = org.vaccineimpact.orderlyweb.db.tables.Tag.TAG;
 }
