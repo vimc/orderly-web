@@ -32,7 +32,7 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `dict of data names is securedbn to report readers`()
+    fun `only report readers can get dict of data names`()
     {
         insertReport("testname", "testversion")
         val url = "/reports/testname/versions/testversion/data/"
@@ -62,7 +62,7 @@ class DataTests : IntegrationTest()
     }
 
     @Test
-    fun `csv data endpoint secured to report readers`()
+    fun `only report readers can get csv data file`()
     {
         var demoCSV = File("${AppConfig()["orderly.root"]}/data/csv/").list()[0]
         demoCSV = demoCSV.substring(0, demoCSV.length - 4)

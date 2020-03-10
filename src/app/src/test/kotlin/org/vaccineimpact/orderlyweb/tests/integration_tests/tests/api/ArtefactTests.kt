@@ -18,7 +18,7 @@ import java.io.File
 class ArtefactTests : IntegrationTest()
 {
     @Test
-    fun `gets dict of artefact names to hashes with report scoped permission`()
+    fun `report readers can get dict of artefact names to hashes`()
     {
         insertReport("testname", "testversion")
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/artefacts/",
@@ -31,7 +31,7 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `artefacts dict endpoint is secured`()
+    fun `only report readers can get artefacts dict`()
     {
         insertReport("testname", "testversion")
         assertAPIUrlSecured("/reports/testname/versions/testversion/artefacts/",
@@ -93,7 +93,7 @@ class ArtefactTests : IntegrationTest()
     }
 
     @Test
-    fun `artefact file endpoint secured to report reading permission`()
+    fun `only report readers can download artefact file`()
     {
         val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
 
