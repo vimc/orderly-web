@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.errors.RouteNotFound
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
+import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import spark.ResponseTransformer
 import spark.Route
 import spark.Spark.notFound
@@ -20,7 +20,7 @@ class Router(private val actionResolver: ActionResolver,
 {
     constructor(templateEngine: TemplateEngine) :
             this(ActionResolver(templateEngine),
-                    OrderlyAuthenticationRouteBuilder(AuthenticationConfig()),
+                    OrderlyAuthenticationRouteBuilder(OrderlyWebAuthenticationConfig()),
                     SparkServiceWrapper(),
                     ErrorHandler(templateEngine))
 

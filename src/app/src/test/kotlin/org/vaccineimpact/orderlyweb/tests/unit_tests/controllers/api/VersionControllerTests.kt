@@ -8,7 +8,6 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.ZipClient
-import org.vaccineimpact.orderlyweb.controllers.api.DataController
 import org.vaccineimpact.orderlyweb.controllers.api.VersionController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -16,6 +15,7 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -29,7 +29,8 @@ class VersionControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getRunMetadata returns orderly_run rds`() {
+    fun `getRunMetadata returns orderly_run rds`()
+    {
 
         val name = "testname"
         val version = "testversion"
@@ -52,7 +53,8 @@ class VersionControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getRunMetadata checks version exists`() {
+    fun `getRunMetadata checks version exists`()
+    {
 
         val name = "testname"
         val version = "testversion"
@@ -75,7 +77,8 @@ class VersionControllerTests : ControllerTest()
     }
 
     @Test
-    fun `getRunMetadata checks file exists`() {
+    fun `getRunMetadata checks file exists`()
+    {
 
         val name = "testname"
         val version = "testversion"
@@ -213,6 +216,29 @@ class VersionControllerTests : ControllerTest()
         Assertions.assertThatThrownBy { sut.getZippedByNameAndVersion() }
                 .isInstanceOf(UnknownObjectError::class.java)
 
+    }
+
+    @Test
+    fun `getTags gets tags from repo`()
+    {
+        val tags = ReportVersionTags(listOf("versionTag"), listOf("reportTag"), listOf("orderlyTag"))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getReportVersionTags(reportName, reportVersion) } doReturn tags
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val sut = VersionController(mockContext, orderly, mock<ZipClient>(),
+                mock(),
+                mockConfig)
+
+        val result = sut.getTags()
+        assertThat(result).isSameAs(tags)
     }
 
     private val reportName: String = "Report name"

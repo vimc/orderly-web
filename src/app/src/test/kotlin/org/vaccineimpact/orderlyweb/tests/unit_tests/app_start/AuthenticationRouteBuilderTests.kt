@@ -1,8 +1,8 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests
+package org.vaccineimpact.orderlyweb.tests.unit_tests.app_start
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.app_start.OrderlyAuthenticationRouteBuilder
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig

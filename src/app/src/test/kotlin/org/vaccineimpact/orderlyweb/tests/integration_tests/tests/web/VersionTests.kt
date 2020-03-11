@@ -84,6 +84,31 @@ class VersionTests : IntegrationTest()
                 contentType = ContentTypes.binarydata)
     }
 
+    @Test
+    fun `only report readers can get tags`()
+    {
+        val (report, url) = getAnyTagsUrl()
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read",
+                Scope.Specific("report", report))), ContentTypes.json)
+    }
+
+    private fun getAnyTagsUrl(): Pair<String, String>
+    {
+        val version = JooqContext().use {
+
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .fetchAny()
+        }
+
+        val versionId = version[REPORT_VERSION.ID]
+        val reportName = version[REPORT_VERSION.REPORT]
+
+        val url = "/report/$reportName/version/$versionId/tags/"
+        return Pair(reportName, url)
+    }
+
     private fun getAnyDataUrl(): Pair<String, String>
     {
         val data = JooqContext().use {

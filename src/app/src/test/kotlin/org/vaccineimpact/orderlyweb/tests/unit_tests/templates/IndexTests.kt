@@ -4,6 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
@@ -109,33 +110,43 @@ class IndexTests : TeamcityTests()
     @Test
     fun `reviewers can see the status column`()
     {
-        val defaultModel = DefaultViewModel(true, "username", isReviewer = true, isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val defaultModel = DefaultViewModel(
+                true,
+                "username",
+                isReviewer = true,
+                isAdmin = false,
+                isAnon = false,
+                breadcrumbs = listOf(IndexViewModel.breadcrumb)
+        )
+
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(6)
+        assertThat(header.select("th").count()).isEqualTo(7)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
         assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Status")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Tags")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[6].selectFirst("label").text()).isEqualTo("Requester")
     }
 
     @Test
     fun `non-reviewers cannot see the status column`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
-                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
-        assertThat(header.select("th").count()).isEqualTo(5)
+        assertThat(header.select("th").count()).isEqualTo(6)
         assertThat(header.select("th")[0].selectFirst("label").text()).isEqualTo("Name")
         assertThat(header.select("th")[1].selectFirst("label").text()).isEqualTo("Version")
-        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Parameter Values")
-        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Author")
-        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Requester")
+        assertThat(header.select("th")[2].selectFirst("label").text()).isEqualTo("Tags")
+        assertThat(header.select("th")[3].selectFirst("label").text()).isEqualTo("Parameter Values")
+        assertThat(header.select("th")[4].selectFirst("label").text()).isEqualTo("Author")
+        assertThat(header.select("th")[5].selectFirst("label").text()).isEqualTo("Requester")
 
     }
 
@@ -143,16 +154,17 @@ class IndexTests : TeamcityTests()
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
-                isAdmin = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
-        assertThat(filters.select("th").count()).isEqualTo(6)
+        assertThat(filters.select("th").count()).isEqualTo(7)
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
         assertThat(filters.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
         assertThat(filters.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
-        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("parameter-values-filter")
-        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("author-filter")
-        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("requester-filter")
+        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("tags-filter")
+        assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("parameter-values-filter")
+        assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("author-filter")
+        assertThat(filters.select("th")[6].selectFirst("input").id()).isEqualTo("requester-filter")
     }
 }

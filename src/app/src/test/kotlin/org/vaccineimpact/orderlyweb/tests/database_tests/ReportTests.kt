@@ -163,6 +163,33 @@ class ReportTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `getAllReportVersions includes orderly tags`()
+    {
+        insertReport("report", "v1")
+        insertVersionTags("v1", listOf("a", "c"))
+        insertOrderlyTags("v1", listOf("b", "d"))
+
+        insertReport("report2", "v2")
+        insertReportTags("report2", listOf("e"))
+        insertOrderlyTags("v2", listOf("f", "e"))
+
+        insertReport("report3", "v3")
+        insertOrderlyTags("v3", listOf("g"))
+
+        val sut = createSut(isReviewer = true)
+        val results = sut.getAllReportVersions()
+
+        assertThat(results[0].id).isEqualTo("v1")
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a", "b", "c", "d"))
+
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("e", "f"))
+
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags).containsExactlyElementsOf(listOf("g"))
+    }
+
+    @Test
     fun `getAllReportVersions returns report names user is authorized to see`()
     {
         insertReport("goodname", "va")

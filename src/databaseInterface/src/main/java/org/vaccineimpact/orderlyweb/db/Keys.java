@@ -42,7 +42,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.Tag;
 import org.vaccineimpact.orderlyweb.db.tables.records.ArtefactFormatRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogLabelRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogRecord;
@@ -76,7 +78,9 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionCustomFieldsR
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionDataRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionPackageRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionTagRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionViewRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.TagRecord;
 
 
 /**
@@ -130,7 +134,9 @@ public class Keys {
     public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = UniqueKeys0.PK_REPORT_VERSION_CUSTOM_FIELDS;
     public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = UniqueKeys0.PK_REPORT_VERSION_DATA;
     public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = UniqueKeys0.PK_REPORT_VERSION_PACKAGE;
+    public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = UniqueKeys0.PK_REPORT_VERSION_TAG;
     public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = UniqueKeys0.PK_REPORT_VERSION_VIEW;
+    public static final UniqueKey<TagRecord> PK_TAG = UniqueKeys0.PK_TAG;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -171,6 +177,8 @@ public class Keys {
     public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_DATA_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionDataRecord, DataRecord> FK_REPORT_VERSION_DATA_DATA_1 = ForeignKeys0.FK_REPORT_VERSION_DATA_DATA_1;
     public static final ForeignKey<ReportVersionPackageRecord, ReportVersionRecord> FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1;
+    public static final ForeignKey<ReportVersionTagRecord, ReportVersionRecord> FK_REPORT_VERSION_TAG_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_TAG_REPORT_VERSION_1;
+    public static final ForeignKey<ReportVersionTagRecord, TagRecord> FK_REPORT_VERSION_TAG_TAG_1 = ForeignKeys0.FK_REPORT_VERSION_TAG_TAG_1;
     public static final ForeignKey<ReportVersionViewRecord, ReportVersionRecord> FK_REPORT_VERSION_VIEW_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_VIEW_REPORT_VERSION_1;
 
     // -------------------------------------------------------------------------
@@ -206,7 +214,9 @@ public class Keys {
         public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = createUniqueKey(ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "pk_report_version_custom_fields", ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.ID);
         public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = createUniqueKey(ReportVersionData.REPORT_VERSION_DATA, "pk_report_version_data", ReportVersionData.REPORT_VERSION_DATA.ID);
         public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = createUniqueKey(ReportVersionPackage.REPORT_VERSION_PACKAGE, "pk_report_version_package", ReportVersionPackage.REPORT_VERSION_PACKAGE.ID);
+        public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = createUniqueKey(ReportVersionTag.REPORT_VERSION_TAG, "pk_report_version_tag", ReportVersionTag.REPORT_VERSION_TAG.ID);
         public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = createUniqueKey(ReportVersionView.REPORT_VERSION_VIEW, "pk_report_version_view", ReportVersionView.REPORT_VERSION_VIEW.ID);
+        public static final UniqueKey<TagRecord> PK_TAG = createUniqueKey(Tag.TAG, "pk_tag", Tag.TAG.ID);
     }
 
     private static class ForeignKeys0 extends AbstractKeys {
@@ -245,6 +255,8 @@ public class Keys {
         public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionData.REPORT_VERSION_DATA, "fk_report_version_data_report_version_1", ReportVersionData.REPORT_VERSION_DATA.REPORT_VERSION);
         public static final ForeignKey<ReportVersionDataRecord, DataRecord> FK_REPORT_VERSION_DATA_DATA_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_DATA, ReportVersionData.REPORT_VERSION_DATA, "fk_report_version_data_data_1", ReportVersionData.REPORT_VERSION_DATA.HASH);
         public static final ForeignKey<ReportVersionPackageRecord, ReportVersionRecord> FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionPackage.REPORT_VERSION_PACKAGE, "fk_report_version_package_report_version_1", ReportVersionPackage.REPORT_VERSION_PACKAGE.REPORT_VERSION);
+        public static final ForeignKey<ReportVersionTagRecord, ReportVersionRecord> FK_REPORT_VERSION_TAG_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionTag.REPORT_VERSION_TAG, "fk_report_version_tag_report_version_1", ReportVersionTag.REPORT_VERSION_TAG.REPORT_VERSION);
+        public static final ForeignKey<ReportVersionTagRecord, TagRecord> FK_REPORT_VERSION_TAG_TAG_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_TAG, ReportVersionTag.REPORT_VERSION_TAG, "fk_report_version_tag_tag_1", ReportVersionTag.REPORT_VERSION_TAG.TAG);
         public static final ForeignKey<ReportVersionViewRecord, ReportVersionRecord> FK_REPORT_VERSION_VIEW_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionView.REPORT_VERSION_VIEW, "fk_report_version_view_report_version_1", ReportVersionView.REPORT_VERSION_VIEW.REPORT_VERSION);
     }
 }

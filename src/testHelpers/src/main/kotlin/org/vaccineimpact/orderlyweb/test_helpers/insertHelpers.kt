@@ -85,6 +85,14 @@ private fun getNewParameterId(ctx: JooqContext): Int
     return (maxFieldId ?: 0) + 1
 }
 
+private fun getNewReportVersionTagId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.REPORT_VERSION_TAG.ID.max())
+            .from(Tables.REPORT_VERSION_TAG)
+            .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
 fun insertReportWithCustomFields(name: String,
                                  version: String,
                                  customFields: Map<String, String>,
@@ -199,6 +207,41 @@ fun insertReportTags(report: String, tags: List<String>)
             tagRecord.store()
         }
     }
+}
+
+fun insertOrderlyTags(version: String, tags: List<String>)
+{
+    JooqContext().use{
+        for(tag in tags)
+        {
+            addOrderlyTag(tag, it)
+
+            val tagRecord = it.dsl.newRecord(Tables.REPORT_VERSION_TAG)
+                    .apply{
+                        this.id = getNewReportVersionTagId(it)
+                        this.reportVersion = version
+                        this.tag = tag
+                    }
+            tagRecord.store()
+        }
+    }
+}
+
+private fun addOrderlyTag(tag: String, ctx: JooqContext)
+{
+    val count = ctx.dsl.selectCount()
+            .from(Tables.TAG)
+            .where(Tables.TAG.ID.eq(tag))
+            .fetchOne(0, Int::class.java)
+    if (count == 0)
+    {
+        val tagRecord = ctx.dsl.newRecord(Tables.TAG)
+                .apply{
+                    this.id = tag
+                }
+        tagRecord.store()
+    }
+
 }
 
 private fun insertReportAndVersion(name: String,
