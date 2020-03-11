@@ -47,11 +47,9 @@
 
             <th>
                 <label for="tags-filter">Tags</label>
-
             </th>
             <th>
                 <label for="parameter-values-filter">Parameter Values</label>
-
             </th>
 
             <#list customFieldKeys as customField>
@@ -88,13 +86,15 @@
             </#if>
             <th>
 
-                <input class="form-control" type="text" id="tags-filter"
-                       data-role="standard-filter" placeholder="Type to filter..."
+                <select class="form-control" type="text" id="tags-filter"
+                       data-role="standard-filter"
                         <#if isReviewer>
                             data-col="4"
                         <#else>
                             data-col="3"
-                        </#if>/>
+                        </#if>>
+                    <option></option>
+                </select>
             </th>
             <th>
                 <input class="form-control" type="text" id="parameter-values-filter"
@@ -123,6 +123,7 @@
         </thead>
     </table>
     <#macro scripts>
+        <script type="text/javascript" src="${appUrl}/js/lib/select2.min.js"></script>
         <script type="text/javascript">
             var customFields = [<#list customFieldKeys as customField>"${customField}", </#list>];
             var rawReports = ${reportsJson};

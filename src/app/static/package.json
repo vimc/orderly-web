@@ -38,6 +38,7 @@
     "jsdom-global": "^3.0.2",
     "popper": "^1.0.1",
     "popper.js": "^1.16.0",
+    "select2": "^4.0.13",
     "sinon": "^7.5.0",
     "through": "^2.3.8",
     "treetables": "^1.1.3",
