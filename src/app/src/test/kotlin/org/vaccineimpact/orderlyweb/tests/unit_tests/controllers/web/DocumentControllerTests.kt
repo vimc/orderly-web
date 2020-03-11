@@ -179,7 +179,7 @@ class DocumentControllerTests : ControllerTest()
         val doc = result.docs[0]
         assertThat(doc.displayName).isEqualTo("toplevelwithonenonemptychild display name")
         assertThat(doc.children.count()).isEqualTo(1)
-        assertThat(doc.children[0].displayName).isEqualTo("file")
+        assertThat(doc.children[0].displayName).isEqualTo("file display name")
     }
 
     @Test
@@ -187,7 +187,7 @@ class DocumentControllerTests : ControllerTest()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
-                    listOf(Document("folder", "folder display  name", "path", false, false,
+                    listOf(Document("folder", "folder display name", "path", false, false,
                             listOf(Document("file", "file display name", "path", true, false, listOf()))),
                             Document("file", "file display name", "path", true, false, listOf()),
                             Document("anotherfolder", "anotherfolder display name", "path", false, false,
