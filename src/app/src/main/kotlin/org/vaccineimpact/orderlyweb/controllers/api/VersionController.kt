@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import java.io.File
 
@@ -17,7 +18,6 @@ class VersionController(context: ActionContext,
                         private val orderly: OrderlyClient,
                         private val zip: ZipClient,
                         private val files: FileSystem = Files(),
-                        private val orderlyServerAPI: OrderlyServerAPI,
                         private val config: Config) : Controller(context)
 {
 
@@ -26,7 +26,6 @@ class VersionController(context: ActionContext,
                     Orderly(context),
                     Zip(),
                     Files(),
-                    OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
 
     fun getChangelogByNameAndVersion(): List<Changelog>
@@ -40,6 +39,15 @@ class VersionController(context: ActionContext,
     {
         val name = context.params(":name")
         return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
+    }
+
+    fun getRunMetadata(): Boolean
+    {
+        val name = context.params(":name")
+        val version = context.params(":version")
+        orderly.checkVersionExistsForReport(name, version)
+        val absoluteFilePath = "${this.config["orderly.root"]}archive/$name/$version/orderly_run.rds"
+        return downloadFile(files, absoluteFilePath, "\"$name/$version/orderly_run.rds\"", ContentTypes.binarydata)
     }
 
     fun getZippedByNameAndVersion(): Boolean
