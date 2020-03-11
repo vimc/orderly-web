@@ -2,10 +2,7 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
-import org.vaccineimpact.orderlyweb.controllers.api.ArtefactController
-import org.vaccineimpact.orderlyweb.controllers.api.DataController
-import org.vaccineimpact.orderlyweb.controllers.api.ResourceController
-import org.vaccineimpact.orderlyweb.controllers.api.VersionController
+import org.vaccineimpact.orderlyweb.controllers.api.*
 import spark.route.HttpMethod
 
 object WebVersionRouteConfig : RouteConfig
@@ -24,21 +21,26 @@ object WebVersionRouteConfig : RouteConfig
                     VersionController::class, "getZippedByNameAndVersion", contentType = ContentTypes.binarydata)
                     .secure(readReports),
             WebEndpoint("/report/:name/version/:version/publish/",
-                    org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "publish",
+                    ReportController::class, "publish",
                     method = HttpMethod.post)
                     .transform()
                     .json()
                     .secure(reviewReports),
             WebEndpoint("/report/:name/version/:version/data/:data/",
-                    org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
+                    DataController::class, "downloadData",
                     contentType = ContentTypes.binarydata)
                     .secure(readReports),
+            WebEndpoint("/report/:name/version/:version/tags/",
+                    org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "tagVersion")
+                    .json()
+                    .post()
+                    .secure(reviewReports),
             WebEndpoint("/report/:name/version/:version/tags/",
                     VersionController::class, "getTags")
                     .json()
                     .transform()
                     .secure(readReports)
-    )
 
+    )
 
 }

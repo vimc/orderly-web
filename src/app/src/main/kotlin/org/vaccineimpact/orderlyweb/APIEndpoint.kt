@@ -53,7 +53,7 @@ data class APIEndpoint(
 
         val config = factory.build()
 
-        spark.before(url, org.pac4j.sparkjava.SecurityFilter(
+        spark.before(url, contentType, org.pac4j.sparkjava.SecurityFilter(
                 config,
                 factory.allClients(),
                 config.authorizers.map { it.key }.joinToString(","),

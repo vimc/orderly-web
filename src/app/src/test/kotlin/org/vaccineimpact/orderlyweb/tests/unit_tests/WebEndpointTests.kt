@@ -53,7 +53,7 @@ class WebEndpointTests: TeamcityTests()
 
         //verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
-        verify(mockSpark).before(eq("/test"), capture(securityFilterArg))
+        verify(mockSpark).before(eq("/test"), eq("text/html"), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
 
         val securityFilterClass = SecurityFilter::class.java
@@ -99,7 +99,7 @@ class WebEndpointTests: TeamcityTests()
 
         //verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
-        verify(mockSpark).before(eq("/test"), capture(securityFilterArg))
+        verify(mockSpark).before(eq("/test"), eq("text/html"), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
 
         val securityFilterClass = SecurityFilter::class.java
@@ -143,7 +143,7 @@ class WebEndpointTests: TeamcityTests()
 
         //verify the security filter has been created as expected
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
-        verify(mockSpark).before(eq("/test"), capture(securityFilterArg))
+        verify(mockSpark).before(eq("/test"), eq("text/html"), capture(securityFilterArg))
         val securityFilter = securityFilterArg.value
 
         val securityFilterClass = SecurityFilter::class.java
@@ -176,7 +176,7 @@ class WebEndpointTests: TeamcityTests()
 
         //verify that config factory and spark were not called
         verify(mockConfigFactory, times(0)).build()
-        verify(mockSpark, times(0)).before(anyString(), any())
+        verify(mockSpark, times(0)).before(anyString(), any(), any())
     }
 
     @Test

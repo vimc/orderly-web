@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.db
+package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.Record
 import org.jooq.Record3
@@ -10,10 +10,10 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.models.permissions.Role
-import org.jooq.impl.DSL
-import org.jooq.DSLContext
-
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.PermissionMapper
+import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 
 
 interface AuthorizationRepository

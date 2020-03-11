@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.DocumentRepository
+import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.Document

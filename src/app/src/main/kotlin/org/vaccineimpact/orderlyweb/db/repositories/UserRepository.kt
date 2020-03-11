@@ -1,8 +1,9 @@
-package org.vaccineimpact.orderlyweb.db
+package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.Record
 import org.jooq.Record3
 import org.jooq.SelectConditionStep
+import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.UserDetails

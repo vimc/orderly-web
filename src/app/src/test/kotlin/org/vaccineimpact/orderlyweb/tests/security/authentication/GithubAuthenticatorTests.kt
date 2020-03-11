@@ -7,7 +7,7 @@ import org.eclipse.egit.github.core.User
 import org.junit.Test
 import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.exception.CredentialsException
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper

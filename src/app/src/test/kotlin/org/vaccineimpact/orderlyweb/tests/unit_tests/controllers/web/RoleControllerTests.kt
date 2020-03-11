@@ -10,8 +10,8 @@ import org.mockito.internal.verification.Times
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.RoleController
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.RoleRepository
+import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError

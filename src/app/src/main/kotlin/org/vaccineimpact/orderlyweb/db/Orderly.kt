@@ -282,19 +282,6 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    override fun getReportTags(reportNames: List<String>): Map<String, List<String>>
-    {
-        JooqContext().use{ ctx ->
-            return ctx.dsl.select(
-                    ORDERLYWEB_REPORT_TAG.REPORT,
-                    ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(ORDERLYWEB_REPORT_TAG)
-                    .where(ORDERLYWEB_REPORT_TAG.REPORT.`in`(reportNames))
-                    .groupBy{it[ORDERLYWEB_REPORT_TAG.REPORT]}
-                    .mapValues{it.value.map{r -> r[ORDERLYWEB_REPORT_TAG.TAG]}.sorted()}
-        }
-    }
-
     private fun mapToReportVersions(ctx: JooqContext,
                                     versions: Result<GenericReportVersionRecord>): List<ReportVersion>
     {
