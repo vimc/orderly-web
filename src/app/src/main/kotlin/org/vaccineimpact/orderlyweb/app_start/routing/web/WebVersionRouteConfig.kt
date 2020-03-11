@@ -34,7 +34,12 @@ object WebVersionRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "tagVersion")
                     .json()
                     .post()
-                    .secure(reviewReports)
+                    .secure(reviewReports),
+            WebEndpoint("/report/:name/version/:version/tags/",
+                    VersionController::class, "getTags")
+                    .json()
+                    .transform()
+                    .secure(readReports)
 
     )
 

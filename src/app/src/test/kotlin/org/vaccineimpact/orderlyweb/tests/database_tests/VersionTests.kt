@@ -7,14 +7,10 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
+import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
-import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 import java.sql.Timestamp
 
 class VersionTests : CleanDatabaseTests()
@@ -56,6 +52,41 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.parameterValues.keys.count()).isEqualTo(2)
         assertThat(result.parameterValues["p1"]).isEqualTo("v1")
         assertThat(result.parameterValues["p2"]).isEqualTo("v2")
+    }
+
+    @Test
+    fun `getTags returns all tags for version`()
+    {
+        val now = Timestamp(System.currentTimeMillis())
+        insertReport("test", "version1", date = now,
+                author = "dr author", requester = "ms requester", published = true)
+        insertReportTags("test", listOf("r1", "r2"))
+        insertVersionTags("version1", listOf("v2", "v1"))
+        insertOrderlyTags("version1", listOf("o1"))
+
+        val sut = createSut()
+        val result = sut.getReportVersionTags("test", "version1")
+        assertThat(result.versionTags).containsExactlyElementsOf(listOf("v1", "v2"))
+        assertThat(result.reportTags).containsExactlyElementsOf(listOf("r1", "r2"))
+        assertThat(result.orderlyTags).containsExactlyElementsOf(listOf("o1"))
+    }
+
+    @Test
+    fun `getTags throws unknown object error if report version does not exist`()
+    {
+        val sut = createSut()
+        Assertions.assertThatThrownBy { sut.getReportVersionTags("nonexistent", "version1") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `getTags throws unknown object error for reader if version is not published`()
+    {
+        insertReport("test", "version1", published = false)
+
+        val sut = createSut()
+        Assertions.assertThatThrownBy { sut.getReportVersionTags("test", "version1") }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 
     @Test

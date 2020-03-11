@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import java.io.File
 
 class VersionController(context: ActionContext,
@@ -59,6 +60,13 @@ class VersionController(context: ActionContext,
         zip.zipIt(folderName, response.outputStream, buildFileList(name, version, folderName))
 
         return true
+    }
+
+    fun getTags(): ReportVersionTags
+    {
+        val name = context.params(":name")
+        val version = context.params(":version")
+        return orderly.getReportVersionTags(name, version)
     }
 
     private fun buildFileList(report: String, version: String, folderName: String): List<String>
