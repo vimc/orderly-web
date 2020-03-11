@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.test_helpers
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -13,8 +14,6 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
                 .from(Tables.ORDERLYWEB_USER_GROUP_PERMISSION)
                 .join(Tables.ORDERLYWEB_PERMISSION)
                 .on(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.PERMISSION.eq(Tables.ORDERLYWEB_PERMISSION.ID))
-                .join(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION)
-                .on(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.eq(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID))
                 .where(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP.eq(email))
                 .and(Tables.ORDERLYWEB_PERMISSION.ID.eq(permissionName))
                 .fetchAny(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID)
@@ -34,11 +33,22 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
                         .where(Tables.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID.eq(permissionID))
                         .execute()
             }
+        }
 
+        val allPermissions = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID,
+                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
+                .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(email))
+                .and(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq(permissionName))
+                .fetch()
+
+        if (allPermissions.count() == 0)
+        {
             it.dsl.deleteFrom(Tables.ORDERLYWEB_USER_GROUP_PERMISSION)
                     .where(Tables.ORDERLYWEB_USER_GROUP_PERMISSION.ID.eq(permissionID))
                     .execute()
-
         }
     }
 }
@@ -148,13 +158,13 @@ fun insertVersionParameterValues(version: String,
         if (!typeExists)
         {
             val typeRecord = it.dsl.newRecord(Tables.PARAMETERS_TYPE)
-                    .apply{
+                    .apply {
                         this.name = "text"
                     }
             typeRecord.store()
         }
 
-        for ((k,v) in parameterValues)
+        for ((k, v) in parameterValues)
         {
             val parameterRecord = it.dsl.newRecord(Tables.PARAMETERS)
                     .apply {
@@ -171,11 +181,11 @@ fun insertVersionParameterValues(version: String,
 
 fun insertVersionTags(version: String, vararg tags: String)
 {
-    JooqContext().use{
-        for(tag in tags)
+    JooqContext().use {
+        for (tag in tags)
         {
             val tagRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
-                    .apply{
+                    .apply {
                         this.reportVersion = version
                         this.tag = tag
                     }
@@ -186,11 +196,11 @@ fun insertVersionTags(version: String, vararg tags: String)
 
 fun insertReportTags(report: String, vararg tags: String)
 {
-    JooqContext().use{
-        for(tag in tags)
+    JooqContext().use {
+        for (tag in tags)
         {
             val tagRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_TAG)
-                    .apply{
+                    .apply {
                         this.report = report
                         this.tag = tag
                     }

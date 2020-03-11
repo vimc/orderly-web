@@ -17,6 +17,9 @@ describe("index page as report reviewer", () => {
         '            </th>\n' +
         '            <th>\n' +
         '            <th>' +
+        '               <label for="tags-filter">Tags</label>\n' +
+        '            </th>\n' +
+        '            <th>' +
         '               <label for="parameter-values-filter">Parameter Values</label>\n' +
         '            </th>\n' +
         '                <label for="author-filter">Author</label>\n' +
@@ -48,19 +51,24 @@ describe("index page as report reviewer", () => {
         '                 </select>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '            <th>\n' +
-        '                <input class="form-control" type="text" id="parameter-values-filter"\n' +
+        '                <input class="form-control" type="text" id="tags-filter"\n' +
         '                       data-role="standard-filter"\n' +
         '                       data-col="4"/>\n' +
         '            </th>\n' +
-        '                <input class="form-control" type="text" id="author-filter"\n' +
+        '            <th>\n' +
+        '                <input class="form-control" type="text" id="parameter-values-filter"\n' +
         '                       data-role="standard-filter"\n' +
         '                       data-col="5"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <input class="form-control" type="text" id="requester-filter"\n' +
+        '                <input class="form-control" type="text" id="author-filter"\n' +
         '                       data-role="standard-filter"\n' +
         '                       data-col="6"/>\n' +
+        '            </th>\n' +
+        '            <th>\n' +
+        '                <input class="form-control" type="text" id="requester-filter"\n' +
+        '                       data-role="standard-filter"\n' +
+        '                       data-col="7"/>\n' +
         '            </th>\n' +
         '        </tr>\n' +
         '        </thead>\n' +
@@ -77,7 +85,8 @@ describe("index page as report reviewer", () => {
         author: "author",
         requester: "requester",
         published: true,
-        parameter_values: "p1=v1"
+        parameter_values: "p1=v1",
+        tags: ["tag1"]
     }];
 
     initReportTable(true, reports, ["author", "requester"]);
@@ -120,6 +129,23 @@ describe("index page as report reviewer", () => {
 
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
 
+    });
+
+    it("wires up tag filter", () => {
+
+        const $table = $('#reports-table');
+        const $filter = $('#tags-filter');
+        expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
+
+        $filter.val("r1");
+        $filter.keyup();
+
+        expect($table.find("tbody tr td")[0].innerHTML).toBe("No matching records found");
+
+        $filter.val("tag1");
+        $filter.keyup();
+
+        expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
     });
 
     it("wires up parameter values filter", () => {

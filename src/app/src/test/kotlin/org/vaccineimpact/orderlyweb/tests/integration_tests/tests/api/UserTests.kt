@@ -3,18 +3,22 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeUserManager
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import spark.route.HttpMethod
 
 class UserTests: IntegrationTest()
 {
     private val ADDED_USER = "added.user@test.com"
 
     @Test
-    fun `can add user with user manage permission`()
+    fun `can add user`()
     {
         assertAddedUserExists(false)
 
@@ -32,17 +36,19 @@ class UserTests: IntegrationTest()
     }
 
     @Test
-    fun `cannot add user without user manage permission`()
+    fun `only user managers can add user without user manage permission`()
     {
-        val userEmail = fakeGlobalReportReviewer()
         val body = mapOf(
                 "email" to "not.added.user@test.com",
                 "username" to "not.added.user",
                 "displayName" to "Not Added User",
                 "source" to "Montagu"
         )
-        val response = apiRequestHelper.post("/user/add/", body, userEmail = userEmail)
-        Assertions.assertThat(response.statusCode).isEqualTo(403)
+        assertAPIUrlSecured("/user/add/",
+                setOf(ReifiedPermission("users.manage", Scope.Global())),
+                method = HttpMethod.post,
+                contentType = ContentTypes.json,
+                postData = body)
     }
 
     private fun assertAddedUserExists(exists: Boolean)

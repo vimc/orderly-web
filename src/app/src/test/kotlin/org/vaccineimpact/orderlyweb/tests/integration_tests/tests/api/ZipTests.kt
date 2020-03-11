@@ -1,17 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.createArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.deleteArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
-import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.io.ByteArrayInputStream
 import java.util.zip.ZipInputStream
@@ -42,44 +42,22 @@ class ZipTests : IntegrationTest()
     }
 
     @Test
-    fun `gets zip file with scoped permissions`()
+    fun `only report readers can get zip file`()
     {
         insertReport("testname", "testversion")
         createArchiveFolder("testname", "testversion")
 
         try
         {
-            val response = apiRequestHelper.get("/reports/testname/versions/testversion/all/", contentType = ContentTypes.zip,
-                    userEmail = fakeReportReader("testname"))
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
-        } finally
-        {
-            deleteArchiveFolder("testname", "testversion")
-        }
-
-    }
-
-    @Test
-    fun `gets zip file with bearer token`()
-    {
-        insertReport("testname", "testversion")
-        createArchiveFolder("testname", "testversion")
-
-        try
-        {
-            val response = apiRequestHelper.get("/reports/testname/versions/testversion/all/",
+            val url ="/reports/testname/versions/testversion/all/"
+            assertAPIUrlSecured(url,
+                    setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
                     contentType = ContentTypes.zip)
-
-            assertSuccessful(response)
-            assertThat(response.headers["content-type"]).isEqualTo("application/zip")
-            assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=testname/testversion.zip")
         } finally
         {
             deleteArchiveFolder("testname", "testversion")
         }
+
     }
 
     @Test
@@ -88,21 +66,8 @@ class ZipTests : IntegrationTest()
         insertReport("testname", "testversion")
         val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/all", contentType = ContentTypes.zip)
 
-        Assertions.assertThat(response.statusCode).isEqualTo(401)
+        assertThat(response.statusCode).isEqualTo(401)
         JSONValidator.validateMultipleAuthErrors(response.text)
-    }
-
-    @Test
-    fun `get zip returns 403 if report not in scoped report reading permissions`()
-    {
-        insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/all",
-                contentType = ContentTypes.zip,  userEmail = "user@email.com")
-
-        Assertions.assertThat(response.statusCode).isEqualTo(403)
-        JSONValidator.validateError(response.text, "forbidden",
-                "You do not have sufficient permissions to access this resource. Missing these permissions: report:testname/reports.read")
-
     }
 
     @Test
@@ -111,10 +76,9 @@ class ZipTests : IntegrationTest()
         val response = apiRequestHelper.get("/reports/notaname/versions/notareport/all",
                 contentType = ContentTypes.zip)
 
-        Assertions.assertThat(response.statusCode).isEqualTo(404)
+        assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version",
                 "Unknown report-version")
-
     }
 
     @Test
@@ -132,7 +96,7 @@ class ZipTests : IntegrationTest()
                 userEmail = fakeGlobalReportReader())
 
         val entries = getZipEntries(response)
-        Assertions.assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv", "$version/README.md")
+        assertThat(entries).containsOnly("$version/mygraph.png", "$version/meta/data.csv", "$version/README.md")
     }
 
     @Test
@@ -151,7 +115,7 @@ class ZipTests : IntegrationTest()
 
         val entries = getZipEntries(response)
 
-        Assertions.assertThat(entries).containsOnly(
+        assertThat(entries).containsOnly(
                 "$version/mygraph.png",
                 "$version/meta/data.csv",
                 "$version/orderly.yml",

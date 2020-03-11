@@ -9,12 +9,12 @@ object ReportRouteConfig : RouteConfig
 {
     private val runReports = setOf("*/reports.run")
     private val readReports = setOf("report:<name>/reports.read")
-    private val reviewReports = setOf("*/reports.review")
     private val controller = ReportController::class
 
     override val endpoints: List<EndpointDefinition> = listOf(
 
             APIEndpoint("/reports/", controller, "getAllReports")
+
                     .json()
                     .transform()
                     // more specific permission checking in the controller action
