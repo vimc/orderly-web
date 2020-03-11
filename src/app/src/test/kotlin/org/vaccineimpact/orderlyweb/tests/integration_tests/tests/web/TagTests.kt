@@ -17,7 +17,7 @@ class TagTests : IntegrationTest()
     @Test
     fun `report reviewers can tag reports`()
     {
-        val url = "/report/minimal/tag"
+        val url = "/report/minimal/tags"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
@@ -30,7 +30,7 @@ class TagTests : IntegrationTest()
     @Test
     fun `only report reviewers can tag reports`()
     {
-        val url = "/report/minimal/tag"
+        val url = "/report/minimal/tags"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
@@ -41,7 +41,7 @@ class TagTests : IntegrationTest()
     fun `report reviewers can tag version`()
     {
         val (report, id) = getAnyReportIds()
-        val url = "/report/$report/version/$id/tag"
+        val url = "/report/$report/version/$id/tags"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
@@ -55,7 +55,7 @@ class TagTests : IntegrationTest()
     fun `only report reviewers can tag versions`()
     {
         val (report, id) = getAnyReportIds()
-        val url = "/report/$report/version/$id/tag"
+        val url = "/report/$report/version/$id/tags"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
