@@ -23,8 +23,8 @@ class SparkServiceWrapper : SparkWrapper
 
     override fun before(path: String, acceptType: String, method: HttpMethod, filter: Filter)
     {
-        val filterIfVerb = FilterIfVerb(method, filter)
-        Spark.before(path, acceptType, filterIfVerb)
+        val methodMatchingFilter = MethodMatchingFilter(method, filter)
+        Spark.before(path, acceptType, methodMatchingFilter)
     }
 
     override fun after(path: String, acceptType: String, vararg filters: Filter)
@@ -59,8 +59,8 @@ class SparkServiceWrapper : SparkWrapper
     }
 }
 
-class FilterIfVerb(val method: HttpMethod,
-                   val filter: Filter): Filter {
+class MethodMatchingFilter(val method: HttpMethod,
+                           val filter: Filter): Filter {
 
     override fun handle(request: Request?, response: Response?)
     {
