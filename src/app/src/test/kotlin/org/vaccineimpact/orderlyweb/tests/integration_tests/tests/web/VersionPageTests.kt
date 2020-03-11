@@ -19,56 +19,62 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `only report readers can see report version page`()
     {
-        assertWebUrlSecured(getAnyReportPageUrl(), setOf(ReifiedPermission("reports.read", Scope.Global())))
+        val (report, url) = getAnyReportPageUrl()
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
     }
 
     @Test
     fun `artefacts can be downloaded`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
-        val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
+        val (report, url) = getAnyReportPageUrl()
+        val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
 
         val firstArtefactHref = page.selectFirst("#artefacts a").attr("href")
 
-        val result = webRequestHelper.requestWithSessionCookie(firstArtefactHref, sessionCookie, ContentTypes.binarydata)
-
-        Assertions.assertThat(result.statusCode).isEqualTo(200)
+        assertWebUrlSecured(firstArtefactHref,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
+                ContentTypes.binarydata)
     }
 
     @Test
     fun `data can be downloaded`()
     {
+        val (report, url) = getAnyReportPageUrl()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
-        val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
+        val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
 
         val firstDataHref = page.selectFirst("#data-links a").attr("href")
 
-        val result = webRequestHelper.requestWithSessionCookie(firstDataHref, sessionCookie, ContentTypes.binarydata)
-
-        Assertions.assertThat(result.statusCode).isEqualTo(200)
+        assertWebUrlSecured(firstDataHref,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
+                contentType = ContentTypes.binarydata)
     }
 
     @Test
     fun `resources can be downloaded`()
     {
+        val (report, url) = getAnyReportPageUrl()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
-        val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
+        val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
 
-        val firstDataHref = page.selectFirst("#resources a").attr("href")
+        val firstResourceHref = page.selectFirst("#resources a").attr("href")
 
-        val result = webRequestHelper.requestWithSessionCookie(firstDataHref, sessionCookie, ContentTypes.binarydata)
-
-        Assertions.assertThat(result.statusCode).isEqualTo(200)
+        assertWebUrlSecured(firstResourceHref,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
+                contentType = ContentTypes.binarydata)
     }
 
     @Test
     fun `zip file can be downloaded`()
     {
+        val (report, url) = getAnyReportPageUrl()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
-        val response = webRequestHelper.requestWithSessionCookie(getAnyReportPageUrl(), sessionCookie)
+        val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
 
         val href = page.selectFirst("#zip-file a").attr("href")
@@ -78,7 +84,7 @@ class VersionPageTests : IntegrationTest()
         Assertions.assertThat(result.statusCode).isEqualTo(200)
     }
 
-    private fun getAnyReportPageUrl(): String
+    private fun getAnyReportPageUrl(): Pair<String, String>
     {
         val data = JooqContext().use {
 
@@ -92,6 +98,6 @@ class VersionPageTests : IntegrationTest()
         val report = data[REPORT_VERSION.REPORT]
         val version = data[REPORT_VERSION.ID]
 
-        return "/report/$report/$version/"
+        return Pair(report, "/report/$report/$version")
     }
 }

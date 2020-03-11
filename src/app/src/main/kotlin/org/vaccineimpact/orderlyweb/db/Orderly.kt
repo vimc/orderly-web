@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.db
 
+import org.jooq.Condition
 import org.jooq.Record6
 import org.jooq.Result
 import org.jooq.impl.DSL.*
@@ -479,7 +480,7 @@ class Orderly(val isReviewer: Boolean,
 
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion =
-            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader).or(isReviewer))
+            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
                     .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =

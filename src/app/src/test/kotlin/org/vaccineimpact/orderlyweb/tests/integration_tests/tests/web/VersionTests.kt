@@ -28,7 +28,7 @@ class VersionTests : IntegrationTest()
 
         val url = "/report/$reportName/version/$versionId/publish/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global()),
+        assertWebUrlSecured(url, setOf(
                 ReifiedPermission("reports.review", Scope.Global())), method = HttpMethod.post,
                 contentType = ContentTypes.json)
     }
@@ -36,15 +36,15 @@ class VersionTests : IntegrationTest()
     @Test
     fun `only report readers can get resource`()
     {
-        val url = getAnyResourceUrl()
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
+        val (report, url) = getAnyArtefactUrl()
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))), ContentTypes.binarydata)
     }
 
     @Test
     fun `only report readers can get artefact`()
     {
-        val url = getAnyArtefactUrl()
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
+        val (report, url) = getAnyArtefactUrl()
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))), ContentTypes.binarydata)
     }
 
     @Test
@@ -63,26 +63,28 @@ class VersionTests : IntegrationTest()
 
         val url = "/report/$reportName/version/$versionId/all/"
 
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())), ContentTypes.binarydata)
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName))),
+                ContentTypes.binarydata)
     }
 
     @Test
     fun `only report readers can get csv data`()
     {
-        val url = getAnyDataUrl() + "?type=csv"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
+        val (report, url) = getAnyDataUrl()
+        assertWebUrlSecured("$url?type=csv", setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
                 contentType = ContentTypes.binarydata)
     }
 
     @Test
     fun `only report readers can get rds data`()
     {
-        val url = getAnyDataUrl() + "?type=rds"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Global())),
+        val (report, url) = getAnyDataUrl()
+        assertWebUrlSecured("$url?type=rds", setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
                 contentType = ContentTypes.binarydata)
     }
 
-    private fun getAnyDataUrl(): String
+    private fun getAnyDataUrl(): Pair<String, String>
     {
         val data = JooqContext().use {
 
@@ -98,10 +100,10 @@ class VersionTests : IntegrationTest()
         val version = data[REPORT_VERSION_DATA.REPORT_VERSION]
         val name = URLEncoder.encode(data[REPORT_VERSION_DATA.NAME], "UTF-8")
 
-        return "/report/$report/version/$version/data/$name/"
+        return Pair(report, "/report/$report/version/$version/data/$name/")
     }
 
-    private fun getAnyResourceUrl(): String
+    private fun getAnyResourceUrl(): Pair<String, String>
     {
         val resource = JooqContext().use {
 
@@ -119,10 +121,10 @@ class VersionTests : IntegrationTest()
         val fileName = resource[FILE_INPUT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
 
-        return "/report/$report/version/$version/resources/$encodedFileName/"
+        return Pair(report, "/report/$report/version/$version/resources/$encodedFileName/")
     }
 
-    private fun getAnyArtefactUrl(): String
+    private fun getAnyArtefactUrl(): Pair<String, String>
     {
         val resource = JooqContext().use {
 
@@ -139,6 +141,6 @@ class VersionTests : IntegrationTest()
         val fileName = resource[FILE_ARTEFACT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
 
-        return "/report/$report/version/$version/artefacts/$encodedFileName/"
+        return Pair(report, "/report/$report/version/$version/artefacts/$encodedFileName/")
     }
 }

@@ -5,6 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
@@ -25,17 +27,16 @@ class ResourceTests : IntegrationTest()
     }
 
     @Test
-    fun `can't get dict of resource names to hashes if report not in scoped permissions`()
+    fun `only report readers can get dict of resource names to hashes`()
     {
         insertReport("testname", "testversion")
-        val response = apiRequestHelper.get("/reports/testname/versions/testversion/resources",
-                userEmail = fakeReportReader("testname"))
-
-        assertJsonContentType(response)
+        assertAPIUrlSecured("/reports/testname/versions/testversion/resources",
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "testname"))),
+                contentType = ContentTypes.json)
     }
 
     @Test
-    fun `gets resource file`()
+    fun `gets resource file with access token`()
     {
         val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
 
@@ -47,7 +48,6 @@ class ResourceTests : IntegrationTest()
         assertSuccessful(response)
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
         Assertions.assertThat(response.headers["content-disposition"]).isEqualTo("attachment; filename=\"use_resource/$version/meta/data.csv\"")
-
     }
 
     @Test
@@ -67,16 +67,14 @@ class ResourceTests : IntegrationTest()
     }
 
     @Test
-    fun `can't get resource file if report not in scoped permissions`()
+    fun `only report readers can get resource file`()
     {
         val version = File("${AppConfig()["orderly.root"]}/archive/use_resource/").list()[0]
-
         val resourceEncoded = "meta:data.csv"
         val url = "/reports/use_resource/versions/$version/resources/$resourceEncoded/"
-        val token = apiRequestHelper.generateOnetimeToken(url, fakeReportReader("badereportname"))
-        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
 
-        assertUnauthorized(response, "use_resource")
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", "use_resource"))))
     }
 
     @Test
@@ -91,18 +89,6 @@ class ResourceTests : IntegrationTest()
         assertJsonContentType(response)
         Assertions.assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-resource", "Unknown resource : '$fakeresource'")
-    }
-
-    @Test
-    fun `gets 401 if missing access token`()
-    {
-        insertReport("testname", "testversion")
-        val fakeresource = "hf647rhj"
-        val response = apiRequestHelper.getNoAuth("/reports/testname/versions/testversion/resources/$fakeresource/", ContentTypes.binarydata)
-
-        Assertions.assertThat(response.statusCode).isEqualTo(401)
-        JSONValidator.validateMultipleAuthErrors(response.text)
-
     }
 
     @Test
