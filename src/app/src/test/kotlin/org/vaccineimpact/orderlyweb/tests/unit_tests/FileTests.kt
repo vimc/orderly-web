@@ -38,13 +38,27 @@ class FileTests
         val root = File("documents").absolutePath
         val children = Files().getAllChildren(root, root).sortedBy { it.name }
         assertThat(children.count()).isEqualTo(3)
-        assertThat(children[0]).isEqualToComparingFieldByField(DocumentDetails("child", "$root/child", "/child", false, false))
+        assertThat(children[0]).isEqualToComparingFieldByField(DocumentDetails("child", "child", "$root/child", "/child", false, false))
         assertThat(children[1])
                 .isEqualToComparingFieldByField(
-                        DocumentDetails("childFile.csv", "$root/childFile.csv", "/childFile.csv", true, false))
+                        DocumentDetails("childFile.csv", "childFile.csv", "$root/childFile.csv", "/childFile.csv", true, false))
         assertThat(children[2])
                 .isEqualToComparingFieldByField(
-                        DocumentDetails("https://external.com", "$root/link.web.url", "/link.web.url", true, true))
+                        DocumentDetails("https://external.com", "link.web.url", "$root/link.web.url", "/link.web.url", true, true))
+    }
+
+    @Test
+    fun `external links use file name as display name and url as name`()
+    {
+        File("documents/link.web.url").createNewFile()
+        File("documents/link.web.url").writeText("[InternetShortcut]\n" +
+                "URL=https://external.com\n")
+
+        val root = File("documents").absolutePath
+        val children = Files().getAllChildren(root, root).sortedBy { it.name }
+        assertThat(children[0])
+                .isEqualToComparingFieldByField(
+                        DocumentDetails("https://external.com", "link.web.url", "$root/link.web.url", "/link.web.url", true, true))
     }
 
     @Test
