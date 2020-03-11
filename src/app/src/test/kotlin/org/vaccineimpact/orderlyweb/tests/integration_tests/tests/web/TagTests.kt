@@ -5,6 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -24,7 +26,8 @@ class TagTests : IntegrationTest()
                 method = HttpMethod.post,
                 postData = mapOf("tag" to "test-tag"))
         assertThat(result.text).isEqualTo("OK")
-        assertReportTagExists("minimal", "test-tag")
+        val tags = getReportTags("minimal")
+        assertThat(tags.first()).isEqualTo("test-tag")
     }
 
     @Test
@@ -48,7 +51,8 @@ class TagTests : IntegrationTest()
                 method = HttpMethod.post,
                 postData = mapOf("tag" to "test-tag"))
         assertThat(result.text).isEqualTo("OK")
-        assertVersionTagExists(id, "test-tag")
+        val tags = getVersionTags(id)
+        assertThat(tags.first()).isEqualTo("test-tag")
     }
 
     @Test
@@ -62,26 +66,93 @@ class TagTests : IntegrationTest()
                 postData = mapOf("tag" to "test-tag"))
     }
 
-    private fun assertReportTagExists(reportName: String, tag: String)
+    @Test
+    fun `report reviewers can delete report tags`()
     {
-        val tags = JooqContext().use {
-            it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
-                    .fetchInto(String::class.java)
-        }
-        assertThat(tags.first()).isEqualTo(tag)
+        val url = "/report/minimal/tag/test-tag"
+        val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                requiredPermissions,
+                contentType = ContentTypes.json,
+                method = HttpMethod.delete)
+        assertThat(result.text).isEqualTo("OK")
+        val tags = getReportTags("minimal")
+        assertThat(tags.count()).isEqualTo(0)
     }
 
-    private fun assertVersionTagExists(versionId: String, tag: String)
+    @Test
+    fun `only report reviewers can delete report tags`()
     {
-        val tags = JooqContext().use {
-            it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
+        val url = "/report/minimal/tag/test-tag"
+        assertWebUrlSecured(url, requiredPermissions,
+                contentType = ContentTypes.json,
+                method = HttpMethod.delete)
+    }
+
+    @Test
+    fun `report reviewers can delete version tags`()
+    {
+        val (report, id) = getAnyReportIds()
+        insertVersionTag(id, "test-tag")
+        val url = "/report/$report/version/$id/tag/test-tag"
+        val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                requiredPermissions,
+                contentType = ContentTypes.json,
+                method = HttpMethod.delete)
+        assertThat(result.text).isEqualTo("OK")
+        val tags = getVersionTags(id)
+        assertThat(tags.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `only report reviewers can delete version tags`()
+    {
+        val (report, id) = getAnyReportIds()
+        val url = "/report/$report/version/$id/tag/test-tag"
+        assertWebUrlSecured(url, requiredPermissions,
+                contentType = ContentTypes.json,
+                method = HttpMethod.delete)
+    }
+
+    private fun getReportTags(reportName: String): MutableList<String>
+    {
+        JooqContext().use {
+            return it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .where(ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
                     .fetchInto(String::class.java)
         }
-        assertThat(tags.first()).isEqualTo(tag)
+    }
+
+    private fun getVersionTags(versionId: String): MutableList<String>
+    {
+        JooqContext().use {
+            return it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
+                    .fetchInto(String::class.java)
+        }
+    }
+
+    private fun insertReportTag(reportName: String, tag: String)
+    {
+        JooqContext().use {
+            it.dsl.insertInto(ORDERLYWEB_REPORT_TAG,
+                            ORDERLYWEB_REPORT_TAG.REPORT,
+                            ORDERLYWEB_REPORT_TAG.TAG)
+                    .values(reportName, tag)
+                    .execute()
+        }
+    }
+
+    private fun insertVersionTag(versionId: String, tag: String)
+    {
+        JooqContext().use {
+            it.dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
+                            ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                            ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .values(versionId, tag)
+                    .execute()
+        }
     }
 
     private fun getAnyReportIds(): Pair<String, String>

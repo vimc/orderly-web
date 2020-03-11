@@ -34,6 +34,11 @@ object WebVersionRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "tagVersion")
                     .json()
                     .post()
+                    .secure(reviewReports),
+            WebEndpoint("/report/:name/version/:version/tag/:tag",
+                    org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "deleteVersionTag",
+                    method = HttpMethod.delete)
+                    .json()
                     .secure(reviewReports)
 
     )
