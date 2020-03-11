@@ -479,7 +479,7 @@ class Orderly(val isReviewer: Boolean,
 
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion =
-            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader))
+            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader).or(isReviewer))
                     .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =

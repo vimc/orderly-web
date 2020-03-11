@@ -85,7 +85,7 @@ class APIEndpointTests: TeamcityTests()
         verify(mockConfigFactory).allClients()
 
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
-        verify(mockSpark).before(eq("/test"), eq("application/json"), capture(securityFilterArg))
+        verify(mockSpark).before(eq("/test"), eq(ContentTypes.binarydata), capture(securityFilterArg))
 
         //verify the security filter has been created as expected
         val securityFilterClass = SecurityFilter::class.java
@@ -149,7 +149,7 @@ class APIEndpointTests: TeamcityTests()
         verify(mockConfigFactory).allClients()
 
         val securityFilterArg: ArgumentCaptor<SecurityFilter> = ArgumentCaptor.forClass(SecurityFilter::class.java)
-        verify(mockSpark).before(eq("/test"), eq("application/json"), capture(securityFilterArg))
+        verify(mockSpark).before(eq("/test"), eq(ContentTypes.binarydata), capture(securityFilterArg))
 
         //verify the security filter has been created with mockConfig
         val securityFilterClass = SecurityFilter::class.java

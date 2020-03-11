@@ -48,7 +48,7 @@ class TagTests : IntegrationTest()
                 method = HttpMethod.post,
                 postData = mapOf("tag" to "test-tag"))
         assertThat(result.text).isEqualTo("OK")
-        assertVersionTagExists("v1", "test-tag")
+        assertVersionTagExists(id, "test-tag")
     }
 
     @Test
@@ -89,6 +89,7 @@ class TagTests : IntegrationTest()
         val report = JooqContext().use {
 
             it.dsl.select(Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION.ID)
+                    .from(Tables.REPORT_VERSION)
                     .where(Tables.REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
