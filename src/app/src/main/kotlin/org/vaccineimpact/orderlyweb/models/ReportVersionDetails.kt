@@ -13,3 +13,4 @@ data class ReportVersionDetails(val name: String,
                                 val dataInfo: List<DataInfo>,
                                 val parameterValues: Map<String, String>)
 
+
