@@ -1,6 +1,6 @@
 <template>
     <div>
-        <web-icon v-if="doc.external"></web-icon>
+        <web-icon></web-icon>
         <a :href="doc.url">{{doc.display_name}}</a>
     </div>
 </template>

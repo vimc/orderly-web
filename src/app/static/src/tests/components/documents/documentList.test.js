@@ -2,6 +2,7 @@ import Vue from "vue";
 import {shallowMount} from '@vue/test-utils';
 import DocumentList from "../../../js/components/documents/documentList.vue";
 import File from "../../../js/components/documents/file.vue";
+import WebLink from "../../../js/components/documents/webLink.vue";
 
 describe("document list", () => {
 
@@ -27,7 +28,16 @@ describe("document list", () => {
                         path: "toplevelfilepath",
                         url: "toplevelfileurl",
                         children: [],
-                        is_file: true
+                        is_file: true,
+                        external: false
+                    },
+                    {
+                        display_name: "toplevelexternal",
+                        path: "toplevelexternalpath",
+                        url: "toplevelexternalurl",
+                        children: [],
+                        is_file: true,
+                        external: true
                     }]
             }
         });
@@ -57,7 +67,26 @@ describe("document list", () => {
             path: "toplevelfilepath",
             url: "toplevelfileurl",
             children: [],
-            is_file: true
+            is_file: true,
+            external: false
+        });
+    });
+
+    it("renders web link", () => {
+        const wrapper = getWrapper();
+
+        const folderListItem = wrapper.find("li#toplevelexternalpath");
+        expect(folderListItem.classes()).not.toContain("has-children");
+        expect(folderListItem.findAll("span.folder-name").length).toBe(0);
+        expect(folderListItem.findAll(".expander").length).toBe(0);
+        expect(folderListItem.findAll(WebLink).length).toBe(1);
+        expect(folderListItem.find(WebLink).vm.$props.doc).toEqual({
+            display_name: "toplevelexternal",
+            path: "toplevelexternalpath",
+            url: "toplevelexternalurl",
+            children: [],
+            is_file: true,
+            external: true
         });
     });
 
