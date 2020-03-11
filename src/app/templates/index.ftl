@@ -46,6 +46,10 @@
             </#if>
 
             <th>
+                <label for="tags-filter">Tags</label>
+
+            </th>
+            <th>
                 <label for="parameter-values-filter">Parameter Values</label>
 
             </th>
@@ -83,27 +87,37 @@
                 </th>
             </#if>
             <th>
-                <input class="form-control" type="text" id="parameter-values-filter"
-                       placeholder="Type to filter..."
-                       data-role="standard-filter"
+
+                <input class="form-control" type="text" id="tags-filter"
+                       data-role="standard-filter" placeholder="Type to filter..."
                         <#if isReviewer>
                             data-col="4"
                         <#else>
                             data-col="3"
-                        </#if>
-                />
-                <#list customFieldKeys as customField>
+                        </#if>/>
+            </th>
             <th>
-                <input class="form-control" type="text" id="${customField}-filter"
+                <input class="form-control" type="text" id="parameter-values-filter"
                        placeholder="Type to filter..."
                        data-role="standard-filter"
                         <#if isReviewer>
-                            data-col="${customField?index + 5}"
+                            data-col="5"
                         <#else>
-                            data-col="${customField?index + 4}"
-                        </#if>
-                />
+                            data-col="4"
+                        </#if>/>
             </th>
+            <#list customFieldKeys as customField>
+                <th>
+                    <input class="form-control" type="text" id="${customField}-filter"
+                           placeholder="Type to filter..."
+                           data-role="standard-filter"
+                            <#if isReviewer>
+                                data-col="${customField?index + 6}"
+                            <#else>
+                                data-col="${customField?index + 5}"
+                            </#if>
+                    />
+                </th>
             </#list>
         </tr>
         </thead>
