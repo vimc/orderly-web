@@ -20,14 +20,14 @@ class TagTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext> {
             on { params(":name") } doReturn "r1"
-            on { postData("tag") } doReturn "burden-report"
+            on { postData<List<String>>("tags") } doReturn listOf("burden-report")
         }
 
         val mockTagRepo = mock<TagRepository>()
         val sut = ReportController(mockContext, mock(), mockTagRepo)
         val result = sut.tagReport()
         assertThat(result).isEqualTo("OK")
-        verify(mockTagRepo).tagReport("r1", "burden-report")
+        verify(mockTagRepo).tagReport("r1", listOf("burden-report"))
     }
 
 
@@ -37,7 +37,7 @@ class TagTests : TeamcityTests()
         val mockContext = mock<ActionContext> {
             on { params(":name") } doReturn "r1"
             on { params(":version") } doReturn "v1"
-            on { postData("tag") } doReturn "burden-report"
+            on { postData<List<String>>("tags") } doReturn listOf("burden-report")
         }
 
         val mockTagRepo = mock<TagRepository>()
@@ -45,7 +45,7 @@ class TagTests : TeamcityTests()
         val sut = ReportController(mockContext, mockOrderly, mockTagRepo)
         val result = sut.tagVersion()
         assertThat(result).isEqualTo("OK")
-        verify(mockTagRepo).tagVersion("v1", "burden-report")
+        verify(mockTagRepo).tagVersion("v1", listOf("burden-report"))
         verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
     }
 }

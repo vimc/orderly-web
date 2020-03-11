@@ -17,10 +17,10 @@ class UserControllerTests
     fun `adds user`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.postData("email") } doReturn "test@test.com"
-            on { this.postData("username") } doReturn "firstname.lastname"
-            on { this.postData("displayName") } doReturn "Firstname Lastname"
-            on { this.postData("source") } doReturn "Montagu"
+            on { this.postData<String>("email") } doReturn "test@test.com"
+            on { this.postData<String>("username") } doReturn "firstname.lastname"
+            on { this.postData<String>("displayName") } doReturn "Firstname Lastname"
+            on { this.postData<String>("source") } doReturn "Montagu"
         }
         val mockRepo = mock<UserRepository>()
 

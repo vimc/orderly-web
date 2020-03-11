@@ -27,7 +27,7 @@ class OrderlyServerTests: TeamcityTests()
     fun `passes through POST body`()
     {
         val mockContext = mock<ActionContext>() {
-            on { this.postData() } doReturn mapOf("key1" to "val1")
+            on { this.postData<String>() } doReturn mapOf("key1" to "val1")
         }
         val sut = OrderlyServer(mockConfig, mockHttpclient)
         sut.post("/some/path/", mockContext)

@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.AssertionsForClassTypes.assertThat
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
@@ -22,9 +22,10 @@ class TagTests : IntegrationTest()
                 requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tag" to "test-tag"))
+                postData = mapOf("tags" to listOf("test-tag", "another-tag")))
         assertThat(result.text).isEqualTo("OK")
-        assertReportTagExists("minimal", "test-tag")
+        val tags = getReportTags("minimal")
+        assertThat(tags).containsExactly("another-tag", "test-tag")
     }
 
     @Test
@@ -34,7 +35,7 @@ class TagTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tag" to "test-tag"))
+                postData = mapOf("tags" to listOf("test-tag", "another-tag")))
     }
 
     @Test
@@ -46,9 +47,10 @@ class TagTests : IntegrationTest()
                 requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tag" to "test-tag"))
+                postData = mapOf("tags" to listOf("test-tag")))
         assertThat(result.text).isEqualTo("OK")
-        assertVersionTagExists(id, "test-tag")
+        val tags = getVersionTags(id)
+        assertThat(tags).containsExactly("test-tag")
     }
 
     @Test
@@ -59,29 +61,27 @@ class TagTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tag" to "test-tag"))
+                postData = mapOf("tags" to listOf("test-tag")))
     }
 
-    private fun assertReportTagExists(reportName: String, tag: String)
+    private fun getReportTags(reportName: String): List<String>
     {
-        val tags = JooqContext().use {
-            it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
+        JooqContext().use {
+            return it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
                     .from(Tables.ORDERLYWEB_REPORT_TAG)
                     .where(Tables.ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
                     .fetchInto(String::class.java)
         }
-        assertThat(tags.first()).isEqualTo(tag)
     }
 
-    private fun assertVersionTagExists(versionId: String, tag: String)
+    private fun getVersionTags(versionId: String): List<String>
     {
-        val tags = JooqContext().use {
-            it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+       JooqContext().use {
+           return it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                     .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(Tables.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
                     .fetchInto(String::class.java)
         }
-        assertThat(tags.first()).isEqualTo(tag)
     }
 
     private fun getAnyReportIds(): Pair<String, String>

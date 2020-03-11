@@ -220,7 +220,7 @@ class RoleControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "GROUP1"
-            on { this.postData() } doReturn mapOf()
+            on { this.postData<String>() } doReturn mapOf()
         }
 
         val sut = RoleController(actionContext, mock(), mock())
@@ -232,7 +232,7 @@ class RoleControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "test"
-            on { this.postData() } doReturn mapOf(
+            on { this.postData<String>() } doReturn mapOf(
                     "name" to "test.permission",
                     "scope_prefix" to "report",
                     "scope_id" to "report1"
@@ -279,7 +279,7 @@ class RoleControllerTests : TeamcityTests()
     fun `adds new role`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.postData() } doReturn mapOf("name" to "NEWGROUP")
+            on { this.postData<String>() } doReturn mapOf("name" to "NEWGROUP")
         }
 
         val authRepo = mock<AuthorizationRepository>()
@@ -347,7 +347,7 @@ class RoleControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":role-id") } doReturn "GROUP1"
-            on { this.postData() } doReturn mapOf("email" to "test@example.com")
+            on { this.postData<String>() } doReturn mapOf("email" to "test@example.com")
         }
 
         val authRepo = mock<AuthorizationRepository>()
@@ -374,7 +374,7 @@ class RoleControllerTests : TeamcityTests()
     fun `throws exception when adding role if name is missing`()
     {
         val actionContext = mock<ActionContext> {
-            on { this.postData() } doReturn mapOf()
+            on { this.postData<String>() } doReturn mapOf()
         }
 
         val sut = RoleController(actionContext, mock(), mock())

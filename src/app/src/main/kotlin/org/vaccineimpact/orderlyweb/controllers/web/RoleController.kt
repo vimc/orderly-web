@@ -44,7 +44,7 @@ class RoleController(context: ActionContext,
     }
 
     fun addRole(): String {
-        val name = context.postData()["name"] ?: throw MissingParameterError("name")
+        val name = context.postData<String>()["name"] ?: throw MissingParameterError("name")
         authRepo.createUserGroup(name)
         return okayResponse()
     }
@@ -87,7 +87,7 @@ class RoleController(context: ActionContext,
     fun addUser(): String
     {
         val roleId = roleId()
-        val email = context.postData()["email"] ?: throw MissingParameterError("action")
+        val email = context.postData<String>()["email"] ?: throw MissingParameterError("action")
         authRepo.ensureGroupHasMember(roleId, email)
         return okayResponse()
     }

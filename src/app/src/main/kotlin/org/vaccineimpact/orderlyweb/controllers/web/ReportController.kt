@@ -29,8 +29,8 @@ class ReportController(context: ActionContext,
     fun tagReport(): String
     {
         val reportName = context.params(":name")
-        val tag = context.postData("tag")
-        tagRepository.tagReport(reportName, tag)
+        val tags = context.postData<List<String>>("tags")
+        tagRepository.tagReport(reportName, tags)
         return okayResponse()
     }
 
@@ -39,8 +39,8 @@ class ReportController(context: ActionContext,
         val reportName = context.params(":name")
         val versionId = context.params(":version")
         orderly.checkVersionExistsForReport(reportName, versionId)
-        val tag = context.postData("tag")
-        tagRepository.tagVersion(versionId, tag)
+        val tags = context.postData<List<String>>("tags")
+        tagRepository.tagVersion(versionId, tags)
         return okayResponse()
     }
 }
