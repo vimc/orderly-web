@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHelper
@@ -95,12 +96,28 @@ abstract class IntegrationTest : TeamcityTests()
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
     }
 
-    protected fun assertWebUrlSecured(url: String, requiredPermissions: Set<ReifiedPermission>,
+    protected fun assertWebUrlSecured(url: String,
+                                      requiredPermissions: Set<ReifiedPermission>,
                                       contentType: String = ContentTypes.html,
                                       method: HttpMethod = HttpMethod.get,
                                       postData: Map<String, String>? = null)
     {
         val checker = WebPermissionChecker(url, requiredPermissions, contentType, method, postData)
+        checker.checkPermissionsAreSufficient()
+
+        for (permission in requiredPermissions)
+        {
+            checker.checkPermissionIsRequired(permission)
+        }
+    }
+
+    protected fun assertAPIUrlSecured(url: String,
+                                      requiredPermissions: Set<ReifiedPermission>,
+                                      contentType: String = ContentTypes.binarydata,
+                                      method: HttpMethod = HttpMethod.get,
+                                      postData: Map<String, String>? = null)
+    {
+        val checker = APIPermissionChecker(url, requiredPermissions, contentType, method, postData)
         checker.checkPermissionsAreSufficient()
 
         for (permission in requiredPermissions)
