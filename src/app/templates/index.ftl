@@ -87,13 +87,16 @@
             <th>
 
                 <select class="form-control" type="text" id="tags-filter"
+                        multiple="multiple"
                        data-role="standard-filter"
                         <#if isReviewer>
                             data-col="4"
                         <#else>
                             data-col="3"
                         </#if>>
-                    <option></option>
+                    <#list tags as tag>
+                        <option>${tag}</option>
+                    </#list>
                 </select>
             </th>
             <th>
