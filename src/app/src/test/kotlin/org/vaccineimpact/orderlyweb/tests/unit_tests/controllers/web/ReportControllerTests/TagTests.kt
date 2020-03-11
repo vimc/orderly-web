@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import khttp.post
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -61,7 +60,7 @@ class TagTests : TeamcityTests()
         val sut = ReportController(mockContext, mock(), mockTagRepo)
         val result = sut.deleteReportTag()
         assertThat(result).isEqualTo("OK")
-        verify(mockTagRepo).deleteVersionTag("v1", "burden-report")
+        verify(mockTagRepo).deleteReportTag("r1", "burden-report")
     }
 
     @Test

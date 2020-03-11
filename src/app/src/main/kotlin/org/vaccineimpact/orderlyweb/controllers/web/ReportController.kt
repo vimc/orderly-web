@@ -47,7 +47,7 @@ class ReportController(context: ActionContext,
     fun deleteReportTag(): String
     {
         val reportName = context.params(":name")
-        val tag = context.postData("tag")
+        val tag = context.params(":tag")
         tagRepository.deleteReportTag(reportName, tag)
         return okayResponse()
     }
@@ -57,7 +57,7 @@ class ReportController(context: ActionContext,
         val reportName = context.params(":name")
         val versionId = context.params(":version")
         orderly.checkVersionExistsForReport(reportName, versionId)
-        val tag = context.postData("tag")
+        val tag = context.params(":tag")
         tagRepository.deleteVersionTag(versionId, tag)
         return okayResponse()
     }
