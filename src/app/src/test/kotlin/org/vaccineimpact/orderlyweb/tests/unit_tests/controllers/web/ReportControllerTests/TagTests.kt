@@ -48,4 +48,37 @@ class TagTests : TeamcityTests()
         verify(mockTagRepo).tagVersion("v1", "burden-report")
         verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
     }
+
+    @Test
+    fun `can delete report tag`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { params(":name") } doReturn "r1"
+            on { params(":tag") } doReturn "burden-report"
+        }
+
+        val mockTagRepo = mock<TagRepository>()
+        val sut = ReportController(mockContext, mock(), mockTagRepo)
+        val result = sut.deleteReportTag()
+        assertThat(result).isEqualTo("OK")
+        verify(mockTagRepo).deleteVersionTag("v1", "burden-report")
+    }
+
+    @Test
+    fun `can delete version tag`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { params(":name") } doReturn "r1"
+            on { params(":version") } doReturn "v1"
+            on { params(":tag") } doReturn "burden-report"
+        }
+
+        val mockTagRepo = mock<TagRepository>()
+        val mockOrderly = mock<OrderlyClient>()
+        val sut = ReportController(mockContext, mockOrderly, mockTagRepo)
+        val result = sut.deleteVersionTag()
+        assertThat(result).isEqualTo("OK")
+        verify(mockTagRepo).deleteVersionTag("v1", "burden-report")
+        verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
+    }
 }

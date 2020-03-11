@@ -169,7 +169,7 @@ fun insertVersionParameterValues(version: String,
     }
 }
 
-fun insertVersionTags(version: String, tags: List<String>)
+fun insertVersionTags(version: String, vararg tags: String)
 {
     JooqContext().use{
         for(tag in tags)
@@ -184,7 +184,7 @@ fun insertVersionTags(version: String, tags: List<String>)
     }
 }
 
-fun insertReportTags(report: String, tags: List<String>)
+fun insertReportTags(report: String, vararg tags: String)
 {
     JooqContext().use{
         for(tag in tags)
@@ -199,7 +199,7 @@ fun insertReportTags(report: String, tags: List<String>)
     }
 }
 
-fun insertOrderlyTags(version: String, tags: List<String>)
+fun insertOrderlyTags(version: String, vararg tags: String)
 {
     JooqContext().use{
         for(tag in tags)

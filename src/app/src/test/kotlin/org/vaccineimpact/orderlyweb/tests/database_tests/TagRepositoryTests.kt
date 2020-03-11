@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReportTags
+import org.vaccineimpact.orderlyweb.test_helpers.insertVersionTags
 
 class TagRepositoryTests : CleanDatabaseTests()
 {
@@ -16,15 +17,15 @@ class TagRepositoryTests : CleanDatabaseTests()
     fun `can get all report tags`()
     {
         insertReport("r1", "v1")
-        insertReportTags("r1", listOf("c-tag", "b-tag", "a-tag"))
+        insertReportTags("r1", "c-tag", "b-tag", "a-tag")
 
         insertReport("r2", "v2")
-        insertReportTags("r2", listOf("d-tag", "c-tag"))
+        insertReportTags("r2", "d-tag", "c-tag")
 
         insertReport("r3", "v3")
 
         insertReport("not-returned", "v4")
-        insertReportTags("not-returned", listOf("nor-returned-tag"))
+        insertReportTags("not-returned", "nor-returned-tag")
 
         val sut = OrderlyWebTagRepository()
 
@@ -67,6 +68,44 @@ class TagRepositoryTests : CleanDatabaseTests()
         }
 
         assertThat(tags).containsExactly("test-tag")
+    }
+
+    @Test
+    fun `can delete report tag`()
+    {
+        insertReport("r1", "v1")
+        insertReportTags("r1", "test-tag")
+        val sut = OrderlyWebTagRepository()
+
+        sut.deleteReportTag("r1", "test-tag")
+
+        val tags = JooqContext().use {
+            it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .where(ORDERLYWEB_REPORT_TAG.REPORT.eq("r1"))
+                    .fetchInto(String::class.java)
+        }
+
+        assertThat(tags.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can delete version tag`()
+    {
+        insertReport("r1", "v1")
+        insertVersionTags("v1", "test-tag")
+        val sut = OrderlyWebTagRepository()
+
+        sut.deleteVersionTag("v1", "test-tag")
+
+        val tags = JooqContext().use {
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq("v1"))
+                    .fetchInto(String::class.java)
+        }
+
+        assertThat(tags.count()).isEqualTo(0)
     }
 
 }
