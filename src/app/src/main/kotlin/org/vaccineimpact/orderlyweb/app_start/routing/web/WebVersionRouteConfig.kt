@@ -36,8 +36,8 @@ object WebVersionRouteConfig : RouteConfig
             WebEndpoint("/report/:name/version/:version/tags/",
                     VersionController::class, "getTags")
                     .json()
-                    .secure(readReports)
                     .transform()
+                    .secure(readReports)
     )
 
 
