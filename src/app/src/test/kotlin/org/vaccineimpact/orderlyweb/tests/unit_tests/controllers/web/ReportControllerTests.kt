@@ -27,8 +27,7 @@ class ReportControllerTests : TeamcityTests()
             listOf(),
             listOf(),
             listOf(),
-            mapOf("p1" to "v1", "p2" to "v2"),
-            VersionDetailsTags(listOf("version"), listOf("report"), listOf("orderly")))
+            mapOf("p1" to "v1", "p2" to "v2"))
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
             Changelog("20160103-143015-1234abcd", "public", "something public", true),

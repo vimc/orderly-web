@@ -1,5 +1,5 @@
 {
-  "id": "VersionDetailsTags",
+  "id": "ReportVersionTags",
   "type": "object",
   "properties": {
     "version_tags": {"type": "array", "items": {"type": "string"}},

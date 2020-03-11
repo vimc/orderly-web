@@ -15,7 +15,6 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.VersionDetailsTags
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.*
@@ -42,8 +41,7 @@ class VersionPageTests : TeamcityTests()
             artefacts = listOf(),
             resources = listOf(),
             dataInfo = listOf(),
-            parameterValues = mapOf("p1" to "v1", "p2" to "v2"),
-            tags = VersionDetailsTags(listOf("version"), listOf("report"), listOf("orderly")))
+            parameterValues = mapOf("p1" to "v1", "p2" to "v2"))
 
     private val testArtefactViewModels = listOf(
             ArtefactViewModel(

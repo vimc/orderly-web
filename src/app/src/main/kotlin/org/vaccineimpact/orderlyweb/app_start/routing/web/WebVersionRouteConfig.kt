@@ -32,8 +32,12 @@ object WebVersionRouteConfig : RouteConfig
             WebEndpoint("/report/:name/version/:version/data/:data/",
                     org.vaccineimpact.orderlyweb.controllers.api.DataController::class, "downloadData",
                     contentType = ContentTypes.binarydata)
+                    .secure(readReports),
+            WebEndpoint("/report/:name/version/:version/tags/",
+                    VersionController::class, "getTags")
+                    .json()
                     .secure(readReports)
-
+                    .transform()
     )
 
 

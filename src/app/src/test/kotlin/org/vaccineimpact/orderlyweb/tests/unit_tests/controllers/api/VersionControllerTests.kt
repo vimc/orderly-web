@@ -4,9 +4,6 @@ import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -17,7 +14,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.VersionController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.VersionDetailsTags
+import org.vaccineimpact.orderlyweb.models.*
 import java.io.File
 import java.time.Instant
 
@@ -36,8 +33,7 @@ class VersionControllerTests : ControllerTest()
         val report = ReportVersionDetails(displayName = "displayName", id = "id", date = Instant.now(),
                 name = "name", published = true, description = "description",
                 artefacts = listOf(),
-                resources = listOf(), dataInfo = listOf(), parameterValues = mapOf(),
-                tags = VersionDetailsTags(listOf("version"), listOf("report"), listOf("orderly")))
+                resources = listOf(), dataInfo = listOf(), parameterValues = mapOf())
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
@@ -146,6 +142,30 @@ class VersionControllerTests : ControllerTest()
         Assertions.assertThatThrownBy { sut.getZippedByNameAndVersion() }
                 .isInstanceOf(UnknownObjectError::class.java)
 
+    }
+
+    @Test
+    fun `getTags gets tags from repo`()
+    {
+        val tags = ReportVersionTags(listOf("versionTag"), listOf("reportTag"), listOf("orderlyTag"))
+
+        val orderly = mock<OrderlyClient> {
+            on { this.getReportVersionTags(reportName, reportVersion) } doReturn tags
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { this.permissions } doReturn PermissionSet()
+            on { this.params(":version") } doReturn reportVersion
+            on { this.params(":name") } doReturn reportName
+        }
+
+        val sut = VersionController(mockContext, orderly, mock<ZipClient>(),
+                mock(),
+                mock<OrderlyServerAPI>(),
+                mockConfig)
+
+        val result = sut.getTags()
+        Assertions.assertThat(result).isSameAs(tags)
     }
 
     private val reportName: String = "Report name"

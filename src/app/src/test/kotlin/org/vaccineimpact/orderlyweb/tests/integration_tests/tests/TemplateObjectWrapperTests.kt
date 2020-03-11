@@ -39,8 +39,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
                 listOf(DataInfo("hash", 1234, 2345)),
-                mapOf("param" to "value"),
-                VersionDetailsTags(listOf("version"), listOf("report"), listOf("orderly")))
+                mapOf("param" to "value"))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash

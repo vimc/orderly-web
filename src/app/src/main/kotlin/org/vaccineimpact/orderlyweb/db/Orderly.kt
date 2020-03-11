@@ -147,10 +147,6 @@ class Orderly(val isReviewer: Boolean,
             val artefacts = getArtefacts(name, version)
             val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
-            val versionTags = getVersionTags(listOf(version))[version]?: listOf()
-            val reportTags = getReportTagsForVersions(listOf(version))[version]?: listOf()
-            val orderlyTags = getOrderlyTags(listOf(version))[version]?: listOf()
-
             return ReportVersionDetails(id = reportVersionResult.id,
                     name = reportVersionResult.report,
                     displayName = reportVersionResult.displayname,
@@ -160,8 +156,18 @@ class Orderly(val isReviewer: Boolean,
                     artefacts = artefacts,
                     resources = getResourceFiles(name, version),
                     dataInfo = getDataInfo(name, version),
-                    parameterValues = parameterValues,
-                    tags = VersionDetailsTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted()))
+                    parameterValues = parameterValues)
+        }
+    }
+
+    override fun getReportVersionTags(name: String, version: String): ReportVersionTags
+    {
+        return JooqContext().use { ctx ->
+            getReportVersion(name, version, ctx)
+            val versionTags = getVersionTags(listOf(version))[version]?: listOf()
+            val reportTags = getReportTagsForVersions(listOf(version))[version]?: listOf()
+            val orderlyTags = getOrderlyTags(listOf(version))[version]?: listOf()
+            return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
         }
     }
 
