@@ -1,10 +1,24 @@
 <template>
     <div v-if="canEdit || allTags.length>0">Tags:
         <span v-for="tag in allTags" class="badge badge-primary mr-1">{{tag}}</span>
-        <a v-if="canEdit" href="#" class="small" title="Coming soon!" data-toggle="tooltip">
+        <a v-if="canEdit" href="#" class="small" @click="editTags">
             <edit-icon></edit-icon>
             Edit tags
         </a>
+
+        <div id="edit-tags"
+             v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
+            <div class="modal-main px-3 py-3">
+                <div class="mb-2 font-weight-bold">Edit tags</div>
+                <div class="mb-2">
+                    <div class="mr-3">
+                </div>
+                <div class="modal-buttons">
+                    <button @click="hideModal" id="cancel-edit-btn" class="btn btn-default">Cancel</button>
+                    <button @click="saveTags" id="save-tags-btn" class="btn submit mr-3">Save changes</button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -21,13 +35,31 @@
                     version_tags: [],
                     report_tags: [],
                     orderly_tags: []
-                }
+                },
+                showModal: false,
+                editedVersionTags: [],
+                editedReportTags: []
             }
         },
         computed: {
             allTags: function() {
                 const all =  [...this.tags.version_tags, ...this.tags.report_tags, ...this.tags.orderly_tags];
                 return [...new Set(all)].sort();
+            }
+        },
+        methods: {
+            editTags: function() {
+                this.editedVersionTags = [...this.tags.version_tags];
+                this.editedReportTags = [...this.tags.report_tags];
+                this.showModal = true;
+            },
+            hideModal: function() {
+                this.showModal = false;
+            },
+            saveTags: function() {
+                this.hideModal();
+
+                //here is where we will post changed, and refresh from backend
             }
         },
         mounted() {

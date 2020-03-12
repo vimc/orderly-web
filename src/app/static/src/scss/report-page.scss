@@ -2,6 +2,7 @@
 @import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";
 @import "partials/sidebar";
 @import "partials/permissions";
+@import "partials/modal";
 
 .changelog-header tr th {
   background-color: $theme-header-bg-color;
