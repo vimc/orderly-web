@@ -27,7 +27,7 @@ class DocumentController(context: ActionContext,
     fun refreshDocuments(): String
     {
         val allDocs = repo.getAllFlat()
-        val root = DocumentDetails("root", documentsRoot, null, false, false)
+        val root = DocumentDetails("root", "root", documentsRoot, null, false, false)
         val unrefreshedDocs = allDocs.toMutableList()
         refreshDocumentsInDir(root, unrefreshedDocs)
 
@@ -52,7 +52,7 @@ class DocumentController(context: ActionContext,
             }
             else
             {
-                repo.add(child.pathFragment!!, child.name, child.isFile, child.external, dir.pathFragment)
+                repo.add(child.pathFragment!!, child.name, child.displayName, child.isFile, child.external, dir.pathFragment)
             }
 
             if (!child.isFile)

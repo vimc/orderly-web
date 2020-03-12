@@ -21,11 +21,7 @@ data class DocumentViewModel(val displayName: String,
         {
             val url = if (doc.external)
             {
-                // displayName = name for now
-                // once actual display names are implemented name
-                // should be added to the document model and this
-                // should be doc.name
-                doc.displayName
+                doc.name
             }
             else
             {
