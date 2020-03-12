@@ -29,11 +29,6 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/actions/status/:key/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
                     .json()
-                    .secure(runReports),
-            WebEndpoint("/report/:name/tags/",
-                    ReportController::class, "tagReport")
-                    .json()
-                    .post()
-                    .secure(reviewReports)
+                    .secure(runReports)
     )
 }

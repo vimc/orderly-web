@@ -26,21 +26,15 @@ class ReportController(context: ActionContext,
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
     }
 
-    fun tagReport(): String
-    {
-        val reportName = context.params(":name")
-        val tags = context.postData<List<String>>("tags")
-        tagRepository.tagReport(reportName, tags)
-        return okayResponse()
-    }
-
     fun tagVersion(): String
     {
         val reportName = context.params(":name")
         val versionId = context.params(":version")
         orderly.checkVersionExistsForReport(reportName, versionId)
-        val tags = context.postData<List<String>>("tags")
-        tagRepository.tagVersion(versionId, tags)
+        val reportTags = context.postData<List<String>>("report_tags")
+        val versionTags = context.postData<List<String>>("version_tags")
+        tagRepository.tagReport(reportName, reportTags)
+        tagRepository.tagVersion(versionId, versionTags)
         return okayResponse()
     }
 }

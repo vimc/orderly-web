@@ -16,22 +16,6 @@ class TagTests : TeamcityTests()
 {
 
     @Test
-    fun `can tag report`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { params(":name") } doReturn "r1"
-            on { postData<List<String>>("tags") } doReturn listOf("burden-report")
-        }
-
-        val mockTagRepo = mock<TagRepository>()
-        val sut = ReportController(mockContext, mock(), mockTagRepo)
-        val result = sut.tagReport()
-        assertThat(result).isEqualTo("OK")
-        verify(mockTagRepo).tagReport("r1", listOf("burden-report"))
-    }
-
-
-    @Test
     fun `can tag version`()
     {
         val mockContext = mock<ActionContext> {
