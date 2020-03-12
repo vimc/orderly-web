@@ -60,9 +60,9 @@ class VersionTests : CleanDatabaseTests()
         val now = Timestamp(System.currentTimeMillis())
         insertReport("test", "version1", date = now,
                 author = "dr author", requester = "ms requester", published = true)
-        insertReportTags("test", listOf("r1", "r2"))
-        insertVersionTags("version1", listOf("v2", "v1"))
-        insertOrderlyTags("version1", listOf("o1"))
+        insertReportTags("test", "r1", "r2")
+        insertVersionTags("version1", "v2", "v1")
+        insertOrderlyTags("version1", "o1")
 
         val sut = createSut()
         val result = sut.getReportVersionTags("test", "version1")

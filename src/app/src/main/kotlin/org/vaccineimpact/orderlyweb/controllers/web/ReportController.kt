@@ -2,10 +2,12 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 
 class ReportController(context: ActionContext,
@@ -33,8 +35,7 @@ class ReportController(context: ActionContext,
         orderly.checkVersionExistsForReport(reportName, versionId)
         val reportTags = context.postData<List<String>>("report_tags")
         val versionTags = context.postData<List<String>>("version_tags")
-        tagRepository.tagReport(reportName, reportTags)
-        tagRepository.tagVersion(versionId, versionTags)
+        tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
         return okayResponse()
     }
 }

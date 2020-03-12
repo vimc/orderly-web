@@ -26,9 +26,9 @@ class TagTests : IntegrationTest()
                 postData = mapOf("report_tags" to listOf("report-test-tag"),
                         "version_tags" to listOf("test-tag")))
         assertThat(result.text).isEqualTo("OK")
-        val tags = getVersionTags(id)
+        val versionTags = getVersionTags(id)
         val reportTags = getReportTags(report)
-        assertThat(tags).containsExactly("test-tag")
+        assertThat(versionTags).containsExactly("test-tag")
         assertThat(reportTags).containsExactly("report-test-tag")
     }
 
@@ -40,8 +40,8 @@ class TagTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("report_tags" to listOf("test-tag"),
-                        "version_tags" to listOf("another-tag")))
+                postData = mapOf("report_tags" to listOf("report-test-tag"),
+                        "version_tags" to listOf("test-tag")))
     }
 
     private fun getReportTags(reportName: String): List<String>
