@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper

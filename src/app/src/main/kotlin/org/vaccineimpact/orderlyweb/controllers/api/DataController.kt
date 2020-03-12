@@ -1,11 +1,8 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.FileSystem
-import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -34,7 +31,7 @@ class DataController(context: ActionContext,
         val id = context.params(":id")
         val absoluteFilePath = "${this.config["orderly.root"]}data/csv/$id.csv"
 
-        return downloadFile(absoluteFilePath, "$id.csv", ContentTypes.csv)
+        return downloadFile(files, absoluteFilePath, "$id.csv", ContentTypes.csv)
     }
 
     fun downloadRDS(): Boolean
@@ -42,7 +39,7 @@ class DataController(context: ActionContext,
         val id = context.params(":id")
         val absoluteFilePath = "${this.config["orderly.root"]}data/rds/$id.rds"
 
-        return downloadFile(absoluteFilePath, "$id.rds", ContentTypes.binarydata)
+        return downloadFile(files, absoluteFilePath, "$id.rds", ContentTypes.binarydata)
     }
 
     fun downloadData(): Boolean
@@ -69,22 +66,6 @@ class DataController(context: ActionContext,
                     ContentTypes.binarydata
                 }
 
-        return downloadFile(absoluteFilePath, "$hash.$type", contentType)
-    }
-
-    private fun downloadFile(absoluteFilePath: String, filename: String,
-                             contentType: String): Boolean
-    {
-        if (!files.fileExists(absoluteFilePath))
-            throw OrderlyFileNotFoundError(filename)
-
-        val response = context.getSparkResponse().raw()
-
-        context.addResponseHeader("Content-Disposition", "attachment; filename=$filename")
-        context.addDefaultResponseHeaders(contentType)
-
-        files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
-
-        return true
+        return downloadFile(files, absoluteFilePath, "$hash.$type", contentType)
     }
 }

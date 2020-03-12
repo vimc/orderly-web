@@ -6,7 +6,7 @@ import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.DocumentController
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.DocumentRepository
+import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
 
 class DocumentControllerTests : ControllerTest()

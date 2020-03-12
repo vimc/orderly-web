@@ -296,27 +296,4 @@ class ReportTests : CleanDatabaseTests()
         assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
 
     }
-
-    @Test
-    fun `can get all report tags`()
-    {
-        insertReport("r1", "v1")
-        insertReportTags("r1", listOf("c-tag", "b-tag", "a-tag"))
-
-        insertReport("r2", "v2")
-        insertReportTags("r2", listOf("d-tag", "c-tag"))
-
-        insertReport("r3", "v3")
-
-        insertReport("not-returned", "v4")
-        insertReportTags("not-returned", listOf("nor-returned-tag"))
-
-        val sut = createSut(isReviewer = true)
-
-        val result = sut.getReportTags(listOf("r1", "r2"))
-
-        assertThat(result.keys.count()).isEqualTo(2)
-        assertThat(result["r1"]).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
-        assertThat(result["r2"]).containsExactlyElementsOf(listOf("c-tag", "d-tag"))
-    }
 }

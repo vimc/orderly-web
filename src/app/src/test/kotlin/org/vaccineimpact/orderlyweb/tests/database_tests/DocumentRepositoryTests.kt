@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests

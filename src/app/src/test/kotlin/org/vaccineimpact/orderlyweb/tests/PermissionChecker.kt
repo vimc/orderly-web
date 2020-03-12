@@ -15,7 +15,7 @@ abstract class PermissionChecker(protected val url: String,
                                  protected val allRequiredPermissions: Set<ReifiedPermission>,
                                  protected val contentType: String = ContentTypes.html,
                                  protected val method: HttpMethod = HttpMethod.get,
-                                 protected val postData: Map<String, String>? = null)
+                                 protected val postData: Map<String, Any>? = null)
 {
 
     abstract val requestHelper: RequestHelper

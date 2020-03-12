@@ -10,7 +10,7 @@ import org.pac4j.oauth.config.OAuth20Configuration
 import org.pac4j.oauth.credentials.OAuth20Credentials
 import org.pac4j.oauth.profile.definition.OAuthProfileDefinition
 import org.pac4j.oauth.profile.github.GitHubProfile
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper

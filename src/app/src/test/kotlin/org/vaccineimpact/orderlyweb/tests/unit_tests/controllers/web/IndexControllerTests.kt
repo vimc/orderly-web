@@ -7,6 +7,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -46,9 +47,11 @@ class IndexControllerTests : TeamcityTests()
 
         val mockOrderly = mock<OrderlyClient> {
             on { this.getAllReportVersions() } doReturn fakeReports
+        }
+        val mockTagRepo = mock<TagRepository>() {
             on { this.getReportTags(listOf("r1", "r2")) } doReturn mapOf("r1" to listOf("report tag"))
         }
-        val sut = IndexController(globalReaderContext, mockOrderly)
+        val sut = IndexController(globalReaderContext, mockOrderly, mockTagRepo)
 
         val result = sut.index().reports.sortedBy { it.ttKey }
 
@@ -132,7 +135,7 @@ class IndexControllerTests : TeamcityTests()
         val mockOrderly = mock<OrderlyClient> {
             on { this.getGlobalPinnedReports() } doReturn fakeReports
         }
-        val sut = IndexController(globalReaderContext, mockOrderly)
+        val sut = IndexController(globalReaderContext, mockOrderly, mock())
 
         val result = sut.index().pinnedReports
 
@@ -164,11 +167,11 @@ class IndexControllerTests : TeamcityTests()
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn false
         }
 
-        var sut = IndexController(documentReaderContext, mockOrderly)
+        var sut = IndexController(documentReaderContext, mockOrderly, mock())
         var result = sut.index()
         assertThat(result.showProjectDocs).isTrue()
 
-        sut = IndexController(noPermsContext, mockOrderly)
+        sut = IndexController(noPermsContext, mockOrderly, mock())
         result = sut.index()
         assertThat(result.showProjectDocs).isFalse()
     }

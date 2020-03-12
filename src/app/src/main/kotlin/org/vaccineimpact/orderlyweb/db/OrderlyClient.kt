@@ -52,5 +52,6 @@ interface OrderlyClient
 
     fun togglePublishStatus(name: String, version: String): Boolean
 
-    fun getReportTags(reportNames: List<String>): Map<String, List<String>>
+    fun getReportVersionTags(name: String, version: String): ReportVersionTags
+
 }

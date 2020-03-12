@@ -7,8 +7,8 @@ import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.DocumentRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyDocumentRepository
+import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
 
 class DocumentController(context: ActionContext,

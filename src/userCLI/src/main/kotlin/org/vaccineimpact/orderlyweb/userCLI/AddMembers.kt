@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.userCLI
 
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 
 fun addMembers(options: Map<String, Any>): String
 {

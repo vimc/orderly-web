@@ -1,6 +1,7 @@
-package org.vaccineimpact.orderlyweb.db
+package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.Record
+import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_DOCUMENT
 import org.vaccineimpact.orderlyweb.models.Document
 

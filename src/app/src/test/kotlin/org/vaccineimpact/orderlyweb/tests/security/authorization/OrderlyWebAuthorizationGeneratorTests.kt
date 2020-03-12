@@ -5,7 +5,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
