@@ -36,7 +36,7 @@ class APIRequestHelper : RequestHelper()
     }
 
     fun postWithPermissions(url: String,
-                            body: Map<String, String>?,
+                            body: Map<String, Any>?,
                             contentType: String = ContentTypes.json,
                             withPermissions: Set<ReifiedPermission> = setOf()): Response
     {
@@ -55,7 +55,7 @@ class APIRequestHelper : RequestHelper()
         return get(baseUrl + url, headers)
     }
 
-    fun post(url: String, body: Map<String, String>?, contentType: String = ContentTypes.json,
+    fun post(url: String, body: Map<String, Any>?, contentType: String = ContentTypes.json,
              userEmail: String = fakeGlobalReportReader()): Response
     {
         val token = generateToken(userEmail)

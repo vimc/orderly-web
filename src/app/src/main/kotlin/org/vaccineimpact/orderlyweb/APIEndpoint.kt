@@ -1,8 +1,9 @@
 package org.vaccineimpact.orderlyweb
 
+import org.pac4j.sparkjava.SecurityFilter
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.APISecurityClientsConfigFactory
+import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import spark.route.HttpMethod
 import kotlin.reflect.KClass
@@ -53,7 +54,7 @@ data class APIEndpoint(
 
         val config = factory.build()
 
-        spark.before(url, contentType, org.pac4j.sparkjava.SecurityFilter(
+        spark.before(url, contentType, method, SecurityFilter(
                 config,
                 factory.allClients(),
                 config.authorizers.map { it.key }.joinToString(","),

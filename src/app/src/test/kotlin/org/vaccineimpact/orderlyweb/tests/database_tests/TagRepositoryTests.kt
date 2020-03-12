@@ -41,7 +41,7 @@ class TagRepositoryTests : CleanDatabaseTests()
     {
         insertReport("r1", "v1")
         val sut = OrderlyWebTagRepository()
-        sut.tagReport("r1", "test-tag")
+        sut.tagReport("r1", listOf("test-tag"))
 
         val tags = JooqContext().use {
             it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
@@ -58,7 +58,7 @@ class TagRepositoryTests : CleanDatabaseTests()
     {
         insertReport("r1", "v1")
         val sut = OrderlyWebTagRepository()
-        sut.tagVersion("v1", "test-tag")
+        sut.tagVersion("v1", listOf("test-tag"))
 
         val tags = JooqContext().use {
             it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)

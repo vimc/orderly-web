@@ -55,7 +55,7 @@ class DirectActionContextTests : TeamcityTests()
     {
         val sut = DirectActionContext(mockPostSparkContext)
 
-        val result = sut.postData()
+        val result = sut.postData<String>()
         assert(result["some"].equals("value"))
     }
 
@@ -64,7 +64,7 @@ class DirectActionContextTests : TeamcityTests()
     {
         val sut = DirectActionContext(mockPostSparkContext)
 
-        val result = sut.postData("some")
+        val result = sut.postData<String>("some")
         assert(result.equals("value"))
     }
 
@@ -93,7 +93,7 @@ class DirectActionContextTests : TeamcityTests()
 
         val sut = DirectActionContext(context)
 
-        val result = sut.postData()
+        val result = sut.postData<String>()
         assert(result.equals(emptyMap<String, String>()))
     }
 

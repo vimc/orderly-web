@@ -12,7 +12,7 @@ class APIPermissionChecker(url: String,
                            allRequiredPermissions: Set<ReifiedPermission>,
                            contentType: String = ContentTypes.html,
                            method: HttpMethod = HttpMethod.get,
-                           postData: Map<String, String>? = null)
+                           postData: Map<String, Any>? = null)
     : PermissionChecker(url, allRequiredPermissions, contentType, method, postData)
 {
 
