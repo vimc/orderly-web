@@ -68,7 +68,7 @@ class Files : FileSystem
         return if (file.extension == "url")
         {
             val url = file.readText().trim('\n').trim().split("URL=").last()
-            val name = file.name.substringBefore(".") // don't include extension in name
+            val name = file.name.substringBefore(".web.url") // don't include extension in name
             DocumentDetails(url, name, file.absolutePath, file.absolutePath.removePrefix(documentsRoot), true, true)
         }
         else
