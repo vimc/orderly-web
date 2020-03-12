@@ -10,12 +10,15 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import java.io.File
 
 class VersionController(context: ActionContext,
                         private val orderly: OrderlyClient,
+                        private val artefactRepository: ArtefactRepository,
                         private val zip: ZipClient,
                         private val files: FileSystem = Files(),
                         private val config: Config) : Controller(context)
@@ -24,6 +27,7 @@ class VersionController(context: ActionContext,
     constructor(context: ActionContext) :
             this(context,
                     Orderly(context),
+                    OrderlyArtefactRepository(),
                     Zip(),
                     Files(),
                     AppConfig())
@@ -85,7 +89,7 @@ class VersionController(context: ActionContext,
         }
         else
         {
-            (orderly.getArtefactHashes(report, version)
+            (artefactRepository.getArtefactHashes(report, version)
                     + orderly.getResourceHashes(report, version)
                     + orderly.getReadme(report, version))
                     .map { "$folderName/${it.key}" }

@@ -1,12 +1,13 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.jooq.Condition
 import org.jooq.Record6
 import org.jooq.Result
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.FileInfo
@@ -16,36 +17,10 @@ typealias GenericReportVersionRecord = Record6<String, String, String, Boolean, 
 
 class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
-              val reportReadingScopes: List<String> = listOf()) : OrderlyClient
+              val reportReadingScopes: List<String> = listOf(),
+              val artefactRepository: ArtefactRepository = OrderlyArtefactRepository()) : OrderlyClient
 {
     constructor(context: ActionContext): this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
-
-    override fun getArtefacts(report: String, version: String): List<Artefact>
-    {
-        JooqContext().use {
-
-            getReportVersion(report, version, it)
-            return it.dsl.select(REPORT_VERSION_ARTEFACT.ID, REPORT_VERSION_ARTEFACT.FORMAT,
-                    REPORT_VERSION_ARTEFACT.DESCRIPTION)
-                    .from(REPORT_VERSION_ARTEFACT)
-                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
-                    .fetch()
-                    .map { a ->
-                        val id = a[REPORT_VERSION_ARTEFACT.ID]
-                        val format = a[REPORT_VERSION_ARTEFACT.FORMAT]
-                        val description = a[REPORT_VERSION_ARTEFACT.DESCRIPTION]
-                        val files = it.dsl.select(FILE_ARTEFACT.FILENAME, FILE.SIZE)
-                                .from(FILE_ARTEFACT)
-                                .innerJoin(FILE)
-                                .on(FILE_ARTEFACT.FILE_HASH.eq(FILE.HASH))
-                                .where(FILE_ARTEFACT.ARTEFACT.eq(id))
-                                .fetch()
-                                .map{ r -> FileInfo(r[FILE_ARTEFACT.FILENAME], r[FILE.SIZE]) }
-
-                        Artefact(parseEnum(format), description, files)
-                    }
-        }
-    }
 
     override fun getAllReportVersions(): List<ReportVersion>
     {
@@ -145,7 +120,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val reportVersionResult = getReportVersion(name, version, it)
-            val artefacts = getArtefacts(name, version)
+            val artefacts = artefactRepository.getArtefacts(name, version)
             val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(id = reportVersionResult.id,
@@ -170,26 +145,6 @@ class Orderly(val isReviewer: Boolean,
             val orderlyTags = getOrderlyTags(listOf(version))[version]?: listOf()
             return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
         }
-    }
-
-    override fun getArtefactHashes(name: String, version: String): Map<String, String>
-    {
-        return JooqContext().use { ctx ->
-            getReportVersion(name, version, ctx)
-            ctx.dsl.select(FILE_ARTEFACT.FILENAME, FILE_ARTEFACT.FILE_HASH)
-                    .from(FILE_ARTEFACT)
-                    .join(REPORT_VERSION_ARTEFACT)
-                    .on(FILE_ARTEFACT.ARTEFACT.eq(REPORT_VERSION_ARTEFACT.ID))
-                    .where(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(version))
-                    .fetch()
-                    .associate { it[FILE_ARTEFACT.FILENAME] to it[FILE_ARTEFACT.FILE_HASH] }
-        }
-    }
-
-    override fun getArtefactHash(name: String, version: String, filename: String): String
-    {
-        return getArtefactHashes(name, version)[filename]
-                ?: throw UnknownObjectError(filename, "Artefact")
     }
 
     override fun getData(name: String, version: String): Map<String, String>
