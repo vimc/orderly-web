@@ -6,8 +6,8 @@
 <#if parameterValues??>
     <p id="param-values"><span class="text-muted">Parameter values:</span> ${parameterValues}</p>
 </#if>
-<div id="reportTagsVueApp" class="mt-5">
-    <report-tags :report=report></report-tags>
+<div id="reportTagsVueApp" class="mb-2">
+    <report-tags :report=report :can-edit="${isReviewer?c}"></report-tags>
 </div>
 <#if focalArtefactUrl?has_content>
     <iframe src="${focalArtefactUrl}"
