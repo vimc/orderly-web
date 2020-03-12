@@ -8,6 +8,7 @@ import reportReadersList from './components/reports/reportReadersList.vue'
 import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
 import scopedReaderRolesList from './components/reports/scopedReportReaderRolesList.vue'
 import editIcon from './components/reports/editIcon.vue'
+import reportTags from './components/reports/reportTags'
 
 let data = {report: null};
 
@@ -53,6 +54,15 @@ $(document).ready(() => {
             }
         });
     }
+
+    new Vue({
+        el: '#reportTagsVueApp',
+        data: data,
+        components: {
+            reportTags: reportTags,
+        }
+    });
+
 
     $('[data-toggle="tooltip"]').tooltip();
 
