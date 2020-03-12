@@ -93,7 +93,7 @@ open class DirectActionContext(private val context: SparkWebContext,
         response.status(statusCode)
     }
 
-    override fun postData(): Map<String, String>
+    override fun<T> postData(): Map<String, T>
     {
         val body = request.body()
 
@@ -103,19 +103,19 @@ open class DirectActionContext(private val context: SparkWebContext,
         }
         else
         {
-            GsonBuilder().create().fromJson<Map<String, String>>(request.body())
+            GsonBuilder().create().fromJson(request.body())
         }
     }
 
-    override fun postData(key: String): String
+    override fun<T> postData(key: String): T
     {
-        return postData()[key] ?: throw MissingParameterError(key);
+        return postData<T>()[key] ?: throw MissingParameterError(key);
     }
 }
 
 fun ActionContext.permissionFromPostData(): ReifiedPermission
 {
-    val postData = this.postData()
+    val postData = this.postData<String>()
     val permission = PermissionViewModel(
             postData["name"] ?: throw MissingParameterError("name"),
             postData["scope_prefix"],

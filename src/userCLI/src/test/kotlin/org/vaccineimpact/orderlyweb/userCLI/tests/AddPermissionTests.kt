@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.userCLI.tests
 
 import org.assertj.core.api.Assertions.*
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests

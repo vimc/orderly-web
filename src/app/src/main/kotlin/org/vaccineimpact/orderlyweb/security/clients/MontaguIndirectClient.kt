@@ -9,7 +9,7 @@ import org.pac4j.core.redirect.RedirectAction
 import org.pac4j.core.redirect.RedirectActionBuilder
 import org.pac4j.http.credentials.extractor.CookieExtractor
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator

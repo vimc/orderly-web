@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.userCLI
 
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 fun grantPermissions(options: Map<String, Any>): String

@@ -6,8 +6,8 @@ import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -36,7 +36,7 @@ class APIRequestHelper : RequestHelper()
     }
 
     fun postWithPermissions(url: String,
-                            body: Map<String, String>?,
+                            body: Map<String, Any>?,
                             contentType: String = ContentTypes.json,
                             withPermissions: Set<ReifiedPermission> = setOf()): Response
     {
@@ -55,7 +55,7 @@ class APIRequestHelper : RequestHelper()
         return get(baseUrl + url, headers)
     }
 
-    fun post(url: String, body: Map<String, String>?, contentType: String = ContentTypes.json,
+    fun post(url: String, body: Map<String, Any>?, contentType: String = ContentTypes.json,
              userEmail: String = fakeGlobalReportReader()): Response
     {
         val token = generateToken(userEmail)

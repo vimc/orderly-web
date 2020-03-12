@@ -1,15 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.UserController
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.RoleRepository
-import org.vaccineimpact.orderlyweb.db.UserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
+import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -199,7 +198,7 @@ class UserControllerTests : TeamcityTests()
     {
         val actionContext = mock<ActionContext> {
             on { this.params(":user-id") } doReturn "user1@example.com"
-            on { this.postData() } doReturn mapOf(
+            on { this.postData<String>() } doReturn mapOf(
                     "name" to "test.permission",
                     "scope_prefix" to "report",
                     "scope_id" to "report1"
