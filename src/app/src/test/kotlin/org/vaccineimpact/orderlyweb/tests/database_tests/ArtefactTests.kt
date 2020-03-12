@@ -49,19 +49,6 @@ class ArtefactTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getArtefactHash throws unknown object error if report not published`()
-    {
-        insertReport("test", "version1", published = false)
-        insertArtefact("version1", files = files)
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getArtefactHash("test", "version1", "graph.png") }
-                .isInstanceOf(UnknownObjectError::class.java)
-
-    }
-
-    @Test
     fun `can get artefact hashes for report`()
     {
         insertReport("test", "version1")
