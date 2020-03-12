@@ -154,6 +154,24 @@ class VersionPageTests : TeamcityTests()
     }
 
     @Test
+    fun `renders report tags correctly`()
+    {
+        val readerDoc = template.jsoupDocFor(testModel)
+
+        var tagsDiv = readerDoc.select("#reportTagsVueApp")
+        var tagsEl = tagsDiv.select("report-tags")
+        Assertions.assertThat(tagsEl.attr(":can-edit")).isEqualTo("false")
+        Assertions.assertThat(tagsEl.attr(":report")).isEqualTo("report")
+
+        val reviewerDoc = template.jsoupDocFor(testModel.copy(appViewModel = testDefaultModel.copy(isReviewer = true)))
+
+        tagsDiv = reviewerDoc.select("#reportTagsVueApp")
+        tagsEl = tagsDiv.select("report-tags")
+        Assertions.assertThat(tagsEl.attr(":can-edit")).isEqualTo("true")
+        Assertions.assertThat(tagsEl.attr(":report")).isEqualTo("report")
+    }
+
+    @Test
     fun `renders download tab title correctly`()
     {
         val xmlResponse = template.xmlResponseFor(testModel)
