@@ -163,7 +163,7 @@ class Orderly(val isReviewer: Boolean,
 
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
     {
-        return JooqContext().use { ctx ->
+        JooqContext().use { ctx ->
             getReportVersion(name, version, ctx)
             val versionTags = getVersionTags(listOf(version))[version]?: listOf()
             val reportTags = getReportTagsForVersions(listOf(version))[version]?: listOf()

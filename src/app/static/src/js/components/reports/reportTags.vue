@@ -8,10 +8,28 @@
 
         <div id="edit-tags"
              v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
-            <div class="modal-main px-3 py-3">
+            <div class="modal-main px-3 py-3" style="max-width: 900px">
                 <div class="mb-2 font-weight-bold">Edit tags</div>
                 <div class="mb-2">
-                    <div class="mr-3">
+                    <tag-list class="mr-3 tag-list"
+                                header="Report Version Tags"
+                                description="These tags only apply to this version"
+                                :editable="true"
+                                v-model="editedVersionTags">
+                    </tag-list>
+                    <tag-list class="mr-3 tag-list"
+                                header="Report Tags"
+                                description="Warning: Editing these tags will change them for all versions of this report"
+                                :editable="true"
+                                v-model="editedReportTags">
+                    </tag-list>
+                    <tag-list class="tag-list"
+                                header="Orderly Tags"
+                                description="These are set in Orderly and cannot be changed"
+                                :editable="false"
+                                v-model="tags.orderly_tags">
+                    </tag-list>
+                    <div class="clearfix"></div>
                 </div>
                 <div class="modal-buttons">
                     <button @click="hideModal" id="cancel-edit-btn" class="btn btn-default">Cancel</button>
@@ -26,6 +44,7 @@
     import Vue from "vue";
     import {api} from "../../utils/api";
     import EditIcon from "./editIcon";
+    import TagList from "./tagList";
 
     export default Vue.extend({
         props: ['report', 'canEdit'],
@@ -59,7 +78,9 @@
             saveTags: function() {
                 this.hideModal();
 
-                //here is where we will post changed, and refresh from backend
+                //TODOO: here is where we will post changed, and refresh from backend
+                alert("Placeholder for saving version tags " + JSON.stringify(editedVersionTags)
+                    + " and report tags " + JSON.stringify(editedReportTags));
             }
         },
         mounted() {
@@ -69,7 +90,8 @@
                 })
         },
         components: {
-            EditIcon
+            EditIcon,
+            TagList
         }
     });
 </script>
