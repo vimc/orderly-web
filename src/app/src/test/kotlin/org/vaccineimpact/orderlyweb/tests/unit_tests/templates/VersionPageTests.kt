@@ -136,21 +136,15 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders report tab correctly`()
     {
-        val xmlResponse = template.xmlResponseFor(testModel)
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val tab = jsoupDoc.select("#report-tab")
 
-        val xPathRoot = "//div[@id='report-tab']"
-
-        assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
-                equalToCompressingWhiteSpace("r1 display")))
-        assertThat(xmlResponse, hasXPath("$xPathRoot/p[1]/text()",
-                equalToCompressingWhiteSpace("r1-v1")))
-
-        assertThat(xmlResponse, hasXPath("$xPathRoot/p[@id='param-values']", equalToCompressingWhiteSpace("Parameter values: p1=v1, p2=v2")))
-
-        assertThat(xmlResponse, hasXPath("$xPathRoot/iframe/@src", equalTo("/testFocalArtefactUrl")))
-        assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/text()",
-                equalToCompressingWhiteSpace("View fullscreen")))
-        assertThat(xmlResponse, hasXPath("$xPathRoot/div[@class='text-right']/a/@href", equalTo("/testFocalArtefactUrl")))
+        Assertions.assertThat(tab.select("h1").text()).isEqualToIgnoringWhitespace("r1 display")
+        Assertions.assertThat(tab.select("p:first-of-type").text()).isEqualToIgnoringWhitespace("r1-v1")
+        Assertions.assertThat(tab.select("#param-values").text()).isEqualToIgnoringWhitespace("Parameter values: p1=v1, p2=v2")
+        Assertions.assertThat(tab.select("iframe").attr("src")).isEqualTo("/testFocalArtefactUrl")
+        Assertions.assertThat(tab.select("div.text-right a").text()).isEqualToIgnoringWhitespace("View fullscreen")
+        Assertions.assertThat(tab.select("div.text-right a").attr("href")).isEqualToIgnoringWhitespace("/testFocalArtefactUrl")
     }
 
     @Test
@@ -174,12 +168,9 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders download tab title correctly`()
     {
-        val xmlResponse = template.xmlResponseFor(testModel)
-
-        val xPathRoot = "//div[@id='downloads-tab']"
-
-        assertThat(xmlResponse, hasXPath("$xPathRoot/h1/text()",
-                equalToCompressingWhiteSpace("r1 display")))
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val title = jsoupDoc.select("#downloads-tab h1")
+        Assertions.assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
     }
 
     @Test
