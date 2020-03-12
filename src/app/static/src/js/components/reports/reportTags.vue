@@ -1,8 +1,6 @@
 <template>
-    <div>
-        <div v-if="allTags.length>0">Tags:
-            <span v-for="tag in allTags" class="badge badge-primary mr-1">{{tag}}</span>
-        </div>
+    <div v-if="allTags.length>0">Tags:
+        <span v-for="tag in allTags" class="badge badge-primary mr-1">{{tag}}</span>
     </div>
 </template>
 
@@ -11,7 +9,6 @@
     import {api} from "../../utils/api";
 
     export default Vue.extend({
-        name: "reportTags",
         props: ['report', 'canEdit'],
         data() {
             return {
@@ -29,7 +26,7 @@
             }
         },
         mounted() {
-            api.get(`/report/${report.name}/version/${report.id}/tags/`)
+            api.get(`/report/${this.report.name}/version/${this.report.id}/tags/`)
                 .then(({data}) => {
                     this.tags = data.data;
                 })
