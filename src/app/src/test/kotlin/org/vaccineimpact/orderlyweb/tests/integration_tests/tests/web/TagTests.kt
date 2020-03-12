@@ -29,7 +29,6 @@ class TagTests : IntegrationTest()
                 postData = mapOf("tags" to listOf("test-tag", "another-tag")))
         assertThat(result.text).isEqualTo("OK")
         val tags = getReportTags("minimal")
-        assertThat(tags.first()).isEqualTo("test-tag")
         assertThat(tags).containsExactly("another-tag", "test-tag")
     }
 
