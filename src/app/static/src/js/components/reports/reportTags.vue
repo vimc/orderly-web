@@ -1,12 +1,17 @@
 <template>
-    <div v-if="allTags.length>0">Tags:
+    <div v-if="canEdit || allTags.length>0">Tags:
         <span v-for="tag in allTags" class="badge badge-primary mr-1">{{tag}}</span>
+        <a v-if="canEdit" href="#" class="small" title="Coming soon!" data-toggle="tooltip">
+            <edit-icon></edit-icon>
+            Edit tags
+        </a>
     </div>
 </template>
 
 <script>
     import Vue from "vue";
     import {api} from "../../utils/api";
+    import EditIcon from "./editIcon";
 
     export default Vue.extend({
         props: ['report', 'canEdit'],
@@ -30,6 +35,9 @@
                 .then(({data}) => {
                     this.tags = data.data;
                 })
+        },
+        components: {
+            EditIcon
         }
     });
 </script>

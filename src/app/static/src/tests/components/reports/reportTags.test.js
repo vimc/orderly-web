@@ -53,8 +53,8 @@ describe("adminApp", () => {
         expect(tags.at(2).text()).toBe("c");
     });
 
-    it('displays nothing if no tags are present', async() => {
-        const wrapper = shallowMount(ReportTags, {propsData: propsData});
+    it('displays nothing if no tags are present and cannot edit', async() => {
+        const wrapper = shallowMount(ReportTags, {propsData});
         wrapper.setData({
             tags: {
                 version_tags: [],
@@ -67,5 +67,42 @@ describe("adminApp", () => {
 
         const div = wrapper.findAll("div");
         expect(div.length).toBe(0);
+    });
+
+    it('displays component if no tags are present and can edit', async() => {
+        const wrapper = shallowMount(ReportTags, {propsData: {...propsData, canEdit: true}});
+        wrapper.setData({
+            tags: {
+                version_tags: [],
+                report_tags: [],
+                orderly_tags: []
+            }
+        });
+
+        await Vue.nextTick();
+
+        const div = wrapper.findAll("div");
+        expect(div.length).toBe(1);
+    });
+
+    it('displays Edit tags link if can edit', () => {
+        const wrapper = shallowMount(ReportTags, {propsData: {...propsData, canEdit: true}});
+        expect(wrapper.find("a").text()).toBe("Edit tags");
+    });
+
+    it('does not display Edit tags link if cannot edit', async () => {
+        const wrapper = shallowMount(ReportTags, {propsData});
+        wrapper.setData({
+            tags: {
+                version_tags: ["tag"],
+                report_tags: [],
+                orderly_tags: []
+            }
+        });
+
+        await Vue.nextTick();
+
+        expect(wrapper.findAll("div").length).toBe(1);
+        expect(wrapper.findAll("a").length).toBe(0);
     });
 });
