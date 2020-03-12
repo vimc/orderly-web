@@ -35,7 +35,7 @@ object WebVersionRouteConfig : RouteConfig
                     .json()
                     .post()
                     .secure(reviewReports),
-            WebEndpoint("/report/:name/version/:version/tag/:tag",
+            WebEndpoint("/report/:name/version/:version/tags/:tag",
                     org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "deleteVersionTag",
                     method = HttpMethod.delete)
                     .json()

@@ -27,11 +27,8 @@ class TagTests : IntegrationTest()
                 postData = mapOf("tags" to listOf("test-tag", "another-tag")))
         assertThat(result.text).isEqualTo("OK")
         val tags = getReportTags("minimal")
-<<<<<<< HEAD
         assertThat(tags.first()).isEqualTo("test-tag")
-=======
         assertThat(tags).containsExactly("another-tag", "test-tag")
->>>>>>> master
     }
 
     @Test
@@ -56,11 +53,8 @@ class TagTests : IntegrationTest()
                 postData = mapOf("tags" to listOf("test-tag")))
         assertThat(result.text).isEqualTo("OK")
         val tags = getVersionTags(id)
-<<<<<<< HEAD
         assertThat(tags.first()).isEqualTo("test-tag")
-=======
         assertThat(tags).containsExactly("test-tag")
->>>>>>> master
     }
 
     @Test
@@ -74,11 +68,10 @@ class TagTests : IntegrationTest()
                 postData = mapOf("tags" to listOf("test-tag")))
     }
 
-<<<<<<< HEAD
     @Test
     fun `report reviewers can delete report tags`()
     {
-        val url = "/report/minimal/tag/test-tag"
+        val url = "/report/minimal/tags/test-tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
@@ -91,7 +84,7 @@ class TagTests : IntegrationTest()
     @Test
     fun `only report reviewers can delete report tags`()
     {
-        val url = "/report/minimal/tag/test-tag"
+        val url = "/report/minimal/tags/test-tag"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.delete)
@@ -102,7 +95,7 @@ class TagTests : IntegrationTest()
     {
         val (report, id) = getAnyReportIds()
         insertVersionTag(id, "test-tag")
-        val url = "/report/$report/version/$id/tag/test-tag"
+        val url = "/report/$report/version/$id/tags/test-tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
@@ -116,32 +109,23 @@ class TagTests : IntegrationTest()
     fun `only report reviewers can delete version tags`()
     {
         val (report, id) = getAnyReportIds()
-        val url = "/report/$report/version/$id/tag/test-tag"
+        val url = "/report/$report/version/$id/tags/test-tag"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.delete)
     }
 
-    private fun getReportTags(reportName: String): MutableList<String>
+    private fun getReportTags(reportName: String): List<String>
     {
         JooqContext().use {
             return it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
                     .from(ORDERLYWEB_REPORT_TAG)
                     .where(ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
-=======
-    private fun getReportTags(reportName: String): List<String>
-    {
-        JooqContext().use {
-            return it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
->>>>>>> master
                     .fetchInto(String::class.java)
         }
     }
 
-<<<<<<< HEAD
-    private fun getVersionTags(versionId: String): MutableList<String>
+    private fun getVersionTags(versionId: String): List<String>
     {
         JooqContext().use {
             return it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
@@ -166,21 +150,11 @@ class TagTests : IntegrationTest()
     {
         JooqContext().use {
             it.dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
-                            ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                            ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                     .values(versionId, tag)
                     .execute()
         }
-=======
-    private fun getVersionTags(versionId: String): List<String>
-    {
-       JooqContext().use {
-           return it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
-                    .fetchInto(String::class.java)
-        }
->>>>>>> master
     }
 
     private fun getAnyReportIds(): Pair<String, String>

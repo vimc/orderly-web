@@ -35,7 +35,7 @@ object WebReportRouteConfig : RouteConfig
                     .json()
                     .post()
                     .secure(reviewReports),
-            WebEndpoint("/report/:name/tag/:tag",
+            WebEndpoint("/report/:name/tags/:tag",
                     ReportController::class, "deleteReportTag",
                     method = HttpMethod.delete)
                     .json()
