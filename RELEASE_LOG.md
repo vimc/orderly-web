@@ -157,3 +157,22 @@
 
 ## Other branches merged in this release
 
+# v1.2.6
+
+## Tickets
+* mrc-1385: Endpoint for getting report metadata
+* mrc-1386: Disambiguate the git endpoints
+* mrc-1390: Tags: Add getting OW report and version tags to backend for index page
+* mrc-1391: Tags: add getting Orderly tags for report versions to backend for index page
+* mrc-1392: Tags: display all tags in Index page
+* mrc-1394: Tags: add getting OW report and version tags to backend for report page
+* mrc-1397: Tags: edit tags backend
+* mrc-1403: Support unauthenticated users
+* mrc-1404: Style web links differently from files
+* mrc-1405: Bug - parameters overflow into next column in reports table
+* mrc-1408: Add security testing util for api endpoints
+* mrc-1410: documents - style web links as links and use file name as display name
+
+## Other branches merged in this release
+* apisecurity
+
