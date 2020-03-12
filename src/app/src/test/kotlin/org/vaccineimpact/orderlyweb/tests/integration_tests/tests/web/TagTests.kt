@@ -9,6 +9,8 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.insertReportTags
+import org.vaccineimpact.orderlyweb.test_helpers.insertVersionTags
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
@@ -71,6 +73,7 @@ class TagTests : IntegrationTest()
     @Test
     fun `report reviewers can delete report tags`()
     {
+        insertReportTags("minimal", "test-tag")
         val url = "/report/minimal/tags/test-tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
@@ -94,7 +97,7 @@ class TagTests : IntegrationTest()
     fun `report reviewers can delete version tags`()
     {
         val (report, id) = getAnyReportIds()
-        insertVersionTag(id, "test-tag")
+        insertVersionTags(id, "test-tag")
         val url = "/report/$report/version/$id/tags/test-tag"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
@@ -132,28 +135,6 @@ class TagTests : IntegrationTest()
                     .from(ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
                     .fetchInto(String::class.java)
-        }
-    }
-
-    private fun insertReportTag(reportName: String, tag: String)
-    {
-        JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_REPORT_TAG,
-                            ORDERLYWEB_REPORT_TAG.REPORT,
-                            ORDERLYWEB_REPORT_TAG.TAG)
-                    .values(reportName, tag)
-                    .execute()
-        }
-    }
-
-    private fun insertVersionTag(versionId: String, tag: String)
-    {
-        JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
-                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .values(versionId, tag)
-                    .execute()
         }
     }
 
