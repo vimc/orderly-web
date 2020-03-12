@@ -79,7 +79,6 @@ class ArtefactControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-
         val fileSystem = mock<FileSystem>() {
             on { this.fileExists("root/archive/$name/$version/$artefact") } doReturn true
         }
@@ -92,12 +91,12 @@ class ArtefactControllerTests : ControllerTest()
     }
 
     @Test
-    fun `checks report exists before downloading artefact`()
+    fun `throws unknown object error if version does not exist for report`()
     {
         val artefact = "test.png"
 
         val repo = mock<ArtefactRepository> {
-            on { this.getArtefactHash(name, version, artefact) } doThrow UnknownObjectError("", "")
+            on { this.getArtefactHash(name, version, artefact) } doReturn ""
         }
 
         val actionContext = mock<ActionContext> {
@@ -105,11 +104,13 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
             on { this.params(":artefact") } doReturn artefact
         }
-        val orderly = mock<OrderlyClient>()
+        val orderly = mock<OrderlyClient> {
+            on {this.checkVersionExistsForReport(name, version)} doThrow UnknownObjectError("report", "")
+        }
 
         val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
-        sut.getFile()
-        verify(orderly).checkVersionExistsForReport(name, version)
+        assertThatThrownBy { sut.getFile() }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 
 
