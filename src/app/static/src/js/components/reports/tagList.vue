@@ -2,11 +2,15 @@
     <div>
         <h6>{{header}}</h6>
         <div class="text-muted tag-list-description">{{description}}</div>
-        <p>
-            <span v-for="tag in value" :class="'badge mr-1 badge-' + (editable ? 'primary' : 'secondary')">{{tag}}</span>
+        <p class="tags">
+            <span v-for="tag in value" :class="'badge mr-1 mb-1 badge-' + (editable ? 'primary' : 'secondary')">
+                {{tag}}<span v-if="editable"> |
+                    <span class="remove-tag" @click="removeTag(tag)">×</span>
+                </span>
+            </span>
         </p>
         <div v-if="editable" class="input-group input-group-sm">
-            <input v-model="roleToAdd" class="form-control" type="input"/>
+            <input v-model="tagToAdd" class="form-control" type="input"/>
             <div class="input-group-append">
                 <button class="btn btn-sm submit" @click="addTag">Add tag</button>
             </div>
@@ -21,12 +25,21 @@
         props: ["value", "editable", "header", "description"],
         data() {
             return {
-                roleToAdd: ""
+                tagToAdd: ""
             }
         },
         methods: {
             addTag: function() {
-                this.$emit("input", [...this.value, this.roleToAdd]);
+                if (this.value.indexOf(this.tagToAdd) < 0) {
+                    this.$emit("input", [...this.value, this.tagToAdd]);
+                    this.tagToAdd = "";
+                }
+            },
+            removeTag: function(tag) {
+                const index = this.value.indexOf(tag);
+                const removed = [...this.value];
+                removed.splice(index, 1);
+                this.$emit("input", removed);
             }
         }
     });

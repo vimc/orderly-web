@@ -8,9 +8,11 @@
 
         <div id="edit-tags"
              v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
-            <div class="modal-main px-3 py-3" style="max-width: 900px">
-                <div class="mb-2 font-weight-bold">Edit tags</div>
-                <div class="mb-2">
+            <div class="modal-main" style="max-width: 900px">
+                <div class="border-bottom p-3">
+                    <h5>Edit tags</h5>
+                </div>
+                <div class="mb-2 p-3">
                     <tag-list class="mr-3 tag-list"
                                 header="Report Version Tags"
                                 description="These tags only apply to this version"
@@ -31,7 +33,7 @@
                     </tag-list>
                     <div class="clearfix"></div>
                 </div>
-                <div class="modal-buttons">
+                <div class="modal-buttons mb-3">
                     <button @click="hideModal" id="cancel-edit-btn" class="btn btn-default">Cancel</button>
                     <button @click="saveTags" id="save-tags-btn" class="btn submit mr-3">Save changes</button>
                 </div>
@@ -79,8 +81,8 @@
                 this.hideModal();
 
                 //TODOO: here is where we will post changed, and refresh from backend
-                alert("Placeholder for saving version tags " + JSON.stringify(editedVersionTags)
-                    + " and report tags " + JSON.stringify(editedReportTags));
+                alert("Placeholder for saving version tags " + JSON.stringify(this.editedVersionTags)
+                    + " and report tags " + JSON.stringify(this.editedReportTags));
             }
         },
         mounted() {
