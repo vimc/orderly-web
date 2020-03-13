@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.AuthorizationRepository
-import org.vaccineimpact.orderlyweb.db.OrderlyAuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 
 class PermissionController(actionContext: ActionContext,
                            private val authRepo: AuthorizationRepository) : Controller(actionContext)

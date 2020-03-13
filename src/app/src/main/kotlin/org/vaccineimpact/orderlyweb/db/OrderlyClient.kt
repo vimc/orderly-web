@@ -25,15 +25,6 @@ interface OrderlyClient
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
 
     @Throws(UnknownObjectError::class)
-    fun getArtefactHashes(name: String, version: String): Map<String, String>
-
-    @Throws(UnknownObjectError::class)
-    fun getArtefacts(report: String, version: String): List<Artefact>
-
-    @Throws(UnknownObjectError::class)
-    fun getArtefactHash(name: String, version: String, filename: String): String
-
-    @Throws(UnknownObjectError::class)
     fun getData(name: String, version: String): Map<String, String>
 
     @Throws(UnknownObjectError::class)
@@ -52,7 +43,6 @@ interface OrderlyClient
 
     fun togglePublishStatus(name: String, version: String): Boolean
 
-    fun getReportTags(reportNames: List<String>): Map<String, List<String>>
-
     fun getReportVersionTags(name: String, version: String): ReportVersionTags
+
 }

@@ -30,8 +30,8 @@ interface ActionContext
 
     fun getSparkResponse(): Response
     fun setStatusCode(statusCode: Int)
-    fun postData(): Map<String, String>
+    fun<T> postData(): Map<String, T>
 
     @Throws(MissingParameterError::class)
-    fun postData(key: String): String
+    fun<T> postData(key: String): T
 }

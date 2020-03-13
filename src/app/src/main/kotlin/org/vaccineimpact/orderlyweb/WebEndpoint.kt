@@ -67,7 +67,7 @@ data class WebEndpoint(
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
         ).apply { securityLogic = OrderlyWebSecurityLogic() }
-        spark.before(url, filter)
+        spark.before(url, contentType, method, filter)
     }
 }
 

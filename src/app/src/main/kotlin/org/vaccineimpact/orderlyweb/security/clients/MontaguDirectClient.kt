@@ -6,7 +6,7 @@ import org.pac4j.core.credentials.TokenCredentials
 import org.pac4j.core.credentials.extractor.HeaderExtractor
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.OrderlyUserRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.ErrorInfo
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator

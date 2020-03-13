@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.json
+import org.vaccineimpact.orderlyweb.post
 import org.vaccineimpact.orderlyweb.secure
 import spark.route.HttpMethod
 
@@ -12,6 +13,7 @@ object WebReportRouteConfig : RouteConfig
 {
     private val readReports = setOf("report:<name>/reports.read")
     private val runReports = setOf("*/reports.run")
+    private val reviewReports = setOf("*/reports.review")
     override val endpoints = listOf(
             WebEndpoint("/", IndexController::class, "index")
                     // more specific permission checking in the controller action

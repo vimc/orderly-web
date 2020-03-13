@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.api.ArtefactController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 
 class ArtefactControllerTests : ControllerTest()
@@ -26,9 +27,9 @@ class ArtefactControllerTests : ControllerTest()
     @Test
     fun `gets artefacts for report`()
     {
-       val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
+        val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
 
-        val orderly = mock<OrderlyClient> {
+        val repo = mock<ArtefactRepository> {
             on { this.getArtefactHashes(name, version) } doReturn artefacts
         }
 
@@ -37,9 +38,29 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
+        val sut = ArtefactController(actionContext, mock(), repo, mock<FileSystem>(), mockConfig)
 
         assertThat(sut.getMetaData()).isEqualTo(artefacts)
+    }
+
+    @Test
+    fun `checks report exists before getting artefacts for report`()
+    {
+        val artefacts = mapOf("test.png" to "hjkdasjkldas6762i1j")
+
+        val repo = mock<ArtefactRepository> {
+            on { this.getArtefactHashes(name, version) } doReturn artefacts
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+        }
+
+        val orderly = mock<OrderlyClient>()
+        val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
+        sut.getMetaData()
+        verify(orderly).checkVersionExistsForReport(name, version)
     }
 
     @Test
@@ -47,7 +68,7 @@ class ArtefactControllerTests : ControllerTest()
     {
         val artefact = "testartefact"
 
-        val orderly = mock<OrderlyClient> {
+        val repo = mock<ArtefactRepository> {
             on { this.getArtefactHash(name, version, artefact) } doReturn ""
         }
 
@@ -58,12 +79,11 @@ class ArtefactControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-
         val fileSystem = mock<FileSystem>() {
             on { this.fileExists("root/archive/$name/$version/$artefact") } doReturn true
         }
 
-        val sut = ArtefactController(actionContext, orderly, fileSystem, mockConfig)
+        val sut = ArtefactController(actionContext, mock(), repo, fileSystem, mockConfig)
 
         sut.getFile()
 
@@ -71,11 +91,35 @@ class ArtefactControllerTests : ControllerTest()
     }
 
     @Test
+    fun `throws unknown object error if version does not exist for report`()
+    {
+        val artefact = "test.png"
+
+        val repo = mock<ArtefactRepository> {
+            on { this.getArtefactHash(name, version, artefact) } doReturn ""
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.params(":artefact") } doReturn artefact
+        }
+        val orderly = mock<OrderlyClient> {
+            on {this.checkVersionExistsForReport(name, version)} doThrow UnknownObjectError("report", "")
+        }
+
+        val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
+        assertThatThrownBy { sut.getFile() }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+
+    @Test
     fun `throws unknown object error if artefact does not exist for report`()
     {
         val artefact = "test.png"
 
-        val orderly = mock<OrderlyClient> {
+        val repo = mock<ArtefactRepository> {
             on { this.getArtefactHash(name, version, artefact) } doThrow UnknownObjectError("", "")
         }
 
@@ -85,7 +129,7 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":artefact") } doReturn artefact
         }
 
-        val sut = ArtefactController(actionContext, orderly, mock<FileSystem>(), mockConfig)
+        val sut = ArtefactController(actionContext, mock(), repo, mock<FileSystem>(), mockConfig)
 
         assertThatThrownBy { sut.getFile() }
                 .isInstanceOf(UnknownObjectError::class.java)
@@ -137,7 +181,7 @@ class ArtefactControllerTests : ControllerTest()
     {
         val artefact = "testartefact$extension"
 
-        val orderly = mock<OrderlyClient> {
+        val repo = mock<ArtefactRepository> {
             on { this.getArtefactHash(name, version, artefact) } doReturn ""
         }
 
@@ -152,7 +196,7 @@ class ArtefactControllerTests : ControllerTest()
             on { this.fileExists("root/archive/$name/$version/$artefact") } doReturn true
         }
 
-        val sut = ArtefactController(actionContext, orderly, fileSystem, mockConfig)
+        val sut = ArtefactController(actionContext, mock(), repo, fileSystem, mockConfig)
 
         sut.getFile()
 
