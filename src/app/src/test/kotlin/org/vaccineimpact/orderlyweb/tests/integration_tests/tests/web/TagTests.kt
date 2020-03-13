@@ -15,53 +15,33 @@ class TagTests : IntegrationTest()
     private val requiredPermissions = setOf(ReifiedPermission("reports.review", Scope.Global()))
 
     @Test
-    fun `report reviewers can tag reports`()
-    {
-        val url = "/report/minimal/tags"
-        val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                requiredPermissions,
-                contentType = ContentTypes.json,
-                method = HttpMethod.post,
-                postData = mapOf("tags" to listOf("test-tag", "another-tag")))
-        assertThat(result.text).isEqualTo("OK")
-        val tags = getReportTags("minimal")
-        assertThat(tags).containsExactly("another-tag", "test-tag")
-    }
-
-    @Test
-    fun `only report reviewers can tag reports`()
-    {
-        val url = "/report/minimal/tags"
-        assertWebUrlSecured(url, requiredPermissions,
-                contentType = ContentTypes.json,
-                method = HttpMethod.post,
-                postData = mapOf("tags" to listOf("test-tag", "another-tag")))
-    }
-
-    @Test
     fun `report reviewers can tag version`()
     {
         val (report, id) = getAnyReportIds()
-        val url = "/report/$report/version/$id/tags"
+        val url = "/report/$report/version/$id/update-tags"
         val result = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tags" to listOf("test-tag")))
+                postData = mapOf("report_tags" to listOf("report-test-tag"),
+                        "version_tags" to listOf("test-tag")))
         assertThat(result.text).isEqualTo("OK")
-        val tags = getVersionTags(id)
-        assertThat(tags).containsExactly("test-tag")
+        val versionTags = getVersionTags(id)
+        val reportTags = getReportTags(report)
+        assertThat(versionTags).containsExactly("test-tag")
+        assertThat(reportTags).containsExactly("report-test-tag")
     }
 
     @Test
     fun `only report reviewers can tag versions`()
     {
         val (report, id) = getAnyReportIds()
-        val url = "/report/$report/version/$id/tags"
+        val url = "/report/$report/version/$id/update-tags"
         assertWebUrlSecured(url, requiredPermissions,
                 contentType = ContentTypes.json,
                 method = HttpMethod.post,
-                postData = mapOf("tags" to listOf("test-tag")))
+                postData = mapOf("report_tags" to listOf("report-test-tag"),
+                        "version_tags" to listOf("test-tag")))
     }
 
     private fun getReportTags(reportName: String): List<String>
@@ -76,8 +56,8 @@ class TagTests : IntegrationTest()
 
     private fun getVersionTags(versionId: String): List<String>
     {
-       JooqContext().use {
-           return it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+        JooqContext().use {
+            return it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                     .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
                     .where(Tables.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
                     .fetchInto(String::class.java)
