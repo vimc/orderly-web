@@ -5,10 +5,11 @@
             <edit-icon></edit-icon>
             Edit tags
         </a>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
 
         <div id="edit-tags"
              v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
-            <div class="modal-main" style="max-width: 900px">
+            <div class="modal-main" style="width: 55rem">
                 <div class="border-bottom p-3">
                     <h5>Edit tags</h5>
                 </div>
@@ -47,6 +48,7 @@
     import {api} from "../../utils/api";
     import EditIcon from "./editIcon";
     import TagList from "./tagList";
+    import ErrorInfo from "../errorInfo";
 
     export default Vue.extend({
         props: ['report', 'canEdit'],
@@ -59,7 +61,9 @@
                 },
                 showModal: false,
                 editedVersionTags: [],
-                editedReportTags: []
+                editedReportTags: [],
+                error: "",
+                defaultMessage: "",
             }
         },
         computed: {
@@ -78,22 +82,37 @@
                 this.showModal = false;
             },
             saveTags: function() {
+                this.error = "";
+                this.defaultMessage = "";
                 this.hideModal();
 
-                //TODOO: here is where we will post changed, and refresh from backend
-                alert("Placeholder for saving version tags " + JSON.stringify(this.editedVersionTags)
-                    + " and report tags " + JSON.stringify(this.editedReportTags));
+                const data = {
+                    version_tags: this.editedVersionTags,
+                    report_tags: this.editedReportTags
+                };
+                api.post(`/report/${this.report.name}/version/${this.report.id}/update-tags/`, data)
+                    .then(() => {
+                        this.refreshTags();
+                    })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage = "An error occurred updating tags";
+                });
+            },
+            refreshTags() {
+                api.get(`/report/${this.report.name}/version/${this.report.id}/tags/`)
+                    .then(({data}) => {
+                        this.tags = data.data;
+                    })
             }
         },
         mounted() {
-            api.get(`/report/${this.report.name}/version/${this.report.id}/tags/`)
-                .then(({data}) => {
-                    this.tags = data.data;
-                })
+            this.refreshTags()
         },
         components: {
             EditIcon,
-            TagList
+            TagList,
+            ErrorInfo
         }
     });
 </script>
