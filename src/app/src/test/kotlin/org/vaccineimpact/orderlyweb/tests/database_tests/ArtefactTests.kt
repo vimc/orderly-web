@@ -5,6 +5,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
@@ -13,12 +15,11 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class ArtefactTests : CleanDatabaseTests()
 {
-
     private val files = listOf(FileInfo("summary.csv", 1234), FileInfo("graph.png", 3456))
 
-    private fun createSut(isReviewer: Boolean = false): Orderly
+    private fun createSut(): ArtefactRepository
     {
-        return Orderly(isReviewer, true, listOf())
+        return OrderlyArtefactRepository()
     }
 
     @Test
@@ -43,19 +44,6 @@ class ArtefactTests : CleanDatabaseTests()
         val sut = createSut()
 
         Assertions.assertThatThrownBy { sut.getArtefactHash("test", "version1", "details.csv") }
-                .isInstanceOf(UnknownObjectError::class.java)
-
-    }
-
-    @Test
-    fun `getArtefactHash throws unknown object error if report not published`()
-    {
-        insertReport("test", "version1", published = false)
-        insertArtefact("version1", files = files)
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getArtefactHash("test", "version1", "graph.png") }
                 .isInstanceOf(UnknownObjectError::class.java)
 
     }
@@ -124,36 +112,6 @@ class ArtefactTests : CleanDatabaseTests()
         val sut = createSut()
         val result = sut.getArtefacts("test", "version1")
         assertThat(result.count()).isEqualTo(0)
-    }
-
-    @Test
-    fun `getArtefacts throws UnknownObjectError if version does not belong to report`()
-    {
-        insertReport("test", "v1")
-        insertReport("badreport", "badversion")
-
-        val sut = createSut()
-        assertThatThrownBy { sut.getArtefacts("badreport", "v1") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `getArtefacts throws UnknownObjectError if report is unpublished and user is not a reviewer`()
-    {
-        insertReport("test", "v1", published = false)
-
-        val sut = createSut()
-        assertThatThrownBy { sut.getArtefacts("test", "v1") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `reviewer can getArtefacts for unpublished report`()
-    {
-        insertReport("test", "v1", published = false)
-
-        val sut = createSut(isReviewer = true)
-        sut.getArtefacts("test", "v1")
     }
 
 }
