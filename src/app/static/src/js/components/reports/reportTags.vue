@@ -1,5 +1,5 @@
 <template>
-    <div v-if="canEdit || allTags.length>0">Tags:
+    <div id="tags" v-if="canEdit || allTags.length>0">Tags:
         <span v-for="tag in allTags" class="badge badge-primary mr-1">{{tag}}</span>
         <a v-if="canEdit" href="#" class="small" @click="editTags">
             <edit-icon></edit-icon>
@@ -13,19 +13,19 @@
                     <h5>Edit tags</h5>
                 </div>
                 <div class="mb-2 p-3">
-                    <tag-list class="mr-3 tag-list"
+                    <tag-list id="version-tags" class="mr-3 tag-list"
                                 header="Report Version Tags"
                                 description="These tags only apply to this version"
                                 :editable="true"
                                 v-model="editedVersionTags">
                     </tag-list>
-                    <tag-list class="mr-3 tag-list"
+                    <tag-list id="report-tags" class="mr-3 tag-list"
                                 header="Report Tags"
                                 description="Warning: Editing these tags will change them for all versions of this report"
                                 :editable="true"
                                 v-model="editedReportTags">
                     </tag-list>
-                    <tag-list class="tag-list"
+                    <tag-list id="orderly-tags" class="tag-list"
                                 header="Orderly Tags"
                                 description="These are set in Orderly and cannot be changed"
                                 :editable="false"
@@ -93,16 +93,22 @@
                     .then(() => {
                         this.refreshTags();
                     })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage = "An error occurred updating tags";
-                });
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred updating tags";
+                    });
             },
             refreshTags() {
+                this.error = "";
+                this.defaultMessage = "";
                 api.get(`/report/${this.report.name}/version/${this.report.id}/tags/`)
                     .then(({data}) => {
                         this.tags = data.data;
                     })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred fetching tags";
+                    });
             }
         },
         mounted() {
