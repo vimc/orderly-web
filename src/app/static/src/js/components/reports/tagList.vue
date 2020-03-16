@@ -30,7 +30,7 @@
         },
         methods: {
             addTag: function() {
-                if (this.value.indexOf(this.tagToAdd) < 0) {
+                if ((this.tagToAdd.trim() != "") && (this.value.indexOf(this.tagToAdd) < 0)) {
                     this.$emit("input", [...this.value, this.tagToAdd]);
                     this.tagToAdd = "";
                 }
