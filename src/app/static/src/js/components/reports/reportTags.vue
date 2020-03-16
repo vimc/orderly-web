@@ -7,8 +7,7 @@
         </a>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
 
-        <div id="edit-tags"
-             v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
+        <div id="edit-tags" :class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
             <div class="modal-main" style="width: 55rem">
                 <div class="border-bottom p-3">
                     <h5>Edit tags</h5>

@@ -1,6 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import {mockAxios} from "../../mockAxios";
 import ReportTags from "../../../js/components/reports/reportTags.vue";
+import TagList from "../../../js/components/reports/tagList.vue";
 import Vue from "vue";
 
 describe("adminApp", () => {
@@ -104,5 +105,49 @@ describe("adminApp", () => {
 
         expect(wrapper.findAll("div").length).toBe(1);
         expect(wrapper.findAll("a").length).toBe(0);
+    });
+
+    it('does not display modal by default', () => {
+        const wrapper = shallowMount(ReportTags, {propsData: {...propsData, canEdit: true}});
+        const modal = wrapper.find("#edit-tags");
+        expect(modal.classes().indexOf("modal-hide")).toBeGreaterThan(-1);
+    });
+
+    it('renders modal as expected when Edit Tags is clicked', async () => {
+        const wrapper = shallowMount(ReportTags, {propsData: {...propsData, canEdit: true}});
+        wrapper.setData({
+            tags: {
+                version_tags: ["vtag", "vtag2"],
+                report_tags: ["rtag"],
+                orderly_tags: ["otag"]
+            }
+        });
+        wrapper.find("a").trigger("click");
+        await Vue.nextTick();
+        const modal = wrapper.find("#edit-tags");
+        expect(modal.classes().indexOf("modal-show")).toBeGreaterThan(-1);
+
+        const tagLists = modal.findAll(TagList);
+        expect(tagLists.length).toBe(3);
+        const versionTags = tagLists.at(0);
+        expect(versionTags.props().header).toBe("Report Version Tags");
+        expect(versionTags.props().description).toBe("These tags only apply to this version");
+        expect(versionTags.props().editable).toBe(true);
+        expect(versionTags.props().value).toStrictEqual(["vtag", "vtag2"]);
+
+        const reportTags = tagLists.at(1);
+        expect(reportTags.props().header).toBe("Report Tags");
+        expect(reportTags.props().description).toBe("Warning: Editing these tags will change them for all versions of this report");
+        expect(reportTags.props().editable).toBe(true);
+        expect(reportTags.props().value).toStrictEqual(["rtag"]);
+
+        const orderlyTags = tagLists.at(2);
+        expect(orderlyTags.props().header).toBe("Orderly Tags");
+        expect(orderlyTags.props().description).toBe("These are set in Orderly and cannot be changed");
+        expect(orderlyTags.props().editable).toBe(false);
+        expect(orderlyTags.props().value).toStrictEqual(["otag"]);
+
+        expect(wrapper.find('#cancel-edit-btn').text()).toBe("Cancel");
+        expect(wrapper.find("#save-tags-btn").text()).toBe("Save changes");
     });
 });
