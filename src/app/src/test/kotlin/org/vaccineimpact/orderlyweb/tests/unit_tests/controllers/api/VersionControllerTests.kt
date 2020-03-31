@@ -3,18 +3,23 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.FileSystem
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.ZipClient
 import org.vaccineimpact.orderlyweb.controllers.api.VersionController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.*
+import org.vaccineimpact.orderlyweb.models.Changelog
+import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.time.Instant
 
@@ -22,6 +27,78 @@ class VersionControllerTests : ControllerTest()
 {
     private val mockConfig = mock<Config> {
         on { this.get("orderly.root") } doReturn "root/"
+    }
+
+    @Test
+    fun `getRunMetadata returns orderly_run rds`()
+    {
+
+        val name = "testname"
+        val version = "testversion"
+
+        val fileSystem = mock<FileSystem>() {
+            on { this.fileExists("root/archive/testname/testversion/orderly_run.rds") } doReturn true
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.getSparkResponse() } doReturn mockSparkResponse
+        }
+
+        val sut = VersionController(actionContext, mock(), mock(), mock(), fileSystem, mockConfig)
+        sut.getRunMetadata()
+
+        verify(fileSystem, times(1))
+                .writeFileToOutputStream("root/archive/testname/testversion/orderly_run.rds", mockOutputStream)
+    }
+
+    @Test
+    fun `getRunMetadata checks version exists`()
+    {
+
+        val name = "testname"
+        val version = "testversion"
+
+        val fileSystem = mock<FileSystem>() {
+            on { this.fileExists("root/archive/testname/testversion/orderly_run.rds") } doReturn false
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.getSparkResponse() } doReturn mockSparkResponse
+        }
+
+        val sut = VersionController(actionContext, mock(), mock(), mock(), fileSystem, mockConfig)
+
+        assertThatThrownBy {
+            sut.getRunMetadata()
+        }.isInstanceOf(OrderlyFileNotFoundError::class.java)
+    }
+
+    @Test
+    fun `getRunMetadata checks file exists`()
+    {
+
+        val name = "testname"
+        val version = "testversion"
+
+        val mockOrderlyClient = mock<OrderlyClient>() {
+            on { checkVersionExistsForReport(name, version) } doThrow UnknownObjectError(version, "version")
+        }
+
+        val actionContext = mock<ActionContext> {
+            on { this.params(":name") } doReturn name
+            on { this.params(":version") } doReturn version
+            on { this.getSparkResponse() } doReturn mockSparkResponse
+        }
+
+        val sut = VersionController(actionContext, mockOrderlyClient, mock(), mock(), mock(), mockConfig)
+
+        assertThatThrownBy {
+            sut.getRunMetadata()
+        }.isInstanceOf(UnknownObjectError::class.java)
     }
 
     @Test
@@ -45,9 +122,8 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(actionContext, orderly, mock<ZipClient>(),
+        val sut = VersionController(actionContext, orderly, mock(), mock<ZipClient>(),
                 mock(),
-                mock<OrderlyServerAPI>(),
                 mockConfig)
 
         assertThat(sut.getByNameAndVersion()).isEqualTo(report)
@@ -69,9 +145,8 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(mockContext, orderly, mock<ZipClient>(),
+        val sut = VersionController(mockContext, orderly, mock(), mock<ZipClient>(),
                 mock(),
-                mock<OrderlyServerAPI>(),
                 mockConfig)
 
         val result = sut.getChangelogByNameAndVersion()
@@ -95,9 +170,9 @@ class VersionControllerTests : ControllerTest()
         val sourcePath = File("root/archive/$reportName/$reportVersion/").absolutePath
         val mockZipClient = mock<ZipClient>()
         val mockFiles = mock<FileSystem>() {
-            on { getAllFilesInFolder(sourcePath)} doReturn arrayListOf("TEST")
+            on { getAllFilesInFolder(sourcePath) } doReturn arrayListOf("TEST")
         }
-        val sut = VersionController(actionContext, mock(), mockZipClient, mockFiles, mock(), mockConfig)
+        val sut = VersionController(actionContext, mock(), mock(), mockZipClient, mockFiles, mockConfig)
 
         sut.getZippedByNameAndVersion()
         verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, listOf("TEST"))
@@ -110,12 +185,14 @@ class VersionControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
-            on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
             on { getResourceHashes(reportName, reportVersion) } doReturn mapOf("meta/inputs1.rds" to "123",
                     "table.xlsx" to "456")
         }
+        val mockArtefactRepo = mock<ArtefactRepository> {
+            on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
+        }
 
-        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),
+        val sut = VersionController(actionContext, mockOrderlyClient, mockArtefactRepo, mockZipClient,
                 mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
@@ -135,7 +212,7 @@ class VersionControllerTests : ControllerTest()
             on { checkVersionExistsForReport(reportName, reportVersion) } doThrow
                     UnknownObjectError(reportVersion, "report")
         }
-        val sut = VersionController(actionContext, mockOrderlyClient, mockZipClient, mock(),
+        val sut = VersionController(actionContext, mockOrderlyClient, mock(), mockZipClient,
                 mock(),
                 mockConfig)
 
@@ -159,13 +236,12 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(mockContext, orderly, mock<ZipClient>(),
+        val sut = VersionController(mockContext, orderly, mock(), mock<ZipClient>(),
                 mock(),
-                mock<OrderlyServerAPI>(),
                 mockConfig)
 
         val result = sut.getTags()
-        Assertions.assertThat(result).isSameAs(tags)
+        assertThat(result).isSameAs(tags)
     }
 
     private val reportName: String = "Report name"

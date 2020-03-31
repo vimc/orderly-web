@@ -1,15 +1,16 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
+import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+
 
 interface TagRepository
 {
     fun getAllTags(): List<String>
     fun getReportTags(reportNames: List<String>): Map<String, List<String>>
-    fun tagReport(reportName: String, tag: String)
-    fun tagVersion(versionId: String, tag: String)
+    fun updateTags(reportName: String, versionId: String, tags: ReportVersionTags)
 }
 
 class OrderlyWebTagRepository : TagRepository
@@ -33,36 +34,48 @@ class OrderlyWebTagRepository : TagRepository
     {
         JooqContext().use { ctx ->
             return ctx.dsl.select(
-                    Tables.ORDERLYWEB_REPORT_TAG.REPORT,
-                    Tables.ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_TAG.REPORT.`in`(reportNames))
-                    .groupBy { it[Tables.ORDERLYWEB_REPORT_TAG.REPORT] }
-                    .mapValues { it.value.map { r -> r[Tables.ORDERLYWEB_REPORT_TAG.TAG] }.sorted() }
-        }
-    }
-
-    override fun tagReport(reportName: String, tag: String)
-    {
-        JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_REPORT_TAG,
                     ORDERLYWEB_REPORT_TAG.REPORT,
                     ORDERLYWEB_REPORT_TAG.TAG)
-                    .values(reportName, tag)
-                    .onDuplicateKeyIgnore()
-                    .execute()
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .where(ORDERLYWEB_REPORT_TAG.REPORT.`in`(reportNames))
+                    .groupBy { it[ORDERLYWEB_REPORT_TAG.REPORT] }
+                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_TAG.TAG] }.sorted() }
         }
     }
 
-    override fun tagVersion(versionId: String, tag: String)
+    override fun updateTags(reportName: String, versionId: String, tags: ReportVersionTags)
     {
         JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
-                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .values(versionId, tag)
-                    .onDuplicateKeyIgnore()
-                    .execute()
+            it.dsl.transaction { config ->
+                val dsl = DSL.using(config)
+                dsl.deleteFrom(ORDERLYWEB_REPORT_TAG)
+                        .where(ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
+                        .execute()
+
+                for (tag in tags.reportTags)
+                {
+                    dsl.insertInto(ORDERLYWEB_REPORT_TAG,
+                            ORDERLYWEB_REPORT_TAG.REPORT,
+                            ORDERLYWEB_REPORT_TAG.TAG)
+                            .values(reportName, tag)
+                            .onDuplicateKeyIgnore()
+                            .execute()
+                }
+
+                dsl.deleteFrom(ORDERLYWEB_REPORT_VERSION_TAG)
+                        .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
+                        .execute()
+
+                for (tag in tags.versionTags)
+                {
+                    dsl.insertInto(ORDERLYWEB_REPORT_VERSION_TAG,
+                            ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                            ORDERLYWEB_REPORT_TAG.TAG)
+                            .values(versionId, tag)
+                            .onDuplicateKeyIgnore()
+                            .execute()
+                }
+            }
         }
     }
 }

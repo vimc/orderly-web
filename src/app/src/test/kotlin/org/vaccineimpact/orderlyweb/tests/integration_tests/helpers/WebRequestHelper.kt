@@ -2,6 +2,9 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.json
+import com.github.salomonbrys.kotson.fromJson
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonElement
 import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
@@ -30,7 +33,7 @@ class WebRequestHelper : RequestHelper()
                                        withPermissions: Set<ReifiedPermission>,
                                        contentType: String = "text/html",
                                        method: HttpMethod = HttpMethod.get,
-                                       postData: Map<String, String>? = null): Response
+                                       postData: Map<String, Any>? = null): Response
     {
         val sessionCookie = webLoginWithMontagu(withPermissions)
         return requestWithSessionCookie(url, sessionCookie, contentType, method, postData)
@@ -64,7 +67,7 @@ class WebRequestHelper : RequestHelper()
                                  cookies: String,
                                  contentType: String = "text/html",
                                  method: HttpMethod = HttpMethod.get,
-                                 postData: Map<String, String>? = null): Response
+                                 postData: Map<String, Any>? = null): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
         val fullUrl = if (url.contains("http"))
@@ -78,18 +81,15 @@ class WebRequestHelper : RequestHelper()
         return when (method)
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)
-            HttpMethod.post -> khttp.post(fullUrl, headers, data = postData?.toJsonObject()?.toJsonString())
+            HttpMethod.post -> khttp.post(fullUrl, headers, data = postData?.toJson())
             HttpMethod.delete -> khttp.delete(fullUrl, headers)
             else -> throw IllegalArgumentException("Method not supported")
         }
     }
 
-    private fun Map<String, *>.toJsonObject(): JsonObject
+    private fun Map<String, *>.toJson(): String
     {
-        val pairs = entries.map { it.toPair() }.toTypedArray()
-        return json {
-            obj(*pairs)
-        }
+        return GsonBuilder().create().toJson(this)
     }
 
 }

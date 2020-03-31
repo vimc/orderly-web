@@ -30,7 +30,7 @@ object WebVersionRouteConfig : RouteConfig
                     DataController::class, "downloadData",
                     contentType = ContentTypes.binarydata)
                     .secure(readReports),
-            WebEndpoint("/report/:name/version/:version/tags/",
+            WebEndpoint("/report/:name/version/:version/update-tags/",
                     org.vaccineimpact.orderlyweb.controllers.web.ReportController::class, "tagVersion")
                     .json()
                     .post()

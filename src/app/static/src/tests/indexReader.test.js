@@ -4,8 +4,6 @@ const $ = require('jquery');
 require("datatables.net")(window, $);
 require("datatables.net-dt")(window, $);
 require('datatables.net-bs4')(window, $);
-require("treetables")(window, $);
-require("tokenize2/dist/tokenize2")(window, $);
 
 describe("index page as report reader", () => {
 

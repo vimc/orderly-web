@@ -41,10 +41,10 @@ data class WebEndpoint(
 
     private fun addSecurityFilter(url: String)
     {
-        //If Montagu Auth and if anon users are not allowed, OrderlyWeb auth should be fully synchronised
+        //If Montagu Auth and if guest users are not allowed, OrderlyWeb auth should be fully synchronised
         // with the external login provider, and login page should not be seen
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
-                && !authenticationConfig.allowAnonUser
+                && !authenticationConfig.allowGuestUser
 
         val client =
                 if (externalAuth || synchronisedAuth)
@@ -67,7 +67,7 @@ data class WebEndpoint(
                 config.authorizers.map { it.key }.joinToString(","),
                 SkipOptionsMatcher.name
         ).apply { securityLogic = OrderlyWebSecurityLogic() }
-        spark.before(url, contentType, filter)
+        spark.before(url, contentType, method, filter)
     }
 }
 

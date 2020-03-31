@@ -2,6 +2,7 @@
 @import "../../node_modules/bootstrap-toggle/css/bootstrap-toggle.min.css";
 @import "partials/sidebar";
 @import "partials/permissions";
+@import "partials/modal";
 
 .changelog-header tr th {
   background-color: $theme-header-bg-color;
@@ -64,4 +65,23 @@ td, th {
       width: 180px;
     }
   }
+}
+
+.tag-list {
+  width: 17rem;
+  float: left;
+}
+
+.tag-list-description {
+  font-size: 0.9rem;
+  font-style: italic;
+  min-height: 3rem;
+}
+
+.tags {
+  min-height: 1.7rem;
+}
+
+.remove-tag {
+  cursor: pointer;
 }

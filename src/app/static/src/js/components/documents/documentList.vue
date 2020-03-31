@@ -10,7 +10,8 @@
                   class="folder-name"
                   v-text="doc.display_name"
                   v-on:click="toggle(doc.path)"></span>
-            <file v-if="doc.is_file" :doc="doc"></file>
+            <file v-if="doc.is_file && !doc.external" :doc="doc"></file>
+            <web-link v-if="doc.is_file && doc.external" :doc="doc"></web-link>
             <document-list v-show="expanded[doc.path]" :docs="doc.children"></document-list>
         </li>
     </ul>
@@ -19,6 +20,7 @@
 <script>
     import Vue from "vue";
     import file from "./file.vue";
+    import webLink from "./webLink.vue";
 
     export default {
         name: "document-list",
@@ -34,7 +36,8 @@
             }
         },
         components: {
-            file
+            file,
+            webLink
         }
     }
 

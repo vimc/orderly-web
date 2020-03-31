@@ -16,7 +16,7 @@ class DocumentsPageTests : TeamcityTests()
             user = "username",
             isReviewer = false,
             isAdmin = false,
-            isAnon = false,
+            isGuest = false,
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
     companion object

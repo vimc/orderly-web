@@ -114,7 +114,7 @@ class IndexTests : TeamcityTests()
                 "username",
                 isReviewer = true,
                 isAdmin = false,
-                isAnon = false,
+                isGuest = false,
                 breadcrumbs = listOf(IndexViewModel.breadcrumb)
         )
 
@@ -135,8 +135,9 @@ class IndexTests : TeamcityTests()
     fun `non-reviewers cannot see the status column`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
-                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(6)
@@ -153,8 +154,9 @@ class IndexTests : TeamcityTests()
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
-                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         assertThat(filters.select("th").count()).isEqualTo(7)
@@ -171,7 +173,7 @@ class IndexTests : TeamcityTests()
     fun `tag column has a multiselect filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
-                isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 

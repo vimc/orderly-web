@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.FixMethodOrder
 import org.junit.Test
@@ -338,6 +339,45 @@ class VersionTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(404)
         JSONValidator.validateError(response.text, "unknown-report-version",
                 "Unknown report-version")
+    }
+
+    @Test
+    fun `can get report run metadata with access token`()
+    {
+        val publishedVersion = JooqContext().use {
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.PUBLISHED)
+                    .fetchAny()
+        }
+        val versionId = publishedVersion[REPORT_VERSION.ID]
+        val reportName = publishedVersion[REPORT_VERSION.REPORT]
+        val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
+        val token = apiRequestHelper.generateOnetimeToken(url)
+        val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
+
+        assertSuccessful(response)
+        assertThat(response.headers["content-type"]).isEqualTo("application/octet-stream")
+        assertThat(response.headers["content-disposition"])
+                .isEqualTo("attachment; filename=\"$reportName/$versionId/orderly_run.rds\"")
+    }
+
+    @Test
+    fun `only report readers can get report run metadata`()
+    {
+        val publishedVersion = JooqContext().use {
+            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
+                    .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.PUBLISHED)
+                    .fetchAny()
+        }
+        val versionId = publishedVersion[REPORT_VERSION.ID]
+        val reportName = publishedVersion[REPORT_VERSION.REPORT]
+        val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
+
+        assertAPIUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", reportName))),
+                contentType = ContentTypes.binarydata)
     }
 
 }

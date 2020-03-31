@@ -1,6 +1,9 @@
 import {initReportTable} from "../js";
 
 const $ = require('jquery');
+require("datatables.net")(window, $);
+require("datatables.net-dt")(window, $);
+require('datatables.net-bs4')(window, $);
 
 describe("index page as report reviewer", () => {
 

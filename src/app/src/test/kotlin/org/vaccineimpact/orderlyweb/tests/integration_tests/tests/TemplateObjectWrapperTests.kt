@@ -109,7 +109,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
             on { hasPermission(any()) } doReturn true
         }
-        val model = DocumentsViewModel.build(mockContext, listOf(Document("name", "path", true, false, listOf())))
+        val model = DocumentsViewModel.build(mockContext, listOf(Document("name", "display name", "path", true, false, listOf())))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash

@@ -9,7 +9,7 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 
 class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig(),
-                              private val anonUserManager: AnonUserManager = OrderlyWebAnonUserManager())
+                              private val guestUserManager: GuestUserManager = OrderlyWebGuestUserManager())
     : DefaultSecurityLogic<Any?, SparkWebContext>()
 {
     override fun perform(context: SparkWebContext?,
@@ -22,9 +22,9 @@ class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationCo
                          inputMultiProfile: Boolean?,
                          vararg parameters: Any?): Any?
     {
-        if (authenticationConfig.allowAnonUser)
+        if (authenticationConfig.allowGuestUser)
         {
-            anonUserManager.updateProfile(context, config, clients)
+            guestUserManager.updateProfile(context, config, clients)
         }
 
         return super.perform(context,

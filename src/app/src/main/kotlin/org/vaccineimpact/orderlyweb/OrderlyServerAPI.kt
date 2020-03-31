@@ -21,8 +21,7 @@ class OrderlyServer(config: Config, private val httpClient: HttpClient) : Orderl
     override fun post(url: String, context: ActionContext): Response
     {
         val fullUrl = buildFullUrl(url, context.queryString())
-        val postData = context.postData()
-
+        val postData = context.postData<String>()
         return httpClient.post(fullUrl, standardHeaders, postData)
     }
 

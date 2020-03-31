@@ -11,7 +11,7 @@ import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.OrderlyWebAnonUserManager
+import org.vaccineimpact.orderlyweb.security.OrderlyWebGuestUserManager
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
@@ -20,13 +20,13 @@ import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import javax.servlet.http.HttpServletRequest
 
-class AnonUserManagerTests : TeamcityTests()
+class GuestUserManagerTests : TeamcityTests()
 {
     private val realUser = CommonProfile().apply { id = "some.real.user" }
-    private val anonUser = CommonProfile().apply { id = "anon" }
+    private val guestUser = CommonProfile().apply { id = "guest" }
 
     private val authRepo = mock<AuthorizationRepository> {
-        on {getPermissionsForGroup("anon")} doReturn listOf(ReifiedPermission("reports.read", Scope.Global()))
+        on {getPermissionsForGroup("guest")} doReturn listOf(ReifiedPermission("reports.read", Scope.Global()))
     }
 
     private fun setUpMockSession(user: CommonProfile? = null): SparkWebContext
@@ -53,7 +53,7 @@ class AnonUserManagerTests : TeamcityTests()
         val mockContext = setUpMockSession(realUser)
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "GithubIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -67,7 +67,7 @@ class AnonUserManagerTests : TeamcityTests()
         val mockContext = setUpMockSession(realUser)
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -81,7 +81,7 @@ class AnonUserManagerTests : TeamcityTests()
         val mockContext = setUpMockSession(realUser)
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -90,12 +90,12 @@ class AnonUserManagerTests : TeamcityTests()
     }
 
     @Test
-    fun `anon user profile is wiped if using GithubIndirectClient`()
+    fun `guest user profile is wiped if using GithubIndirectClient`()
     {
-        val mockContext = setUpMockSession(anonUser)
+        val mockContext = setUpMockSession(guestUser)
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "GithubIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -104,12 +104,12 @@ class AnonUserManagerTests : TeamcityTests()
     }
 
     @Test
-    fun `anon user profile is wiped if using MontaguIndirectClient`()
+    fun `guest user profile is wiped if using MontaguIndirectClient`()
     {
-        val mockContext = setUpMockSession(anonUser)
+        val mockContext = setUpMockSession(guestUser)
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -118,12 +118,12 @@ class AnonUserManagerTests : TeamcityTests()
     }
 
     @Test
-    fun `anon user profile is not added if using GithubIndirectClient`()
+    fun `guest user profile is not added if using GithubIndirectClient`()
     {
         val mockContext = setUpMockSession()
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "GithubIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -132,12 +132,12 @@ class AnonUserManagerTests : TeamcityTests()
     }
 
     @Test
-    fun `anon user profile is not added if using MontaguIndirectClient`()
+    fun `guest user profile is not added if using MontaguIndirectClient`()
     {
         val mockContext = setUpMockSession()
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
@@ -146,31 +146,31 @@ class AnonUserManagerTests : TeamcityTests()
     }
 
     @Test
-    fun `anon user profile is added if using OrderlyWebIndirectClient`()
+    fun `guest user profile is added if using OrderlyWebIndirectClient`()
     {
         val mockContext = setUpMockSession()
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager(authRepo)
+        val sut = OrderlyWebGuestUserManager(authRepo)
         sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true).get()
-        assertThat(profile.id).isEqualTo("anon")
+        assertThat(profile.id).isEqualTo("guest")
         assertThat(profile.orderlyWebPermissions.count()).isEqualTo(1)
         assertThat(profile.orderlyWebPermissions.first().name).isEqualTo("reports.read")
     }
 
     @Test
-    fun `existing anon user profile is updated if using OrderlyWebIndirectClient`()
+    fun `existing guest user profile is updated if using OrderlyWebIndirectClient`()
     {
-        val mockContext = setUpMockSession(anonUser)
+        val mockContext = setUpMockSession(guestUser)
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
-        val sut = OrderlyWebAnonUserManager(authRepo)
+        val sut = OrderlyWebGuestUserManager(authRepo)
         sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true).get()
-        assertThat(profile.id).isEqualTo("anon")
+        assertThat(profile.id).isEqualTo("guest")
         assertThat(profile.orderlyWebPermissions.count()).isEqualTo(1)
         assertThat(profile.orderlyWebPermissions.first().name).isEqualTo("reports.read")
     }

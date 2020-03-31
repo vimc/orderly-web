@@ -60,7 +60,7 @@ class DefaultViewModelTests : TeamcityTests()
                 user = "username",
                 isReviewer = true,
                 isAdmin = false,
-                isAnon = false,
+                isGuest = false,
                 breadcrumbs = listOf(IndexViewModel.breadcrumb),
                 appConfig = mockConfig)
 
@@ -80,7 +80,7 @@ class DefaultViewModelTests : TeamcityTests()
                 user = "username",
                 isReviewer = true,
                 isAdmin = false,
-                isAnon = false,
+                isGuest = false,
                 breadcrumbs = listOf(IndexViewModel.breadcrumb),
                 appConfig = mockConfig)
 
