@@ -67,7 +67,7 @@ class GuestUserManagerTests : TeamcityTests()
         val mockContext = setUpMockSession(realUser)
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
-        val sut = OrderlyWebGuestserManager()
+        val sut = OrderlyWebGuestUserManager()
         sut.updateProfile(mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
