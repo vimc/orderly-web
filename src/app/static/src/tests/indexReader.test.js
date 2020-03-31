@@ -1,6 +1,11 @@
 import {initReportTable} from "../js";
 
 const $ = require('jquery');
+require("datatables.net")(window, $);
+require("datatables.net-dt")(window, $);
+require('datatables.net-bs4')(window, $);
+require("treetables")(window, $);
+require("tokenize2/dist/tokenize2")(window, $);
 
 describe("index page as report reader", () => {
 
@@ -38,9 +43,8 @@ describe("index page as report reader", () => {
         '                       data-col="2"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <input class="form-control" type="text" id="tags-filter"\n' +
-        '                       data-role="standard-filter"\n' +
-        '                       data-col="3"/>\n' +
+        '                <select class="form-control" id="tags-filter"\n' +
+        '                       data-col="3"><option value="test-tag">test-tag</option></select>\n' +
         '            </th>\n' +
         '            <th>\n' +
         '                <input class="form-control" type="text" id="parameter-values-filter"\n' +

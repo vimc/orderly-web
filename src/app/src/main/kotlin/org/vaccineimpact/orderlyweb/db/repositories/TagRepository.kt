@@ -24,6 +24,7 @@ class OrderlyWebTagRepository : TagRepository
                     .union(it.dsl.select(TAG.ID)
                             .from(TAG))
                     .fetchInto(String::class.java)
+                    .distinct()
                     .sorted()
         }
     }

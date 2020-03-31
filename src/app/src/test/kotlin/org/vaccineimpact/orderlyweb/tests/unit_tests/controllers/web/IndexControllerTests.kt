@@ -153,6 +153,26 @@ class IndexControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `adds tags to vm`()
+    {
+        val documentReaderContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
+        }
+
+        val mockOrderly = mock<OrderlyClient> {
+            on { this.getGlobalPinnedReports() } doReturn listOf<ReportVersion>()
+        }
+
+        val mockRepo = mock<TagRepository> {
+            on { getAllTags() } doReturn listOf("a", "b")
+        }
+
+        val sut = IndexController(documentReaderContext, mockOrderly, mockRepo)
+        val result = sut.index()
+        assertThat(result.tags).containsExactly("a", "b")
+    }
+
+    @Test
     fun `showProjectDocs if user has document reading permission`()
     {
         val documentReaderContext = mock<ActionContext> {

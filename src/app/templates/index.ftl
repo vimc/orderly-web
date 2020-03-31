@@ -85,9 +85,8 @@
                 </th>
             </#if>
             <th>
-                <select class="form-control" type="text" id="tags-filter"
+                <select class="form-control" id="tags-filter"
                         multiple="multiple"
-                       data-role="standard-filter"
                         <#if isReviewer>
                             data-col="4"
                         <#else>
