@@ -6,7 +6,7 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.junit.Test
 import org.mockito.internal.verification.Times
-import org.vaccineimpact.orderlyweb.security.AnonUserManager
+import org.vaccineimpact.orderlyweb.security.GuestUserManager
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -14,14 +14,14 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 class OrderlyWebSecurityLogicTests : TeamcityTests()
 {
     @Test
-    fun `anon user profile is managed if allow anon is true`()
+    fun `guest user profile is managed if allow guest is true`()
     {
-        val anonUserManager = mock<AnonUserManager>()
+        val guestUserManager = mock<GuestUserManager>()
         val config = mock<AuthenticationConfig> {
-            on { allowAnonUser } doReturn true
+            on { allowGuestUser } doReturn true
         }
 
-        val sut = OrderlyWebSecurityLogic(config, anonUserManager)
+        val sut = OrderlyWebSecurityLogic(config, guestUserManager)
         try
         {
             sut.perform(mock(), mock(), mock(), mock(), "", "", "", false)
@@ -32,18 +32,18 @@ class OrderlyWebSecurityLogicTests : TeamcityTests()
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(anonUserManager, Times(1)).updateProfile(any(), any(), any())
+        verify(guestUserManager, Times(1)).updateProfile(any(), any(), any())
     }
 
     @Test
-    fun `anon user profile is not managed if allow anon is false`()
+    fun `guest user profile is not managed if allow guest is false`()
     {
-        val anonUserManager = mock<AnonUserManager>()
+        val guestUserManager = mock<GuestUserManager>()
         val config = mock<AuthenticationConfig> {
-            on { allowAnonUser } doReturn false
+            on { allowGuestUser } doReturn false
         }
 
-        val sut = OrderlyWebSecurityLogic(config, anonUserManager)
+        val sut = OrderlyWebSecurityLogic(config, guestUserManager)
         try
         {
             sut.perform(mock(), mock(), mock(), mock(), "", "", "", false)
@@ -54,6 +54,6 @@ class OrderlyWebSecurityLogicTests : TeamcityTests()
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(anonUserManager, Times(0)).updateProfile(any(), any(), any())
+        verify(guestUserManager, Times(0)).updateProfile(any(), any(), any())
     }
 }
