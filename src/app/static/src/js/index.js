@@ -31,7 +31,7 @@ export const initReportTable = (isReviewer, reports, customFields) => {
         return nameFilter(displayName, value, data);
     });
 
-    $('#tags-filter').select2();
+    $('#tags-filter').tokenize2();
 
     $('#name-filter').on('keyup', () => {
         dt.draw();

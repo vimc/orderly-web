@@ -13,6 +13,19 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReportTags
 class TagRepositoryTests : CleanDatabaseTests()
 {
     @Test
+    fun `can get all tags`()
+    {
+        insertReport("r1", "v1")
+        insertReportTags("r1", listOf("c-tag", "b-tag", "a-tag"))
+        insertVersionTags("v1", listOf("d-tag", "c-tag"))
+
+        val sut = OrderlyWebTagRepository()
+
+        val result = sut.getAllTags()
+        assertThat(result).containsExactly("a-tag", "b-tag", "c-tag", "d-tag")
+    }
+
+    @Test
     fun `can get all report tags`()
     {
         insertReport("r1", "v1")

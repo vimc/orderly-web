@@ -4,5 +4,5 @@ module.exports = [
     "./node_modules/bootstrap/dist/js/bootstrap.min.js.map",
     "./node_modules/popper.js/dist/umd/popper.min.js",
     "./node_modules/popper.js/dist/umd/popper.min.js.map",
-    "./node_modules/select2/dist/js/select2.min.js"
+    "./node_modules/tokenize2/dist/tokenize2.min.js"
 ];

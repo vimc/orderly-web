@@ -85,7 +85,6 @@
                 </th>
             </#if>
             <th>
-
                 <select class="form-control" type="text" id="tags-filter"
                         multiple="multiple"
                        data-role="standard-filter"
@@ -126,7 +125,7 @@
         </thead>
     </table>
     <#macro scripts>
-        <script type="text/javascript" src="${appUrl}/js/lib/select2.min.js"></script>
+        <script type="text/javascript" src="${appUrl}/js/lib/tokenize2.min.js"></script>
         <script type="text/javascript">
             var customFields = [<#list customFieldKeys as customField>"${customField}", </#list>];
             var rawReports = ${reportsJson};
