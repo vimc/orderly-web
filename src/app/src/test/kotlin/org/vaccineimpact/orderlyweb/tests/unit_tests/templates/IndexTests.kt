@@ -179,7 +179,7 @@ class IndexTests : TeamcityTests()
 
         val filterSelect = filters.select("th")[3].selectFirst("select")
         assertThat(filterSelect.id()).isEqualTo("tags-filter")
-        assertThat(filterSelect.attr("mutliple")).isEqualTo("multiple")
+        assertThat(filterSelect.attr("multiple")).isEqualTo("multiple")
         assertThat(filterSelect.select("option").count()).isEqualTo(2)
         assertThat(filterSelect.select("option").map { it.attr("value") }).containsExactly("a", "b")
         assertThat(filterSelect.select("option").map { it.text() }).containsExactly("a", "b")

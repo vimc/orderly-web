@@ -1,7 +1,6 @@
-const $ = require('jquery');
-global.jQuery = $;
-
 import {initReportTable} from "../js";
+
+const $ = require('jquery');
 
 describe("index page as report reader", () => {
 
