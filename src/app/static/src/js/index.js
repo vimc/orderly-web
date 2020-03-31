@@ -1,9 +1,6 @@
 import {nameFilter, options, statusFilter} from "./utils/reportsTable";
 import $ from 'jquery';
 
-require("datatables.net")(window, $);
-require("datatables.net-dt")(window, $);
-require('datatables.net-bs4')(window, $);
 require("treetables")(window, $);
 
 export const initReportTable = (isReviewer, reports, customFields) => {
