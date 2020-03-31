@@ -28,7 +28,7 @@ class PermissionTests : IntegrationTest()
 
         val json = JsonLoader.fromString(response.text)
         assertThat(json["data"].toString())
-                .isEqualTo("[\"documents.read\",\"reports.read\",\"reports.review\",\"reports.run\",\"tags.manage\",\"users.manage\"]")
+                .isEqualTo("[\"documents.read\",\"documents.manage\",\"reports.read\",\"reports.review\",\"reports.run\",\"tags.manage\",\"users.manage\"]")
 
     }
 }
