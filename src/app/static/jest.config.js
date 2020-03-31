@@ -1,7 +1,8 @@
 module.exports = {
     "testResultsProcessor": "jest-teamcity-reporter",
     "setupFilesAfterEnv": [
-        "<rootDir>/src/tests/setup.js"
+        "<rootDir>/src/tests/setup.js",
+        "jest-canvas-mock"
     ],
     "globals": {
         "appUrl": "http://app"
@@ -14,6 +15,7 @@ module.exports = {
         "json",
         "vue"
     ],
+    "moduleNameMapper": {"tokenize2": "<rootDir>/node_modules/tokenize2/tokenize2.js"},
     "transform": {
         ".*\\.(vue)$": "vue-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"

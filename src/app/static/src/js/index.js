@@ -2,6 +2,7 @@ import {nameFilter, options, statusFilter} from "./utils/reportsTable";
 import $ from 'jquery';
 
 require("treetables")(window, $);
+require("tokenize2")(window, $);
 
 export const initReportTable = (isReviewer, reports, customFields) => {
 
@@ -41,7 +42,7 @@ export const initReportTable = (isReviewer, reports, customFields) => {
     });
 
     const $tagsFilter = $("#tags-filter");
- //   $tagsFilter.tokenize2();
+    $tagsFilter.tokenize2();
     $tagsFilter.on('tokenize:tokens:added tokenize:tokens:remove', function() {
 
         const col = parseInt($(this).data("col"));

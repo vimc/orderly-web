@@ -1,9 +1,7 @@
-import {initReportTable} from "../js";
-
 const $ = require('jquery');
-require("datatables.net")(window, $);
-require("datatables.net-dt")(window, $);
-require('datatables.net-bs4')(window, $);
+global.jQuery = $;
+
+import {initReportTable} from "../js";
 
 describe("index page as report reader", () => {
 
@@ -41,7 +39,7 @@ describe("index page as report reader", () => {
         '                       data-col="2"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <select class="form-control" id="tags-filter"\n' +
+        '                <select class="form-control" multiple="multiple" id="tags-filter"\n' +
         '                       data-col="3"><option value="test-tag">test-tag</option></select>\n' +
         '            </th>\n' +
         '            <th>\n' +

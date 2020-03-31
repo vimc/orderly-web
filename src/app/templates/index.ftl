@@ -124,7 +124,6 @@
         </thead>
     </table>
     <#macro scripts>
-        <script type="text/javascript" src="${appUrl}/js/lib/tokenize2.min.js"></script>
         <script type="text/javascript">
             var customFields = [<#list customFieldKeys as customField>"${customField}", </#list>];
             var rawReports = ${reportsJson};
