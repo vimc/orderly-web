@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.security.clients.*
 
 interface AuthenticationConfig
 {
-    val allowAnonUser: Boolean
+    val allowGuestUser: Boolean
     fun getConfiguredProvider(): AuthenticationProvider
     fun getAuthenticationIndirectClient(): IndirectClient<out Credentials, out CommonProfile>
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
@@ -18,10 +18,10 @@ interface AuthenticationConfig
 
 class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()) : AuthenticationConfig
 {
-    override val allowAnonUser: Boolean
+    override val allowGuestUser: Boolean
         get()
         {
-            return appConfig.getBool("auth.allow_anon")
+            return appConfig.getBool("auth.allow_guest")
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider

@@ -78,7 +78,7 @@ class VersionPageTests : TeamcityTests()
     private val testDefaultModel = DefaultViewModel(true, "username",
             isReviewer = false,
             isAdmin = false,
-            isAnon = false,
+            isGuest = false,
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
     private val testModel = ReportVersionPageViewModel(
