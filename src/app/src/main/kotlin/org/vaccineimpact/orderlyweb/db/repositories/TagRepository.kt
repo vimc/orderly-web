@@ -2,8 +2,7 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
+import org.vaccineimpact.orderlyweb.db.Tables.*
 
 interface TagRepository
 {
@@ -18,10 +17,12 @@ class OrderlyWebTagRepository : TagRepository
     override fun getAllTags(): List<String> {
         JooqContext().use {
             return it.dsl.select(
-                            Tables.ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_TAG)
-                    .union(it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                            .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG))
+                            ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .union(it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                            .from(ORDERLYWEB_REPORT_VERSION_TAG))
+                    .union(it.dsl.select(TAG.ID)
+                            .from(TAG))
                     .fetchInto(String::class.java)
                     .sorted()
         }

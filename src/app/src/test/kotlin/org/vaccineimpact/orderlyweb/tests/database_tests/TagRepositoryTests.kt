@@ -6,9 +6,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReportTags
+import org.vaccineimpact.orderlyweb.test_helpers.*
 
 class TagRepositoryTests : CleanDatabaseTests()
 {
@@ -16,13 +14,15 @@ class TagRepositoryTests : CleanDatabaseTests()
     fun `can get all tags`()
     {
         insertReport("r1", "v1")
+        insertReport("r2", "v2")
         insertReportTags("r1", listOf("c-tag", "b-tag", "a-tag"))
         insertVersionTags("v1", listOf("d-tag", "c-tag"))
+        insertOrderlyTags("v2", listOf("e-tag", "f-tag"))
 
         val sut = OrderlyWebTagRepository()
 
         val result = sut.getAllTags()
-        assertThat(result).containsExactly("a-tag", "b-tag", "c-tag", "d-tag")
+        assertThat(result).containsExactly("a-tag", "b-tag", "c-tag", "d-tag", "e-tag", "f-tag")
     }
 
     @Test

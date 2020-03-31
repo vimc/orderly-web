@@ -7,7 +7,6 @@ import freemarker.ext.beans.StringModel
 import freemarker.template.SimpleHash
 import freemarker.template.SimpleSequence
 import freemarker.template.TemplateBooleanModel
-import freemarker.template.TemplateModel
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
@@ -87,7 +86,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
             on { hasPermission(any()) } doReturn true
         }
-        val model = IndexViewModel(mockContext, listOf(), listOf(), listOf(), true)
+        val model = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true)
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash

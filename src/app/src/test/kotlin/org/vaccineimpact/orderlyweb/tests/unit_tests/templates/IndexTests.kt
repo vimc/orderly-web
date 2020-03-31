@@ -24,7 +24,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -39,7 +39,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders link to project docs if user has permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("View project documentation")
@@ -49,7 +49,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `does not render link to project docs if user does not have permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
@@ -58,7 +58,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders pinned reports correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(
                 PinnedReportViewModel("report1", "version1", "display1", "date1",
                         DownloadableFileViewModel("zip file 1", "zip file url 1", 1)),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
@@ -96,7 +96,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly when no pinned reports`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -119,7 +119,7 @@ class IndexTests : TeamcityTests()
                 breadcrumbs = listOf(IndexViewModel.breadcrumb)
         )
 
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(7)
@@ -137,7 +137,7 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(6)
@@ -155,7 +155,7 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isAnon = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         assertThat(filters.select("th").count()).isEqualTo(7)

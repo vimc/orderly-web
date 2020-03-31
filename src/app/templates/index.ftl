@@ -94,7 +94,7 @@
                             data-col="3"
                         </#if>>
                     <#list tags as tag>
-                        <option>${tag}</option>
+                        <option value="${tag}">${tag}</option>
                     </#list>
                 </select>
             </th>

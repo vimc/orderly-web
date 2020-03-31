@@ -31,8 +31,6 @@ export const initReportTable = (isReviewer, reports, customFields) => {
         return nameFilter(displayName, value, data);
     });
 
-    $('#tags-filter').tokenize2();
-
     $('#name-filter').on('keyup', () => {
         dt.draw();
     });
@@ -42,6 +40,17 @@ export const initReportTable = (isReviewer, reports, customFields) => {
 
         dt.column(col)
             .search(this.value)
+            .draw();
+    });
+
+    const $tagsFilter = $("#tags-filter");
+    $tagsFilter.tokenize2();
+    $tagsFilter.on('tokenize:tokens:added tokenize:tokens:remove', function() {
+
+        const col = parseInt($(this).data("col"));
+
+        dt.column(col)
+            .search($(this).val().join(","))
             .draw();
     });
 
