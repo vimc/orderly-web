@@ -37,6 +37,7 @@ object WebRouteConfig : RouteConfig
                     WebVersionRouteConfig.endpoints +
                     WebUserRouteConfig.endpoints +
                     WebPermissionRouteConfig.endpoints +
-                    WebRoleRouteConfig.endpoints + metricsEndpoint + adminEndpoint
+                    WebRoleRouteConfig.endpoints +
+                    WebSettingsRouteConfig.endpoints + metricsEndpoint + adminEndpoint
 }
 
