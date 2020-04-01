@@ -73,9 +73,7 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
 
         FileUtils.copyURLToFile(
                 URL(url),
-                tmpFile,
-                60000,
-                60000)
+                tmpFile)
 
         val tmpDir = Files.createTempDirectory("documents").toFile()
 
