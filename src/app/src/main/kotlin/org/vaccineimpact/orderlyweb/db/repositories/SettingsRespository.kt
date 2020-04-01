@@ -24,7 +24,7 @@ class OrderlySettingsRepository: SettingsRepository
     {
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_SETTINGS)
-                    .set(mapOf(ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST to value))
+                    .set(ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST, value)
                     .execute()
         }
     }
