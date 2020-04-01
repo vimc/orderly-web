@@ -1,16 +1,17 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.FileSystem
-import org.vaccineimpact.orderlyweb.controllers.api.DocumentController
+import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
+import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
 
-class DocumentControllerTests : ControllerTest()
+class RefreshDocumentsTests : ControllerTest()
 {
     private val mockConfig = mock<Config> {
         on { get("documents.root") } doReturn "documents"
@@ -32,7 +33,7 @@ class DocumentControllerTests : ControllerTest()
     @Test
     fun `refreshDocuments downloads and saves files from url`()
     {
-        val sut = DocumentController(mockContext, mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
         verify(mockFiles).save("http://url.com", "/documents")
     }
@@ -44,7 +45,7 @@ class DocumentControllerTests : ControllerTest()
             on { postData<String>("url") } doReturn "http://dropbox.com?dl=0"
         }
 
-        val sut = DocumentController(mockContext, mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
         verify(mockFiles).save("http://dropbox.com?dl=1", "/documents")
     }
@@ -74,7 +75,7 @@ class DocumentControllerTests : ControllerTest()
             )
         }
 
-        val sut = DocumentController(mockContext, mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
 
         //Expect create
@@ -116,7 +117,7 @@ class DocumentControllerTests : ControllerTest()
             on { getAllFlat() } doReturn flatDocs
         }
 
-        val sut = DocumentController(mockContext, mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
 
         verify(mockRepo).setVisibility(listOf(flatDocs[0]), true) // still exists
