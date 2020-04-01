@@ -15,7 +15,7 @@ class FileTests
     @After
     fun cleanup()
     {
-       // File("documents").deleteRecursively()
+        File("documents").deleteRecursively()
     }
 
     private val useResourceDir = File("${AppConfig()["orderly.root"]}archive/use_resource/").absolutePath
