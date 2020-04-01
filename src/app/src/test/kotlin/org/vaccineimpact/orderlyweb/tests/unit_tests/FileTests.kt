@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
+import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.Files
@@ -14,7 +15,7 @@ class FileTests
     @After
     fun cleanup()
     {
-        File("documents").deleteRecursively()
+       // File("documents").deleteRecursively()
     }
 
     private val useResourceDir = File("${AppConfig()["orderly.root"]}archive/use_resource/").absolutePath
@@ -67,5 +68,13 @@ class FileTests
     {
         assertThat(Files().getAbsolutePath("${AppConfig()["orderly.root"]}archive/use_resource/"))
                 .isEqualTo(useResourceDir)
+    }
+
+    @Ignore
+    @Test
+    fun `can save zip from url`() {
+
+        val testDir = java.nio.file.Files.createTempDirectory("test").toFile()
+        Files().save("", testDir.absolutePath)
     }
 }

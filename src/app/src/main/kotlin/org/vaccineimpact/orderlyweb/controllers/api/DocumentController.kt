@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
 import org.vaccineimpact.orderlyweb.models.Document
+import java.net.URL
 
 class DocumentController(context: ActionContext,
                          private val fileSystem: FileSystem,
@@ -26,6 +27,13 @@ class DocumentController(context: ActionContext,
 
     fun refreshDocuments(): String
     {
+        var url = context.postData<String>("url")
+        if (url.contains("dropbox"))
+        {
+            url = url.split("?")[0]
+            url = "$url?dl=1"
+        }
+        fileSystem.save(url, documentsRoot)
         val allDocs = repo.getAllFlat()
         val root = DocumentDetails("root", "root", documentsRoot, null, false, false)
         val unrefreshedDocs = allDocs.toMutableList()

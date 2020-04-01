@@ -1,10 +1,14 @@
 package org.vaccineimpact.orderlyweb
 
+import org.apache.commons.io.FileUtils
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.OutputStream
+import java.net.URL
+import java.nio.file.Files
 import java.util.zip.GZIPOutputStream
+
 
 interface FileSystem
 {
@@ -13,9 +17,10 @@ interface FileSystem
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     fun getAbsolutePath(sourcePath: String): String
     fun getAllChildren(sourceAbsolutePath: String, documentsRoot: String): List<DocumentDetails>
+    fun save(url: String, targetAbsolutePath: String)
 }
 
-class Files : FileSystem
+class Files(val zip: ZipClient = Zip()) : FileSystem
 {
 
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
@@ -61,6 +66,27 @@ class Files : FileSystem
         val children = source.list() ?: arrayOf()
         return children.map { File(source, it) }
                 .map { getDocumentDetails(it, documentsRoot) }
+    }
+
+    override fun save(url: String, targetAbsolutePath: String)
+    {
+        val tmpFile = Files.createTempFile("documents", ".zip").toFile()
+
+        FileUtils.copyURLToFile(
+                URL(url),
+                tmpFile,
+                60000,
+                60000)
+
+        val tmpDir = Files.createTempDirectory("documents").toFile()
+
+        zip.unzip(tmpFile, tmpDir)
+
+        val targetDir = File(targetAbsolutePath)
+        targetDir.mkdirs()
+
+        FileUtils.cleanDirectory(targetDir)
+        FileUtils.copyDirectory(tmpDir, targetDir)
     }
 
     private fun getDocumentDetails(file: File, documentsRoot: String): DocumentDetails
