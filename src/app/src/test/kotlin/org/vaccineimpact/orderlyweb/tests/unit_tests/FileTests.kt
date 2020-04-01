@@ -70,11 +70,13 @@ class FileTests
                 .isEqualTo(useResourceDir)
     }
 
-    @Ignore
     @Test
     fun `can save zip from url`() {
 
         val testDir = java.nio.file.Files.createTempDirectory("test").toFile()
-        Files().save("", testDir.absolutePath)
+        Files().save("https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip", testDir.absolutePath)
+        assertThat(File(testDir, "testdata/test.doc").isFile).isTrue()
+        assertThat(File(testDir, "testdata/subdir").isDirectory).isTrue()
+        assertThat(File(testDir, "testdata/subdir/test.csv").isFile).isTrue()
     }
 }

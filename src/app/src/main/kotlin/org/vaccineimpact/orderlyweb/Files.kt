@@ -9,7 +9,6 @@ import java.net.URL
 import java.nio.file.Files
 import java.util.zip.GZIPOutputStream
 
-
 interface FileSystem
 {
     fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)

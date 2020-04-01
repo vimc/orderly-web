@@ -60,7 +60,7 @@ class APIRequestHelper : RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return khttp.post(baseUrl + url, headers, json = body, timeout = 120.0)
+        return khttp.post(baseUrl + url, headers, json = body)
     }
 
     fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
