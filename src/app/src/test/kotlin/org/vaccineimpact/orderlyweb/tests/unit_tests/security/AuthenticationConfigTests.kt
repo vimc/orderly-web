@@ -6,6 +6,7 @@ import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.repositories.SettingsRepository
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.authentication.UnknownAuthenticationProvider
@@ -107,5 +108,17 @@ class AuthenticationConfigTests : TeamcityTests()
         val result = sut.getAuthenticationDirectClient()
 
         assertThat(result is GitHubDirectClient).isTrue()
+    }
+
+    @Test
+    fun `allowGuestUser returns expected result`()
+    {
+        val mockSettingsRepo = mock<SettingsRepository>{
+            on { getAuthAllowGuest() } doReturn true
+        }
+        val sut = OrderlyWebAuthenticationConfig(mock(), mockSettingsRepo)
+        val result = sut.allowGuestUser
+
+        assertThat(result).isTrue()
     }
 }

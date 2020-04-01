@@ -6,6 +6,8 @@ import org.pac4j.core.profile.CommonProfile
 import org.slf4j.LoggerFactory
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlySettingsRepository
+import org.vaccineimpact.orderlyweb.db.repositories.SettingsRepository
 import org.vaccineimpact.orderlyweb.security.clients.*
 
 interface AuthenticationConfig
@@ -16,12 +18,13 @@ interface AuthenticationConfig
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
 }
 
-class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig()) : AuthenticationConfig
+class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
+                                     val settingsRepo: SettingsRepository = OrderlySettingsRepository()) : AuthenticationConfig
 {
     override val allowGuestUser: Boolean
         get()
         {
-            return appConfig.getBool("auth.allow_guest")
+            return settingsRepo.getAuthAllowGuest()
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider
