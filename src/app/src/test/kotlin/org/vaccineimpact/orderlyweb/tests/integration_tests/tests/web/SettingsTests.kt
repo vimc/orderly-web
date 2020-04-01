@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 
 class SettingsTests : IntegrationTest()
 {
@@ -20,6 +21,13 @@ class SettingsTests : IntegrationTest()
     }
 
     @Test
+    fun `only user managers can set auth allow guest`()
+    {
+        assertWebUrlSecured(allowGuestUrl, setOf(ReifiedPermission("users.manage", Scope.Global())),
+                method = HttpMethod.post, contentType = ContentTypes.json)
+    }
+
+    @Test
     fun `can get auth allow guest`()
     {
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
@@ -29,5 +37,24 @@ class SettingsTests : IntegrationTest()
         val json = JsonLoader.fromString(response.text)
         AssertionsForClassTypes.assertThat(json["data"].toString())
                 .isEqualTo("false")
+    }
+
+    @Test
+    fun `can set auth allow guest`()
+    {
+        webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
+                setOf(ReifiedPermission("users.manage", Scope.Global())),
+                ContentTypes.json,
+                method = HttpMethod.post,
+                data = "true")
+
+
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
+                setOf(ReifiedPermission("users.manage", Scope.Global())),
+                ContentTypes.json)
+
+        val json = JsonLoader.fromString(response.text)
+        AssertionsForClassTypes.assertThat(json["data"].toString())
+                .isEqualTo("true")
     }
 }
