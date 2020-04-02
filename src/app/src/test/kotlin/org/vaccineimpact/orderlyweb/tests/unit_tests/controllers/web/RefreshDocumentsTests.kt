@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DocumentDetails
@@ -8,8 +9,12 @@ import org.vaccineimpact.orderlyweb.FileSystem
 import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
+import java.net.URL
+import java.util.zip.ZipException
 
 class RefreshDocumentsTests : ControllerTest()
 {
@@ -35,7 +40,7 @@ class RefreshDocumentsTests : ControllerTest()
     {
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
-        verify(mockFiles).save("http://url.com", "/documents")
+        verify(mockFiles).save(URL("http://url.com"), "/documents")
     }
 
     @Test
@@ -47,7 +52,7 @@ class RefreshDocumentsTests : ControllerTest()
 
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
-        verify(mockFiles).save("http://dropbox.com?dl=1", "/documents")
+        verify(mockFiles).save(URL("http://dropbox.com?dl=1"), "/documents")
     }
 
     @Test
@@ -129,5 +134,27 @@ class RefreshDocumentsTests : ControllerTest()
 
         verify(mockRepo, times(0)).add(any(), any(), any(), any(), any(), any())
 
+    }
+
+    @Test
+    fun `refreshDocuments throws error if url is invalid`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { postData<String>("url") } doReturn "badurl"
+        }
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        assertThatThrownBy { sut.refreshDocuments() }
+                .isInstanceOf(BadRequest::class.java)
+    }
+
+    @Test
+    fun `refreshDocuments throws error if zip is invalid`()
+    {
+        val mockFiles = mock<FileSystem> {
+            on { save(any(), any()) } doThrow ZipException()
+        }
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        assertThatThrownBy { sut.refreshDocuments() }
+                .isInstanceOf(InvalidOperationError::class.java)
     }
 }

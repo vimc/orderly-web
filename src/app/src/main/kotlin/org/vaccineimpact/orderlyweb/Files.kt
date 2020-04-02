@@ -8,6 +8,7 @@ import java.io.OutputStream
 import java.net.URL
 import java.nio.file.Files
 import java.util.zip.GZIPOutputStream
+import java.util.zip.ZipException
 
 interface FileSystem
 {
@@ -16,7 +17,8 @@ interface FileSystem
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     fun getAbsolutePath(sourcePath: String): String
     fun getAllChildren(sourceAbsolutePath: String, documentsRoot: String): List<DocumentDetails>
-    fun save(url: String, targetAbsolutePath: String)
+    @Throws(ZipException::class)
+    fun save(url: URL, targetAbsolutePath: String)
 }
 
 class Files(val zip: ZipClient = Zip()) : FileSystem
@@ -67,12 +69,12 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
                 .map { getDocumentDetails(it, documentsRoot) }
     }
 
-    override fun save(url: String, targetAbsolutePath: String)
+    override fun save(url: URL, targetAbsolutePath: String)
     {
         val tmpFile = Files.createTempFile("documents", ".zip").toFile()
 
         FileUtils.copyURLToFile(
-                URL(url),
+                url,
                 tmpFile)
 
         val tmpDir = Files.createTempDirectory("documents").toFile()
