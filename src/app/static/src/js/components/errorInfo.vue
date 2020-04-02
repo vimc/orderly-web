@@ -10,6 +10,8 @@
         props: ["apiError", "defaultMessage"],
         computed: {
             errorMessage: function () {
+                console.log(this.defaultMessage)
+                console.log(this.apiError)
                 if (this.apiError) {
                     return "Error: " + (this.apiErrorMessage(this.apiError.response) || this.defaultMessage);
                 } else {
