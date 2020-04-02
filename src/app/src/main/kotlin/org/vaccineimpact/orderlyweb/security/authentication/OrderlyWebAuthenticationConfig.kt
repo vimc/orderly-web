@@ -24,8 +24,7 @@ class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
     override val allowGuestUser: Boolean
         get()
         {
-            val result =  settingsRepo.getAuthAllowGuest()
-            return result
+            return settingsRepo.getAuthAllowGuest()
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider
