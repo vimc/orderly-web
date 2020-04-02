@@ -5,6 +5,7 @@ import ManageRoles from "../../../js/components/admin/manageRoles.vue";
 import ManageUserPermissions from "../../../js/components/admin/manageUserPermissions.vue";
 import AdminApp from "../../../js/components/admin/adminApp.vue";
 import Vue from "vue";
+import refreshDocuments from "../../../js/components/admin/refreshDocuments";
 
 describe("adminApp", () => {
     beforeEach(() => {
@@ -124,5 +125,10 @@ describe("adminApp", () => {
             });
         });
     });
+
+    it("includes refresh documents widget", () => {
+        const wrapper = shallowMount(AdminApp);
+        expect(wrapper.findAll(refreshDocuments).length).toBe(1);
+    })
     
 });
