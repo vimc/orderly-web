@@ -151,6 +151,7 @@ class RefreshDocumentsTests : ControllerTest()
     fun `refreshDocuments throws error if zip is invalid`()
     {
         val mockFiles = mock<FileSystem> {
+            on { getAbsolutePath("documents") } doReturn ("/documents")
             on { save(any(), any()) } doThrow ZipException()
         }
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
