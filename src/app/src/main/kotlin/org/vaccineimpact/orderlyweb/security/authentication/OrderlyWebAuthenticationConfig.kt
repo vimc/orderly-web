@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.security.clients.*
 interface AuthenticationConfig
 {
     val allowGuestUser: Boolean
+    val canAllowGuestUser: Boolean
     fun getConfiguredProvider(): AuthenticationProvider
     fun getAuthenticationIndirectClient(): IndirectClient<out Credentials, out CommonProfile>
     fun getAuthenticationDirectClient(): OrderlyWebTokenCredentialClient
@@ -24,7 +25,20 @@ class OrderlyWebAuthenticationConfig(val appConfig: Config = AppConfig(),
     override val allowGuestUser: Boolean
         get()
         {
-            return settingsRepo.getAuthAllowGuest()
+            return if (canAllowGuestUser)
+            {
+                settingsRepo.getAuthAllowGuest()
+            }
+            else
+            {
+                false
+            }
+        }
+
+    override val canAllowGuestUser: Boolean
+        get()
+        {
+            return appConfig.authorizationEnabled && (getConfiguredProvider() != AuthenticationProvider.Montagu)
         }
 
     override fun getConfiguredProvider(): AuthenticationProvider
