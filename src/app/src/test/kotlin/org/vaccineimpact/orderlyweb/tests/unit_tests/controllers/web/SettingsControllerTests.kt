@@ -17,15 +17,13 @@ class SettingsControllerTests : TeamcityTests()
 {
     val mockAuthConfig = mock<AuthenticationConfig>{
         on { canAllowGuestUser } doReturn true
+        on { allowGuestUser } doReturn true
     }
 
     @Test
-    fun `getAuthAllowGuest gets setting from database`()
+    fun `getAuthAllowGuest gets setting from config object`()
     {
-        val mockRepo = mock<SettingsRepository>{
-            on { getAuthAllowGuest() } doReturn true
-        }
-        val sut = SettingsController(mock(), mockRepo, mockAuthConfig)
+        val sut = SettingsController(mock(), mock(), mockAuthConfig)
 
         assertThat(sut.getAuthAllowGuest()).isTrue()
     }
@@ -45,7 +43,7 @@ class SettingsControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `throws InvalidOperationError if cannot allow guest user`()
+    fun `setAuthAllowGuest throws InvalidOperationError if cannot allow guest user`()
     {
         val cannotAllowConfig = mock<AuthenticationConfig>{
             on { canAllowGuestUser } doReturn false

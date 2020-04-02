@@ -16,7 +16,7 @@ class SettingsController(context: ActionContext,
 
     fun getAuthAllowGuest(): Boolean
     {
-        return repo.getAuthAllowGuest()
+        return authConfig.allowGuestUser
     }
 
     fun setAuthAllowGuest()
