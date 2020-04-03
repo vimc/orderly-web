@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.github.fge.jackson.JsonLoader
+import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.AssertionsForClassTypes
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -11,7 +12,7 @@ import spark.route.HttpMethod
 
 class SettingsTests : IntegrationTest()
 {
-    private val allowGuestUrl = "/settings/auth_allow_guest/"
+    private val allowGuestUrl = "/settings/auth-allow-guest/"
 
     @Test
     fun `only user managers can get auth allow guest`()
@@ -40,21 +41,18 @@ class SettingsTests : IntegrationTest()
     }
 
     @Test
-    fun `can set auth allow guest`()
+    fun `can get expected set auth allow guest response`()
     {
-        webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
                 setOf(ReifiedPermission("users.manage", Scope.Global())),
                 ContentTypes.json,
                 method = HttpMethod.post,
                 data = "true")
 
-
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
-                setOf(ReifiedPermission("users.manage", Scope.Global())),
-                ContentTypes.json)
-
+        assertThat(response.statusCode).isEqualTo(400)
         val json = JsonLoader.fromString(response.text)
-        AssertionsForClassTypes.assertThat(json["data"].toString())
-                .isEqualTo("true")
+        AssertionsForClassTypes.assertThat(json["errors"][0]["code"].asText())
+                .isEqualTo("invalid-operation-error")
+
     }
 }
