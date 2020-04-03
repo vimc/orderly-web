@@ -60,6 +60,20 @@ abstract class SeleniumTest : CustomConfigTests()
         driver.findElement(By.className("btn-xl")).click()
     }
 
+    protected fun loginWithGithub()
+    {
+        val loginField = driver.findElement(By.id("login_field"))
+        val passwordField = driver.findElement(By.id("password"))
+
+        val pw = "notarealpassword"
+        val username = "notarealuser"
+
+        loginField.sendKeys(username)
+        passwordField.sendKeys(pw)
+
+        driver.findElement(By.name("commit")).click()
+    }
+
     protected fun loginWithMontagu()
     {
         driver.get(RequestHelper.webBaseUrl)
