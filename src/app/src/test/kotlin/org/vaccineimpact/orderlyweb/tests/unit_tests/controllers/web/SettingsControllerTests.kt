@@ -38,7 +38,8 @@ class SettingsControllerTests : TeamcityTests()
         }
 
         val sut = SettingsController(mockContext, mockRepo, mockAuthConfig)
-        sut.setAuthAllowGuest()
+        val result = sut.setAuthAllowGuest()
+        assertThat(result).isEqualTo("OK")
 
         verify(mockRepo).setAuthAllowGuest(true)
     }
