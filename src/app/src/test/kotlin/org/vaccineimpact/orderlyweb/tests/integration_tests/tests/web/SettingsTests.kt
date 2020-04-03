@@ -25,7 +25,7 @@ class SettingsTests : IntegrationTest()
     fun `non-user managers cannot set auth allow guest`()
     {
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
-                setOf(ReifiedPermission()),
+                setOf(),
                 ContentTypes.json,
                 method = HttpMethod.post,
                 data = "true")
