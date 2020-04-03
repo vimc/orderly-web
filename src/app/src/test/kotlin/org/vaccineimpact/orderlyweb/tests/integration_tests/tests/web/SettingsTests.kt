@@ -22,10 +22,15 @@ class SettingsTests : IntegrationTest()
     }
 
     @Test
-    fun `only user managers can set auth allow guest`()
+    fun `non-user managers cannot set auth allow guest`()
     {
-        assertWebUrlSecured(allowGuestUrl, setOf(ReifiedPermission("users.manage", Scope.Global())),
-                method = HttpMethod.post, contentType = ContentTypes.json)
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(allowGuestUrl,
+                setOf(ReifiedPermission()),
+                ContentTypes.json,
+                method = HttpMethod.post,
+                data = "true")
+
+        assertThat(response.statusCode).isEqualTo(404)
     }
 
     @Test
