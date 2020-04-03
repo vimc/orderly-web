@@ -19,7 +19,7 @@ class SettingsController(context: ActionContext,
         return authConfig.allowGuestUser
     }
 
-    fun setAuthAllowGuest()
+    fun setAuthAllowGuest(): String
     {
         if (!authConfig.canAllowGuestUser) {
             throw InvalidOperationError("Cannot set auth-allow-guest with current application configuration")
@@ -27,5 +27,7 @@ class SettingsController(context: ActionContext,
 
         val value = context.getRequestBody().toBoolean()
         repo.setAuthAllowGuest(value)
+
+        return okayResponse()
     }
 }
