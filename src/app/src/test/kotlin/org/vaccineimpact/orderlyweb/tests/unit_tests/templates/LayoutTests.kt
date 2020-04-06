@@ -73,9 +73,8 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
-        val script = doc.getElementsByTag("script")[0].html().split("\n")
-        assertThat(script[0].trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
-        assertThat(script[1].trim()).isEqualTo("var currentUser = \"test.user\"")
+        val script = doc.getElementsByTag("script")[0].html()
+        assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
     }
 
     @Test

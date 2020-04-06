@@ -5,11 +5,9 @@ import ManageRoles from "../../../js/components/admin/manageRoles.vue";
 import ManageUserPermissions from "../../../js/components/admin/manageUserPermissions.vue";
 import AdminApp from "../../../js/components/admin/adminApp.vue";
 import Vue from "vue";
-import refreshDocuments from "../../../js/components/admin/refreshDocuments";
 
 describe("adminApp", () => {
     beforeEach(() => {
-        global.currentUser = "a@example.com";
         mockAxios.reset();
         mockAxios.onGet('http://app/roles/')
             .reply(200, {"data": mockRoles});
@@ -30,7 +28,7 @@ describe("adminApp", () => {
             display_name: "Some other name",
             email: "b@example.com",
             direct_permissions: [{
-                name: "documents.manage",
+                name: "reports.read",
                 scope_id: "",
                 scope_prefix: null
             }],
@@ -125,28 +123,6 @@ describe("adminApp", () => {
                 done();
             });
         });
-    });
-
-    it("includes refresh documents widget if the current user has permission", async () => {
-        global.currentUser = "b@example.com";
-        const wrapper = shallowMount(AdminApp);
-        wrapper.setData({
-            users: mockUsers
-        });
-
-        await Vue.nextTick();
-        expect(wrapper.findAll(refreshDocuments).length).toBe(1);
-    });
-
-    it("does not include refresh documents widget if the current user does not have permission", async () => {
-        global.currentUser = "a@example.com";
-        const wrapper = shallowMount(AdminApp);
-        wrapper.setData({
-            users: mockUsers
-        });
-
-        await Vue.nextTick();
-        expect(wrapper.findAll(refreshDocuments).length).toBe(0);
     });
     
 });

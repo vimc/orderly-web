@@ -3,6 +3,7 @@ import {shallowMount} from '@vue/test-utils';
 import DocumentList from "../../../js/components/documents/documentList.vue";
 import File from "../../../js/components/documents/file.vue";
 import WebLink from "../../../js/components/documents/webLink.vue";
+import refreshDocuments from "../../../js/components/admin/refreshDocuments";
 
 describe("document list", () => {
 
@@ -115,6 +116,27 @@ describe("document list", () => {
 
         expect(folderListItem.classes()).toContain("open");
         expect(folderListItem.find(DocumentList).isVisible()).toBe(true);
+    });
+
+
+    it("includes refresh documents widget if canManage is true", async () => {
+        const wrapper = getWrapper();
+        wrapper.setProps({
+            canManage: true
+        });
+
+        await Vue.nextTick();
+        expect(wrapper.findAll(refreshDocuments).length).toBe(1);
+    });
+
+    it("does not include refresh documents widget if canManage is false", async () => {
+        const wrapper = getWrapper();
+        wrapper.setProps({
+            canManage: false
+        });
+
+        await Vue.nextTick();
+        expect(wrapper.findAll(refreshDocuments).length).toBe(0);
     });
 
 });

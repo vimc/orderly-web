@@ -4,7 +4,8 @@ import documentList from "./components/documents/documentList.vue";
 new Vue({
     el: '#app',
     data: {
-        docs: docs
+        docs: docs,
+        canManage: canManage
     },
     components: {
         documentList: documentList

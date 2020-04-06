@@ -5,7 +5,7 @@
             <manage-roles :roles="roles"
                           @changed="getAll"></manage-roles>
         </div>
-        <div class="col-4">
+        <div class="col-4 offset-2">
             <label class="font-weight-bold d-block">Manage permissions</label>
             <label class="font-weight-bold d-block">For roles</label>
             <manage-role-permissions
@@ -14,10 +14,6 @@
             <hr/>
             <label class="font-weight-bold d-block">For individual users</label>
             <manage-user-permissions :all-users="users" @changed="getUsers"></manage-user-permissions>
-        </div>
-        <div class="col-4" v-if="canManageDocs">
-            <label class="font-weight-bold">Manage project docs</label>
-            <refresh-documents></refresh-documents>
         </div>
     </div>
 </template>
@@ -28,29 +24,17 @@
     import manageUserPermissions from "./manageUserPermissions";
     import {api} from "../../utils/api";
     import manageRolePermissions from "./manageRolePermissions";
-    import refreshDocuments from "./refreshDocuments";
 
     export default Vue.extend({
         components: {
             manageRoles: manageRoles,
             manageUserPermissions: manageUserPermissions,
-            manageRolePermissions: manageRolePermissions,
-            refreshDocuments: refreshDocuments
+            manageRolePermissions: manageRolePermissions
         },
         data() {
             return {
                 users: [],
                 roles: []
-            }
-        },
-        computed: {
-            canManageDocs() {
-                const user = this.users.find(u => u.email === currentUser);
-                if (user == null){
-                    return false;
-                }
-                const perms = user.direct_permissions.concat(user.role_permissions).map(p => p.name);
-                return perms.indexOf("documents.manage") > -1
             }
         },
         methods: {
