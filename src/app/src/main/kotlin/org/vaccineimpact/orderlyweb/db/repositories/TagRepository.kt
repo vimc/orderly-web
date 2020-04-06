@@ -2,18 +2,34 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+
 
 interface TagRepository
 {
+    fun getAllTags(): List<String>
     fun getReportTags(reportNames: List<String>): Map<String, List<String>>
     fun updateTags(reportName: String, versionId: String, tags: ReportVersionTags)
 }
 
 class OrderlyWebTagRepository : TagRepository
 {
+    override fun getAllTags(): List<String> {
+        JooqContext().use {
+            return it.dsl.select(
+                            ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .union(it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                            .from(ORDERLYWEB_REPORT_VERSION_TAG))
+                    .union(it.dsl.select(TAG.ID)
+                            .from(TAG))
+                    .fetchInto(String::class.java)
+                    .distinct()
+                    .sorted()
+        }
+    }
+
     override fun getReportTags(reportNames: List<String>): Map<String, List<String>>
     {
         JooqContext().use { ctx ->

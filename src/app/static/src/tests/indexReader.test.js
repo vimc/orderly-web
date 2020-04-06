@@ -13,12 +13,10 @@ describe("index page as report reader", () => {
         '            <th>\n' +
         '                <label for="version-filter">Version</label>\n' +
         '            </th>\n' +
-        '            <th><label for="status-filter">Status</label>\n' +
-        '            </th>\n' +
-        '            <th>' +
         '            <th>' +
         '               <label for="tags-filter">Tags</label>\n' +
         '            </th>\n' +
+        '             <th>' +
         '               <label for="parameter-values-filter">Parameter Values</label>\n' +
         '            </th>\n' +
         '            <th>\n' +
@@ -38,9 +36,11 @@ describe("index page as report reader", () => {
         '                       data-col="2"/>\n' +
         '            </th>\n' +
         '            <th>\n' +
-        '                <input class="form-control" type="text" id="tags-filter"\n' +
-        '                       data-role="standard-filter"\n' +
-        '                       data-col="3"/>\n' +
+        '                <select class="form-control" multiple="multiple" id="tags-filter"\n' +
+        '                       data-col="3">' +
+        '                               <option value="tag1">tag1</option>' +
+        '                               <option value="r1">r1</option>' +
+        '                </select>\n' +
         '            </th>\n' +
         '            <th>\n' +
         '                <input class="form-control" type="text" id="parameter-values-filter"\n' +
@@ -77,6 +77,11 @@ describe("index page as report reader", () => {
     }];
 
     initReportTable(false, reports, ["author", "requester"]);
+
+    beforeEach(() => {
+        const $filter = $('#tags-filter');
+        $filter.tokenize2().trigger("tokenize:clear");
+    });
 
     it("wires up name filter", () => {
 
@@ -125,13 +130,12 @@ describe("index page as report reader", () => {
         const $filter = $('#tags-filter');
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
 
-        $filter.val("r1");
-        $filter.keyup();
-
+        $filter.tokenize2().trigger("tokenize:tokens:add", ["r1", "r1"]);
+        expect($table.find("tbody tr td").length).toBe(1);
         expect($table.find("tbody tr td")[0].innerHTML).toBe("No matching records found");
 
-        $filter.val("tag1");
-        $filter.keyup();
+        $filter.tokenize2().trigger("tokenize:clear");
+        $filter.tokenize2().trigger("tokenize:tokens:add", ["tag1", "tag1", true]);
 
         expect($($table.find("tbody tr td")[1]).find("span")[0].innerHTML).toBe("r1 display");
     });

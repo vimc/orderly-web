@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
@@ -24,7 +23,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -39,7 +38,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders link to project docs if user has permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("View project documentation")
@@ -49,7 +48,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `does not render link to project docs if user does not have permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
@@ -58,7 +57,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders pinned reports correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(
                 PinnedReportViewModel("report1", "version1", "display1", "date1",
                         DownloadableFileViewModel("zip file 1", "zip file url 1", 1)),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
@@ -96,7 +95,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly when no pinned reports`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -119,7 +118,7 @@ class IndexTests : TeamcityTests()
                 breadcrumbs = listOf(IndexViewModel.breadcrumb)
         )
 
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(7)
@@ -137,7 +136,8 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"),true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(6)
@@ -155,16 +155,33 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf("author", "requester"), true,defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         assertThat(filters.select("th").count()).isEqualTo(7)
         assertThat(filters.select("th")[0].selectFirst("input").id()).isEqualTo("name-filter")
         assertThat(filters.select("th")[1].selectFirst("input").id()).isEqualTo("version-filter")
         assertThat(filters.select("th")[2].selectFirst("select").id()).isEqualTo("status-filter")
-        assertThat(filters.select("th")[3].selectFirst("input").id()).isEqualTo("tags-filter")
+        assertThat(filters.select("th")[3].selectFirst("select").id()).isEqualTo("tags-filter")
         assertThat(filters.select("th")[4].selectFirst("input").id()).isEqualTo("parameter-values-filter")
         assertThat(filters.select("th")[5].selectFirst("input").id()).isEqualTo("author-filter")
         assertThat(filters.select("th")[6].selectFirst("input").id()).isEqualTo("requester-filter")
+    }
+
+    @Test
+    fun `tag column has a multiselect filter`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, defaultModel)
+        val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
+
+        val filterSelect = filters.select("th")[3].selectFirst("select")
+        assertThat(filterSelect.id()).isEqualTo("tags-filter")
+        assertThat(filterSelect.attr("multiple")).isEqualTo("multiple")
+        assertThat(filterSelect.select("option").count()).isEqualTo(2)
+        assertThat(filterSelect.select("option").map { it.attr("value") }).containsExactly("a", "b")
+        assertThat(filterSelect.select("option").map { it.text() }).containsExactly("a", "b")
     }
 }
