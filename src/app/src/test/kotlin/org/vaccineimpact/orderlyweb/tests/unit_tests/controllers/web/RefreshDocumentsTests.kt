@@ -40,7 +40,7 @@ class RefreshDocumentsTests : ControllerTest()
     {
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
-        verify(mockFiles).save(URL("http://url.com"), "/documents")
+        verify(mockFiles).saveArchiveFromUrl(URL("http://url.com"), "/documents")
     }
 
     @Test
@@ -52,7 +52,7 @@ class RefreshDocumentsTests : ControllerTest()
 
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
-        verify(mockFiles).save(URL("http://dropbox.com?dl=1"), "/documents")
+        verify(mockFiles).saveArchiveFromUrl(URL("http://dropbox.com?dl=1"), "/documents")
     }
 
     @Test
@@ -152,7 +152,7 @@ class RefreshDocumentsTests : ControllerTest()
     {
         val mockFiles = mock<FileSystem> {
             on { getAbsolutePath("documents") } doReturn ("/documents")
-            on { save(any(), any()) } doThrow ZipException()
+            on { saveArchiveFromUrl(any(), any()) } doThrow ZipException()
         }
         val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         assertThatThrownBy { sut.refreshDocuments() }

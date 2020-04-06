@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
-import org.junit.Ignore
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.Files
@@ -75,7 +74,7 @@ class FileTests
     fun `can save zip from url`() {
 
         val testDir = java.nio.file.Files.createTempDirectory("test").toFile()
-        Files().save(URL("https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"), testDir.absolutePath)
+        Files().saveArchiveFromUrl(URL("https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"), testDir.absolutePath)
         assertThat(File(testDir, "testdata/test.doc").isFile).isTrue()
         assertThat(File(testDir, "testdata/subdir").isDirectory).isTrue()
         assertThat(File(testDir, "testdata/subdir/test.csv").isFile).isTrue()

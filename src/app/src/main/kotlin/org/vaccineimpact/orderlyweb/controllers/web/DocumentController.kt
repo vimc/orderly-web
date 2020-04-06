@@ -78,7 +78,7 @@ class DocumentController(context: ActionContext,
         }
         try
         {
-            files.save(URL, documentsRoot)
+            files.saveArchiveFromUrl(URL, documentsRoot)
         }
         catch (e: ZipException)
         {

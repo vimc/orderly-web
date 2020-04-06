@@ -17,7 +17,7 @@ interface FileSystem
     fun getAbsolutePath(sourcePath: String): String
     fun getAllChildren(sourceAbsolutePath: String, documentsRoot: String): List<DocumentDetails>
     @Throws(ZipException::class)
-    fun save(url: URL, targetAbsolutePath: String)
+    fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
 }
 
 class Files(val zip: ZipClient = Zip()) : FileSystem
@@ -68,7 +68,7 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
                 .map { getDocumentDetails(it, documentsRoot) }
     }
 
-    override fun save(url: URL, targetAbsolutePath: String)
+    override fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
     {
         val tmpFile = java.nio.file.Files.createTempFile("documents", ".zip").toFile()
 
