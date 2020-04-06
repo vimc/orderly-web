@@ -22,6 +22,10 @@ interface GuestUserManager
 class OrderlyWebGuestUserManager(
         private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : GuestUserManager
 {
+    companion object {
+        const val GUEST_USER = "guest"
+    }
+
     private val clientFinder = DefaultSecurityClientFinder()
     override fun updateProfile(context: SparkWebContext?,
                                config: Config?,
