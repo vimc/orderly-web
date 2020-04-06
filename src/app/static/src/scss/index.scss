@@ -1,10 +1,12 @@
 @import "style";
 @import "../../node_modules/datatables.net-bs4/css/dataTables.bootstrap4.css";
 @import "../../node_modules/treetables/tree-table.css";
+@import "../../node_modules/tokenize2/tokenize2.css";
 
 $border-color: rgba(0, 0, 0, 0.125);
 #reports-table {
   border: 1px solid $border-color;
+
   td {
     border-color: $border-color;
     overflow-wrap: break-word;
@@ -68,4 +70,24 @@ $border-color: rgba(0, 0, 0, 0.125);
   margin: 0 auto;
   width: 204px;
   display: block !important;
+}
+
+.tokens-container {
+  margin-bottom: 0 !important;
+  min-height: 38px !important;
+
+  .placeholder {
+    overflow: hidden !important;
+    height: 1.5em !important;
+    position: absolute !important;
+    padding-top: 1px !important;
+    padding-left: 7px !important;
+    color: $input-placeholder-color !important;
+  }
+
+  input, .token-search {
+    border: 0 !important;
+  }
+
+
 }
