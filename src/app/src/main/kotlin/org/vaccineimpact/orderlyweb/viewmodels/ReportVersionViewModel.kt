@@ -1,15 +1,15 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.isImage
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 
 
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
@@ -182,14 +182,14 @@ data class InputDataViewModel(val key: String,
 data class DownloadableFileViewModel(val name: String, val url: String, val size: Long?)
 {
     val formattedSize =
-        if (size != null)
-        {
-            byteCountToDisplaySize(size)
-        }
-        else
-        {
-            null
-        }
+            if (size != null)
+            {
+                byteCountToDisplaySize(size)
+            }
+            else
+            {
+                null
+            }
 }
 
 data class ChangelogViewModel(val date: String, val version: String, val entries: List<ChangelogItemViewModel>)
@@ -199,10 +199,21 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
         fun build(id: String, changelog: List<Changelog>): ChangelogViewModel
         {
             val date = ReportVersionPageViewModel.getDateStringFromVersionId(id)
-            val entries = changelog.map { ChangelogItemViewModel(it.label, it.value) }
+
+            val entries = changelog.map {
+                val cssClass = if (it.public)
+                {
+                    "public"
+                }
+                else
+                {
+                    "internal"
+                }
+                ChangelogItemViewModel(it.label, it.value, cssClass)
+            }
             return ChangelogViewModel(date, id, entries)
         }
     }
 }
 
-data class ChangelogItemViewModel(val label: String, val value: String)
+data class ChangelogItemViewModel(val label: String, val value: String, val cssClass: String)

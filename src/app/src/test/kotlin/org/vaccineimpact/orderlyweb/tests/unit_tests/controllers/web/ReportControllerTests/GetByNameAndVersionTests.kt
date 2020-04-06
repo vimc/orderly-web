@@ -28,10 +28,10 @@ class GetByNameAndVersionTests : TeamcityTests()
             listOf(),
             mapOf("p1" to "v1", "p2" to "v2"))
 
-    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true),
-            Changelog("20160103-143015-1234abcd", "public", "something public", true),
-            Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", true),
-            Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true))
+    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
+            Changelog("20160103-143015-1234abcd", "public", "something public", true, true),
+            Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", true, false),
+            Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true, true))
 
     private val mockActionContext = mock<ActionContext> {
         on { this.params(":name") } doReturn "r1"
@@ -135,18 +135,18 @@ class GetByNameAndVersionTests : TeamcityTests()
         assertThat(result.changelog.count()).isEqualTo(3)
         assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
         assertThat(result.changelog[0].version).isEqualTo("20180103-143015-1234abcd")
-        var expectedEntries = listOf(ChangelogItemViewModel("public", "something public in 2018"))
+        var expectedEntries = listOf(ChangelogItemViewModel("public", "something public in 2018", "public"))
         assertThat(result.changelog[0].entries).hasSameElementsAs(expectedEntries)
 
         assertThat(result.changelog[1].date).isEqualTo("Fri Jan 06 2017, 14:30")
         assertThat(result.changelog[1].version).isEqualTo("20170106-143015-1234abcd")
-        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal in 2017"))
+        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal in 2017", "internal"))
         assertThat(result.changelog[1].entries).hasSameElementsAs(expectedEntries)
 
         assertThat(result.changelog[2].date).isEqualTo("Sun Jan 03 2016, 14:30")
         assertThat(result.changelog[2].version).isEqualTo("20160103-143015-1234abcd")
-        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal"),
-                ChangelogItemViewModel("public", "something public"))
+        expectedEntries = listOf(ChangelogItemViewModel("internal", "something internal", "internal"),
+                ChangelogItemViewModel("public", "something public", "public"))
         assertThat(result.changelog[2].entries).hasSameElementsAs(expectedEntries)
     }
 

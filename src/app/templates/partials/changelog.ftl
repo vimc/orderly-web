@@ -15,8 +15,8 @@
         </td>
         <td>
             <#list item.entries as entry>
-                <div class="badge changelog-label badge-${entry.label}">${entry.label}</div>
-                <div class="changelog-item ${entry.label}">
+                <div class="badge changelog-label badge-${entry.cssClass}">${entry.label}</div>
+                <div class="changelog-item ${entry.cssClass}">
                     ${entry.value}
                 </div>
             </#list>
