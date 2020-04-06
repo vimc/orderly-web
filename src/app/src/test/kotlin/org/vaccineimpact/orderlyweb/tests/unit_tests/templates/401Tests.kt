@@ -29,6 +29,7 @@ class _401Tests: TeamcityTests()
             on { logo } doReturn "logo.png"
             on { montaguUrl } doReturn "http://test-montagu"
             on { appUrl } doReturn "http://app"
+            on { user } doReturn "someone@email.com"
 
         }
 
