@@ -20,11 +20,22 @@ class WebPermissionChecker(url: String,
     override fun requestWithPermissions(permissions: Set<ReifiedPermission>): Response
     {
         requestHelper.getWebPage("/logout")
-        return requestHelper.loginWithMontaguAndMakeRequest(
-                this.url,
-                permissions,
-                this.contentType,
-                this.method,
-                this.postData)
+        if (this.postData == null)
+        {
+            return requestHelper.loginWithMontaguAndMakeRequest(
+                    this.url,
+                    permissions,
+                    this.contentType,
+                    this.method)
+        }
+        else
+        {
+            return requestHelper.loginWithMontaguAndMakeRequest(
+                    this.url,
+                    permissions,
+                    this.contentType,
+                    this.method,
+                    this.postData)
+        }
     }
 }

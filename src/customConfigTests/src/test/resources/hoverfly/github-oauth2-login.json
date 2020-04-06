@@ -54,8 +54,8 @@
             "value" : "keep-alive"
           } ],
           "Referer" : [ {
-            "matcher" : "exact",
-            "value" : "http://localhost:8888/weblogin?requestedUrl=http%3A%2F%2Flocalhost%3A8888%2F"
+            "matcher" : "glob",
+            "value" : "http://localhost:8888/weblogin*"
           } ],
           "Upgrade-Insecure-Requests" : [ {
             "matcher" : "exact",

@@ -1,9 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.security
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import org.junit.Test
 import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.security.GuestUserManager
@@ -14,7 +11,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 class OrderlyWebSecurityLogicTests : TeamcityTests()
 {
     @Test
-    fun `guest user profile is managed if allow guest is true`()
+    fun `guest user profile is updated with expected param if allow guest is true`()
     {
         val guestUserManager = mock<GuestUserManager>()
         val config = mock<AuthenticationConfig> {
@@ -32,11 +29,11 @@ class OrderlyWebSecurityLogicTests : TeamcityTests()
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(guestUserManager, Times(1)).updateProfile(any(), any(), any())
+        verify(guestUserManager).updateProfile(eq(true), any(), any(), any())
     }
 
     @Test
-    fun `guest user profile is not managed if allow guest is false`()
+    fun `guest user profile is updated with expected param if allow guest is false`()
     {
         val guestUserManager = mock<GuestUserManager>()
         val config = mock<AuthenticationConfig> {
@@ -54,6 +51,6 @@ class OrderlyWebSecurityLogicTests : TeamcityTests()
             // because we're not testing that and the method we care about is called
             // before the exceptions get thrown
         }
-        verify(guestUserManager, Times(0)).updateProfile(any(), any(), any())
+        verify(guestUserManager).updateProfile(eq(false), any(), any(), any())
     }
 }

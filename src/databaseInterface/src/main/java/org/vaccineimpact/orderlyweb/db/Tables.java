@@ -24,6 +24,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportTag;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionTag;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebSettings;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupGlobalPermission;
@@ -147,6 +148,11 @@ public class Tables {
      * The table <code>orderlyweb_report_version_tag</code>.
      */
     public static final OrderlywebReportVersionTag ORDERLYWEB_REPORT_VERSION_TAG = org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG;
+
+    /**
+     * The table <code>orderlyweb_settings</code>.
+     */
+    public static final OrderlywebSettings ORDERLYWEB_SETTINGS = org.vaccineimpact.orderlyweb.db.tables.OrderlywebSettings.ORDERLYWEB_SETTINGS;
 
     /**
      * The table <code>orderlyweb_user</code>.
