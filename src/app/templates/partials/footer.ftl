@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="montaguUrl" type="String" -->
 <script>var appUrl="${appUrl}"</script>
+<script>var currentUser="${user}"</script>
 <script type="text/javascript" src="${appUrl}/js/lib/jquery.slim.min.js"></script>
 <#if scripts??>
     <@scripts></@scripts>

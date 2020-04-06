@@ -15,7 +15,7 @@
             <label class="font-weight-bold d-block">For individual users</label>
             <manage-user-permissions :all-users="users" @changed="getUsers"></manage-user-permissions>
         </div>
-        <div class="col-4">
+        <div class="col-4" v-if="canManageDocs">
             <label class="font-weight-bold">Manage project docs</label>
             <refresh-documents></refresh-documents>
         </div>
@@ -41,6 +41,16 @@
             return {
                 users: [],
                 roles: []
+            }
+        },
+        computed: {
+            canManageDocs() {
+                const user = this.users.find(u => u.email === currentUser);
+                if (user == null){
+                    return false;
+                }
+                const perms = user.direct_permissions.concat(user.role_permissions).map(p => p.name);
+                return perms.indexOf("documents.manage") > -1
             }
         },
         methods: {

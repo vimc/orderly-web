@@ -56,6 +56,7 @@ describe("refresh documents", () => {
         await Vue.nextTick();
 
         expect(wrapper.find(".text-success").text()).toBe("Documents have been updated! View");
+        expect(wrapper.find("a").attributes("href")).toBe("http://app/project-docs");
         expectButtonEnabledState(wrapper);
     });
 

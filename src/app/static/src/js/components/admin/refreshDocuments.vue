@@ -29,7 +29,7 @@
                 error: null,
                 disabled: false,
                 btnText: "Update",
-                projectDocsHref: appUrl + "project-docs"
+                projectDocsHref: appUrl + "/project-docs"
             }
         },
         methods: {
