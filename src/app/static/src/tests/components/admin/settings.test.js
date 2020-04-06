@@ -18,6 +18,8 @@ describe("settings", () => {
             expect(mockAxios.history.get.length).toBe(1);
             expect(mockAxios.history.get[0].url).toBe(url);
             expect(wrapper.find("input").attr("checked")).toBe(true);
+            expect(wrapper.find(ErrorInfo).props().error).toBe(null);
+            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
             done();
         });
     });
@@ -32,6 +34,8 @@ describe("settings", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
             expect(mockAxios.history.post[0].data).toBe(false);
+            expect(wrapper.find(ErrorInfo).props().error).toBe(null);
+            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
             done();
         });
     });
