@@ -6,7 +6,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.OutputStream
 import java.net.URL
-import java.nio.file.Files
 import java.util.zip.GZIPOutputStream
 
 interface FileSystem
@@ -69,13 +68,13 @@ class Files(val zip: ZipClient = Zip()) : FileSystem
 
     override fun save(url: String, targetAbsolutePath: String)
     {
-        val tmpFile = Files.createTempFile("documents", ".zip").toFile()
+        val tmpFile = java.nio.file.Files.createTempFile("documents", ".zip").toFile()
 
         FileUtils.copyURLToFile(
                 URL(url),
                 tmpFile)
 
-        val tmpDir = Files.createTempDirectory("documents").toFile()
+        val tmpDir = java.nio.file.Files.createTempDirectory("documents").toFile()
 
         zip.unzip(tmpFile, tmpDir)
 
