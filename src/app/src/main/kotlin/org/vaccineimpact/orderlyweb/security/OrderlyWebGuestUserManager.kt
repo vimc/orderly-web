@@ -25,7 +25,7 @@ class OrderlyWebGuestUserManager(
         private val authRepo: AuthorizationRepository = OrderlyAuthorizationRepository()) : GuestUserManager
 {
     companion object {
-        private const val GUEST_USER = "guest"
+        const val GUEST_USER = "guest"
     }
 
     private val clientFinder = DefaultSecurityClientFinder()

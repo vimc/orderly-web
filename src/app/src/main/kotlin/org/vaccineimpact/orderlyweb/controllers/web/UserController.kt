@@ -3,9 +3,11 @@ package org.vaccineimpact.orderlyweb.controllers.web
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.repositories.*
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.permissionFromPostData
 import org.vaccineimpact.orderlyweb.permissionFromRouteParams
+import org.vaccineimpact.orderlyweb.security.OrderlyWebGuestUserManager
 import org.vaccineimpact.orderlyweb.viewmodels.UserViewModel
 
 class UserController(context: ActionContext,
@@ -55,11 +57,18 @@ class UserController(context: ActionContext,
         return userRepo.getUserEmails()
     }
 
-
     fun addPermission(): String
     {
         val userId = userId()
         val permission = context.permissionFromPostData()
+
+        val allowedGuestPerms = listOf("reports.read", "documents.read")
+
+        if ((userId == OrderlyWebGuestUserManager.GUEST_USER) && (!allowedGuestPerms.contains(permission.name)))
+        {
+            throw BadRequest("Cannot grant ${permission.name} permission to guest user")
+        }
+
         authRepo.ensureUserGroupHasPermission(userId, permission)
 
         return okayResponse()
