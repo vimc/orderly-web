@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.mockito.ArgumentCaptor
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -9,6 +10,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.UserController
 import org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.RoleRepository
 import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -196,12 +198,25 @@ class UserControllerTests : TeamcityTests()
     @Test
     fun `adds permission to user`()
     {
+        assertAddsPermissionToUser("user1@example.com", "test.permission", "report", "report1")
+
+    }
+
+    @Test
+    fun `can add allowed permissions to guest user`()
+    {
+        assertAddsPermissionToUser("guest", "reports.read", "report", "report1")
+        assertAddsPermissionToUser("guest", "documents.read", "", "")
+    }
+
+    private fun assertAddsPermissionToUser(user: String, permissionName: String, scopePrefix: String, scopeId: String)
+    {
         val actionContext = mock<ActionContext> {
-            on { this.params(":user-id") } doReturn "user1@example.com"
+            on { this.params(":user-id") } doReturn user
             on { this.postData<String>() } doReturn mapOf(
-                    "name" to "test.permission",
-                    "scope_prefix" to "report",
-                    "scope_id" to "report1"
+                    "name" to permissionName,
+                    "scope_prefix" to scopePrefix,
+                    "scope_id" to scopeId
             )
         }
 
@@ -213,11 +228,38 @@ class UserControllerTests : TeamcityTests()
         assertThat(result).isEqualTo("OK")
 
         val permissionCaptor: ArgumentCaptor<ReifiedPermission> = ArgumentCaptor.forClass(ReifiedPermission::class.java)
-        verify(authRepo).ensureUserGroupHasPermission(eq("user1@example.com"), capture(permissionCaptor))
+        verify(authRepo).ensureUserGroupHasPermission(eq(user), capture(permissionCaptor))
 
         val permission = permissionCaptor.value
-        assertThat(permission.name).isEqualTo("test.permission")
-        assertThat(permission.scope.value).isEqualTo("report:report1")
+        assertThat(permission.name).isEqualTo(permissionName)
+        if (scopePrefix == "")
+        {
+            assertThat(permission.scope.value).isEqualTo("*")
+        }
+        else
+        {
+            assertThat(permission.scope.value).isEqualTo("$scopePrefix:$scopeId")
+        }
+
+    }
+
+    @Test
+    fun `throws exception when adding non-allowed permissions to guest user`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":user-id") } doReturn "guest"
+            on { this.postData<String>() } doReturn mapOf(
+                    "name" to "reports.review",
+                    "scope_prefix" to "report",
+                    "scope_id" to "report1"
+            )
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+
+        val sut = UserController(actionContext, mock(), authRepo, mock())
+        assertThatThrownBy{ sut.addPermission() }.isInstanceOf(BadRequest::class.java)
+                .hasMessageContaining("Cannot grant reports.review permission to guest user")
     }
 
     @Test

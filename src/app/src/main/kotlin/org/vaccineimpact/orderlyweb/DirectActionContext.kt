@@ -111,6 +111,11 @@ open class DirectActionContext(private val context: SparkWebContext,
     {
         return postData<T>()[key] ?: throw MissingParameterError(key);
     }
+
+    override fun getRequestBody(): String
+    {
+        return request.body()
+    }
 }
 
 fun ActionContext.permissionFromPostData(): ReifiedPermission

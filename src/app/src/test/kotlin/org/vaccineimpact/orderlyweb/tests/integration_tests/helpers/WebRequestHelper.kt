@@ -33,10 +33,20 @@ class WebRequestHelper : RequestHelper()
                                        withPermissions: Set<ReifiedPermission>,
                                        contentType: String = "text/html",
                                        method: HttpMethod = HttpMethod.get,
-                                       postData: Map<String, Any>? = null): Response
+                                       postData: Map<String, Any> ): Response
     {
         val sessionCookie = webLoginWithMontagu(withPermissions)
         return requestWithSessionCookie(url, sessionCookie, contentType, method, postData)
+    }
+
+    fun loginWithMontaguAndMakeRequest(url: String,
+                                       withPermissions: Set<ReifiedPermission>,
+                                       contentType: String = "text/html",
+                                       method: HttpMethod = HttpMethod.get,
+                                       data: String? = null): Response
+    {
+        val sessionCookie = webLoginWithMontagu(withPermissions)
+        return requestWithSessionCookie(url, sessionCookie, contentType, method, data)
     }
 
     fun getWithMontaguCookie(
@@ -67,7 +77,16 @@ class WebRequestHelper : RequestHelper()
                                  cookies: String,
                                  contentType: String = "text/html",
                                  method: HttpMethod = HttpMethod.get,
-                                 postData: Map<String, Any>? = null): Response
+                                 postData: Map<String, Any>): Response
+    {
+        return requestWithSessionCookie(url, cookies, contentType, method, postData.toJson())
+    }
+
+    fun requestWithSessionCookie(url: String,
+                                 cookies: String,
+                                 contentType: String = "text/html",
+                                 method: HttpMethod = HttpMethod.get,
+                                 data: String? = null): Response
     {
         val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
         val fullUrl = if (url.contains("http"))
@@ -81,7 +100,7 @@ class WebRequestHelper : RequestHelper()
         return when (method)
         {
             HttpMethod.get -> khttp.get(fullUrl, headers)
-            HttpMethod.post -> khttp.post(fullUrl, headers, data = postData?.toJson())
+            HttpMethod.post -> khttp.post(fullUrl, headers, data = data)
             HttpMethod.delete -> khttp.delete(fullUrl, headers)
             else -> throw IllegalArgumentException("Method not supported")
         }

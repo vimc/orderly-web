@@ -54,7 +54,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "GithubIndirectClient")
+        sut.updateProfile(true, mockContext, config, "GithubIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.get())
@@ -68,7 +68,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "MontaguIndirectClient")
+        sut.updateProfile(true, mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.get())
@@ -82,7 +82,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
+        sut.updateProfile(true, mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.get())
@@ -96,7 +96,21 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "GithubIndirectClient")
+        sut.updateProfile(true, mockContext, config, "GithubIndirectClient")
+
+        val profile = ProfileManager<CommonProfile>(mockContext).get(true)
+        assertThat(profile.isPresent)
+                .isFalse()
+    }
+
+    @Test
+    fun `guest user profile is wiped if guest user is not allowed`()
+    {
+        val mockContext = setUpMockSession(guestUser)
+
+        val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
+        val sut = OrderlyWebGuestUserManager()
+        sut.updateProfile(false, mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.isPresent)
@@ -110,7 +124,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "MontaguIndirectClient")
+        sut.updateProfile(true, mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.isPresent)
@@ -124,7 +138,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(GithubIndirectClient("", ""), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "GithubIndirectClient")
+        sut.updateProfile(true, mockContext, config, "GithubIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.isPresent)
@@ -138,7 +152,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(MontaguIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager()
-        sut.updateProfile(mockContext, config, "MontaguIndirectClient")
+        sut.updateProfile(true, mockContext, config, "MontaguIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true)
         assertThat(profile.isPresent)
@@ -152,7 +166,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager(authRepo)
-        sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
+        sut.updateProfile(true, mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true).get()
         assertThat(profile.id).isEqualTo("guest")
@@ -167,7 +181,7 @@ class GuestUserManagerTests : TeamcityTests()
 
         val config = WebSecurityConfigFactory(OrderlyWebIndirectClient(), setOf()).build()
         val sut = OrderlyWebGuestUserManager(authRepo)
-        sut.updateProfile(mockContext, config, "OrderlyWebIndirectClient")
+        sut.updateProfile(true, mockContext, config, "OrderlyWebIndirectClient")
 
         val profile = ProfileManager<CommonProfile>(mockContext).get(true).get()
         assertThat(profile.id).isEqualTo("guest")
