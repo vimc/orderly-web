@@ -6,10 +6,15 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyDocumentRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.Document
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
+import java.net.MalformedURLException
+import java.net.URL
+import java.util.zip.ZipException
 
 class DocumentController(context: ActionContext,
                          private val config: Config,
@@ -63,7 +68,22 @@ class DocumentController(context: ActionContext,
             url = url.split("?")[0]
             url = "$url?dl=1"
         }
-        files.save(url, documentsRoot)
+        val URL = try
+        {
+            URL(url)
+        }
+        catch (e: MalformedURLException)
+        {
+            throw BadRequest("$url is not a valid url")
+        }
+        try
+        {
+            files.saveArchiveFromUrl(URL, documentsRoot)
+        }
+        catch (e: ZipException)
+        {
+            throw InvalidOperationError("Downloaded file is not a valid zip file")
+        }
         val allDocs = docsRepo.getAllFlat()
         val root = DocumentDetails("root", "root", documentsRoot, null, false, false)
         val unrefreshedDocs = allDocs.toMutableList()
