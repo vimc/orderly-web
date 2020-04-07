@@ -34,7 +34,7 @@ class DocumentsPageTests : TeamcityTests()
         val doc = template.jsoupDocFor(viewModel)
 
         val app = doc.selectFirst("#app")
-        assertThat(app.html()).isEqualTo("<document-list :docs=\"docs\" :can-manage=\"canManage\"></document-list>")
+        assertThat(app.html()).isEqualTo("<document-page :can-manage=\"canManage\"></document-page>")
     }
 
     @Test
