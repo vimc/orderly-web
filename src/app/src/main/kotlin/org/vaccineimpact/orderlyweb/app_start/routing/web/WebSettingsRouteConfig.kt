@@ -14,7 +14,7 @@ object WebSettingsRouteConfig : RouteConfig
                             .json()
                             .secure(usersManage)
                             .transform(),
-                    WebEndpoint("/settings/auth-allow-guest",
+                    WebEndpoint("/settings/auth-allow-guest/",
                             SettingsController::class, "setAuthAllowGuest",
                             method = HttpMethod.post)
                             .json()

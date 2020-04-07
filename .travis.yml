@@ -44,7 +44,7 @@ matrix:
       - ./src/gradlew -p src :customConfigTests:copyDemo
       script:
       - ./src/gradlew -p src :app:test
-      - ./src/gradlew -p src :customConfigTests:test
+      - ./src/gradlew -p src :customConfigTests:test --stacktrace
       after_success:
       - ./src/gradlew -p src :app:jacocoTestReport
       - codecov -f src/app/coverage/test/*.xml

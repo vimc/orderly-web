@@ -104,6 +104,7 @@ class GuestUserTests: SeleniumTest() {
         assertThat(driver.findElements(By.className("login")).count()).isEqualTo(0)
         assertThat(driver.findElements(By.className("logout")).count()).isEqualTo(1)
         assertThat(driver.findElement(By.className("logout")).text).isEqualTo("Logged in as notarealemail | Logout")
+        println("Saw expected response for logged in user")
 
         // user should see reports in report table
         rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
