@@ -20,3 +20,17 @@ constructor(val name: String,
             val customFields: Map<String, String?>,
             val parameterValues: Map<String, String>,
             val tags: List<String>)
+
+data class ReportVersionWithChangelog
+@ConstructorProperties("name", "id", "date", "parameterValues", "changelogs")
+constructor(val name: String,
+            val id: String,
+            val date: Instant,
+            val parameterValues: Map<String, String>,
+            val changelogs: List<Changelog>)
+
+data class ReportWithPublishStatus
+@ConstructorProperties("name", "displayname", "hasBeenPublished")
+constructor(val name: String,
+            val displayName: String?,
+            val hasBeenPublished: Boolean)

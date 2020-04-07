@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
@@ -37,5 +38,10 @@ class ReportController(context: ActionContext,
         val versionTags = context.postData<List<String>>("version_tags")
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
         return okayResponse()
+    }
+
+    fun getUnpublished(): List<ReportWithDraftsViewModel>
+    {
+
     }
 }
