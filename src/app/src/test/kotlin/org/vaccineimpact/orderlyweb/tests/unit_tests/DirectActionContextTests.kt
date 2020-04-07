@@ -69,6 +69,14 @@ class DirectActionContextTests : TeamcityTests()
     }
 
     @Test
+    fun `can get request body`()
+    {
+        val sut = DirectActionContext(mockPostSparkContext)
+        val result = sut.getRequestBody()
+        assert(result.equals("{ \"some\" : \"value\" }"))
+    }
+
+    @Test
     fun `MissingParameterError thrown if get nonexistent value from request body`()
     {
         val sut = DirectActionContext(mockPostSparkContext)

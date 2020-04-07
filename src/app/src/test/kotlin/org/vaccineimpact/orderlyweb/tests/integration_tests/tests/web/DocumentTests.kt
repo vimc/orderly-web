@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import khttp.post
+import com.github.salomonbrys.kotson.get
+import com.github.salomonbrys.kotson.toJsonArray
 import org.assertj.core.api.Assertions
+import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -10,6 +12,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.insertDocument
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 import java.io.File
@@ -76,7 +79,7 @@ class DocumentTests : IntegrationTest()
                 sessionCookie,
                 method = HttpMethod.post,
                 contentType = ContentTypes.json,
-                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"))
+                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/master/testdata/test.zip"))
 
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 
@@ -111,5 +114,29 @@ class DocumentTests : IntegrationTest()
             Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata")
             Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
         }
+    }
+
+    @Test
+    fun `only document readers can get all documents`()
+    {
+        val url = "/documents/"
+        assertWebUrlSecured(url, readDocuments)
+    }
+
+    @Test
+    fun `document readers can get all documents`()
+    {
+        JooqContext().use {
+            insertDocument(it, "/path", 1, null)
+        }
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest("/documents", readDocuments, ContentTypes.json)
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val data = JSONValidator.getData(response.text)
+        assertThat(data.isArray).isTrue()
+        val doc = data[0]
+        assertThat(doc.get("path").textValue()).isEqualTo("/path")
+
     }
 }

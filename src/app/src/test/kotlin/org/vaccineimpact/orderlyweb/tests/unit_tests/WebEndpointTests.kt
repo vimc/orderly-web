@@ -9,24 +9,47 @@ import org.pac4j.core.authorization.authorizer.Authorizer
 import org.pac4j.core.config.Config
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SecurityFilter
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.SparkWrapper
-import org.vaccineimpact.orderlyweb.WebEndpoint
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
-import org.vaccineimpact.orderlyweb.post
-import org.vaccineimpact.orderlyweb.secure
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.transform
+import spark.Filter
 import spark.route.HttpMethod
 
 class WebEndpointTests : TeamcityTests()
 {
-
     private class TestController(actionContext: ActionContext) : Controller(actionContext)
+
+    @Test
+    fun `adds headers filter if content type is json`()
+    {
+        val mockSpark = mock<SparkWrapper>()
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
+                contentType = ContentTypes.json, spark = mockSpark)
+
+        sut.additionalSetup("/test")
+
+        val filterArg : ArgumentCaptor<Filter> = ArgumentCaptor.forClass(Filter::class.java)
+        verify(mockSpark).after(eq("/test"), eq(ContentTypes.json), capture(filterArg))
+        val filter = filterArg.value
+        assertThat(filter is DefaultHeadersFilter).isTrue()
+        assertThat((filter as DefaultHeadersFilter).contentType).isEqualTo("application/json; charset=utf-8")
+    }
+
+    @Test
+    fun `does not add headers filter if content type is not json`()
+    {
+        val mockSpark = mock<SparkWrapper>()
+        val sut = WebEndpoint(urlFragment = "/test", actionName = "test", controller = TestController::class,
+                contentType = ContentTypes.binarydata, spark = mockSpark)
+
+        sut.additionalSetup("/test")
+
+        verify(mockSpark, times(0)).after(any(), any(), any())
+    }
 
     @Test
     fun `adds security filter if secure, external auth`()

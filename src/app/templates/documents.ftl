@@ -4,7 +4,7 @@
     </#macro>
 
     <div id="app">
-        <document-list :docs="docs" :can-manage="canManage"></document-list>
+        <document-page :can-manage="canManage"></document-page>
     </div>
 
     <#macro scripts>

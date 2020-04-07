@@ -1,6 +1,6 @@
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
-import refreshDocuments from "../../../js/components/admin/refreshDocuments";
+import refreshDocuments from "../../../js/components/documents/refreshDocuments";
 import {mockAxios} from "../../mockAxios";
 
 describe("refresh documents", () => {
@@ -55,9 +55,9 @@ describe("refresh documents", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(".text-success").text()).toBe("Documents have been updated! View");
-        expect(wrapper.find("a").attributes("href")).toBe("http://app/project-docs");
+        expect(wrapper.find(".text-success").text()).toBe("Documents have been updated!");
         expectButtonEnabledState(wrapper);
+        expect(wrapper.emitted().refreshed.length).toBe(1);
     });
 
     it("shows error if refreshing fails", async () => {

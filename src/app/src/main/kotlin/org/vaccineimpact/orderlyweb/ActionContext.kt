@@ -31,6 +31,7 @@ interface ActionContext
     fun getSparkResponse(): Response
     fun setStatusCode(statusCode: Int)
     fun<T> postData(): Map<String, T>
+    fun getRequestBody(): String
 
     @Throws(MissingParameterError::class)
     fun<T> postData(key: String): T

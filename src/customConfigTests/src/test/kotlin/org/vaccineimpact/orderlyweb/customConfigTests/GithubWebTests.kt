@@ -17,16 +17,7 @@ class GithubWebTests : SeleniumTest()
 
         clickOnLandingPageLink()
 
-        val loginField = driver.findElement(By.id("login_field"))
-        val passwordField = driver.findElement(By.id("password"))
-
-        val pw = "notarealpassword"
-        val username = "notarealuser"
-
-        loginField.sendKeys(username)
-        passwordField.sendKeys(pw)
-
-        driver.findElement(By.name("commit")).click()
+        loginWithGithub()
     }
 
     @Test

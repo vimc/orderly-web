@@ -63,15 +63,20 @@ data class DocumentsViewModel(@Serialise("documentList")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel
         {
-            val docVms = docs
-                    .map { DocumentViewModel.build(it) }
-                    .filterNotNull()
-                    .sortedBy { it.displayName }
-                    .sortedBy { it.isFile }
+            val docVms = buildDocs(docs)
 
             return DocumentsViewModel(docVms,
                     context.hasPermission(ReifiedPermission("documents.manage", Scope.Global())),
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+        }
+
+        fun buildDocs(docs: List<Document>): List<DocumentViewModel>
+        {
+            return docs
+                    .map { DocumentViewModel.build(it) }
+                    .filterNotNull()
+                    .sortedBy { it.displayName }
+                    .sortedBy { it.isFile }
         }
     }
 }
