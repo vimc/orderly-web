@@ -30,8 +30,17 @@ constructor(override val name: String,
             override val latestVersion: String,
             override val description: String?) : Version
 
-data class ReportVersion(
-        val basicReportVersion: BasicReportVersion,
+data class ReportVersion(@Transient val basicReportVersion: BasicReportVersion,
         val customFields: Map<String, String?>,
         val parameterValues: Map<String, String>,
         val tags: List<String>) : Version by basicReportVersion
+{
+    // we have to declare these overrides so that this gets serialised as a flat object
+    override val date: Instant = basicReportVersion.date
+    override val description: String? = basicReportVersion.description
+    override val displayName: String? = basicReportVersion.displayName
+    override val id: String = basicReportVersion.id
+    override val name: String = basicReportVersion.name
+    override val latestVersion: String = basicReportVersion.latestVersion
+    override val published: Boolean = basicReportVersion.published
+}

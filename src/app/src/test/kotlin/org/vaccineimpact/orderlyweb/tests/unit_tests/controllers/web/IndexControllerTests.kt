@@ -122,8 +122,8 @@ class IndexControllerTests : TeamcityTests()
     @Test
     fun `builds pinned versions`()
     {
-        val r1v1 = Report("r1", "r1", "20190706-143015-1234abcd")
-        val r1v2 = Report("r2", "r2 display name", "20190806-143015-1234abcd")
+        val r1v1 = Report("r1", "r1", "20190607-143015-1234abcd")
+        val r1v2 = Report("r2", "r2 display name", "20190608-143015-1234abcd")
 
         val fakeReports = listOf(r1v1, r1v2)
 
@@ -135,10 +135,23 @@ class IndexControllerTests : TeamcityTests()
         val result = sut.index().pinnedReports
 
         val expected = listOf(
-                PinnedReportViewModel("r1", "v1", "r1", "Fri Jun 07 2019",
-                        DownloadableFileViewModel("r1-v1.zip", "http://localhost:8888/report/r1/version/v1/all/", null)),
-                PinnedReportViewModel("r2", "v2", "r2 display name", "Sat Jun 08 2019",
-                        DownloadableFileViewModel("r2-v2.zip", "http://localhost:8888/report/r2/version/v2/all/", null))
+                PinnedReportViewModel(
+                        "r1",
+                        "20190607-143015-1234abcd",
+                        "r1", "Fri Jun 07 2019",
+                        DownloadableFileViewModel(
+                                "r1-20190607-143015-1234abcd.zip",
+                                "http://localhost:8888/report/r1/version/20190607-143015-1234abcd/all/",
+                                null)),
+                PinnedReportViewModel(
+                        "r2",
+                        "20190608-143015-1234abcd",
+                        "r2 display name",
+                        "Sat Jun 08 2019",
+                        DownloadableFileViewModel(
+                                "r2-20190608-143015-1234abcd.zip",
+                                "http://localhost:8888/report/r2/version/20190608-143015-1234abcd/all/",
+                                null))
         )
 
         assertThat(result.count()).isEqualTo(2)

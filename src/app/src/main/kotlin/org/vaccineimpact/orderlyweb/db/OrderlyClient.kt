@@ -42,5 +42,6 @@ interface OrderlyClient
 
     fun getReportVersionTags(name: String, version: String): ReportVersionTags
 
+    @Throws(UnknownObjectError::class)
     fun getReportVersion(name: String, version: String): BasicReportVersion
 }

@@ -48,17 +48,19 @@ class Orderly(val isReviewer: Boolean,
 
             val versions = it.dsl
                     .select(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING,
-                            ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT,
+                            ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.`as`("name"),
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID.`as`("latestVersion"))
                     .fromJoinPath(ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
                     .join(REPORT_VERSION)
-                    .on(REPORT_VERSION.REPORT.eq(REPORT.NAME))
+                    .on(REPORT_VERSION.REPORT.eq(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
+                    .where(shouldIncludeReportVersion)
                     .fetch()
 
-            return versions.groupBy { it[REPORT_VERSION.REPORT] }.map {
-                it.value.minBy { it[REPORT_VERSION.ID] }!!.into(Report::class.java)
-            }
+            return versions.groupBy { r -> r["name"] }.map {
+                it.value.maxBy { r -> r["latestVersion"] as String }
+            }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
+                    .map { r -> r!!.into(Report::class.java)}
         }
     }
 
