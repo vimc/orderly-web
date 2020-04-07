@@ -6,21 +6,6 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 
 interface OrderlyClient
 {
-    fun getAllReports(): List<Report>
-
-    fun getAllReportVersions(): List<ReportVersion>
-
-    fun getGlobalPinnedReports(): List<ReportVersion>
-
-    @Throws(UnknownObjectError::class)
-    fun getReportsByName(name: String): List<String>
-
-    @Throws(UnknownObjectError::class)
-    fun checkVersionExistsForReport(name: String, version: String)
-
-    @Throws(UnknownObjectError::class)
-    fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
-
     @Throws(UnknownObjectError::class)
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
 
@@ -41,8 +26,17 @@ interface OrderlyClient
 
     fun getReadme(name: String, version: String): Map<String, String>
 
-    fun togglePublishStatus(name: String, version: String): Boolean
-
     fun getReportVersionTags(name: String, version: String): ReportVersionTags
 
+    fun getDataInfo(name: String, version: String): List<DataInfo>
+
+    fun getResourceFiles(name: String, version: String): List<FileInfo>
+
+    fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+
+    fun getParameters(version: String): Map<String, String>
+
+    fun getOrderlyTags(versionIds: List<String>): Map<String, List<String>>
+    fun getReportTagsForVersions(versionIds: List<String>): Map<String, List<String>>
+    fun getVersionTags(versionIds: List<String>): Map<String, List<String>>
 }

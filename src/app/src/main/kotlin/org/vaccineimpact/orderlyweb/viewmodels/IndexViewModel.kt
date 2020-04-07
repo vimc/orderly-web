@@ -3,6 +3,8 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.BasicReportVersion
+import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -34,7 +36,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
         fun build(reports: List<ReportVersion>,
                   reportTags: Map<String, List<String>>,
                   allTags: List<String>,
-                  pinnedReports: List<ReportVersion>,
+                  pinnedReports: List<Report>,
                   context: ActionContext): IndexViewModel
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
@@ -76,6 +78,20 @@ private object IndexViewDateFormatter
     fun format(date: Instant): String
     {
         return formatter.format(LocalDateTime.ofInstant(date, ZoneId.of("UTC")))
+    }
+
+    fun format(id: String): String
+    {
+        return formatter.format(getDateStringFromVersionId(id))
+    }
+
+    private fun getDateStringFromVersionId(id: String): LocalDateTime
+    {
+        val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
+        val match = regex.matchEntire(id)
+                ?.groupValues ?: throw Exception("Badly formatted report id $id")
+
+        return LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
     }
 }
 
@@ -144,15 +160,15 @@ data class PinnedReportViewModel(val name: String,
 {
     companion object
     {
-        fun buildList(versions: List<ReportVersion>): List<PinnedReportViewModel>
+        fun buildList(versions: List<Report>): List<PinnedReportViewModel>
         {
             return versions.map {
 
-                val reportFileViewModelBuilder = ReportFileViewModelBuilder(it.name, it.id)
+                val reportFileViewModelBuilder = ReportFileViewModelBuilder(it.name, it.latestVersion)
                 PinnedReportViewModel(it.name,
-                        it.id,
+                        it.latestVersion,
                         it.displayName ?: it.name,
-                        IndexViewDateFormatter.format(it.date),
+                        IndexViewDateFormatter.format(it.latestVersion),
                         reportFileViewModelBuilder.buildZipFileViewModel())
             }
         }

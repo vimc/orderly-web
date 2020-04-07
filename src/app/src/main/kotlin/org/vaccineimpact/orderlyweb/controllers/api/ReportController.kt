@@ -9,19 +9,22 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.Orderly
-import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 
 class ReportController(context: ActionContext,
+                       private val reportRepository: ReportRepository,
+                       private val reportLogic: ReportLogic,
                        private val orderly: OrderlyClient,
                        private val orderlyServerAPI: OrderlyServerAPI,
                        config: Config) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(context,
+                    OrderlyReportRepository(context),
+                    OrderlyReportLogic(context),
                     Orderly(context),
                     OrderlyServer(AppConfig(), KHttpClient()),
                     AppConfig())
@@ -37,7 +40,7 @@ class ReportController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        return orderly.togglePublishStatus(name, version)
+        return reportRepository.togglePublishStatus(name, version)
     }
 
     fun status(): String
@@ -54,7 +57,7 @@ class ReportController(context: ActionContext,
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
-        return orderly.getAllReports()
+        return reportRepository.getAllReports()
     }
 
     fun getAllVersions(): List<ReportVersion>
@@ -64,13 +67,13 @@ class ReportController(context: ActionContext,
             throw MissingRequiredPermissionError(PermissionSet("*/reports.read"))
         }
 
-        return orderly.getAllReportVersions()
+        return reportLogic.getAllReportVersions()
     }
 
     fun getVersionsByName(): List<String>
     {
         val name = context.params(":name")
-        return orderly.getReportsByName(name)
+        return reportRepository.getReportsByName(name)
     }
 
 

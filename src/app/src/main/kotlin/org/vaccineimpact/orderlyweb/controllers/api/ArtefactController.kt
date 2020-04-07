@@ -10,10 +10,13 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import java.io.File
 
 class ArtefactController(context: ActionContext,
+                         private val reportRepository: ReportRepository,
                          private val orderly: OrderlyClient,
                          private val artefactRepository: ArtefactRepository,
                          private val files: FileSystem,
@@ -23,6 +26,7 @@ class ArtefactController(context: ActionContext,
 {
     constructor(context: ActionContext) :
             this(context,
+                    OrderlyReportRepository(context),
                     Orderly(context),
                     OrderlyArtefactRepository(),
                     Files(),
@@ -32,7 +36,7 @@ class ArtefactController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        orderly.checkVersionExistsForReport(name, version)
+        reportRepository.getReportVersion(name, version)
         return artefactRepository.getArtefactHashes(name, version)
     }
 
@@ -43,7 +47,7 @@ class ArtefactController(context: ActionContext,
         val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
         val inline = context.queryParams("inline")?.toBoolean() ?: false
 
-        orderly.checkVersionExistsForReport(name, version)
+        reportRepository.getReportVersion(name, version)
         artefactRepository.getArtefactHash(name, version, artefactname)
 
         val filename = "$name/$version/$artefactname"

@@ -11,8 +11,8 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
+data class ReportVersionPageViewModel(@Serialise("reportJson")
+                                      val report: BasicReportVersion,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -75,7 +75,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 null
             }
 
-            return ReportVersionPageViewModel(report.copy(displayName = displayName),
+            return ReportVersionPageViewModel(
+                    report.basicReportVersion.copy(displayName = displayName),
                     focalArtefactUrl,
                     isRunner,
                     artefactViewModels,
