@@ -13,8 +13,13 @@ object WebDocumentRouteConfig : RouteConfig
                     DocumentController::class, "getDocument", contentType = ContentTypes.binarydata)
                     .secure(readDocuments),
             WebEndpoint("/project-docs/",
-                    DocumentController::class, "getAll")
+                    DocumentController::class, "getIndex")
                     .secure(readDocuments),
+            WebEndpoint("/documents/",
+                    DocumentController::class, "getAll")
+                    .secure(readDocuments)
+                    .transform()
+                    .json(),
             WebEndpoint("/documents/refresh/", DocumentController::class, "refreshDocuments")
                     .post()
                     .json()
