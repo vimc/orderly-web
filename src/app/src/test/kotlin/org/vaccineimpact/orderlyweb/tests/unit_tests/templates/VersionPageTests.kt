@@ -324,8 +324,8 @@ class VersionPageTests : TeamcityTests()
     @Test
     fun `renders changelog rows`()
     {
-        val entries =  listOf(ChangelogItemViewModel("public", "something public"),
-                ChangelogItemViewModel("internal", "something internal"))
+        val entries =  listOf(ChangelogItemViewModel("custom-public-label", "something public", "public"),
+                ChangelogItemViewModel("custom-internal-label", "something internal", "internal"))
 
         val changelog = listOf(ChangelogViewModel("14 Jun 2018", "v1", entries))
 
