@@ -120,7 +120,7 @@ class DocumentTests : IntegrationTest()
     fun `only document readers can get all documents`()
     {
         val url = "/documents/"
-        assertWebUrlSecured(url, readDocuments)
+        assertWebUrlSecured(url, readDocuments, ContentTypes.json)
     }
 
     @Test
