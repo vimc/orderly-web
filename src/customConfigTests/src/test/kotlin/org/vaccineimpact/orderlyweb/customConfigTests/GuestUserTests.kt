@@ -88,22 +88,17 @@ class GuestUserTests: SeleniumTest() {
         // guest user should not see any reports in report table
         var rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
         assertThat(rows.count()).isEqualTo(1) // there's always 1 empty row
-        println("Got expected guest response")
 
         driver.findElement(By.className("login")).findElement(By.cssSelector("a")).click()
-        println("Clicked on  login link")
 
         // should be redirected to login page with link
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("login-link")))
         driver.findElement(By.className("login-link")).click()
-        println("Clicked on  login with github link")
 
         login()
-        println("Logged in")
 
         // should be returned to the site as logged in user
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("site-title")))
-        println("Returned as logged in user")
 
         // user should see logout link and should no longer see login link
         assertThat(driver.findElements(By.className("login")).count()).isEqualTo(0)
