@@ -425,8 +425,9 @@ class Orderly(val isReviewer: Boolean,
                 .select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                         CHANGELOG.LABEL,
                         CHANGELOG.VALUE,
-                        CHANGELOG.FROM_FILE)
-                .from(CHANGELOG)
+                        CHANGELOG.FROM_FILE,
+                        CHANGELOG_LABEL.PUBLIC)
+                .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
                 .join(REPORT_VERSION)
                 .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
                 .where(REPORT_VERSION.REPORT.eq(report))
@@ -445,11 +446,7 @@ class Orderly(val isReviewer: Boolean,
             if (isReviewer)
                 trueCondition()
             else
-                CHANGELOG.LABEL.`in`(
-                        select(CHANGELOG_LABEL.ID)
-                                .from(CHANGELOG_LABEL)
-                                .where(CHANGELOG_LABEL.PUBLIC)
-                ).and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+                CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
 
     private val changelogReportVersionColumnForUser =
             if (isReviewer)

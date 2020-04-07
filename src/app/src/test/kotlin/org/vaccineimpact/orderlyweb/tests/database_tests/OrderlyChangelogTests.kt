@@ -44,8 +44,8 @@ class OrderlychangelogTests : CleanDatabaseTests()
         Assertions.assertThat(results.count()).isEqualTo(2)
 
         //changelog items are returned in desc order
-        assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false)
-        assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true)
+        assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false, false)
+        assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true, true)
     }
 
     @Test
@@ -76,7 +76,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         Assertions.assertThat(results.count()).isEqualTo(1)
 
-        assertChangelogValuesMatch(results[0], "version1", "public", "did something great", true)
+        assertChangelogValuesMatch(results[0], "version1", "public", "did something great", true, true)
     }
 
     @Test
@@ -415,9 +415,9 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         Assertions.assertThat(results.count()).isEqualTo(3)
 
-        assertChangelogValuesMatch(results[0], "v3", "public", "did something great v3", true)
-        assertChangelogValuesMatch(results[1], "v2", "public", "did something great v2", true)
-        assertChangelogValuesMatch(results[2], "v2", "public", "did something great v1", true)
+        assertChangelogValuesMatch(results[0], "v3", "public", "did something great v3", true, true)
+        assertChangelogValuesMatch(results[1], "v2", "public", "did something great v2", true, true)
+        assertChangelogValuesMatch(results[2], "v2", "public", "did something great v1", true, true)
     }
 
     private fun insertTestReportChangelogs()
@@ -488,24 +488,24 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         if (latestVersion == "version3")
         {
-            assertChangelogValuesMatch(results[0], "version3", "internal", "everything is broken", false)
-            assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
-            assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
+            assertChangelogValuesMatch(results[0], "version3", "internal", "everything is broken", false, false)
+            assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false, false)
+            assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true, true)
 
             index += 3
         }
 
         if (latestVersion == "version2" || index > 0)
         {
-            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true)
+            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true, true)
 
             index++
         }
 
         if (latestVersion == "version1" || index > 0)
         {
-            assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false)
-            assertChangelogValuesMatch(results[index + 1], "version1", "public", "did something great v1", true)
+            assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false, false)
+            assertChangelogValuesMatch(results[index + 1], "version1", "public", "did something great v1", true, true)
 
             index += 2
         }
@@ -524,7 +524,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         if (latestVersion == "version3")
         {
-            assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true)
+            assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true, true)
 
             index++
         }
@@ -532,7 +532,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
         if (latestVersion == "version2" || index > 0)
         {
             //The public version of this changelog item is version3, while the 'real' version is version2
-            assertChangelogValuesMatch(results[index], "version3", "public", "did something great v2", true)
+            assertChangelogValuesMatch(results[index], "version3", "public", "did something great v2", true, true)
 
             index++
         }
@@ -545,12 +545,17 @@ class OrderlychangelogTests : CleanDatabaseTests()
         }
     }
 
-    private fun assertChangelogValuesMatch(changelog: Changelog, report_version: String, label: String,
-                                           value: String, fromFile: Boolean)
+    private fun assertChangelogValuesMatch(changelog: Changelog,
+                                           report_version: String,
+                                           label: String,
+                                           value: String,
+                                           fromFile: Boolean,
+                                           public: Boolean)
     {
         Assertions.assertThat(changelog.reportVersion).isEqualTo(report_version)
         Assertions.assertThat(changelog.fromFile).isEqualTo(fromFile)
         Assertions.assertThat(changelog.label).isEqualTo(label)
         Assertions.assertThat(changelog.value).isEqualTo(value)
+        Assertions.assertThat(changelog.public).isEqualTo(public)
     }
 }

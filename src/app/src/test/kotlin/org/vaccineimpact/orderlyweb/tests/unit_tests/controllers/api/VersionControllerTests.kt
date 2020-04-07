@@ -132,8 +132,8 @@ class VersionControllerTests : ControllerTest()
     @Test
     fun `getChangelogByNameAndVersion returns changelog`()
     {
-        val changelogs = listOf(Changelog(reportVersion, "public", "did a thing", true),
-                Changelog(reportVersion, "public", "did another thing", true))
+        val changelogs = listOf(Changelog(reportVersion, "public", "did a thing", true, true),
+                Changelog(reportVersion, "public", "did another thing", true, true))
 
         val orderly = mock<OrderlyClient> {
             on { this.getChangelogByNameAndVersion(reportName, reportVersion) } doReturn changelogs
