@@ -184,12 +184,12 @@ class DocumentControllerTests : ControllerTest()
             on { hasPermission(ReifiedPermission("documents.manage", Scope.Global())) } doReturn false
         }
         var sut = DocumentController(hasPermContext, AppConfig(), Files(), mockRepo)
-        var result = sut.getAll()
+        var result = sut.getIndex()
 
         assertThat(result.canManage).isTrue()
 
         sut = DocumentController(noPermContext, AppConfig(), Files(), mockRepo)
-        result = sut.getAll()
+        result = sut.getIndex()
 
         assertThat(result.canManage).isFalse()
     }

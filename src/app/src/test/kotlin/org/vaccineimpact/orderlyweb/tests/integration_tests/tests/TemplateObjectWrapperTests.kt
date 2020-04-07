@@ -63,8 +63,6 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val dataModel = data[0] as StringModel
         assertThat(dataModel["name"].toString()).isEqualTo("hash")
         assertThat(dataModel["csvSize"].toString()).isEqualTo("1234")
-
-        val tags = result["tags"]
     }
 
     @Test
