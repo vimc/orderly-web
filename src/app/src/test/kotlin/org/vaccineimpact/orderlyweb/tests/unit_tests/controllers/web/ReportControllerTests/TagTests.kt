@@ -32,6 +32,6 @@ class TagTests : TeamcityTests()
         val result = sut.tagVersion()
         assertThat(result).isEqualTo("OK")
         verify(mockTagRepo).updateTags(eq("r1"), eq("v1"), eq(ReportVersionTags(listOf("v-tag"), listOf("r-tag"), listOf())))
-        verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
+        verify(mockOrderly).getReportVersion("r1", "v1")
     }
 }

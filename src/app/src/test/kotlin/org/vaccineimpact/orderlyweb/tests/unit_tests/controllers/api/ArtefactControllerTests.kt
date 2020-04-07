@@ -60,7 +60,7 @@ class ArtefactControllerTests : ControllerTest()
         val orderly = mock<OrderlyClient>()
         val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
         sut.getMetaData()
-        verify(orderly).checkVersionExistsForReport(name, version)
+        verify(orderly).getReportVersion(name, version)
     }
 
     @Test
@@ -105,7 +105,7 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":artefact") } doReturn artefact
         }
         val orderly = mock<OrderlyClient> {
-            on {this.checkVersionExistsForReport(name, version)} doThrow UnknownObjectError("report", "")
+            on {this.getReportVersion(name, version)} doThrow UnknownObjectError("report", "")
         }
 
         val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)

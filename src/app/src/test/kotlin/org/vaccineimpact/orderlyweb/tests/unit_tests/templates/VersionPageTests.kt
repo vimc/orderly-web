@@ -14,6 +14,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
+import org.vaccineimpact.orderlyweb.models.BasicReportVersion
 import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
@@ -32,12 +33,13 @@ class VersionPageTests : TeamcityTests()
         val template = FreemarkerTestRule("report-page.ftl")
     }
 
-    private val testReport = ReportVersionDetails(name = "r1",
+    private val testReport = ReportVersionDetails(BasicReportVersion(name = "r1",
             displayName = "r1 display",
             id = "r1-v1",
             published = true,
             date = Timestamp(System.currentTimeMillis()).toInstant(),
-            description = "description",
+            latestVersion = "v1",
+            description = "description"),
             artefacts = listOf(),
             resources = listOf(),
             dataInfo = listOf(),
@@ -82,7 +84,7 @@ class VersionPageTests : TeamcityTests()
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
     private val testModel = ReportVersionPageViewModel(
-            testReport,
+            testReport.basicReportVersion,
             "/testFocalArtefactUrl",
             false,
             testArtefactViewModels,

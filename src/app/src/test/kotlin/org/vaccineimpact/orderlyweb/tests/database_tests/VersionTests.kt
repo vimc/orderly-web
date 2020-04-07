@@ -270,9 +270,9 @@ class VersionTests : CleanDatabaseTests()
 
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0].name).isEqualTo("test3")
-        assertThat(results[0].id).isEqualTo("test3_1_pub")
+        assertThat(results[0].latestVersion).isEqualTo("test3_1_pub")
         assertThat(results[1].name).isEqualTo("test1")
-        assertThat(results[1].id).isEqualTo("test1_2_pub")
+        assertThat(results[1].latestVersion).isEqualTo("test1_2_pub")
     }
 
     @Test
@@ -298,10 +298,10 @@ class VersionTests : CleanDatabaseTests()
 
         assertThat(results.count()).isEqualTo(3)
         assertThat(results[0].name).isEqualTo("test4")
-        assertThat(results[0].id).isEqualTo("test4_1_unpub")
+        assertThat(results[0].latestVersion).isEqualTo("test4_1_unpub")
         assertThat(results[1].name).isEqualTo("test3")
-        assertThat(results[1].id).isEqualTo("test3_1_pub")
+        assertThat(results[1].latestVersion).isEqualTo("test3_1_pub")
         assertThat(results[2].name).isEqualTo("test1")
-        assertThat(results[2].id).isEqualTo("test1_3_unpub")
+        assertThat(results[2].latestVersion).isEqualTo("test1_3_unpub")
     }
 }

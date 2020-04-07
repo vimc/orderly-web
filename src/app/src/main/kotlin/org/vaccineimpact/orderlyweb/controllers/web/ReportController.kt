@@ -32,7 +32,7 @@ class ReportController(context: ActionContext,
     {
         val reportName = context.params(":name")
         val versionId = context.params(":version")
-        orderly.checkVersionExistsForReport(reportName, versionId)
+        orderly.getReportVersion(reportName, versionId)
         val reportTags = context.postData<List<String>>("report_tags")
         val versionTags = context.postData<List<String>>("version_tags")
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))

@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.models.BasicReportVersion
+import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
@@ -32,15 +34,15 @@ class IndexControllerTests : TeamcityTests()
     {
         val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
 
-        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate,
+        val r1v1 = ReportVersion(BasicReportVersion("r1", null, "v1", true, someDate, "v2", "desc"),
                 mapOf("author" to "author1", "requester" to "requester1"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1", "t2"))
-        val r1v2 = r1v1.copy(
-                id = "v2",
+        val r1v2Basic = r1v1.basicReportVersion.copy(id = "v2",
                 displayName = "r1 display name",
                 published = false,
                 date = someDate.plus(Duration.ofDays(1)))
+        val r1v2 = r1v1.copy(basicReportVersion = r1v2Basic)
 
-        val r2v1 = ReportVersion("r2", null, "r2v1", "r2v1", true, someDate.minus(Duration.ofDays(2)),
+        val r2v1 = ReportVersion(BasicReportVersion("r2", null, "r2v1", true, someDate.minus(Duration.ofDays(2)), "r2v1", "desc"),
                 mapOf("author" to "another author", "requester" to "another requester"), mapOf(), listOf())
 
         val fakeReports = listOf(r1v1, r1v2, r2v1)
@@ -120,15 +122,8 @@ class IndexControllerTests : TeamcityTests()
     @Test
     fun `builds pinned versions`()
     {
-        val someDate = Instant.parse("2019-06-07T12:31:00.613Z")
-
-        val r1v1 = ReportVersion("r1", null, "v1", "v2", true, someDate,
-                mapOf("author" to "author1", "requester" to "requester1"), mapOf("p" to "v"), listOf())
-        val r1v2 = r1v1.copy(
-                name = "r2",
-                id = "v2",
-                displayName = "r2 display name",
-                date = someDate.plus(Duration.ofDays(1)))
+        val r1v1 = Report("r1", "r1", "20190706-143015-1234abcd")
+        val r1v2 = Report("r2", "r2 display name", "20190806-143015-1234abcd")
 
         val fakeReports = listOf(r1v1, r1v2)
 
@@ -160,7 +155,7 @@ class IndexControllerTests : TeamcityTests()
         }
 
         val mockOrderly = mock<OrderlyClient> {
-            on { this.getGlobalPinnedReports() } doReturn listOf<ReportVersion>()
+            on { this.getGlobalPinnedReports() } doReturn listOf<Report>()
         }
 
         val mockRepo = mock<TagRepository> {
@@ -180,7 +175,7 @@ class IndexControllerTests : TeamcityTests()
         }
 
         val mockOrderly = mock<OrderlyClient> {
-            on { this.getGlobalPinnedReports() } doReturn listOf<ReportVersion>()
+            on { this.getGlobalPinnedReports() } doReturn listOf<Report>()
         }
 
         val noPermsContext = mock<ActionContext> {
