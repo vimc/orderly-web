@@ -88,14 +88,14 @@ class DocumentControllerTests : ControllerTest()
             on { getAllVisibleDocuments() } doReturn listOf(Document("name", "display name", "path", true, false, listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
-        val result = sut.getAll()
+        val result = sut.getIndex()
         assertThat(result.breadcrumbs[0]).isEqualToComparingFieldByField(IndexViewModel.breadcrumb)
         assertThat(result.breadcrumbs[1].name).isEqualTo("Project documentation")
         assertThat(result.breadcrumbs[1].url).isEqualTo("http://localhost:8888/project-docs")
     }
 
     @Test
-    fun `creates document viewmodels`()
+    fun `creates document viewmodels for index`()
     {
         val mockRepo = mock<DocumentRepository> {
             on { getAllVisibleDocuments() } doReturn
@@ -106,7 +106,7 @@ class DocumentControllerTests : ControllerTest()
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
-        val result = sut.getAll()
+        val result = sut.getIndex()
         assertThat(result.docs[0].displayName).isEqualTo("displayName")
         assertThat(result.docs[0].path).isEqualTo("/path")
         assertThat(result.docs[0].isFile).isFalse()
@@ -132,6 +132,43 @@ class DocumentControllerTests : ControllerTest()
     }
 
     @Test
+    fun `creates document viewmodels`()
+    {
+        val mockRepo = mock<DocumentRepository> {
+            on { getAllVisibleDocuments() } doReturn
+                    listOf(Document("name", "displayName", "/path", false, false, listOf(
+                            Document("child", "child display name", "/childpath", true, false, listOf()),
+                            Document("www.externalchild.com", "external display name", "/childpath.url", true, true, listOf())
+
+                    )))
+        }
+        val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
+        val docs = sut.getAll()
+        assertThat(docs[0].displayName).isEqualTo("displayName")
+        assertThat(docs[0].path).isEqualTo("/path")
+        assertThat(docs[0].isFile).isFalse()
+        assertThat(docs[0].external).isFalse()
+        assertThat(docs[0].url).isEqualTo("http://localhost:8888/project-docs/path")
+        assertThat(docs[0].children.count()).isEqualTo(2)
+
+        var child = docs[0].children[0]
+        assertThat(child.displayName).isEqualTo("child display name")
+        assertThat(child.path).isEqualTo("/childpath")
+        assertThat(child.isFile).isTrue()
+        assertThat(child.external).isFalse()
+        assertThat(child.url).isEqualTo("http://localhost:8888/project-docs/childpath")
+        assertThat(child.children.count()).isEqualTo(0)
+
+        child = docs[0].children[1]
+        assertThat(child.displayName).isEqualTo("external display name")
+        assertThat(child.path).isEqualTo("/childpath.url")
+        assertThat(child.isFile).isTrue()
+        assertThat(child.external).isTrue()
+        assertThat(child.url).isEqualTo("www.externalchild.com")
+        assertThat(child.children.count()).isEqualTo(0)
+    }
+
+    @Test
     fun `sets canOpen correctly`()
     {
         val mockRepo = mock<DocumentRepository> {
@@ -143,7 +180,7 @@ class DocumentControllerTests : ControllerTest()
                     )))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
-        val result = sut.getAll()
+        val result = sut.getIndex()
         assertThat(result.docs[0].displayName).isEqualTo("display name")
         assertThat(result.docs[0].canOpen).isFalse()
 
@@ -174,7 +211,7 @@ class DocumentControllerTests : ControllerTest()
                                     )))))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
-        val result = sut.getAll()
+        val result = sut.getIndex()
         assertThat(result.docs.count()).isEqualTo(1)
         val doc = result.docs[0]
         assertThat(doc.displayName).isEqualTo("toplevelwithonenonemptychild display name")
@@ -195,7 +232,7 @@ class DocumentControllerTests : ControllerTest()
                             Document("anotherfile", "anotherfile display name", "path", true, false, listOf()))
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
-        val result = sut.getAll()
+        val result = sut.getIndex()
         assertThat(result.docs[0].displayName).isEqualTo("anotherfolder display name")
         assertThat(result.docs[1].displayName).isEqualTo("folder display name")
         assertThat(result.docs[2].displayName).isEqualTo("anotherfile display name")

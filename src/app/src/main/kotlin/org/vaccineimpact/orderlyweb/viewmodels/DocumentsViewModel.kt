@@ -60,14 +60,19 @@ data class DocumentsViewModel(@Serialise("documentList")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel
         {
-            val docVms = docs
+            val docVms = buildDocs(docs)
+
+            return DocumentsViewModel(docVms,
+                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+        }
+
+        fun buildDocs(docs: List<Document>): List<DocumentViewModel>
+        {
+            return docs
                     .map { DocumentViewModel.build(it) }
                     .filterNotNull()
                     .sortedBy { it.displayName }
                     .sortedBy { it.isFile }
-
-            return DocumentsViewModel(docVms,
-                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
     }
 }
