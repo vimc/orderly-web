@@ -12,6 +12,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowViewModel>,
+                          val tags: List<String>,
                           val pinnedReports: List<PinnedReportViewModel>,
                           val customFieldKeys: List<String>,
                           val showProjectDocs: Boolean,
@@ -20,10 +21,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
+                tags: List<String>,
                 pinnedReports: List<PinnedReportViewModel>,
                 customFieldKeys: List<String>,
                 showProjectDocs: Boolean)
-            : this(reports, pinnedReports, customFieldKeys, showProjectDocs, DefaultViewModel(context, breadcrumb))
+            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -31,6 +33,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
         fun build(reports: List<ReportVersion>,
                   reportTags: Map<String, List<String>>,
+                  allTags: List<String>,
                   pinnedReports: List<ReportVersion>,
                   context: ActionContext): IndexViewModel
         {
@@ -61,7 +64,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
-            return IndexViewModel(context, reportRows, pinnedReportsViewModels, emptyCustomFields.keys.sorted(), showDocs)
+            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(), showDocs)
         }
     }
 }

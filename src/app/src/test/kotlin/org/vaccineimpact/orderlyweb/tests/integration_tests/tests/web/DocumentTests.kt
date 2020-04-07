@@ -1,18 +1,23 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
+import khttp.post
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 import java.io.File
 
 class DocumentTests : IntegrationTest()
 {
     private val readDocuments = setOf(ReifiedPermission("documents.read", Scope.Global()))
+    private val manageDocuments = setOf(ReifiedPermission("documents.manage", Scope.Global()))
 
     @After
     fun cleanup()
@@ -51,5 +56,60 @@ class DocumentTests : IntegrationTest()
     {
         val url = "/project-docs/"
         assertWebUrlSecured(url, readDocuments)
+    }
+
+    @Test
+    fun `only document managers can refresh documents`()
+    {
+        val url = "/documents/refresh/"
+        assertWebUrlSecured(url, manageDocuments,
+                contentType = ContentTypes.json,
+                method = HttpMethod.post,
+                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"))
+    }
+
+    @Test
+    fun `can refresh documents`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(manageDocuments)
+        val response = webRequestHelper.requestWithSessionCookie("/documents/refresh/",
+                sessionCookie,
+                method = HttpMethod.post,
+                contentType = ContentTypes.json,
+                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"))
+
+        Assertions.assertThat(response.statusCode).isEqualTo(200)
+
+        JooqContext().use {
+            val result = it.dsl.selectFrom(Tables.ORDERLYWEB_DOCUMENT)
+                    .orderBy(Tables.ORDERLYWEB_DOCUMENT.PATH)
+                    .fetch()
+
+            Assertions.assertThat(result.count()).isEqualTo(4)
+
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata")
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("testdata")
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo(null)
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/subdir")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("subdir")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/subdir/test.csv")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.csv")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata/subdir")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/test.doc")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.doc")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+        }
     }
 }

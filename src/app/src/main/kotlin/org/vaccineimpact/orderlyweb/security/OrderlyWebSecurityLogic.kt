@@ -22,10 +22,7 @@ class OrderlyWebSecurityLogic(private val authenticationConfig: AuthenticationCo
                          inputMultiProfile: Boolean?,
                          vararg parameters: Any?): Any?
     {
-        if (authenticationConfig.allowGuestUser)
-        {
-            guestUserManager.updateProfile(context, config, clients)
-        }
+        guestUserManager.updateProfile(authenticationConfig.allowGuestUser, context, config, clients)
 
         return super.perform(context,
                 config,

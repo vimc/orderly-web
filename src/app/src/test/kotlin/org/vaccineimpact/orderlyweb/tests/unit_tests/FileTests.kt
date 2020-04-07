@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.Files
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import java.io.File
+import java.net.URL
 
 class FileTests
 {
@@ -67,5 +68,15 @@ class FileTests
     {
         assertThat(Files().getAbsolutePath("${AppConfig()["orderly.root"]}archive/use_resource/"))
                 .isEqualTo(useResourceDir)
+    }
+
+    @Test
+    fun `can save zip from url`() {
+
+        val testDir = java.nio.file.Files.createTempDirectory("test").toFile()
+        Files().saveArchiveFromUrl(URL("https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"), testDir.absolutePath)
+        assertThat(File(testDir, "testdata/test.doc").isFile).isTrue()
+        assertThat(File(testDir, "testdata/subdir").isDirectory).isTrue()
+        assertThat(File(testDir, "testdata/subdir/test.csv").isFile).isTrue()
     }
 }

@@ -1,27 +1,63 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.*
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DocumentDetails
 import org.vaccineimpact.orderlyweb.FileSystem
-import org.vaccineimpact.orderlyweb.controllers.api.DocumentController
+import org.vaccineimpact.orderlyweb.controllers.web.DocumentController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.models.Document
+import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
+import java.net.URL
+import java.util.zip.ZipException
 
-class DocumentControllerTests : ControllerTest()
+class RefreshDocumentsTests : ControllerTest()
 {
+    private val mockConfig = mock<Config> {
+        on { get("documents.root") } doReturn "documents"
+    }
+
+    private val mockContext = mock<ActionContext> {
+        on { postData<String>("url") } doReturn "http://url.com"
+    }
+
+    private val mockRepo = mock<DocumentRepository> {
+        on { getAllFlat() } doReturn listOf<Document>()
+    }
+
+    private val mockFiles = mock<FileSystem> {
+        on { getAbsolutePath("documents") } doReturn ("/documents")
+        on { getAllChildren(any(), any()) } doReturn listOf<DocumentDetails>()
+    }
+
+    @Test
+    fun `refreshDocuments downloads and saves files from url`()
+    {
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        sut.refreshDocuments()
+        verify(mockFiles).saveArchiveFromUrl(URL("http://url.com"), "/documents")
+    }
+
+    @Test
+    fun `refreshDocuments ensures dropbox urls are downloadable`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { postData<String>("url") } doReturn "http://dropbox.com?dl=0"
+        }
+
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        sut.refreshDocuments()
+        verify(mockFiles).saveArchiveFromUrl(URL("http://dropbox.com?dl=1"), "/documents")
+    }
+
     @Test
     fun `refreshDocuments populates all docs when there are none pre-existing`()
     {
-        val mockConfig = mock<Config> {
-            on { get("documents.root") } doReturn "documents"
-        }
-
-        val mockRepo = mock<DocumentRepository> {
-            on { getAllFlat() } doReturn listOf<Document>()
-        }
-
         val mockFiles = mock<FileSystem> {
             on { getAbsolutePath("documents") } doReturn ("/documents")
 
@@ -44,7 +80,7 @@ class DocumentControllerTests : ControllerTest()
             )
         }
 
-        val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
 
         //Expect create
@@ -59,10 +95,6 @@ class DocumentControllerTests : ControllerTest()
     @Test
     fun `refreshDocuments refreshes show field of existing documents`()
     {
-        val mockConfig = mock<Config> {
-            on { get("documents.root") } doReturn "documents"
-        }
-
         val mockFiles = mock<FileSystem> {
             on { getAbsolutePath("documents") } doReturn ("/documents")
 
@@ -90,7 +122,7 @@ class DocumentControllerTests : ControllerTest()
             on { getAllFlat() } doReturn flatDocs
         }
 
-        val sut = DocumentController(mock(), mockFiles, mockConfig, mockRepo)
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
         sut.refreshDocuments()
 
         verify(mockRepo).setVisibility(listOf(flatDocs[0]), true) // still exists
@@ -102,5 +134,28 @@ class DocumentControllerTests : ControllerTest()
 
         verify(mockRepo, times(0)).add(any(), any(), any(), any(), any(), any())
 
+    }
+
+    @Test
+    fun `refreshDocuments throws error if url is invalid`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { postData<String>("url") } doReturn "badurl"
+        }
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        assertThatThrownBy { sut.refreshDocuments() }
+                .isInstanceOf(BadRequest::class.java)
+    }
+
+    @Test
+    fun `refreshDocuments throws error if zip is invalid`()
+    {
+        val mockFiles = mock<FileSystem> {
+            on { getAbsolutePath("documents") } doReturn ("/documents")
+            on { saveArchiveFromUrl(any(), any()) } doThrow ZipException()
+        }
+        val sut = DocumentController(mockContext, mockConfig, mockFiles, mockRepo)
+        assertThatThrownBy { sut.refreshDocuments() }
+                .isInstanceOf(InvalidOperationError::class.java)
     }
 }

@@ -109,4 +109,25 @@ class GuestUserTests: SeleniumTest() {
         rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
         assertThat(rows.count()).isEqualTo(2)
     }
+
+    @Test
+    fun `guest user with existing session is redirected to login page next request after allow guest set to false`()
+    {
+        startApp("auth.provider=github")
+
+        driver.get(RequestHelper.webBaseUrl)
+
+        val header = driver.findElement(By.cssSelector("h1"))
+        assertThat(header.text).isEqualTo("Find a report")
+
+        JooqContext().use {
+            it.dsl.update(Tables.ORDERLYWEB_SETTINGS)
+                    .set(Tables.ORDERLYWEB_SETTINGS.AUTH_ALLOW_GUEST, false)
+                    .execute()
+        }
+
+        driver.get(RequestHelper.webBaseUrl)
+        val button = driver.findElement(By.cssSelector(".login-link"))
+        assertThat(button.text).isEqualToIgnoringWhitespace("Log in with GitHub")
+    }
 }

@@ -2,6 +2,7 @@ import {nameFilter, options, statusFilter} from "./utils/reportsTable";
 import $ from 'jquery';
 
 require("treetables")(window, $);
+require("tokenize2")(window, $);
 
 export const initReportTable = (isReviewer, reports, customFields) => {
 
@@ -38,6 +39,23 @@ export const initReportTable = (isReviewer, reports, customFields) => {
         dt.column(col)
             .search(this.value)
             .draw();
+    });
+
+    const $tagsFilter = $("#tags-filter");
+    $tagsFilter.tokenize2({placeholder: "Type to filter..."});
+    $tagsFilter.on('tokenize:tokens:added tokenize:tokens:remove', function() {
+
+        const col = parseInt($(this).data("col"));
+
+        dt.column(col)
+            .search($(this).val().join(","))
+            .draw();
+    });
+
+    $(".tokens-container input").on("focus", function() {
+        const t = $tagsFilter.tokenize2();
+        t.trigger('tokenize:search', [t.input.val()]);
+        t.trigger("tokenize:dropdown:show");
     });
 
     $('#expand').on("click", () => {

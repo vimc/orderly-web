@@ -1,10 +1,13 @@
 package org.vaccineimpact.orderlyweb
 
+import org.apache.commons.io.FileUtils
 import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.OutputStream
+import java.net.URL
 import java.util.zip.GZIPOutputStream
+import java.util.zip.ZipException
 
 interface FileSystem
 {
@@ -13,9 +16,11 @@ interface FileSystem
     fun getAllFilesInFolder(sourceAbsolutePath: String): ArrayList<String>
     fun getAbsolutePath(sourcePath: String): String
     fun getAllChildren(sourceAbsolutePath: String, documentsRoot: String): List<DocumentDetails>
+    @Throws(ZipException::class)
+    fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
 }
 
-class Files : FileSystem
+class Files(val zip: ZipClient = Zip()) : FileSystem
 {
 
     override fun writeFileToOutputStream(absoluteFilePath: String, outputStream: OutputStream)
@@ -61,6 +66,25 @@ class Files : FileSystem
         val children = source.list() ?: arrayOf()
         return children.map { File(source, it) }
                 .map { getDocumentDetails(it, documentsRoot) }
+    }
+
+    override fun saveArchiveFromUrl(url: URL, targetAbsolutePath: String)
+    {
+        val tmpFile = java.nio.file.Files.createTempFile("documents", ".zip").toFile()
+
+        FileUtils.copyURLToFile(
+                url,
+                tmpFile)
+
+        val tmpDir = java.nio.file.Files.createTempDirectory("documents").toFile()
+
+        zip.unzip(tmpFile, tmpDir)
+
+        val targetDir = File(targetAbsolutePath)
+        targetDir.mkdirs()
+
+        FileUtils.cleanDirectory(targetDir)
+        FileUtils.copyDirectory(tmpDir, targetDir)
     }
 
     private fun getDocumentDetails(file: File, documentsRoot: String): DocumentDetails

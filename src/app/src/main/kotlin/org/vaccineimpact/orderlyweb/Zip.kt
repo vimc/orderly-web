@@ -5,25 +5,30 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.io.OutputStream
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import java.util.zip.GZIPOutputStream
 import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 import java.util.zip.ZipOutputStream
 
 interface ZipClient
 {
-    fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>)
+    fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>, gzip: Boolean = true)
+    fun unzip(sourceFile: File, targetDirectory: File)
 }
 
 class Zip : ZipClient
 {
     val logger = LoggerFactory.getLogger(Zip::class.java)
 
-    override fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>)
+    override fun zipIt(sourceAbsolutePath: String, output: OutputStream, fileList: List<String>, gzip: Boolean)
     {
         val source = File(sourceAbsolutePath)
-
         val bufferSize = 8000
-        ZipOutputStream(GZIPOutputStream(output, bufferSize)).use {
+        val stream = if (gzip) GZIPOutputStream(output, bufferSize) else output
+
+        ZipOutputStream(stream).use {
 
             zipOutputStream ->
             for (file in fileList)
@@ -35,6 +40,22 @@ class Zip : ZipClient
             }
 
             zipOutputStream.closeEntry()
+        }
+    }
+
+    override fun unzip(sourceFile: File, targetDirectory: File)
+    {
+        val zip = ZipFile(sourceFile)
+        val entries = zip.entries()
+        while (entries.hasMoreElements())
+        {
+            val entry = entries.nextElement()
+            val newFile = File(targetDirectory, entry.name)
+            if (!entry.isDirectory)
+            {
+                newFile.mkdirs()
+                Files.copy(zip.getInputStream(entry), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+            }
         }
     }
 

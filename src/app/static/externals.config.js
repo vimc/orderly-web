@@ -6,5 +6,5 @@ module.exports = [
     "./node_modules/popper.js/dist/umd/popper.min.js.map",
     "./node_modules/datatables.net/js/jquery.dataTables.min.js",
     "./node_modules/datatables.net-bs4/js/dataTables.bootstrap4.js",
-    "./node_modules/datatables.net-dt/js/dataTables.dataTables.js",
+    "./node_modules/datatables.net-dt/js/dataTables.dataTables.js"
 ];

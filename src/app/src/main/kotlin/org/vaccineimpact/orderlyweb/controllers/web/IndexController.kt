@@ -21,8 +21,9 @@ class IndexController(actionContext: ActionContext,
         val reports = orderly.getAllReportVersions()
         val reportNames = reports.map { it.name }.distinct()
         val reportTags = tagRepository.getReportTags(reportNames)
+        val allTags = tagRepository.getAllTags()
         val pinnedReports = orderly.getGlobalPinnedReports()
-        return IndexViewModel.build(reports, reportTags, pinnedReports, context)
+        return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, context)
     }
 
     fun metrics(): String
