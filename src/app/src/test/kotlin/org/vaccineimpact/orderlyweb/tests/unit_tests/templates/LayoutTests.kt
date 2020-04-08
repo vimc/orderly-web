@@ -44,6 +44,8 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.select(".logout").count()).isEqualTo(0) //should not show logged in view
         assertThat(doc.select("#content").count()).isEqualTo(1)
+        val script = doc.getElementsByTag("script")[0].html()
+        assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
     }
 
     @Test
@@ -71,7 +73,8 @@ class LayoutTests : TeamcityTests()
 
         assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
-
+        val script = doc.getElementsByTag("script")[0].html()
+        assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
     }
 
     @Test

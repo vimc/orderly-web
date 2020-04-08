@@ -24,7 +24,7 @@
 
     export default {
         name: "document-list",
-        props: ["docs"],
+        props: ["docs", "canManage"],
         data() {
             return {
                 expanded: {}
