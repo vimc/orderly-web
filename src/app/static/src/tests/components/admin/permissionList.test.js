@@ -14,14 +14,19 @@ describe("permission list", () => {
             })
     });
 
-    it("fetches permissions for typeahead on mount", (done) => {
-        const rendered = shallowMount(PermissionList,
+    const getWrapper = (propsData) => {
+        return shallowMount(PermissionList,
             {
                 propsData: {
-                    permissions: []
+                    permissions: [],
+                    canRemove: true,
+                    ...propsData
                 }
             });
+    };
 
+    it("fetches permissions for typeahead on mount", (done) => {
+        const rendered = getWrapper();
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(1);
             expect(rendered.vm.$data.allPermissions).toStrictEqual(["reports.read", "reports.review", "users.manage"]);
@@ -30,28 +35,24 @@ describe("permission list", () => {
     });
 
     it("displays scope if there is a specific scope", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [{
-                    name: "reports.read",
-                    scope_id: "r1",
-                    scope_prefix: "report"
-                }]
-            }
+        const rendered = getWrapper({
+            permissions: [{
+                name: "reports.read",
+                scope_id: "r1",
+                scope_prefix: "report"
+            }]
         });
 
         expect(rendered.find("li .name").text()).toBe("reports.read / report:r1");
     });
 
     it("does not display scope if global", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [{
-                    name: "reports.read",
-                    scope_id: "",
-                    scope_prefix: null
-                }]
-            }
+        const rendered = getWrapper({
+            permissions: [{
+                name: "reports.read",
+                scope_id: "",
+                scope_prefix: null
+            }]
         });
 
         expect(rendered.find("li .name").text()).toBe("reports.read");
@@ -64,10 +65,8 @@ describe("permission list", () => {
             scope_prefix: null
         };
 
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [perm]
-            }
+        const rendered = getWrapper({
+            permissions: [perm]
         });
 
         rendered.find(".remove").trigger("click");
@@ -79,18 +78,16 @@ describe("permission list", () => {
 
     it("available permissions are any global permissions that the user doesn't have", async () => {
 
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [{
-                    name: "reports.review",
-                    scope_id: "",
-                    scope_prefix: null
-                }, {
-                    name: "reports.read",
-                    scope_id: "r1",
-                    scope_prefix: "report"
-                }]
-            }
+        const rendered = getWrapper({
+            permissions: [{
+                name: "reports.review",
+                scope_id: "",
+                scope_prefix: null
+            }, {
+                name: "reports.read",
+                scope_id: "r1",
+                scope_prefix: "report"
+            }]
         });
 
         rendered.setData({
@@ -104,38 +101,32 @@ describe("permission list", () => {
     });
 
     it("only shows list of permissions if there are any", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: []
-            }
-        });
+        const rendered = getWrapper();
 
         expect(rendered.findAll("ul").length).toBe(0);
     });
 
     it("permissions are sorted", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                permissions: [
-                    {
-                        name: "reports.read",
-                        scope_id: "r2",
-                        scope_prefix: "report"
-                    },
-                    {
-                        name: "reports.read",
-                        scope_id: "",
-                        scope_prefix: null
-                    }, {
-                        name: "reports.review",
-                        scope_id: "",
-                        scope_prefix: null
-                    }, {
-                        name: "reports.read",
-                        scope_id: "r1",
-                        scope_prefix: "report"
-                    }]
-            }
+        const rendered = getWrapper({
+            permissions: [
+                {
+                    name: "reports.read",
+                    scope_id: "r2",
+                    scope_prefix: "report"
+                },
+                {
+                    name: "reports.read",
+                    scope_id: "",
+                    scope_prefix: null
+                }, {
+                    name: "reports.review",
+                    scope_id: "",
+                    scope_prefix: null
+                }, {
+                    name: "reports.read",
+                    scope_id: "r1",
+                    scope_prefix: "report"
+                }]
         });
 
         const renderedPermissionNames = rendered.findAll(".name");
@@ -146,17 +137,15 @@ describe("permission list", () => {
     });
 
     it("renders direct permissions", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                userGroup: "test",
-                permissions: [
-                    {
-                        name: "reports.read",
-                        scope_id: "",
-                        scope_prefix: null,
-                        source: "test"
-                    }]
-            }
+        const rendered = getWrapper({
+            userGroup: "test",
+            permissions: [
+                {
+                    name: "reports.read",
+                    scope_id: "",
+                    scope_prefix: null,
+                    source: "test"
+                }]
         });
 
         expect(rendered.find(".name").classes()).not.toContain("text-muted");
@@ -166,17 +155,15 @@ describe("permission list", () => {
     });
 
     it("renders in-direct permissions", () => {
-        const rendered = shallowMount(PermissionList, {
-            propsData: {
-                userGroup: "test",
-                permissions: [
-                    {
-                        name: "reports.read",
-                        scope_id: "",
-                        scope_prefix: null,
-                        source: "something else"
-                    }]
-            }
+        const rendered = getWrapper({
+            userGroup: "test",
+            permissions: [
+                {
+                    name: "reports.read",
+                    scope_id: "",
+                    scope_prefix: null,
+                    source: "something else"
+                }]
         });
 
         expect(rendered.find(".name").classes()).toContain("text-muted");
@@ -184,5 +171,38 @@ describe("permission list", () => {
         expect(rendered.findAll("span").length).toBe(2);
         expect(rendered.findAll("span").at(1).classes()).toContain("text-muted");
         expect(rendered.findAll("span").at(1).text()).toBe("(via something else)");
+    });
+
+    it("permissions cannot be removed if canRemove is false", () => {
+        const rendered = getWrapper({
+            userGroup: "test",
+            permissions: [
+                {
+                    name: "reports.read",
+                    scope_id: "",
+                    scope_prefix: null,
+                    source: "test"
+                },{
+                    name: "reports.read",
+                    scope_id: "",
+                    scope_prefix: null,
+                    source: "something else"
+                }],
+                canRemove: false
+        });
+
+        const items = rendered.findAll("li");
+
+        const direct = items.at(0);
+        expect(direct.find(".name").classes()).toContain("text-muted");
+        expect(direct.findAll(".remove").length).toBe(0);
+        expect(direct.findAll("span").length).toBe(1);
+
+        const indirect = items.at(1);
+        expect(indirect.find(".name").classes()).toContain("text-muted");
+        expect(indirect.findAll(".remove").length).toBe(0);
+        expect(indirect.findAll("span").length).toBe(2);
+        expect(indirect.findAll("span").at(1).classes()).toContain("text-muted");
+        expect(indirect.findAll("span").at(1).text()).toBe("(via something else)");
     });
 });

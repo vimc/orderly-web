@@ -105,6 +105,8 @@ describe("manage users", () => {
         expect(rendered.findAll("li").length).toBe(2);
         expect(rendered.findAll(PermissionList).length).toBe(2);
 
+        expect(rendered.find(PermissionList).props().canRemove).toBe(true);
+
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(true);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
     });
