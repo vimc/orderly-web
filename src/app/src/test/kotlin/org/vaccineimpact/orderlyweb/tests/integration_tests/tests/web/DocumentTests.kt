@@ -79,7 +79,7 @@ class DocumentTests : IntegrationTest()
                 sessionCookie,
                 method = HttpMethod.post,
                 contentType = ContentTypes.json,
-                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/mrc-1458/testdata/test.zip"))
+                postData = mapOf("url" to "https://github.com/vimc/orderly-web/raw/master/testdata/test.zip"))
 
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 

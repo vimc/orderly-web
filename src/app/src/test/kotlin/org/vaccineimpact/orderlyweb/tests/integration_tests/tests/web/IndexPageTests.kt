@@ -1,15 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertGlobalPinnedReport
@@ -79,7 +76,7 @@ class IndexPageTests : IntegrationTest()
         val href = pinnedReportsDownloadButtons.first().attr("href")
         val result = webRequestHelper.requestWithSessionCookie(href, sessionCookie, ContentTypes.binarydata)
 
-        Assertions.assertThat(result.statusCode).isEqualTo(200)
+        assertThat(result.statusCode).isEqualTo(200)
     }
 
     @Test
@@ -98,13 +95,13 @@ class IndexPageTests : IntegrationTest()
 
         val result = webRequestHelper.requestWithSessionCookie(href, sessionCookie, ContentTypes.html)
 
-        Assertions.assertThat(result.statusCode).isEqualTo(200)
+        assertThat(result.statusCode).isEqualTo(200)
     }
 
     private fun getReportsJsonFromPage(page: Document): JsonArray
     {
         val reportsTag = page.getElementsByTag("script")[2].html()
-                .split("var rawReports = ")[1];
+                .split("var rawReports = ")[1]
         val reportsString =  reportsTag.split(";")[0]
         return JsonParser().parse(reportsString) as JsonArray
     }

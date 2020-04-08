@@ -14,6 +14,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.Document
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
@@ -107,6 +109,7 @@ class DocumentControllerTests : ControllerTest()
         }
         val sut = DocumentController(mock(), AppConfig(), Files(), mockRepo)
         val result = sut.getIndex()
+
         assertThat(result.docs[0].displayName).isEqualTo("displayName")
         assertThat(result.docs[0].path).isEqualTo("/path")
         assertThat(result.docs[0].isFile).isFalse()
@@ -166,6 +169,29 @@ class DocumentControllerTests : ControllerTest()
         assertThat(child.external).isTrue()
         assertThat(child.url).isEqualTo("www.externalchild.com")
         assertThat(child.children.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `sets canManage from context`()
+    {
+        val mockRepo = mock<DocumentRepository> {
+            on { getAllVisibleDocuments() } doReturn listOf<Document>()
+        }
+        val hasPermContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.manage", Scope.Global())) } doReturn true
+        }
+        val noPermContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.manage", Scope.Global())) } doReturn false
+        }
+        var sut = DocumentController(hasPermContext, AppConfig(), Files(), mockRepo)
+        var result = sut.getIndex()
+
+        assertThat(result.canManage).isTrue()
+
+        sut = DocumentController(noPermContext, AppConfig(), Files(), mockRepo)
+        result = sut.getIndex()
+
+        assertThat(result.canManage).isFalse()
     }
 
     @Test

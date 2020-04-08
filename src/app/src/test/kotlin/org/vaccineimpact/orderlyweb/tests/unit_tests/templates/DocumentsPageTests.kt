@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
 import org.junit.ClassRule
 import org.junit.Test
@@ -29,11 +30,25 @@ class DocumentsPageTests : TeamcityTests()
     @Test
     fun `renders vue app`()
     {
-        val viewModel = DocumentsViewModel(listOf(), testDefaultModel)
+        val viewModel = DocumentsViewModel(listOf(), false, testDefaultModel)
         val doc = template.jsoupDocFor(viewModel)
 
         val app = doc.selectFirst("#app")
-        assertThat(app.html()).isEqualTo("<document-list :docs=\"docs\"></document-list>")
+        assertThat(app.html()).isEqualTo("<document-page :can-manage=\"canManage\"></document-page>")
+    }
+
+    @Test
+    fun `renders canManage as js var`()
+    {
+        var viewModel = DocumentsViewModel(listOf(), false, testDefaultModel)
+        var doc = template.jsoupDocFor(viewModel)
+        var script = doc.getElementsByTag("script")[2].html().split("\n")[1]
+        Assertions.assertThat(script.trim()).isEqualTo("var canManage = false;")
+
+        viewModel = DocumentsViewModel(listOf(), true, testDefaultModel)
+        doc = template.jsoupDocFor(viewModel)
+        script = doc.getElementsByTag("script")[2].html().split("\n")[1]
+        Assertions.assertThat(script.trim()).isEqualTo("var canManage = true;")
     }
 
 }

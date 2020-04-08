@@ -9,20 +9,19 @@ describe("document list", () => {
     function getWrapper() {
         return shallowMount(DocumentList, {
             propsData: {
-                docs: [
-                    {
-                        display_name: "folder",
-                        path: "path",
-                        url: "url",
-                        children: [{
-                            display_name: "file",
-                            path: "filepath",
-                            url: "fileurl",
-                            children: [],
-                            is_file: true
-                        }],
-                        is_file: false
-                    },
+                docs: [{
+                    display_name: "folder",
+                    path: "path",
+                    url: "url",
+                    children: [{
+                        display_name: "file",
+                        path: "filepath",
+                        url: "fileurl",
+                        children: [],
+                        is_file: true
+                    }],
+                    is_file: false
+                },
                     {
                         display_name: "toplevelfile",
                         path: "toplevelfilepath",
