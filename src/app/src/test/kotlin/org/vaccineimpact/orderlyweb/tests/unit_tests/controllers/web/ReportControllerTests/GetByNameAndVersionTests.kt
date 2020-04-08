@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -42,18 +43,22 @@ class GetByNameAndVersionTests : TeamcityTests()
     private val mockOrderly = mock<OrderlyClient> {
 
         on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
+
+        on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
+    }
+
+    private val mockReportRepo = mock<ReportRepository> {
         on { this.getReportsByName("r1") } doReturn
                 listOf(versionId, "20170104-091500-1234dcba")
-        on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
     }
 
     @Test
     fun `getByNameAndVersion uses display name if present`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.report.displayName).isEqualTo( "a fake report")
+        assertThat(result.report.displayName).isEqualTo("a fake report")
     }
 
     @Test
@@ -65,7 +70,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(basicReportVersion = noDisplayName)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
@@ -74,7 +79,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `builds parameter values`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.parameterValues).isEqualTo("p1=v1, p2=v2")
     }
@@ -87,7 +92,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(parameterValues = mapOf())
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly,mockReportRepo,  mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.parameterValues).isEqualTo(null)
     }
@@ -95,7 +100,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `builds report version picker viewmodels`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.versions[1].url).isEqualTo("http://localhost:8888/report/r1/20170103-143015-1234abcd")
@@ -110,15 +115,12 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `report version picker options are ordered by date descending`()
     {
-        val mockOrderly = mock<OrderlyClient> {
-
-            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn mockReportDetails
+        val mockReportRepo = mock<ReportRepository> {
             on { this.getReportsByName("r1") } doReturn
                     listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba", versionId, "20170202-093000-1234dcba")
-            on { this.getChangelogByNameAndVersion("r1", versionId) } doReturn mockChangelog
         }
 
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.versions[0].date).isEqualTo("Sat Feb 04 2017, 09:30")
@@ -131,7 +133,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `builds changelog viewmodels`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.changelog.count()).isEqualTo(3)
@@ -155,7 +157,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `changelogs are ordered by date descending`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.changelog[0].date).isEqualTo("Wed Jan 03 2018, 14:30")
@@ -166,7 +168,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `focalArtefactUrl is null if no artefacts`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -183,7 +185,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = unsuitableArtefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isNull()
@@ -201,7 +203,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.focalArtefactUrl).isEqualTo("http://localhost:8888/report/r1/version/$versionId/artefacts/subdir%3Asuitable.png?inline=true")
@@ -220,7 +222,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts.count()).isEqualTo(2)
@@ -256,7 +258,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(artefacts = artefacts)
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.artefacts[0].inlineArtefactFigure).isNull()
@@ -273,7 +275,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                             DataInfo("data2", 200, 2000)))
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.dataLinks.count()).isEqualTo(2)
@@ -303,7 +305,7 @@ class GetByNameAndVersionTests : TeamcityTests()
                     mockReportDetails.copy(resources = listOf(FileInfo("resource1.Rmd", 100), FileInfo("subdir/resource2.Rmd", 200)))
         }
 
-        val sut = ReportController(mockActionContext, orderly, mock())
+        val sut = ReportController(mockActionContext, orderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.resources.count()).isEqualTo(2)
@@ -318,7 +320,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `zipFile has expected url`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
 
         assertThat(result.zipFile.name).isEqualTo("r1-$versionId.zip")
@@ -334,7 +336,7 @@ class GetByNameAndVersionTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn true
         }
-        val sut = ReportController(actionContext, mockOrderly, mock())
+        val sut = ReportController(actionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.isRunner).isTrue()
     }
@@ -347,7 +349,7 @@ class GetByNameAndVersionTests : TeamcityTests()
             on { this.params(":version") } doReturn versionId
             on { this.hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn false
         }
-        val sut = ReportController(actionContext, mockOrderly, mock())
+        val sut = ReportController(actionContext, mockOrderly, mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.isRunner).isFalse()
     }
@@ -355,7 +357,7 @@ class GetByNameAndVersionTests : TeamcityTests()
     @Test
     fun `creates correct breadcrumbs`()
     {
-        val sut = ReportController(mockActionContext, mockOrderly, mock())
+        val sut = ReportController(mockActionContext, mockOrderly, mockReportRepo, mock())
 
         val breadcrumbs = sut.getByNameAndVersion().breadcrumbs
         assertThat(breadcrumbs.count()).isEqualTo(2)

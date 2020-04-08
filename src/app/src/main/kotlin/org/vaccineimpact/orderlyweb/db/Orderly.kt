@@ -51,7 +51,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersion(version)
+            val parameterValues = getParametersForVersions(listOf(version))[version]?: mapOf()
 
             return ReportVersionDetails(basicReportVersion,
                     artefacts = artefacts,
@@ -205,20 +205,6 @@ class Orderly(val isReviewer: Boolean,
                     versionCustomFields,
                     versionParameters,
                     (versionTags + reportTags + orderlyTags).distinct().sorted())
-        }
-    }
-
-    private fun getParametersForVersion(version: String): Map<String, String>
-    {
-        JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    PARAMETERS.REPORT_VERSION,
-                    PARAMETERS.NAME,
-                    PARAMETERS.VALUE)
-                    .from(PARAMETERS)
-                    .where(PARAMETERS.REPORT_VERSION.eq(version))
-                    .fetch()
-                    .associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] }
         }
     }
 

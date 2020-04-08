@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import java.net.URLEncoder
@@ -26,7 +27,7 @@ class OnetimeTokenTests : IntegrationTest()
     @Test
     fun `can use one time token to authenticate`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 
         val tokenReponse = apiRequestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))
@@ -43,7 +44,7 @@ class OnetimeTokenTests : IntegrationTest()
     @Test
     fun `can use one time token to authenticate endpoint with query string`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/?query=whatever"
 
         val tokenReponse = apiRequestHelper.get("/onetime_token/?url=" + URLEncoder.encode("/api/v1$url", "UTF-8"))

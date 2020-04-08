@@ -5,6 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.FileInfo
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -42,7 +44,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with access token`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val token = apiRequestHelper.generateOnetimeToken(url)
@@ -56,7 +58,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with bearer token`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata)
@@ -69,7 +71,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `gets artefact file with bearer token without trailing slash`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png"
         val response = apiRequestHelper.get(url, ContentTypes.binarydata)
@@ -95,7 +97,7 @@ class ArtefactTests : IntegrationTest()
     @Test
     fun `only report readers can download artefact file`()
     {
-        val publishedVersion = Orderly(false, true, listOf()).getReportsByName("other")[0]
+        val publishedVersion = OrderlyReportRepository(false, true, listOf()).getReportsByName("other")[0]
 
         val url = "/reports/other/versions/$publishedVersion/artefacts/graph.png/"
 

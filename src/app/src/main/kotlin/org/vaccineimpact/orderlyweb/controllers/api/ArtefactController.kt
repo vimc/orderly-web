@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 
 class ArtefactController(context: ActionContext,
-                         private val orderly: OrderlyClient,
                          private val reportRepository: ReportRepository,
                          private val artefactRepository: ArtefactRepository,
                          private val files: FileSystem,
@@ -23,7 +22,6 @@ class ArtefactController(context: ActionContext,
 {
     constructor(context: ActionContext) :
             this(context,
-                    Orderly(context),
                     OrderlyReportRepository(context),
                     OrderlyArtefactRepository(),
                     Files(),

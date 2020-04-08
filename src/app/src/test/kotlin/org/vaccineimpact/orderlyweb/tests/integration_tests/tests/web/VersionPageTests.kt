@@ -72,7 +72,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `zip file can be downloaded`()
     {
-        val (report, url) = getAnyReportPageUrl()
+        val (_, url) = getAnyReportPageUrl()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
