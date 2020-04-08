@@ -276,6 +276,35 @@ class RoleControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `throws InvalidOperationError if remove permission from Admin role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "Admin"
+            on { this.params(":name") } doReturn "test.permission"
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        assertThatThrownBy{ sut.removePermission() }.isInstanceOf(InvalidOperationError::class.java)
+                .hasMessageContaining("You cannot remove permissions from the Admin role")
+    }
+
+    @Test
+    fun `throws InvalidOperationError if add permission to Admin role`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":role-id") } doReturn "Admin"
+            on { this.params(":name") } doReturn "test.permission"
+        }
+
+        val authRepo = mock<AuthorizationRepository>()
+        val sut = RoleController(actionContext, mock(), authRepo)
+        assertThatThrownBy{ sut.addPermission() }.isInstanceOf(InvalidOperationError::class.java)
+                .hasMessageContaining("You cannot add permissions to the Admin role")
+    }
+
+
+    @Test
     fun `adds new role`()
     {
         val actionContext = mock<ActionContext> {
