@@ -8,6 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.*
@@ -137,6 +138,48 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.name).isEqualTo("test")
         assertThat(result.id).isEqualTo("version1")
         assertThat(result.published).isFalse()
+    }
+
+    @Test
+    fun `can getAllReportVersions with custom fields`()
+    {
+        insertReport("test", "va")
+        insertReport("test", "vb")
+        insertReport("test", "vc")
+
+        val mockReportRepo = mock<ReportRepository> {
+            on { getAllCustomFields() } doReturn
+                    mapOf("author" to null, "requester" to null)
+            on { getCustomFieldsForVersions(listOf("va", "vb", "vc")) } doReturn
+                    mapOf("va" to mapOf("author" to "author authorson"))
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo)
+
+        val results = sut.getAllReportVersions()
+
+        assertThat(results.count()).isEqualTo(3)
+
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].id).isEqualTo("va")
+        assertThat(results[0].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
+        assertThat(results[0].customFields["requester"]).isEqualTo(null)
+
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("vb")
+        assertThat(results[1].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[1].customFields["author"]).isEqualTo(null)
+        assertThat(results[1].customFields["requester"]).isEqualTo(null)
+
+        assertThat(results[2].name).isEqualTo("test")
+        assertThat(results[2].id).isEqualTo("vc")
+        assertThat(results[2].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[2].customFields["author"]).isEqualTo(null)
+        assertThat(results[2].customFields["requester"]).isEqualTo(null)
     }
 
     @Test
