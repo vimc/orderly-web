@@ -21,28 +21,8 @@ class Orderly(val isReviewer: Boolean,
 
     override fun getAllReportVersions(): List<ReportVersion>
     {
-        JooqContext().use {
-            // create a temp table containing the latest version ID for each report name
-            val latestVersionForEachReport = getLatestVersionsForReports(it)
-
-            val versions = it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
-                            latestVersionForEachReport.field<String>("latestVersion"),
-                            REPORT_VERSION.DESCRIPTION
-                    )
-                    .from(REPORT_VERSION)
-                    .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fetchInto(BasicReportVersion::class.java)
-
-            return mapToReportVersions(it, versions)
-        }
+        val basicVersions = reportRepository.getAllReportVersions()
+        return mapToReportVersions(basicVersions)
     }
 
     override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
@@ -51,7 +31,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersions(listOf(version))[version]?: mapOf()
+            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(basicReportVersion,
                     artefacts = artefacts,
@@ -155,28 +135,14 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
             return getDatedChangelogForReport(basicVersion.name, Timestamp.from(basicVersion.date), it)
         }
-
     }
 
-    private fun mapToReportVersions(ctx: JooqContext,
-                                    basicVersions: List<BasicReportVersion>): List<ReportVersion>
+    private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
     {
-        val allCustomFields = ctx.dsl.select(
-                CUSTOM_FIELDS.ID)
-                .from(CUSTOM_FIELDS)
-                .fetch()
-                .associate { r -> r[CUSTOM_FIELDS.ID] to null as String? }
 
         val versionIds = basicVersions.map { it.id }
-        val customFieldsForVersions = ctx.dsl.select(
-                REPORT_VERSION_CUSTOM_FIELDS.KEY,
-                REPORT_VERSION_CUSTOM_FIELDS.VALUE,
-                REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
-                .from(REPORT_VERSION_CUSTOM_FIELDS)
-                .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
-                .fetch()
-                .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
-
+        val allCustomFields = reportRepository.getAllCustomFields()
+        val customFieldsForVersions = reportRepository.getCustomFieldsForVersions(versionIds)
         val parametersForVersions = getParametersForVersions(versionIds)
 
         val allVersionTags = getVersionTags(versionIds)
@@ -189,11 +155,7 @@ class Orderly(val isReviewer: Boolean,
             val versionCustomFields = mutableMapOf<String, String?>()
 
             versionCustomFields.putAll(allCustomFields)
-            if (customFieldsForVersions.containsKey(versionId))
-            {
-                versionCustomFields.putAll(customFieldsForVersions[versionId]!!
-                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
-            }
+            versionCustomFields.putAll(customFieldsForVersions[versionId]?: mapOf())
 
             val versionParameters = parametersForVersions[versionId] ?: mapOf()
 
