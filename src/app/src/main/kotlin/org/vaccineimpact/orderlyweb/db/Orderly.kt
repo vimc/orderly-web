@@ -259,19 +259,6 @@ class Orderly(val isReviewer: Boolean,
         }
     }
 
-    private fun getLatestVersionsForReports(db: JooqContext): TempTable
-    {
-        return db.dsl.select(
-                REPORT_VERSION.REPORT,
-                REPORT_VERSION.ID.`as`("latestVersion"),
-                REPORT_VERSION.DATE.max().`as`("maxDate")
-        )
-                .from(REPORT_VERSION)
-                .where(shouldIncludeReportVersion)
-                .groupBy(REPORT_VERSION.REPORT)
-                .asTemporaryTable(name = "latest_version_for_each_report")
-    }
-
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
     {
         return ctx.dsl
