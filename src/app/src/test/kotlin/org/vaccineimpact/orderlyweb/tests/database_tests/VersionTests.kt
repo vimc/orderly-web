@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
@@ -11,7 +10,9 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.test_helpers.*
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
@@ -142,63 +143,68 @@ class VersionTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can get report versions`()
+    fun `get report versions includes custom fields and parameters`()
     {
-        insertReport("test", "va")
+        val basicReportVersion = BasicReportVersion("test", "display name", "va", true,
+                Instant.now(), "v3", "description")
 
-        insertReport("test", "vz")
-        insertVersionParameterValues("vz", mapOf("p1" to "v1", "p2" to "v2"))
+        val mockReportRepo = mock<ReportRepository> {
+            on { getAllReportVersions() } doReturn listOf(
+                    basicReportVersion, basicReportVersion.copy(id = "vz"),
+                    basicReportVersion.copy(name = "test2", id = "vd")
+            )
+            on { getAllCustomFields() } doReturn
+                    mapOf("author" to null, "requester" to null)
+            on { getCustomFieldsForVersions(listOf("va", "vz", "vd")) } doReturn
+                    mapOf("va" to mapOf("author" to "author authorson"))
 
-        insertReport("test2", "vc")
-        insertReport("test2", "vb")
-        insertReportWithCustomFields("test2", "vd", mapOf("author" to "test2 author"))
-        insertReportWithCustomFields("test3", "test3version", mapOf())
-        insertReport("test3", "test3versionunpublished", published = false)
+            on { getParametersForVersions(listOf("va", "vz", "vd")) } doReturn
+                    mapOf("vz" to mapOf("p1" to "param1"))
+        }
 
-        val sut = createSut()
+        val mockTagRepo = mock<TagRepository> {
+            on { getVersionTags(listOf("va", "vz", "vd")) } doReturn mapOf()
+            on { getReportTagsForVersions(listOf("va", "vz", "vd")) } doReturn mapOf()
+            on { getOrderlyTagsForVersions(listOf("va", "vz", "vd")) } doReturn mapOf()
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo,
+                tagRepository = mockTagRepo)
 
         val results = sut.getAllReportVersions()
 
         assertThat(results.count()).isEqualTo(6)
 
         assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].displayName).isEqualTo("display name")
         assertThat(results[0].latestVersion).isEqualTo("vz")
         assertThat(results[0].id).isEqualTo("va")
         assertThat(results[0].published).isTrue()
         assertThat(results[0].customFields.keys.count()).isEqualTo(2)
         assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
-        assertThat(results[0].customFields["requester"]).isEqualTo("requester mcfunder")
+        assertThat(results[0].customFields["requester"]).isEqualTo(null)
         assertThat(results[0].parameterValues.keys.count()).isEqualTo(0)
 
         assertThat(results[1].name).isEqualTo("test")
         assertThat(results[1].id).isEqualTo("vz")
         assertThat(results[1].latestVersion).isEqualTo("vz")
+        assertThat(results[1].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[1].customFields["author"]).isEqualTo(null)
+        assertThat(results[1].customFields["requester"]).isEqualTo(null)
         assertThat(results[1].parameterValues.keys.count()).isEqualTo(2)
-        assertThat(results[1].parameterValues["p1"]).isEqualTo("v1")
-        assertThat(results[1].parameterValues["p2"]).isEqualTo("v2")
+        assertThat(results[1].parameterValues["p1"]).isEqualTo("param1")
 
-        assertThat(results[2].name).isEqualTo("test2")
-        assertThat(results[2].id).isEqualTo("vb")
-        assertThat(results[2].latestVersion).isEqualTo("vd")
-
-        assertThat(results[3].name).isEqualTo("test2")
-        assertThat(results[3].id).isEqualTo("vc")
-        assertThat(results[3].latestVersion).isEqualTo("vd")
 
         assertThat(results[4].name).isEqualTo("test2")
         assertThat(results[4].id).isEqualTo("vd")
         assertThat(results[4].latestVersion).isEqualTo("vd")
         assertThat(results[4].customFields.keys.count()).isEqualTo(2)
-        assertThat(results[4].customFields["author"]).isEqualTo("test2 author")
+        assertThat(results[4].customFields["author"]).isEqualTo(null)
         assertThat(results[4].customFields["requester"]).isEqualTo(null)
-
-        assertThat(results[5].name).isEqualTo("test3")
-        assertThat(results[5].id).isEqualTo("test3version")
-        assertThat(results[5].latestVersion).isEqualTo("test3version")
-        assertThat(results[5].customFields.keys.count()).isEqualTo(2)
-        assertThat(results[5].customFields["author"]).isEqualTo(null)
-        assertThat(results[5].customFields["requester"]).isEqualTo(null)
+        assertThat(results[4].parameterValues.keys.count()).isEqualTo(0)
 
     }
 
