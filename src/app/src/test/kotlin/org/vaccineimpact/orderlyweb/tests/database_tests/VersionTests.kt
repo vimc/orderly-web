@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
-import java.sql.Timestamp
 import java.time.Instant
 
 class VersionTests : CleanDatabaseTests()
@@ -33,7 +32,7 @@ class VersionTests : CleanDatabaseTests()
 
     private val mockReportRepo = mock<ReportRepository> {
         on { getReportVersion("test", "v1") } doReturn basicReportVersion
-        on { getAllReportVersions() } doReturn listOf(basicReportVersion)
+        on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
     }
 
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
@@ -44,16 +43,17 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `can get report version details`()
     {
-        val now = Timestamp(System.currentTimeMillis())
-        insertReport("test", "v1", date = now,
-                author = "dr author", requester = "ms requester")
+        // although fetching reports from the repo is mocked we need to insert this
+        // record so that we can insert files/data/artefacts/parameters which are
+        // still fetched directly from the db
+        insertReport("test", "v1")
 
         insertFileInput("v1", "file.csv", FilePurpose.RESOURCE, 2345)
         insertFileInput("v1", "graph.png", FilePurpose.RESOURCE, 3456)
 
         insertData("v1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
-        insertArtefact("version1", "some artefact",
+        insertArtefact("v1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
         insertVersionParameterValues("v1", mapOf("p1" to "v1", "p2" to "v2"))
@@ -61,11 +61,14 @@ class VersionTests : CleanDatabaseTests()
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "v1")
 
+        // these properties come from the mock
         assertThat(result.id).isEqualTo("v1")
         assertThat(result.name).isEqualTo("test")
-        assertThat(result.displayName).isEqualTo("display name test")
+        assertThat(result.displayName).isEqualTo("display name")
         assertThat(result.date).isEqualTo(now)
         assertThat(result.published).isTrue()
+
+        // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
@@ -85,7 +88,7 @@ class VersionTests : CleanDatabaseTests()
 
         // don't mock the repos as this method still goes directly to the db
         val sut = Orderly(true, true, listOf())
-        val result = sut.getReportVersionTags("test", "version1")
+        val result = sut.getReportVersionTags("test", "v1")
         assertThat(result.versionTags).containsExactlyElementsOf(listOf("v1", "v2"))
         assertThat(result.reportTags).containsExactlyElementsOf(listOf("r1", "r2"))
         assertThat(result.orderlyTags).containsExactlyElementsOf(listOf("o1"))
@@ -106,7 +109,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test", "version1", published = false)
 
         // don't mock the repos as this method still goes directly to the db
-        val sut = Orderly(true, true, listOf())
+        val sut = Orderly(isReviewer = false, isGlobalReader = true, reportReadingScopes = listOf())
         Assertions.assertThatThrownBy { sut.getReportVersionTags("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
@@ -213,7 +216,7 @@ class VersionTests : CleanDatabaseTests()
 
         val results = sut.getAllReportVersions()
 
-        assertThat(results.count()).isEqualTo(3)
+        assertThat(results.count()).isEqualTo(2)
 
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[0].id).isEqualTo("v1")
@@ -238,7 +241,7 @@ class VersionTests : CleanDatabaseTests()
 
         val results = sut.getAllReportVersions()
 
-        assertThat(results.count()).isEqualTo(6)
+        assertThat(results.count()).isEqualTo(2)
 
         assertThat(results[0].name).isEqualTo("test")
         assertThat(results[0].id).isEqualTo("v1")
