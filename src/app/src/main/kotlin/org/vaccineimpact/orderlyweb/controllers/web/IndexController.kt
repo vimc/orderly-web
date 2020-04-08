@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
@@ -16,7 +16,7 @@ class IndexController(actionContext: ActionContext,
                       private val tagRepository: TagRepository) : Controller(actionContext)
 {
     constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
+            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyTagRepository())
 
     @Template("index.ftl")
     fun index(): IndexViewModel
