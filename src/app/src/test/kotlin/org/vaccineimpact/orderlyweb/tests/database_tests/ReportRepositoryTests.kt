@@ -6,14 +6,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Orderly
-import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
 
-class ReportTests : CleanDatabaseTests()
+class ReportRepositoryTests : CleanDatabaseTests()
 {
-    private fun createSut(isReviewer: Boolean = false): OrderlyClient
+    private fun createSut(isReviewer: Boolean = false): ReportRepository
     {
-        return Orderly(isReviewer, true, listOf())
+        return OrderlyReportRepository(isReviewer, true, listOf())
     }
 
     @Test
@@ -51,7 +52,7 @@ class ReportTests : CleanDatabaseTests()
             on { it.reportReadingScopes } doReturn listOf("goodname")
         }
 
-        val sut = Orderly(mockContext)
+        val sut = OrderlyReportRepository(mockContext)
 
         val result = sut.getAllReports()
         assertThat(result).hasSize(1)
@@ -68,7 +69,7 @@ class ReportTests : CleanDatabaseTests()
             on { it.isGlobalReader() } doReturn true
         }
 
-        val sut = Orderly(mockContext)
+        val sut = OrderlyReportRepository(mockContext)
 
         val results = sut.getAllReports()
         assertThat(results.count()).isEqualTo(2)
@@ -86,7 +87,7 @@ class ReportTests : CleanDatabaseTests()
             on { it.reportReadingScopes } doReturn listOf("goodname")
         }
 
-        val sut = Orderly(mockContext)
+        val sut = OrderlyReportRepository(mockContext)
 
         val result = sut.getGlobalPinnedReports()
         assertThat(result).hasSize(1)
@@ -105,7 +106,7 @@ class ReportTests : CleanDatabaseTests()
             on { it.isGlobalReader() } doReturn true
         }
 
-        val sut = Orderly(mockContext)
+        val sut = OrderlyReportRepository(mockContext)
 
         val results = sut.getGlobalPinnedReports()
         assertThat(results.count()).isEqualTo(2)
@@ -122,7 +123,7 @@ class ReportTests : CleanDatabaseTests()
 
         insertReport("report", "v3")
 
-        val sut = createSut(isReviewer = true)
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
         assertThat(results[0].id).isEqualTo("v1")
@@ -149,7 +150,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("report3", "v3")
         insertReportTags("report3", "a-tag")
 
-        val sut = createSut(isReviewer = true)
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
         assertThat(results[0].id).isEqualTo("v1")
@@ -176,7 +177,7 @@ class ReportTests : CleanDatabaseTests()
         insertReport("report3", "v3")
         insertOrderlyTags("v3", "g")
 
-        val sut = createSut(isReviewer = true)
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
         assertThat(results[0].id).isEqualTo("v1")
@@ -287,13 +288,75 @@ class ReportTests : CleanDatabaseTests()
 
         var result = sut.togglePublishStatus("test", "version1")
 
-        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isFalse()
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
         assertThat(result).isFalse()
 
         result = sut.togglePublishStatus("test", "version1")
         assertThat(result).isTrue()
 
-        assertThat(sut.getDetailsByNameAndVersion("test", "version1").published).isTrue()
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
 
     }
+
+
+
+    @Test
+    fun `reader can get latest published versions of pinned reports`()
+    {
+        insertReport("test1", "20170103-143015-1234pub")
+        insertReport("test1", "20180103-143015-1234pub")
+        insertReport("test1", "20190103-143015-1234unpub", published = false)
+
+        insertReport("test2", "20160203-143015-1234pub")
+
+        insertReport("test3", "20170203-143015-1234pub")
+
+        insertReport("test4", "20180203-143015-1234unpub", published = false)
+
+        insertGlobalPinnedReport("test4", 0)
+        insertGlobalPinnedReport("test3", 1)
+        insertGlobalPinnedReport("test1", 2)
+
+        val sut = createSut(isReviewer = false)
+
+        val results = sut.getGlobalPinnedReports()
+
+        assertThat(results.count()).isEqualTo(2)
+        assertThat(results[0].name).isEqualTo("test3")
+        assertThat(results[0].latestVersion).isEqualTo("20170203-143015-1234pub")
+        assertThat(results[1].name).isEqualTo("test1")
+        assertThat(results[1].latestVersion).isEqualTo("20180103-143015-1234pub")
+    }
+
+    @Test
+    fun `reviewer can get latest published and unpublished versions of pinned reports`()
+    {
+        insertReport("test1", "20170103-143015-1234pub")
+        insertReport("test1", "20180103-143015-1234pub")
+        insertReport("test1", "20190103-143015-1234unpub", published = false)
+
+        insertReport("test2", "20160203-143015-1234pub")
+
+        insertReport("test3", "20170203-143015-1234pub")
+
+        insertReport("test4", "20180203-143015-1234unpub", published = false)
+
+        insertGlobalPinnedReport("test4", 0)
+        insertGlobalPinnedReport("test3", 1)
+        insertGlobalPinnedReport("test1", 2)
+
+        val sut = createSut(isReviewer = true)
+
+        val results = sut.getGlobalPinnedReports()
+
+        assertThat(results.count()).isEqualTo(3)
+        assertThat(results[0].name).isEqualTo("test4")
+        assertThat(results[0].latestVersion).isEqualTo("20180203-143015-1234unpub")
+        assertThat(results[1].name).isEqualTo("test3")
+        assertThat(results[1].latestVersion).isEqualTo("20170203-143015-1234pub")
+        assertThat(results[2].name).isEqualTo("test1")
+        assertThat(results[2].latestVersion).isEqualTo("20190103-143015-1234unpub")
+    }
+
+
 }
