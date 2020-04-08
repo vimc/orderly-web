@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.database_tests
+package org.vaccineimpact.orderlyweb.tests.database_tests.reportRepositoryTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -10,7 +10,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
 
-class ReportRepositoryTests : CleanDatabaseTests()
+class ReportTests : CleanDatabaseTests()
 {
     private fun createSut(isReviewer: Boolean = false): ReportRepository
     {
@@ -297,8 +297,6 @@ class ReportRepositoryTests : CleanDatabaseTests()
         assertThat(sut.getReportVersion("test", "version1").published).isTrue()
 
     }
-
-
 
     @Test
     fun `reader can get latest published versions of pinned reports`()

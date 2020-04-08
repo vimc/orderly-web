@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
+import org.jooq.Record2
+import org.jooq.SelectConditionStep
 import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -15,10 +17,11 @@ interface TagRepository
 
 class OrderlyWebTagRepository : TagRepository
 {
-    override fun getAllTags(): List<String> {
+    override fun getAllTags(): List<String>
+    {
         JooqContext().use {
             return it.dsl.select(
-                            ORDERLYWEB_REPORT_TAG.TAG)
+                    ORDERLYWEB_REPORT_TAG.TAG)
                     .from(ORDERLYWEB_REPORT_TAG)
                     .union(it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
                             .from(ORDERLYWEB_REPORT_VERSION_TAG))
@@ -77,5 +80,51 @@ class OrderlyWebTagRepository : TagRepository
                 }
             }
         }
+    }
+
+    override fun getAllTagsForVersions(versionIds: List<String>): Map<String, List<String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+                    .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
+                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
+        }
+    }
+
+    private fun getVersionTagsQuery(versionIds: List<String>, ctx: JooqContext)
+            : SelectConditionStep<Record2<String, String>>
+    {
+        return ctx.dsl.select(
+                ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`as`("version"),
+                ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+    }
+
+    private fun getReportTagsForVersionsQuery(versionIds: List<String>, ctx: JooqContext)
+            : SelectConditionStep<Record2<String, String>>
+    {
+        return ctx.dsl.select(
+                ORDERLYWEB_REPORT_TAG.TAG,
+                REPORT_VERSION.ID.`as`("version"))
+                .from(ORDERLYWEB_REPORT_TAG)
+                .innerJoin(REPORT_VERSION)
+                .on(ORDERLYWEB_REPORT_TAG.REPORT.eq(REPORT_VERSION.REPORT))
+                .where(REPORT_VERSION.ID.`in`(versionIds))
+    }
+
+    private fun getOrderlyTagsForVersionsQuery(versionIds: List<String>, ctx: JooqContext)
+            : SelectConditionStep<Record2<String, String>>
+    {
+        return ctx.dsl.select(
+                REPORT_VERSION_TAG.REPORT_VERSION.`as`("version"),
+                REPORT_VERSION_TAG.TAG)
+                .from(REPORT_VERSION_TAG)
+                .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+
     }
 }

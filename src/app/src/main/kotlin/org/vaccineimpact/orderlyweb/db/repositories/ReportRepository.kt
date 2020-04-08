@@ -21,8 +21,9 @@ interface ReportRepository
     fun getReportVersion(name: String, version: String): BasicReportVersion
 
     fun getAllReportVersions(): List<BasicReportVersion>
-    fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, List<Pair<String, String>>>
+    fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
     fun getAllCustomFields(): Map<String, String?>
+    fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -151,7 +152,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, List<Pair<String, String>>>
+    override fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
     {
         JooqContext().use {
             return it.dsl.select(
@@ -162,7 +163,22 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
                     .fetch()
                     .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
-                    .mapValues { it.value.map { Pair(it[REPORT_VERSION_CUSTOM_FIELDS.KEY], it[REPORT_VERSION_CUSTOM_FIELDS.VALUE]) } }
+                    .mapValues { it.value.associate { it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to it[REPORT_VERSION_CUSTOM_FIELDS.VALUE] } }
+        }
+    }
+
+    override fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.select(
+                    PARAMETERS.REPORT_VERSION,
+                    PARAMETERS.NAME,
+                    PARAMETERS.VALUE)
+                    .from(PARAMETERS)
+                    .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
+                    .fetch()
+                    .groupBy { it[PARAMETERS.REPORT_VERSION] }
+                    .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
         }
     }
 
