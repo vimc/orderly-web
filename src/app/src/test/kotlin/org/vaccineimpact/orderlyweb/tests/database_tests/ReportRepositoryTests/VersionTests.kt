@@ -13,7 +13,8 @@ import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
 
-class VersionTests: CleanDatabaseTests() {
+class VersionTests : CleanDatabaseTests()
+{
 
     private fun createSut(isReviewer: Boolean = false): ReportRepository
     {

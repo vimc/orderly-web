@@ -139,10 +139,10 @@ class Orderly(val isReviewer: Boolean,
 
     private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
     {
-
         val versionIds = basicVersions.map { it.id }
         val allCustomFields = reportRepository.getAllCustomFields()
         val customFieldsForVersions = reportRepository.getCustomFieldsForVersions(versionIds)
+
         val parametersForVersions = getParametersForVersions(versionIds)
 
         val allVersionTags = getVersionTags(versionIds)

@@ -22,9 +22,10 @@ interface ReportRepository
 
     fun getAllReportVersions(): List<BasicReportVersion>
 
+    fun getAllCustomFields(): Map<String, String?>
+
     fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 
-    fun getAllCustomFields(): Map<String, String?>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
