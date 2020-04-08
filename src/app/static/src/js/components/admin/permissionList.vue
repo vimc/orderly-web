@@ -2,14 +2,14 @@
     <div>
         <ul v-if="permissions.length > 0" class="list-unstyled children mt-1">
             <li v-for="p in sortedPermissions">
-                <span class="name" :class="{'text-muted': !isDirect(p)}" :name="p.name">{{p.name}} <span
+                <span class="name" :class="{'text-muted': !canRemovePermission(p)}" :name="p.name">{{p.name}} <span
                         v-if="p.scope_prefix">/ {{p.scope_prefix}}:{{p.scope_id}}</span></span>
-                <span v-if="isDirect(p)" v-on:click="function() {remove(p)}"
+                <span v-if="canRemovePermission(p)" v-on:click="function() {remove(p)}"
                       class="remove d-inline-block ml-2 large">×</span>
                 <span v-if="!isDirect(p)" class="text-muted source small">(via {{p.source}})</span>
             </li>
         </ul>
-        <add-permission :user-group="userGroup" :available-permissions="availablePermissions" @added="add"></add-permission>
+        <add-permission v-if="canEdit" :user-group="userGroup" :available-permissions="availablePermissions" @added="add"></add-permission>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -22,7 +22,7 @@
     export default {
         name: "permissionList",
         components: {AddPermission, ErrorInfo},
-        props: ["permissions", "userGroup"],
+        props: ["permissions", "userGroup", "canEdit"],
         data() {
             return {
                 error: "",
@@ -56,6 +56,9 @@
             },
             add(p) {
                 this.$emit("added", p);
+            },
+            canRemovePermission(p) {
+                return this.canEdit && this.isDirect(p)
             },
             isDirect(p) {
                 return p.source === this.userGroup

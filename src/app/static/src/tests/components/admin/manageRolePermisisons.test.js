@@ -45,7 +45,22 @@ describe("manageRolePermissions", () => {
         expect(listItems.at(1).find('span').text()).toBe("Science");
         expect(listItems.at(1).findAll(PermissionList).length).toBe(1);
         expect(listItems.at(1).find(PermissionList).props().permissions.length).toBe(0);
+        expect(listItems.at(1).find(PermissionList).props().canEdit).toBe(true);
 
+    });
+
+    it('renders PermissionList with canEdit false for Admin role', () => {
+        const wrapper = shallowMount(ManageRolePermissions, {
+            propsData: {
+                roles: [
+                    {name: "Admin", permissions: []}
+                ]
+            }
+        });
+
+        const listItems = wrapper.findAll("li");
+        expect(listItems.length).toBe(1);
+        expect(listItems.at(0).find(PermissionList).props().canEdit).toBe(false);
     });
 
     it('renders with error', async () => {
