@@ -26,6 +26,8 @@ class VersionTests : CleanDatabaseTests()
                 mapOf("author" to null, "requester" to null)
         on { getCustomFieldsForVersions(listOf(version)) } doReturn
                 mapOf(version to mapOf("author" to "test2 author"))
+        on { getAllReportVersions() } doReturn
+                listOf(BasicReportVersion(name, "display name", version, true, Instant.now(), "v", "desc"))
     }
 
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
@@ -71,27 +73,16 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `can get all report versions`()
     {
-        insertReport("test", "va")
-
-        insertReport("test", "vz")
-        insertVersionParameterValues("vz", mapOf("p1" to "v1", "p2" to "v2"))
-
-        insertReport("test2", "vc")
-        insertReport("test2", "vb")
-        insertReportWithCustomFields("test2", "vd", mapOf("author" to "test2 author"))
-        insertReportWithCustomFields("test3", "test3version", mapOf())
-        insertReport("test3", "test3versionunpublished", published = false)
-
         val sut = createSut()
 
         val results = sut.getAllReportVersions()
 
-        assertThat(results.count()).isEqualTo(6)
+        assertThat(results.count()).isEqualTo(1)
 
-        assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].displayName).isEqualTo("display name test")
-        assertThat(results[0].latestVersion).isEqualTo("vz")
-        assertThat(results[0].id).isEqualTo("va")
+        assertThat(results[0].name).isEqualTo(name)
+        assertThat(results[0].displayName).isEqualTo("display name")
+        assertThat(results[0].latestVersion).isEqualTo("v")
+        assertThat(results[0].id).isEqualTo(version)
         assertThat(results[0].published).isTrue()
         assertThat(results[0].customFields.keys.count()).isEqualTo(2)
         assertThat(results[0].customFields["author"]).isEqualTo("author authorson")

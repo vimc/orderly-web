@@ -153,6 +153,8 @@ class ReportTests : CleanDatabaseTests()
         val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
+        val reportTags = sut.getReportVersionTags("report", "v1")
+
         assertThat(results[0].id).isEqualTo("v1")
         assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag", "d-tag"))
 

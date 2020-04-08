@@ -86,12 +86,15 @@ class OrderlyTagRepository : TagRepository
     override fun getAllTagsForVersions(versionIds: List<String>): Map<String, List<String>>
     {
         JooqContext().use { ctx ->
-            return getVersionTagsQuery(versionIds, ctx)
+            val tags = getVersionTagsQuery(versionIds, ctx)
                     .union(getReportTagsForVersionsQuery(versionIds, ctx))
                     .union(getOrderlyTagsForVersionsQuery(versionIds, ctx))
                     .fetch()
+
+            val groups = tags
                     .groupBy { it["version"] as String }
-                    .mapValues { it.value.map { r -> r["tag"] as String } }
+
+            return groups.mapValues { it.value.map { r -> r["tag"] as String } }
         }
     }
 
@@ -119,8 +122,8 @@ class OrderlyTagRepository : TagRepository
             : SelectConditionStep<Record2<String, String>>
     {
         return ctx.dsl.select(
-                ORDERLYWEB_REPORT_TAG.TAG.`as`("tag"),
-                REPORT_VERSION.ID.`as`("version"))
+                REPORT_VERSION.ID.`as`("version"),
+                ORDERLYWEB_REPORT_TAG.TAG.`as`("tag"))
                 .from(ORDERLYWEB_REPORT_TAG)
                 .innerJoin(REPORT_VERSION)
                 .on(ORDERLYWEB_REPORT_TAG.REPORT.eq(REPORT_VERSION.REPORT))
