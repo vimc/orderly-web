@@ -6,14 +6,12 @@ data class ReportVersionDetails(@Transient val basicReportVersion: BasicReportVe
                                 val artefacts: List<Artefact>,
                                 val resources: List<FileInfo>,
                                 val dataInfo: List<DataInfo>,
-                                val parameterValues: Map<String, String>) : Version by basicReportVersion
+                                val parameterValues: Map<String, String>)
 {
-    // we have to declare these overrides so that this gets serialised as a flat object
-    override val date: Instant = basicReportVersion.date
-    override val description: String? = basicReportVersion.description
-    override val displayName: String? = basicReportVersion.displayName
-    override val id: String = basicReportVersion.id
-    override val name: String = basicReportVersion.name
-    override val latestVersion: String = basicReportVersion.latestVersion
-    override val published: Boolean = basicReportVersion.published
+    val date: Instant = basicReportVersion.date
+    val description: String? = basicReportVersion.description
+    val displayName: String? = basicReportVersion.displayName
+    val id: String = basicReportVersion.id
+    val name: String = basicReportVersion.name
+    val published: Boolean = basicReportVersion.published
 }

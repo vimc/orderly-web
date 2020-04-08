@@ -53,7 +53,7 @@ class GetByNameAndVersionTests : TeamcityTests()
         val sut = ReportController(mockActionContext, mockOrderly, mock())
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.report).isEqualTo(mockReportDetails)
+        assertThat(result.report.displayName).isEqualTo( "a fake report")
     }
 
     @Test
