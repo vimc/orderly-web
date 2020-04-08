@@ -7,6 +7,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.BasicReportVersion
 import org.vaccineimpact.orderlyweb.models.Report
@@ -53,7 +54,7 @@ class IndexControllerTests : TeamcityTests()
         val mockTagRepo = mock<TagRepository>() {
             on { this.getReportTags(listOf("r1", "r2")) } doReturn mapOf("r1" to listOf("report tag"))
         }
-        val sut = IndexController(globalReaderContext, mockOrderly, mockTagRepo)
+        val sut = IndexController(globalReaderContext, mockOrderly, mock(), mockTagRepo)
 
         val result = sut.index().reports.sortedBy { it.ttKey }
 
@@ -127,10 +128,10 @@ class IndexControllerTests : TeamcityTests()
 
         val fakeReports = listOf(r1v1, r1v2)
 
-        val mockOrderly = mock<OrderlyClient> {
+        val mockReportRepo = mock<ReportRepository> {
             on { this.getGlobalPinnedReports() } doReturn fakeReports
         }
-        val sut = IndexController(globalReaderContext, mockOrderly, mock())
+        val sut = IndexController(globalReaderContext, mock(), mockReportRepo, mock())
 
         val result = sut.index().pinnedReports
 
@@ -167,7 +168,7 @@ class IndexControllerTests : TeamcityTests()
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
         }
 
-        val mockOrderly = mock<OrderlyClient> {
+        val mockReportRepo = mock<ReportRepository> {
             on { this.getGlobalPinnedReports() } doReturn listOf<Report>()
         }
 
@@ -175,7 +176,7 @@ class IndexControllerTests : TeamcityTests()
             on { getAllTags() } doReturn listOf("a", "b")
         }
 
-        val sut = IndexController(documentReaderContext, mockOrderly, mockRepo)
+        val sut = IndexController(documentReaderContext, mock(), mockReportRepo, mockRepo)
         val result = sut.index()
         assertThat(result.tags).containsExactly("a", "b")
     }
@@ -187,7 +188,7 @@ class IndexControllerTests : TeamcityTests()
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
         }
 
-        val mockOrderly = mock<OrderlyClient> {
+        val mockReportRepo = mock<ReportRepository> {
             on { this.getGlobalPinnedReports() } doReturn listOf<Report>()
         }
 
@@ -195,11 +196,11 @@ class IndexControllerTests : TeamcityTests()
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn false
         }
 
-        var sut = IndexController(documentReaderContext, mockOrderly, mock())
+        var sut = IndexController(documentReaderContext, mock(), mockReportRepo, mock())
         var result = sut.index()
         assertThat(result.showProjectDocs).isTrue()
 
-        sut = IndexController(noPermsContext, mockOrderly, mock())
+        sut = IndexController(noPermsContext, mock(), mockReportRepo, mock())
         result = sut.index()
         assertThat(result.showProjectDocs).isFalse()
     }

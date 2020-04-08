@@ -12,12 +12,15 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import java.io.File
 
 class VersionController(context: ActionContext,
                         private val orderly: OrderlyClient,
+                        private val reportRepository: ReportRepository,
                         private val artefactRepository: ArtefactRepository,
                         private val zip: ZipClient,
                         private val files: FileSystem = Files(),
@@ -27,6 +30,7 @@ class VersionController(context: ActionContext,
     constructor(context: ActionContext) :
             this(context,
                     Orderly(context),
+                    OrderlyReportRepository(context),
                     OrderlyArtefactRepository(),
                     Zip(),
                     Files(),
@@ -49,7 +53,7 @@ class VersionController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        orderly.getReportVersion(name, version)
+        reportRepository.getReportVersion(name, version)
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$name/$version/orderly_run.rds"
         return downloadFile(files, absoluteFilePath, "\"$name/$version/orderly_run.rds\"", ContentTypes.binarydata)
     }
@@ -60,7 +64,7 @@ class VersionController(context: ActionContext,
         val version = context.params(":version")
 
         // check that the requested version exists for the given report
-        orderly.getReportVersion(name, version)
+        reportRepository.getReportVersion(name, version)
 
         val response = context.getSparkResponse().raw()
 

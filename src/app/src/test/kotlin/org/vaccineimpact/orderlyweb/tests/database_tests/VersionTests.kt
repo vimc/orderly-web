@@ -1,8 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -246,62 +249,114 @@ class VersionTests : CleanDatabaseTests()
         Assertions.assertThat(results[6].id).isEqualTo("test3versionunpublished")
         Assertions.assertThat(results[6].latestVersion).isEqualTo("test3versionunpublished")
     }
-
     @Test
-    fun `reader can get latest published versions of pinned reports`()
+    fun `getAllReportVersions returns version tags`()
     {
-        insertReport("test1", "20170103-143015-1234pub")
-        insertReport("test1", "20180103-143015-1234pub")
-        insertReport("test1", "20190103-143015-1234unpub", published = false)
+        insertReport("report", "v1")
+        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
 
-        insertReport("test2", "20160203-143015-1234pub")
+        insertReport("report", "v2")
+        insertVersionTags("v2", "aa-tag")
 
-        insertReport("test3", "20170203-143015-1234pub")
+        insertReport("report", "v3")
 
-        insertReport("test4", "20180203-143015-1234unpub", published = false)
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
+        val results = sut.getAllReportVersions()
 
-        insertGlobalPinnedReport("test4", 0)
-        insertGlobalPinnedReport("test3", 1)
-        insertGlobalPinnedReport("test1", 2)
+        assertThat(results[0].id).isEqualTo("v1")
+        //tags should be sorted
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
 
-        val sut = createSut(isReviewer = false)
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
 
-        val results = sut.getGlobalPinnedReports()
-
-        assertThat(results.count()).isEqualTo(2)
-        assertThat(results[0].name).isEqualTo("test3")
-        assertThat(results[0].latestVersion).isEqualTo("20170203-143015-1234pub")
-        assertThat(results[1].name).isEqualTo("test1")
-        assertThat(results[1].latestVersion).isEqualTo("20180103-143015-1234pub")
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags.count()).isEqualTo(0)
     }
 
     @Test
-    fun `reviewer can get latest published and unpublished versions of pinned reports`()
+    fun `getAllReportVersions includes report tags`()
     {
-        insertReport("test1", "20170103-143015-1234pub")
-        insertReport("test1", "20180103-143015-1234pub")
-        insertReport("test1", "20190103-143015-1234unpub", published = false)
+        insertReport("report", "v1")
+        insertReportTags("report", "d-tag", "b-tag")
+        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
 
-        insertReport("test2", "20160203-143015-1234pub")
+        insertReport("report2", "v2")
+        insertVersionTags("v2", "aa-tag")
 
-        insertReport("test3", "20170203-143015-1234pub")
+        insertReport("report3", "v3")
+        insertReportTags("report3", "a-tag")
 
-        insertReport("test4", "20180203-143015-1234unpub", published = false)
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
+        val results = sut.getAllReportVersions()
 
-        insertGlobalPinnedReport("test4", 0)
-        insertGlobalPinnedReport("test3", 1)
-        insertGlobalPinnedReport("test1", 2)
+        assertThat(results[0].id).isEqualTo("v1")
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag", "d-tag"))
 
-        val sut = createSut(isReviewer = true)
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
 
-        val results = sut.getGlobalPinnedReports()
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags).containsExactlyElementsOf(listOf("a-tag"))
+    }
 
-        assertThat(results.count()).isEqualTo(3)
-        assertThat(results[0].name).isEqualTo("test4")
-        assertThat(results[0].latestVersion).isEqualTo("20180203-143015-1234unpub")
-        assertThat(results[1].name).isEqualTo("test3")
-        assertThat(results[1].latestVersion).isEqualTo("20170203-143015-1234pub")
-        assertThat(results[2].name).isEqualTo("test1")
-        assertThat(results[2].latestVersion).isEqualTo("20190103-143015-1234unpub")
+    @Test
+    fun `getAllReportVersions includes orderly tags`()
+    {
+        insertReport("report", "v1")
+        insertVersionTags("v1", "a", "c")
+        insertOrderlyTags("v1", "b", "d")
+
+        insertReport("report2", "v2")
+        insertReportTags("report2", "e")
+        insertOrderlyTags("v2", "f", "e")
+
+        insertReport("report3", "v3")
+        insertOrderlyTags("v3", "g")
+
+        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
+        val results = sut.getAllReportVersions()
+
+        assertThat(results[0].id).isEqualTo("v1")
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a", "b", "c", "d"))
+
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("e", "f"))
+
+        assertThat(results[2].id).isEqualTo("v3")
+        assertThat(results[2].tags).containsExactlyElementsOf(listOf("g"))
+    }
+
+    @Test
+    fun `getAllReportVersions returns report names user is authorized to see`()
+    {
+        insertReport("goodname", "va")
+        insertReport("badname", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.reportReadingScopes } doReturn listOf("goodname")
+        }
+
+        val sut = Orderly(mockContext)
+
+        val result = sut.getAllReportVersions()
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("goodname")
+    }
+
+    @Test
+    fun `getAllReportVersions returns all report names if user has global read permissions`()
+    {
+        insertReport("goodname", "va")
+        insertReport("anothername", "vb")
+
+        val mockContext = mock<ActionContext> {
+            on { it.isGlobalReader() } doReturn true
+        }
+
+        val sut = Orderly(mockContext)
+
+        val results = sut.getAllReportVersions()
+        assertThat(results.count()).isEqualTo(2)
     }
 }

@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.VersionController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
@@ -43,7 +44,7 @@ class VersionControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = VersionController(actionContext, mock(), mock(), mock(), fileSystem, mockConfig)
+        val sut = VersionController(actionContext, mock(), mock(), mock(), mock(), fileSystem, mockConfig)
         sut.getRunMetadata()
 
         verify(fileSystem, times(1))
@@ -67,7 +68,7 @@ class VersionControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = VersionController(actionContext, mock(), mock(), mock(), fileSystem, mockConfig)
+        val sut = VersionController(actionContext, mock(), mock(), mock(), mock(), fileSystem, mockConfig)
 
         assertThatThrownBy {
             sut.getRunMetadata()
@@ -81,7 +82,7 @@ class VersionControllerTests : ControllerTest()
         val name = "testname"
         val version = "testversion"
 
-        val mockOrderlyClient = mock<OrderlyClient>() {
+        val mockReportRepo = mock<ReportRepository>() {
             on { getReportVersion(name, version) } doThrow UnknownObjectError(version, "version")
         }
 
@@ -91,7 +92,7 @@ class VersionControllerTests : ControllerTest()
             on { this.getSparkResponse() } doReturn mockSparkResponse
         }
 
-        val sut = VersionController(actionContext, mockOrderlyClient, mock(), mock(), mock(), mockConfig)
+        val sut = VersionController(actionContext, mock(), mockReportRepo, mock(), mock(), mock(), mockConfig)
 
         assertThatThrownBy {
             sut.getRunMetadata()
@@ -119,7 +120,7 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(actionContext, orderly, mock(), mock<ZipClient>(),
+        val sut = VersionController(actionContext, orderly, mock(), mock(), mock<ZipClient>(),
                 mock(),
                 mockConfig)
 
@@ -142,7 +143,7 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(mockContext, orderly, mock(), mock<ZipClient>(),
+        val sut = VersionController(mockContext, orderly, mock(), mock(), mock<ZipClient>(),
                 mock(),
                 mockConfig)
 
@@ -169,7 +170,7 @@ class VersionControllerTests : ControllerTest()
         val mockFiles = mock<FileSystem>() {
             on { getAllFilesInFolder(sourcePath) } doReturn arrayListOf("TEST")
         }
-        val sut = VersionController(actionContext, mock(), mock(), mockZipClient, mockFiles, mockConfig)
+        val sut = VersionController(actionContext, mock(), mock(), mock(), mockZipClient, mockFiles, mockConfig)
 
         sut.getZippedByNameAndVersion()
         verify(mockZipClient, times(1)).zipIt(sourcePath, mockOutputStream, listOf("TEST"))
@@ -189,7 +190,7 @@ class VersionControllerTests : ControllerTest()
             on { getArtefactHashes(reportName, reportVersion) } doReturn mapOf("file1.csv" to "312", "file2.pdf" to "789")
         }
 
-        val sut = VersionController(actionContext, mockOrderlyClient, mockArtefactRepo, mockZipClient,
+        val sut = VersionController(actionContext, mockOrderlyClient, mock(), mockArtefactRepo, mockZipClient,
                 mock(), mockConfig)
 
         sut.getZippedByNameAndVersion()
@@ -205,11 +206,11 @@ class VersionControllerTests : ControllerTest()
         val actionContext = makeReportReaderActionContext()
 
         val mockZipClient = mock<ZipClient>()
-        val mockOrderlyClient = mock<OrderlyClient> {
+        val mockReportRepo = mock<ReportRepository> {
             on { getReportVersion(reportName, reportVersion) } doThrow
                     UnknownObjectError(reportVersion, "report")
         }
-        val sut = VersionController(actionContext, mockOrderlyClient, mock(), mockZipClient,
+        val sut = VersionController(actionContext, mock(), mockReportRepo, mock(), mockZipClient,
                 mock(),
                 mockConfig)
 
@@ -233,7 +234,7 @@ class VersionControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = VersionController(mockContext, orderly, mock(), mock<ZipClient>(),
+        val sut = VersionController(mockContext, orderly, mock(), mock(), mock<ZipClient>(),
                 mock(),
                 mockConfig)
 
