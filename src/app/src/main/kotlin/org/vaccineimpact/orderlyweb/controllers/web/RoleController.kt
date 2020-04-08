@@ -69,6 +69,12 @@ class RoleController(context: ActionContext,
     fun addPermission(): String
     {
         val roleId = roleId()
+
+        if (roleId == RoleRepository.ADMIN_ROLE)
+        {
+            throw InvalidOperationError("You cannot add permissions to the ${RoleRepository.ADMIN_ROLE} role.")
+        }
+
         val permission = context.permissionFromPostData()
         authRepo.ensureUserGroupHasPermission(roleId, permission)
 
@@ -78,6 +84,12 @@ class RoleController(context: ActionContext,
     fun removePermission(): String
     {
         val roleId = roleId()
+
+        if (roleId == RoleRepository.ADMIN_ROLE)
+        {
+            throw InvalidOperationError("You cannot remove permissions from the ${RoleRepository.ADMIN_ROLE} role.")
+        }
+
         val permission = context.permissionFromRouteParams()
         authRepo.ensureUserGroupDoesNotHavePermission(roleId, permission)
 
@@ -97,7 +109,7 @@ class RoleController(context: ActionContext,
         val roleId = roleId()
         val email = context.params(":email")
 
-        if (roleId== RoleRepository.ADMIN_ROLE && context.userProfile?.id == email)
+        if (roleId == RoleRepository.ADMIN_ROLE && context.userProfile?.id == email)
         {
             throw InvalidOperationError("You cannot remove yourself from the ${RoleRepository.ADMIN_ROLE} role.")
         }
