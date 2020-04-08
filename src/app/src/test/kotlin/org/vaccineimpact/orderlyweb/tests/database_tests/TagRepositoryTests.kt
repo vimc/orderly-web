@@ -5,7 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_TAG
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_TAG
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyTagRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
@@ -25,7 +25,7 @@ class TagRepositoryTests : CleanDatabaseTests()
         insertVersionTags("v1", "d-tag", "c-tag")
         insertOrderlyTags("v2", "e-tag", "f-tag")
 
-        val sut = OrderlyWebTagRepository()
+        val sut = OrderlyTagRepository()
 
         val result = sut.getAllTags()
         assertThat(result).containsExactly("a-tag", "b-tag", "c-tag", "d-tag", "e-tag", "f-tag")
@@ -45,7 +45,7 @@ class TagRepositoryTests : CleanDatabaseTests()
         insertReport("not-returned", "v4")
         insertReportTags("not-returned", "nor-returned-tag")
 
-        val sut = OrderlyWebTagRepository()
+        val sut = OrderlyTagRepository()
 
         val result = sut.getReportTags(listOf("r1", "r2"))
 
@@ -60,7 +60,7 @@ class TagRepositoryTests : CleanDatabaseTests()
         insertReport("r1", "v1")
         insertReportTags("r1", "old-report-tag")
         insertVersionTags("v1", "old-version-tag")
-        val sut = OrderlyWebTagRepository()
+        val sut = OrderlyTagRepository()
         val reportVersionTags = ReportVersionTags(listOf("test-version-tag"),
                 listOf("test-report-tag"),
                 listOf("test-orderly-tag"))

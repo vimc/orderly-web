@@ -3,10 +3,7 @@ package org.vaccineimpact.orderlyweb.db
 import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import java.sql.Timestamp
@@ -15,6 +12,7 @@ class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
               val reportReadingScopes: List<String> = listOf(),
               val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
+              private val tagRepository: TagRepository = OrderlyTagRepository(),
               val artefactRepository: ArtefactRepository = OrderlyArtefactRepository()) : OrderlyClient
 {
     constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
@@ -31,7 +29,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
+            val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(basicReportVersion,
                     artefacts = artefacts,
@@ -44,13 +42,7 @@ class Orderly(val isReviewer: Boolean,
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
     {
         reportRepository.getReportVersion(name, version)
-
-        JooqContext().use { ctx ->
-            val versionTags = getVersionTags(listOf(version))[version] ?: listOf()
-            val reportTags = getReportTagsForVersions(listOf(version))[version] ?: listOf()
-            val orderlyTags = getOrderlyTags(listOf(version))[version] ?: listOf()
-            return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
-        }
+        return tagRepository.getReportVersionTags(name, version)
     }
 
     override fun getData(name: String, version: String): Map<String, String>
@@ -146,9 +138,7 @@ class Orderly(val isReviewer: Boolean,
         val customFieldsForVersions = reportRepository.getCustomFieldsForVersions(versionIds)
         val parametersForVersions = reportRepository.getParametersForVersions(versionIds)
 
-        val allVersionTags = getVersionTags(versionIds)
-        val allReportTags = getReportTagsForVersions(versionIds)
-        val allOrderlyTags = getOrderlyTags(versionIds)
+        val tagsForVersions = tagRepository.getAllTagsForVersions(versionIds)
 
         return basicVersions.map {
             val versionId = it.id
@@ -160,14 +150,12 @@ class Orderly(val isReviewer: Boolean,
 
             val versionParameters = parametersForVersions[versionId] ?: mapOf()
 
-            val versionTags = allVersionTags[versionId] ?: listOf()
-            val reportTags = allReportTags[versionId] ?: listOf()
-            val orderlyTags = allOrderlyTags[versionId] ?: listOf()
+            val versionTags = tagsForVersions[versionId]?: listOf()
 
             ReportVersion(it,
                     versionCustomFields,
                     versionParameters,
-                    (versionTags + reportTags + orderlyTags).distinct().sorted())
+                    versionTags.distinct().sorted())
         }
     }
 

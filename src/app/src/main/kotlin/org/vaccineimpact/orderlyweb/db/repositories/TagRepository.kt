@@ -7,15 +7,16 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 
-
 interface TagRepository
 {
     fun getAllTags(): List<String>
     fun getReportTags(reportNames: List<String>): Map<String, List<String>>
     fun updateTags(reportName: String, versionId: String, tags: ReportVersionTags)
+    fun getAllTagsForVersions(versionIds: List<String>): Map<String, List<String>>
+    fun getReportVersionTags(name: String, version: String): ReportVersionTags
 }
 
-class OrderlyWebTagRepository : TagRepository
+class OrderlyTagRepository : TagRepository
 {
     override fun getAllTags(): List<String>
     {
@@ -85,13 +86,22 @@ class OrderlyWebTagRepository : TagRepository
     override fun getAllTagsForVersions(versionIds: List<String>): Map<String, List<String>>
     {
         JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
-                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-                    .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
-                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
+            return getVersionTagsQuery(versionIds, ctx)
+                    .union(getReportTagsForVersionsQuery(versionIds, ctx))
+                    .union(getOrderlyTagsForVersionsQuery(versionIds, ctx))
+                    .fetch()
+                    .groupBy { it["version"] as String }
+                    .mapValues { it.value.map { r -> r["tag"] as String } }
+        }
+    }
+
+    override fun getReportVersionTags(name: String, version: String): ReportVersionTags
+    {
+        JooqContext().use { ctx ->
+            val versionTags = getVersionTagsQuery(listOf(version), ctx).fetch("tag", String::class.java)
+            val reportTags = getReportTagsForVersionsQuery(listOf(version), ctx).fetch("tag", String::class.java)
+            val orderlyTags = getOrderlyTagsForVersionsQuery(listOf(version), ctx).fetch("tag", String::class.java)
+            return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
         }
     }
 
@@ -100,7 +110,7 @@ class OrderlyWebTagRepository : TagRepository
     {
         return ctx.dsl.select(
                 ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`as`("version"),
-                ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                ORDERLYWEB_REPORT_VERSION_TAG.TAG.`as`("tag"))
                 .from(ORDERLYWEB_REPORT_VERSION_TAG)
                 .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
     }
@@ -109,7 +119,7 @@ class OrderlyWebTagRepository : TagRepository
             : SelectConditionStep<Record2<String, String>>
     {
         return ctx.dsl.select(
-                ORDERLYWEB_REPORT_TAG.TAG,
+                ORDERLYWEB_REPORT_TAG.TAG.`as`("tag"),
                 REPORT_VERSION.ID.`as`("version"))
                 .from(ORDERLYWEB_REPORT_TAG)
                 .innerJoin(REPORT_VERSION)
@@ -122,7 +132,7 @@ class OrderlyWebTagRepository : TagRepository
     {
         return ctx.dsl.select(
                 REPORT_VERSION_TAG.REPORT_VERSION.`as`("version"),
-                REPORT_VERSION_TAG.TAG)
+                REPORT_VERSION_TAG.TAG.`as`("tag"))
                 .from(REPORT_VERSION_TAG)
                 .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
 
