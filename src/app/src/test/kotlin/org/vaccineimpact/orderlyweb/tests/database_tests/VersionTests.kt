@@ -1,17 +1,22 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import java.sql.Timestamp
+import java.time.Instant
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -30,7 +35,7 @@ class VersionTests : CleanDatabaseTests()
         insertFileInput("version1", "file.csv", FilePurpose.RESOURCE, 2345)
         insertFileInput("version1", "graph.png", FilePurpose.RESOURCE, 3456)
 
-        insertData("version1", "dat", "some sql", "testdb",  "somehash", 9876, 7654)
+        insertData("version1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
         insertArtefact("version1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
@@ -57,114 +62,83 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `getTags returns all tags for version`()
     {
-        val now = Timestamp(System.currentTimeMillis())
-        insertReport("test", "version1", date = now,
-                author = "dr author", requester = "ms requester", published = true)
-        insertReportTags("test", "r1", "r2")
-        insertVersionTags("version1", "v2", "v1")
-        insertOrderlyTags("version1", "o1")
+        val mockTagRepo = mock<TagRepository> {
+            on { getVersionTags(listOf("v1")) } doReturn
+                    mapOf("v1" to listOf("b-tag", "a-tag"))
 
-        val sut = createSut()
-        val result = sut.getReportVersionTags("test", "version1")
-        assertThat(result.versionTags).containsExactlyElementsOf(listOf("v1", "v2"))
-        assertThat(result.reportTags).containsExactlyElementsOf(listOf("r1", "r2"))
-        assertThat(result.orderlyTags).containsExactlyElementsOf(listOf("o1"))
+            on { getReportTagsForVersions(listOf("v1")) } doReturn
+                    mapOf("v1" to listOf("b-tag", "d-tag"), "v2" to listOf("bb"))
+
+            on { getOrderlyTagsForVersions(listOf("v1")) } doReturn
+                    mapOf("v1" to listOf("c-tag"), "v2" to listOf("aa"))
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mock(),
+                tagRepository = mockTagRepo)
+
+        val result = sut.getReportVersionTags("test", "v1")
+        assertThat(result.versionTags).containsExactlyElementsOf(listOf("a-tag", "b-tag"))
+        assertThat(result.reportTags).containsExactlyElementsOf(listOf("b-tag", "d-tag"))
+        assertThat(result.orderlyTags).containsExactlyElementsOf(listOf("c-tag"))
     }
 
     @Test
-    fun `getTags throws unknown object error if report version does not exist`()
+    fun `getTags checks report version exists and is accessible`()
     {
-        val sut = createSut()
-        Assertions.assertThatThrownBy { sut.getReportVersionTags("nonexistent", "version1") }
-                .isInstanceOf(UnknownObjectError::class.java)
+        val mockReportRepo = mock<ReportRepository>()
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo,
+                tagRepository = mock())
+
+        sut.getReportVersionTags("r1", "version1")
+        verify(mockReportRepo).getReportVersion("r1", "version1")
     }
 
     @Test
-    fun `getTags throws unknown object error for reader if version is not published`()
+    fun `getAllReportVersions returns version, report and orderly tags`()
     {
-        insertReport("test", "version1", published = false)
+        val basicReportVersion = BasicReportVersion("report", "display name", "v1", true,
+                Instant.now(), "v3", "description")
 
-        val sut = createSut()
-        Assertions.assertThatThrownBy { sut.getReportVersionTags("test", "version1") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
+        val mockTagRepo = mock<TagRepository> {
+            on { getVersionTags(listOf("v1", "v2", "v3")) } doReturn
+                    mapOf("v1" to listOf("b-tag", "a-tag"))
 
-    @Test
-    fun `getAllReportVersions returns version tags`()
-    {
-        insertReport("report", "v1")
-        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
+            on { getReportTagsForVersions(listOf("v1", "v2", "v3")) } doReturn
+                    mapOf("v1" to listOf("b-tag", "d-tag"), "v2" to listOf("bb"))
 
-        insertReport("report", "v2")
-        insertVersionTags("v2", "aa-tag")
+            on { getOrderlyTagsForVersions(listOf("v1", "v2", "v3")) } doReturn
+                    mapOf("v1" to listOf("b-tag", "d-tag"), "v2" to listOf("aa"))
+        }
 
-        insertReport("report", "v3")
+        val mockReportRepo = mock<ReportRepository> {
+            on { getAllReportVersions() } doReturn listOf(
+                    basicReportVersion, basicReportVersion.copy(id = "v2"), basicReportVersion.copy(id = "v3")
+            )
+        }
 
-        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo,
+                tagRepository = mockTagRepo)
+
         val results = sut.getAllReportVersions()
 
         assertThat(results[0].id).isEqualTo("v1")
-        //tags should be sorted
-        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
+        //tags should be sorted and distinct
+        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "d-tag"))
 
         assertThat(results[1].id).isEqualTo("v2")
-        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
+        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa", "bb"))
 
         assertThat(results[2].id).isEqualTo("v3")
         assertThat(results[2].tags.count()).isEqualTo(0)
-    }
-
-    @Test
-    fun `getAllReportVersions includes report tags`()
-    {
-        insertReport("report", "v1")
-        insertReportTags("report", "d-tag", "b-tag")
-        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
-
-        insertReport("report2", "v2")
-        insertVersionTags("v2", "aa-tag")
-
-        insertReport("report3", "v3")
-        insertReportTags("report3", "a-tag")
-
-        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
-        val results = sut.getAllReportVersions()
-
-        assertThat(results[0].id).isEqualTo("v1")
-        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag", "d-tag"))
-
-        assertThat(results[1].id).isEqualTo("v2")
-        assertThat(results[1].tags).containsExactlyElementsOf(listOf("aa-tag"))
-
-        assertThat(results[2].id).isEqualTo("v3")
-        assertThat(results[2].tags).containsExactlyElementsOf(listOf("a-tag"))
-    }
-
-    @Test
-    fun `getAllReportVersions includes orderly tags`()
-    {
-        insertReport("report", "v1")
-        insertVersionTags("v1", "a", "c")
-        insertOrderlyTags("v1", "b", "d")
-
-        insertReport("report2", "v2")
-        insertReportTags("report2", "e")
-        insertOrderlyTags("v2", "f", "e")
-
-        insertReport("report3", "v3")
-        insertOrderlyTags("v3", "g")
-
-        val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
-        val results = sut.getAllReportVersions()
-
-        assertThat(results[0].id).isEqualTo("v1")
-        assertThat(results[0].tags).containsExactlyElementsOf(listOf("a", "b", "c", "d"))
-
-        assertThat(results[1].id).isEqualTo("v2")
-        assertThat(results[1].tags).containsExactlyElementsOf(listOf("e", "f"))
-
-        assertThat(results[2].id).isEqualTo("v3")
-        assertThat(results[2].tags).containsExactlyElementsOf(listOf("g"))
     }
 
     @Test
