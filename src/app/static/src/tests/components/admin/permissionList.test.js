@@ -19,7 +19,7 @@ describe("permission list", () => {
             {
                 propsData: {
                     permissions: [],
-                    canRemove: true,
+                    canEdit: true,
                     ...propsData
                 }
             });
@@ -173,7 +173,7 @@ describe("permission list", () => {
         expect(rendered.findAll("span").at(1).text()).toBe("(via something else)");
     });
 
-    it("permissions cannot be removed if canRemove is false", () => {
+    it("permissions cannot be removed if canEdit is false", () => {
         const rendered = getWrapper({
             userGroup: "test",
             permissions: [
@@ -188,7 +188,7 @@ describe("permission list", () => {
                     scope_prefix: null,
                     source: "something else"
                 }],
-                canRemove: false
+                canEdit: false
         });
 
         const items = rendered.findAll("li");
@@ -204,5 +204,10 @@ describe("permission list", () => {
         expect(indirect.findAll("span").length).toBe(2);
         expect(indirect.findAll("span").at(1).classes()).toContain("text-muted");
         expect(indirect.findAll("span").at(1).text()).toBe("(via something else)");
+    });
+
+    it("permissions cannot be added if canEdit is false", () => {
+        const rendered = getWrapper({canEdit: false});
+        expect(rendered.findAll(AddPermission).length).toBe(0);
     });
 });

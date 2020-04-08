@@ -13,7 +13,7 @@
                 <permission-list v-show="expanded[u.email]"
                                  :permissions="u.direct_permissions.concat(u.role_permissions)"
                                  :user-group="u.email"
-                                 :can-remove="true"
+                                 :can-edit="true"
                                  @added="function(p) {addPermission(p, u)}"
                                  @removed="function(p) {removePermission(p, u)}"></permission-list>
             </li>
