@@ -10,13 +10,10 @@ interface OrderlyClient
 
     fun getAllReportVersions(): List<ReportVersion>
 
-    fun getGlobalPinnedReports(): List<ReportVersion>
+    fun getGlobalPinnedReports(): List<Report>
 
     @Throws(UnknownObjectError::class)
     fun getReportsByName(name: String): List<String>
-
-    @Throws(UnknownObjectError::class)
-    fun checkVersionExistsForReport(name: String, version: String)
 
     @Throws(UnknownObjectError::class)
     fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
@@ -45,4 +42,6 @@ interface OrderlyClient
 
     fun getReportVersionTags(name: String, version: String): ReportVersionTags
 
+    @Throws(UnknownObjectError::class)
+    fun getReportVersion(name: String, version: String): BasicReportVersion
 }

@@ -1,7 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -11,7 +9,6 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
-import java.io.File
 
 class ArtefactController(context: ActionContext,
                          private val orderly: OrderlyClient,
@@ -32,7 +29,7 @@ class ArtefactController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        orderly.checkVersionExistsForReport(name, version)
+        orderly.getReportVersion(name, version)
         return artefactRepository.getArtefactHashes(name, version)
     }
 
@@ -43,7 +40,7 @@ class ArtefactController(context: ActionContext,
         val artefactname = parseRouteParamToFilepath(context.params(":artefact"))
         val inline = context.queryParams("inline")?.toBoolean() ?: false
 
-        orderly.checkVersionExistsForReport(name, version)
+        orderly.getReportVersion(name, version)
         artefactRepository.getArtefactHash(name, version, artefactname)
 
         val filename = "$name/$version/$artefactname"

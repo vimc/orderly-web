@@ -49,7 +49,7 @@ class VersionController(context: ActionContext,
     {
         val name = context.params(":name")
         val version = context.params(":version")
-        orderly.checkVersionExistsForReport(name, version)
+        orderly.getReportVersion(name, version)
         val absoluteFilePath = "${this.config["orderly.root"]}archive/$name/$version/orderly_run.rds"
         return downloadFile(files, absoluteFilePath, "\"$name/$version/orderly_run.rds\"", ContentTypes.binarydata)
     }
@@ -60,7 +60,7 @@ class VersionController(context: ActionContext,
         val version = context.params(":version")
 
         // check that the requested version exists for the given report
-        orderly.checkVersionExistsForReport(name, version)
+        orderly.getReportVersion(name, version)
 
         val response = context.getSparkResponse().raw()
 

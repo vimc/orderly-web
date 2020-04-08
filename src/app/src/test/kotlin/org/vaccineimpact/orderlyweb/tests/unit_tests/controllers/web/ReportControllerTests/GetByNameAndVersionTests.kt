@@ -17,12 +17,13 @@ import java.time.Instant
 class GetByNameAndVersionTests : TeamcityTests()
 {
     private val versionId = "20170103-143015-1234abcd"
-    private val mockReportDetails = ReportVersionDetails("r1",
+    private val mockReportDetails = ReportVersionDetails(BasicReportVersion("r1",
             "a fake report",
             versionId,
             true,
             Instant.now(),
-            "a fake report",
+            "latest v",
+            "a fake report"),
             listOf(),
             listOf(),
             listOf(),
@@ -52,15 +53,16 @@ class GetByNameAndVersionTests : TeamcityTests()
         val sut = ReportController(mockActionContext, mockOrderly, mock())
         val result = sut.getByNameAndVersion()
 
-        assertThat(result.report).isEqualTo(mockReportDetails)
+        assertThat(result.report.displayName).isEqualTo( "a fake report")
     }
 
     @Test
     fun `getByNameAndVersion uses name for display name if not present`()
     {
+        val noDisplayName = mockReportDetails.basicReportVersion.copy(displayName = null)
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
-                    mockReportDetails.copy(displayName = null)
+                    mockReportDetails.copy(basicReportVersion = noDisplayName)
         }
 
         val sut = ReportController(mockActionContext, orderly, mock())

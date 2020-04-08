@@ -250,15 +250,15 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reader can get latest published versions of pinned reports`()
     {
-        insertReport("test1", "test1_1_pub")
-        insertReport("test1", "test1_2_pub")
-        insertReport("test1", "test1_3_unpub", published = false)
+        insertReport("test1", "20170103-143015-1234pub")
+        insertReport("test1", "20180103-143015-1234pub")
+        insertReport("test1", "20190103-143015-1234unpub", published = false)
 
-        insertReport("test2", "test2_1_pub")
+        insertReport("test2", "20160203-143015-1234pub")
 
-        insertReport("test3", "test3_1_pub")
+        insertReport("test3", "20170203-143015-1234pub")
 
-        insertReport("test4", "test4_1_unpub", published = false)
+        insertReport("test4", "20180203-143015-1234unpub", published = false)
 
         insertGlobalPinnedReport("test4", 0)
         insertGlobalPinnedReport("test3", 1)
@@ -270,23 +270,23 @@ class VersionTests : CleanDatabaseTests()
 
         assertThat(results.count()).isEqualTo(2)
         assertThat(results[0].name).isEqualTo("test3")
-        assertThat(results[0].id).isEqualTo("test3_1_pub")
+        assertThat(results[0].latestVersion).isEqualTo("20170203-143015-1234pub")
         assertThat(results[1].name).isEqualTo("test1")
-        assertThat(results[1].id).isEqualTo("test1_2_pub")
+        assertThat(results[1].latestVersion).isEqualTo("20180103-143015-1234pub")
     }
 
     @Test
     fun `reviewer can get latest published and unpublished versions of pinned reports`()
     {
-        insertReport("test1", "test1_1_pub")
-        insertReport("test1", "test1_2_pub")
-        insertReport("test1", "test1_3_unpub", published = false)
+        insertReport("test1", "20170103-143015-1234pub")
+        insertReport("test1", "20180103-143015-1234pub")
+        insertReport("test1", "20190103-143015-1234unpub", published = false)
 
-        insertReport("test2", "test2_1_pub")
+        insertReport("test2", "20160203-143015-1234pub")
 
-        insertReport("test3", "test3_1_pub")
+        insertReport("test3", "20170203-143015-1234pub")
 
-        insertReport("test4", "test4_1_unpub", published = false)
+        insertReport("test4", "20180203-143015-1234unpub", published = false)
 
         insertGlobalPinnedReport("test4", 0)
         insertGlobalPinnedReport("test3", 1)
@@ -298,10 +298,10 @@ class VersionTests : CleanDatabaseTests()
 
         assertThat(results.count()).isEqualTo(3)
         assertThat(results[0].name).isEqualTo("test4")
-        assertThat(results[0].id).isEqualTo("test4_1_unpub")
+        assertThat(results[0].latestVersion).isEqualTo("20180203-143015-1234unpub")
         assertThat(results[1].name).isEqualTo("test3")
-        assertThat(results[1].id).isEqualTo("test3_1_pub")
+        assertThat(results[1].latestVersion).isEqualTo("20170203-143015-1234pub")
         assertThat(results[2].name).isEqualTo("test1")
-        assertThat(results[2].id).isEqualTo("test1_3_unpub")
+        assertThat(results[2].latestVersion).isEqualTo("20190103-143015-1234unpub")
     }
 }

@@ -14,10 +14,7 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
-import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
@@ -85,7 +82,7 @@ class VersionControllerTests : ControllerTest()
         val version = "testversion"
 
         val mockOrderlyClient = mock<OrderlyClient>() {
-            on { checkVersionExistsForReport(name, version) } doThrow UnknownObjectError(version, "version")
+            on { getReportVersion(name, version) } doThrow UnknownObjectError(version, "version")
         }
 
         val actionContext = mock<ActionContext> {
@@ -107,8 +104,8 @@ class VersionControllerTests : ControllerTest()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = ReportVersionDetails(displayName = "displayName", id = "id", date = Instant.now(),
-                name = "name", published = true, description = "description",
+        val report = ReportVersionDetails(BasicReportVersion(displayName = "displayName", id = "id", date = Instant.now(),
+                name = "name", published = true, description = "description", latestVersion = "v1"),
                 artefacts = listOf(),
                 resources = listOf(), dataInfo = listOf(), parameterValues = mapOf())
 
@@ -209,7 +206,7 @@ class VersionControllerTests : ControllerTest()
 
         val mockZipClient = mock<ZipClient>()
         val mockOrderlyClient = mock<OrderlyClient> {
-            on { checkVersionExistsForReport(reportName, reportVersion) } doThrow
+            on { getReportVersion(reportName, reportVersion) } doThrow
                     UnknownObjectError(reportVersion, "report")
         }
         val sut = VersionController(actionContext, mockOrderlyClient, mock(), mockZipClient,
