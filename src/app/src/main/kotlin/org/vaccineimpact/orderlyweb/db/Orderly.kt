@@ -21,56 +21,31 @@ class Orderly(val isReviewer: Boolean,
 
     override fun getAllReportVersions(): List<ReportVersion>
     {
-        JooqContext().use {
-            // create a temp table containing the latest version ID for each report name
-            val latestVersionForEachReport = getLatestVersionsForReports(it)
-
-            val versions = it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
-                            latestVersionForEachReport.field<String>("latestVersion"),
-                            REPORT_VERSION.DESCRIPTION
-                    )
-                    .from(REPORT_VERSION)
-                    .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fetchInto(BasicReportVersion::class.java)
-
-            return mapToReportVersions(versions)
-        }
+        val basicVersions = reportRepository.getAllReportVersions()
+        return mapToReportVersions(basicVersions)
     }
 
     override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
-        JooqContext().use {
+        val artefacts = artefactRepository.getArtefacts(name, version)
+        val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
 
-            val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
-
-            return ReportVersionDetails(basicReportVersion,
-                    artefacts = artefacts,
-                    resources = getResourceFiles(name, version),
-                    dataInfo = getDataInfo(name, version),
-                    parameterValues = parameterValues)
-        }
+        return ReportVersionDetails(basicReportVersion,
+                artefacts = artefacts,
+                resources = getResourceFiles(name, version),
+                dataInfo = getDataInfo(name, version),
+                parameterValues = parameterValues)
     }
 
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
     {
         reportRepository.getReportVersion(name, version)
 
-        JooqContext().use { ctx ->
-            val versionTags = getVersionTags(listOf(version))[version] ?: listOf()
-            val reportTags = getReportTagsForVersions(listOf(version))[version] ?: listOf()
-            val orderlyTags = getOrderlyTags(listOf(version))[version] ?: listOf()
-            return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
-        }
+        val versionTags = getVersionTags(listOf(version))[version] ?: listOf()
+        val reportTags = getReportTagsForVersions(listOf(version))[version] ?: listOf()
+        val orderlyTags = getOrderlyTags(listOf(version))[version] ?: listOf()
+        return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
     }
 
     override fun getData(name: String, version: String): Map<String, String>
@@ -155,7 +130,6 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
             return getDatedChangelogForReport(basicVersion.name, Timestamp.from(basicVersion.date), it)
         }
-
     }
 
     private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
@@ -263,19 +237,6 @@ class Orderly(val isReviewer: Boolean,
                     .map { FileInfo(it[FILE_INPUT.FILENAME], it[FILE.SIZE]) }
 
         }
-    }
-
-    private fun getLatestVersionsForReports(db: JooqContext): TempTable
-    {
-        return db.dsl.select(
-                REPORT_VERSION.REPORT,
-                REPORT_VERSION.ID.`as`("latestVersion"),
-                REPORT_VERSION.DATE.max().`as`("maxDate")
-        )
-                .from(REPORT_VERSION)
-                .where(shouldIncludeReportVersion)
-                .groupBy(REPORT_VERSION.REPORT)
-                .asTemporaryTable(name = "latest_version_for_each_report")
     }
 
     private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>

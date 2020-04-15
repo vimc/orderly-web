@@ -5,7 +5,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
@@ -15,61 +14,80 @@ import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
-import java.sql.Timestamp
+import java.time.Instant
 
 class VersionTests : CleanDatabaseTests()
 {
+    val now = Instant.now()
+
+    private val basicReportVersion =
+            BasicReportVersion(
+                    "test",
+                    "display name",
+                    "v1",
+                    true,
+                    now,
+                    "vz",
+                    "descripion")
+
+    private val mockReportRepo = mock<ReportRepository> {
+        on { getReportVersion("test", "v1") } doReturn basicReportVersion
+        on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
+        on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
+    }
+
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
     {
-        return Orderly(isReviewer, true, listOf())
+        return Orderly(isReviewer, true, listOf(), reportRepository = mockReportRepo)
     }
 
     @Test
-    fun `reader can get published report version details`()
+    fun `can get report version details`()
     {
-        val now = Timestamp(System.currentTimeMillis())
-        insertReport("test", "version1", date = now,
-                author = "dr author", requester = "ms requester")
+        // although fetching reports from the repo is mocked we need to insert this
+        // record so that we can insert files/data/artefacts/parameters which are
+        // still fetched directly from the db
+        insertReport("test", "v1")
 
-        insertFileInput("version1", "file.csv", FilePurpose.RESOURCE, 2345)
-        insertFileInput("version1", "graph.png", FilePurpose.RESOURCE, 3456)
+        insertFileInput("v1", "file.csv", FilePurpose.RESOURCE, 2345)
+        insertFileInput("v1", "graph.png", FilePurpose.RESOURCE, 3456)
 
-        insertData("version1", "dat", "some sql", "testdb",  "somehash", 9876, 7654)
+        insertData("v1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
-        insertArtefact("version1", "some artefact",
+        insertArtefact("v1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
-        insertVersionParameterValues("version1", mapOf("p1" to "v1", "p2" to "v2"))
-
         val sut = createSut()
-        val result = sut.getDetailsByNameAndVersion("test", "version1")
+        val result = sut.getDetailsByNameAndVersion("test", "v1")
 
-        assertThat(result.id).isEqualTo("version1")
+        // these properties come from the mock
+        assertThat(result.id).isEqualTo("v1")
         assertThat(result.name).isEqualTo("test")
-        assertThat(result.displayName).isEqualTo("display name test")
-        assertThat(result.date).isEqualTo(now.toInstant())
+        assertThat(result.displayName).isEqualTo("display name")
+        assertThat(result.date).isEqualTo(now)
         assertThat(result.published).isTrue()
+        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
+        assertThat(result.parameterValues["p1"]).isEqualTo("param1")
+        assertThat(result.parameterValues["p2"]).isEqualTo("param2")
+
+        // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
         assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
-        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
-        assertThat(result.parameterValues["p1"]).isEqualTo("v1")
-        assertThat(result.parameterValues["p2"]).isEqualTo("v2")
     }
 
     @Test
     fun `getTags returns all tags for version`()
     {
-        val now = Timestamp(System.currentTimeMillis())
-        insertReport("test", "version1", date = now,
-                author = "dr author", requester = "ms requester", published = true)
+        insertReport("test", "v1")
         insertReportTags("test", "r1", "r2")
-        insertVersionTags("version1", "v2", "v1")
-        insertOrderlyTags("version1", "o1")
+        insertVersionTags("v1", "v2", "v1")
+        insertOrderlyTags("v1", "o1")
 
-        val sut = createSut()
-        val result = sut.getReportVersionTags("test", "version1")
+        // don't mock the repos as this method still goes directly to the db
+        val sut = Orderly(true, true, listOf())
+        val result = sut.getReportVersionTags("test", "v1")
         assertThat(result.versionTags).containsExactlyElementsOf(listOf("v1", "v2"))
         assertThat(result.reportTags).containsExactlyElementsOf(listOf("r1", "r2"))
         assertThat(result.orderlyTags).containsExactlyElementsOf(listOf("o1"))
@@ -78,7 +96,8 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `getTags throws unknown object error if report version does not exist`()
     {
-        val sut = createSut()
+        // don't mock the repos as this method still goes directly to the db
+        val sut = Orderly(true, true, listOf())
         Assertions.assertThatThrownBy { sut.getReportVersionTags("nonexistent", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
@@ -88,106 +107,10 @@ class VersionTests : CleanDatabaseTests()
     {
         insertReport("test", "version1", published = false)
 
-        val sut = createSut()
+        // don't mock the repos as this method still goes directly to the db
+        val sut = Orderly(isReviewer = false, isGlobalReader = true, reportReadingScopes = listOf())
         Assertions.assertThatThrownBy { sut.getReportVersionTags("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `getDetailsByNameAndVersion throws unknown object error if report version not published`()
-    {
-        insertReport("test", "version1", published = false)
-
-        val sut = createSut()
-        Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "version1") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `getDetailsByNameAndVersion throws unknown object error if report version doesnt exist`()
-    {
-        insertReport("test", "version1")
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("test", "dsajkdsj") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-
-    @Test
-    fun `getDetailsByNameAndVersion throws unknown object error if report name not found`()
-    {
-        insertReport("test", "version1")
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getDetailsByNameAndVersion("dsajkdsj", "version") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `reviewer can get unpublished version details`()
-    {
-        insertReport("test", "version1", published = false)
-
-        val sut = createSut(isReviewer = true)
-
-        val result = sut.getDetailsByNameAndVersion("test", "version1")
-
-        assertThat(result.name).isEqualTo("test")
-        assertThat(result.id).isEqualTo("version1")
-        assertThat(result.published).isFalse()
-    }
-
-    @Test
-    fun `can getAllReportVersions with custom fields and parameters`()
-    {
-        insertReport("test", "va")
-        insertReport("test", "vb")
-        insertReport("test", "vc")
-
-        val versionIds = listOf("va", "vb", "vc")
-
-        val mockReportRepo = mock<ReportRepository> {
-            on { getAllCustomFields() } doReturn
-                    mapOf("author" to null, "requester" to null)
-            on { getCustomFieldsForVersions(versionIds) } doReturn
-                    mapOf("va" to mapOf("author" to "author authorson"))
-            on { getParametersForVersions(versionIds) } doReturn mapOf("va" to mapOf("p1" to "param1"),
-                    "vb" to mapOf("p2" to "param2"))
-        }
-
-        val sut = Orderly(isReviewer = true,
-                isGlobalReader = true,
-                reportReadingScopes = listOf(),
-                reportRepository = mockReportRepo)
-
-        val results = sut.getAllReportVersions()
-
-        assertThat(results.count()).isEqualTo(3)
-
-        assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].id).isEqualTo("va")
-        assertThat(results[0].customFields.keys.count()).isEqualTo(2)
-        assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
-        assertThat(results[0].customFields["requester"]).isEqualTo(null)
-        assertThat(results[0].parameterValues.keys.count()).isEqualTo(1)
-        assertThat(results[0].parameterValues["p1"]).isEqualTo("param1")
-
-        assertThat(results[1].name).isEqualTo("test")
-        assertThat(results[1].id).isEqualTo("vb")
-        assertThat(results[1].customFields.keys.count()).isEqualTo(2)
-        assertThat(results[1].customFields["author"]).isEqualTo(null)
-        assertThat(results[1].customFields["requester"]).isEqualTo(null)
-        assertThat(results[1].parameterValues.keys.count()).isEqualTo(1)
-        assertThat(results[1].parameterValues["p2"]).isEqualTo("param2")
-
-        assertThat(results[2].name).isEqualTo("test")
-        assertThat(results[2].id).isEqualTo("vc")
-        assertThat(results[2].customFields.keys.count()).isEqualTo(2)
-        assertThat(results[2].customFields["author"]).isEqualTo(null)
-        assertThat(results[2].customFields["requester"]).isEqualTo(null)
     }
 
     @Test
@@ -201,6 +124,7 @@ class VersionTests : CleanDatabaseTests()
 
         insertReport("report", "v3")
 
+        // don't mock the repos as this method goes directly to the db for tags
         val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
@@ -228,6 +152,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("report3", "v3")
         insertReportTags("report3", "a-tag")
 
+        // don't mock the repos as this method goes directly to the db for tags
         val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
@@ -255,6 +180,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("report3", "v3")
         insertOrderlyTags("v3", "g")
 
+        // don't mock the repos as this method goes directly to the db for tags
         val sut = Orderly(isReviewer = true, isGlobalReader = true, reportReadingScopes = listOf())
         val results = sut.getAllReportVersions()
 
@@ -266,6 +192,50 @@ class VersionTests : CleanDatabaseTests()
 
         assertThat(results[2].id).isEqualTo("v3")
         assertThat(results[2].tags).containsExactlyElementsOf(listOf("g"))
+    }
+
+    @Test
+    fun `can getAllReportVersions with custom fields and parameters`()
+    {
+        val versionIds = listOf("v1", "v2")
+
+        val mockReportRepo = mock<ReportRepository> {
+            on { getAllReportVersions() } doReturn listOf(
+                    basicReportVersion,
+                    basicReportVersion.copy(id = "v2"))
+            on { getAllCustomFields() } doReturn
+                    mapOf("author" to null, "requester" to null)
+            on { getCustomFieldsForVersions(versionIds) } doReturn
+                    mapOf("v1" to mapOf("author" to "author authorson"))
+            on { getParametersForVersions(versionIds) } doReturn
+                    mapOf("v1" to mapOf("p1" to "param1"),
+                    "v2" to mapOf("p2" to "param2"))
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo)
+
+        val results = sut.getAllReportVersions()
+
+        assertThat(results.count()).isEqualTo(2)
+
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].id).isEqualTo("v1")
+        assertThat(results[0].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
+        assertThat(results[0].customFields["requester"]).isEqualTo(null)
+        assertThat(results[0].parameterValues.keys.count()).isEqualTo(1)
+        assertThat(results[0].parameterValues["p1"]).isEqualTo("param1")
+
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("v2")
+        assertThat(results[1].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[1].customFields["author"]).isEqualTo(null)
+        assertThat(results[1].customFields["requester"]).isEqualTo(null)
+        assertThat(results[1].parameterValues.keys.count()).isEqualTo(1)
+        assertThat(results[1].parameterValues["p2"]).isEqualTo("param2")
     }
 
 }
