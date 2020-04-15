@@ -82,14 +82,15 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         JooqContext().use {
 
             val versions = it.dsl
-                    .select(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING,
-                            Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.`as`("name"),
+                    .select(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING,
+                            ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.`as`("name"),
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID.`as`("latestVersion"))
                     .fromJoinPath(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
                     .join(REPORT_VERSION)
                     .on(REPORT_VERSION.REPORT.eq(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
                     .where(shouldIncludeReportVersion)
+                    .and(REPORT_VERSION.PUBLISHED.eq(true))
                     .fetch()
 
             return versions.groupBy { r -> r["name"] }.map {
