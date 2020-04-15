@@ -1,16 +1,15 @@
-package org.vaccineimpact.orderlyweb.tests.database_tests
+package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
 
-class ReportRepositoryTests : CleanDatabaseTests()
+class ReportTests : CleanDatabaseTests()
 {
     private fun createSut(isReviewer: Boolean = false): ReportRepository
     {

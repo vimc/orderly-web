@@ -41,7 +41,7 @@ class Orderly(val isReviewer: Boolean,
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                     .fetchInto(BasicReportVersion::class.java)
 
-            return mapToReportVersions(it, versions)
+            return mapToReportVersions(versions)
         }
     }
 
@@ -51,7 +51,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersions(listOf(version))[version]?: mapOf()
+            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(basicReportVersion,
                     artefacts = artefacts,
@@ -158,24 +158,11 @@ class Orderly(val isReviewer: Boolean,
 
     }
 
-    private fun mapToReportVersions(ctx: JooqContext,
-                                    basicVersions: List<BasicReportVersion>): List<ReportVersion>
+    private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
     {
-        val allCustomFields = ctx.dsl.select(
-                CUSTOM_FIELDS.ID)
-                .from(CUSTOM_FIELDS)
-                .fetch()
-                .associate { r -> r[CUSTOM_FIELDS.ID] to null as String? }
-
         val versionIds = basicVersions.map { it.id }
-        val customFieldsForVersions = ctx.dsl.select(
-                REPORT_VERSION_CUSTOM_FIELDS.KEY,
-                REPORT_VERSION_CUSTOM_FIELDS.VALUE,
-                REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
-                .from(REPORT_VERSION_CUSTOM_FIELDS)
-                .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
-                .fetch()
-                .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
+        val allCustomFields = reportRepository.getAllCustomFields()
+        val customFieldsForVersions = reportRepository.getCustomFieldsForVersions(versionIds)
 
         val parametersForVersions = getParametersForVersions(versionIds)
 
@@ -189,11 +176,7 @@ class Orderly(val isReviewer: Boolean,
             val versionCustomFields = mutableMapOf<String, String?>()
 
             versionCustomFields.putAll(allCustomFields)
-            if (customFieldsForVersions.containsKey(versionId))
-            {
-                versionCustomFields.putAll(customFieldsForVersions[versionId]!!
-                        .associate { f -> f[REPORT_VERSION_CUSTOM_FIELDS.KEY] to f[REPORT_VERSION_CUSTOM_FIELDS.VALUE] })
-            }
+            versionCustomFields.putAll(customFieldsForVersions[versionId] ?: mapOf())
 
             val versionParameters = parametersForVersions[versionId] ?: mapOf()
 

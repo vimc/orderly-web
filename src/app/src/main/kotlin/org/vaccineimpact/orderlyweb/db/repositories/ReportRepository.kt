@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.BasicReportVersion
 import org.vaccineimpact.orderlyweb.models.Report
@@ -18,6 +19,8 @@ interface ReportRepository
 
     @Throws(UnknownObjectError::class)
     fun getReportVersion(name: String, version: String): BasicReportVersion
+    fun getAllCustomFields(): Map<String, String?>
+    fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -108,6 +111,32 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .execute()
 
             return newStatus
+        }
+    }
+
+    override fun getAllCustomFields(): Map<String, String?>
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                    CUSTOM_FIELDS.ID)
+                    .from(CUSTOM_FIELDS)
+                    .fetch()
+                    .associate { r -> r[CUSTOM_FIELDS.ID] to null as String? }
+        }
+    }
+
+    override fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                    REPORT_VERSION_CUSTOM_FIELDS.KEY,
+                    REPORT_VERSION_CUSTOM_FIELDS.VALUE,
+                    REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION)
+                    .from(REPORT_VERSION_CUSTOM_FIELDS)
+                    .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
+                    .fetch()
+                    .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
+                    .mapValues { it.value.associate { it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to it[REPORT_VERSION_CUSTOM_FIELDS.VALUE] } }
         }
     }
 
