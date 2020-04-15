@@ -120,8 +120,9 @@ class TagRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyTagRepository()
         val result = sut.getReportTagsForVersions(listOf("v1", "v2", "v3"))
 
-        assertThat(result.keys).containsExactly("v1")
+        assertThat(result.keys).containsExactly("v1", "v3")
         assertThat(result["v1"]).containsExactlyElementsOf(listOf("b-tag", "d-tag"))
+        assertThat(result["v3"]).containsExactlyElementsOf(listOf("a-tag"))
     }
 
     @Test

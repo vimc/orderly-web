@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -92,7 +93,7 @@ class VersionTests : CleanDatabaseTests()
     fun `getTags checks report version exists`()
     {
         val mockReportRepo = mock<ReportRepository> {
-            on { getReportVersion("test", "v1") doThrow UnknownObjectError("report", "test")
+            on { getReportVersion("test", "v1") } doThrow UnknownObjectError("report", "test")
         }
 
         val sut = Orderly(isReviewer = true,
