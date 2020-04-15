@@ -41,4 +41,9 @@ class ReportController(context: ActionContext,
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
         return okayResponse()
     }
+
+    fun setPinnedReports()
+    {
+        //TODO
+    }
 }
