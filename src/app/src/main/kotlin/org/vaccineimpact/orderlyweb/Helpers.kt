@@ -10,6 +10,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import java.net.URLDecoder
 import java.net.URLEncoder
+import java.time.LocalDateTime
 import javax.servlet.http.HttpServletResponse
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
@@ -134,4 +135,13 @@ fun Controller.downloadFile(files: FileSystem,
     files.writeFileToOutputStream(absoluteFilePath, response.outputStream)
 
     return true
+}
+
+fun getDateStringFromVersionId(id: String): LocalDateTime
+{
+    val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
+    val match = regex.matchEntire(id)
+            ?.groupValues ?: throw Exception("Badly formatted report id $id")
+
+    return LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
 }

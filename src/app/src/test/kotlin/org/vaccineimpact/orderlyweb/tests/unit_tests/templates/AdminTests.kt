@@ -18,7 +18,7 @@ class AdminTests : TeamcityTests()
         val template = FreemarkerTestRule("admin.ftl")
     }
 
-    private val testViewModel = AdminViewModel(mock<ActionContext>())
+    private val testViewModel = AdminViewModel(mock<ActionContext>(), true)
 
     @Test
     fun `renders correctly`()
@@ -27,5 +27,6 @@ class AdminTests : TeamcityTests()
         assertThat(doc.select("#adminVueApp manage-roles")).isNotNull()
         assertThat(doc.select("#adminVueApp manage-users")).isNotNull()
         assertThat(doc.select("#adminVueApp manage-role-permissions")).isNotNull()
+        assertThat(doc.select("body script")[2].toString()).contains("let canAllowGuest = true;")
     }
 }

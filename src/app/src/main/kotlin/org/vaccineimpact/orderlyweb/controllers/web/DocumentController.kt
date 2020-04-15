@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.Document
+import org.vaccineimpact.orderlyweb.viewmodels.DocumentViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 import java.net.MalformedURLException
 import java.net.URL
@@ -26,9 +27,14 @@ class DocumentController(context: ActionContext,
     private val documentsRoot = files.getAbsolutePath(config["documents.root"])
 
     @Template("documents.ftl")
-    fun getAll(): DocumentsViewModel
+    fun getIndex(): DocumentsViewModel
     {
         return DocumentsViewModel.build(context, docsRepo.getAllVisibleDocuments())
+    }
+
+    fun getAll(): List<DocumentViewModel>
+    {
+        return DocumentsViewModel.buildDocs(docsRepo.getAllVisibleDocuments())
     }
 
     fun getDocument(): Boolean

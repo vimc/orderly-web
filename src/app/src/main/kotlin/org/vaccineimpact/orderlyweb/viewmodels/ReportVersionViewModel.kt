@@ -1,18 +1,15 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
-import org.vaccineimpact.orderlyweb.canRenderInBrowser
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.isImage
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
 
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionDetails,
+data class ReportVersionPageViewModel(@Serialise("reportJson") val report: BasicReportVersion,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -75,7 +72,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 null
             }
 
-            return ReportVersionPageViewModel(report.copy(displayName = displayName),
+            return ReportVersionPageViewModel(
+                    report.basicReportVersion.copy(displayName = displayName),
                     focalArtefactUrl,
                     isRunner,
                     artefactViewModels,
@@ -151,21 +149,9 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
-            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", date,
+            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", formatter.format(date),
                     selected = id == currentVersion)
         }
-
-        fun getDateStringFromVersionId(id: String): String
-        {
-            val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
-            val regex = Regex("(\\d{4})(\\d{2})(\\d{2})-(\\d{2})(\\d{2})(\\d{2})-([0-9a-f]{8})")
-            val match = regex.matchEntire(id)
-                    ?.groupValues ?: throw Exception("Badly formatted report id $id")
-
-            val date = LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
-            return formatter.format(date)
-        }
-
     }
 }
 
@@ -198,12 +184,12 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
     {
         fun build(id: String, changelog: List<Changelog>): ChangelogViewModel
         {
-            val date = ReportVersionPageViewModel.getDateStringFromVersionId(id)
+            val date = getDateStringFromVersionId(id)
 
             val entries = changelog.map {
                 ChangelogItemViewModel.build(it)
             }
-            return ChangelogViewModel(date, id, entries)
+            return ChangelogViewModel(formatter.format(date), id, entries)
         }
     }
 }

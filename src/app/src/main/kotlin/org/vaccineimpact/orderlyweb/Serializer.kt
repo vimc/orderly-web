@@ -1,16 +1,12 @@
 package org.vaccineimpact.orderlyweb
 
-import com.github.salomonbrys.kotson.addProperty
 import com.github.salomonbrys.kotson.jsonSerializer
 import com.github.salomonbrys.kotson.registerTypeAdapter
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
 import org.vaccineimpact.orderlyweb.models.Result
 import org.vaccineimpact.orderlyweb.models.ResultStatus
-import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
-import kotlin.reflect.full.memberProperties
 
 open class Serializer
 {
@@ -39,7 +35,7 @@ open class Serializer
 
     open fun toResult(data: Any?): String = toJson(Result(ResultStatus.SUCCESS, data, emptyList()))
 
-    open fun toJson(result: org.vaccineimpact.orderlyweb.models.Result): String = gson.toJson(result)
+    open fun toJson(result: Result): String = gson.toJson(result)
 
     fun convertFieldName(name: String): String
     {

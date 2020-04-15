@@ -6,6 +6,8 @@ import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Document
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 
 data class DocumentViewModel(val displayName: String,
                              val path: String,
@@ -52,6 +54,7 @@ data class DocumentViewModel(val displayName: String,
 
 data class DocumentsViewModel(@Serialise("documentList")
                               val docs: List<DocumentViewModel>,
+                              val canManage: Boolean,
                               val appViewModel: AppViewModel) : AppViewModel by appViewModel
 {
     companion object
@@ -60,14 +63,20 @@ data class DocumentsViewModel(@Serialise("documentList")
 
         fun build(context: ActionContext, docs: List<Document>): DocumentsViewModel
         {
-            val docVms = docs
+            val docVms = buildDocs(docs)
+
+            return DocumentsViewModel(docVms,
+                    context.hasPermission(ReifiedPermission("documents.manage", Scope.Global())),
+                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+        }
+
+        fun buildDocs(docs: List<Document>): List<DocumentViewModel>
+        {
+            return docs
                     .map { DocumentViewModel.build(it) }
                     .filterNotNull()
                     .sortedBy { it.displayName }
                     .sortedBy { it.isFile }
-
-            return DocumentsViewModel(docVms,
-                    DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
     }
 }

@@ -29,12 +29,13 @@ class TemplateObjectWrapperTests : TeamcityTests()
     {
         val now = Instant.now()
         val artFiles = listOf(FileInfo("graph.png", 1234))
-        val report = ReportVersionDetails("r1",
+        val report = ReportVersionDetails(BasicReportVersion("r1",
                 "first report",
                 "v1",
                 true,
                 now,
-                "a fake report",
+                "v1",
+                "a fake report"),
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
                 listOf(DataInfo("hash", 1234, 2345)),
@@ -63,8 +64,6 @@ class TemplateObjectWrapperTests : TeamcityTests()
         val dataModel = data[0] as StringModel
         assertThat(dataModel["name"].toString()).isEqualTo("hash")
         assertThat(dataModel["csvSize"].toString()).isEqualTo("1234")
-
-        val tags = result["tags"]
     }
 
     @Test

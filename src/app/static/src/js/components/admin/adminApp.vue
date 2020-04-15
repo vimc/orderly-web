@@ -5,7 +5,7 @@
             <manage-roles :roles="roles"
                           @changed="getAll"></manage-roles>
         </div>
-        <div class="col-4 offset-2">
+        <div class="col-4">
             <label class="font-weight-bold d-block">Manage permissions</label>
             <label class="font-weight-bold d-block">For roles</label>
             <manage-role-permissions
@@ -14,6 +14,12 @@
             <hr/>
             <label class="font-weight-bold d-block">For individual users</label>
             <manage-user-permissions :all-users="users" @changed="getUsers"></manage-user-permissions>
+        </div>
+        <div class="col-4">
+            <div v-if="showSettings">
+                <label class="font-weight-bold">Settings</label>
+                <settings></settings>
+            </div>
         </div>
     </div>
 </template>
@@ -24,17 +30,24 @@
     import manageUserPermissions from "./manageUserPermissions";
     import {api} from "../../utils/api";
     import manageRolePermissions from "./manageRolePermissions";
+    import settings from "./settings";
 
     export default Vue.extend({
         components: {
             manageRoles: manageRoles,
             manageUserPermissions: manageUserPermissions,
-            manageRolePermissions: manageRolePermissions
+            manageRolePermissions: manageRolePermissions,
+            settings: settings
         },
         data() {
             return {
                 users: [],
                 roles: []
+            }
+        },
+        computed: {
+            showSettings() {
+                return canAllowGuest;
             }
         },
         methods: {

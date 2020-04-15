@@ -2,6 +2,7 @@ import {shallowMount} from '@vue/test-utils';
 import {mockAxios} from "../../mockAxios";
 import ManageRolePermissions from "../../../js/components/admin/manageRolePermissions.vue";
 import ManageRoles from "../../../js/components/admin/manageRoles.vue";
+import Settings from "../../../js/components/admin/settings.vue";
 import ManageUserPermissions from "../../../js/components/admin/manageUserPermissions.vue";
 import AdminApp from "../../../js/components/admin/adminApp.vue";
 import Vue from "vue";
@@ -13,6 +14,7 @@ describe("adminApp", () => {
             .reply(200, {"data": mockRoles});
         mockAxios.onGet('http://app/users/')
             .reply(200, {"data": mockUsers});
+        window.canAllowGuest = true;
     });
 
     const mockUsers = [
@@ -65,6 +67,7 @@ describe("adminApp", () => {
         expect(wrapper.find(ManageRoles).props().roles).toBe(mockRoles);
         expect(wrapper.find(ManageUserPermissions).props().allUsers).toBe(mockUsers);
         expect(wrapper.find(ManageRolePermissions).props().roles).toBe(mockRoles);
+        expect(wrapper.findAll(Settings).length).toBe(1);
     });
 
     it('fetches roles and users on mount', async (done) => {
@@ -124,5 +127,10 @@ describe("adminApp", () => {
             });
         });
     });
-    
+
+    it('does not render settings if cannot allow guest', () => {
+        window.canAllowGuest = false;
+        const wrapper = shallowMount(AdminApp);
+        expect(wrapper.findAll(Settings).length).toBe(0);
+    });
 });

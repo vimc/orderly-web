@@ -12,9 +12,10 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
+import org.vaccineimpact.orderlyweb.models.BasicReportVersion
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
 import org.vaccineimpact.orderlyweb.models.ReportVersion
@@ -35,15 +36,18 @@ class ReportControllerTests : ControllerTest()
 
 
     private val reportVersions = listOf(
-            ReportVersion(reportName, "display1", "v1", "v1", true, Instant.now(),
+            ReportVersion(BasicReportVersion(reportName, "display1", "v1", true, Instant.now(), "v1", "desc"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1"), listOf("t1", "t2")),
-            ReportVersion("r2", "display2", "v2", "v2", true, Instant.now(),
+            ReportVersion(BasicReportVersion("r2", "display2", "v2", true, Instant.now(), "v1", "v2"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1"))
     )
 
     private val mockOrderly = mock<OrderlyClient> {
-        on { this.getAllReports() } doReturn reports
         on { this.getAllReportVersions() } doReturn reportVersions
+    }
+
+    private val mockReportRepo = mock<ReportRepository> {
+        on { this.getAllReports() } doReturn reports
     }
 
     @Test
@@ -62,8 +66,7 @@ class ReportControllerTests : ControllerTest()
             on { this.post(any(), any()) } doReturn mockAPIResponse
         }
 
-        val sut = ReportController(actionContext, mock<OrderlyClient>(),
-                apiClient, mockConfig)
+        val sut = ReportController(actionContext, mock(), mockReportRepo, apiClient, mockConfig)
 
         val result = sut.run()
 
@@ -77,9 +80,7 @@ class ReportControllerTests : ControllerTest()
             on { it.permissions } doReturn PermissionSet()
         }
 
-        val sut = ReportController(mockContext, mockOrderly,
-                mock(),
-                mockConfig)
+        val sut = ReportController(mockContext, mockOrderly, mockReportRepo, mock(), mockConfig)
 
         assertThatThrownBy { sut.getAllReports() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
@@ -93,8 +94,7 @@ class ReportControllerTests : ControllerTest()
             on { it.permissions } doReturn PermissionSet()
         }
 
-        val sut = ReportController(mockContext, mock(), mock(),
-                mockConfig)
+        val sut = ReportController(mockContext, mock(), mock(), mock(), mockConfig)
 
         assertThatThrownBy { sut.getAllVersions() }
                 .isInstanceOf(MissingRequiredPermissionError::class.java)
@@ -106,7 +106,7 @@ class ReportControllerTests : ControllerTest()
     {
         val reportVersions = listOf("version1", "version2")
 
-        val orderly = mock<OrderlyClient> {
+        val mockReportRepo = mock<ReportRepository> {
             on { this.getReportsByName(reportName) } doReturn reportVersions
         }
 
@@ -115,9 +115,7 @@ class ReportControllerTests : ControllerTest()
             on { it.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(mockContext, orderly,
-                mock<OrderlyServerAPI>(),
-                mockConfig)
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mock(), mockConfig)
 
         assertThat(sut.getVersionsByName()).isEqualTo(reportVersions)
     }
@@ -141,9 +139,7 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn reportName
         }
 
-        val sut = ReportController(mockContext, orderly,
-                mock<OrderlyServerAPI>(),
-                mockConfig)
+        val sut = ReportController(mockContext, orderly, mockReportRepo, mock(), mockConfig)
 
         val result = sut.getLatestChangelogByName()
         assertThat(result.count()).isEqualTo(changelogs.count())
@@ -158,8 +154,8 @@ class ReportControllerTests : ControllerTest()
     {
         val name = "reportName"
         val version = "v1"
-        val orderly = mock<OrderlyClient>() {
-            on {togglePublishStatus(name, version)} doReturn false
+        val mockReportRepo = mock<ReportRepository>() {
+            on { togglePublishStatus(name, version) } doReturn false
         }
 
         val mockContext = mock<ActionContext> {
@@ -167,15 +163,13 @@ class ReportControllerTests : ControllerTest()
             on { this.params(":name") } doReturn name
         }
 
-        val sut = ReportController(mockContext, orderly,
-                mock(),
-                mockConfig)
+        val sut = ReportController(mockContext, mock(), mockReportRepo, mock(), mockConfig)
 
         val result = sut.publish()
 
         assertThat(result).isEqualTo(false)
 
-        verify(orderly).togglePublishStatus(name, version)
+        verify(mockReportRepo).togglePublishStatus(name, version)
     }
 
 }

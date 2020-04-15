@@ -9,6 +9,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -26,12 +27,14 @@ class TagTests : TeamcityTests()
             on { postData<List<String>>("version_tags") } doReturn listOf("v-tag")
         }
 
+        val mockReportRepo = mock<ReportRepository>()
+
         val mockTagRepo = mock<TagRepository>()
         val mockOrderly = mock<OrderlyClient>()
-        val sut = ReportController(mockContext, mockOrderly, mockTagRepo)
+        val sut = ReportController(mockContext, mockOrderly, mockReportRepo, mockTagRepo)
         val result = sut.tagVersion()
         assertThat(result).isEqualTo("OK")
         verify(mockTagRepo).updateTags(eq("r1"), eq("v1"), eq(ReportVersionTags(listOf("v-tag"), listOf("r-tag"), listOf())))
-        verify(mockOrderly).checkVersionExistsForReport("r1", "v1")
+        verify(mockReportRepo).getReportVersion("r1", "v1")
     }
 }

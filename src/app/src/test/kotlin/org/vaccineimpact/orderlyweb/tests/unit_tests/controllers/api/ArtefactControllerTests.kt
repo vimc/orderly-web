@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.controllers.api.ArtefactController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 
 class ArtefactControllerTests : ControllerTest()
@@ -57,10 +58,10 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
         }
 
-        val orderly = mock<OrderlyClient>()
-        val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
+        val reportRepo = mock<ReportRepository>()
+        val sut = ArtefactController(actionContext, reportRepo, repo, mock<FileSystem>(), mockConfig)
         sut.getMetaData()
-        verify(orderly).checkVersionExistsForReport(name, version)
+        verify(reportRepo).getReportVersion(name, version)
     }
 
     @Test
@@ -104,11 +105,11 @@ class ArtefactControllerTests : ControllerTest()
             on { this.params(":version") } doReturn version
             on { this.params(":artefact") } doReturn artefact
         }
-        val orderly = mock<OrderlyClient> {
-            on {this.checkVersionExistsForReport(name, version)} doThrow UnknownObjectError("report", "")
+        val reportRepo = mock<ReportRepository> {
+            on {this.getReportVersion(name, version)} doThrow UnknownObjectError("report", "")
         }
 
-        val sut = ArtefactController(actionContext, orderly, repo, mock<FileSystem>(), mockConfig)
+        val sut = ArtefactController(actionContext, reportRepo, repo, mock<FileSystem>(), mockConfig)
         assertThatThrownBy { sut.getFile() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }

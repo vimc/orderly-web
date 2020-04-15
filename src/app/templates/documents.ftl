@@ -4,12 +4,17 @@
     </#macro>
 
     <div id="app">
-        <document-list :docs="docs"></document-list>
+        <document-page :can-manage="canManage"></document-page>
     </div>
 
     <#macro scripts>
         <script type="text/javascript">
             var docs = ${documentList};
+            <#if canManage>
+                var canManage = true;
+            <#else>
+                var canManage = false;
+            </#if>
         </script>
 
         <script type="text/javascript" src="${appUrl}/js/documents.bundle.js"></script>
