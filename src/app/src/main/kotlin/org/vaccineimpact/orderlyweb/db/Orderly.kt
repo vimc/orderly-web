@@ -3,10 +3,7 @@ package org.vaccineimpact.orderlyweb.db
 import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import java.sql.Timestamp
@@ -15,7 +12,8 @@ class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
               val reportReadingScopes: List<String> = listOf(),
               val reportRepository: ReportRepository = OrderlyReportRepository(isReviewer, isGlobalReader, reportReadingScopes),
-              val artefactRepository: ArtefactRepository = OrderlyArtefactRepository()) : OrderlyClient
+              val artefactRepository: ArtefactRepository = OrderlyArtefactRepository(),
+              val tagRepository: TagRepository = OrderlyWebTagRepository()) : OrderlyClient
 {
     constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
 
@@ -28,29 +26,24 @@ class Orderly(val isReviewer: Boolean,
     override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
-        JooqContext().use {
+        val artefacts = artefactRepository.getArtefacts(name, version)
+        val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
 
-            val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
-
-            return ReportVersionDetails(basicReportVersion,
-                    artefacts = artefacts,
-                    resources = getResourceFiles(name, version),
-                    dataInfo = getDataInfo(name, version),
-                    parameterValues = parameterValues)
-        }
+        return ReportVersionDetails(basicReportVersion,
+                artefacts = artefacts,
+                resources = getResourceFiles(name, version),
+                dataInfo = getDataInfo(name, version),
+                parameterValues = parameterValues)
     }
 
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
     {
         reportRepository.getReportVersion(name, version)
 
-        JooqContext().use { ctx ->
-            val versionTags = getVersionTags(listOf(version))[version] ?: listOf()
-            val reportTags = getReportTagsForVersions(listOf(version))[version] ?: listOf()
-            val orderlyTags = getOrderlyTags(listOf(version))[version] ?: listOf()
-            return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
-        }
+        val versionTags = tagRepository.getVersionTags(listOf(version))[version] ?: listOf()
+        val reportTags = tagRepository.getReportTagsForVersions(listOf(version))[version] ?: listOf()
+        val orderlyTags = tagRepository.getOrderlyTagsForVersions(listOf(version))[version] ?: listOf()
+        return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
     }
 
     override fun getData(name: String, version: String): Map<String, String>
@@ -145,9 +138,9 @@ class Orderly(val isReviewer: Boolean,
 
         val parametersForVersions = getParametersForVersions(versionIds)
 
-        val allVersionTags = getVersionTags(versionIds)
-        val allReportTags = getReportTagsForVersions(versionIds)
-        val allOrderlyTags = getOrderlyTags(versionIds)
+        val allVersionTags = tagRepository.getVersionTags(versionIds)
+        val allReportTags = tagRepository.getReportTagsForVersions(versionIds)
+        val allOrderlyTags = tagRepository.getOrderlyTagsForVersions(versionIds)
 
         return basicVersions.map {
             val versionId = it.id
@@ -155,7 +148,7 @@ class Orderly(val isReviewer: Boolean,
             val versionCustomFields = mutableMapOf<String, String?>()
 
             versionCustomFields.putAll(allCustomFields)
-            versionCustomFields.putAll(customFieldsForVersions[versionId]?: mapOf())
+            versionCustomFields.putAll(customFieldsForVersions[versionId] ?: mapOf())
 
             val versionParameters = parametersForVersions[versionId] ?: mapOf()
 
@@ -182,47 +175,6 @@ class Orderly(val isReviewer: Boolean,
                     .fetch()
                     .groupBy { it[PARAMETERS.REPORT_VERSION] }
                     .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
-        }
-    }
-
-    private fun getVersionTags(versionIds: List<String>): Map<String, List<String>>
-    {
-        JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-                    ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
-                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-                    .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
-                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
-        }
-    }
-
-    private fun getReportTagsForVersions(versionIds: List<String>): Map<String, List<String>>
-    {
-        JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    ORDERLYWEB_REPORT_TAG.TAG,
-                    REPORT_VERSION.ID)
-                    .from(ORDERLYWEB_REPORT_TAG)
-                    .innerJoin(REPORT_VERSION)
-                    .on(ORDERLYWEB_REPORT_TAG.REPORT.eq(REPORT_VERSION.REPORT))
-                    .where(REPORT_VERSION.ID.`in`(versionIds))
-                    .groupBy { it[REPORT_VERSION.ID] }
-                    .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_TAG.TAG] } }
-        }
-    }
-
-    private fun getOrderlyTags(versionIds: List<String>): Map<String, List<String>>
-    {
-        JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    REPORT_VERSION_TAG.REPORT_VERSION,
-                    REPORT_VERSION_TAG.TAG)
-                    .from(REPORT_VERSION_TAG)
-                    .where(REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-                    .groupBy { it[REPORT_VERSION_TAG.REPORT_VERSION] }
-                    .mapValues { it.value.map { r -> r[REPORT_VERSION_TAG.TAG] } }
         }
     }
 
