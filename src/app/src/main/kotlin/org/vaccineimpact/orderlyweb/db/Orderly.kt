@@ -51,7 +51,7 @@ class Orderly(val isReviewer: Boolean,
         JooqContext().use {
 
             val artefacts = artefactRepository.getArtefacts(name, version)
-            val parameterValues = getParametersForVersions(listOf(version))[version] ?: mapOf()
+            val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
 
             return ReportVersionDetails(basicReportVersion,
                     artefacts = artefacts,
@@ -164,7 +164,7 @@ class Orderly(val isReviewer: Boolean,
         val allCustomFields = reportRepository.getAllCustomFields()
         val customFieldsForVersions = reportRepository.getCustomFieldsForVersions(versionIds)
 
-        val parametersForVersions = getParametersForVersions(versionIds)
+        val parametersForVersions = reportRepository.getParametersForVersions(versionIds)
 
         val allVersionTags = getVersionTags(versionIds)
         val allReportTags = getReportTagsForVersions(versionIds)
@@ -188,21 +188,6 @@ class Orderly(val isReviewer: Boolean,
                     versionCustomFields,
                     versionParameters,
                     (versionTags + reportTags + orderlyTags).distinct().sorted())
-        }
-    }
-
-    private fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
-    {
-        JooqContext().use { ctx ->
-            return ctx.dsl.select(
-                    PARAMETERS.REPORT_VERSION,
-                    PARAMETERS.NAME,
-                    PARAMETERS.VALUE)
-                    .from(PARAMETERS)
-                    .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
-                    .fetch()
-                    .groupBy { it[PARAMETERS.REPORT_VERSION] }
-                    .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
         }
     }
 
