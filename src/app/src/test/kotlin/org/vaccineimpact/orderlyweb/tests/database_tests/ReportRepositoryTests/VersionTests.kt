@@ -271,4 +271,27 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.id).isEqualTo("version1")
     }
 
+    @Test
+    fun `getLatestVersion throws unknown object error for reviewer if no versions`()
+    {
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(true)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `getLatestVersion throws unknown object error for reader if no published versions`()
+    {
+        insertReport("test", "version1", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(false)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
 }
