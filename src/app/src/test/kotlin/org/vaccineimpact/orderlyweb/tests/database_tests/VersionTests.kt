@@ -4,11 +4,13 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -87,7 +89,66 @@ class VersionTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getTags checks report version exists and is accessible`()
+    fun `getTags checks report version exists`()
+    {
+        val mockReportRepo = mock<ReportRepository> {
+            on { getReportVersion("test", "v1") doThrow UnknownObjectError("report", "test")
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo,
+                tagRepository = mock())
+
+        assertThatThrownBy {  sut.getReportVersionTags("test", "v1") }
+                .isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `can getAllReportVersions with custom fields`()
+    {
+        insertReport("test", "va")
+        insertReport("test", "vb")
+        insertReport("test", "vc")
+
+        val mockReportRepo = mock<ReportRepository> {
+            on { getAllCustomFields() } doReturn
+                    mapOf("author" to null, "requester" to null)
+            on { getCustomFieldsForVersions(listOf("va", "vb", "vc")) } doReturn
+                    mapOf("va" to mapOf("author" to "author authorson"))
+        }
+
+        val sut = Orderly(isReviewer = true,
+                isGlobalReader = true,
+                reportReadingScopes = listOf(),
+                reportRepository = mockReportRepo)
+
+        val results = sut.getAllReportVersions()
+
+        assertThat(results.count()).isEqualTo(3)
+
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].id).isEqualTo("va")
+        assertThat(results[0].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
+        assertThat(results[0].customFields["requester"]).isEqualTo(null)
+
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("vb")
+        assertThat(results[1].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[1].customFields["author"]).isEqualTo(null)
+        assertThat(results[1].customFields["requester"]).isEqualTo(null)
+
+        assertThat(results[2].name).isEqualTo("test")
+        assertThat(results[2].id).isEqualTo("vc")
+        assertThat(results[2].customFields.keys.count()).isEqualTo(2)
+        assertThat(results[2].customFields["author"]).isEqualTo(null)
+        assertThat(results[2].customFields["requester"]).isEqualTo(null)
+    }
+
+    @Test
+    fun `reader can get all published report versions`()
     {
         val mockReportRepo = mock<ReportRepository>()
         val sut = Orderly(isReviewer = true,
