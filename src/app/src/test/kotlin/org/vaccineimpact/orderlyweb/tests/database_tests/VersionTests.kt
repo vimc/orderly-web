@@ -34,6 +34,7 @@ class VersionTests : CleanDatabaseTests()
     private val mockReportRepo = mock<ReportRepository> {
         on { getReportVersion("test", "v1") } doReturn basicReportVersion
         on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
+        on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
     }
 
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
@@ -57,8 +58,6 @@ class VersionTests : CleanDatabaseTests()
         insertArtefact("v1", "some artefact",
                 ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
 
-        insertVersionParameterValues("v1", mapOf("p1" to "v1", "p2" to "v2"))
-
         val sut = createSut()
         val result = sut.getDetailsByNameAndVersion("test", "v1")
 
@@ -68,15 +67,15 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.displayName).isEqualTo("display name")
         assertThat(result.date).isEqualTo(now)
         assertThat(result.published).isTrue()
+        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
+        assertThat(result.parameterValues["p1"]).isEqualTo("param1")
+        assertThat(result.parameterValues["p2"]).isEqualTo("param2")
 
         // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
         assertThat(result.artefacts).containsExactly(Artefact(ArtefactFormat.DATA,
                 "some artefact", listOf(FileInfo("artefactfile.csv", 1234))))
         assertThat(result.dataInfo).hasSameElementsAs(listOf(DataInfo("dat", 9876, 7654)))
-        assertThat(result.parameterValues.keys.count()).isEqualTo(2)
-        assertThat(result.parameterValues["p1"]).isEqualTo("v1")
-        assertThat(result.parameterValues["p2"]).isEqualTo("v2")
     }
 
     @Test
@@ -166,17 +165,21 @@ class VersionTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `can getAllReportVersions with custom fields`()
+    fun `can getAllReportVersions with custom fields and parameters`()
     {
+        val versionIds = listOf("v1", "v2")
+
         val mockReportRepo = mock<ReportRepository> {
             on { getAllReportVersions() } doReturn listOf(
                     basicReportVersion,
                     basicReportVersion.copy(id = "v2"))
-
             on { getAllCustomFields() } doReturn
                     mapOf("author" to null, "requester" to null)
-            on { getCustomFieldsForVersions(listOf("v1", "v2")) } doReturn
+            on { getCustomFieldsForVersions(versionIds) } doReturn
                     mapOf("v1" to mapOf("author" to "author authorson"))
+            on { getParametersForVersions(versionIds) } doReturn
+                    mapOf("v1" to mapOf("p1" to "param1"),
+                    "v2" to mapOf("p2" to "param2"))
         }
 
         val sut = Orderly(isReviewer = true,
@@ -193,34 +196,15 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results[0].customFields.keys.count()).isEqualTo(2)
         assertThat(results[0].customFields["author"]).isEqualTo("author authorson")
         assertThat(results[0].customFields["requester"]).isEqualTo(null)
+        assertThat(results[0].parameterValues.keys.count()).isEqualTo(1)
+        assertThat(results[0].parameterValues["p1"]).isEqualTo("param1")
 
         assertThat(results[1].name).isEqualTo("test")
         assertThat(results[1].id).isEqualTo("v2")
         assertThat(results[1].customFields.keys.count()).isEqualTo(2)
         assertThat(results[1].customFields["author"]).isEqualTo(null)
         assertThat(results[1].customFields["requester"]).isEqualTo(null)
-    }
-
-    @Test
-    fun `getAllReportVersions includes parameters`()
-    {
-        insertReport("test", "v1")
-        insertReport("test", "v2")
-        insertVersionParameterValues("v2", mapOf("p1" to "param1", "p2" to "param2"))
-        val sut = createSut()
-
-        val results = sut.getAllReportVersions()
-
-        assertThat(results.count()).isEqualTo(2)
-
-        assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].id).isEqualTo("v1")
-        assertThat(results[0].parameterValues.keys.count()).isEqualTo(0)
-
-        assertThat(results[1].name).isEqualTo("test")
-        assertThat(results[1].id).isEqualTo("v2")
-        assertThat(results[1].parameterValues.keys.count()).isEqualTo(2)
-        assertThat(results[1].parameterValues["p1"]).isEqualTo("param1")
+        assertThat(results[1].parameterValues.keys.count()).isEqualTo(1)
         assertThat(results[1].parameterValues["p2"]).isEqualTo("param2")
     }
 
