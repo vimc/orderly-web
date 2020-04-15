@@ -10,6 +10,7 @@
                                  cssClass="children"
                                  :permissions="role.permissions"
                                  :user-group="role.name"
+                                 :can-edit="role.name !== 'Admin'"
                                  @added="function(p) {addPermission(p, role)}"
                                  @removed="function(p) {removePermission(p, role.name)}"></permission-list>
             </li>
