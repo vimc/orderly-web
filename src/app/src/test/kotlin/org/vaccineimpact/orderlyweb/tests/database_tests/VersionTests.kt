@@ -3,7 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -11,7 +12,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.test_helpers.*
+import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertArtefact
 import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
@@ -35,6 +37,11 @@ class VersionTests : CleanDatabaseTests()
         on { getReportVersion("test", "v1") } doReturn basicReportVersion
         on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
         on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
+        on { getLatestVersion("test") } doReturn basicReportVersion.copy(id = "latest", date = now.minusSeconds(100))
+        on { getDatedChangelogForReport("test", now.minusSeconds(100)) } doReturn
+                listOf(Changelog("v1", "public", "getLatestChangelog", true, true))
+        on { getDatedChangelogForReport("test", now) } doReturn
+                listOf(Changelog("v1", "public", "getByNameAndVersion", true, true))
     }
 
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
@@ -117,7 +124,7 @@ class VersionTests : CleanDatabaseTests()
                 reportRepository = mockReportRepo,
                 tagRepository = mock())
 
-        assertThatThrownBy {  sut.getReportVersionTags("test", "v1") }
+        assertThatThrownBy { sut.getReportVersionTags("test", "v1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -179,7 +186,7 @@ class VersionTests : CleanDatabaseTests()
                     mapOf("v1" to mapOf("author" to "author authorson"))
             on { getParametersForVersions(versionIds) } doReturn
                     mapOf("v1" to mapOf("p1" to "param1"),
-                    "v2" to mapOf("p2" to "param2"))
+                            "v2" to mapOf("p2" to "param2"))
         }
 
         val sut = Orderly(isReviewer = true,
@@ -206,6 +213,26 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results[1].customFields["requester"]).isEqualTo(null)
         assertThat(results[1].parameterValues.keys.count()).isEqualTo(1)
         assertThat(results[1].parameterValues["p2"]).isEqualTo("param2")
+    }
+
+    @Test
+    fun `can getLatestChangelogByName`()
+    {
+        val sut = createSut()
+        val result = sut.getLatestChangelogByName("test")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0])
+                .isEqualToComparingFieldByField(Changelog("v1", "public", "getLatestChangelog", true, true))
+    }
+
+    @Test
+    fun `can getChangelogByNameAndVersion`()
+    {
+        val sut = createSut()
+        val result = sut.getChangelogByNameAndVersion("test", "v1")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0])
+                .isEqualToComparingFieldByField(Changelog("v1", "public", "getByNameAndVersion", true, true))
     }
 
 }

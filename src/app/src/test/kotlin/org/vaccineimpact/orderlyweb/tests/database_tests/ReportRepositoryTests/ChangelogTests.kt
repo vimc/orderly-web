@@ -1,24 +1,32 @@
-package org.vaccineimpact.orderlyweb.tests.database_tests
+package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.db.Orderly
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.InsertableChangelog
 import org.vaccineimpact.orderlyweb.tests.insertChangelog
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import java.sql.Timestamp
+import java.time.Instant
 
-class OrderlychangelogTests : CleanDatabaseTests()
+class ChangelogTests : CleanDatabaseTests()
 {
-    private fun createSut(isReviewer: Boolean = false): Orderly
+    private fun createSut(isReviewer: Boolean = false): ReportRepository
     {
-        return Orderly(isReviewer, true, listOf())
+        return OrderlyReportRepository(isReviewer, true, listOf())
     }
 
+    private val older = Instant.parse("2017-12-03T10:15:30.00Z")
+    private val old = Instant.parse("2018-12-03T10:15:30.00Z")
+    private val latest = Instant.parse("2019-12-03T10:15:30.00Z")
+
     @Test
-    fun `reviewer can get all changelog for report version`()
+    fun `reviewer can get all changelog`()
     {
         insertReport("test", "version1")
         insertChangelog(listOf(
@@ -39,7 +47,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(true)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version1")
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         Assertions.assertThat(results.count()).isEqualTo(2)
 
@@ -49,7 +57,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `reader can get public changelog for report version`()
+    fun `reader can get public changelog`()
     {
         insertReport("test", "version1")
         insertChangelog(listOf(
@@ -72,7 +80,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(false)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version1")
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         Assertions.assertThat(results.count()).isEqualTo(1)
 
@@ -86,7 +94,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(true)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version3")
+        val results = sut.getDatedChangelogForReport("test",  Instant.now())
 
         assertExpectedTestChangelogValues("version3", results)
 
@@ -99,10 +107,9 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(false)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version3")
+        val results = sut.getDatedChangelogForReport("test",  Instant.now())
 
         assertExpectedPublicTestChangelogValues("version3", results)
-
     }
 
     @Test
@@ -111,7 +118,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
         val sut = createSut(true)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version2")
+        val results = sut.getDatedChangelogForReport("test", old)
 
         assertExpectedTestChangelogValues("version2", results)
     }
@@ -122,7 +129,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
         val sut = createSut(false)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version1")
+        val results = sut.getDatedChangelogForReport("test", old)
 
         assertExpectedPublicTestChangelogValues("version1", results)
     }
@@ -151,9 +158,9 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(true)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version2")
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
-        assertExpectedTestChangelogValues("version2", results)
+        assertExpectedTestChangelogValues("version3", results)
     }
 
     @Test
@@ -180,7 +187,7 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut(false)
 
-        val results = sut.getChangelogByNameAndVersion("test", "version3")
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         assertExpectedPublicTestChangelogValues("version3", results)
     }
@@ -192,239 +199,35 @@ class OrderlychangelogTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        val results = sut.getChangelogByNameAndVersion("emptytest", "version1")
+        val results = sut.getDatedChangelogForReport("emptytest", Instant.now())
 
         Assertions.assertThat(results.count()).isEqualTo(0)
     }
 
     @Test
-    fun `throws unknown object error when getting changelog for nonexistent version`()
+    fun `getLatestVersion throws unknown object error when report does not exist`()
     {
-
         val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getChangelogByNameAndVersion("test", "versionX") }
+        Assertions.assertThatThrownBy { sut.getLatestVersion("test") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
     @Test
-    fun `throws unknown object error when getting changelog for version which is not in named report`()
+    fun `getLatestVersion throws unknown object error for reader when report is not published`()
     {
-        insertTestReportChangelogs()
+        insertReport("test", "version1", published = false)
 
         val sut = createSut()
 
-        Assertions.assertThatThrownBy { sut.getChangelogByNameAndVersion("anothertest", "version1") }
+        Assertions.assertThatThrownBy { sut.getLatestVersion("test") }
                 .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `throws unknown object error when reader attempts to get changelog for version which in not published`()
-    {
-        insertTestReportChangelogs()
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getChangelogByNameAndVersion("test", "version2") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `throws unknown object error when getting latest changelog for nonexistent report`()
-    {
-
-        val sut = createSut()
-
-        Assertions.assertThatThrownBy { sut.getLatestChangelogByName("does not exist") }
-                .isInstanceOf(UnknownObjectError::class.java)
-    }
-
-    @Test
-    fun `reviewer can get latest changelog for report`()
-    {
-        insertTestReportChangelogs()
-
-        val sut = createSut(true)
-
-        val results = sut.getLatestChangelogByName("test")
-
-        assertExpectedTestChangelogValues("version3", results)
-    }
-
-    @Test
-    fun `reader can get latest public changelog for report`()
-    {
-        insertTestReportChangelogs()
-
-        val sut = createSut(false)
-
-        val results = sut.getLatestChangelogByName("test")
-
-        assertExpectedPublicTestChangelogValues("version3", results)
-    }
-
-    @Test
-    fun `reviewer does not get latest changelog for other reports`()
-    {
-        insertTestReportChangelogs()
-
-        insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id7",
-                        "anotherversion1",
-                        "public",
-                        "did something great v1",
-                        true,
-                        7,
-                        "anotherversion1"),
-                InsertableChangelog(
-                        "id8",
-                        "anotherversion1",
-                        "internal",
-                        "did something awful v1",
-                        false,
-                        8,
-                        "anotherversion1")))
-
-        val sut = createSut(true)
-
-        val results = sut.getLatestChangelogByName("test")
-
-        assertExpectedTestChangelogValues("version3", results)
-    }
-
-    @Test
-    fun `reader does not get latest changelog for other reports`()
-    {
-        insertTestReportChangelogs()
-
-        insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id7",
-                        "anotherversion1",
-                        "public",
-                        "did something great v1",
-                        true,
-                        7,
-                        "anotherversion1"),
-                InsertableChangelog(
-                        "id8",
-                        "anotherversion1",
-                        "internal",
-                        "did something awful v1",
-                        false,
-                        8,
-                        "anotherversion1")))
-
-        val sut = createSut(false)
-
-        val results = sut.getLatestChangelogByName("test")
-
-        assertExpectedPublicTestChangelogValues("version3", results)
-    }
-
-    @Test
-    fun `getLatestChangelogByName returns changelog for latest published version to reader`()
-    {
-        // old unpublished version with changelogs forwarded to next published version
-        insertReport("test", "v1", published = false)
-        // old published version
-        insertReport("test", "v2", published = false)
-        // latest published version
-        insertReport("test", "v3", published = true)
-        // latest unpublished version
-        insertReport("test", "v4", published = false)
-
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id1",
-                        "v1",
-                        "public",
-                        "did something great v1",
-                        true,
-                        1,
-                        reportVersionPublic = "v2"),
-                InsertableChangelog(
-                        "id2",
-                        "v1",
-                        "internal",
-                        "did something awful v1",
-                        false,
-                        2,
-                        reportVersionPublic = "v2")))
-
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id3",
-                        "v2",
-                        "public",
-                        "did something great v2",
-                        true,
-                        3,
-                        reportVersionPublic = "v2"),
-                InsertableChangelog(
-                        "id4",
-                        "v2",
-                        "internal",
-                        "did something awful v2",
-                        false,
-                        4,
-                        reportVersionPublic = "v2")))
-
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id5",
-                        "v3",
-                        "public",
-                        "did something great v3",
-                        true,
-                        5,
-                        reportVersionPublic = "v3"),
-                InsertableChangelog(
-                        "id6",
-                        "v3",
-                        "internal",
-                        "did something awful v3",
-                        false,
-                        6,
-                        reportVersionPublic = "v3")))
-
-        insertChangelog(listOf(
-                InsertableChangelog(
-                        "id7",
-                        "v4",
-                        "public",
-                        "did something great v4",
-                        true,
-                        7,
-                        reportVersionPublic = null),
-                InsertableChangelog(
-                        "id8",
-                        "v4",
-                        "internal",
-                        "did something awful v4",
-                        false,
-                        8,
-                        reportVersionPublic = null)))
-
-        val sut = createSut(false)
-
-        val results = sut.getLatestChangelogByName("test")
-
-        Assertions.assertThat(results.count()).isEqualTo(3)
-
-        assertChangelogValuesMatch(results[0], "v3", "public", "did something great v3", true, true)
-        assertChangelogValuesMatch(results[1], "v2", "public", "did something great v2", true, true)
-        assertChangelogValuesMatch(results[2], "v2", "public", "did something great v1", true, true)
     }
 
     private fun insertTestReportChangelogs()
     {
-        insertReport("test", "version1")
-        insertReport("test", "version2", published = false)
-        insertReport("test", "version3")
+        insertReport("test", "version1", date = Timestamp.from(older))
+        insertReport("test", "version2", published = false, date = Timestamp.from(old))
+        insertReport("test", "version3", date = Timestamp.from(latest))
 
         insertChangelog(listOf(
                 InsertableChangelog(
