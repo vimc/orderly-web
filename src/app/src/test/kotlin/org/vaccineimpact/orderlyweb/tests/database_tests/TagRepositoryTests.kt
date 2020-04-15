@@ -86,5 +86,66 @@ class TagRepositoryTests : CleanDatabaseTests()
         assertThat(versionTags).containsExactly("test-version-tag")
     }
 
+    @Test
+    fun `can get version tags`()
+    {
+        insertReport("report", "v1")
+        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
+
+        insertReport("report", "v2")
+        insertVersionTags("v2", "aa-tag")
+
+        insertReport("report", "v3")
+
+        val sut = OrderlyWebTagRepository()
+        val result = sut.getVersionTags(listOf("v1", "v2"))
+
+        assertThat(result.keys).containsExactly("v1", "v2")
+        assertThat(result["v1"]).containsExactlyElementsOf(listOf("a-tag", "b-tag", "c-tag"))
+        assertThat(result["v2"]).containsExactlyElementsOf(listOf("aa-tag"))
+    }
+
+    @Test
+    fun `can get report tags for versions`()
+    {
+        insertReport("report", "v1")
+        insertReportTags("report", "d-tag", "b-tag")
+        insertVersionTags("v1", "c-tag", "a-tag", "b-tag")
+
+        insertReport("report2", "v2")
+        insertVersionTags("v2", "aa-tag")
+
+        insertReport("report3", "v3")
+        insertReportTags("report3", "a-tag")
+
+        val sut = OrderlyWebTagRepository()
+        val result = sut.getReportTagsForVersions(listOf("v1", "v2", "v3"))
+
+        assertThat(result.keys).containsExactly("v1", "v3")
+        assertThat(result["v1"]).containsExactlyElementsOf(listOf("b-tag", "d-tag"))
+        assertThat(result["v3"]).containsExactlyElementsOf(listOf("a-tag"))
+    }
+
+    @Test
+    fun `can get orderly tags for versions`()
+    {
+        insertReport("report", "v1")
+        insertVersionTags("v1", "a", "c")
+        insertOrderlyTags("v1", "b", "d")
+
+        insertReport("report2", "v2")
+        insertReportTags("report2", "e")
+        insertOrderlyTags("v2", "f", "e")
+
+        insertReport("report3", "v3")
+        insertOrderlyTags("v3", "g")
+
+        val sut = OrderlyWebTagRepository()
+        val result = sut.getOrderlyTagsForVersions(listOf("v1", "v2"))
+
+        assertThat(result.keys).containsExactly("v1", "v2")
+        assertThat(result["v1"]).containsExactlyElementsOf(listOf("b", "d"))
+        assertThat(result["v2"]).containsExactlyElementsOf(listOf("f", "e"))
+    }
 
 }
