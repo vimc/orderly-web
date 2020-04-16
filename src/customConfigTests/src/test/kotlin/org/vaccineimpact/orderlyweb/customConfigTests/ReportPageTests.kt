@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
+import okhttp3.internal.waitMillis
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
@@ -86,6 +87,7 @@ class ReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
 
         //Additional logging to diagnose TeamCity only failure
+        wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*error.*")))
         println("REPORT VUE APP:" +  driver.findElement(By.cssSelector("#runReportVueApp")).getAttribute("outerHTML"))
 
         wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*success.*")))
