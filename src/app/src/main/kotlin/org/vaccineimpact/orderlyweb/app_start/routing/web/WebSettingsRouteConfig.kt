@@ -8,6 +8,7 @@ import spark.route.HttpMethod
 object WebSettingsRouteConfig : RouteConfig
 {
     private val usersManage = setOf("*/users.manage")
+
     override val endpoints: List<EndpointDefinition> = listOf(
                     WebEndpoint("/settings/auth-allow-guest/",
                             SettingsController::class, "getAuthAllowGuest")

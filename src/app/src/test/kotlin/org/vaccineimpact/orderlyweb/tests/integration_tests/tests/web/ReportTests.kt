@@ -1,11 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import org.junit.Test
+import org.assertj.core.api.Assertions.assertThat
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.tests.addMembers
-import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 
@@ -27,4 +27,28 @@ class ReportTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
 
+    @Test
+    fun `only report configurers can set global pinned reports`()
+    {
+        val url = "/report/pinned-reports/"
+        val requiredPermissions = setOf(ReifiedPermission("reports.configure", Scope.Global()))
+        assertWebUrlSecured(url, requiredPermissions, method = HttpMethod.post, contentType = ContentTypes.json,
+                postData = mapOf("reports" to "[]"))
+    }
+
+    @Test
+    fun `can set global pinned reports`()
+    {
+        val url = "/report/pinned-reports/"
+
+        webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.configure", Scope.Global())),
+                method = HttpMethod.post,
+                postData = mapOf("reports" to "[\"view\"]"),
+                contentType = ContentTypes.json)
+
+        val pinnedReports = OrderlyReportRepository(true, true).getGlobalPinnedReports()
+        assertThat(pinnedReports.count()).isEqualTo(1)
+        assertThat(pinnedReports[0].name).isEqualTo("view")
+    }
 }

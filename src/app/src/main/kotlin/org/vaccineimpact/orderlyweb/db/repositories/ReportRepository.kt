@@ -35,6 +35,10 @@ interface ReportRepository
     fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
 
     fun getLatestVersion(report: String): BasicReportVersion
+
+    fun setPinnedReports(reportNames: List<String>)
+
+    fun reportExists(reportName: String): Boolean
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -234,6 +238,32 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(REPORT_VERSION.REPORT.eq(report))
                     .and(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(BasicReportVersion::class.java) ?: throw UnknownObjectError(report, "report")
+        }
+    }
+
+    override fun setPinnedReports(reportNames: List<String>)
+    {
+        JooqContext().use { ctx ->
+            ctx.dsl.transaction { _ ->
+                ctx.dsl.deleteFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                        .execute()
+                reportNames.forEachIndexed { index, reportName ->
+                    ctx.dsl.insertInto(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                            .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING, index)
+                            .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT, reportName)
+                            .execute()
+                }
+            }
+        }
+    }
+
+    override fun reportExists(reportName: String): Boolean
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.selectFrom(REPORT)
+                    .where(REPORT.NAME.eq(reportName))
+                    .fetch()
+                    .count() > 0
         }
     }
 
