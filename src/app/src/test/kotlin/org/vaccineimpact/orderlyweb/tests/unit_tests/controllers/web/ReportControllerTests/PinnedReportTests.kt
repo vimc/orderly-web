@@ -58,16 +58,4 @@ class PinnedReportTests : TeamcityTests()
         assertThatThrownBy{ sut.setPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Cannot include the same pinned report twice")
     }
-
-    @Test
-    fun `getAllReportDisplayNames calls repo`()
-    {
-        val result = mapOf("reportName" to "displayName")
-        val displayNamesRepo = mock<ReportRepository> {
-            on { getAllReportDisplayNames() } doReturn result
-        }
-
-        val sut = ReportController(mock(), mock(), displayNamesRepo, mock())
-        assertThat(sut.getAllReportDisplayNames()).isSameAs(result)
-    }
 }

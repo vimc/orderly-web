@@ -33,13 +33,6 @@ object WebReportRouteConfig : RouteConfig
                     method = HttpMethod.post)
                     .json()
                     .secure(configureReports)
-                    .transform(),
-            WebEndpoint("/typeahead/reports/",
-                    ReportController::class, "getAllReportDisplayNames")
-                    .json()
                     .transform()
-                    .secure(configureReports)
-
-
     )
 }
