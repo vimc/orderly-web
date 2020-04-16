@@ -38,7 +38,7 @@ class IndexController(actionContext: ActionContext,
             null
         }
 
-        return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, context)
+        return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, canConfigure, displayNames, context)
     }
 
     fun metrics(): String

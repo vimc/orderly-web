@@ -133,7 +133,7 @@
             </#if>
             <#if canConfigure>
             var reportDisplayNames = ${reportDisplayNames};
-            <#/if>
+            </#if>
         </script>
         <script type="text/javascript" src="${appUrl}/js/lib/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/lib/dataTables.bootstrap4.js"></script>
