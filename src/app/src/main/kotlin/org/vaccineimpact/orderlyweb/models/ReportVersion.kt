@@ -27,14 +27,10 @@ data class ReportVersion(@Transient val basicReportVersion: BasicReportVersion,
     val latestVersion: String = basicReportVersion.latestVersion
 }
 
-data class ReportVersionWithChangelog
-constructor(@Transient val basicReportVersion: BasicReportVersion,
+data class ReportDraft
+constructor(val name: String,
+            val displayName: String?,
+            val id: String,
+            val date: Instant,
             val parameterValues: Map<String, String>,
             val changelogs: List<Changelog>)
-{
-    val date: Instant = basicReportVersion.date
-    val description: String? = basicReportVersion.description
-    val displayName: String? = basicReportVersion.displayName
-    val id: String = basicReportVersion.id
-    val name: String = basicReportVersion.name
-}

@@ -2,8 +2,8 @@ package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.AssertionsForClassTypes.assertThat
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -12,10 +12,10 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
+import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 
 class VersionTests : CleanDatabaseTests()
 {
-
     private fun createSut(isReviewer: Boolean = false): ReportRepository
     {
         return OrderlyReportRepository(isReviewer, true, listOf())
@@ -34,8 +34,8 @@ class VersionTests : CleanDatabaseTests()
         val sut = OrderlyReportRepository(mockContext)
 
         val result = sut.getAllReportVersions()
-        Assertions.assertThat(result).hasSize(1)
-        Assertions.assertThat(result[0].name).isEqualTo("goodname")
+        assertThat(result).hasSize(1)
+        assertThat(result[0].name).isEqualTo("goodname")
     }
 
     @Test
@@ -51,7 +51,7 @@ class VersionTests : CleanDatabaseTests()
         val sut = OrderlyReportRepository(mockContext)
 
         val results = sut.getAllReportVersions()
-        Assertions.assertThat(results.count()).isEqualTo(2)
+        assertThat(results.count()).isEqualTo(2)
     }
 
     @Test
@@ -60,7 +60,7 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test", "version1", published = false)
 
         val sut = createSut()
-        Assertions.assertThatThrownBy { sut.getReportVersion("test", "version1") }
+        assertThatThrownBy { sut.getReportVersion("test", "version1") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -71,7 +71,7 @@ class VersionTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        Assertions.assertThatThrownBy { sut.getReportVersion("test", "dsajkdsj") }
+        assertThatThrownBy { sut.getReportVersion("test", "dsajkdsj") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -83,7 +83,7 @@ class VersionTests : CleanDatabaseTests()
 
         val sut = createSut()
 
-        Assertions.assertThatThrownBy { sut.getReportVersion("dsajkdsj", "version") }
+        assertThatThrownBy { sut.getReportVersion("dsajkdsj", "version") }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
 
@@ -116,33 +116,33 @@ class VersionTests : CleanDatabaseTests()
 
         val results = sut.getAllReportVersions()
 
-        Assertions.assertThat(results.count()).isEqualTo(6)
+        assertThat(results.count()).isEqualTo(6)
 
-        Assertions.assertThat(results[0].name).isEqualTo("test")
-        Assertions.assertThat(results[0].displayName).isEqualTo("display name test")
-        Assertions.assertThat(results[0].latestVersion).isEqualTo("vz")
-        Assertions.assertThat(results[0].id).isEqualTo("va")
-        Assertions.assertThat(results[0].published).isTrue()
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].latestVersion).isEqualTo("vz")
+        assertThat(results[0].id).isEqualTo("va")
+        assertThat(results[0].published).isTrue()
 
-        Assertions.assertThat(results[1].name).isEqualTo("test")
-        Assertions.assertThat(results[1].id).isEqualTo("vz")
-        Assertions.assertThat(results[1].latestVersion).isEqualTo("vz")
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("vz")
+        assertThat(results[1].latestVersion).isEqualTo("vz")
 
-        Assertions.assertThat(results[2].name).isEqualTo("test2")
-        Assertions.assertThat(results[2].id).isEqualTo("vb")
-        Assertions.assertThat(results[2].latestVersion).isEqualTo("vd")
+        assertThat(results[2].name).isEqualTo("test2")
+        assertThat(results[2].id).isEqualTo("vb")
+        assertThat(results[2].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[3].name).isEqualTo("test2")
-        Assertions.assertThat(results[3].id).isEqualTo("vc")
-        Assertions.assertThat(results[3].latestVersion).isEqualTo("vd")
+        assertThat(results[3].name).isEqualTo("test2")
+        assertThat(results[3].id).isEqualTo("vc")
+        assertThat(results[3].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[4].name).isEqualTo("test2")
-        Assertions.assertThat(results[4].id).isEqualTo("vd")
-        Assertions.assertThat(results[4].latestVersion).isEqualTo("vd")
+        assertThat(results[4].name).isEqualTo("test2")
+        assertThat(results[4].id).isEqualTo("vd")
+        assertThat(results[4].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[5].name).isEqualTo("test3")
-        Assertions.assertThat(results[5].id).isEqualTo("test3version")
-        Assertions.assertThat(results[5].latestVersion).isEqualTo("test3version")
+        assertThat(results[5].name).isEqualTo("test3")
+        assertThat(results[5].id).isEqualTo("test3version")
+        assertThat(results[5].latestVersion).isEqualTo("test3version")
     }
 
     @Test
@@ -160,37 +160,37 @@ class VersionTests : CleanDatabaseTests()
 
         val results = sut.getAllReportVersions()
 
-        Assertions.assertThat(results.count()).isEqualTo(7)
+        assertThat(results.count()).isEqualTo(7)
 
-        Assertions.assertThat(results[0].name).isEqualTo("test")
-        Assertions.assertThat(results[0].displayName).isEqualTo("display name test")
-        Assertions.assertThat(results[0].latestVersion).isEqualTo("vz")
-        Assertions.assertThat(results[0].id).isEqualTo("va")
-        Assertions.assertThat(results[0].published).isTrue()
+        assertThat(results[0].name).isEqualTo("test")
+        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].latestVersion).isEqualTo("vz")
+        assertThat(results[0].id).isEqualTo("va")
+        assertThat(results[0].published).isTrue()
 
-        Assertions.assertThat(results[1].name).isEqualTo("test")
-        Assertions.assertThat(results[1].id).isEqualTo("vz")
-        Assertions.assertThat(results[1].latestVersion).isEqualTo("vz")
+        assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].id).isEqualTo("vz")
+        assertThat(results[1].latestVersion).isEqualTo("vz")
 
-        Assertions.assertThat(results[2].name).isEqualTo("test2")
-        Assertions.assertThat(results[2].id).isEqualTo("vb")
-        Assertions.assertThat(results[2].latestVersion).isEqualTo("vd")
+        assertThat(results[2].name).isEqualTo("test2")
+        assertThat(results[2].id).isEqualTo("vb")
+        assertThat(results[2].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[3].name).isEqualTo("test2")
-        Assertions.assertThat(results[3].id).isEqualTo("vc")
-        Assertions.assertThat(results[3].latestVersion).isEqualTo("vd")
+        assertThat(results[3].name).isEqualTo("test2")
+        assertThat(results[3].id).isEqualTo("vc")
+        assertThat(results[3].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[4].name).isEqualTo("test2")
-        Assertions.assertThat(results[4].id).isEqualTo("vd")
-        Assertions.assertThat(results[4].latestVersion).isEqualTo("vd")
+        assertThat(results[4].name).isEqualTo("test2")
+        assertThat(results[4].id).isEqualTo("vd")
+        assertThat(results[4].latestVersion).isEqualTo("vd")
 
-        Assertions.assertThat(results[5].name).isEqualTo("test3")
-        Assertions.assertThat(results[5].id).isEqualTo("test3version")
-        Assertions.assertThat(results[5].latestVersion).isEqualTo("test3versionunpublished")
+        assertThat(results[5].name).isEqualTo("test3")
+        assertThat(results[5].id).isEqualTo("test3version")
+        assertThat(results[5].latestVersion).isEqualTo("test3versionunpublished")
 
-        Assertions.assertThat(results[6].name).isEqualTo("test3")
-        Assertions.assertThat(results[6].id).isEqualTo("test3versionunpublished")
-        Assertions.assertThat(results[6].latestVersion).isEqualTo("test3versionunpublished")
+        assertThat(results[6].name).isEqualTo("test3")
+        assertThat(results[6].id).isEqualTo("test3versionunpublished")
+        assertThat(results[6].latestVersion).isEqualTo("test3versionunpublished")
     }
 
     @Test
@@ -198,9 +198,9 @@ class VersionTests : CleanDatabaseTests()
     {
         val sut = createSut()
         val result = sut.getAllCustomFields()
-        Assertions.assertThat(result.keys).containsExactly("author", "requester")
-        Assertions.assertThat(result["author"]).isEqualTo(null)
-        Assertions.assertThat(result["requester"]).isEqualTo(null)
+        assertThat(result.keys).containsExactly("author", "requester")
+        assertThat(result["author"]).isEqualTo(null)
+        assertThat(result["requester"]).isEqualTo(null)
     }
 
     @Test
@@ -213,10 +213,85 @@ class VersionTests : CleanDatabaseTests()
         val sut = createSut()
         val result = sut.getCustomFieldsForVersions(listOf("v1", "v2", "v3"))
 
-        Assertions.assertThat(result.keys).containsExactly("v1", "v3")
-        Assertions.assertThat(result["v1"]!!.keys).containsExactly("author")
-        Assertions.assertThat(result["v1"]!!["author"]).isEqualTo("authorer")
-        Assertions.assertThat(result["v3"]!!.keys).containsExactly("requester")
-        Assertions.assertThat(result["v3"]!!["requester"]).isEqualTo("requester mcfunderface")
+        assertThat(result.keys).containsExactly("v1", "v3")
+        assertThat(result["v1"]!!.keys).containsExactly("author")
+        assertThat(result["v1"]!!["author"]).isEqualTo("authorer")
+        assertThat(result["v3"]!!.keys).containsExactly("requester")
+        assertThat(result["v3"]!!["requester"]).isEqualTo("requester mcfunderface")
     }
+
+    @Test
+    fun `can get parameters for report versions`()
+    {
+        insertReport("test", "va")
+        insertVersionParameterValues("va", mapOf("p1" to "param1", "p2" to "param2"))
+        insertReport("test", "vz")
+        insertVersionParameterValues("vz", mapOf("p1" to "param3"))
+
+        insertReport("test2", "vc")
+        insertReport("test2", "vb")
+
+        val sut = createSut()
+
+        val results = sut.getParametersForVersions(listOf("va", "vz", "vb", "vc"))
+
+        assertThat(results.keys).containsExactly("va", "vz")
+
+        assertThat(results["va"]!!.keys.count()).isEqualTo(2)
+        assertThat(results["va"]!!["p1"]).isEqualTo("param1")
+        assertThat(results["va"]!!["p2"]).isEqualTo("param2")
+
+        assertThat(results["vz"]!!.keys.count()).isEqualTo(1)
+        assertThat(results["vz"]!!["p1"]).isEqualTo("param3")
+    }
+
+    @Test
+    fun `can get latest version for reviewer`()
+    {
+        insertReport("test", "version1")
+        insertReport("test", "version2", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(true)
+        val result = sut.getLatestVersion("test")
+
+        assertThat(result.id).isEqualTo("version2")
+    }
+
+    @Test
+    fun `can get latest published version for reader`()
+    {
+        insertReport("test", "version1")
+        insertReport("test", "version2", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(false)
+        val result = sut.getLatestVersion("test")
+
+        assertThat(result.id).isEqualTo("version1")
+    }
+
+    @Test
+    fun `getLatestVersion throws unknown object error for reviewer if no versions`()
+    {
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(true)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `getLatestVersion throws unknown object error for reader if no published versions`()
+    {
+        insertReport("test", "version1", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(false)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
 }

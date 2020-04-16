@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelog
+import org.vaccineimpact.orderlyweb.models.ReportDraft
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import java.time.Instant
 
@@ -11,7 +11,7 @@ data class ReportDraftViewModel(val id: String,
 {
     companion object
     {
-        fun build(version: ReportVersionWithChangelog): ReportDraftViewModel
+        fun build(version: ReportDraft): ReportDraftViewModel
         {
             val changelogs = version.changelogs.map { ChangelogItemViewModel.build(it) }
             val parameterValues = version.parameterValues.entries.joinToString(",") { "${it.key}=${it.value}" }
@@ -25,7 +25,7 @@ data class DateGroup(val date: String, val drafts: List<ReportDraftViewModel>)
 {
     companion object
     {
-        fun build(date: Instant, versions: List<ReportVersionWithChangelog>): DateGroup
+        fun build(date: Instant, versions: List<ReportDraft>): DateGroup
         {
             return DateGroup(date.toString(), versions.map(ReportDraftViewModel::build))
         }
@@ -36,7 +36,7 @@ data class ReportWithDraftsViewModel(val displayName: String, val previouslyPubl
 {
     companion object
     {
-        fun build(report: ReportWithPublishStatus, versions: List<ReportVersionWithChangelog>): ReportWithDraftsViewModel
+        fun build(report: ReportWithPublishStatus, versions: List<ReportDraft>): ReportWithDraftsViewModel
         {
             return ReportWithDraftsViewModel(report.displayName ?: report.name,
                     report.hasBeenPublished,

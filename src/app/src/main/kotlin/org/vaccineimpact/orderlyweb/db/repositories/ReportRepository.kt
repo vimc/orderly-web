@@ -1,12 +1,13 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
+import org.jooq.impl.DSL
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.BasicReportVersion
-import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelog
+import org.vaccineimpact.orderlyweb.models.*
+import java.sql.Timestamp
+import java.time.Instant
 
 interface ReportRepository
 {
@@ -27,7 +28,15 @@ interface ReportRepository
 
     fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 
-    fun getUnpublishedVersions(): List<BasicReportVersion>
+    fun getUnpublishedVersions(): List<ReportDraft>
+
+    fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+
+    fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
+
+    fun getLatestVersion(report: String): BasicReportVersion
+
+    fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -131,27 +140,58 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getUnpublishedVersions(): List<ReportVersionWithChangelog>
+    override fun getUnpublishedVersions(): List<ReportDraft>
     {
         JooqContext().use {
-            // create a temp table containing the latest version ID for each report name
-            val latestVersionForEachReport = getLatestVersionsForReports(it)
 
-            return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
-                            latestVersionForEachReport.field<String>("latestVersion"),
-                            REPORT_VERSION.DESCRIPTION
-                    )
-                    .from(REPORT_VERSION)
-                    .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+            val records = it.dsl.select(REPORT_VERSION.REPORT.`as`("name"),
+                    REPORT_VERSION.DISPLAYNAME,
+                    REPORT_VERSION.ID,
+                    REPORT_VERSION.DATE,
+                    REPORT_VERSION.DESCRIPTION,
+                    CHANGELOG.LABEL,
+                    CHANGELOG.VALUE,
+                    CHANGELOG.FROM_FILE,
+                    CHANGELOG_LABEL.PUBLIC)
+                    .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
+                    .leftJoin(REPORT_VERSION)
+                    .on(REPORT_VERSION.ID.eq(CHANGELOG.REPORT_VERSION))
                     .where(shouldIncludeReportVersion)
+                    .and(REPORT_VERSION.PUBLISHED.eq(false))
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fetchInto(BasicReportVersion::class.java)
+                    .fetch()
+
+            val versions = records.groupBy { record -> record[REPORT_VERSION.ID] }
+            val params = getParametersForVersions(versions.keys, it)
+
+            return versions.map { group ->
+                val changelogs = group.value.map {
+                    Changelog(it[REPORT_VERSION.ID],
+                            it[CHANGELOG.LABEL],
+                            it[CHANGELOG.VALUE],
+                            it[CHANGELOG.FROM_FILE],
+                            it[CHANGELOG_LABEL.PUBLIC])
+                }
+                val ref = group.value.first()
+                ReportDraft(ref[REPORT_VERSION.REPORT],
+                        ref[REPORT_VERSION.DISPLAYNAME],
+                        group.key,
+                        ref[REPORT_VERSION.DATE].toInstant(),
+                        params[group.key]?: mapOf(),
+                        changelogs
+                )
+            }
+        }
+    }
+
+    override fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
+    {
+        JooqContext().use {
+            return it.dsl.select(REPORT.NAME,
+                    DSL.firstValue(REPORT_VERSION.DISPLAYNAME).over(DSL.orderBy(REPORT_VERSION.DATE.desc())),
+                    DSL.max(REPORT_VERSION.PUBLISHED).`as`("hasBeenPublished"))
+                    .fromJoinPath(REPORT_VERSION, REPORT)
+                    .fetchInto(ReportWithPublishStatus::class.java)
         }
     }
 
@@ -195,6 +235,69 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
+    override fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
+        JooqContext().use { ctx ->
+            return getParametersForVersions(versionIds, ctx)
+        }
+    }
+
+    override fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
+    {
+        return JooqContext().use {
+            it.dsl.select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
+                    CHANGELOG.LABEL,
+                    CHANGELOG.VALUE,
+                    CHANGELOG.FROM_FILE,
+                    CHANGELOG_LABEL.PUBLIC)
+                    .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
+                    .join(REPORT_VERSION)
+                    .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
+                    .where(REPORT_VERSION.REPORT.eq(report))
+                    .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(latestDate)))
+                    .and(shouldIncludeChangelogItem)
+                    .orderBy(CHANGELOG.ORDERING.desc())
+                    .fetchInto(Changelog::class.java)
+        }
+    }
+
+    override fun getLatestVersion(report: String): BasicReportVersion
+    {
+        JooqContext().use {
+            val latestVersionForEachReport = getLatestVersionsForReports(it)
+
+            return it.dsl.withTemporaryTable(latestVersionForEachReport)
+                    .select(REPORT_VERSION.REPORT.`as`("name"),
+                            REPORT_VERSION.DISPLAYNAME,
+                            REPORT_VERSION.ID,
+                            REPORT_VERSION.PUBLISHED,
+                            REPORT_VERSION.DATE,
+                            latestVersionForEachReport.field<String>("latestVersion"),
+                            REPORT_VERSION.DESCRIPTION
+                    )
+                    .from(REPORT_VERSION)
+                    .join(latestVersionForEachReport.tableName)
+                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+                    .where(shouldIncludeReportVersion)
+                    .and(REPORT_VERSION.REPORT.eq(report))
+                    .and(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .fetchAny()?.into(BasicReportVersion::class.java) ?: throw UnknownObjectError(report, "report")
+        }
+    }
+
+    private fun getParametersForVersions(versionIds: Collection<String>, ctx: JooqContext): Map<String, Map<String, String>>
+    {
+        return ctx.dsl.select(
+                PARAMETERS.REPORT_VERSION,
+                PARAMETERS.NAME,
+                PARAMETERS.VALUE)
+                .from(PARAMETERS)
+                .where(PARAMETERS.REPORT_VERSION.`in`(versionIds))
+                .fetch()
+                .groupBy { it[PARAMETERS.REPORT_VERSION] }
+                .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
+    }
+
     private fun getReportVersion(name: String, version: String, ctx: JooqContext): BasicReportVersion
     {
         val latestVersionForEachReport = getLatestVersionsForReports(ctx)
@@ -236,4 +339,15 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
                     .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
 
+    private val shouldIncludeChangelogItem =
+            if (isReviewer)
+                DSL.trueCondition()
+            else
+                CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
+
+    private val changelogReportVersionColumnForUser =
+            if (isReviewer)
+                CHANGELOG.REPORT_VERSION
+            else
+                CHANGELOG.REPORT_VERSION_PUBLIC
 }

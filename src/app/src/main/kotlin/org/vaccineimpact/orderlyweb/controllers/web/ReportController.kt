@@ -45,6 +45,10 @@ class ReportController(context: ActionContext,
 
     fun getUnpublished(): List<ReportWithDraftsViewModel>
     {
-
+        val reports = reportRepository.getReportsWithPublishStatus()
+        val drafts = reportRepository.getUnpublishedVersions()
+        return reports.map { report ->
+            ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name})
+        }
     }
 }
