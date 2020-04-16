@@ -60,4 +60,9 @@ class ReportController(context: ActionContext,
 
         reportRepository.setPinnedReports(reports)
     }
+
+    fun getAllReportDisplayNames(): Map<String, String>
+    {
+        return reportRepository.getAllReportDisplayNames()
+    }
 }
