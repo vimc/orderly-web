@@ -277,7 +277,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .from(REPORT_VERSION)
                     .where(REPORT_VERSION.PUBLISHED.eq(true))
                     .groupBy(REPORT_VERSION.REPORT)
-                    .map{it[REPORT_VERSION.ID]}
+                    .map{it[0]}
 
              return ctx.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.DISPLAYNAME)
                     .from(REPORT_VERSION)

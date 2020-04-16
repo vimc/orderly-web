@@ -253,8 +253,6 @@ private fun insertReportAndVersion(name: String,
 {
     JooqContext().use {
 
-       val displayname = display ?: "display name $name"
-
         //Does the report already exist in the REPORT table?
         val rows = it.dsl.select(Tables.REPORT.NAME)
                 .from(Tables.REPORT)
@@ -276,7 +274,7 @@ private fun insertReportAndVersion(name: String,
                     this.id = version
                     this.report = name
                     this.date = date
-                    this.displayname = displayname
+                    this.displayname = display
                     this.description = "description $name"
                     this.requester = ""
                     this.author = ""
