@@ -27,4 +27,11 @@ class ReportTests : IntegrationTest()
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
 
+    @Test
+    fun `only report configurers can set global pinned reports`()
+    {
+        val url = "/report/pinned-reports/"
+        val requiredPermissions = setOf(ReifiedPermission("reports.configure", Scope.Global()))
+        assertWebUrlSecured(url, requiredPermissions, method = HttpMethod.post, contentType = ContentTypes.json)
+    }
 }
