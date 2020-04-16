@@ -36,8 +36,10 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermissi
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
+import org.vaccineimpact.orderlyweb.db.tables.ReportBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
@@ -210,6 +212,11 @@ public class Tables {
     public static final Report REPORT = org.vaccineimpact.orderlyweb.db.tables.Report.REPORT;
 
     /**
+     * The table <code>report_batch</code>.
+     */
+    public static final ReportBatch REPORT_BATCH = org.vaccineimpact.orderlyweb.db.tables.ReportBatch.REPORT_BATCH;
+
+    /**
      * The table <code>report_version</code>.
      */
     public static final ReportVersion REPORT_VERSION = org.vaccineimpact.orderlyweb.db.tables.ReportVersion.REPORT_VERSION;
@@ -218,6 +225,11 @@ public class Tables {
      * The table <code>report_version_artefact</code>.
      */
     public static final ReportVersionArtefact REPORT_VERSION_ARTEFACT = org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact.REPORT_VERSION_ARTEFACT;
+
+    /**
+     * The table <code>report_version_batch</code>.
+     */
+    public static final ReportVersionBatch REPORT_VERSION_BATCH = org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch.REPORT_VERSION_BATCH;
 
     /**
      * The table <code>report_version_custom_fields</code>.
