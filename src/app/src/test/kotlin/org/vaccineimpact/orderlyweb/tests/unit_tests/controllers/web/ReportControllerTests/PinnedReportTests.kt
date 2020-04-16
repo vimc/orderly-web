@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.Test
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -56,5 +57,17 @@ class PinnedReportTests : TeamcityTests()
         val sut = ReportController(dupesContext, mock(), mockRepo, mock())
         assertThatThrownBy{ sut.setPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Cannot include the same pinned report twice")
+    }
+
+    @Test
+    fun `getAllReportDisplayNames calls repo`()
+    {
+        val result = mapOf("reportName" to "displayName")
+        val displayNamesRepo = mock<ReportRepository> {
+            on { getAllReportDisplayNames() } doReturn result
+        }
+
+        val sut = ReportController(mock(), mock(), displayNamesRepo, mock())
+        assertThat(sut.getAllReportDisplayNames()).isSameAs(result)
     }
 }

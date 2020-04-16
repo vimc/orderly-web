@@ -281,4 +281,21 @@ class ReportTests : CleanDatabaseTests()
         insertReport("r1", "v1")
         assertThat(sut.reportExists("r1")).isTrue()
     }
+
+    @Test
+    fun `can getAllReportDisplayNames`()
+    {
+        //should return display name for latest published version of each report, or report name if display name is null
+        insertReport("r1", "v1.1", published = true, display = "v1.1 display")
+        insertReport("r1", "v1.2", published = false, display = "v1.2 display")
+
+        insertReport("r2", "v2.1", published = true, display = "v2.1 display")
+        insertReport("r2", "v2.2", published = true, display = null)
+
+        val sut = createSut()
+        val result = sut.getAllReportDisplayNames()
+        assertThat(result.keys.count()).isEqualTo(2)
+        assertThat(result["r1"]).isEqualTo("v1.1 display")
+        assertThat(result["r2"]).isEqualTo("r2")
+    }
 }

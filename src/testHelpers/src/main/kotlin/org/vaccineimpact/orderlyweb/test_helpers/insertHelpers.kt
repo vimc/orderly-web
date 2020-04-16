@@ -120,9 +120,10 @@ fun insertReport(name: String,
                  published: Boolean = true,
                  date: Timestamp = Timestamp(System.currentTimeMillis()),
                  author: String = "author authorson",
-                 requester: String = "requester mcfunder")
+                 requester: String = "requester mcfunder",
+                 display: String? = null)
 {
-    insertReportAndVersion(name, version, published, date)
+    insertReportAndVersion(name, version, published, date, display)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -247,11 +248,12 @@ private fun addOrderlyTag(tag: String, ctx: JooqContext)
 private fun insertReportAndVersion(name: String,
                                    version: String,
                                    published: Boolean,
-                                   date: Timestamp)
+                                   date: Timestamp,
+                                   display: String? = null)
 {
     JooqContext().use {
 
-        val displayname = "display name $name"
+       val displayname = display ?: "display name $name"
 
         //Does the report already exist in the REPORT table?
         val rows = it.dsl.select(Tables.REPORT.NAME)

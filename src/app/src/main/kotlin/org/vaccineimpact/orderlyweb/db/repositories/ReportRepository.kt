@@ -41,7 +41,7 @@ interface ReportRepository
 
     fun reportExists(reportName: String): Boolean
 
-    fun getAllReportDisplayNames: Map<String, String>
+    fun getAllReportDisplayNames(): Map<String, String>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
