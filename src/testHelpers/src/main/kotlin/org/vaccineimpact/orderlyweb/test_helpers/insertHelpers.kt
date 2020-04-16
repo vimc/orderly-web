@@ -36,9 +36,9 @@ fun removePermission(email: String, permissionName: String, scopePrefix: String)
         }
 
         val allPermissions = it.dsl.select(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.ID,
-                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
-                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
-                        ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_PREFIX,
+                ORDERLYWEB_USER_GROUP_PERMISSION_ALL.SCOPE_ID)
                 .from(ORDERLYWEB_USER_GROUP_PERMISSION_ALL)
                 .where(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.USER_GROUP.eq(email))
                 .and(ORDERLYWEB_USER_GROUP_PERMISSION_ALL.PERMISSION.eq(permissionName))
@@ -97,9 +97,10 @@ fun insertReportWithCustomFields(name: String,
                                  version: String,
                                  customFields: Map<String, String>,
                                  published: Boolean = true,
-                                 date: Timestamp = Timestamp(System.currentTimeMillis()))
+                                 date: Timestamp = Timestamp(System.currentTimeMillis()),
+                                 displayName: String? = "display name $name")
 {
-    insertReportAndVersion(name, version, published, date)
+    insertReportAndVersion(name, version, published, date, displayName)
     JooqContext().use {
         for ((key, value) in customFields)
         {
@@ -120,9 +121,10 @@ fun insertReport(name: String,
                  published: Boolean = true,
                  date: Timestamp = Timestamp(System.currentTimeMillis()),
                  author: String = "author authorson",
-                 requester: String = "requester mcfunder")
+                 requester: String = "requester mcfunder",
+                 displayName: String? = null)
 {
-    insertReportAndVersion(name, version, published, date)
+    insertReportAndVersion(name, version, published, date, displayName)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -211,13 +213,13 @@ fun insertReportTags(report: String, vararg tags: String)
 
 fun insertOrderlyTags(version: String, vararg tags: String)
 {
-    JooqContext().use{
-        for(tag in tags)
+    JooqContext().use {
+        for (tag in tags)
         {
             addOrderlyTag(tag, it)
 
             val tagRecord = it.dsl.newRecord(Tables.REPORT_VERSION_TAG)
-                    .apply{
+                    .apply {
                         this.id = getNewReportVersionTagId(it)
                         this.reportVersion = version
                         this.tag = tag
@@ -236,7 +238,7 @@ private fun addOrderlyTag(tag: String, ctx: JooqContext)
     if (count == 0)
     {
         val tagRecord = ctx.dsl.newRecord(Tables.TAG)
-                .apply{
+                .apply {
                     this.id = tag
                 }
         tagRecord.store()
@@ -247,11 +249,10 @@ private fun addOrderlyTag(tag: String, ctx: JooqContext)
 private fun insertReportAndVersion(name: String,
                                    version: String,
                                    published: Boolean,
-                                   date: Timestamp)
+                                   date: Timestamp,
+                                   displayName: String?)
 {
     JooqContext().use {
-
-        val displayname = "display name $name"
 
         //Does the report already exist in the REPORT table?
         val rows = it.dsl.select(Tables.REPORT.NAME)
@@ -274,7 +275,7 @@ private fun insertReportAndVersion(name: String,
                     this.id = version
                     this.report = name
                     this.date = date
-                    this.displayname = displayname
+                    this.displayname = displayName
                     this.description = "description $name"
                     this.requester = ""
                     this.author = ""

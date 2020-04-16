@@ -239,21 +239,19 @@ class VersionTests : IntegrationTest()
     fun `can get version changelog by name and version`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
                         "internal",
                         "did something awful",
-                        false,
                         1),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
-                        true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
@@ -289,21 +287,19 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version does not belong to report`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
                         "internal",
                         "did something awful",
-                        false,
                         1),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
-                        true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/notatestversion/changelog",
                 userEmail = fakeGlobalReportReader())
@@ -317,21 +313,19 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version is not published and user has reader permission only`()
     {
         insertReport("testname", "testversion", published = false)
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
                         "internal",
                         "did something awful",
-                        false,
                         1),
                 InsertableChangelog(
                         "id2",
                         "testversion",
                         "public",
                         "did something great",
-                        true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog",
                 userEmail = fakeGlobalReportReader())

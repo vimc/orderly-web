@@ -18,12 +18,11 @@ constructor(val id: String,
             val reportVersion: String,
             val label: String,
             val value: String,
-            val fromFile: Boolean,
             val ordering: Int,
             val reportVersionPublic: String? = null)
 
 
-fun insertChangelog(changelog: List<InsertableChangelog>)
+fun insertChangelog(vararg changelog: InsertableChangelog)
 {
     JooqContext().use {
 
@@ -36,7 +35,7 @@ fun insertChangelog(changelog: List<InsertableChangelog>)
                     .set(CHANGELOG.ID, entry.id)
                     .set(CHANGELOG.LABEL, entry.label)
                     .set(CHANGELOG.VALUE, entry.value)
-                    .set(CHANGELOG.FROM_FILE, entry.fromFile)
+                    .set(CHANGELOG.FROM_FILE, false)
                     .set(CHANGELOG.REPORT_VERSION, entry.reportVersion)
                     .set(CHANGELOG.ORDERING, entry.ordering)
                     .set(CHANGELOG.REPORT_VERSION_PUBLIC, entry.reportVersionPublic)

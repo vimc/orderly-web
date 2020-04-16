@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -29,21 +28,19 @@ class ChangelogTests : CleanDatabaseTests()
     fun `reviewer can get all changelog`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "zz_id1",
                         "version1",
                         "public",
                         "did something great",
-                        true,
                         1),
                 InsertableChangelog(
                         "id2",
                         "version1",
                         "internal",
                         "did something awful",
-                        false,
-                        2)))
+                        2))
 
         val sut = createSut(true)
 
@@ -52,21 +49,19 @@ class ChangelogTests : CleanDatabaseTests()
         Assertions.assertThat(results.count()).isEqualTo(2)
 
         //changelog items are returned in desc order
-        assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false, false)
-        assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true, true)
+        assertChangelogValuesMatch(results[0], "version1", "internal", "did something awful", false)
+        assertChangelogValuesMatch(results[1], "version1", "public", "did something great", true)
     }
 
     @Test
     fun `reader can get public changelog`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(
-                InsertableChangelog(
+        insertChangelog(InsertableChangelog(
                         "zz_id1",
                         "version1",
                         "public",
                         "did something great",
-                        true,
                         1,
                         "version1"),
                 InsertableChangelog(
@@ -74,9 +69,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "version1",
                         "internal",
                         "did something awful",
-                        false,
                         2,
-                        "version1")))
+                        "version1"))
 
         val sut = createSut(false)
 
@@ -84,7 +78,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         Assertions.assertThat(results.count()).isEqualTo(1)
 
-        assertChangelogValuesMatch(results[0], "version1", "public", "did something great", true, true)
+        assertChangelogValuesMatch(results[0], "version1", "public", "did something great", true)
     }
 
     @Test
@@ -140,21 +134,18 @@ class ChangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
-                InsertableChangelog(
+        insertChangelog(InsertableChangelog(
                         "id7",
                         "anotherversion1",
                         "public",
                         "did something great v1",
-                        true,
                         7),
                 InsertableChangelog(
                         "id8",
                         "anotherversion1",
                         "internal",
                         "did something awful v1",
-                        false,
-                        8)))
+                        8))
 
         val sut = createSut(true)
 
@@ -169,21 +160,18 @@ class ChangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
-                InsertableChangelog(
+        insertChangelog(InsertableChangelog(
                         "id7",
                         "anotherversion1",
                         "public",
                         "did something great v1",
-                        true,
                         7),
                 InsertableChangelog(
                         "id8",
                         "anotherversion1",
                         "internal",
                         "did something awful v1",
-                        false,
-                        8)))
+                        8))
 
         val sut = createSut(false)
 
@@ -229,13 +217,11 @@ class ChangelogTests : CleanDatabaseTests()
         insertReport("test", "version2", published = false, date = Timestamp.from(old))
         insertReport("test", "version3", date = Timestamp.from(latest))
 
-        insertChangelog(listOf(
-                InsertableChangelog(
+        insertChangelog(InsertableChangelog(
                         "id1",
                         "version1",
                         "public",
                         "did something great v1",
-                        true,
                         1,
                         null),
                 InsertableChangelog(
@@ -243,27 +229,24 @@ class ChangelogTests : CleanDatabaseTests()
                         "version1",
                         "internal",
                         "did something awful v1",
-                        false,
                         2,
-                        null)))
+                        null))
 
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id3",
                         "version2",
                         "public",
                         "did something great v2",
-                        true,
                         3,
-                        "version3")))
+                        "version3"))
 
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id4",
                         "version3",
                         "public",
                         "did something great v3",
-                        true,
                         4,
                         "version3"),
                 InsertableChangelog(
@@ -271,7 +254,6 @@ class ChangelogTests : CleanDatabaseTests()
                         "version3",
                         "internal",
                         "did something awful v3",
-                        false,
                         5,
                         "version3"),
                 InsertableChangelog(
@@ -279,9 +261,8 @@ class ChangelogTests : CleanDatabaseTests()
                         "version3",
                         "internal",
                         "everything is broken",
-                        false,
                         6,
-                        "version3")))
+                        "version3"))
 
     }
 
@@ -291,24 +272,24 @@ class ChangelogTests : CleanDatabaseTests()
 
         if (latestVersion == "version3")
         {
-            assertChangelogValuesMatch(results[0], "version3", "internal", "everything is broken", false, false)
-            assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false, false)
-            assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true, true)
+            assertChangelogValuesMatch(results[0], "version3", "internal", "everything is broken", false)
+            assertChangelogValuesMatch(results[1], "version3", "internal", "did something awful v3", false)
+            assertChangelogValuesMatch(results[2], "version3", "public", "did something great v3", true)
 
             index += 3
         }
 
         if (latestVersion == "version2" || index > 0)
         {
-            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true, true)
+            assertChangelogValuesMatch(results[index], "version2", "public", "did something great v2", true)
 
             index++
         }
 
         if (latestVersion == "version1" || index > 0)
         {
-            assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false, false)
-            assertChangelogValuesMatch(results[index + 1], "version1", "public", "did something great v1", true, true)
+            assertChangelogValuesMatch(results[index], "version1", "internal", "did something awful v1", false)
+            assertChangelogValuesMatch(results[index + 1], "version1", "public", "did something great v1", true)
 
             index += 2
         }
@@ -327,7 +308,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         if (latestVersion == "version3")
         {
-            assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true, true)
+            assertChangelogValuesMatch(results[0], "version3", "public", "did something great v3", true)
 
             index++
         }
@@ -335,7 +316,7 @@ class ChangelogTests : CleanDatabaseTests()
         if (latestVersion == "version2" || index > 0)
         {
             //The public version of this changelog item is version3, while the 'real' version is version2
-            assertChangelogValuesMatch(results[index], "version3", "public", "did something great v2", true, true)
+            assertChangelogValuesMatch(results[index], "version3", "public", "did something great v2", true)
 
             index++
         }
@@ -352,11 +333,9 @@ class ChangelogTests : CleanDatabaseTests()
                                            report_version: String,
                                            label: String,
                                            value: String,
-                                           fromFile: Boolean,
                                            public: Boolean)
     {
         Assertions.assertThat(changelog.reportVersion).isEqualTo(report_version)
-        Assertions.assertThat(changelog.fromFile).isEqualTo(fromFile)
         Assertions.assertThat(changelog.label).isEqualTo(label)
         Assertions.assertThat(changelog.value).isEqualTo(value)
         Assertions.assertThat(changelog.public).isEqualTo(public)

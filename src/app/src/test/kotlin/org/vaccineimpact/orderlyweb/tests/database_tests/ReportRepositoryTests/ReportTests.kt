@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
+import java.sql.Timestamp
+import java.time.Instant
 
 class ReportTests : CleanDatabaseTests()
 {
@@ -246,5 +248,33 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[2].latestVersion).isEqualTo("20190103-143015-1234unpub")
     }
 
+    @Test
+    fun `can get reports with publish status`()
+    {
+        insertReport("test", "v1", published = true, displayName = null)
+        insertReport("test", "v2", published = false, displayName = "old display name")
+        insertReport("test", "v3", published = false, displayName = "newer display name")
+
+        insertReport("test2", "v4", published = true, displayName = "test2 display name")
+        insertReport("test2", "v5", published = false, displayName = null)
+
+        insertReport("test3", "v6", published = false, displayName = null)
+
+        val sut = createSut()
+        val result = sut.getReportsWithPublishStatus()
+        assertThat(result.count()).isEqualTo(3)
+
+        assertThat(result[0].name).isEqualTo("test3")
+        assertThat(result[0].displayName).isEqualTo(null)
+        assertThat(result[0].hasBeenPublished).isEqualTo(false)
+
+        assertThat(result[1].name).isEqualTo("test2")
+        assertThat(result[1].displayName).isEqualTo("test2 display name")
+        assertThat(result[1].hasBeenPublished).isEqualTo(true)
+
+        assertThat(result[2].name).isEqualTo("test")
+        assertThat(result[2].displayName).isEqualTo("newer display name")
+        assertThat(result[2].hasBeenPublished).isEqualTo(true)
+    }
 
 }

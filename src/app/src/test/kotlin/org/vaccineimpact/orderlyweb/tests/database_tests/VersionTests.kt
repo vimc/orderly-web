@@ -39,9 +39,9 @@ class VersionTests : CleanDatabaseTests()
         on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
         on { getLatestVersion("test") } doReturn basicReportVersion.copy(id = "latest", date = now.minusSeconds(100))
         on { getDatedChangelogForReport("test", now.minusSeconds(100)) } doReturn
-                listOf(Changelog("v1", "public", "getLatestChangelog", true, true))
+                listOf(Changelog("v1", "public", "getLatestChangelog", true))
         on { getDatedChangelogForReport("test", now) } doReturn
-                listOf(Changelog("v1", "public", "getByNameAndVersion", true, true))
+                listOf(Changelog("v1", "public", "getByNameAndVersion", true))
     }
 
     private fun createSut(isReviewer: Boolean = false): OrderlyClient
@@ -222,7 +222,7 @@ class VersionTests : CleanDatabaseTests()
         val result = sut.getLatestChangelogByName("test")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0])
-                .isEqualToComparingFieldByField(Changelog("v1", "public", "getLatestChangelog", true, true))
+                .isEqualToComparingFieldByField(Changelog("v1", "public", "getLatestChangelog", true))
     }
 
     @Test
@@ -232,7 +232,7 @@ class VersionTests : CleanDatabaseTests()
         val result = sut.getChangelogByNameAndVersion("test", "v1")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result[0])
-                .isEqualToComparingFieldByField(Changelog("v1", "public", "getByNameAndVersion", true, true))
+                .isEqualToComparingFieldByField(Changelog("v1", "public", "getByNameAndVersion", true))
     }
 
 }

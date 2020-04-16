@@ -27,7 +27,7 @@ data class DateGroup(val date: String, val drafts: List<ReportDraftViewModel>)
     {
         fun build(date: Instant, versions: List<ReportDraft>): DateGroup
         {
-            return DateGroup(date.toString(), versions.map(ReportDraftViewModel::build))
+            return DateGroup(date.toString(), versions.map { ReportDraftViewModel.build(it) })
         }
     }
 }

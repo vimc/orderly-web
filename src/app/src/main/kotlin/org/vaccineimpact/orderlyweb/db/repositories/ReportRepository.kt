@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
-import org.jooq.impl.DSL
+import org.jooq.JoinType
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -144,18 +145,19 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
 
-            val records = it.dsl.select(REPORT_VERSION.REPORT.`as`("name"),
+            val records = it.dsl.select(REPORT_VERSION.REPORT,
                     REPORT_VERSION.DISPLAYNAME,
                     REPORT_VERSION.ID,
                     REPORT_VERSION.DATE,
                     REPORT_VERSION.DESCRIPTION,
                     CHANGELOG.LABEL,
                     CHANGELOG.VALUE,
-                    CHANGELOG.FROM_FILE,
+                    CHANGELOG.ORDERING,
                     CHANGELOG_LABEL.PUBLIC)
-                    .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
-                    .leftJoin(REPORT_VERSION)
+                    .from(REPORT_VERSION)
+                    .leftJoin(CHANGELOG)
                     .on(REPORT_VERSION.ID.eq(CHANGELOG.REPORT_VERSION))
+                    .joinPath(CHANGELOG, CHANGELOG_LABEL, joinType = JoinType.LEFT_OUTER_JOIN)
                     .where(shouldIncludeReportVersion)
                     .and(REPORT_VERSION.PUBLISHED.eq(false))
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
@@ -165,20 +167,22 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             val params = getParametersForVersions(versions.keys, it)
 
             return versions.map { group ->
-                val changelogs = group.value.map {
-                    Changelog(it[REPORT_VERSION.ID],
-                            it[CHANGELOG.LABEL],
-                            it[CHANGELOG.VALUE],
-                            it[CHANGELOG.FROM_FILE],
-                            it[CHANGELOG_LABEL.PUBLIC])
-                }
+                val changelog = group.value
+                        .filter { it[CHANGELOG.LABEL] != null }
+                        .sortedByDescending { it[CHANGELOG.ORDERING] }
+                        .map {
+                            Changelog(it[REPORT_VERSION.ID],
+                                    it[CHANGELOG.LABEL],
+                                    it[CHANGELOG.VALUE],
+                                    it[CHANGELOG_LABEL.PUBLIC])
+                        }
                 val ref = group.value.first()
                 ReportDraft(ref[REPORT_VERSION.REPORT],
                         ref[REPORT_VERSION.DISPLAYNAME],
                         group.key,
                         ref[REPORT_VERSION.DATE].toInstant(),
-                        params[group.key]?: mapOf(),
-                        changelogs
+                        params[group.key] ?: mapOf(),
+                        changelog
                 )
             }
         }
@@ -187,10 +191,22 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     override fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
     {
         JooqContext().use {
-            return it.dsl.select(REPORT.NAME,
-                    DSL.firstValue(REPORT_VERSION.DISPLAYNAME).over(DSL.orderBy(REPORT_VERSION.DATE.desc())),
-                    DSL.max(REPORT_VERSION.PUBLISHED).`as`("hasBeenPublished"))
-                    .fromJoinPath(REPORT_VERSION, REPORT)
+            val orderByClause = `when`(REPORT_VERSION.DISPLAYNAME.isNull, timestamp("1970-01-01 01:00:00.0"))
+                    .otherwise(REPORT_VERSION.DATE)
+            return it.dsl.selectDistinct(REPORT.NAME,
+                    firstValue(REPORT_VERSION.DISPLAYNAME)
+                            .over()
+                            .partitionBy(REPORT_VERSION.REPORT)
+                            .orderBy(orderByClause.desc())
+                            .`as`("displayName"),
+                    REPORT_VERSION.PUBLISHED
+                            .maxOver()
+                            .partitionBy(REPORT_VERSION.REPORT)
+                            .`as`("hasBeenPublished"))
+                    .from(REPORT_VERSION)
+                    .join(REPORT)
+                    .on(REPORT_VERSION.REPORT.eq(REPORT.NAME))
+                    .orderBy(REPORT_VERSION.DATE.desc())
                     .fetchInto(ReportWithPublishStatus::class.java)
         }
     }
@@ -248,7 +264,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             it.dsl.select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                     CHANGELOG.LABEL,
                     CHANGELOG.VALUE,
-                    CHANGELOG.FROM_FILE,
                     CHANGELOG_LABEL.PUBLIC)
                     .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
                     .join(REPORT_VERSION)
@@ -341,7 +356,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     private val shouldIncludeChangelogItem =
             if (isReviewer)
-                DSL.trueCondition()
+                trueCondition()
             else
                 CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
 

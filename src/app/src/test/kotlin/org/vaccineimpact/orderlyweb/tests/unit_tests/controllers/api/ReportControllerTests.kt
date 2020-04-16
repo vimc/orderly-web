@@ -127,8 +127,8 @@ class ReportControllerTests : ControllerTest()
         val reportName = "reportName"
 
         val latestVersion = "latestVersion"
-        val changelogs = listOf(Changelog(latestVersion, "public", "did a thing", true, true),
-                Changelog(latestVersion, "public", "did another thing", true, true))
+        val changelogs = listOf(Changelog(latestVersion, "public", "did a thing", true),
+                Changelog(latestVersion, "public", "did another thing", true))
 
         val orderly = mock<OrderlyClient> {
             on { this.getLatestChangelogByName(reportName) } doReturn changelogs

@@ -15,5 +15,5 @@ dependencies {
     compile "org.jooq:jooq-meta:3.9.1"
     compile "org.jooq:jooq-codegen:3.9.1"
 
-    compile "org.xerial:sqlite-jdbc:3.19.3"
+    compile "org.xerial:sqlite-jdbc:3.30.1"
 }
