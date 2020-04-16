@@ -19,7 +19,9 @@ import org.vaccineimpact.orderlyweb.tests.insertData
 import org.vaccineimpact.orderlyweb.tests.insertFileInput
 import java.time.Instant
 
-class VersionTests : CleanDatabaseTests()
+// TODO once data and resources moved out this should no longer be a database test class
+// and should be moved to unit tests
+class OrderlyTests : CleanDatabaseTests()
 {
     val now = Instant.now()
 
