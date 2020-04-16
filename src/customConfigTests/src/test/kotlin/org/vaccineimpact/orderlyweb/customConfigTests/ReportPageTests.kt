@@ -59,6 +59,7 @@ class ReportPageTests : SeleniumTest()
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq("minimal"))
                     .fetchAny()
         }
 

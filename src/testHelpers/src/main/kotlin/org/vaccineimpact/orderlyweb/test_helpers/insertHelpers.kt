@@ -282,6 +282,7 @@ private fun insertReportAndVersion(name: String,
                     this.author = ""
                     this.published = published
                     this.connection = false
+                    this.elapsed = 100.0
                 }
         reportVersionRecord.store()
 
