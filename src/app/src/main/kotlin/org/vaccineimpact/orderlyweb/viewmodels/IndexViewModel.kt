@@ -18,6 +18,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val pinnedReports: List<PinnedReportViewModel>,
                           val customFieldKeys: List<String>,
                           val showProjectDocs: Boolean,
+                          val canConfigure: Boolean,
+                          val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
@@ -26,8 +28,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 tags: List<String>,
                 pinnedReports: List<PinnedReportViewModel>,
                 customFieldKeys: List<String>,
-                showProjectDocs: Boolean)
-            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs, DefaultViewModel(context, breadcrumb))
+                showProjectDocs: Boolean,
+                canConfigure: Boolean,
+                reportDisplayNames: Map<String, String>?)
+            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
+                    canConfigure, reportDisplayNames, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -37,6 +42,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                   reportTags: Map<String, List<String>>,
                   allTags: List<String>,
                   pinnedReports: List<Report>,
+                  canConfigure: Boolean,
+                  reportDisplayNames: Map<String, String>?,
                   context: ActionContext): IndexViewModel
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
@@ -66,7 +73,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
-            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(), showDocs)
+            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
+                    showDocs, canConfigure, reportDisplayNames)
         }
     }
 }

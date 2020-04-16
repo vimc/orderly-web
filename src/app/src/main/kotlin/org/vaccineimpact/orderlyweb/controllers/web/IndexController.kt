@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class IndexController(actionContext: ActionContext,
@@ -26,6 +28,16 @@ class IndexController(actionContext: ActionContext,
         val reportTags = tagRepository.getReportTags(reportNames)
         val allTags = tagRepository.getAllTags()
         val pinnedReports = reportRepository.getGlobalPinnedReports()
+
+        val canConfigure = context.hasPermission(ReifiedPermission("reports.configure", Scope.Global()))
+        val displayNames = if (canConfigure) {
+            reportRepository.getAllReportDisplayNames()
+        }
+        else
+        {
+            null
+        }
+
         return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, context)
     }
 
