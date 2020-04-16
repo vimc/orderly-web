@@ -4,7 +4,6 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.controllers.web.SettingsController
 import spark.route.HttpMethod
 
 object WebReportRouteConfig : RouteConfig
