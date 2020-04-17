@@ -87,7 +87,7 @@ class ReportPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
 
         //Additional logging to diagnose TeamCity only failure
-        wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*error.*")))
+        wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*Running status: error.*")))
         println("REPORT VUE APP:" +  driver.findElement(By.cssSelector("#runReportVueApp")).getAttribute("outerHTML"))
 
         wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*success.*")))
