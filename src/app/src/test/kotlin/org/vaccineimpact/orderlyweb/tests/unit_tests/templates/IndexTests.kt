@@ -151,6 +151,33 @@ class IndexTests : TeamcityTests()
     }
 
     @Test
+    fun `renders reportDisplayNames as js var if canConfigure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        assertThat(scriptEl.indexOf("var reportDisplayNames = {\n" +
+                "  \"r1\": \"r1 display\",\n" +
+                "  \"r2\": \"r2 display\"\n" +
+                "};")).isGreaterThan(-1)
+    }
+
+    @Test
+    fun `does not render reportDisplayNames as js var if cannot Configure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                false, null, defaultModel)
+
+        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1);
+    }
+
+    @Test
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
