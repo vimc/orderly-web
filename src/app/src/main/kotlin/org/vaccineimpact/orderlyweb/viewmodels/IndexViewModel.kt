@@ -42,8 +42,6 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                   reportTags: Map<String, List<String>>,
                   allTags: List<String>,
                   pinnedReports: List<Report>,
-                  canConfigure: Boolean,
-                  reportDisplayNames: Map<String, String>?,
                   context: ActionContext): IndexViewModel
         {
             val emptyCustomFields: Map<String, String?> = if (reports.count() > 0)
@@ -73,6 +71,17 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
+
+            val canConfigure = context.hasPermission(ReifiedPermission("reports.configure", Scope.Global()))
+            val reportDisplayNames = if (canConfigure)
+            {
+                reportRows.filter{ it.ttParent == 0 }.map{ it.name to it.displayName }.toMap()
+            }
+            else
+            {
+                null
+            }
+
             return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
                     showDocs, canConfigure, reportDisplayNames)
         }

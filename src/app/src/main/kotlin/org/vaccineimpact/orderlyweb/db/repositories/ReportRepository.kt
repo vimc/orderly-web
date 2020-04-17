@@ -40,8 +40,6 @@ interface ReportRepository
     fun setPinnedReports(reportNames: List<String>)
 
     fun reportExists(reportName: String): Boolean
-
-    fun getAllReportDisplayNames(): Map<String, String>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -267,23 +265,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(REPORT.NAME.eq(reportName))
                     .fetch()
                     .count() > 0
-        }
-    }
-
-    override fun getAllReportDisplayNames(): Map<String, String>
-    {
-        JooqContext().use { ctx ->
-            val versions = ctx.dsl.select(max(REPORT_VERSION.ID))
-                    .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
-                    .groupBy(REPORT_VERSION.REPORT)
-                    .map{it[0]}
-
-             return ctx.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.DISPLAYNAME)
-                    .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.ID.`in`(versions))
-                    .map{ it[REPORT_VERSION.REPORT] to (it[REPORT_VERSION.DISPLAYNAME] ?: it[REPORT_VERSION.REPORT]) }
-                    .toMap()
         }
     }
 

@@ -29,16 +29,7 @@ class IndexController(actionContext: ActionContext,
         val allTags = tagRepository.getAllTags()
         val pinnedReports = reportRepository.getGlobalPinnedReports()
 
-        val canConfigure = context.hasPermission(ReifiedPermission("reports.configure", Scope.Global()))
-        val displayNames = if (canConfigure) {
-            reportRepository.getAllReportDisplayNames()
-        }
-        else
-        {
-            null
-        }
-
-        return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, canConfigure, displayNames, context)
+        return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, context)
     }
 
     fun metrics(): String
