@@ -36,8 +36,7 @@
         pollingTimer: null,
         runningKey: "",
         runningStatus: "",
-        newVersionFromRun: null,
-        disagnostic: ""
+        newVersionFromRun: null
     };
 
     export default {
@@ -110,7 +109,6 @@
                             .then(({data}) => {
                                 this.runningStatus = data.data.status;
                                 this.newVersionFromRun = data.data.version;
-                                this.diagnostic = JSON.stringify(data)
                             })
                             .catch(({response}) => {
                                 this.stopPolling();
