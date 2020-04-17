@@ -1,12 +1,10 @@
 package org.vaccineimpact.orderlyweb.db
 
-import org.jooq.impl.DSL.trueCondition
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
-import java.sql.Timestamp
 
 class Orderly(val isReviewer: Boolean,
               val isGlobalReader: Boolean,
@@ -104,31 +102,14 @@ class Orderly(val isReviewer: Boolean,
 
     override fun getLatestChangelogByName(name: String): List<Changelog>
     {
-        JooqContext().use {
-
-            val latestVersionDate = it.dsl
-                    .select(REPORT_VERSION.DATE)
-                    .from(REPORT_VERSION)
-                    .join(REPORT)
-                    .on(REPORT_VERSION.REPORT.eq(REPORT.NAME))
-                    .where(REPORT.NAME.eq(name))
-                    .and(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.DATE.desc())
-                    .fetchAny()
-                    ?: throw UnknownObjectError(name, "report")
-
-            return getDatedChangelogForReport(name, latestVersionDate.value1(), it)
-
-        }
+        val latestVersion = reportRepository.getLatestVersion(name)
+        return reportRepository.getDatedChangelogForReport(name, latestVersion.date)
     }
 
     override fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>
     {
         val basicVersion = reportRepository.getReportVersion(name, version)
-
-        JooqContext().use {
-            return getDatedChangelogForReport(basicVersion.name, Timestamp.from(basicVersion.date), it)
-        }
+        return reportRepository.getDatedChangelogForReport(basicVersion.name, basicVersion.date)
     }
 
     private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
@@ -196,40 +177,4 @@ class Orderly(val isReviewer: Boolean,
 
         }
     }
-
-    private fun getDatedChangelogForReport(report: String, latestDate: Timestamp, ctx: JooqContext): List<Changelog>
-    {
-        return ctx.dsl
-                .select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
-                        CHANGELOG.LABEL,
-                        CHANGELOG.VALUE,
-                        CHANGELOG.FROM_FILE,
-                        CHANGELOG_LABEL.PUBLIC)
-                .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
-                .join(REPORT_VERSION)
-                .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
-                .where(REPORT_VERSION.REPORT.eq(report))
-                .and(REPORT_VERSION.DATE.lessOrEqual(latestDate))
-                .and(shouldIncludeChangelogItem)
-                .orderBy(CHANGELOG.ORDERING.desc())
-                .fetchInto(Changelog::class.java)
-    }
-
-    // shouldInclude for the relational schema
-    private val shouldIncludeReportVersion =
-            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
-                    .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
-
-    private val shouldIncludeChangelogItem =
-            if (isReviewer)
-                trueCondition()
-            else
-                CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
-
-    private val changelogReportVersionColumnForUser =
-            if (isReviewer)
-                CHANGELOG.REPORT_VERSION
-            else
-                CHANGELOG.REPORT_VERSION_PUBLIC
-
 }

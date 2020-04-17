@@ -1,8 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
-import org.assertj.core.api.Assertions.*
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -15,7 +16,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
 
 class VersionTests : CleanDatabaseTests()
 {
-
     private fun createSut(isReviewer: Boolean = false): ReportRepository
     {
         return OrderlyReportRepository(isReviewer, true, listOf())
@@ -244,4 +244,54 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results["vz"]!!.keys.count()).isEqualTo(1)
         assertThat(results["vz"]!!["p1"]).isEqualTo("param3")
     }
+
+    @Test
+    fun `can get latest version for reviewer`()
+    {
+        insertReport("test", "version1")
+        insertReport("test", "version2", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(true)
+        val result = sut.getLatestVersion("test")
+
+        assertThat(result.id).isEqualTo("version2")
+    }
+
+    @Test
+    fun `can get latest published version for reader`()
+    {
+        insertReport("test", "version1")
+        insertReport("test", "version2", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(false)
+        val result = sut.getLatestVersion("test")
+
+        assertThat(result.id).isEqualTo("version1")
+    }
+
+    @Test
+    fun `getLatestVersion throws unknown object error for reviewer if no versions`()
+    {
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(true)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
+    @Test
+    fun `getLatestVersion throws unknown object error for reader if no published versions`()
+    {
+        insertReport("test", "version1", published = false)
+        insertReport("anotherreport", "v1")
+
+        val sut = createSut(false)
+        assertThatThrownBy {
+            sut.getLatestVersion("test")
+        }.isInstanceOf(UnknownObjectError::class.java)
+    }
+
 }
