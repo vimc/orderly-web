@@ -43,7 +43,7 @@ class ReportController(context: ActionContext,
         return okayResponse()
     }
 
-    fun setPinnedReports()
+    fun setGlobalPinnedReports(): String
     {
         val reports = context.postData<List<String>>("reports")
 
@@ -58,6 +58,8 @@ class ReportController(context: ActionContext,
             throw BadRequest("Cannot include the same pinned report twice")
         }
 
-        reportRepository.setPinnedReports(reports)
+        reportRepository.setGlobalPinnedReports(reports)
+
+        return okayResponse()
     }
 }
