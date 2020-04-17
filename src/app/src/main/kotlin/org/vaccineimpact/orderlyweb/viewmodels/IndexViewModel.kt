@@ -19,7 +19,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val customFieldKeys: List<String>,
                           val showProjectDocs: Boolean,
                           val canConfigure: Boolean,
-                          val reportDisplayNames: Map<String, String>?,
+                          @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {

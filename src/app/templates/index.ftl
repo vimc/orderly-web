@@ -132,7 +132,7 @@
             var canReview = true;
             </#if>
             <#if canConfigure>
-            var reportDisplayNames = ${reportDisplayNames};
+            var reportDisplayNames = ${reportDisplayNamesJson};
             </#if>
         </script>
         <script type="text/javascript" src="${appUrl}/js/lib/jquery.dataTables.min.js"></script>
