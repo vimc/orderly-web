@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.junit.Test
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -25,15 +26,16 @@ class PinnedReportTests : TeamcityTests()
     }
 
     @Test
-    fun `setPinnedReports calls repo`()
+    fun `setGlobalPinnedReports calls repo`()
     {
         val sut = ReportController(mockContext, mock(), mockRepo, mock())
-        sut.setPinnedReports()
-        verify(mockRepo).setPinnedReports(reports)
+        val result = sut.setGlobalPinnedReports()
+        assertThat(result).isEqualTo("OK")
+        verify(mockRepo).setGlobalPinnedReports(reports)
     }
 
     @Test
-    fun `setPinnedReports throws error if report does not exist`()
+    fun `setGlobalPinnedReports throws error if report does not exist`()
     {
         val notFoundRepo = mock<ReportRepository>{
             on { reportExists("r1") } doReturn true
@@ -41,20 +43,20 @@ class PinnedReportTests : TeamcityTests()
         }
 
         val sut = ReportController(mockContext, mock(), notFoundRepo, mock())
-        assertThatThrownBy{ sut.setPinnedReports() }.isInstanceOf(BadRequest::class.java)
+        assertThatThrownBy{ sut.setGlobalPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Report 'r2' does not exist")
 
     }
 
     @Test
-    fun `setPinnedReport throws error if duplicate reports`()
+    fun `setGlobalPinnedReport throws error if duplicate reports`()
     {
         val dupesContext = mock<ActionContext> {
             on { postData<List<String>>("reports") } doReturn listOf("r1", "r1")
         }
 
         val sut = ReportController(dupesContext, mock(), mockRepo, mock())
-        assertThatThrownBy{ sut.setPinnedReports() }.isInstanceOf(BadRequest::class.java)
+        assertThatThrownBy{ sut.setGlobalPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Cannot include the same pinned report twice")
     }
 }

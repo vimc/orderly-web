@@ -16,6 +16,12 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/", IndexController::class, "index")
                     // more specific permission checking in the controller action
                     .secure(),
+            WebEndpoint("/global-pinned-reports/",
+                    ReportController::class, "setGlobalPinnedReports",
+                    method = HttpMethod.post)
+                    .json()
+                    .secure(configureReports)
+                    .transform(),
             WebEndpoint("/report/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
@@ -27,13 +33,7 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/actions/status/:key/",
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
                     .json()
-                    .secure(runReports),
-            WebEndpoint("/report/pinned-reports/",
-                    ReportController::class, "setPinnedReports",
-                    method = HttpMethod.post)
-                    .json()
-                    .secure(configureReports)
-                    .transform()
+                    .secure(runReports)
 
     )
 }

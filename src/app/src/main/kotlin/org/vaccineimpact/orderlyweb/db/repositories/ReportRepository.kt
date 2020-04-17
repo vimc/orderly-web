@@ -32,7 +32,7 @@ interface ReportRepository
 
     fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 
-    fun setPinnedReports(reportNames: List<String>)
+    fun setGlobalPinnedReports(reportNames: List<String>)
 
     fun reportExists(reportName: String): Boolean
 
@@ -198,7 +198,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun setPinnedReports(reportNames: List<String>)
+    override fun setGlobalPinnedReports(reportNames: List<String>)
     {
         JooqContext().use { ctx ->
             ctx.dsl.transaction { _ ->

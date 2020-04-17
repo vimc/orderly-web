@@ -257,7 +257,7 @@ class ReportTests : CleanDatabaseTests()
         insertGlobalPinnedReport("r2", 1)
 
         val sut = createSut()
-        sut.setPinnedReports(listOf("r4", "r3"))
+        sut.setGlobalPinnedReports(listOf("r4", "r3"))
 
         JooqContext().use {
             val result = it.dsl.selectFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
