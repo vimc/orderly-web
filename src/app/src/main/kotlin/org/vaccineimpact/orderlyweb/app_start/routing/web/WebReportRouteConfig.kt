@@ -10,7 +10,7 @@ object WebReportRouteConfig : RouteConfig
 {
     private val readReports = setOf("report:<name>/reports.read")
     private val runReports = setOf("*/reports.run")
-    private val configureReports = setOf("*/reports.configure")
+    private val configureReports = setOf("*/pinned-reports.manage")
 
     override val endpoints = listOf(
             WebEndpoint("/", IndexController::class, "index")
