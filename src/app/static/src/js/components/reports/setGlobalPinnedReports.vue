@@ -4,7 +4,7 @@
             <edit-icon></edit-icon>
             Edit pinned reports
         </a>
-        <div v-if="expanded">
+        <div v-if="expanded" id="set-pinned-reports-details">
             <div class="font-weight-bold">
                 Select up to three reports to pin. Only reports with a published version are available.
             </div>
@@ -28,7 +28,7 @@
                     <error-info :default-message="defaultMessage" :api-error="error"></error-info>
                 </div>
                 <error-info :default-message="defaultMessage" :api-error="error"></error-info>
-                <div>
+                <div id="pinned-report-buttons">
                     <button class="btn btn-sm float-right" type="submit" @click="save">Save changes</button>
                     <button class="btn btn-sm btn-default float-right mr-2" @click="cancel">Cancel</button>
                 </div>
