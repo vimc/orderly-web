@@ -223,7 +223,7 @@ class IndexControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `does not build report display names where user can set pinned reports`()
+    fun `does not build report display names where user cannot set pinned reports`()
     {
         val noConfigureContext = mock<ActionContext> {
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
