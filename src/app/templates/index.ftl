@@ -131,7 +131,7 @@
             <#if isReviewer>
             var canReview = true;
             </#if>
-            <#if canConfigure>
+            <#if canSetPinnedReports>
             var reportDisplayNames = ${reportDisplayNamesJson};
             var currentPinnedReportNames = [
                 <#list pinnedReports as pinnedReport>

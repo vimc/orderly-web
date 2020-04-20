@@ -18,7 +18,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val pinnedReports: List<PinnedReportViewModel>,
                           val customFieldKeys: List<String>,
                           val showProjectDocs: Boolean,
-                          val canConfigure: Boolean,
+                          val canSetPinnedReports: Boolean,
                           @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
@@ -29,10 +29,10 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 pinnedReports: List<PinnedReportViewModel>,
                 customFieldKeys: List<String>,
                 showProjectDocs: Boolean,
-                canConfigure: Boolean,
+                canSetPinnedReports: Boolean,
                 reportDisplayNames: Map<String, String>?)
             : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-                    canConfigure, reportDisplayNames, DefaultViewModel(context, breadcrumb))
+                    canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -72,8 +72,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
 
-            val canConfigure = context.hasPermission(ReifiedPermission("reports.configure", Scope.Global()))
-            val reportDisplayNames = if (canConfigure)
+            val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
+            val reportDisplayNames = if (canSetPinnedReports)
             {
                 val reportsWithPublished = reportRows.filter{ it.ttParent != 0 && it.published == true }
                         .map{ it.ttParent }.distinct()
@@ -87,7 +87,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             }
 
             return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
-                    showDocs, canConfigure, reportDisplayNames)
+                    showDocs, canSetPinnedReports, reportDisplayNames)
         }
     }
 }

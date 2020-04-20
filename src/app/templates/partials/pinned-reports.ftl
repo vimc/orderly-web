@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="pinnedReports" type="kotlin.collections.List<PinnedReportViewModel>" -->
 <#import "../macros/download-icon.ftl" as download_icon>
-<#if pinnedReports?has_content || canConfigure>
+<#if pinnedReports?has_content || canSetPinnedReports>
     <h1 class="h3 mb-3 pinned-reports">Pinned Reports</h1>
     <div class="mb-5">
         <div id="pinned-reports" class="row">
@@ -21,7 +21,7 @@
                 </div>
             </#list>
         </div>
-        <#if canConfigure>
+        <#if canSetPinnedReports>
             <div id="setPinnedReportsVueApp" class="mt-2 col-6">
                 <set-global-pinned-reports :current="currentPinnedReportNames" :available="reportDisplayNames"></set-global-pinned-reports>
             </div>

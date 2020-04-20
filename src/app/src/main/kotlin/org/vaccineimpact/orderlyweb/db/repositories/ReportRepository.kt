@@ -202,12 +202,14 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     override fun setGlobalPinnedReports(reportNames: List<String>)
     {
-        JooqContext().use { ctx ->
-            ctx.dsl.transaction { _ ->
-                ctx.dsl.deleteFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+        JooqContext().use {
+            it.dsl.transaction { config ->
+                val dsl = DSL.using(config)
+
+                dsl.deleteFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
                         .execute()
                 reportNames.forEachIndexed { index, reportName ->
-                    ctx.dsl.insertInto(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                    dsl.insertInto(ORDERLYWEB_PINNED_REPORT_GLOBAL)
                             .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING, index)
                             .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT, reportName)
                             .execute()

@@ -28,10 +28,10 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `only report configurers can set global pinned reports`()
+    fun `only settings managers can set global pinned reports`()
     {
         val url = "/global-pinned-reports/"
-        val requiredPermissions = setOf(ReifiedPermission("reports.configure", Scope.Global()))
+        val requiredPermissions = setOf(ReifiedPermission("pinned-reports.manage", Scope.Global()))
         assertWebUrlSecured(url, requiredPermissions, method = HttpMethod.post, contentType = ContentTypes.json,
                 postData = mapOf("reports" to listOf<String>()))
     }
@@ -42,7 +42,7 @@ class ReportTests : IntegrationTest()
         val url = "/global-pinned-reports/"
 
         webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("reports.configure", Scope.Global())),
+                setOf(ReifiedPermission("pinned-reports.manage", Scope.Global())),
                 method = HttpMethod.post,
                 postData = mapOf("reports" to listOf("html")),
                 contentType = ContentTypes.json)
