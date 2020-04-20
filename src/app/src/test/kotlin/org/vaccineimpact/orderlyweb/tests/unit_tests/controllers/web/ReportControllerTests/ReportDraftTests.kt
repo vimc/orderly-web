@@ -27,6 +27,7 @@ class ReportDraftTests : TeamcityTests()
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
 
         assertThat(result.count()).isEqualTo(2)
+        assertThat(result[0].previouslyPublished).isFalse()
         assertThat(result[0].dateGroups.count()).isEqualTo(2)
         var dateGroup = result[0].dateGroups[0]
         assertThat(dateGroup.date).isEqualTo("Tue Apr 21 2020")
@@ -42,6 +43,7 @@ class ReportDraftTests : TeamcityTests()
         assertThat(dateGroup.drafts[0].id).isEqualTo("v2-1")
         assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report-2/v2-1")
 
+        assertThat(result[1].previouslyPublished).isTrue()
         assertThat(result[1].dateGroups.count()).isEqualTo(1)
         dateGroup = result[1].dateGroups[0]
         assertThat(dateGroup.date).isEqualTo("Mon Apr 20 2020")
