@@ -84,13 +84,13 @@
                     reports: this.selected,
                 };
 
-                api.post(`/global-pinned-reports/`, data)
+                api.post("/global-pinned-reports/", data)
                     .then(() => {
                         window.location.reload()
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = `could not save pinned reports`;
+                        this.defaultMessage = "could not save pinned reports";
                     });
             },
             initialState: function() {
