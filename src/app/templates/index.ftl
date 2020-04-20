@@ -135,7 +135,7 @@
             var reportDisplayNames = ${reportDisplayNamesJson};
             var currentPinnedReportNames = [
                 <#list pinnedReports as pinnedReport>
-                "${pinnedReport.name}"
+                "${pinnedReport.name}",
                 </#list>];
             </#if>
         </script>
