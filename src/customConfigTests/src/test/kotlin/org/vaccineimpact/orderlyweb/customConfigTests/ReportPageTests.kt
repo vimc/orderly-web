@@ -59,6 +59,7 @@ class ReportPageTests : SeleniumTest()
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
+                    .where(REPORT_VERSION.REPORT.eq("minimal"))
                     .fetchAny()
         }
 
@@ -83,6 +84,7 @@ class ReportPageTests : SeleniumTest()
         driver.findElement(By.cssSelector("#confirm-run-btn")).click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
+
         wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*success.*")))
 
         val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text

@@ -43,8 +43,10 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermissi
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
+import org.vaccineimpact.orderlyweb.db.tables.ReportBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
@@ -66,7 +68,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Tag;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 1524912851;
+    private static final long serialVersionUID = 1999477293;
 
     /**
      * The reference instance of <code></code>
@@ -224,6 +226,11 @@ public class DefaultSchema extends SchemaImpl {
     public final Report REPORT = org.vaccineimpact.orderlyweb.db.tables.Report.REPORT;
 
     /**
+     * The table <code>report_batch</code>.
+     */
+    public final ReportBatch REPORT_BATCH = org.vaccineimpact.orderlyweb.db.tables.ReportBatch.REPORT_BATCH;
+
+    /**
      * The table <code>report_version</code>.
      */
     public final ReportVersion REPORT_VERSION = org.vaccineimpact.orderlyweb.db.tables.ReportVersion.REPORT_VERSION;
@@ -232,6 +239,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>report_version_artefact</code>.
      */
     public final ReportVersionArtefact REPORT_VERSION_ARTEFACT = org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact.REPORT_VERSION_ARTEFACT;
+
+    /**
+     * The table <code>report_version_batch</code>.
+     */
+    public final ReportVersionBatch REPORT_VERSION_BATCH = org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch.REPORT_VERSION_BATCH;
 
     /**
      * The table <code>report_version_custom_fields</code>.
@@ -318,8 +330,10 @@ public class DefaultSchema extends SchemaImpl {
             Parameters.PARAMETERS,
             ParametersType.PARAMETERS_TYPE,
             Report.REPORT,
+            ReportBatch.REPORT_BATCH,
             ReportVersion.REPORT_VERSION,
             ReportVersionArtefact.REPORT_VERSION_ARTEFACT,
+            ReportVersionBatch.REPORT_VERSION_BATCH,
             ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS,
             ReportVersionData.REPORT_VERSION_DATA,
             ReportVersionPackage.REPORT_VERSION_PACKAGE,

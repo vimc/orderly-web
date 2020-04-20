@@ -37,8 +37,10 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermissi
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
+import org.vaccineimpact.orderlyweb.db.tables.ReportBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
@@ -72,8 +74,10 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupVersion
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ParametersRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ParametersTypeRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.ReportBatchRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionArtefactRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionBatchRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionCustomFieldsRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionDataRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionPackageRecord;
@@ -129,8 +133,10 @@ public class Keys {
     public static final UniqueKey<ParametersRecord> PK_PARAMETERS = UniqueKeys0.PK_PARAMETERS;
     public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = UniqueKeys0.PK_PARAMETERS_TYPE;
     public static final UniqueKey<ReportRecord> PK_REPORT = UniqueKeys0.PK_REPORT;
+    public static final UniqueKey<ReportBatchRecord> PK_REPORT_BATCH = UniqueKeys0.PK_REPORT_BATCH;
     public static final UniqueKey<ReportVersionRecord> PK_REPORT_VERSION = UniqueKeys0.PK_REPORT_VERSION;
     public static final UniqueKey<ReportVersionArtefactRecord> PK_REPORT_VERSION_ARTEFACT = UniqueKeys0.PK_REPORT_VERSION_ARTEFACT;
+    public static final UniqueKey<ReportVersionBatchRecord> PK_REPORT_VERSION_BATCH = UniqueKeys0.PK_REPORT_VERSION_BATCH;
     public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = UniqueKeys0.PK_REPORT_VERSION_CUSTOM_FIELDS;
     public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = UniqueKeys0.PK_REPORT_VERSION_DATA;
     public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = UniqueKeys0.PK_REPORT_VERSION_PACKAGE;
@@ -172,6 +178,8 @@ public class Keys {
     public static final ForeignKey<ReportVersionRecord, ReportRecord> FK_REPORT_VERSION_REPORT_1 = ForeignKeys0.FK_REPORT_VERSION_REPORT_1;
     public static final ForeignKey<ReportVersionArtefactRecord, ReportVersionRecord> FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionArtefactRecord, ArtefactFormatRecord> FK_REPORT_VERSION_ARTEFACT_ARTEFACT_FORMAT_1 = ForeignKeys0.FK_REPORT_VERSION_ARTEFACT_ARTEFACT_FORMAT_1;
+    public static final ForeignKey<ReportVersionBatchRecord, ReportVersionRecord> FK_REPORT_VERSION_BATCH_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_BATCH_REPORT_VERSION_1;
+    public static final ForeignKey<ReportVersionBatchRecord, ReportBatchRecord> FK_REPORT_VERSION_BATCH_REPORT_BATCH_1 = ForeignKeys0.FK_REPORT_VERSION_BATCH_REPORT_BATCH_1;
     public static final ForeignKey<ReportVersionCustomFieldsRecord, ReportVersionRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_CUSTOM_FIELDS_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionCustomFieldsRecord, CustomFieldsRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1 = ForeignKeys0.FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1;
     public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_DATA_REPORT_VERSION_1;
@@ -209,8 +217,10 @@ public class Keys {
         public static final UniqueKey<ParametersRecord> PK_PARAMETERS = createUniqueKey(Parameters.PARAMETERS, "pk_parameters", Parameters.PARAMETERS.ID);
         public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = createUniqueKey(ParametersType.PARAMETERS_TYPE, "pk_parameters_type", ParametersType.PARAMETERS_TYPE.NAME);
         public static final UniqueKey<ReportRecord> PK_REPORT = createUniqueKey(Report.REPORT, "pk_report", Report.REPORT.NAME);
+        public static final UniqueKey<ReportBatchRecord> PK_REPORT_BATCH = createUniqueKey(ReportBatch.REPORT_BATCH, "pk_report_batch", ReportBatch.REPORT_BATCH.ID);
         public static final UniqueKey<ReportVersionRecord> PK_REPORT_VERSION = createUniqueKey(ReportVersion.REPORT_VERSION, "pk_report_version", ReportVersion.REPORT_VERSION.ID);
         public static final UniqueKey<ReportVersionArtefactRecord> PK_REPORT_VERSION_ARTEFACT = createUniqueKey(ReportVersionArtefact.REPORT_VERSION_ARTEFACT, "pk_report_version_artefact", ReportVersionArtefact.REPORT_VERSION_ARTEFACT.ID);
+        public static final UniqueKey<ReportVersionBatchRecord> PK_REPORT_VERSION_BATCH = createUniqueKey(ReportVersionBatch.REPORT_VERSION_BATCH, "pk_report_version_batch", ReportVersionBatch.REPORT_VERSION_BATCH.REPORT_VERSION);
         public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = createUniqueKey(ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "pk_report_version_custom_fields", ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.ID);
         public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = createUniqueKey(ReportVersionData.REPORT_VERSION_DATA, "pk_report_version_data", ReportVersionData.REPORT_VERSION_DATA.ID);
         public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = createUniqueKey(ReportVersionPackage.REPORT_VERSION_PACKAGE, "pk_report_version_package", ReportVersionPackage.REPORT_VERSION_PACKAGE.ID);
@@ -250,6 +260,8 @@ public class Keys {
         public static final ForeignKey<ReportVersionRecord, ReportRecord> FK_REPORT_VERSION_REPORT_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT, ReportVersion.REPORT_VERSION, "fk_report_version_report_1", ReportVersion.REPORT_VERSION.REPORT);
         public static final ForeignKey<ReportVersionArtefactRecord, ReportVersionRecord> FK_REPORT_VERSION_ARTEFACT_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionArtefact.REPORT_VERSION_ARTEFACT, "fk_report_version_artefact_report_version_1", ReportVersionArtefact.REPORT_VERSION_ARTEFACT.REPORT_VERSION);
         public static final ForeignKey<ReportVersionArtefactRecord, ArtefactFormatRecord> FK_REPORT_VERSION_ARTEFACT_ARTEFACT_FORMAT_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_ARTEFACT_FORMAT, ReportVersionArtefact.REPORT_VERSION_ARTEFACT, "fk_report_version_artefact_artefact_format_1", ReportVersionArtefact.REPORT_VERSION_ARTEFACT.FORMAT);
+        public static final ForeignKey<ReportVersionBatchRecord, ReportVersionRecord> FK_REPORT_VERSION_BATCH_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionBatch.REPORT_VERSION_BATCH, "fk_report_version_batch_report_version_1", ReportVersionBatch.REPORT_VERSION_BATCH.REPORT_VERSION);
+        public static final ForeignKey<ReportVersionBatchRecord, ReportBatchRecord> FK_REPORT_VERSION_BATCH_REPORT_BATCH_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_BATCH, ReportVersionBatch.REPORT_VERSION_BATCH, "fk_report_version_batch_report_batch_1", ReportVersionBatch.REPORT_VERSION_BATCH.REPORT_BATCH);
         public static final ForeignKey<ReportVersionCustomFieldsRecord, ReportVersionRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "fk_report_version_custom_fields_report_version_1", ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION);
         public static final ForeignKey<ReportVersionCustomFieldsRecord, CustomFieldsRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_CUSTOM_FIELDS, ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "fk_report_version_custom_fields_custom_fields_1", ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.KEY);
         public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, ReportVersionData.REPORT_VERSION_DATA, "fk_report_version_data_report_version_1", ReportVersionData.REPORT_VERSION_DATA.REPORT_VERSION);
