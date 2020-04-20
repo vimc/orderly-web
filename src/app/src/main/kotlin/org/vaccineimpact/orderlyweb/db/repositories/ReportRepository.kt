@@ -32,6 +32,10 @@ interface ReportRepository
 
     fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 
+    fun setGlobalPinnedReports(reportNames: List<String>)
+
+    fun reportExists(reportName: String): Boolean
+
     fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
 
     fun getLatestVersion(report: String): BasicReportVersion
@@ -191,6 +195,34 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fetch()
                     .groupBy { it[PARAMETERS.REPORT_VERSION] }
                     .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
+        }
+    }
+
+    override fun setGlobalPinnedReports(reportNames: List<String>)
+    {
+        JooqContext().use {
+            it.dsl.transaction { config ->
+                val dsl = DSL.using(config)
+
+                dsl.deleteFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                        .execute()
+                reportNames.forEachIndexed { index, reportName ->
+                    dsl.insertInto(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                            .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING, index)
+                            .set(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT, reportName)
+                            .execute()
+                }
+            }
+        }
+    }
+
+    override fun reportExists(reportName: String): Boolean
+    {
+        JooqContext().use { ctx ->
+            return ctx.dsl.selectFrom(REPORT)
+                    .where(REPORT.NAME.eq(reportName))
+                    .fetch()
+                    .count() > 0
         }
     }
 

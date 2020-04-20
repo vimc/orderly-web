@@ -141,9 +141,10 @@ class AdminPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-role-permissions li[id='Funders'] .vbt-autcomplete-list")))
         val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
-        assertThat(links.size).isEqualTo(2)
+        assertThat(links.size).isEqualTo(3)
         assertThat(links[0].text).isEqualTo("reports.review")
         assertThat(links[1].text).isEqualTo("reports.run")
+        assertThat(links[2].text).isEqualTo("pinned-reports.manage")
     }
 
     @Test
@@ -193,8 +194,9 @@ class AdminPageTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#manage-users li .vbt-autcomplete-list")))
         val autoList = userListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
-        assertThat(links.size).isEqualTo(2)
+        assertThat(links.size).isEqualTo(3)
         assertThat(links[0].text).isEqualTo("reports.read")
         assertThat(links[1].text).isEqualTo("reports.run")
+        assertThat(links[2].text).isEqualTo("pinned-reports.manage")
     }
 }

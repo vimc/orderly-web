@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 
@@ -39,6 +40,26 @@ class ReportController(context: ActionContext,
         val reportTags = context.postData<List<String>>("report_tags")
         val versionTags = context.postData<List<String>>("version_tags")
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
+        return okayResponse()
+    }
+
+    fun setGlobalPinnedReports(): String
+    {
+        val reports = context.postData<List<String>>("reports")
+
+        reports.forEach{
+            if (!reportRepository.reportExists(it))
+            {
+                throw BadRequest("Report '$it' does not exist")
+            }
+        }
+        if (reports.distinct().count() < reports.count())
+        {
+            throw BadRequest("Cannot include the same pinned report twice")
+        }
+
+        reportRepository.setGlobalPinnedReports(reports)
+
         return okayResponse()
     }
 }
