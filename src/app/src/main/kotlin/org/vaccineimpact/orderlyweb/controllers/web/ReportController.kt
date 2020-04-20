@@ -2,15 +2,17 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
+import org.vaccineimpact.orderlyweb.models.ReportDraft
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
@@ -40,5 +42,14 @@ class ReportController(context: ActionContext,
         val versionTags = context.postData<List<String>>("version_tags")
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
         return okayResponse()
+    }
+
+    fun getReportDrafts(reports: List<ReportWithPublishStatus>, drafts: List<ReportDraft>): List<ReportWithDraftsViewModel>
+    {
+        //val reports = reportRepository.getReportsWithPublishStatus()
+       // val drafts = reportRepository.getUnpublishedVersions()
+        return reports.map { report ->
+            ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name})
+        }.filter { it.dateGroups.any() }
     }
 }

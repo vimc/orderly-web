@@ -187,15 +187,7 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
             val date = getDateStringFromVersionId(id)
 
             val entries = changelog.map {
-                val cssClass = if (it.public)
-                {
-                    "public"
-                }
-                else
-                {
-                    "internal"
-                }
-                ChangelogItemViewModel(it.label, it.value, cssClass)
+                ChangelogItemViewModel.build(it)
             }
             return ChangelogViewModel(formatter.format(date), id, entries)
         }
@@ -203,3 +195,20 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
 }
 
 data class ChangelogItemViewModel(val label: String, val value: String, val cssClass: String)
+{
+    companion object
+    {
+        fun build(changelog: Changelog): ChangelogItemViewModel
+        {
+            val cssClass = if (changelog.public)
+            {
+                "public"
+            }
+            else
+            {
+                "internal"
+            }
+            return ChangelogItemViewModel(changelog.label, changelog.value, cssClass)
+        }
+    }
+}
