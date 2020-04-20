@@ -207,23 +207,23 @@ class IndexControllerTests : TeamcityTests()
     }
 
     @Test
-    fun `builds report display names where canConfigure reports`()
+    fun `builds report display names where can set pinned reports`()
     {
         val reportConfigureContext = mock<ActionContext> {
-            on { hasPermission(ReifiedPermission("reports.configure", Scope.Global())) } doReturn true
+            on { hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global())) } doReturn true
         }
 
         val sut = IndexController(reportConfigureContext, mockOrderly, mock(), mock())
         val result = sut.index()
 
-        assertThat(result.canConfigure).isTrue()
+        assertThat(result.canSetPinnedReports).isTrue()
         assertThat(result.reportDisplayNames!!.keys.count()).isEqualTo(2)
         assertThat(result.reportDisplayNames!!["r1"]).isEqualTo("r1 display name")
         assertThat(result.reportDisplayNames!!["r2"]).isEqualTo("r2")
     }
 
     @Test
-    fun `does not build report displya names where user cannot configure reports`()
+    fun `does not build report display names where user can set pinned reports`()
     {
         val noConfigureContext = mock<ActionContext> {
             on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
@@ -232,7 +232,7 @@ class IndexControllerTests : TeamcityTests()
         val sut = IndexController(noConfigureContext, mockOrderly, mock(), mock())
         val result = sut.index()
 
-        assertThat(result.canConfigure).isFalse()
+        assertThat(result.canSetPinnedReports).isFalse()
         assertThat(result.reportDisplayNames).isNull()
     }
 

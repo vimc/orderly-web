@@ -151,7 +151,7 @@ class IndexTests : TeamcityTests()
     }
 
     @Test
-    fun `renders reportDisplayNames as js var if canConfigure`()
+    fun `renders reportDisplayNames as js var if can set pinned reports`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
@@ -166,7 +166,7 @@ class IndexTests : TeamcityTests()
     }
 
     @Test
-    fun `does not render reportDisplayNames as js var if cannot Configure`()
+    fun `does not render reportDisplayNames as js var if cannot set pinned reports`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
