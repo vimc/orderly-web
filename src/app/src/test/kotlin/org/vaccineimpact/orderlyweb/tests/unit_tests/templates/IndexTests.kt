@@ -178,6 +178,32 @@ class IndexTests : TeamcityTests()
     }
 
     @Test
+    fun `renders set-global-pinned-reports component if can configure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        assertThat(component.count()).isEqualTo(1)
+        assertThat(component.attr(":current")).isEqualTo("currentPinnedReportNames")
+        assertThat(component.attr(":available")).isEqualTo("reportDisplayNames")
+    }
+
+    @Test
+    fun `does not render set-global-pinned-reports component if cannot configure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                false, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        assertThat(component.count()).isEqualTo(0)
+    }
+
+    @Test
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,

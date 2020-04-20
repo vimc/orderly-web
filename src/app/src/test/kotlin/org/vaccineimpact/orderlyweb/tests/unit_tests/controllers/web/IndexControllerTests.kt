@@ -223,6 +223,23 @@ class IndexControllerTests : TeamcityTests()
     }
 
     @Test
+    fun `does not build display names for reports which have no published versions`()
+    {
+        val reportConfigureContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("reports.configure", Scope.Global())) } doReturn true
+        }
+        val orderly = mock<OrderlyClient> {
+            on { this.getAllReportVersions() } doReturn listOf(r1v2, r2v1)
+        }
+
+        val sut = IndexController(reportConfigureContext, orderly, mock(), mock())
+        val result = sut.index()
+
+        assertThat(result.reportDisplayNames!!.keys.count()).isEqualTo(1)
+        assertThat(result.reportDisplayNames!!["r2"]).isEqualTo("r2")
+    }
+
+    @Test
     fun `does not build report displya names where user cannot configure reports`()
     {
         val noConfigureContext = mock<ActionContext> {
