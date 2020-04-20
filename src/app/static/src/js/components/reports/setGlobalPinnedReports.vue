@@ -6,7 +6,7 @@
         </a>
         <div v-if="expanded">
             <div class="font-weight-bold">
-                Select up to three reports to pin:
+                Select up to three reports to pin. Only reports with a published version are available.
             </div>
             <div class="ml-2">
                 <ul v-if="selected.length > 0" class="list-unstyled children mt-1">
@@ -22,15 +22,15 @@
                             placeholder="report name"
                             :data="availableDisplayNames">
                         <template slot="append">
-                            <button @click="add" type="submit" class="btn btn-sm">Add</button>
+                            <button @click="add" type="submit" class="btn btn-sm" :disabled="disableAdd">Add</button>
                         </template>
                     </typeahead>
                     <error-info :default-message="defaultMessage" :api-error="error"></error-info>
                 </div>
                 <error-info :default-message="defaultMessage" :api-error="error"></error-info>
                 <div>
-                    <button class="btn btn-sm btn-default float-right" @click="cancel">Cancel</button>
                     <button class="btn btn-sm float-right" type="submit" @click="save">Save changes</button>
+                    <button class="btn btn-sm btn-default float-right mr-2" @click="cancel">Cancel</button>
                 </div>
             </div>
         </div>
@@ -54,6 +54,9 @@
                 return Object.keys(this.available)
                     .filter(r => this.selected.indexOf(r) < 0)
                     .map(r => this.available[r]);
+            },
+            disableAdd: function() {
+                return this.selected.length > 2;
             }
         },
         methods: {
@@ -83,7 +86,7 @@
 
                 api.post(`/global-pinned-reports/`, data)
                     .then(() => {
-                        //TODO: refresh page
+                        window.location.reload()
                     })
                     .catch((error) => {
                         this.error = error;

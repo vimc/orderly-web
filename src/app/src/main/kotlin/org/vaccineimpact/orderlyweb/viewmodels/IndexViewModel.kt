@@ -75,7 +75,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val canConfigure = context.hasPermission(ReifiedPermission("reports.configure", Scope.Global()))
             val reportDisplayNames = if (canConfigure)
             {
-                reportRows.filter{ it.ttParent == 0 }.map{ it.name to it.displayName }.toMap()
+                val reportsWithPublished = reportRows.filter{ it.ttParent != 0 && it.published == true }
+                        .map{ it.ttParent }.distinct()
+
+                reportRows.filter{ it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
+                    .map{ it.name to it.displayName }.toMap()
             }
             else
             {
