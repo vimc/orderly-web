@@ -22,7 +22,7 @@
                             placeholder="report name"
                             :data="availableDisplayNames">
                         <template slot="append">
-                            <button @click="add" type="submit" class="btn btn-sm" :disabled="disableAdd">Add</button>
+                            <button id="add-pinned-report" @click="add" type="submit" class="btn btn-sm" :disabled="disableAdd">Add</button>
                         </template>
                     </typeahead>
                     <error-info :default-message="defaultMessage" :api-error="error"></error-info>
