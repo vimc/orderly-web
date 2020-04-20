@@ -142,9 +142,9 @@ class AdminPageTests : SeleniumTest()
         val autoList = roleListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
         assertThat(links.size).isEqualTo(3)
-        //assertThat(links[0].text).isEqualTo("pinned-reports.manage")
-        //assertThat(links[1].text).isEqualTo("reports.review")
-        //assertThat(links[2].text).isEqualTo("reports.run")
+        assertThat(links[0].text).isEqualTo("pinned-reports.manage")
+        assertThat(links[1].text).isEqualTo("reports.review")
+        assertThat(links[2].text).isEqualTo("reports.run")
     }
 
     @Test
@@ -195,8 +195,8 @@ class AdminPageTests : SeleniumTest()
         val autoList = userListItem.findElement(By.className("vbt-autcomplete-list"))
         val links = autoList.findElements(By.tagName("a"))
         assertThat(links.size).isEqualTo(3)
-       // assertThat(links[0].text).isEqualTo("pinned-reports.manage")
-       // assertThat(links[1].text).isEqualTo("reports.read")
-       // assertThat(links[2].text).isEqualTo("reports.run")
+        assertThat(links[0].text).isEqualTo("pinned-reports.manage")
+        assertThat(links[1].text).isEqualTo("reports.read")
+        assertThat(links[2].text).isEqualTo("reports.run")
     }
 }
