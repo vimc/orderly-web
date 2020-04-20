@@ -18,8 +18,11 @@ class ReportDraftTests : TeamcityTests()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
         val sut = ReportController(mock())
-        val fakeReports = listOf(ReportWithPublishStatus("report-2", "The second report", false), ReportWithPublishStatus("report-1", "The first report", true))
-        val fakeDrafts = listOf(ReportDraft("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
+        val fakeReports = listOf(
+                ReportWithPublishStatus("report-2", "The second report", false),
+                ReportWithPublishStatus("report-1", "The first report", true))
+        val fakeDrafts = listOf(
+                ReportDraft("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
                 ReportDraft("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
                 ReportDraft("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), mapOf(), listOf()),
                 ReportDraft("report-2", "The second report", "v2-3", date, mapOf(), listOf()))
@@ -29,6 +32,7 @@ class ReportDraftTests : TeamcityTests()
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].previouslyPublished).isFalse()
         assertThat(result[0].dateGroups.count()).isEqualTo(2)
+
         var dateGroup = result[0].dateGroups[0]
         assertThat(dateGroup.date).isEqualTo("Tue Apr 21 2020")
         assertThat(dateGroup.drafts.count()).isEqualTo(2)
@@ -57,7 +61,8 @@ class ReportDraftTests : TeamcityTests()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
         val sut = ReportController(mock())
-        val fakeReports = listOf(ReportWithPublishStatus("report-2", "The second report", false),
+        val fakeReports = listOf(
+                ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
         val fakeDrafts = listOf(
                 ReportDraft("report-1",
@@ -77,7 +82,7 @@ class ReportDraftTests : TeamcityTests()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
         val sut = ReportController(mock())
-        val fakeReports = listOf(ReportWithPublishStatus("report-1", "The second report", false))
+        val fakeReports = listOf(ReportWithPublishStatus("report-1", "The first report", false))
         val fakeDrafts = listOf(
                 ReportDraft("report-1",
                         "The first report",
@@ -97,5 +102,24 @@ class ReportDraftTests : TeamcityTests()
         assertThat(draft.changelog[1].cssClass).isEqualTo("internal")
         assertThat(draft.changelog[1].label).isEqualTo("draft")
         assertThat(draft.changelog[1].value).isEqualTo("something internal")
+    }
+
+    @Test
+    fun `report display name falls back to report name`()
+    {
+        val date = Instant.parse("2020-04-21T10:34:50.63Z")
+        val sut = ReportController(mock())
+        val fakeReports = listOf(
+                ReportWithPublishStatus("report-2", "The second report", false),
+                ReportWithPublishStatus("report-1", "report-1", false))
+
+        val fakeDrafts = listOf(
+                ReportDraft("report-1", "The first report", "v1-1", date, mapOf(), listOf()),
+                ReportDraft("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()))
+
+        val result = sut.getReportDrafts(fakeReports, fakeDrafts)
+
+        assertThat(result[0].displayName).isEqualTo("The second report")
+        assertThat(result[1].displayName).isEqualTo("report-1")
     }
 }
