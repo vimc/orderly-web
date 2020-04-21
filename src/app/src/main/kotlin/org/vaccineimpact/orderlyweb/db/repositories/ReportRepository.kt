@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.impl.DSL
+import org.jooq.impl.DSL.max
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -32,13 +33,14 @@ interface ReportRepository
 
     fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
 
+    fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
+
+    fun getLatestVersion(report: String): BasicReportVersion
+
     fun setGlobalPinnedReports(reportNames: List<String>)
 
     fun reportExists(reportName: String): Boolean
 
-    fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
-
-    fun getLatestVersion(report: String): BasicReportVersion
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,

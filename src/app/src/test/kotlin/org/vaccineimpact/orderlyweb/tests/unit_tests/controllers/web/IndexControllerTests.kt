@@ -30,27 +30,28 @@ class IndexControllerTests : TeamcityTests()
                 Scope.Global())))
     }
 
+    private val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
+
+    private val r1v1 = ReportVersion(BasicReportVersion("r1", null, "v1", true, someDate, "v2", "desc"),
+            mapOf("author" to "author1", "requester" to "requester1"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1", "t2"))
+    private val r1v2Basic = r1v1.basicReportVersion.copy(id = "v2",
+            displayName = "r1 display name",
+            published = false,
+            date = someDate.plus(Duration.ofDays(1)))
+    private val r1v2 = r1v1.copy(basicReportVersion = r1v2Basic)
+
+    private val r2v1 = ReportVersion(BasicReportVersion("r2", null, "r2v1", true, someDate.minus(Duration.ofDays(2)), "r2v1", "desc"),
+            mapOf("author" to "another author", "requester" to "another requester"), mapOf(), listOf())
+
+    private val fakeReports = listOf(r1v1, r1v2, r2v1)
+
+    private val mockOrderly = mock<OrderlyClient> {
+        on { this.getAllReportVersions() } doReturn fakeReports
+    }
+
     @Test
     fun `builds report rows`()
     {
-        val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
-
-        val r1v1 = ReportVersion(BasicReportVersion("r1", null, "v1", true, someDate, "v2", "desc"),
-                mapOf("author" to "author1", "requester" to "requester1"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1", "t2"))
-        val r1v2Basic = r1v1.basicReportVersion.copy(id = "v2",
-                displayName = "r1 display name",
-                published = false,
-                date = someDate.plus(Duration.ofDays(1)))
-        val r1v2 = r1v1.copy(basicReportVersion = r1v2Basic)
-
-        val r2v1 = ReportVersion(BasicReportVersion("r2", null, "r2v1", true, someDate.minus(Duration.ofDays(2)), "r2v1", "desc"),
-                mapOf("author" to "another author", "requester" to "another requester"), mapOf(), listOf())
-
-        val fakeReports = listOf(r1v1, r1v2, r2v1)
-
-        val mockOrderly = mock<OrderlyClient> {
-            on { this.getAllReportVersions() } doReturn fakeReports
-        }
         val mockTagRepo = mock<TagRepository>() {
             on { this.getReportTags(listOf("r1", "r2")) } doReturn mapOf("r1" to listOf("report tag"))
         }
@@ -203,6 +204,36 @@ class IndexControllerTests : TeamcityTests()
         sut = IndexController(noPermsContext, mock(), mockReportRepo, mock())
         result = sut.index()
         assertThat(result.showProjectDocs).isFalse()
+    }
+
+    @Test
+    fun `builds report display names where can set pinned reports`()
+    {
+        val reportConfigureContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global())) } doReturn true
+        }
+
+        val sut = IndexController(reportConfigureContext, mockOrderly, mock(), mock())
+        val result = sut.index()
+
+        assertThat(result.canSetPinnedReports).isTrue()
+        assertThat(result.reportDisplayNames!!.keys.count()).isEqualTo(2)
+        assertThat(result.reportDisplayNames!!["r1"]).isEqualTo("r1 display name")
+        assertThat(result.reportDisplayNames!!["r2"]).isEqualTo("r2")
+    }
+
+    @Test
+    fun `does not build report display names where user cannot set pinned reports`()
+    {
+        val noConfigureContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("documents.read", Scope.Global())) } doReturn true
+        }
+
+        val sut = IndexController(noConfigureContext, mockOrderly, mock(), mock())
+        val result = sut.index()
+
+        assertThat(result.canSetPinnedReports).isFalse()
+        assertThat(result.reportDisplayNames).isNull()
     }
 
 }

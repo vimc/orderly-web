@@ -34,6 +34,5 @@ object WebReportRouteConfig : RouteConfig
                     org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
                     .json()
                     .secure(runReports)
-
     )
 }

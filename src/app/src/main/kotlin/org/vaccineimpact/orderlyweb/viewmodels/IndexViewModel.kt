@@ -18,6 +18,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val pinnedReports: List<PinnedReportViewModel>,
                           val customFieldKeys: List<String>,
                           val showProjectDocs: Boolean,
+                          val canSetPinnedReports: Boolean,
+                          @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
@@ -26,8 +28,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 tags: List<String>,
                 pinnedReports: List<PinnedReportViewModel>,
                 customFieldKeys: List<String>,
-                showProjectDocs: Boolean)
-            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs, DefaultViewModel(context, breadcrumb))
+                showProjectDocs: Boolean,
+                canSetPinnedReports: Boolean,
+                reportDisplayNames: Map<String, String>?)
+            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
+                    canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
 
     companion object
     {
@@ -66,7 +71,19 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
-            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(), showDocs)
+
+            val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
+            val reportDisplayNames = if (canSetPinnedReports)
+            {
+                reportRows.filter{ it.ttParent == 0 }.map{ it.name to it.displayName }.toMap()
+            }
+            else
+            {
+                null
+            }
+
+            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
+                    showDocs, canSetPinnedReports, reportDisplayNames)
         }
     }
 }

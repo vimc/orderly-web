@@ -23,9 +23,9 @@ class ReportTests : CleanDatabaseTests()
     fun `reader can get all published reports`()
     {
         insertReport("test", "va")
-        insertReport("test", "vz")
+        insertReport("test", "vz", display = "display name test")
         insertReport("test2", "vc")
-        insertReport("test2", "vb")
+        insertReport("test2", "vb", display = "display name test 2")
         insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
@@ -40,7 +40,7 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[0].latestVersion).isEqualTo("vz")
 
         assertThat(results[1].name).isEqualTo("test2")
-        assertThat(results[1].displayName).isEqualTo("display name test2")
+        assertThat(results[1].displayName).isEqualTo("display name test 2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
     }
 
