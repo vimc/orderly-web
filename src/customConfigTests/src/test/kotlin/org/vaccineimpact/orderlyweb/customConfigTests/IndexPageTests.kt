@@ -83,6 +83,17 @@ class IndexPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
 
         driver.findElement(By.cssSelector("#setPinnedReportsVueApp a")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-pinned-report")))
+
+        val addReportField = driver.findElement(By.cssSelector("#setPinnedReportsVueApp input"))
+        addReportField.sendKeys("testreport2")
+        driver.findElement(By.id("add-pinned-report")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#setPinnedReportsVueApp #testreport2")))
+
+        driver.findElement(By.cssSelector("#pinned-report-buttons button[type='submit']")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#pinned-reports .card")))
+        assertThat(driver.findElement(By.cssSelector("#pinned-reports .card a")).text).isEqualTo("testreport2")
     }
 
 }
