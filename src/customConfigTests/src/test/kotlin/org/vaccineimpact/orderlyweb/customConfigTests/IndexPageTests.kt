@@ -70,7 +70,7 @@ class IndexPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can set pinned reports`()
+    fun `can set pinned reports with permission`()
     {
         setUpDb()
         startApp("auth.provider=montagu")
@@ -96,4 +96,19 @@ class IndexPageTests : SeleniumTest()
         assertThat(driver.findElement(By.cssSelector("#pinned-reports .card a")).text).isEqualTo("testreport2")
     }
 
+    @Test
+    fun `cannot set pinned reports without permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.cssSelector("#setPinnedReportsVueApp"))
+        assertThat(component.count()).isEqualTo(0)
+    }
 }
