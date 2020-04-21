@@ -226,7 +226,7 @@ class IndexControllerTests : TeamcityTests()
     fun `does not build display names for reports which have no published versions`()
     {
         val reportConfigureContext = mock<ActionContext> {
-            on { hasPermission(ReifiedPermission("reports.configure", Scope.Global())) } doReturn true
+            on { hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global())) } doReturn true
         }
         val orderly = mock<OrderlyClient> {
             on { this.getAllReportVersions() } doReturn listOf(r1v2, r2v1)
