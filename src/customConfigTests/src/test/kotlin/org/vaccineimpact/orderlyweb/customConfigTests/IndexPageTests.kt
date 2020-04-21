@@ -69,4 +69,20 @@ class IndexPageTests : SeleniumTest()
         assertThat(childRows.count()).isEqualTo(0)
     }
 
+    @Test
+    fun `can set pinned reports`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global()),
+                ReifiedPermission("pinned-reports.manage", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        driver.findElement(By.cssSelector("#setPinnedReportsVueApp a")).click()
+    }
+
 }
