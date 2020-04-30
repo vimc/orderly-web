@@ -2,7 +2,7 @@
 
 set -ex
 here=$(dirname $0)
-. $HERE/common
+. $here/common
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
