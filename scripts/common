@@ -1,7 +1,7 @@
 if [ -z "$TRAVIS_BRANCH" ]; then
     GIT_BRANCH=$(git symbolic-ref --short HEAD)
     GIT_ID=$(git rev-parse --short=7 HEAD)
-else if [ -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
+elif [ -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
     GIT_BRANCH=$TRAVIS_BRANCH
     GIT_ID=$TRAVIS_COMMIT
 else
