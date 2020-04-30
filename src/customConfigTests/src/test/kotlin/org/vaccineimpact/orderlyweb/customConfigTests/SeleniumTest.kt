@@ -41,7 +41,7 @@ abstract class SeleniumTest : CustomConfigTests()
 
         driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")
+                    addArguments("--ignore-certificate-errors", "--no-sandbox")
                     setProxy(proxy)
                 })
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)

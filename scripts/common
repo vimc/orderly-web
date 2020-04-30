@@ -9,6 +9,4 @@ else
     GIT_ID=$TRAVIS_COMMIT
 fi
 
-if [[ $GIT_BRANCH == *"dependabot"* ]]; then
-    GIT_BRANCH="dependabot" # the full dependabot branch names are not valid docker tags
-fi
+GIT_BRANCH=$(echo $GIT_BRANCH | sed 's!/!-!g')

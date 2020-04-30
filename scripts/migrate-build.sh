@@ -2,6 +2,7 @@
 set -ex
 
 HERE=$(dirname $0)
+. $HERE/common
 . $HERE/migrate-common.sh
 
 # build tagged images
