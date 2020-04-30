@@ -1,0 +1,11 @@
+if [ -z "$TRAVIS_BRANCH" ]; then
+    GIT_BRANCH=$(git symbolic-ref --short HEAD)
+    GIT_ID=$(git rev-parse --short=7 HEAD)
+else
+    GIT_BRANCH=$TRAVIS_BRANCH
+    GIT_ID=$TRAVIS_COMMIT
+fi
+
+if [[ $GIT_BRANCH == *"dependabot"* ]]; then
+    GIT_BRANCH="dependabot" # the full dependabot branch names are not valid docker tags
+fi
