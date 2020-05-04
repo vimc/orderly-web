@@ -8,7 +8,7 @@
             <div class="font-weight-bold">
                 Select up to three reports to pin. Only reports with a published version are available.
             </div>
-            <div class="ml-2">
+            <div>
                 <ul v-if="selected.length > 0" class="list-unstyled children mt-1">
                     <li v-for="selectedReport in selected">
                         <span class="name" :id="selectedReport">{{displayName(selectedReport)}}</span>

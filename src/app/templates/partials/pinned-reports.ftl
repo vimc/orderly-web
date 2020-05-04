@@ -22,9 +22,11 @@
             </#list>
         </div>
         <#if canSetPinnedReports>
-            <div id="setPinnedReportsVueApp" class="mt-2 col-6">
-                <set-global-pinned-reports :current="currentPinnedReportNames" :available="reportDisplayNames"></set-global-pinned-reports>
-            </div>
+            <div class="row">
+                <div id="setPinnedReportsVueApp" class="mt-2 col-6">
+                    <set-global-pinned-reports :current="currentPinnedReportNames" :available="reportDisplayNames"></set-global-pinned-reports>
+                </div>
+             </div>
         </#if>
     </div>
 </#if>
