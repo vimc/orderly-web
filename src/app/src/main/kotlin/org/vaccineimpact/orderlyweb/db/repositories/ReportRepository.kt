@@ -62,6 +62,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID.`as`("latestVersion"))
                     .from(REPORT_VERSION)
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .where(shouldIncludeReportVersion)
@@ -76,6 +77,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
             val result = it.dsl.select(REPORT_VERSION.ID)
                     .from(REPORT_VERSION)
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(name)
                             .and(shouldIncludeReportVersion))
 
@@ -102,6 +104,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fromJoinPath(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
                     .join(REPORT_VERSION)
                     .on(REPORT_VERSION.REPORT.eq(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .where(shouldIncludeReportVersion)
                     .and(REPORT_VERSION.PUBLISHED.eq(true))
                     .fetch()
@@ -139,6 +142,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .from(REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .where(shouldIncludeReportVersion)
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                     .fetchInto(BasicReportVersion::class.java)
@@ -239,6 +243,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
                     .join(REPORT_VERSION)
                     .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(report))
                     .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(latestDate)))
                     .and(shouldIncludeChangelogItem)
@@ -256,12 +261,13 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .select(REPORT_VERSION.REPORT.`as`("name"),
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
+                            ORDERLYWEB_REPORT_VERSION.PUBLISHED,
                             REPORT_VERSION.DATE,
                             latestVersionForEachReport.field<String>("latestVersion"),
                             REPORT_VERSION.DESCRIPTION
                     )
                     .from(REPORT_VERSION)
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
@@ -279,11 +285,12 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .select(REPORT_VERSION.REPORT.`as`("name"),
                         REPORT_VERSION.DISPLAYNAME,
                         REPORT_VERSION.ID,
-                        REPORT_VERSION.PUBLISHED,
+                        ORDERLYWEB_REPORT_VERSION.PUBLISHED,
                         REPORT_VERSION.DATE,
                         latestVersionForEachReport.field<String>("latestVersion"),
                         REPORT_VERSION.DESCRIPTION)
                 .from(REPORT_VERSION)
+                .joinPath(ORDERLYWEB_REPORT_VERSION)
                 .join(latestVersionForEachReport.tableName)
                 .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
                 .where(REPORT_VERSION.REPORT.eq(name))
@@ -310,7 +317,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion =
             (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
-                    .and(REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
+                    .and(ORDERLYWEB_REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =
             if (isReviewer)
