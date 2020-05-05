@@ -7,7 +7,9 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
@@ -24,8 +26,8 @@ class ReportPageTests : SeleniumTest()
         val unpublishedVersion = JooqContext().use {
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(false))
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(false))
                     .fetchAny()
         }
 
