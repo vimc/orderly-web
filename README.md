@@ -42,7 +42,8 @@ v1.23.0 which appends random strings to container names each time they run.
    
    To achieve this, make the following changes before running `/dev/run-dependencies.sh` and the app:
    - In `/dev/cli.sh'` replace `docker run -v $PWD/src/app/demo:/orderly $image "$@"` with `docker run -v $PWD/src/app/git:/orderly $image "$@"`
-   - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`    
+   - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`
+   - In `/dev/run-dependencies.sh` replace `export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/customConfigTests/git` with `export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)`    
 
 See [auth.md](/docs/auth.md) for further details about web authentication.
 
