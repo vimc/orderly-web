@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -54,7 +55,8 @@ class VersionTests : IntegrationTest()
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
@@ -98,7 +100,8 @@ class VersionTests : IntegrationTest()
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
@@ -117,7 +120,8 @@ class VersionTests : IntegrationTest()
                     .from(REPORT_VERSION_DATA)
                     .join(REPORT_VERSION)
                     .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
@@ -136,7 +140,8 @@ class VersionTests : IntegrationTest()
                     .from(FILE_INPUT)
                     .join(REPORT_VERSION)
                     .on(FILE_INPUT.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }
@@ -157,7 +162,8 @@ class VersionTests : IntegrationTest()
                     .fromJoinPath(FILE_ARTEFACT, REPORT_VERSION_ARTEFACT)
                     .join(REPORT_VERSION)
                     .on(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 

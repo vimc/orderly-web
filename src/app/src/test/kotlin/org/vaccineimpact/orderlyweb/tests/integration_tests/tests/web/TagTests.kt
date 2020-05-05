@@ -5,6 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -70,7 +71,8 @@ class TagTests : IntegrationTest()
 
             it.dsl.select(Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION.ID)
                     .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.PUBLISHED.eq(true))
+                    .joinPath(Tables.ORDERLYWEB_REPORT_VERSION)
+                    .where(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
 

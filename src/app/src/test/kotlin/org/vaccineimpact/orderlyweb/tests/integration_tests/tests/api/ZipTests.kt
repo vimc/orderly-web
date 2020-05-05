@@ -5,6 +5,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -87,8 +88,9 @@ class ZipTests : IntegrationTest()
         val version = JooqContext("demo/orderly.sqlite").use {
             it.dsl.select(Tables.REPORT_VERSION.ID)
                     .from(Tables.REPORT_VERSION)
+                    .joinPath(Tables.ORDERLYWEB_REPORT_VERSION)
                     .where(Tables.REPORT_VERSION.REPORT.eq("use_resource"))
-                    .and(Tables.REPORT_VERSION.PUBLISHED.eq(true))
+                    .and(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchInto(String::class.java)
                     .first()
         }

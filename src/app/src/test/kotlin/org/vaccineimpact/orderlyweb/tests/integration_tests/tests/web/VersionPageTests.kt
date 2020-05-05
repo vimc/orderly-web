@@ -89,8 +89,8 @@ class VersionPageTests : IntegrationTest()
         val data = JooqContext().use {
 
             it.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fromJoinPath(REPORT_VERSION_DATA, REPORT_VERSION, FILE_INPUT)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+                    .fromJoinPath(REPORT_VERSION_DATA, REPORT_VERSION, FILE_INPUT, ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }

@@ -106,7 +106,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .on(REPORT_VERSION.REPORT.eq(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
                     .joinPath(ORDERLYWEB_REPORT_VERSION)
                     .where(shouldIncludeReportVersion)
-                    .and(REPORT_VERSION.PUBLISHED.eq(true))
+                    .and(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetch()
 
             return versions.groupBy { r -> r["name"] }.map {
@@ -134,7 +134,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .select(REPORT_VERSION.REPORT.`as`("name"),
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID,
-                            REPORT_VERSION.PUBLISHED,
+                            ORDERLYWEB_REPORT_VERSION.PUBLISHED,
                             REPORT_VERSION.DATE,
                             latestVersionForEachReport.field<String>("latestVersion"),
                             REPORT_VERSION.DESCRIPTION
@@ -154,9 +154,9 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         JooqContext().use {
             val existing = getReportVersion(name, version, it)
             val newStatus = !existing.published
-            it.dsl.update(REPORT_VERSION)
-                    .set(REPORT_VERSION.PUBLISHED, newStatus)
-                    .where(REPORT_VERSION.ID.eq(version))
+            it.dsl.update(ORDERLYWEB_REPORT_VERSION)
+                    .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, newStatus)
+                    .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
                     .execute()
 
             return newStatus
