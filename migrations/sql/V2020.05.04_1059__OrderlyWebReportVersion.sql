@@ -13,5 +13,5 @@ CREATE TRIGGER insert_orderlyweb_report_version
    AFTER INSERT ON report_version
 BEGIN
     INSERT OR IGNORE INTO orderlyweb_report_version(id, published)
-    VALUES(NEW.id, false);
+    VALUES(NEW.id, 0);
 END;

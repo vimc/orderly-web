@@ -8,6 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -63,8 +64,7 @@ class ErrorPageTests : IntegrationTest()
                     .execute()
 
             val report = it.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .first()
 

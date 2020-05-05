@@ -61,8 +61,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .select(REPORT_VERSION.REPORT.`as`("name"),
                             REPORT_VERSION.DISPLAYNAME,
                             REPORT_VERSION.ID.`as`("latestVersion"))
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .where(shouldIncludeReportVersion)
@@ -76,8 +75,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         JooqContext().use {
 
             val result = it.dsl.select(REPORT_VERSION.ID)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(name)
                             .and(shouldIncludeReportVersion))
 
@@ -104,7 +102,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fromJoinPath(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
                     .join(REPORT_VERSION)
                     .on(REPORT_VERSION.REPORT.eq(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(shouldIncludeReportVersion)
                     .and(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetch()
@@ -142,7 +140,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .from(REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(shouldIncludeReportVersion)
                     .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
                     .fetchInto(BasicReportVersion::class.java)
@@ -243,7 +241,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
                     .join(REPORT_VERSION)
                     .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(report))
                     .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(latestDate)))
                     .and(shouldIncludeChangelogItem)
@@ -266,8 +264,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                             latestVersionForEachReport.field<String>("latestVersion"),
                             REPORT_VERSION.DESCRIPTION
                     )
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .join(latestVersionForEachReport.tableName)
                     .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
@@ -289,8 +286,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                         REPORT_VERSION.DATE,
                         latestVersionForEachReport.field<String>("latestVersion"),
                         REPORT_VERSION.DESCRIPTION)
-                .from(REPORT_VERSION)
-                .joinPath(ORDERLYWEB_REPORT_VERSION)
+                .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                 .join(latestVersionForEachReport.tableName)
                 .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
                 .where(REPORT_VERSION.REPORT.eq(name))
@@ -308,7 +304,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 REPORT_VERSION.ID.`as`("latestVersion"),
                 REPORT_VERSION.DATE.max().`as`("maxDate")
         )
-                .from(REPORT_VERSION)
+                .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                 .where(shouldIncludeReportVersion)
                 .groupBy(REPORT_VERSION.REPORT)
                 .asTemporaryTable(name = "latest_version_for_each_report")

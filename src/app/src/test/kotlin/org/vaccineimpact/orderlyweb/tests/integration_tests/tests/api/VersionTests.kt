@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION
 import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -49,8 +50,7 @@ class VersionTests : IntegrationTest()
         val publishStatus = JooqContext().use {
 
             it.dsl.select(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(reportName))
                     .and(REPORT_VERSION.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
@@ -66,8 +66,7 @@ class VersionTests : IntegrationTest()
         val publishedVersion = JooqContext().use {
 
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
                     .fetchAny()
         }
@@ -88,8 +87,7 @@ class VersionTests : IntegrationTest()
         val publishStatus = JooqContext().use {
 
             it.dsl.select(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(REPORT_VERSION.REPORT.eq(reportName))
                     .and(REPORT_VERSION.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
@@ -351,8 +349,7 @@ class VersionTests : IntegrationTest()
     {
         val publishedVersion = JooqContext().use {
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
                     .fetchAny()
         }
@@ -373,8 +370,7 @@ class VersionTests : IntegrationTest()
     {
         val publishedVersion = JooqContext().use {
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .joinPath(ORDERLYWEB_REPORT_VERSION)
+                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
                     .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
                     .fetchAny()
         }
