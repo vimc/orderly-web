@@ -92,7 +92,9 @@
                     })
                     .catch(({response}) => {
                         this.dismissRunStatus();
-                        this.runningStatus = "Error when running report";
+                        //this.runningStatus = "Error when running report";
+                        //TODO: revert this to above, just for extra logging now
+                        this.runningStatus = "Error when running report -  status: " +  response.status + " data: " + JSON.stringify(response.data);
                         console.log(response.data);
                     })
                     .finally(() => {
