@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import okhttp3.internal.waitMillis
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
@@ -16,8 +15,6 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.time.Duration
-import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
 class ReportPageTests : SeleniumTest()
@@ -87,12 +84,6 @@ class ReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
         driver.findElement(By.cssSelector("#confirm-run-btn")).click()
-
-        synchronized(driver) {
-            driver.waitMillis(10000)
-        }
-        val html = driver.findElement(By.id("run-report-status")).getAttribute("innerHTML")
-        println(html)
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
 
