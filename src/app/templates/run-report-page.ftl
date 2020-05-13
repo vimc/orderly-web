@@ -26,7 +26,9 @@
         <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-tab">
                 <h2>Run a report</h2>
-                <p>Report run coming soon!</p>
+                <div id="runReportVueApp">
+                    <run-report></run-report>
+                </div>
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                <h2>Report logs</h2>
@@ -35,6 +37,7 @@
         </div>
     </div>
     <#macro scripts>
+        <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
         <script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
     </#macro>
 </@layoutwide>
