@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.viewmodels.*
 
 class ReportController(context: ActionContext,
@@ -34,7 +35,20 @@ class ReportController(context: ActionContext,
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        return RunReportViewModel(context)
+        //TODO: Orderly server does not yet support fetching this metadata, so we hardcode dummy data for now
+        val runReportMetadata = RunReportMetadata(true, true,
+                listOf("support", "annex"), listOf("internal", "published"))
+
+        val gitBranches = if (runReportMetadata.gitSupported)  {
+            //TODO: as above, need to get this from orderly serverwhen endpoint is available
+            listOf("master", "dev_branch")
+        }
+        else
+        {
+            null
+        }
+
+        return RunReportViewModel(context, runReportMetadata, gitBranches)
     }
 
     fun tagVersion(): String

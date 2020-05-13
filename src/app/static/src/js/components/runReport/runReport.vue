@@ -6,6 +6,7 @@
 
 <script>
     export default {
-        name: "runReport"
+        name: "runReport",
+        props: ['metadata', 'gitBranches']
     }
 </script>
