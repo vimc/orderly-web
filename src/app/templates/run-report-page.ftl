@@ -13,10 +13,10 @@
                     <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                         <ul class="nav flex-column list-unstyled mb-0">
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#run-tab" role="tab">Run a report</a>
+                                <a id="run-link" class="nav-link active" data-toggle="tab" href="#run-tab" role="tab">Run a report</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#logs-tab" role="tab">Report logs</a>
+                                <a id="logs-link" class="nav-link" data-toggle="tab" href="#logs-tab" role="tab">Report logs</a>
                             </li>
                         </ul>
                     </div>
@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
-               <h2>Report logs</h2>
+                <h2>Report logs</h2>
                 <p>Report logs coming soon!</p>
             </div>
         </div>
