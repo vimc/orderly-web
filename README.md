@@ -167,6 +167,9 @@ Defines a type of permission e.g. 'run reports'
 ### orderlyweb_report_tag
 Defines tags at a report level
 
+### orderlyweb_report_version
+Holds report version data which is managed by OrderlyWeb rather than Orderly - currently just the Published flag.
+
 ### orderlyweb_report_version_tag
 Defines tags at a report version level
 
