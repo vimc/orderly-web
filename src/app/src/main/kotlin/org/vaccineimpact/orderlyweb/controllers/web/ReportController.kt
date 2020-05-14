@@ -39,14 +39,9 @@ class ReportController(context: ActionContext,
         val runReportMetadata = RunReportMetadata(true, true,
                 listOf("support", "annex"), listOf("internal", "published"))
 
-        val gitBranches = if (runReportMetadata.gitSupported)  {
-            //TODO: as above, need to get this from orderly serverwhen endpoint is available
-            listOf("master", "dev_branch")
-        }
-        else
-        {
-            null
-        }
+        //TODO: as above, need to get this from orderly server when endpoint is available
+        //TODO: Don't attempt get get git branches if metadata.git_supported is false
+        val gitBranches = listOf("master", "dev_branch")
 
         return RunReportViewModel(context, runReportMetadata, gitBranches)
     }
