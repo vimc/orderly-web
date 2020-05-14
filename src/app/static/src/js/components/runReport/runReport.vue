@@ -1,6 +1,6 @@
 <template>
     <div>
-        <form>
+        <form class="mt-3">
             <div v-if="metadata.git_supported" id="gitBranchFormGroup" class="form-group row">
                 <label for="gitBranch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
