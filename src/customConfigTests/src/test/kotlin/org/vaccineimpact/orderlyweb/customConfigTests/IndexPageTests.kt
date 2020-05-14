@@ -69,4 +69,46 @@ class IndexPageTests : SeleniumTest()
         assertThat(childRows.count()).isEqualTo(0)
     }
 
+    @Test
+    fun `can set pinned reports with permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global()),
+                ReifiedPermission("pinned-reports.manage", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        driver.findElement(By.cssSelector("#setPinnedReportsVueApp a")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-pinned-report")))
+
+        val addReportField = driver.findElement(By.cssSelector("#setPinnedReportsVueApp input"))
+        addReportField.sendKeys("testreport2")
+        driver.findElement(By.id("add-pinned-report")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#setPinnedReportsVueApp #testreport2")))
+
+        driver.findElement(By.cssSelector("#pinned-report-buttons button[type='submit']")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#pinned-reports .card")))
+        assertThat(driver.findElement(By.cssSelector("#pinned-reports .card a")).text).isEqualTo("testreport2")
+    }
+
+    @Test
+    fun `cannot set pinned reports without permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.cssSelector("#setPinnedReportsVueApp"))
+        assertThat(component.count()).isEqualTo(0)
+    }
 }
