@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
-import org.vaccineimpact.orderlyweb.db.joinPath
 
 class ErrorPageTests : IntegrationTest()
 {
