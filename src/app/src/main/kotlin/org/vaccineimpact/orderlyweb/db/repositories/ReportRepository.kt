@@ -255,7 +255,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
                             ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
                             ORDERLYWEB_REPORT_VERSION_FULL.ID,
-                            ORDERLYWEB_REPORT_VERSION.PUBLISHED,
+                            ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED,
                             ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                             latestVersionForEachReport.field<String>("latestVersion"),
                             ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION
