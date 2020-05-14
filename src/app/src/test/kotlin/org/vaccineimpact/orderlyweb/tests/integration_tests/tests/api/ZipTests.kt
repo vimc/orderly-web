@@ -87,7 +87,7 @@ class ZipTests : IntegrationTest()
     fun `report reader gets only artefacts and resources`()
     {
         val version = JooqContext("demo/orderly.sqlite").use {
-            it.dsl.select(Tables.REPORT_VERSION.ID)
+            it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_FULL.ID)
                     .from(Tables.ORDERLYWEB_REPORT_VERSION_FULL)
                     .where(Tables.ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq("use_resource"))
                     .and(Tables.ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
