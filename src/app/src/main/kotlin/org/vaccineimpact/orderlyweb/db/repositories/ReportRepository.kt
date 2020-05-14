@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import org.jooq.impl.DSL
-import org.jooq.impl.DSL.max
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
@@ -58,14 +57,14 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID.`as`("latestVersion"))
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                    .select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                            ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
+                            ORDERLYWEB_REPORT_VERSION_FULL.ID.`as`("latestVersion"))
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .on(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT)
+                    .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                     .fetchInto(Report::class.java)
         }
     }
@@ -74,9 +73,9 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
 
-            val result = it.dsl.select(REPORT_VERSION.ID)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(name)
+            val result = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(name)
                             .and(shouldIncludeReportVersion))
 
             if (result.count() == 0)
@@ -97,19 +96,18 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             val versions = it.dsl
                     .select(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING,
                             ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID.`as`("latestVersion"))
-                    .fromJoinPath(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
-                    .join(REPORT_VERSION)
-                    .on(REPORT_VERSION.REPORT.eq(Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                            ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
+                            ORDERLYWEB_REPORT_VERSION_FULL.ID.`as`("latestVersion"))
+                    .fromJoinPath(ORDERLYWEB_PINNED_REPORT_GLOBAL, REPORT)
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT))
                     .where(shouldIncludeReportVersion)
-                    .and(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetch()
 
             return versions.groupBy { r -> r["name"] }.map {
                 it.value.maxBy { r -> r["latestVersion"] as String }
-            }.sortedBy { r -> r!![Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
+            }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
                     .map { r -> r!!.into(Report::class.java) }
         }
     }
@@ -129,20 +127,19 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
-                            ORDERLYWEB_REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
+                    .select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                            ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
+                            ORDERLYWEB_REPORT_VERSION_FULL.ID,
+                            ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED,
+                            ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                             latestVersionForEachReport.field<String>("latestVersion"),
-                            REPORT_VERSION.DESCRIPTION
+                            ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION
                     )
-                    .from(REPORT_VERSION)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                    .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
+                    .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
                     .fetchInto(BasicReportVersion::class.java)
         }
     }
@@ -239,11 +236,10 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     CHANGELOG.FROM_FILE,
                     CHANGELOG_LABEL.PUBLIC)
                     .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
-                    .join(REPORT_VERSION)
-                    .on(changelogReportVersionColumnForUser.eq(REPORT_VERSION.ID))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(report))
-                    .and(REPORT_VERSION.DATE.lessOrEqual(Timestamp.from(latestDate)))
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(changelogReportVersionColumnForUser.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.DATE.lessOrEqual(Timestamp.from(latestDate)))
                     .and(shouldIncludeChangelogItem)
                     .orderBy(CHANGELOG.ORDERING.desc())
                     .fetchInto(Changelog::class.java)
@@ -256,20 +252,20 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
             return it.dsl.withTemporaryTable(latestVersionForEachReport)
-                    .select(REPORT_VERSION.REPORT.`as`("name"),
-                            REPORT_VERSION.DISPLAYNAME,
-                            REPORT_VERSION.ID,
+                    .select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                            ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
+                            ORDERLYWEB_REPORT_VERSION_FULL.ID,
                             ORDERLYWEB_REPORT_VERSION.PUBLISHED,
-                            REPORT_VERSION.DATE,
+                            ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                             latestVersionForEachReport.field<String>("latestVersion"),
-                            REPORT_VERSION.DESCRIPTION
+                            ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION
                     )
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .join(latestVersionForEachReport.tableName)
-                    .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
+                    .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
-                    .and(REPORT_VERSION.REPORT.eq(report))
-                    .and(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(BasicReportVersion::class.java) ?: throw UnknownObjectError(report, "report")
         }
     }
@@ -279,18 +275,18 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         val latestVersionForEachReport = getLatestVersionsForReports(ctx)
 
         return ctx.dsl.withTemporaryTable(latestVersionForEachReport)
-                .select(REPORT_VERSION.REPORT.`as`("name"),
-                        REPORT_VERSION.DISPLAYNAME,
-                        REPORT_VERSION.ID,
-                        ORDERLYWEB_REPORT_VERSION.PUBLISHED,
-                        REPORT_VERSION.DATE,
+                .select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                        ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME,
+                        ORDERLYWEB_REPORT_VERSION_FULL.ID,
+                        ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED,
+                        ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                         latestVersionForEachReport.field<String>("latestVersion"),
-                        REPORT_VERSION.DESCRIPTION)
-                .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                        ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION)
+                .from(ORDERLYWEB_REPORT_VERSION_FULL)
                 .join(latestVersionForEachReport.tableName)
-                .on(REPORT_VERSION.REPORT.eq(latestVersionForEachReport.field("report")))
-                .where(REPORT_VERSION.REPORT.eq(name))
-                .and(REPORT_VERSION.ID.eq(version))
+                .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
+                .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(name))
+                .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(version))
                 .and(shouldIncludeReportVersion)
                 .singleOrNull()
                 ?.into(BasicReportVersion::class.java)
@@ -300,20 +296,20 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     private fun getLatestVersionsForReports(db: JooqContext): TempTable
     {
         return db.dsl.select(
-                REPORT_VERSION.REPORT,
-                REPORT_VERSION.ID.`as`("latestVersion"),
-                REPORT_VERSION.DATE.max().`as`("maxDate")
+                ORDERLYWEB_REPORT_VERSION_FULL.REPORT,
+                ORDERLYWEB_REPORT_VERSION_FULL.ID.`as`("latestVersion"),
+                ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("maxDate")
         )
-                .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
+                .from(ORDERLYWEB_REPORT_VERSION_FULL)
                 .where(shouldIncludeReportVersion)
-                .groupBy(REPORT_VERSION.REPORT)
+                .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                 .asTemporaryTable(name = "latest_version_for_each_report")
     }
 
     // shouldInclude for the relational schema
     private val shouldIncludeReportVersion =
-            (REPORT_VERSION.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
-                    .and(ORDERLYWEB_REPORT_VERSION.PUBLISHED.bitOr(isReviewer))
+            (ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reportReadingScopes).or(isGlobalReader.or(isReviewer)))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =
             if (isReviewer)

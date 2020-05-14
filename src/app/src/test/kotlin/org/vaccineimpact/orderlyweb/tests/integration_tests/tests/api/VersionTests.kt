@@ -8,8 +8,7 @@ import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -49,10 +48,10 @@ class VersionTests : IntegrationTest()
 
         val publishStatus = JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(reportName))
-                    .and(REPORT_VERSION.ID.eq(versionId))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(reportName))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
                     .first()
         }
@@ -65,14 +64,14 @@ class VersionTests : IntegrationTest()
     {
         val publishedVersion = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val versionId = publishedVersion[REPORT_VERSION.ID]
-        val reportName = publishedVersion[REPORT_VERSION.REPORT]
+        val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
+        val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
 
         // now unpublish
         val response = apiRequestHelper.post("/reports/$reportName/versions/$versionId/publish/?value=false", mapOf(),
@@ -86,10 +85,10 @@ class VersionTests : IntegrationTest()
 
         val publishStatus = JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq(reportName))
-                    .and(REPORT_VERSION.ID.eq(versionId))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(reportName))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(versionId))
                     .fetchInto(Boolean::class.java)
                     .first()
         }
@@ -348,13 +347,13 @@ class VersionTests : IntegrationTest()
     fun `can get report run metadata with access token`()
     {
         val publishedVersion = JooqContext().use {
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED)
                     .fetchAny()
         }
-        val versionId = publishedVersion[REPORT_VERSION.ID]
-        val reportName = publishedVersion[REPORT_VERSION.REPORT]
+        val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
+        val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
         val token = apiRequestHelper.generateOnetimeToken(url)
         val response = apiRequestHelper.getNoAuth("$url?access_token=$token", ContentTypes.binarydata)
@@ -369,13 +368,13 @@ class VersionTests : IntegrationTest()
     fun `only report readers can get report run metadata`()
     {
         val publishedVersion = JooqContext().use {
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED)
                     .fetchAny()
         }
-        val versionId = publishedVersion[REPORT_VERSION.ID]
-        val reportName = publishedVersion[REPORT_VERSION.REPORT]
+        val versionId = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
+        val reportName = publishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val url = "/reports/${reportName}/versions/${versionId}/run-meta/"
 
         assertAPIUrlSecured(url,

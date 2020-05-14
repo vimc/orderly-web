@@ -89,16 +89,17 @@ class VersionPageTests : IntegrationTest()
     {
         val data = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fromJoinPath(REPORT_VERSION_DATA, REPORT_VERSION, FILE_INPUT)
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .fromJoinPath(REPORT_VERSION_DATA,FILE_INPUT)
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }
 
-        val report = data[REPORT_VERSION.REPORT]
-        val version = data[REPORT_VERSION.ID]
+        val report = data[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
+        val version = data[ORDERLYWEB_REPORT_VERSION_FULL.ID]
 
         return Pair(report, "/report/$report/$version")
     }

@@ -88,9 +88,9 @@ class ZipTests : IntegrationTest()
     {
         val version = JooqContext("demo/orderly.sqlite").use {
             it.dsl.select(Tables.REPORT_VERSION.ID)
-                    .fromJoinPath(Tables.REPORT_VERSION, Tables.ORDERLYWEB_REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.REPORT.eq("use_resource"))
-                    .and(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+                    .from(Tables.ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(Tables.ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq("use_resource"))
+                    .and(Tables.ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchInto(String::class.java)
                     .first()
         }

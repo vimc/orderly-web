@@ -62,12 +62,12 @@ class ErrorPageTests : IntegrationTest()
                     .set(REPORT_VERSION_ARTEFACT.FORMAT, "BAD-FORMAT")
                     .execute()
 
-            val report = it.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            val report = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT,ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .first()
 
-            Pair(report[REPORT_VERSION.REPORT], report[REPORT_VERSION.ID])
+            Pair(report[ORDERLYWEB_REPORT_VERSION_FULL.REPORT], report[ORDERLYWEB_REPORT_VERSION_FULL.ID])
         }
 
         val result = webRequestHelper.loginWithMontaguAndMakeRequest("/report/$report/$version/",

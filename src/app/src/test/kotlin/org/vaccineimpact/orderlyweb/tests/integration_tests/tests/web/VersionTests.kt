@@ -53,14 +53,14 @@ class VersionTests : IntegrationTest()
     {
         val version = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val versionId = version[REPORT_VERSION.ID]
-        val reportName = version[REPORT_VERSION.REPORT]
+        val versionId = version[ORDERLYWEB_REPORT_VERSION_FULL.ID]
+        val reportName = version[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
 
         val url = "/report/$reportName/version/$versionId/all/"
 
@@ -97,9 +97,9 @@ class VersionTests : IntegrationTest()
     {
         val version = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID,ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
@@ -114,12 +114,11 @@ class VersionTests : IntegrationTest()
     {
         val data = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION_DATA.NAME, REPORT_VERSION.REPORT, REPORT_VERSION_DATA.REPORT_VERSION)
+            it.dsl.select(REPORT_VERSION_DATA.NAME, ORDERLYWEB_REPORT_VERSION_FULL.REPORT, REPORT_VERSION_DATA.REPORT_VERSION)
                     .from(REPORT_VERSION_DATA)
-                    .join(REPORT_VERSION)
-                    .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
@@ -136,15 +135,14 @@ class VersionTests : IntegrationTest()
 
             it.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.REPORT_VERSION, REPORT_VERSION.REPORT)
                     .from(FILE_INPUT)
-                    .join(REPORT_VERSION)
-                    .on(FILE_INPUT.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(FILE_INPUT.REPORT_VERSION.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }
 
-        val report = resource[REPORT_VERSION.REPORT]
+        val report = resource[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val version = resource[FILE_INPUT.REPORT_VERSION]
         val fileName = resource[FILE_INPUT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")
@@ -156,16 +154,15 @@ class VersionTests : IntegrationTest()
     {
         val resource = JooqContext().use {
 
-            it.dsl.select(FILE_ARTEFACT.FILENAME, REPORT_VERSION_ARTEFACT.REPORT_VERSION, REPORT_VERSION.REPORT)
+            it.dsl.select(FILE_ARTEFACT.FILENAME, REPORT_VERSION_ARTEFACT.REPORT_VERSION, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                     .fromJoinPath(FILE_ARTEFACT, REPORT_VERSION_ARTEFACT)
-                    .join(REPORT_VERSION)
-                    .on(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(REPORT_VERSION.ID))
-                    .joinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(REPORT_VERSION_ARTEFACT.REPORT_VERSION.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        val report = resource[REPORT_VERSION.REPORT]
+        val report = resource[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val version = resource[REPORT_VERSION_ARTEFACT.REPORT_VERSION]
         val fileName = resource[FILE_ARTEFACT.FILENAME]
         val encodedFileName = URLEncoder.encode(fileName, "UTF-8")

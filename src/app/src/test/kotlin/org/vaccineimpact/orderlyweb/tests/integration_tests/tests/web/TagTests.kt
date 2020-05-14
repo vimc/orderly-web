@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -48,9 +48,9 @@ class TagTests : IntegrationTest()
     private fun getReportTags(reportName: String): List<String>
     {
         JooqContext().use {
-            return it.dsl.select(Tables.ORDERLYWEB_REPORT_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
+            return it.dsl.select(ORDERLYWEB_REPORT_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_TAG)
+                    .where(ORDERLYWEB_REPORT_TAG.REPORT.eq(reportName))
                     .fetchInto(String::class.java)
         }
     }
@@ -58,9 +58,9 @@ class TagTests : IntegrationTest()
     private fun getVersionTags(versionId: String): List<String>
     {
         JooqContext().use {
-            return it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-                    .from(Tables.ORDERLYWEB_REPORT_VERSION_TAG)
-                    .where(Tables.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
+            return it.dsl.select(ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+                    .from(ORDERLYWEB_REPORT_VERSION_TAG)
+                    .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.eq(versionId))
                     .fetchInto(String::class.java)
         }
     }
@@ -69,12 +69,12 @@ class TagTests : IntegrationTest()
     {
         val report = JooqContext().use {
 
-            it.dsl.select(Tables.REPORT_VERSION.REPORT, Tables.REPORT_VERSION.ID)
-                    .fromJoinPath(Tables.REPORT_VERSION, Tables.ORDERLYWEB_REPORT_VERSION)
-                    .where(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
         }
 
-        return Pair(report[Tables.REPORT_VERSION.REPORT], report[Tables.REPORT_VERSION.ID])
+        return Pair(report[ORDERLYWEB_REPORT_VERSION_FULL.REPORT], report[ORDERLYWEB_REPORT_VERSION_FULL.ID])
     }
 }
