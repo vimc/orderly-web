@@ -75,7 +75,11 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
             val reportDisplayNames = if (canSetPinnedReports)
             {
-                reportRows.filter{ it.ttParent == 0 }.map{ it.name to it.displayName }.toMap()
+                val reportsWithPublished = reportRows.filter{ it.ttParent != 0 && it.published == true }
+                        .map{ it.ttParent }.distinct()
+
+                reportRows.filter{ it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
+                    .map{ it.name to it.displayName }.toMap()
             }
             else
             {

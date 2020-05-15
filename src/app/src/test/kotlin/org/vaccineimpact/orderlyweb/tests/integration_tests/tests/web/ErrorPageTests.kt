@@ -7,8 +7,8 @@ import org.jsoup.nodes.Document
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_ARTEFACT
+import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -62,11 +62,12 @@ class ErrorPageTests : IntegrationTest()
                     .set(REPORT_VERSION_ARTEFACT.FORMAT, "BAD-FORMAT")
                     .execute()
 
-            val report = it.dsl.selectFrom(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+            val report = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT,ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .first()
 
-            Pair(report[REPORT_VERSION.REPORT], report[REPORT_VERSION.ID])
+            Pair(report[ORDERLYWEB_REPORT_VERSION_FULL.REPORT], report[ORDERLYWEB_REPORT_VERSION_FULL.ID])
         }
 
         val result = webRequestHelper.loginWithMontaguAndMakeRequest("/report/$report/$version/",

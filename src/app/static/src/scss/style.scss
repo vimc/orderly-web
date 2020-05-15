@@ -88,3 +88,20 @@ select.form-control {
   font-weight: 300;
   color: #212529;
 }
+
+.remove {
+  cursor: pointer;
+  color: $danger;
+  line-height: 1em;
+  vertical-align: top;
+}
+
+.remove:hover {
+  color: darken($danger, 10%);
+  text-decoration: underline;
+}
+
+.btn-default {
+  @include button-variant($gray-200, $gray-400);
+}
+

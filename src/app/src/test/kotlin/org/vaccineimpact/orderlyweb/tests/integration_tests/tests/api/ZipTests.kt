@@ -5,6 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -85,10 +87,10 @@ class ZipTests : IntegrationTest()
     fun `report reader gets only artefacts and resources`()
     {
         val version = JooqContext("demo/orderly.sqlite").use {
-            it.dsl.select(Tables.REPORT_VERSION.ID)
-                    .from(Tables.REPORT_VERSION)
-                    .where(Tables.REPORT_VERSION.REPORT.eq("use_resource"))
-                    .and(Tables.REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(Tables.ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(Tables.ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(Tables.ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq("use_resource"))
+                    .and(Tables.ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchInto(String::class.java)
                     .first()
         }
