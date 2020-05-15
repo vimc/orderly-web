@@ -3,10 +3,10 @@ REGISTRY_PUBLIC=vimc
 NAME=orderlyweb-migrate
 
 if [ -z "$TRAVIS_BRANCH" ]; then
-    GIT_BRANCH=$(git -C "$PACKAGE_ROOT" symbolic-ref --short HEAD)
+    GIT_BRANCH=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
     GIT_ID=$(git rev-parse --short=7 HEAD)
 else
-    GIT_BRANCH=$TRAVIS_BRANCH
+    GIT_BRANCH=$($TRAVIS_BRANCH | sed 's;/;-;g')
     GIT_ID=$TRAVIS_COMMIT
 fi
 
