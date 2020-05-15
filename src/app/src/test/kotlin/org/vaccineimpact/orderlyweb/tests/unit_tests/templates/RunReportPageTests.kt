@@ -1,10 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
@@ -18,51 +20,63 @@ class RunReportPageTests : TeamcityTests()
         val template = FreemarkerTestRule("run-report-page.ftl")
     }
 
-    private val testModel = RunReportViewModel(mock<ActionContext>())
+    private val testModel = RunReportViewModel(mock<ActionContext>(),
+            RunReportMetadata(true, true,
+                    listOf("support", "annex"), listOf("internal", "published")),
+            listOf("master", "dev"))
+
+    private val doc = RunReportPageTests.template.jsoupDocFor(testModel)
 
     @Test
     fun `renders outline correctly`()
     {
-        val doc = RunReportPageTests.template.jsoupDocFor(testModel)
+        assertThat(doc.select(".nav-item")[0].text()).isEqualTo("Run a report")
+        assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Report logs")
 
-        Assertions.assertThat(doc.select(".nav-item")[0].text()).isEqualTo("Run a report")
-        Assertions.assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Report logs")
-
-        Assertions.assertThat(doc.selectFirst("#run-tab").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
-        Assertions.assertThat(doc.selectFirst("#logs-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
+        assertThat(doc.selectFirst("#run-tab").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
+        assertThat(doc.selectFirst("#logs-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
     }
 
     @Test
     fun `renders breadcrumbs correctly`()
     {
-        val doc = RunReportPageTests.template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
 
-        Assertions.assertThat(breadcrumbs.count()).isEqualTo(2)
-        Assertions.assertThat(breadcrumbs[0].child(0).text()).isEqualTo("Main menu")
-        Assertions.assertThat(breadcrumbs[0].child(0).attr("href")).isEqualTo("http://localhost:8888")
-        Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("Run a report")
-        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("http://localhost:8888/run-report")
+        assertThat(breadcrumbs.count()).isEqualTo(2)
+        assertThat(breadcrumbs[0].child(0).text()).isEqualTo("Main menu")
+        assertThat(breadcrumbs[0].child(0).attr("href")).isEqualTo("http://localhost:8888")
+        assertThat(breadcrumbs[1].child(0).text()).isEqualTo("Run a report")
+        assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("http://localhost:8888/run-report")
     }
 
     @Test
     fun `renders run tab correctly`()
     {
-        val doc = RunReportPageTests.template.jsoupDocFor(testModel)
         val tab = doc.select("#run-tab")
 
-        Assertions.assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Run a report")
-        Assertions.assertThat(tab.select("#runReportVueApp").select("run-report").count()).isEqualTo(1)
+        assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Run a report")
+
+        val runReportComponent = tab.select("#runReportVueApp").select("run-report")
+        assertThat(runReportComponent.attr(":metadata")).isEqualTo("runReportMetadata")
+        assertThat(runReportComponent.attr(":git-branches")).isEqualTo("gitBranches")
 
     }
 
     @Test
     fun `renders logs tab correctly`()
     {
-        val doc = RunReportPageTests.template.jsoupDocFor(testModel)
         val tab = doc.select("#logs-tab")
 
-        Assertions.assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Report logs")
-        Assertions.assertThat(tab.select("p").text()).isEqualToIgnoringWhitespace("Report logs coming soon!")
+        assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Report logs")
+        assertThat(tab.select("p").text()).isEqualToIgnoringWhitespace("Report logs coming soon!")
+    }
+
+    @Test
+    fun `renders metadata and git branches to script tag`()
+    {
+        val script = doc.select("script")[2]
+        val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
+        assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
+                                                    + " var gitBranches = [ \"master\", \"dev\" ];")
     }
 }
