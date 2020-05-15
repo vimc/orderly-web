@@ -5,8 +5,7 @@ import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -35,9 +34,9 @@ class IndexPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
 
         val reportNames = JooqContext().use {
-            it.dsl.select(REPORT_VERSION.REPORT)
-                    .fromJoinPath(REPORT_VERSION, ORDERLYWEB_REPORT_VERSION)
-                    .where(ORDERLYWEB_REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetch().distinct()
         }
 
@@ -71,4 +70,46 @@ class IndexPageTests : SeleniumTest()
         assertThat(childRows.count()).isEqualTo(0)
     }
 
+    @Test
+    fun `can set pinned reports with permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global()),
+                ReifiedPermission("pinned-reports.manage", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        driver.findElement(By.cssSelector("#setPinnedReportsVueApp a")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-pinned-report")))
+
+        val addReportField = driver.findElement(By.cssSelector("#setPinnedReportsVueApp input"))
+        addReportField.sendKeys("testreport2")
+        driver.findElement(By.id("add-pinned-report")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#setPinnedReportsVueApp #testreport2")))
+
+        driver.findElement(By.cssSelector("#pinned-report-buttons button[type='submit']")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#pinned-reports .card")))
+        assertThat(driver.findElement(By.cssSelector("#pinned-reports .card a")).text).isEqualTo("testreport2")
+    }
+
+    @Test
+    fun `cannot set pinned reports without permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.cssSelector("#setPinnedReportsVueApp"))
+        assertThat(component.count()).isEqualTo(0)
+    }
 }
