@@ -4,7 +4,7 @@ set -ex
 here=$(dirname $0)
 
 git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD)
+git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json

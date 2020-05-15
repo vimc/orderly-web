@@ -4,7 +4,7 @@ set -ex
 here=$(dirname $0)
 
 GIT_ID=$(git rev-parse --short=7 HEAD)
-GIT_BRANCH=$(git symbolic-ref --short HEAD)
+GIT_BRANCH=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
 
 REGISTRY=docker.montagu.dide.ic.ac.uk:5000
 REGISTRY_PUBLIC=vimc

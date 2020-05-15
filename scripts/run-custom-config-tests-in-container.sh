@@ -4,7 +4,7 @@ set -ex
 here=$(dirname $0)
 
 git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD)
+git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
 
 # Make the build environment image that is shared between multiple build targets
 ./scripts/make-build-env.sh
