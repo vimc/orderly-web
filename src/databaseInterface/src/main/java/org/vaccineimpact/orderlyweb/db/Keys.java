@@ -26,6 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportTag;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroup;
@@ -64,6 +65,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebDocumentRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebPermissionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebPinnedReportGlobalRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportTagRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportVersionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportVersionTagRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupGlobalPermissionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupPermissionRecord;
@@ -126,6 +128,7 @@ public class Keys {
     public static final UniqueKey<OrderlywebDocumentRecord> PK_ORDERLYWEB_DOCUMENT = UniqueKeys0.PK_ORDERLYWEB_DOCUMENT;
     public static final UniqueKey<OrderlywebPermissionRecord> PK_ORDERLYWEB_PERMISSION = UniqueKeys0.PK_ORDERLYWEB_PERMISSION;
     public static final UniqueKey<OrderlywebReportTagRecord> PK_ORDERLYWEB_REPORT_TAG = UniqueKeys0.PK_ORDERLYWEB_REPORT_TAG;
+    public static final UniqueKey<OrderlywebReportVersionRecord> PK_ORDERLYWEB_REPORT_VERSION = UniqueKeys0.PK_ORDERLYWEB_REPORT_VERSION;
     public static final UniqueKey<OrderlywebReportVersionTagRecord> PK_ORDERLYWEB_REPORT_VERSION_TAG = UniqueKeys0.PK_ORDERLYWEB_REPORT_VERSION_TAG;
     public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = UniqueKeys0.PK_ORDERLYWEB_USER;
     public static final UniqueKey<OrderlywebUserGroupRecord> PK_ORDERLYWEB_USER_GROUP = UniqueKeys0.PK_ORDERLYWEB_USER_GROUP;
@@ -162,6 +165,7 @@ public class Keys {
     public static final ForeignKey<OrderlywebDocumentRecord, OrderlywebDocumentRecord> FK_ORDERLYWEB_DOCUMENT_ORDERLYWEB_DOCUMENT_1 = ForeignKeys0.FK_ORDERLYWEB_DOCUMENT_ORDERLYWEB_DOCUMENT_1;
     public static final ForeignKey<OrderlywebPinnedReportGlobalRecord, ReportRecord> FK_ORDERLYWEB_PINNED_REPORT_GLOBAL_REPORT_1 = ForeignKeys0.FK_ORDERLYWEB_PINNED_REPORT_GLOBAL_REPORT_1;
     public static final ForeignKey<OrderlywebReportTagRecord, ReportRecord> FK_ORDERLYWEB_REPORT_TAG_REPORT_1 = ForeignKeys0.FK_ORDERLYWEB_REPORT_TAG_REPORT_1;
+    public static final ForeignKey<OrderlywebReportVersionRecord, ReportVersionRecord> FK_ORDERLYWEB_REPORT_VERSION_REPORT_VERSION_1 = ForeignKeys0.FK_ORDERLYWEB_REPORT_VERSION_REPORT_VERSION_1;
     public static final ForeignKey<OrderlywebReportVersionTagRecord, ReportVersionRecord> FK_ORDERLYWEB_REPORT_VERSION_TAG_REPORT_VERSION_1 = ForeignKeys0.FK_ORDERLYWEB_REPORT_VERSION_TAG_REPORT_VERSION_1;
     public static final ForeignKey<OrderlywebUserGroupGlobalPermissionRecord, OrderlywebUserGroupPermissionRecord> FK_ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1 = ForeignKeys0.FK_ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1;
     public static final ForeignKey<OrderlywebUserGroupPermissionRecord, OrderlywebUserGroupRecord> FK_ORDERLYWEB_USER_GROUP_PERMISSION_ORDERLYWEB_USER_GROUP_1 = ForeignKeys0.FK_ORDERLYWEB_USER_GROUP_PERMISSION_ORDERLYWEB_USER_GROUP_1;
@@ -210,6 +214,7 @@ public class Keys {
         public static final UniqueKey<OrderlywebDocumentRecord> PK_ORDERLYWEB_DOCUMENT = createUniqueKey(OrderlywebDocument.ORDERLYWEB_DOCUMENT, "pk_orderlyweb_document", OrderlywebDocument.ORDERLYWEB_DOCUMENT.PATH);
         public static final UniqueKey<OrderlywebPermissionRecord> PK_ORDERLYWEB_PERMISSION = createUniqueKey(OrderlywebPermission.ORDERLYWEB_PERMISSION, "pk_orderlyweb_permission", OrderlywebPermission.ORDERLYWEB_PERMISSION.ID);
         public static final UniqueKey<OrderlywebReportTagRecord> PK_ORDERLYWEB_REPORT_TAG = createUniqueKey(OrderlywebReportTag.ORDERLYWEB_REPORT_TAG, "pk_orderlyweb_report_tag", OrderlywebReportTag.ORDERLYWEB_REPORT_TAG.REPORT, OrderlywebReportTag.ORDERLYWEB_REPORT_TAG.TAG);
+        public static final UniqueKey<OrderlywebReportVersionRecord> PK_ORDERLYWEB_REPORT_VERSION = createUniqueKey(OrderlywebReportVersion.ORDERLYWEB_REPORT_VERSION, "pk_orderlyweb_report_version", OrderlywebReportVersion.ORDERLYWEB_REPORT_VERSION.ID);
         public static final UniqueKey<OrderlywebReportVersionTagRecord> PK_ORDERLYWEB_REPORT_VERSION_TAG = createUniqueKey(OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG, "pk_orderlyweb_report_version_tag", OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION, OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG.TAG);
         public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = createUniqueKey(OrderlywebUser.ORDERLYWEB_USER, "pk_orderlyweb_user", OrderlywebUser.ORDERLYWEB_USER.EMAIL);
         public static final UniqueKey<OrderlywebUserGroupRecord> PK_ORDERLYWEB_USER_GROUP = createUniqueKey(OrderlywebUserGroup.ORDERLYWEB_USER_GROUP, "pk_orderlyweb_user_group", OrderlywebUserGroup.ORDERLYWEB_USER_GROUP.ID);
@@ -244,6 +249,7 @@ public class Keys {
         public static final ForeignKey<OrderlywebDocumentRecord, OrderlywebDocumentRecord> FK_ORDERLYWEB_DOCUMENT_ORDERLYWEB_DOCUMENT_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_ORDERLYWEB_DOCUMENT, OrderlywebDocument.ORDERLYWEB_DOCUMENT, "fk_orderlyweb_document_orderlyweb_document_1", OrderlywebDocument.ORDERLYWEB_DOCUMENT.PARENT);
         public static final ForeignKey<OrderlywebPinnedReportGlobalRecord, ReportRecord> FK_ORDERLYWEB_PINNED_REPORT_GLOBAL_REPORT_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT, OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL, "fk_orderlyweb_pinned_report_global_report_1", OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT);
         public static final ForeignKey<OrderlywebReportTagRecord, ReportRecord> FK_ORDERLYWEB_REPORT_TAG_REPORT_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT, OrderlywebReportTag.ORDERLYWEB_REPORT_TAG, "fk_orderlyweb_report_tag_report_1", OrderlywebReportTag.ORDERLYWEB_REPORT_TAG.REPORT);
+        public static final ForeignKey<OrderlywebReportVersionRecord, ReportVersionRecord> FK_ORDERLYWEB_REPORT_VERSION_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, OrderlywebReportVersion.ORDERLYWEB_REPORT_VERSION, "fk_orderlyweb_report_version_report_version_1", OrderlywebReportVersion.ORDERLYWEB_REPORT_VERSION.ID);
         public static final ForeignKey<OrderlywebReportVersionTagRecord, ReportVersionRecord> FK_ORDERLYWEB_REPORT_VERSION_TAG_REPORT_VERSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_REPORT_VERSION, OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG, "fk_orderlyweb_report_version_tag_report_version_1", OrderlywebReportVersionTag.ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION);
         public static final ForeignKey<OrderlywebUserGroupGlobalPermissionRecord, OrderlywebUserGroupPermissionRecord> FK_ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_ORDERLYWEB_USER_GROUP_PERMISSION, OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION, "fk_orderlyweb_user_group_global_permission_orderlyweb_user_group_permission_1", OrderlywebUserGroupGlobalPermission.ORDERLYWEB_USER_GROUP_GLOBAL_PERMISSION.ID);
         public static final ForeignKey<OrderlywebUserGroupPermissionRecord, OrderlywebUserGroupRecord> FK_ORDERLYWEB_USER_GROUP_PERMISSION_ORDERLYWEB_USER_GROUP_1 = createForeignKey(org.vaccineimpact.orderlyweb.db.Keys.PK_ORDERLYWEB_USER_GROUP, OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION, "fk_orderlyweb_user_group_permission_orderlyweb_user_group_1", OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION.USER_GROUP);
