@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -11,7 +10,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.*
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
@@ -30,6 +29,12 @@ class ReportController(context: ActionContext,
         val versions = reportRepository.getReportsByName(reportName)
         val changelog = orderly.getChangelogByNameAndVersion(reportName, version)
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
+    }
+
+    @Template("run-report-page.ftl")
+    fun getRunReport(): RunReportViewModel
+    {
+        return RunReportViewModel(context)
     }
 
     fun tagVersion(): String
