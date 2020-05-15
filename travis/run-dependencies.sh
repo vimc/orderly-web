@@ -19,7 +19,8 @@ $here/../scripts/setup-montagu-db.sh
 docker exec api mkdir -p /etc/montagu/api
 docker exec api touch /etc/montagu/api/go_signal
 
-BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo "$TRAVIS_BRANCH" | sed 's;/;-;g'; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+REAL_BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo "$TRAVIS_BRANCH"; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
+BRANCH=$(sed 's;/;-;g' <<< $REAL_BRANCH)
 
 docker run --rm -v ${TRAVIS_BUILD_DIR}/src/app/demo:/orderly vimc/orderlyweb-migrate:$BRANCH
 docker run --rm -v ${TRAVIS_BUILD_DIR}/src/app/git:/orderly vimc/orderlyweb-migrate:$BRANCH
