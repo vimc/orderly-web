@@ -5,6 +5,7 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
+import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -33,7 +34,8 @@ class RunReportPageTests : SeleniumTest()
         val tab = driver.findElement(By.id("run-tab"))
 
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
-        assertThat(tab.findElement(By.id("runReportVueApp")).text).isEqualTo("Run report coming soon!")
+        val select = Select(tab.findElement(By.tagName("select")))
+        assertThat(select.firstSelectedOption.text).isEqualTo(" -- Select a branch -- ")
     }
 
     @Test
