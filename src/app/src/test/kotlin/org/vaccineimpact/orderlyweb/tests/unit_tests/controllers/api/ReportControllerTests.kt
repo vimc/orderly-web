@@ -10,6 +10,7 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.api.ReportController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
@@ -58,9 +59,7 @@ class ReportControllerTests : ControllerTest()
             on { this.permissions } doReturn PermissionSet()
         }
 
-        val mockAPIResponse = mock<Response>() {
-            on { this.text } doReturn "okayresponse"
-        }
+        val mockAPIResponse = OrderlyServerResponse("okayresponse", 200)
 
         val apiClient = mock<OrderlyServerAPI>() {
             on { this.post(any(), any()) } doReturn mockAPIResponse

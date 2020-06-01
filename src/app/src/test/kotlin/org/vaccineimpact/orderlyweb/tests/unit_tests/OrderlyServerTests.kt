@@ -1,8 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
+import khttp.responses.Response
+import org.json.JSONObject
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -13,7 +16,15 @@ import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class OrderlyServerTests: TeamcityTests()
 {
-    private val mockHttpclient = mock<HttpClient>()
+
+    private val mockResponse = mock<Response> {
+        on {this.jsonObject} doReturn JSONObject()
+    }
+
+    private val mockHttpclient = mock<HttpClient> {
+        on {this.get(any(), any())} doReturn mockResponse
+        on {this.post(any(), any(), any())} doReturn mockResponse
+    }
     private val mockConfig = mock<Config>() {
         on { this.get("orderly.server") } doReturn "http://orderly"
     }
