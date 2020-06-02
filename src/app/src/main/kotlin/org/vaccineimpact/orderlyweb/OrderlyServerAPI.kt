@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb
 
 import khttp.responses.Response
 import org.json.JSONArray
+import org.json.JSONObject
 import org.vaccineimpact.orderlyweb.db.Config
 
 interface OrderlyServerAPI
@@ -38,10 +39,37 @@ class OrderlyServer(config: Config, private val httpClient: HttpClient) : Orderl
 
     private fun transformResponse(rawResponse: Response): OrderlyServerResponse
     {
-        val json = rawResponse.jsonObject; //this is a copy, we're not updating response here
-        val errors = json["errors"]
-        val newErrors = JSONArray() //TODO: add actual errors, having transformed them!!
+        val errorsKey = "errors"
+        val messageKey = "message"
+        val detailKey = "detail"
 
+        val json = rawResponse.jsonObject;
+        val newErrors = JSONArray()
+        if (json.has(errorsKey) && json[errorsKey] is JSONArray)
+        {
+            val errors = json[errorsKey] as JSONArray
+            for (error in errors)
+            {
+                if (error is JSONObject)
+                {
+                    if (error.has(detailKey))
+                    {
+                        val message = if (error[detailKey] == JSONObject.NULL)
+                        {
+                            ""
+                        }
+                        else
+                        {
+                            error[detailKey]
+                        }
+                        error.put(messageKey, message)
+                        error.remove(detailKey)
+                    }
+
+                    newErrors.put(error)
+                }
+            }
+        }
         json.put("errors", newErrors)
 
         return OrderlyServerResponse(json.toString(), rawResponse.statusCode)

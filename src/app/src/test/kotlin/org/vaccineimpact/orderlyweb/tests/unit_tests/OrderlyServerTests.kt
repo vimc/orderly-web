@@ -1,10 +1,12 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import khttp.responses.Response
+import org.assertj.core.api.Assertions.assertThat
 import org.json.JSONObject
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -69,4 +71,77 @@ class OrderlyServerTests: TeamcityTests()
 
         verify(mockHttpclient).get("http://orderly/v1/some/path/?key1=val1", standardHeaders)
     }
+
+    @Test
+    fun `passes through response json and status code`()
+    {
+        val json = """{"status": "success", "data": ["some data"], "errors": []}"""
+        testTranslatedResponse(json, json)
+    }
+
+    @Test
+    fun `translates response with null errors to empty array`()
+    {
+        val raw = """{"status": "success", "data": ["some data"], "errors": null}"""
+        val expected = """{"status": "success", "data": ["some data"], "errors": []}"""
+        testTranslatedResponse(raw, expected)
+    }
+
+    @Test
+    fun `translates response error detail to error message`()
+    {
+        val raw = """{"status": "success", "data": ["some data"], 
+                                  "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": "msg2"}]}"""
+
+        val expected = """{"status": "success", "data": ["some data"], 
+                                  "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": "msg2"}]}"""
+
+        testTranslatedResponse(raw, expected)
+    }
+
+    @Test
+    fun `translates response null error detail to empty string error message`()
+    {
+        val raw = """{"status": "success", "data": ["some data"], 
+                                  "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": null}]}"""
+
+        val expected = """{"status": "success", "data": ["some data"], 
+                                  "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
+
+        testTranslatedResponse(raw, expected)
+    }
+
+    @Test
+    fun `passes response errors through unchanged if no detail key`()
+    {
+        val json = """{"status": "success", "data": ["some data"], 
+                                  "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
+        testTranslatedResponse(json, json)
+    }
+
+    private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String) {
+        val rawJson = JSONObject(rawResponse)
+        val mockRawResponse = mock<Response> {
+            on {this.jsonObject} doReturn rawJson
+            on {this.statusCode} doReturn 400
+        }
+        val mockClient = mock<HttpClient> {
+            on {this.get(any(), any())} doReturn mockRawResponse
+            on {this.post(any(), any(), any())} doReturn mockRawResponse
+        }
+        val mapper = ObjectMapper()
+        val expectedJson = mapper.readTree(expectedTranslatedResponse)
+
+
+        val sut = OrderlyServer(mockConfig, mockClient)
+
+        val getResult = sut.get("anyUrl", mock())
+        assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
+        assertThat(getResult.statusCode).isEqualTo(400)
+
+        val postResult = sut.get("anyUrl", mock())
+        assertThat(mapper.readTree(postResult.text).equals(expectedJson)).isTrue()
+        assertThat(postResult.statusCode).isEqualTo(400)
+    }
 }
+
