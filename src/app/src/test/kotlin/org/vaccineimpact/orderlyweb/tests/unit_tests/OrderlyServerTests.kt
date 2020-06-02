@@ -112,6 +112,16 @@ class OrderlyServerTests: TeamcityTests()
     }
 
     @Test
+    fun `translate ignores errors which are not objects`()
+    {
+        val raw = """{"status": "success", "data": ["some data"], "errors": ["err1", "err2"]}"""
+
+        val expected = """{"status": "success", "data": ["some data"], "errors": []}"""
+
+        testTranslatedResponse(raw, expected)
+    }
+
+    @Test
     fun `passes response errors through unchanged if no detail key`()
     {
         val json = """{"status": "success", "data": ["some data"], 
