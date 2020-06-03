@@ -4,8 +4,8 @@
             <div v-if="metadata.git_supported" id="gitBranchFormGroup" class="form-group row">
                 <label for="gitBranch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
-                    <select class="form-control" id="gitBranch">
-                        <option disabled selected value> -- Select a branch -- </option>
+                    <select class="form-control" id="gitBranch" v-model="selectedBranch" @change="changedBranch">
+                        <option disabled selected value=""> -- Select a branch -- </option>
                         <option v-for="branch in gitBranches" :value="branch">{{branch}}</option>
                     </select>
                 </div>
@@ -17,6 +17,23 @@
 <script>
     export default {
         name: "runReport",
-        props: ['metadata', 'gitBranches']
+        props: ['metadata', 'gitBranches'],
+        data: () => {
+            return {
+                gitCommits: [],
+                selectedBranch: ""
+            }
+        },
+        computed: {
+            showCommits: function() {
+                return this.gitCommits && this.gitCommits.length > 0;
+            },
+           changedBranch: function() {
+                //TODO:
+                if (this.selecteBranch) {
+                    alert("selected branch " + this.selectedBranch);
+                }
+            }
+        }
     }
 </script>
