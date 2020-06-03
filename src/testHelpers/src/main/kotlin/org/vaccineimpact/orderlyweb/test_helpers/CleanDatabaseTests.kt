@@ -13,7 +13,7 @@ abstract class CleanDatabaseTests : DatabaseTests()
         val tables = Tables::class.java
 
         val enumTables = listOf("ARTEFACT_FORMAT", "FILE_PURPOSE", "ORDERLYWEB_PERMISSION", "CHANGELOG_LABEL")
-        val views = listOf("ORDERLYWEB_USER_GROUP_PERMISSION_ALL")
+        val views = listOf("ORDERLYWEB_USER_GROUP_PERMISSION_ALL", "ORDERLYWEB_REPORT_VERSION_FULL")
         val fields = tables.declaredFields.filter {
             !enumTables.contains(it.name) && !views.contains(it.name)
         }

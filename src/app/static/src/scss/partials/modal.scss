@@ -30,6 +30,3 @@
   float: right;
 }
 
-.btn-default {
-  @include button-variant($gray-200, $gray-400);
-}

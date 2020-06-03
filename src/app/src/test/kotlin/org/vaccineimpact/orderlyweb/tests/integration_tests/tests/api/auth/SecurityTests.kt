@@ -9,7 +9,6 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHe
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
-import sun.security.jca.GetInstance
 import java.time.Instant
 import java.util.*
 
