@@ -1,20 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
-import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.api.GitController
 
 class GitControllerTests : ControllerTest()
 {
     private val mockContext = mock<ActionContext>()
-    private val mockResponse = mock<Response>{
-        on {it.statusCode} doReturn 200
-        on {it.text} doReturn "testResponse"
-    }
+    private val mockResponse = OrderlyServerResponse("testResponse", 200)
 
     @Test
     fun `status gets status from orderly`()
