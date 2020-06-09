@@ -90,8 +90,8 @@ describe("reportTags", () => {
             expect(wrapper.vm.error.response.data).toBe("TEST ERROR");
             expect(wrapper.vm.defaultMessage).toBe("An error occurred fetching Git commits");
 
-            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
+            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
 
             done();
         });
