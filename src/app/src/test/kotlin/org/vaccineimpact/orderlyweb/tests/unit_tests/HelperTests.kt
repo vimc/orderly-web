@@ -7,6 +7,8 @@ import org.vaccineimpact.orderlyweb.canRenderInBrowser
 import org.vaccineimpact.orderlyweb.guessFileType
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class HelperTests : TeamcityTests()
 {
@@ -82,5 +84,11 @@ class HelperTests : TeamcityTests()
         Assertions.assertThat(guessFileType("something.xls")).isEqualTo("application/octet-stream")
 
         Assertions.assertThat(guessFileType("SOMETHING.BMP")).isEqualTo("image/bmp")
+    }
+
+    @Test
+    fun `getFriendlyDateTime returns expected strings`()
+    {
+        val date = LocalDateTime(LocalDate())
     }
 }
