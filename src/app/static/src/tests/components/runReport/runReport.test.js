@@ -8,9 +8,9 @@ describe("reportTags", () => {
                 gitBranches: ["master", "dev"]
             }});
 
-        expect(wrapper.find("#gitBranchFormGroup").exists()).toBe(true);
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
 
-        const options = wrapper.findAll("#gitBranchFormGroup select option");
+        const options = wrapper.findAll("#git-branch-form-group select option");
         expect(options.length).toBe(3);
         expect(options.at(0).text()).toBe("-- Select a branch --");
         expect(options.at(0).attributes().disabled).toBe("disabled");
@@ -26,6 +26,6 @@ describe("reportTags", () => {
                 gitBranches: null
             }});
 
-        expect(wrapper.find("#gitBranchFormGroup").exists()).toBe(false);
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(false);
     });
 });

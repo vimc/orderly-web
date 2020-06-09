@@ -4,11 +4,12 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
 import org.vaccineimpact.orderlyweb.canRenderInBrowser
+import org.vaccineimpact.orderlyweb.getFriendlyDateTime
 import org.vaccineimpact.orderlyweb.guessFileType
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
-import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+
 
 class HelperTests : TeamcityTests()
 {
@@ -89,6 +90,10 @@ class HelperTests : TeamcityTests()
     @Test
     fun `getFriendlyDateTime returns expected strings`()
     {
-        val date = LocalDateTime(LocalDate())
+        val str = "2020-06-08 12:30"
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val dateTime = LocalDateTime.parse(str, formatter)
+
+        Assertions.assertThat(getFriendlyDateTime(dateTime)).isEqualTo("Mon Jun 08 2020, 12:30")
     }
 }
