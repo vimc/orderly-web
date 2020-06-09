@@ -1,6 +1,7 @@
 FROM docker.montagu.dide.ic.ac.uk:5000/node-docker:master
 
 # Install OpenJDK
+#
 RUN echo 'deb http://deb.debian.org/debian stretch-backports main' > /etc/apt/sources.list.d/stretch-backports.list
 RUN apt-get update
 RUN apt-get install -t stretch-backports -y \
