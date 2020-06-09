@@ -51,7 +51,7 @@
         methods: {
             changedBranch: function() {
                 if (this.selectedBranch) {
-                     api.get(`/git/branch/${this.selectedBranch}/commitss/`)
+                     api.get(`/git/branch/${this.selectedBranch}/commits/`)
                          .then(({data}) => {
                              this.gitCommits = data.data;
                              if (this.gitCommits.length) {
@@ -65,12 +65,6 @@
                              this.defaultMessage = "An error occurred fetching Git commits";
                          });
                  }
-            }
-        },
-        watch: {
-            selectedCommitId: function() {
-                //TODO: fetch db instances, if supported
-                console.log("commit: " + this.selectedCommitId)
             }
         }
     }
