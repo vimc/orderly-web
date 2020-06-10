@@ -50,6 +50,8 @@ dependencies {
     compile "khttp:khttp:0.1.0"
     compile "com.squareup.okhttp3:okhttp:4.0.0-RC1"
 
+    compile "org.ocpsoft.prettytime:prettytime:4.0.5.Final"
+
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "khttp:khttp:0.1.0"
     testCompile "com.beust:klaxon:0.31"

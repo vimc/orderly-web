@@ -13,6 +13,8 @@ import java.net.URLEncoder
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.servlet.http.HttpServletResponse
+import org.ocpsoft.prettytime.PrettyTime
+import java.util.*
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
@@ -151,4 +153,10 @@ private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
 fun getFriendlyDateTime(date: LocalDateTime) : String
 {
     return formatter.format(date)
+}
+
+private val prettyTime = PrettyTime()
+fun getFriendlyRelativeDateTime(date: Date) : String
+{
+    return prettyTime.format(date)
 }
