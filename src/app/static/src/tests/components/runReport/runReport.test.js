@@ -1,4 +1,4 @@
-;import {shallowMount, mount} from "@vue/test-utils";
+import {shallowMount, mount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ErrorInfo from "../../../js/components/errorInfo";
 import {mockAxios} from "../../mockAxios";

@@ -12,10 +12,10 @@ class GitController(context: ActionContext): Controller(context)
     {
         //TODO: Get from Orderly server when supported
         return listOf(
-               GitCommit("d41cc19", "2020-06-02T08:51:251",
-                            getFriendlyDateTime(LocalDateTime.parse("2020-06-02T08:51:21"))),
-               GitCommit("e54b124", "2020-06-01T09:15:115",
-                            getFriendlyDateTime(LocalDateTime.parse("2020-06-01T09:15:11")))
+               GitCommit("d41cc19", "2020-06-10 10:12:04",
+                            getFriendlyDateTime(LocalDateTime.parse("2020-06-10 10:12:04"))),
+               GitCommit("e54b124", "2020-06-09 12:43:19",
+                            getFriendlyDateTime(LocalDateTime.parse("2020-06-09 12:43:19")))
         )
     }
 }
