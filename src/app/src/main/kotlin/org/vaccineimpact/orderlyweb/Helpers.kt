@@ -11,7 +11,10 @@ import java.math.RoundingMode
 import java.net.URLDecoder
 import java.net.URLEncoder
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.servlet.http.HttpServletResponse
+import org.ocpsoft.prettytime.PrettyTime
+import java.util.*
 
 // The idea is that as this file grows, I'll group helpers and split them off into files/classes with more
 // specific aims.
@@ -144,4 +147,16 @@ fun getDateStringFromVersionId(id: String): LocalDateTime
             ?.groupValues ?: throw Exception("Badly formatted report id $id")
 
     return LocalDateTime.parse("${match[1]}-${match[2]}-${match[3]}T${match[4]}:${match[5]}:${match[6]}")
+}
+
+private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
+fun getFriendlyDateTime(date: LocalDateTime) : String
+{
+    return formatter.format(date)
+}
+
+private val prettyTime = PrettyTime()
+fun getFriendlyRelativeDateTime(date: Date) : String
+{
+    return prettyTime.format(date)
 }
