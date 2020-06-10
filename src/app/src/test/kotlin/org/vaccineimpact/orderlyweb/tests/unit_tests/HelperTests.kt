@@ -98,10 +98,14 @@ class HelperTests : TeamcityTests()
     }
 
     @Test
-    fun `getRelativeFriendlyDateTime returns expected string`()
+    fun `getRelativeFriendlyDateTime returns expected strings`()
     {
-        val date = Date().toInstant().minus(2, ChronoUnit.DAYS)
-        val result = getFriendlyRelativeDateTime(Date.from(date))
+        var date = Date().toInstant().minus(2, ChronoUnit.DAYS)
+        var result = getFriendlyRelativeDateTime(Date.from(date))
         Assertions.assertThat(result).isEqualTo("2 days ago")
+
+        date = Date().toInstant().minus(1, ChronoUnit.HOURS)
+        result = getFriendlyRelativeDateTime(Date.from(date))
+        Assertions.assertThat(result).isEqualTo("1 hour ago")
     }
 }
