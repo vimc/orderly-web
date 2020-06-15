@@ -1,5 +1,5 @@
-DROP TRIGGER insert_orderlyweb_report_version;
-DROP VIEW orderlyweb_report_version_full;
+DROP TRIGGER IF EXISTS insert_orderlyweb_report_version;
+DROP VIEW IF EXISTS orderlyweb_report_version_full;
 
 CREATE VIEW orderlyweb_report_version_full AS
 SELECT rv.id, report, date, displayname, description, connection, elapsed, git_sha, git_branch, git_clean, requester, author,
