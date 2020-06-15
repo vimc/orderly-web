@@ -284,11 +284,13 @@ private fun insertReportAndVersion(name: String,
                 }
         reportVersionRecord.store()
 
-        //THe new report version should have triggered an insert into orderlyweb_report_version
-        it.dsl.update(Tables.ORDERLYWEB_REPORT_VERSION)
-                .set(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED, published)
-                .where(Tables.ORDERLYWEB_REPORT_VERSION.ID.eq(version))
-                .execute()
+
+        val orderlywebReportVersionRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION)
+                .apply{
+                    this.id = version
+                    this.published = published
+                }
+        orderlywebReportVersionRecord.store()
 
         //Update latest version of Report
         it.dsl.update(Tables.REPORT)
