@@ -149,11 +149,28 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         JooqContext().use {
             val existing = getReportVersion(name, version, it)
             val newStatus = !existing.published
-            it.dsl.update(ORDERLYWEB_REPORT_VERSION)
-                    .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, newStatus)
-                    .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
-                    .execute()
 
+            val rowExists = it.dsl.select(DSL.count())
+                    .from(ORDERLYWEB_REPORT_VERSION)
+                    .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
+                    .fetchOne(0, Int::class.java)
+
+            if (rowExists > 0)
+            {
+                it.dsl.update(ORDERLYWEB_REPORT_VERSION)
+                        .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, newStatus)
+                        .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
+                        .execute()
+            }
+            else
+            {
+                val record = it.dsl.newRecord(ORDERLYWEB_REPORT_VERSION)
+                        .apply {
+                            this.id = version
+                            this.published = newStatus
+                        }
+                record.store()
+            }
             return newStatus
         }
     }
