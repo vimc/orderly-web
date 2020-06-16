@@ -121,9 +121,10 @@ fun insertReport(name: String,
                  date: Timestamp = Timestamp(System.currentTimeMillis()),
                  author: String = "author authorson",
                  requester: String = "requester mcfunder",
-                 display: String? = null)
+                 display: String? = null,
+                 addOrderlyWebReportVersion: Boolean = true)
 {
-    insertReportAndVersion(name, version, published, date, display)
+    insertReportAndVersion(name, version, published, date, display, addOrderlyWebReportVersion)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -249,7 +250,8 @@ private fun insertReportAndVersion(name: String,
                                    version: String,
                                    published: Boolean,
                                    date: Timestamp,
-                                   display: String? = null)
+                                   display: String? = null,
+                                   addOrderlyWebReportVersion: Boolean = true)
 {
     JooqContext().use {
 
@@ -284,11 +286,16 @@ private fun insertReportAndVersion(name: String,
                 }
         reportVersionRecord.store()
 
-        //THe new report version should have triggered an insert into orderlyweb_report_version
-        it.dsl.update(Tables.ORDERLYWEB_REPORT_VERSION)
-                .set(Tables.ORDERLYWEB_REPORT_VERSION.PUBLISHED, published)
-                .where(Tables.ORDERLYWEB_REPORT_VERSION.ID.eq(version))
-                .execute()
+
+        if (addOrderlyWebReportVersion)
+        {
+            val orderlywebReportVersionRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION)
+                    .apply {
+                        this.id = version
+                        this.published = published
+                    }
+            orderlywebReportVersionRecord.store()
+        }
 
         //Update latest version of Report
         it.dsl.update(Tables.REPORT)

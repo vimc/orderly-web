@@ -190,6 +190,22 @@ class ReportTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `can toggle publish status when OrderlyWeb_Report_version does not yet exist`()
+    {
+        insertReport("test", "version1", addOrderlyWebReportVersion = false)
+        val sut = createSut(isReviewer = true)
+
+        var result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isTrue()
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+
+        result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isFalse()
+
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
+    }
+
+    @Test
     fun `reader can get latest published versions of pinned reports`()
     {
         insertReport("test1", "20170103-143015-1234pub")
