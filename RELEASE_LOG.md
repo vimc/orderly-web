@@ -217,3 +217,12 @@
 * chromedriver
 * dependabot/npm_and_yarn/src/app/static/jquery-3.5.0
 
+# v1.2.8
+
+## Tickets
+* mrc-1597: Get available Git commits
+* mrc-1615: Integrate orderly.server changes into OrderlyWeb
+* vimc-4062: Manually insert rows into orderlyweb_report_version
+
+## Other branches merged in this release
+
