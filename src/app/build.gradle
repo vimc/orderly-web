@@ -100,7 +100,7 @@ task generateTestData() {
             commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
         
-        String owMigrateImage = "vimc/orderlyweb-migrate:vimc-4062"
+        String owMigrateImage = "vimc/orderlyweb-migrate:master"
         println("Pulling " + owMigrateImage)
         exec {
             commandLine 'docker', 'pull', owMigrateImage
