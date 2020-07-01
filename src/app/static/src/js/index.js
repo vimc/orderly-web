@@ -1,5 +1,7 @@
 import {nameFilter, options, statusFilter} from "./utils/reportsTable";
 import $ from 'jquery';
+import Vue from 'vue';
+import setGlobalPinnedReports from './components/reports/setGlobalPinnedReports'
 
 require("treetables")(window, $);
 require("tokenize2")(window, $);
@@ -74,4 +76,13 @@ export const initReportTable = (isReviewer, reports, customFields) => {
 $(document).ready(() => {
     const isReviewer = typeof canReview !== "undefined";
     initReportTable(isReviewer, reports, customFields)
+
+    if ($('#setPinnedReportsVueApp').length > 0) {
+        new Vue({
+            el: '#setPinnedReportsVueApp',
+            components: {
+                setGlobalPinnedReports
+            }
+        });
+    }
 });

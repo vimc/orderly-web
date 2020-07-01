@@ -2,11 +2,14 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.byteCountToDisplaySize
-import org.vaccineimpact.orderlyweb.canRenderInBrowser
-import org.vaccineimpact.orderlyweb.guessFileType
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
-import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
+import java.time.temporal.TemporalUnit
+import java.util.*
+
 
 class HelperTests : TeamcityTests()
 {
@@ -82,5 +85,27 @@ class HelperTests : TeamcityTests()
         Assertions.assertThat(guessFileType("something.xls")).isEqualTo("application/octet-stream")
 
         Assertions.assertThat(guessFileType("SOMETHING.BMP")).isEqualTo("image/bmp")
+    }
+
+    @Test
+    fun `getFriendlyDateTime returns expected string`()
+    {
+        val str = "2020-06-08 12:30"
+        val formatter: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
+        val dateTime = LocalDateTime.parse(str, formatter)
+
+        Assertions.assertThat(getFriendlyDateTime(dateTime)).isEqualTo("Mon Jun 08 2020, 12:30")
+    }
+
+    @Test
+    fun `getRelativeFriendlyDateTime returns expected strings`()
+    {
+        var date = Date().toInstant().minus(2, ChronoUnit.DAYS)
+        var result = getFriendlyRelativeDateTime(Date.from(date))
+        Assertions.assertThat(result).isEqualTo("2 days ago")
+
+        date = Date().toInstant().minus(1, ChronoUnit.HOURS)
+        result = getFriendlyRelativeDateTime(Date.from(date))
+        Assertions.assertThat(result).isEqualTo("1 hour ago")
     }
 }

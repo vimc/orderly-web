@@ -7,6 +7,7 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.fromJoinPath
+import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.FilePurpose
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -88,15 +89,19 @@ class VersionPageTests : IntegrationTest()
     {
         val data = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
-                    .fromJoinPath(REPORT_VERSION_DATA, REPORT_VERSION, FILE_INPUT)
-                    .where(REPORT_VERSION.PUBLISHED.eq(true))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
+                    .from(REPORT_VERSION_DATA)
+                    .join(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .on(REPORT_VERSION_DATA.REPORT_VERSION.eq(ORDERLYWEB_REPORT_VERSION_FULL.ID))
+                    .join(FILE_INPUT)
+                    .on(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(FILE_INPUT.REPORT_VERSION))
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .and(FILE_INPUT.FILE_PURPOSE.eq(FilePurpose.RESOURCE.toString()))
                     .fetchAny()
         }
 
-        val report = data[REPORT_VERSION.REPORT]
-        val version = data[REPORT_VERSION.ID]
+        val report = data[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
+        val version = data[ORDERLYWEB_REPORT_VERSION_FULL.ID]
 
         return Pair(report, "/report/$report/$version")
     }

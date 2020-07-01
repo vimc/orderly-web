@@ -26,7 +26,7 @@ class GithubWebTests : SeleniumTest()
         startApp("auth.provider=github\nauth.fine_grained=false")
         login()
 
-        val header = driver.findElement(By.cssSelector("h1"))
+        val header = driver.findElement(By.cssSelector(".reports-list"))
         assertThat(header.text).isEqualTo("Find a report")
     }
 

@@ -7,7 +7,8 @@ import org.openqa.selenium.Dimension
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
+import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
@@ -23,14 +24,14 @@ class ReportPageTests : SeleniumTest()
         startApp("auth.provider=montagu")
         val unpublishedVersion = JooqContext().use {
 
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.PUBLISHED.eq(false))
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                    .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(false))
                     .fetchAny()
         }
 
-        val versionId = unpublishedVersion[REPORT_VERSION.ID]
-        val reportName = unpublishedVersion[REPORT_VERSION.REPORT]
+        val versionId = unpublishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.ID]
+        val reportName = unpublishedVersion[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
 
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")

@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -11,7 +10,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
+import org.vaccineimpact.orderlyweb.viewmodels.*
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
@@ -30,6 +30,20 @@ class ReportController(context: ActionContext,
         val versions = reportRepository.getReportsByName(reportName)
         val changelog = orderly.getChangelogByNameAndVersion(reportName, version)
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
+    }
+
+    @Template("run-report-page.ftl")
+    fun getRunReport(): RunReportViewModel
+    {
+        //TODO: Orderly server does not yet support fetching this metadata, so we hardcode dummy data for now
+        val runReportMetadata = RunReportMetadata(true, true,
+                listOf("support", "annex"), listOf("internal", "published"))
+
+        //TODO: as above, need to get this from orderly server when endpoint is available
+        //TODO: Don't attempt get get git branches if metadata.git_supported is false
+        val gitBranches = listOf("master", "dev_branch")
+
+        return RunReportViewModel(context, runReportMetadata, gitBranches)
     }
 
     fun tagVersion(): String
