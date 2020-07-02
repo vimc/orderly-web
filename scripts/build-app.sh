@@ -2,9 +2,7 @@
 
 set -ex
 here=$(dirname $0)
-
-git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
+. $here/common
 
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
@@ -16,8 +14,8 @@ $here/make-build-env.sh
 # Create an image based on the shared build env that compiles, tests and dockerises
 # the app
 docker build --tag orderly-web-app-build \
-	--build-arg git_id=$git_id \
-	--build-arg git_branch=$git_branch \
+	--build-arg git_id=$GIT_ID \
+	--build-arg git_branch=$GIT_BRANCH \
     -f app.Dockerfile \
 	.
 

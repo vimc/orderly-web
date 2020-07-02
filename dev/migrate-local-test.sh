@@ -5,6 +5,7 @@
 set -ex
 
 HERE=$(dirname $0)
+. $HERE/../scripts/common
 . $HERE/../scripts/migrate-common.sh
 
 if [[ -d ${HERE}/../src/app/demo ]]

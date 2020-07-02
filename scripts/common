@@ -1,0 +1,12 @@
+if [ -z "$TRAVIS_BRANCH" ]; then
+    GIT_BRANCH=$(git symbolic-ref --short HEAD)
+    GIT_ID=$(git rev-parse --short=7 HEAD)
+elif [ -z "$TRAVIS_PULL_REQUEST_BRANCH" ]; then
+    GIT_BRANCH=$TRAVIS_BRANCH
+    GIT_ID=$TRAVIS_COMMIT
+else
+    GIT_BRANCH=$TRAVIS_PULL_REQUEST_BRANCH
+    GIT_ID=$TRAVIS_COMMIT
+fi
+
+GIT_BRANCH=$(echo $GIT_BRANCH | sed 's!/!-!g')
