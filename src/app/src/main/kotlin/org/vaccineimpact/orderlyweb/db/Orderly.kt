@@ -15,19 +15,19 @@ class Orderly(val isReviewer: Boolean,
 {
     constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
 
-    override fun getAllReportVersions(): List<ReportVersion>
+    override fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
         val basicVersions = reportRepository.getAllReportVersions()
         return mapToReportVersions(basicVersions)
     }
 
-    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
+    override fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionWithArtefactsDataDescParamsResources
     {
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val artefacts = artefactRepository.getArtefacts(name, version)
         val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
 
-        return ReportVersionDetails(basicReportVersion,
+        return ReportVersionWithArtefactsDataDescParamsResources(basicReportVersion,
                 artefacts = artefacts,
                 resources = getResourceFiles(name, version),
                 dataInfo = getDataInfo(name, version),
@@ -112,7 +112,7 @@ class Orderly(val isReviewer: Boolean,
         return reportRepository.getDatedChangelogForReport(basicVersion.name, basicVersion.date)
     }
 
-    private fun mapToReportVersions(basicVersions: List<BasicReportVersion>): List<ReportVersion>
+    private fun mapToReportVersions(basicVersions: List<ReportVersionWithDescLatest>): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
     {
         val versionIds = basicVersions.map { it.id }
         val allCustomFields = reportRepository.getAllCustomFields()
@@ -138,7 +138,7 @@ class Orderly(val isReviewer: Boolean,
             val reportTags = allReportTags[versionId] ?: listOf()
             val orderlyTags = allOrderlyTags[versionId] ?: listOf()
 
-            ReportVersion(it,
+            ReportVersionWithDescCustomFieldsLatestParamsTags(it,
                     versionCustomFields,
                     versionParameters,
                     (versionTags + reportTags + orderlyTags).distinct().sorted())

@@ -6,10 +6,10 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 
 interface OrderlyClient
 {
-    fun getAllReportVersions(): List<ReportVersion>
+    fun getAllReportVersions(): List<ReportVersionWithDescCustomFieldsLatestParamsTags>
 
     @Throws(UnknownObjectError::class)
-    fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionDetails
+    fun getDetailsByNameAndVersion(name: String, version: String): ReportVersionWithArtefactsDataDescParamsResources
 
     @Throws(UnknownObjectError::class)
     fun getChangelogByNameAndVersion(name: String, version: String): List<Changelog>

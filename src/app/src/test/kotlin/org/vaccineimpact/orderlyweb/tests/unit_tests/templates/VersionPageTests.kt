@@ -4,9 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.equalTo
-import org.hamcrest.Matchers.equalToCompressingWhiteSpace
 import org.junit.ClassRule
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
@@ -14,12 +11,11 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.BasicReportVersion
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.*
-import org.xmlmatchers.XmlMatchers.hasXPath
 import java.sql.Timestamp
 
 //This will also test the partials which the report-page template includes
@@ -33,7 +29,7 @@ class VersionPageTests : TeamcityTests()
         val template = FreemarkerTestRule("report-page.ftl")
     }
 
-    private val testReport = ReportVersionDetails(BasicReportVersion(name = "r1",
+    private val testReport = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(name = "r1",
             displayName = "r1 display",
             id = "r1-v1",
             published = true,

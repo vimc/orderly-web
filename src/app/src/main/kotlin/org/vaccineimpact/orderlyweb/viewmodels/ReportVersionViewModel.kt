@@ -9,7 +9,7 @@ import java.time.format.DateTimeFormatter
 
 private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
 
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: BasicReportVersion,
+data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatest,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -24,7 +24,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Basic
 {
     companion object
     {
-        fun build(report: ReportVersionDetails,
+        fun build(report: ReportVersionWithArtefactsDataDescParamsResources,
                   versions: List<String>,
                   changelog: List<Changelog>,
                   context: ActionContext): ReportVersionPageViewModel

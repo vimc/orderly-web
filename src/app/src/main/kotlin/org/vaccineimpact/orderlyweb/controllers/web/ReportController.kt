@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
-import org.vaccineimpact.orderlyweb.models.ReportDraft
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
@@ -44,7 +44,8 @@ class ReportController(context: ActionContext,
         return okayResponse()
     }
 
-    fun getReportDrafts(reports: List<ReportWithPublishStatus>, drafts: List<ReportDraft>): List<ReportWithDraftsViewModel>
+    fun getReportDrafts(reports: List<ReportWithPublishStatus>, drafts: List<ReportVersionWithChangelogsParams>)
+            : List<ReportWithDraftsViewModel>
     {
         //val reports = reportRepository.getReportsWithPublishStatus()
        // val drafts = reportRepository.getDrafts()

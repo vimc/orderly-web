@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportVersionDetails
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
-import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import java.io.File
 
@@ -43,7 +42,7 @@ class VersionController(context: ActionContext,
         return orderly.getChangelogByNameAndVersion(name, version)
     }
 
-    fun getByNameAndVersion(): ReportVersionDetails
+    fun getByNameAndVersion(): ReportVersionWithArtefactsDataDescParamsResources
     {
         val name = context.params(":name")
         return orderly.getDetailsByNameAndVersion(name, context.params(":version"))

@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.models.ReportDraft
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.Instant
@@ -22,10 +22,10 @@ class ReportDraftTests : TeamcityTests()
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
         val fakeDrafts = listOf(
-                ReportDraft("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
-                ReportDraft("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
-                ReportDraft("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), mapOf(), listOf()),
-                ReportDraft("report-2", "The second report", "v2-3", date, mapOf(), listOf()))
+                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-3", date, mapOf(), listOf()))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
 
@@ -65,7 +65,7 @@ class ReportDraftTests : TeamcityTests()
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
         val fakeDrafts = listOf(
-                ReportDraft("report-1",
+                ReportVersionWithChangelogsParams("report-1",
                         "The first report",
                         "v1-1",
                         date,
@@ -84,7 +84,7 @@ class ReportDraftTests : TeamcityTests()
         val sut = ReportController(mock())
         val fakeReports = listOf(ReportWithPublishStatus("report-1", "The first report", false))
         val fakeDrafts = listOf(
-                ReportDraft("report-1",
+                ReportVersionWithChangelogsParams("report-1",
                         "The first report",
                         "v1-1",
                         date,
@@ -111,11 +111,11 @@ class ReportDraftTests : TeamcityTests()
         val sut = ReportController(mock())
         val fakeReports = listOf(
                 ReportWithPublishStatus("report-2", "The second report", false),
-                ReportWithPublishStatus("report-1", "report-1", false))
+                ReportWithPublishStatus("report-1", null, false))
 
         val fakeDrafts = listOf(
-                ReportDraft("report-1", "The first report", "v1-1", date, mapOf(), listOf()),
-                ReportDraft("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()))
+                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", null, "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
 

@@ -29,7 +29,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
     {
         val now = Instant.now()
         val artFiles = listOf(FileInfo("graph.png", 1234))
-        val report = ReportVersionDetails(BasicReportVersion("r1",
+        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest("r1",
                 "first report",
                 "v1",
                 true,

@@ -9,9 +9,9 @@ import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
-import org.vaccineimpact.orderlyweb.models.BasicReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -35,7 +35,7 @@ class IndexControllerTests : TeamcityTests()
     {
         val someDate = Instant.parse("2019-05-23T12:31:00.613Z")
 
-        val r1v1 = ReportVersion(BasicReportVersion("r1", null, "v1", true, someDate, "v2", "desc"),
+        val r1v1 = ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest("r1", null, "v1", true, someDate, "v2", "desc"),
                 mapOf("author" to "author1", "requester" to "requester1"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1", "t2"))
         val r1v2Basic = r1v1.basicReportVersion.copy(id = "v2",
                 displayName = "r1 display name",
@@ -43,7 +43,7 @@ class IndexControllerTests : TeamcityTests()
                 date = someDate.plus(Duration.ofDays(1)))
         val r1v2 = r1v1.copy(basicReportVersion = r1v2Basic)
 
-        val r2v1 = ReportVersion(BasicReportVersion("r2", null, "r2v1", true, someDate.minus(Duration.ofDays(2)), "r2v1", "desc"),
+        val r2v1 = ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest("r2", null, "r2v1", true, someDate.minus(Duration.ofDays(2)), "r2v1", "desc"),
                 mapOf("author" to "another author", "requester" to "another requester"), mapOf(), listOf())
 
         val fakeReports = listOf(r1v1, r1v2, r2v1)

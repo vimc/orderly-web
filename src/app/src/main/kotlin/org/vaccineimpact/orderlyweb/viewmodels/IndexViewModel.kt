@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.getDateStringFromVersionId
 import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.Instant
@@ -33,7 +33,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
     {
         val breadcrumb = Breadcrumb("Main menu", AppConfig()["app.url"])
 
-        fun build(reports: List<ReportVersion>,
+        fun build(reports: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
                   reportTags: Map<String, List<String>>,
                   allTags: List<String>,
                   pinnedReports: List<Report>,
@@ -102,7 +102,7 @@ data class ReportRowViewModel(val ttKey: Int,
     companion object
     {
         fun buildParent(key: Int,
-                        versions: List<ReportVersion>,
+                        versions: List<ReportVersionWithDescCustomFieldsLatestParamsTags>,
                         customFields: Map<String, String?>,
                         tags: List<String>): ReportRowViewModel
         {
@@ -115,7 +115,7 @@ data class ReportRowViewModel(val ttKey: Int,
                     tags)
         }
 
-        fun buildVersion(version: ReportVersion, key: Int, parent: ReportRowViewModel): ReportRowViewModel
+        fun buildVersion(version: ReportVersionWithDescCustomFieldsLatestParamsTags, key: Int, parent: ReportRowViewModel): ReportRowViewModel
         {
             val dateString = IndexViewDateFormatter.format(version.date)
             val parameterValues = if (version.parameterValues.keys.count() > 0)
