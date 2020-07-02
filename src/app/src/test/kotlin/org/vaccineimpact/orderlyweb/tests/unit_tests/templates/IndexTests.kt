@@ -23,7 +23,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -38,7 +38,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders link to project docs if user has permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("View project documentation")
@@ -48,7 +48,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `does not render link to project docs if user does not have permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
@@ -62,7 +62,7 @@ class IndexTests : TeamcityTests()
                         DownloadableFileViewModel("zip file 1", "zip file url 1", 1)),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
                         DownloadableFileViewModel("zip file 2", "zip file url 2", 1))
-        ), listOf(), true)
+        ), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -95,7 +95,7 @@ class IndexTests : TeamcityTests()
     @Test
     fun `renders correctly when no pinned reports`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -118,7 +118,7 @@ class IndexTests : TeamcityTests()
                 breadcrumbs = listOf(IndexViewModel.breadcrumb)
         )
 
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(7)
@@ -136,7 +136,7 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
 
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
@@ -151,11 +151,64 @@ class IndexTests : TeamcityTests()
     }
 
     @Test
+    fun `renders reportDisplayNames as js var if can set pinned reports`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        assertThat(scriptEl.indexOf("var reportDisplayNames = {\n" +
+                "  \"r1\": \"r1 display\",\n" +
+                "  \"r2\": \"r2 display\"\n" +
+                "};")).isGreaterThan(-1)
+    }
+
+    @Test
+    fun `does not render reportDisplayNames as js var if cannot set pinned reports`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                false, null, defaultModel)
+
+        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1);
+    }
+
+    @Test
+    fun `renders set-global-pinned-reports component if can configure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        assertThat(component.count()).isEqualTo(1)
+        assertThat(component.attr(":current")).isEqualTo("currentPinnedReportNames")
+        assertThat(component.attr(":available")).isEqualTo("reportDisplayNames")
+    }
+
+    @Test
+    fun `does not render set-global-pinned-reports component if cannot configure`()
+    {
+        val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
+                isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
+                false, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+
+        val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
+        assertThat(component.count()).isEqualTo(0)
+    }
+
+    @Test
     fun `each column has a custom filter`()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
 
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
@@ -174,7 +227,7 @@ class IndexTests : TeamcityTests()
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         val filterSelect = filters.select("th")[3].selectFirst("select")

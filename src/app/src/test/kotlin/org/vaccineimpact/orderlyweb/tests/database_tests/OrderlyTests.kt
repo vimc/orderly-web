@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat

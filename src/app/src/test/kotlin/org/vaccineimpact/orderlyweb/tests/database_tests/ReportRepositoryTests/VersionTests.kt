@@ -104,8 +104,8 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reader can get all published report versions`()
     {
-        insertReport("test", "va")
-        insertReport("test", "vz")
+        insertReport("test", "va", display = "display name a")
+        insertReport("test", "vz", display = "display name z")
         insertReport("test2", "vc")
         insertReport("test2", "vb")
         insertReport("test2", "vd")
@@ -119,12 +119,13 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results.count()).isEqualTo(6)
 
         assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].displayName).isEqualTo("display name a")
         assertThat(results[0].latestVersion).isEqualTo("vz")
         assertThat(results[0].id).isEqualTo("va")
         assertThat(results[0].published).isTrue()
 
         assertThat(results[1].name).isEqualTo("test")
+        assertThat(results[1].displayName).isEqualTo("display name z")
         assertThat(results[1].id).isEqualTo("vz")
         assertThat(results[1].latestVersion).isEqualTo("vz")
 
@@ -148,7 +149,7 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get all published and unpublished report versions`()
     {
-        insertReport("test", "va")
+        insertReport("test", "va", display = "display name a")
         insertReport("test", "vz")
         insertReport("test2", "vc")
         insertReport("test2", "vb")
@@ -163,7 +164,7 @@ class VersionTests : CleanDatabaseTests()
         assertThat(results.count()).isEqualTo(7)
 
         assertThat(results[0].name).isEqualTo("test")
-        assertThat(results[0].displayName).isEqualTo("display name test")
+        assertThat(results[0].displayName).isEqualTo("display name a")
         assertThat(results[0].latestVersion).isEqualTo("vz")
         assertThat(results[0].id).isEqualTo("va")
         assertThat(results[0].published).isTrue()

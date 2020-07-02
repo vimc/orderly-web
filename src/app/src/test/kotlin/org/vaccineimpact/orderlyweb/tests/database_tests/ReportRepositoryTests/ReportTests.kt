@@ -5,6 +5,9 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.test_helpers.*
@@ -20,9 +23,9 @@ class ReportTests : CleanDatabaseTests()
     fun `reader can get all published reports`()
     {
         insertReport("test", "va")
-        insertReport("test", "vz")
+        insertReport("test", "vz", display = "display name test")
         insertReport("test2", "vc")
-        insertReport("test2", "vb")
+        insertReport("test2", "vb", display = "display name test 2")
         insertReport("test2", "vd", published = false)
         insertReport("test3", "test3version", published = false)
 
@@ -37,7 +40,7 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[0].latestVersion).isEqualTo("vz")
 
         assertThat(results[1].name).isEqualTo("test2")
-        assertThat(results[1].displayName).isEqualTo("display name test2")
+        assertThat(results[1].displayName).isEqualTo("display name test 2")
         assertThat(results[1].latestVersion).isEqualTo("vb")
     }
 
@@ -186,7 +189,21 @@ class ReportTests : CleanDatabaseTests()
 
     }
 
+    @Test
+    fun `can toggle publish status when OrderlyWeb_Report_version does not yet exist`()
+    {
+        insertReport("test", "version1", addOrderlyWebReportVersion = false)
+        val sut = createSut(isReviewer = true)
 
+        var result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isTrue()
+        assertThat(sut.getReportVersion("test", "version1").published).isTrue()
+
+        result = sut.togglePublishStatus("test", "version1")
+        assertThat(result).isFalse()
+
+        assertThat(sut.getReportVersion("test", "version1").published).isFalse()
+    }
 
     @Test
     fun `reader can get latest published versions of pinned reports`()
@@ -244,5 +261,40 @@ class ReportTests : CleanDatabaseTests()
         assertThat(results[1].latestVersion).isEqualTo("20180103-143015-1234pub")
     }
 
+    @Test
+    fun `setPinnedReport deletes existing pinned reports and inserts from parameter`()
+    {
+        insertReport("r1", "v1")
+        insertReport("r2", "v2")
+        insertReport("r3", "v3")
+        insertReport("r4", "v4")
 
+        insertGlobalPinnedReport("r1", 0)
+        insertGlobalPinnedReport("r2", 1)
+
+        val sut = createSut()
+        sut.setGlobalPinnedReports(listOf("r4", "r3"))
+
+        JooqContext().use {
+            val result = it.dsl.selectFrom(ORDERLYWEB_PINNED_REPORT_GLOBAL)
+                    .orderBy(ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING)
+                    .fetch()
+
+            assertThat(result.count()).isEqualTo(2)
+            assertThat(result[0][ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING]).isEqualTo(0)
+            assertThat(result[0][ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT]).isEqualTo("r4")
+            assertThat(result[1][ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING]).isEqualTo(1)
+            assertThat(result[1][ORDERLYWEB_PINNED_REPORT_GLOBAL.REPORT]).isEqualTo("r3")
+        }
+    }
+
+    @Test
+    fun `can check reportExists`()
+    {
+        val sut = createSut()
+        assertThat(sut.reportExists("r1")).isFalse()
+
+        insertReport("r1", "v1")
+        assertThat(sut.reportExists("r1")).isTrue()
+    }
 }

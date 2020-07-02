@@ -120,9 +120,11 @@ fun insertReport(name: String,
                  published: Boolean = true,
                  date: Timestamp = Timestamp(System.currentTimeMillis()),
                  author: String = "author authorson",
-                 requester: String = "requester mcfunder")
+                 requester: String = "requester mcfunder",
+                 display: String? = null,
+                 addOrderlyWebReportVersion: Boolean = true)
 {
-    insertReportAndVersion(name, version, published, date)
+    insertReportAndVersion(name, version, published, date, display, addOrderlyWebReportVersion)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -247,11 +249,11 @@ private fun addOrderlyTag(tag: String, ctx: JooqContext)
 private fun insertReportAndVersion(name: String,
                                    version: String,
                                    published: Boolean,
-                                   date: Timestamp)
+                                   date: Timestamp,
+                                   display: String? = null,
+                                   addOrderlyWebReportVersion: Boolean = true)
 {
     JooqContext().use {
-
-        val displayname = "display name $name"
 
         //Does the report already exist in the REPORT table?
         val rows = it.dsl.select(Tables.REPORT.NAME)
@@ -274,15 +276,26 @@ private fun insertReportAndVersion(name: String,
                     this.id = version
                     this.report = name
                     this.date = date
-                    this.displayname = displayname
+                    this.displayname = display
                     this.description = "description $name"
                     this.requester = ""
                     this.author = ""
-                    this.published = published
+                    this.published = false
                     this.connection = false
                     this.elapsed = 100.0
                 }
         reportVersionRecord.store()
+
+
+        if (addOrderlyWebReportVersion)
+        {
+            val orderlywebReportVersionRecord = it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_VERSION)
+                    .apply {
+                        this.id = version
+                        this.published = published
+                    }
+            orderlywebReportVersionRecord.store()
+        }
 
         //Update latest version of Report
         it.dsl.update(Tables.REPORT)

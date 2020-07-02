@@ -7,19 +7,6 @@
     word-break: break-word;
   }
 }
-
-.remove {
-  cursor: pointer;
-  color: $danger;
-  line-height: 1em;
-  vertical-align: top;
-}
-
-.remove:hover {
-  color: darken($danger, 10%);
-  text-decoration: underline;
-}
-
 ul.roles {
 
   ul.children {

@@ -7,8 +7,6 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.format.DateTimeFormatter
 
-private val formatter = DateTimeFormatter.ofPattern("EEE MMM dd yyyy, HH:mm")
-
 data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatest,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
@@ -149,7 +147,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
         private fun buildVersionPickerViewModel(reportName: String, currentVersion: String, id: String): VersionPickerViewModel
         {
             val date = getDateStringFromVersionId(id)
-            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", formatter.format(date),
+            return VersionPickerViewModel("${AppConfig()["app.url"]}/report/$reportName/$id", getFriendlyDateTime(date),
                     selected = id == currentVersion)
         }
     }
@@ -189,7 +187,7 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
             val entries = changelog.map {
                 ChangelogItemViewModel.build(it)
             }
-            return ChangelogViewModel(formatter.format(date), id, entries)
+            return ChangelogViewModel(getFriendlyDateTime(date), id, entries)
         }
     }
 }

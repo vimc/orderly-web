@@ -131,6 +131,13 @@
             <#if isReviewer>
             var canReview = true;
             </#if>
+            <#if canSetPinnedReports>
+            var reportDisplayNames = ${reportDisplayNamesJson};
+            var currentPinnedReportNames = [
+                <#list pinnedReports as pinnedReport>
+                "${pinnedReport.name}",
+                </#list>];
+            </#if>
         </script>
         <script type="text/javascript" src="${appUrl}/js/lib/jquery.dataTables.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/lib/dataTables.bootstrap4.js"></script>

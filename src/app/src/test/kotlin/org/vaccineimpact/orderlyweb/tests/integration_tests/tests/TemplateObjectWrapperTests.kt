@@ -85,7 +85,7 @@ class TemplateObjectWrapperTests : TeamcityTests()
             on { it.userProfile } doReturn CommonProfile().apply { id = "user.name" }
             on { hasPermission(any()) } doReturn true
         }
-        val model = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true)
+        val model = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(model) as SimpleHash

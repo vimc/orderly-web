@@ -9,10 +9,11 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
-import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
+import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
+import org.vaccineimpact.orderlyweb.viewmodels.*
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
@@ -33,6 +34,20 @@ class ReportController(context: ActionContext,
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
     }
 
+    @Template("run-report-page.ftl")
+    fun getRunReport(): RunReportViewModel
+    {
+        //TODO: Orderly server does not yet support fetching this metadata, so we hardcode dummy data for now
+        val runReportMetadata = RunReportMetadata(true, true,
+                listOf("support", "annex"), listOf("internal", "published"))
+
+        //TODO: as above, need to get this from orderly server when endpoint is available
+        //TODO: Don't attempt get get git branches if metadata.git_supported is false
+        val gitBranches = listOf("master", "dev_branch")
+
+        return RunReportViewModel(context, runReportMetadata, gitBranches)
+    }
+
     fun tagVersion(): String
     {
         val reportName = context.params(":name")
@@ -48,9 +63,30 @@ class ReportController(context: ActionContext,
             : List<ReportWithDraftsViewModel>
     {
         //val reports = reportRepository.getReportsWithPublishStatus()
-       // val drafts = reportRepository.getDrafts()
+        // val drafts = reportRepository.getDrafts()
         return reports.map { report ->
-            ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name})
+            ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name })
         }.filter { it.dateGroups.any() }
+
+    }
+
+    fun setGlobalPinnedReports(): String
+    {
+        val reports = context.postData<List<String>>("reports")
+
+        reports.forEach{
+            if (!reportRepository.reportExists(it))
+            {
+                throw BadRequest("Report '$it' does not exist")
+            }
+        }
+        if (reports.distinct().count() < reports.count())
+        {
+            throw BadRequest("Cannot include the same pinned report twice")
+        }
+
+        reportRepository.setGlobalPinnedReports(reports)
+
+        return okayResponse()
     }
 }

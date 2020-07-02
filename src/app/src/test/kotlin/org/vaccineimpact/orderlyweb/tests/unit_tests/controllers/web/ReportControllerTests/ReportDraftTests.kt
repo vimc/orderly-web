@@ -22,10 +22,10 @@ class ReportDraftTests : TeamcityTests()
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
         val fakeDrafts = listOf(
-                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
-                ReportVersionWithChangelogsParams("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()),
-                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), mapOf(), listOf()),
-                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-3", date, mapOf(), listOf()))
+                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), false, mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", "The second report", "v2-3", date, false, mapOf(), listOf()))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
 
@@ -69,6 +69,7 @@ class ReportDraftTests : TeamcityTests()
                         "The first report",
                         "v1-1",
                         date,
+                        false,
                         mapOf("p1" to "param1", "p2" to "param2"),
                         listOf(Changelog("v1-1", "public", "something public", true, true),
                                 Changelog("v1-1", "internal", "something internal", true, false))))
@@ -88,6 +89,7 @@ class ReportDraftTests : TeamcityTests()
                         "The first report",
                         "v1-1",
                         date,
+                        false,
                         mapOf("p1" to "param1", "p2" to "param2"),
                         listOf(Changelog("v1-1", "published", "something public", true, true),
                                 Changelog("v1-1", "draft", "something internal", true, false))))
@@ -114,8 +116,8 @@ class ReportDraftTests : TeamcityTests()
                 ReportWithPublishStatus("report-1", null, false))
 
         val fakeDrafts = listOf(
-                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, mapOf(), listOf()),
-                ReportVersionWithChangelogsParams("report-2", null, "v2-1", date.minus(1, ChronoUnit.DAYS), mapOf(), listOf()))
+                ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, false, mapOf(), listOf()),
+                ReportVersionWithChangelogsParams("report-2", null, "v2-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
 

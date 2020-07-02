@@ -34,7 +34,7 @@ class LayoutTests : TeamcityTests()
     @Test
     fun `renders correctly when not logged in`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -60,7 +60,7 @@ class LayoutTests : TeamcityTests()
             } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
         val xml = template.xmlResponseFor(testModel)
@@ -89,7 +89,7 @@ class LayoutTests : TeamcityTests()
             } doReturn true
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -110,7 +110,7 @@ class LayoutTests : TeamcityTests()
             } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -138,7 +138,7 @@ class LayoutTests : TeamcityTests()
         }
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel)
 
         val doc = template.jsoupDocFor(testModel)
 

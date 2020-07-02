@@ -176,3 +176,53 @@
 ## Other branches merged in this release
 * apisecurity
 
+# v1.2.7
+
+## Tickets
+* mrc-1393: Tags: Add multi-select filter for tags in index page
+* mrc-1396: Tags: Display tags in report page
+* mrc-1397_update: Tags: edit tags backend
+* mrc-1398: Tags: edit tags frontend
+* mrc-1414: Factor out artefact repo
+* mrc-1454: Rename "anon" to "guest"
+* mrc-1455: Make guest login allowed configurable by admin: backend
+* mrc-1456: Prevent the guest user from being assigned certain permissions
+* mrc-1458: Update refresh documents endpoint to also download new files first
+* mrc-1459: Add documents.manage permission to db
+* mrc-1460: Add widget for refreshing documents
+* mrc-1460_getdocs: Add widget for refreshing documents
+* mrc-1462: Make guest login allowed configurable by admin: frontend
+* mrc-1464: Url validation when refreshing documents
+* mrc-1476_changelog: Factor out report repo
+* mrc-1476_customfields: Factor out report repo
+* mrc-1476_getVersions: Factor out report repo
+* mrc-1476_models: Factor out report repo
+* mrc-1476_params: Factor out report repo
+* mrc-1476_repo: Factor out report repo
+* mrc-1476_tags2: Factor out report repo
+* mrc-1478: Bug - external changelogs missing styles
+* mrc-1481: Should not be able to remove permissions from the Admin group itself
+* mrc-1490: Make Admin role non-editable in front end
+* mrc-1499: Pinned reports should return report's latest published version
+* mrc-1500: Endpoint to set global pinned reports
+* mrc-1501: Provide report display names in index view model for setting pinned reports
+* mrc-1502: Admin front end to set global pinned reports
+* mrc-1503: Fix tests for elapsed column in report version table
+* mrc-1573: Allow "published" status to survive orderly rebuild
+* mrc-1598: Fetch run report metadata and git branches from Orderly on run report page load
+* mrc-1600: Run report page: show git branches available
+* mrc-1604: Run report page: page and tabs
+
+## Other branches merged in this release
+* chromedriver
+* dependabot/npm_and_yarn/src/app/static/jquery-3.5.0
+
+# v1.2.8
+
+## Tickets
+* mrc-1597: Get available Git commits
+* mrc-1615: Integrate orderly.server changes into OrderlyWeb
+* vimc-4062: Manually insert rows into orderlyweb_report_version
+
+## Other branches merged in this release
+

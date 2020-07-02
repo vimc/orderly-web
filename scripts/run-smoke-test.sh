@@ -4,7 +4,7 @@ set -ex
 here=$(dirname $0)
 
 git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD)
+git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
 
 ## Run all dependencies
 export MONTAGU_ORDERLY_PATH=$PWD/git
