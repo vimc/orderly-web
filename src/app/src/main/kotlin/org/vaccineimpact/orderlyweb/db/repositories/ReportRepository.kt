@@ -139,7 +139,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .join(latestVersionForEachReport.tableName)
                     .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
-                    .orderBy(REPORT_VERSION.REPORT, REPORT_VERSION.ID)
+                    .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
                     .fetchInto(ReportVersionWithDescLatest::class.java)
         }
     }
@@ -281,8 +281,8 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .join(latestVersionForEachReport.tableName)
                     .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
-                    .and(REPORT_VERSION.REPORT.eq(report))
-                    .and(REPORT_VERSION.ID.eq(latestVersionForEachReport.field("latestVersion")))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
+                    .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
 
         }
