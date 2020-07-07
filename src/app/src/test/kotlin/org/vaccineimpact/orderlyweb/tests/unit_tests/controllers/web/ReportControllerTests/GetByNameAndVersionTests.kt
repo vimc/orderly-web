@@ -30,10 +30,10 @@ class GetByNameAndVersionTests : TeamcityTests()
             listOf(),
             mapOf("p1" to "v1", "p2" to "v2"))
 
-    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
-            Changelog("20160103-143015-1234abcd", "public", "something public", true, true),
-            Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", true, false),
-            Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true, true))
+    private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", false),
+            Changelog("20160103-143015-1234abcd", "public", "something public", true),
+            Changelog("20170106-143015-1234abcd", "internal", "something internal in 2017", false),
+            Changelog("20180103-143015-1234abcd", "public", "something public in 2018", true))
 
     private val mockActionContext = mock<ActionContext> {
         on { this.params(":name") } doReturn "r1"

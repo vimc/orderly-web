@@ -71,8 +71,8 @@ class ReportDraftTests : TeamcityTests()
                         date,
                         false,
                         mapOf("p1" to "param1", "p2" to "param2"),
-                        listOf(Changelog("v1-1", "public", "something public", true, true),
-                                Changelog("v1-1", "internal", "something internal", true, false))))
+                        listOf(Changelog("v1-1", "public", "something public", true),
+                                Changelog("v1-1", "internal", "something internal", false))))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
         assertThat(result.count()).isEqualTo(1)
@@ -91,8 +91,8 @@ class ReportDraftTests : TeamcityTests()
                         date,
                         false,
                         mapOf("p1" to "param1", "p2" to "param2"),
-                        listOf(Changelog("v1-1", "published", "something public", true, true),
-                                Changelog("v1-1", "draft", "something internal", true, false))))
+                        listOf(Changelog("v1-1", "published", "something public", true),
+                                Changelog("v1-1", "draft", "something internal", false))))
 
         val result = sut.getReportDrafts(fakeReports, fakeDrafts)
         val draft = result[0].dateGroups[0].drafts[0]
