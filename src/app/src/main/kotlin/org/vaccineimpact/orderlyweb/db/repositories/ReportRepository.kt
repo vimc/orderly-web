@@ -250,7 +250,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             it.dsl.select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                     CHANGELOG.LABEL,
                     CHANGELOG.VALUE,
-                    CHANGELOG.FROM_FILE,
                     CHANGELOG_LABEL.PUBLIC)
                     .fromJoinPath(CHANGELOG, CHANGELOG_LABEL)
                     .join(ORDERLYWEB_REPORT_VERSION_FULL)
