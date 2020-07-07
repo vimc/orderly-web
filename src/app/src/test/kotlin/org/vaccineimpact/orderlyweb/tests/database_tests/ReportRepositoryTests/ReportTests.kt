@@ -297,4 +297,34 @@ class ReportTests : CleanDatabaseTests()
         insertReport("r1", "v1")
         assertThat(sut.reportExists("r1")).isTrue()
     }
+
+
+    @Test
+    fun `can get reports with publish status`()
+    {
+        insertReport("test", "v1", published = true, display = null)
+        insertReport("test", "v2", published = false, display = "old display name")
+        insertReport("test", "v3", published = false, display = "newer display name")
+
+        insertReport("test2", "v4", published = true, display = "test2 display name")
+        insertReport("test2", "v5", published = false, display = null)
+
+        insertReport("test3", "v6", published = false, display = null)
+
+        val sut = createSut()
+        val result = sut.getReportsWithPublishStatus()
+        assertThat(result.count()).isEqualTo(3)
+
+        assertThat(result[0].name).isEqualTo("test3")
+        assertThat(result[0].displayName).isEqualTo(null)
+        assertThat(result[0].hasBeenPublished).isEqualTo(false)
+
+        assertThat(result[1].name).isEqualTo("test2")
+        assertThat(result[1].displayName).isEqualTo("test2 display name")
+        assertThat(result[1].hasBeenPublished).isEqualTo(true)
+
+        assertThat(result[2].name).isEqualTo("test")
+        assertThat(result[2].displayName).isEqualTo("newer display name")
+        assertThat(result[2].hasBeenPublished).isEqualTo(true)
+    }
 }

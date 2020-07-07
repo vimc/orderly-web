@@ -1,9 +1,11 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
 
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
@@ -17,7 +19,7 @@ class ReportDraftTests : TeamcityTests()
     fun `can build report draft view models with most recent drafts first`()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
-        val sut = ReportController(mock())
+
         val fakeReports = listOf(
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
@@ -26,6 +28,13 @@ class ReportDraftTests : TeamcityTests()
                 ReportVersionWithChangelogsParams("report-2", "report-2", "v2-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()),
                 ReportVersionWithChangelogsParams("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), false, mapOf(), listOf()),
                 ReportVersionWithChangelogsParams("report-2", "The second report", "v2-3", date, false, mapOf(), listOf()))
+
+        val mockRepo = mock<ReportRepository> {
+            on { getReportsWithPublishStatus() } doReturn fakeReports
+            on { getDrafts() } doReturn fakeDrafts
+        }
+
+        val sut = ReportController(mock(), mock(), mockRepo, mock())
 
         val result = sut.getReportDrafts()
 
@@ -60,7 +69,7 @@ class ReportDraftTests : TeamcityTests()
     fun `only reports with drafts are included`()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
-        val sut = ReportController(mock())
+
         val fakeReports = listOf(
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", "The first report", true))
@@ -74,6 +83,12 @@ class ReportDraftTests : TeamcityTests()
                         listOf(Changelog("v1-1", "public", "something public", true, true),
                                 Changelog("v1-1", "internal", "something internal", true, false))))
 
+        val mockRepo = mock<ReportRepository> {
+            on { getReportsWithPublishStatus() } doReturn fakeReports
+            on { getDrafts() } doReturn fakeDrafts
+        }
+
+        val sut = ReportController(mock(), mock(), mockRepo, mock())
         val result = sut.getReportDrafts()
         assertThat(result.count()).isEqualTo(1)
     }
@@ -82,7 +97,6 @@ class ReportDraftTests : TeamcityTests()
     fun `can build report draft view model with parameters and changelogs`()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
-        val sut = ReportController(mock())
         val fakeReports = listOf(ReportWithPublishStatus("report-1", "The first report", false))
         val fakeDrafts = listOf(
                 ReportVersionWithChangelogsParams("report-1",
@@ -94,6 +108,12 @@ class ReportDraftTests : TeamcityTests()
                         listOf(Changelog("v1-1", "published", "something public", true, true),
                                 Changelog("v1-1", "draft", "something internal", true, false))))
 
+        val mockRepo = mock<ReportRepository> {
+            on { getReportsWithPublishStatus() } doReturn fakeReports
+            on { getDrafts() } doReturn fakeDrafts
+        }
+
+        val sut = ReportController(mock(), mock(), mockRepo, mock())
         val result = sut.getReportDrafts()
         val draft = result[0].dateGroups[0].drafts[0]
         assertThat(draft.parameterValues).isEqualTo("p1=param1,p2=param2")
@@ -110,7 +130,7 @@ class ReportDraftTests : TeamcityTests()
     fun `report display name falls back to report name`()
     {
         val date = Instant.parse("2020-04-21T10:34:50.63Z")
-        val sut = ReportController(mock())
+
         val fakeReports = listOf(
                 ReportWithPublishStatus("report-2", "The second report", false),
                 ReportWithPublishStatus("report-1", null, false))
@@ -119,6 +139,12 @@ class ReportDraftTests : TeamcityTests()
                 ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, false, mapOf(), listOf()),
                 ReportVersionWithChangelogsParams("report-2", null, "v2-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()))
 
+        val mockRepo = mock<ReportRepository> {
+            on { getReportsWithPublishStatus() } doReturn fakeReports
+            on { getDrafts() } doReturn fakeDrafts
+        }
+
+        val sut = ReportController(mock(), mock(), mockRepo, mock())
         val result = sut.getReportDrafts()
 
         assertThat(result[0].displayName).isEqualTo("The second report")
