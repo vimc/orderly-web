@@ -18,7 +18,7 @@ import java.time.Instant
 class GetByNameAndVersionTests : TeamcityTests()
 {
     private val versionId = "20170103-143015-1234abcd"
-    private val mockReportDetails = ReportVersionDetails(BasicReportVersion("r1",
+    private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest("r1",
             "a fake report",
             versionId,
             true,

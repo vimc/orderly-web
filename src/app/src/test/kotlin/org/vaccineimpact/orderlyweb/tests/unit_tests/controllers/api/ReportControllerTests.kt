@@ -16,10 +16,10 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
-import org.vaccineimpact.orderlyweb.models.BasicReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
-import org.vaccineimpact.orderlyweb.models.ReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import java.time.Instant
 
@@ -37,9 +37,9 @@ class ReportControllerTests : ControllerTest()
 
 
     private val reportVersions = listOf(
-            ReportVersion(BasicReportVersion(reportName, "display1", "v1", true, Instant.now(), "v1", "desc"),
+            ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest(reportName, "display1", "v1", true, Instant.now(), "v1", "desc"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1"), listOf("t1", "t2")),
-            ReportVersion(BasicReportVersion("r2", "display2", "v2", true, Instant.now(), "v1", "v2"),
+            ReportVersionWithDescCustomFieldsLatestParamsTags(ReportVersionWithDescLatest("r2", "display2", "v2", true, Instant.now(), "v1", "v2"),
                     mapOf("author" to "auth", "requester" to "req"), mapOf("p1" to "v1", "p2" to "v2"), listOf("t1"))
     )
 

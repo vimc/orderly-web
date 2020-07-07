@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.BasicReportVersion
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.Report
 import java.sql.Timestamp
@@ -22,9 +22,9 @@ interface ReportRepository
     fun togglePublishStatus(name: String, version: String): Boolean
 
     @Throws(UnknownObjectError::class)
-    fun getReportVersion(name: String, version: String): BasicReportVersion
+    fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
 
-    fun getAllReportVersions(): List<BasicReportVersion>
+    fun getAllReportVersions(): List<ReportVersionWithDescLatest>
 
     fun getAllCustomFields(): Map<String, String?>
 
@@ -34,7 +34,7 @@ interface ReportRepository
 
     fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
 
-    fun getLatestVersion(report: String): BasicReportVersion
+    fun getLatestVersion(report: String): ReportVersionWithDescLatest
 
     fun setGlobalPinnedReports(reportNames: List<String>)
 
@@ -112,7 +112,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getReportVersion(name: String, version: String): BasicReportVersion
+    override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
     {
         //raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
@@ -120,7 +120,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getAllReportVersions(): List<BasicReportVersion>
+    override fun getAllReportVersions(): List<ReportVersionWithDescLatest>
     {
         JooqContext().use {
             // create a temp table containing the latest version ID for each report name
@@ -140,7 +140,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
                     .where(shouldIncludeReportVersion)
                     .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT, ORDERLYWEB_REPORT_VERSION_FULL.ID)
-                    .fetchInto(BasicReportVersion::class.java)
+                    .fetchInto(ReportVersionWithDescLatest::class.java)
         }
     }
 
@@ -263,7 +263,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getLatestVersion(report: String): BasicReportVersion
+    override fun getLatestVersion(report: String): ReportVersionWithDescLatest
     {
         JooqContext().use {
             val latestVersionForEachReport = getLatestVersionsForReports(it)
@@ -283,11 +283,12 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(shouldIncludeReportVersion)
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
-                    .fetchAny()?.into(BasicReportVersion::class.java) ?: throw UnknownObjectError(report, "report")
+                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
+
         }
     }
 
-    private fun getReportVersion(name: String, version: String, ctx: JooqContext): BasicReportVersion
+    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionWithDescLatest
     {
         val latestVersionForEachReport = getLatestVersionsForReports(ctx)
 
@@ -306,7 +307,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(version))
                 .and(shouldIncludeReportVersion)
                 .singleOrNull()
-                ?.into(BasicReportVersion::class.java)
+                ?.into(ReportVersionWithDescLatest::class.java)
                 ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 

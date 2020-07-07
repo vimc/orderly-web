@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.time.format.DateTimeFormatter
 
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: BasicReportVersion,
+data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatest,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -22,7 +22,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Basic
 {
     companion object
     {
-        fun build(report: ReportVersionDetails,
+        fun build(report: ReportVersionWithArtefactsDataDescParamsResources,
                   versions: List<String>,
                   changelog: List<Changelog>,
                   context: ActionContext): ReportVersionPageViewModel
@@ -185,15 +185,7 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
             val date = getDateStringFromVersionId(id)
 
             val entries = changelog.map {
-                val cssClass = if (it.public)
-                {
-                    "public"
-                }
-                else
-                {
-                    "internal"
-                }
-                ChangelogItemViewModel(it.label, it.value, cssClass)
+                ChangelogItemViewModel.build(it)
             }
             return ChangelogViewModel(getFriendlyDateTime(date), id, entries)
         }
@@ -201,3 +193,20 @@ data class ChangelogViewModel(val date: String, val version: String, val entries
 }
 
 data class ChangelogItemViewModel(val label: String, val value: String, val cssClass: String)
+{
+    companion object
+    {
+        fun build(changelog: Changelog): ChangelogItemViewModel
+        {
+            val cssClass = if (changelog.public)
+            {
+                "public"
+            }
+            else
+            {
+                "internal"
+            }
+            return ChangelogItemViewModel(changelog.label, changelog.value, cssClass)
+        }
+    }
+}

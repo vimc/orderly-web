@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -26,7 +26,7 @@ class OrderlyTests : CleanDatabaseTests()
     val now = Instant.now()
 
     private val basicReportVersion =
-            BasicReportVersion(
+            ReportVersionWithDescLatest(
                     "test",
                     "display name",
                     "v1",
@@ -134,7 +134,7 @@ class OrderlyTests : CleanDatabaseTests()
     @Test
     fun `getAllReportVersions returns version, report and orderly tags`()
     {
-        val basicReportVersion = BasicReportVersion("report", "display name", "v1", true,
+        val basicReportVersion = ReportVersionWithDescLatest("report", "display name", "v1", true,
                 Instant.now(), "v3", "description")
 
         val mockTagRepo = mock<TagRepository> {

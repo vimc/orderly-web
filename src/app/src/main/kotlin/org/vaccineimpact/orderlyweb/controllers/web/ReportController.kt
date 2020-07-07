@@ -8,8 +8,10 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
-import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
+import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.viewmodels.*
 
@@ -55,6 +57,17 @@ class ReportController(context: ActionContext,
         val versionTags = context.postData<List<String>>("version_tags")
         tagRepository.updateTags(reportName, versionId, ReportVersionTags(versionTags, reportTags, listOf()))
         return okayResponse()
+    }
+
+    fun getReportDrafts(reports: List<ReportWithPublishStatus>, drafts: List<ReportVersionWithChangelogsParams>)
+            : List<ReportWithDraftsViewModel>
+    {
+        //val reports = reportRepository.getReportsWithPublishStatus()
+        // val drafts = reportRepository.getDrafts()
+        return reports.map { report ->
+            ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name })
+        }.filter { it.dateGroups.any() }
+
     }
 
     fun setGlobalPinnedReports(): String
