@@ -59,11 +59,11 @@ class ReportController(context: ActionContext,
         return okayResponse()
     }
 
-    fun getReportDrafts(reports: List<ReportWithPublishStatus>, drafts: List<ReportVersionWithChangelogsParams>)
+    fun getReportDrafts()
             : List<ReportWithDraftsViewModel>
     {
-        //val reports = reportRepository.getReportsWithPublishStatus()
-        // val drafts = reportRepository.getDrafts()
+        val reports = reportRepository.getReportsWithPublishStatus()
+        val drafts = reportRepository.getDrafts()
         return reports.map { report ->
             ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name })
         }.filter { it.dateGroups.any() }
