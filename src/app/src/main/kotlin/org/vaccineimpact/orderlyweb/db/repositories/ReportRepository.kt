@@ -295,6 +295,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     CHANGELOG.LABEL,
                     CHANGELOG.VALUE,
                     CHANGELOG.ORDERING,
+                    CHANGELOG.FROM_FILE,
                     CHANGELOG_LABEL.PUBLIC)
                     .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .leftJoin(CHANGELOG)
@@ -316,6 +317,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                             Changelog(it[ORDERLYWEB_REPORT_VERSION_FULL.ID],
                                     it[CHANGELOG.LABEL],
                                     it[CHANGELOG.VALUE],
+                                    it[CHANGELOG.FROM_FILE],
                                     it[CHANGELOG_LABEL.PUBLIC])
                         }
                 val ref = group.value.first()

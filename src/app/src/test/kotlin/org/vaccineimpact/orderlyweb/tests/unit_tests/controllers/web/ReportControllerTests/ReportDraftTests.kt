@@ -27,7 +27,7 @@ class ReportDraftTests : TeamcityTests()
                 ReportVersionWithChangelogsParams("report-2", "The second report", "v2-2", date.minus(1, ChronoUnit.HOURS), false, mapOf(), listOf()),
                 ReportVersionWithChangelogsParams("report-2", "The second report", "v2-3", date, false, mapOf(), listOf()))
 
-        val result = sut.getReportDrafts(fakeReports, fakeDrafts)
+        val result = sut.getReportDrafts()
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].previouslyPublished).isFalse()
@@ -74,7 +74,7 @@ class ReportDraftTests : TeamcityTests()
                         listOf(Changelog("v1-1", "public", "something public", true, true),
                                 Changelog("v1-1", "internal", "something internal", true, false))))
 
-        val result = sut.getReportDrafts(fakeReports, fakeDrafts)
+        val result = sut.getReportDrafts()
         assertThat(result.count()).isEqualTo(1)
     }
 
@@ -94,7 +94,7 @@ class ReportDraftTests : TeamcityTests()
                         listOf(Changelog("v1-1", "published", "something public", true, true),
                                 Changelog("v1-1", "draft", "something internal", true, false))))
 
-        val result = sut.getReportDrafts(fakeReports, fakeDrafts)
+        val result = sut.getReportDrafts()
         val draft = result[0].dateGroups[0].drafts[0]
         assertThat(draft.parameterValues).isEqualTo("p1=param1,p2=param2")
         assertThat(draft.changelog.count()).isEqualTo(2)
@@ -119,7 +119,7 @@ class ReportDraftTests : TeamcityTests()
                 ReportVersionWithChangelogsParams("report-1", "The first report", "v1-1", date, false, mapOf(), listOf()),
                 ReportVersionWithChangelogsParams("report-2", null, "v2-1", date.minus(1, ChronoUnit.DAYS), false, mapOf(), listOf()))
 
-        val result = sut.getReportDrafts(fakeReports, fakeDrafts)
+        val result = sut.getReportDrafts()
 
         assertThat(result[0].displayName).isEqualTo("The second report")
         assertThat(result[1].displayName).isEqualTo("report-1")
