@@ -1,16 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api
 
 import com.fasterxml.jackson.databind.node.ArrayNode
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
-import org.vaccineimpact.orderlyweb.db.joinPath
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -241,7 +239,7 @@ class VersionTests : IntegrationTest()
     fun `can get version changelog by name and version`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
@@ -255,7 +253,7 @@ class VersionTests : IntegrationTest()
                         "public",
                         "did something great",
                         true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog/",
                 userEmail = fakeGlobalReportReader())
@@ -291,7 +289,7 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version does not belong to report`()
     {
         insertReport("testname", "testversion")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
@@ -305,7 +303,7 @@ class VersionTests : IntegrationTest()
                         "public",
                         "did something great",
                         true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/notatestversion/changelog",
                 userEmail = fakeGlobalReportReader())
@@ -319,7 +317,7 @@ class VersionTests : IntegrationTest()
     fun `get changelog returns 404 if version is not published and user has reader permission only`()
     {
         insertReport("testname", "testversion", published = false)
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "testversion",
@@ -333,7 +331,7 @@ class VersionTests : IntegrationTest()
                         "public",
                         "did something great",
                         true,
-                        2)))
+                        2))
 
         val response = apiRequestHelper.get("/reports/testname/versions/testversion/changelog",
                 userEmail = fakeGlobalReportReader())
