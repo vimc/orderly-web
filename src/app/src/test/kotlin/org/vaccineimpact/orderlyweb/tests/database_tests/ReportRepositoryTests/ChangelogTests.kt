@@ -2,15 +2,14 @@ package org.vaccineimpact.orderlyweb.tests.database_tests.ReportRepositoryTests
 
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.models.Changelog
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.InsertableChangelog
 import org.vaccineimpact.orderlyweb.tests.insertChangelog
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -29,7 +28,7 @@ class ChangelogTests : CleanDatabaseTests()
     fun `reviewer can get all changelog`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "zz_id1",
                         "version1",
@@ -43,7 +42,7 @@ class ChangelogTests : CleanDatabaseTests()
                         "internal",
                         "did something awful",
                         false,
-                        2)))
+                        2))
 
         val sut = createSut(true)
 
@@ -60,7 +59,7 @@ class ChangelogTests : CleanDatabaseTests()
     fun `reader can get public changelog`()
     {
         insertReport("test", "version1")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "zz_id1",
                         "version1",
@@ -76,7 +75,7 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something awful",
                         false,
                         2,
-                        "version1")))
+                        "version1"))
 
         val sut = createSut(false)
 
@@ -94,7 +93,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         val sut = createSut(true)
 
-        val results = sut.getDatedChangelogForReport("test",  Instant.now())
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         assertExpectedTestChangelogValues("version3", results)
 
@@ -107,7 +106,7 @@ class ChangelogTests : CleanDatabaseTests()
 
         val sut = createSut(false)
 
-        val results = sut.getDatedChangelogForReport("test",  Instant.now())
+        val results = sut.getDatedChangelogForReport("test", Instant.now())
 
         assertExpectedPublicTestChangelogValues("version3", results)
     }
@@ -140,7 +139,7 @@ class ChangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id7",
                         "anotherversion1",
@@ -154,7 +153,7 @@ class ChangelogTests : CleanDatabaseTests()
                         "internal",
                         "did something awful v1",
                         false,
-                        8)))
+                        8))
 
         val sut = createSut(true)
 
@@ -169,7 +168,7 @@ class ChangelogTests : CleanDatabaseTests()
         insertTestReportChangelogs()
 
         insertReport("anothertest", "anotherversion1")
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id7",
                         "anotherversion1",
@@ -183,7 +182,7 @@ class ChangelogTests : CleanDatabaseTests()
                         "internal",
                         "did something awful v1",
                         false,
-                        8)))
+                        8))
 
         val sut = createSut(false)
 
@@ -229,7 +228,7 @@ class ChangelogTests : CleanDatabaseTests()
         insertReport("test", "version2", published = false, date = Timestamp.from(old))
         insertReport("test", "version3", date = Timestamp.from(latest))
 
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id1",
                         "version1",
@@ -245,9 +244,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something awful v1",
                         false,
                         2,
-                        null)))
+                        null))
 
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id3",
                         "version2",
@@ -255,9 +254,9 @@ class ChangelogTests : CleanDatabaseTests()
                         "did something great v2",
                         true,
                         3,
-                        "version3")))
+                        "version3"))
 
-        insertChangelog(listOf(
+        insertChangelog(
                 InsertableChangelog(
                         "id4",
                         "version3",
@@ -281,7 +280,7 @@ class ChangelogTests : CleanDatabaseTests()
                         "everything is broken",
                         false,
                         6,
-                        "version3")))
+                        "version3"))
 
     }
 

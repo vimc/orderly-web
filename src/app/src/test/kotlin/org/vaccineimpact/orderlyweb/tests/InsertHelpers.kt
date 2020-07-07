@@ -23,7 +23,7 @@ constructor(val id: String,
             val reportVersionPublic: String? = null)
 
 
-fun insertChangelog(changelog: List<InsertableChangelog>)
+fun insertChangelog(vararg changelog: InsertableChangelog)
 {
     JooqContext().use {
 
