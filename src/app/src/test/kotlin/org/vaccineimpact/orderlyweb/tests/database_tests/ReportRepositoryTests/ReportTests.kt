@@ -320,7 +320,7 @@ class ReportTests : CleanDatabaseTests()
         assertThat(result[0].hasBeenPublished).isEqualTo(false)
 
         assertThat(result[1].name).isEqualTo("test2")
-        assertThat(result[1].displayName).isEqualTo("test2 display name")
+        assertThat(result[1].displayName).isEqualTo(null)
         assertThat(result[1].hasBeenPublished).isEqualTo(true)
 
         assertThat(result[2].name).isEqualTo("test")

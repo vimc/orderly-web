@@ -336,13 +336,11 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     override fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
     {
         JooqContext().use {
-            val orderByClause = `when`(ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME.isNull, timestamp("1970-01-01 01:00:00.0"))
-                    .otherwise(ORDERLYWEB_REPORT_VERSION_FULL.DATE)
             return it.dsl.selectDistinct(REPORT.NAME,
                     firstValue(ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME)
                             .over()
                             .partitionBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
-                            .orderBy(orderByClause.desc())
+                            .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.DATE.desc())
                             .`as`("displayName"),
                     ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED
                             .maxOver()
