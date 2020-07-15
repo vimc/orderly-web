@@ -89,4 +89,9 @@ class ReportController(context: ActionContext,
 
         return okayResponse()
     }
+
+    fun publishReports() {
+        val ids = context.postData<List<String>>("ids")
+        reportRepository.publish(ids)
+    }
 }
