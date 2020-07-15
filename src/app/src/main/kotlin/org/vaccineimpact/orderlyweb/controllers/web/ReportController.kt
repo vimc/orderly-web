@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
+import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
@@ -59,22 +60,22 @@ class ReportController(context: ActionContext,
         return okayResponse()
     }
 
-    fun getReportDrafts()
-            : List<ReportWithDraftsViewModel>
+    @Template("publish-reports.ftl")
+    fun publishReports()
+            : PublishReportsViewModel
     {
         val reports = reportRepository.getReportsWithPublishStatus()
         val drafts = reportRepository.getDrafts()
-        return reports.map { report ->
+        return PublishReportsViewModel(context, reports.map { report ->
             ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name })
-        }.filter { it.dateGroups.any() }
-
+        }.filter { it.dateGroups.any() })
     }
 
     fun setGlobalPinnedReports(): String
     {
         val reports = context.postData<List<String>>("reports")
 
-        reports.forEach{
+        reports.forEach {
             if (!reportRepository.reportExists(it))
             {
                 throw BadRequest("Report '$it' does not exist")

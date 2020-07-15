@@ -4,16 +4,19 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.controllers.web.AdminController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
+import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class ReportDraftTests : TeamcityTests()
+class PublishReportsTests : TeamcityTests()
 {
     @Test
     fun `can build report draft view models with most recent drafts first`()
@@ -36,7 +39,7 @@ class ReportDraftTests : TeamcityTests()
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
 
-        val result = sut.getReportDrafts()
+        val result = sut.publishReports().reportsWithDrafts
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].previouslyPublished).isFalse()
@@ -89,7 +92,7 @@ class ReportDraftTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getReportDrafts()
+        val result = sut.publishReports().reportsWithDrafts
         assertThat(result.count()).isEqualTo(1)
     }
 
@@ -114,7 +117,7 @@ class ReportDraftTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getReportDrafts()
+        val result = sut.publishReports().reportsWithDrafts
         val draft = result[0].dateGroups[0].drafts[0]
         assertThat(draft.parameterValues).isEqualTo("p1=param1,p2=param2")
         assertThat(draft.changelog.count()).isEqualTo(2)
@@ -145,9 +148,23 @@ class ReportDraftTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getReportDrafts()
+        val result = sut.publishReports().reportsWithDrafts
 
         assertThat(result[0].displayName).isEqualTo("The second report")
         assertThat(result[1].displayName).isEqualTo("report-1")
+    }
+
+    @Test
+    fun `returns correct breadcrumbs for page`()
+    {
+        val mockRepo = mock<ReportRepository> {
+            on { getReportsWithPublishStatus() } doReturn listOf<ReportWithPublishStatus>()
+            on { getDrafts() } doReturn listOf<ReportVersionWithChangelogsParams>()
+        }
+
+        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val model = sut.publishReports()
+        assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
+                Breadcrumb("Publish reports", "http://localhost:8888/publish-reports"))
     }
 }
