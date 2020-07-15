@@ -45,6 +45,6 @@ class PublishReportsPageTests : TeamcityTests()
     {
         val script = doc.select("script")[2]
         val reportsJson = Serializer.instance.gson.toJson(testModel.reportsWithDrafts)
-        assertThat(script.html()).isEqualToIgnoringWhitespace("var reportsWithDraftsJson = ${reportsJson};")
+        assertThat(script.html()).isEqualToIgnoringWhitespace("var reportsWithDrafts = ${reportsJson};")
     }
 }
