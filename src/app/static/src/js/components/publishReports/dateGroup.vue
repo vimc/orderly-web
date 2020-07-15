@@ -1,7 +1,7 @@
 <template>
 <div>
-    <div class="date">{{date}}</div>
-    <div class="ml-3">
+    <h6>{{date}}</h6>
+    <div class="ml-4">
         <report-draft v-for="draft in drafts" :draft="draft"></report-draft>
     </div>
 </div>

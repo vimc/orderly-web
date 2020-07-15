@@ -25,7 +25,8 @@ class PublishReportsPageTests : TeamcityTests()
     @Test
     fun `renders page`()
     {
-        assertThat(doc.select("h2")[0].text()).isEqualTo("Latest drafts")
+        val publishComponent = doc.select("#publishReportsApp").select("publish-reports")
+        assertThat(publishComponent.attr(":reports-with-drafts")).isEqualTo("reportsWithDrafts")
     }
 
     @Test
@@ -46,5 +47,12 @@ class PublishReportsPageTests : TeamcityTests()
         val script = doc.select("script")[2]
         val reportsJson = Serializer.instance.gson.toJson(testModel.reportsWithDrafts)
         assertThat(script.html()).isEqualToIgnoringWhitespace("var reportsWithDrafts = ${reportsJson};")
+    }
+
+    @Test
+    fun `renders script bundle`()
+    {
+        val script = doc.select("script")[3]
+        assertThat(script.attr("src")).isEqualTo("http://localhost:8888/js/publishReports.bundle.js")
     }
 }

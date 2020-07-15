@@ -1,9 +1,9 @@
 <template>
     <div>
-        <h2>Latest drafts</h2>
+        <h2 class="h4">Latest drafts</h2>
         <div v-for="report in reportsWithDrafts" class="report">
-            <span>{{report.display_name}}</span>
-            <div class="ml-3">
+            <h5>{{report.display_name}}</h5>
+            <div class="ml-4">
                 <date-group v-for="group in report.date_groups"
                             :date="group.date"
                             :drafts="group.drafts"></date-group>

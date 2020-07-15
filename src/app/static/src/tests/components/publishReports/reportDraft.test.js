@@ -1,3 +1,4 @@
+import Vue from "vue";
 import {shallowMount} from "@vue/test-utils";
 import reportDraft from "../../../js/components/publishReports/reportDraft";
 
@@ -32,13 +33,55 @@ describe("reportDraft", () => {
         expect(rendered.find("span").text()).toBe("nmin=0");
     });
 
-    it("displays changelogs", () => {
+    it("renders changelogs", () => {
         const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
-        const logs = rendered.findAll(".changelog")
+        const logs = rendered.findAll(".changelog");
         expect(logs.length).toBe(2);
+
         expect(logs.at(0).find(".badge-public").text()).toBe("public");
         expect(logs.at(0).find(".public").text()).toBe(fakeDraft.changelog[0].value);
         expect(logs.at(1).find(".badge-internal").text()).toBe("internal");
         expect(logs.at(1).find(".internal").text()).toBe(fakeDraft.changelog[1].value);
+    });
+
+    it("does not render changelog link if there are no changelogs", () => {
+        const fakeDraftNoChangelogs = {...fakeDraft, changelog: []};
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraftNoChangelogs}});
+
+        expect(rendered.findAll(".changelog").length).toBe(0);
+        expect(rendered.find(".changelog-container").findAll("a").length).toBe(0);
+        expect(rendered.find(".changelog-container").find("span").text()).toBe("no changelog");
+    });
+
+    it("can toggle changelog visibility", async () => {
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
+
+        let logs = rendered.findAll(".changelog");
+        expect(logs.at(0).isVisible()).toBe(false);
+        expect(logs.at(1).isVisible()).toBe(false);
+
+        expect(rendered.find(".changelog-container").classes()).not.toContain("open");
+
+        const toggleLink = rendered.find(".changelog-container").find("a");
+        expect(toggleLink.text()).toBe("changelog");
+        toggleLink.trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.find(".changelog-container").classes()).toContain("open");
+
+        logs = rendered.findAll(".changelog");
+        expect(logs.at(0).isVisible()).toBe(true);
+        expect(logs.at(1).isVisible()).toBe(true);
+
+        toggleLink.trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.find(".changelog-container").classes()).not.toContain("open");
+
+        logs = rendered.findAll(".changelog");
+        expect(logs.at(0).isVisible()).toBe(false);
+        expect(logs.at(1).isVisible()).toBe(false);
     });
 });

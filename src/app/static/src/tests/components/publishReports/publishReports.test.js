@@ -34,8 +34,8 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports, {propsData: {reportsWithDrafts: testReportsWithDrafts}});
         const reports = rendered.findAll(".report");
         expect(reports.length).toBe(2);
-        expect(reports.at(0).find("span").text()).toBe("another report");
-        expect(reports.at(1).find("span").text()).toBe("global");
+        expect(reports.at(0).find("h5").text()).toBe("another report");
+        expect(reports.at(1).find("h5").text()).toBe("global");
     });
 
     it("displays date groups", () => {

@@ -23,7 +23,7 @@ describe("dateGroup", () => {
 
     it("displays date", () => {
         const rendered = shallowMount(dateGroup, {propsData: {date: testDateGroup.date, drafts: testDateGroup.drafts}});
-        expect(rendered.find(".date").text()).toBe("Sat Jul 27 2019");
+        expect(rendered.find("h6").text()).toBe("Sat Jul 27 2019");
     });
 
     it("displays drafts", () => {
