@@ -50,7 +50,6 @@ describe("reportDraft", () => {
 
         expect(rendered.findAll(".changelog").length).toBe(0);
         expect(rendered.find(".changelog-container").findAll("a").length).toBe(0);
-        expect(rendered.find(".changelog-container").find("span").text()).toBe("no changelog");
     });
 
     it("can toggle changelog visibility", async () => {

@@ -49,15 +49,15 @@ class PublishReportsTests : TeamcityTests()
         assertThat(dateGroup.date).isEqualTo("Tue Apr 21 2020")
         assertThat(dateGroup.drafts.count()).isEqualTo(2)
         assertThat(dateGroup.drafts[0].id).isEqualTo("v2-3")
-        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report-2/v2-3")
+        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report/report-2/v2-3")
         assertThat(dateGroup.drafts[1].id).isEqualTo("v2-2")
-        assertThat(dateGroup.drafts[1].url).isEqualTo("http://localhost:8888/report-2/v2-2")
+        assertThat(dateGroup.drafts[1].url).isEqualTo("http://localhost:8888/report/report-2/v2-2")
 
         dateGroup = result[0].dateGroups[1]
         assertThat(dateGroup.date).isEqualTo("Mon Apr 20 2020")
         assertThat(dateGroup.drafts.count()).isEqualTo(1)
         assertThat(dateGroup.drafts[0].id).isEqualTo("v2-1")
-        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report-2/v2-1")
+        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report/report-2/v2-1")
 
         assertThat(result[1].previouslyPublished).isTrue()
         assertThat(result[1].dateGroups.count()).isEqualTo(1)
@@ -65,7 +65,7 @@ class PublishReportsTests : TeamcityTests()
         assertThat(dateGroup.date).isEqualTo("Mon Apr 20 2020")
         assertThat(dateGroup.drafts.count()).isEqualTo(1)
         assertThat(dateGroup.drafts[0].id).isEqualTo("v1-1")
-        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report-1/v1-1")
+        assertThat(dateGroup.drafts[0].url).isEqualTo("http://localhost:8888/report/report-1/v1-1")
     }
 
     @Test
