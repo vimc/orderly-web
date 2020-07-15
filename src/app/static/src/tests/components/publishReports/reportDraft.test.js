@@ -83,4 +83,36 @@ describe("reportDraft", () => {
         expect(logs.at(0).isVisible()).toBe(false);
         expect(logs.at(1).isVisible()).toBe(false);
     });
+
+    it("collapses changelog if collapse increments", async () => {
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, collapse: 0}});
+        expect(rendered.findAll(".changelog").length).toBe(2);
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
+
+        const toggleLink = rendered.find(".changelog-container").find("a");
+        toggleLink.trigger("click");
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(2);
+
+        rendered.setProps({collapse: 1});
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
+    });
+
+    it("expands changelog if expand increments", async () => {
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, expand: 0}});
+        expect(rendered.findAll(".changelog").length).toBe(2);
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
+
+        rendered.setProps({expand: 1});
+
+        await Vue.nextTick();
+
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(2);
+    });
+
 });
