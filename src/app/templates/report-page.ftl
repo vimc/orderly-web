@@ -54,7 +54,7 @@
                             </#if>
                             <#if isRunner || !fineGrainedAuth>
                                 <div id="runReportVueApp" class="mt-5">
-                                    <run-report :report=report></run-report>
+                                    <run-report-inline :report=report></run-report-inline>
                                 </div>
                             </#if>
                         </div>

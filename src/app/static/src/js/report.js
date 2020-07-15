@@ -2,7 +2,7 @@ import Vue from 'vue';
 import $ from 'jquery';
 
 import publishSwitch from './components/reports/publishSwitch.vue'
-import runReport from './components/reports/runReportInline.vue'
+import runReportInline from './components/reports/runReportInline.vue'
 import globalReportReadersList from './components/reports/globalReportReadersList'
 import reportReadersList from './components/reports/reportReadersList.vue'
 import globalReaderRolesList from './components/reports/globalReportReaderRolesList.vue'
@@ -37,7 +37,7 @@ $(document).ready(() => {
             el: '#runReportVueApp',
             data: data,
             components: {
-                runReport: runReport
+                runReportInline
             }
         });
     }
