@@ -15,7 +15,7 @@ class PublishTests : TeamcityTests() {
     fun `can publish multiple versions`() {
         val mockRepo = mock<ReportRepository>()
         val mockContext = mock<ActionContext> {
-            on { postData<List<String>>("versions")} doReturn listOf("v1", "v2")
+            on { postData<List<String>>("ids")} doReturn listOf("v1", "v2")
         }
         val sut = ReportController(mockContext, mock(), mockRepo, mock())
         sut.publishReports()
