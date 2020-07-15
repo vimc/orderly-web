@@ -43,6 +43,7 @@ object WebReportRouteConfig : RouteConfig
                     "/publish-reports/",
                     ReportController::class, "publishReports")
                     .post()
+                    .json()
                     .secure(reviewReports)
     )
 }

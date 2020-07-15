@@ -56,9 +56,12 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report reviewers can publish reports`()
     {
-        val url = "/publish-reports"
-        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.review", Scope.Global())),
-                method = HttpMethod.post, contentType = ContentTypes.json)
+        val url = "/publish-reports/"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.review", Scope.Global())),
+                method = HttpMethod.post,
+                contentType = ContentTypes.json,
+                postData = mapOf("ids" to listOf("v1")))
     }
 
     @Test
@@ -67,7 +70,7 @@ class ReportTests : IntegrationTest()
         insertReport("report", "v1", published = false)
         insertReport("report", "v2", published = false)
 
-        val url = "/publish-reports"
+        val url = "/publish-reports/"
         webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,
@@ -75,6 +78,7 @@ class ReportTests : IntegrationTest()
                 contentType = ContentTypes.json)
 
         val repo = OrderlyReportRepository(true, true)
+
         assertThat(repo.getReportVersion("report", "v1").published).isTrue()
         assertThat(repo.getReportVersion("report", "v2").published).isTrue()
     }
