@@ -18,7 +18,7 @@
         <button v-on:click="confirmRun" class="btn mt-2" type="submit">Run report</button>
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
-            <div v-if="newVersionFromRun" id="run-report-new-version">
+            <div v-if="runHasCompleted && newVersionFromRun" id="run-report-new-version">
                 New version: <a v-bind:href="newVersionHref">{{newVersionDisplayName}}</a>
             </div>
             <button v-on:click="dismissRunStatus" id="run-report-dismiss" class="btn btn-link">Dismiss</button>
