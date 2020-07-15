@@ -1,3 +1,4 @@
+import Vue from "vue";
 import publishReports from "../../../js/components/publishReports/publishReports";
 import {shallowMount} from "@vue/test-utils";
 import dateGroup from "../../../js/components/publishReports/dateGroup";
@@ -59,7 +60,20 @@ describe("publishReports", () => {
 
     it("renders title", () => {
         const rendered = shallowMount(publishReports, {propsData: {reportsWithDrafts: testReportsWithDrafts}});
-        expect(rendered.find("h2").text()).toBe("Latest drafts")
-    })
+        expect(rendered.find("label").text()).toBe("Latest drafts")
+    });
+
+    it("displays only previously published reports when option is checked", async () => {
+        const rendered = shallowMount(publishReports, {propsData: {reportsWithDrafts: testReportsWithDrafts}});
+        let reports = rendered.findAll(".report");
+        expect(reports.length).toBe(2);
+        rendered.find("input").setChecked(true);
+
+        await Vue.nextTick();
+
+        reports = rendered.findAll(".report");
+        expect(reports.length).toBe(1);
+        expect(reports.at(0).find("h5").text()).toBe("another report");
+    });
 
 });
