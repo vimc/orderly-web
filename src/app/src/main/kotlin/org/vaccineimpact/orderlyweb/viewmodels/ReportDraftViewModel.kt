@@ -19,7 +19,7 @@ data class ReportDraftViewModel(val id: String,
         {
             val changelogs = version.changelogs.map { ChangelogItemViewModel.build(it) }
             val parameterValues = version.parameterValues.entries.joinToString(",") { "${it.key}=${it.value}" }
-            return ReportDraftViewModel(version.id, "${AppConfig()["app.url"]}/${version.name}/${version.id}", changelogs, parameterValues)
+            return ReportDraftViewModel(version.id, "${AppConfig()["app.url"]}/report/${version.name}/${version.id}", changelogs, parameterValues)
         }
     }
 }

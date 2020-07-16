@@ -26,6 +26,6 @@ class PublishReportsPageTests : IntegrationTest()
         Assertions.assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
-        Assertions.assertThat(page.selectFirst("h2").text()).isEqualTo("Latest drafts")
+        Assertions.assertThat(page.select("#publishReportsApp").count()).isEqualTo(1)
     }
 }

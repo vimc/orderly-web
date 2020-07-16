@@ -3,44 +3,7 @@
 @import "partials/sidebar";
 @import "partials/permissions";
 @import "partials/modal";
-
-.changelog-header tr th {
-  background-color: $theme-header-bg-color;
-}
-
-.changelog-label {
-  border-radius: 0.25rem 0.25rem 0 0;
-}
-
-.changelog-item {
-  padding-right: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  margin-top: -2px;
-
-  &.public {
-    border-top: 1px solid $published-color;
-    border-right: 1px solid $published-color;
-  }
-
-  &.internal {
-    border-top: 1px solid $internal-color;
-    border-right: 1px solid $internal-color;
-  }
-
-  &.no-badge {
-    border-top: 1px solid $theme-table-border-color;
-    padding-bottom: 5px;
-  }
-
-  &.no-badge:first-of-type {
-    border-top: 0;
-  }
-
-  &.no-badge:last-of-type {
-    padding-bottom: 0;
-  }
-}
+@import "partials/changelogs";
 
 .specific-read-access-label {
   margin-top: 40px;
