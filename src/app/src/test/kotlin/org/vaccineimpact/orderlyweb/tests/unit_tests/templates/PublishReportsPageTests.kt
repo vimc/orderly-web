@@ -25,8 +25,7 @@ class PublishReportsPageTests : TeamcityTests()
     @Test
     fun `renders page`()
     {
-        val publishComponent = doc.select("#publishReportsApp").select("publish-reports")
-        assertThat(publishComponent.attr(":reports-with-drafts")).isEqualTo("reportsWithDrafts")
+        assertThat(doc.select("#publishReportsApp").count()).isEqualTo(1)
     }
 
     @Test
@@ -44,7 +43,7 @@ class PublishReportsPageTests : TeamcityTests()
     @Test
     fun `renders script bundle`()
     {
-        val script = doc.select("script")[3]
+        val script = doc.select("script")[2]
         assertThat(script.attr("src")).isEqualTo("http://localhost:8888/js/publishReports.bundle.js")
     }
 }
