@@ -10,6 +10,7 @@ object WebReportRouteConfig : RouteConfig
 {
     private val readReports = setOf("report:<name>/reports.read")
     private val runReports = setOf("*/reports.run")
+    private val reviewReports = setOf("*/reports.review")
     private val configureReports = setOf("*/pinned-reports.manage")
 
     override val endpoints = listOf(
@@ -37,6 +38,12 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint(
                     "/run-report/",
                     ReportController::class, "getRunReport")
-                    .secure(runReports)
+                    .secure(runReports),
+            WebEndpoint(
+                    "/bulk-publish/",
+                    ReportController::class, "publishReports")
+                    .post()
+                    .json()
+                    .secure(reviewReports)
     )
 }
