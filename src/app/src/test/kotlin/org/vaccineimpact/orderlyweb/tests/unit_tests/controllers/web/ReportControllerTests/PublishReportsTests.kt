@@ -38,7 +38,7 @@ class PublishReportsTests : TeamcityTests()
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
 
-        val result = sut.getPublishReports().reportsWithDrafts
+        val result = sut.getDrafts()
 
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].previouslyPublished).isFalse()
@@ -91,7 +91,7 @@ class PublishReportsTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getPublishReports().reportsWithDrafts
+        val result = sut.getDrafts()
         assertThat(result.count()).isEqualTo(1)
     }
 
@@ -116,7 +116,7 @@ class PublishReportsTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getPublishReports().reportsWithDrafts
+        val result = sut.getDrafts()
         val draft = result[0].dateGroups[0].drafts[0]
         assertThat(draft.parameterValues).isEqualTo("p1=param1,p2=param2")
         assertThat(draft.changelog.count()).isEqualTo(2)
@@ -147,7 +147,7 @@ class PublishReportsTests : TeamcityTests()
         }
 
         val sut = ReportController(mock(), mock(), mockRepo, mock())
-        val result = sut.getPublishReports().reportsWithDrafts
+        val result = sut.getDrafts()
 
         assertThat(result[0].displayName).isEqualTo("The second report")
         assertThat(result[1].displayName).isEqualTo("report-1")
