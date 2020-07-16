@@ -1,6 +1,9 @@
 <template>
     <div>
-        <h2 class="h4 mb-4">Latest drafts</h2>
+        <span class="text-muted">
+            Here you can publish the latest drafts (unpublished versions) of reports in bulk.
+            You can also manage the publish status of an individual report version directly from its report page.
+        </span>
         <div v-for="report in reportsWithDrafts" class="report">
             <h5>{{report.display_name}}</h5>
             <div class="ml-5">
