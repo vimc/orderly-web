@@ -4,8 +4,8 @@
         <div class="ml-4">
             <report-draft v-for="draft in drafts"
                           :draft="draft"
-                          :expand="expand"
-                          :collapse="collapse"></report-draft>
+                          :expand-clicked="expandClicked"
+                          :collapse-clicked="collapseClicked"></report-draft>
         </div>
     </div>
 </template>
@@ -16,6 +16,6 @@
     export default {
         name: "dateGroup",
         components: {ReportDraft},
-        props: ["date", "drafts", "expand", "collapse"]
+        props: ["date", "drafts", "expandClicked", "collapseClicked"]
     }
 </script>

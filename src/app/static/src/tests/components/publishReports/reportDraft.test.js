@@ -85,7 +85,7 @@ describe("reportDraft", () => {
     });
 
     it("collapses changelog if collapse increments", async () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, collapse: 0}});
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, collapseClicked: 0}});
         expect(rendered.findAll(".changelog").length).toBe(2);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
@@ -96,7 +96,7 @@ describe("reportDraft", () => {
 
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(2);
 
-        rendered.setProps({collapse: 1});
+        rendered.setProps({collapseClicked: 1});
 
         await Vue.nextTick();
 
@@ -104,11 +104,11 @@ describe("reportDraft", () => {
     });
 
     it("expands changelog if expand increments", async () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, expand: 0}});
+        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, expandClicked: 0}});
         expect(rendered.findAll(".changelog").length).toBe(2);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
-        rendered.setProps({expand: 1});
+        rendered.setProps({expandClicked: 1});
 
         await Vue.nextTick();
 

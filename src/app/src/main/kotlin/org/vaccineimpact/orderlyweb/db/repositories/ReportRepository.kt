@@ -43,6 +43,8 @@ interface ReportRepository
 
     fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
 
+    fun publish(ids: List<String>)
+
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -351,6 +353,16 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(REPORT.NAME))
                     .orderBy(ORDERLYWEB_REPORT_VERSION_FULL.DATE.desc())
                     .fetchInto(ReportWithPublishStatus::class.java)
+        }
+    }
+
+    override fun publish(ids: List<String>)
+    {
+        JooqContext().use {
+            it.dsl.update(ORDERLYWEB_REPORT_VERSION)
+                    .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, true)
+                    .where(ORDERLYWEB_REPORT_VERSION.ID.`in`(ids))
+                    .execute()
         }
     }
 

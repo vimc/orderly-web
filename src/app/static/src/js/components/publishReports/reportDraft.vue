@@ -16,7 +16,7 @@
 <script>
     export default {
         name: 'reportDraft',
-        props: ['draft', 'expand', 'collapse'],
+        props: ['draft', 'expandClicked', 'collapseClicked'],
         data() {
             return {
                 showChangelog: false
@@ -29,10 +29,10 @@
             }
         },
         watch: {
-            expand() {
+            expandClicked() {
                 this.showChangelog = true;
             },
-            collapse() {
+            collapseClicked() {
                 this.showChangelog = false;
             }
         }
