@@ -4,7 +4,9 @@
         <report v-for="report in reportsWithDrafts"
                 :report="report"
                 :selected-ids="selectedIds"
-                @change="change"></report>
+                :selected-dates="selectedDates"
+                @change="change"
+                @change-group="handleGroupChange"></report>
     </div>
 </template>
 <script>
@@ -16,9 +18,14 @@
         props: ["reportsWithDrafts"],
         data() {
             const selectedIds = {}
+            const selectedDates = {}
             this.reportsWithDrafts.map(r => r.date_groups
-                .map(g => g.drafts.map(d => selectedIds[d.id] = false)))
+                .map(g => {
+                    selectedDates[g.date] = false;
+                    g.drafts.map(d => selectedIds[d.id] = false)
+                }))
             return {
+                selectedDates,
                 selectedIds
             }
         },
@@ -30,6 +37,9 @@
                 if (value.ids) {
                     value.ids.map(id => this.selectedIds[id] = value.value)
                 }
+            },
+            handleGroupChange(value) {
+                this.selectedDates[value.date] = value.value
             }
         }
     }

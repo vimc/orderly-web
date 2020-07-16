@@ -16,39 +16,36 @@
                         :date="group.date"
                         :drafts="group.drafts"
                         :selected-ids="selectedIds"
-                        @change="change"></date-group>
+                        @change="handleChangeFromChild"
+                        @change-group="handleGroupChange"></date-group>
         </div>
     </div>
 </template>
 <script>
     import DateGroup from "./dateGroup";
+    import selectableParentMixin from "./selectableParentMixin";
 
     export default {
         components: {DateGroup},
         props: ["report", "selectedIds"],
-        data() {
-            return {selected: false}
-        },
+        mixins: [selectableParentMixin],
         computed: {
             dates() {
                 return this.report.date_groups.map(g => g.date)
             },
             draftIds() {
-                return [].concat.apply([], this.report.date_groups.map(g => g.drafts.map(d=> d.id)))
+                return [].concat.apply([], this.report.date_groups.map(g => g.drafts.map(d => d.id)))
             }
         },
         methods: {
-            change(value) {
-                if (!value.value) {
-                    // don't want the parent checkbox selected if any child is not
-                    this.selected = false
-                }
-                this.$emit("change", value)
+            handleGroupChange(value) {
+                this.$emit("change-group", value);
             },
             selectReport(e) {
                 const value = e.target.checked
                 this.selected = value
                 this.$emit("change", {ids: this.draftIds, value});
+                this.$emit("change-group", {date: this.dates, value});
             }
         }
     }

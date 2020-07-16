@@ -47,14 +47,6 @@
                 e.preventDefault();
                 this.showChangelog = !this.showChangelog;
             }
-        },
-        watch: {
-            selectedIds: {
-                deep: true,
-                handler() {
-                    console.log("selectedIdschanged")
-                }
-            }
         }
     }
 </script>
