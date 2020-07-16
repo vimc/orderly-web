@@ -295,4 +295,19 @@ class VersionTests : CleanDatabaseTests()
         }.isInstanceOf(UnknownObjectError::class.java)
     }
 
+    @Test
+    fun `can publish multiple versions at once`()
+    {
+        insertReport("test", "v1", published = false)
+        insertReport("test", "v2", published = false)
+        insertReport("anotherreport", "b1", published = false)
+
+        val sut = createSut(true)
+        sut.publish(listOf("v1", "b1"))
+
+        assertThat(sut.getReportVersion("test", "v1").published).isTrue()
+        assertThat(sut.getReportVersion("test", "v2").published).isFalse()
+        assertThat(sut.getReportVersion("anotherreport", "b1").published).isTrue()
+    }
+
 }
