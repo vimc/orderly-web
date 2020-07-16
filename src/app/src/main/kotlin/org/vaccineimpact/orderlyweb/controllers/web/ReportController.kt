@@ -61,7 +61,7 @@ class ReportController(context: ActionContext,
     }
 
     @Template("publish-reports.ftl")
-    fun publishReports()
+    fun getPublishReports()
             : PublishReportsViewModel
     {
         val reports = reportRepository.getReportsWithPublishStatus()
@@ -88,6 +88,13 @@ class ReportController(context: ActionContext,
 
         reportRepository.setGlobalPinnedReports(reports)
 
+        return okayResponse()
+    }
+
+    fun publishReports(): String
+    {
+        val ids = context.postData<List<String>>("ids")
+        reportRepository.publish(ids)
         return okayResponse()
     }
 }

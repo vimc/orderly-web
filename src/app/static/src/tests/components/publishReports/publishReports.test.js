@@ -58,9 +58,12 @@ describe("publishReports", () => {
         expect(groups.at(0).props("drafts")).toEqual([]);
     });
 
-    it("renders title", () => {
+    it("renders title and help text", () => {
         const rendered = shallowMount(publishReports, {propsData: {reportsWithDrafts: testReportsWithDrafts}});
-        expect(rendered.find("label").text()).toBe("Latest drafts")
+        expect(rendered.find("h1.h3").text()).toBe("Publish reports");
+        expect(rendered.find("span.text-muted").text())
+            .toBeIgnoringWhitespace("Here you can publish the latest drafts (unpublished versions) of reports in bulk." +
+                "You can also manage the publish status of an individual report version directly from its report page.");
     });
 
     it("displays only previously published reports when option is checked", async () => {
