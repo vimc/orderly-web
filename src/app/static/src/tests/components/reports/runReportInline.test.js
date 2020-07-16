@@ -1,11 +1,11 @@
 import {mount} from '@vue/test-utils';
 import {mockAxios} from "../../mockAxios";
 import * as sinon from "sinon";
-import RunReport from "../../../js/components/reports/runReport.vue"
+import RunReport from "../../../js/components/reports/runReportInline.vue"
 import {session} from "../../../js/utils/session";
 import Vue from "vue";
 
-describe("runReport", () => {
+describe("runReportInline", () => {
 
     beforeEach(() => {
         mockAxios.reset();
@@ -72,7 +72,29 @@ describe("runReport", () => {
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
     });
 
-    it('shows new version', async () => {
+    it('shows new version if run is completed', async () => {
+        const wrapper = mount(RunReport, runReportProps);
+
+        wrapper.setData({
+            showModal: false,
+            pollingTimer: null,
+            runningKey: "some_key",
+            runningStatus: "success",
+            newVersionFromRun: "20190514-160954-fc295f38"
+        });
+
+        await Vue.nextTick();
+
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: success");
+
+        expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
+        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
+        expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
+    });
+
+    it('does not show new version if run is not completed', async () => {
         const wrapper = mount(RunReport, runReportProps);
 
         wrapper.setData({
@@ -89,9 +111,7 @@ describe("runReport", () => {
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
         expect(wrapper.find("#run-report-status").text()).toContain("Running status: some_status");
 
-        expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
-        expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
-        expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
+        expect(wrapper.findAll("#run-report-new-version").length).toBe(0);
     });
 
     it('shows modal', async () => {
@@ -403,11 +423,11 @@ describe("runReport", () => {
         }, 1800);
     });
 
-    it('initialises data from session storage', async () => {
+    it('initialises complete data from session storage', async () => {
         session.getRunningReportStatus.restore();
         sinon.stub(session, "getRunningReportStatus").callsFake(() => {
                 return {
-                    runningStatus: "storedStatus",
+                    runningStatus: "success",
                     runningKey: "storedKey",
                     newVersionFromRun: "20190514-160954-fc295f38"
                 }
@@ -420,11 +440,34 @@ describe("runReport", () => {
 
         expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
         expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
-        expect(wrapper.find("#run-report-status").text()).toContain("Running status: storedStatus");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: success");
 
         expect(wrapper.find("#run-report-new-version").text()).toBe("New version: Tue May 14 2019, 16:09");
         expect(wrapper.find("#run-report-new-version a").attributes("href")).toBe("http://app/report/name1/20190514-160954-fc295f38");
         expect(wrapper.find("#run-report-dismiss").text()).toBe("Dismiss");
+
+    });
+
+    it('initialises incomplete data from session storage', async () => {
+        session.getRunningReportStatus.restore();
+        sinon.stub(session, "getRunningReportStatus").callsFake(() => {
+                return {
+                    runningStatus: "running",
+                    runningKey: "storedKey",
+                    newVersionFromRun: "20190514-160954-fc295f38"
+                }
+            }
+        );
+
+        const wrapper = mount(RunReport, runReportProps);
+
+        await Vue.nextTick();
+
+        expect(wrapper.find('button[type="submit"]').text()).toBe("Run report");
+        expect(wrapper.find('#run-report-confirm').classes()).toContain("modal-hide");
+        expect(wrapper.find("#run-report-status").text()).toContain("Running status: running");
+
+        expect(wrapper.findAll("#run-report-new-version").length).toBe(0);
 
         expect(wrapper.vm.$data["runningKey"]).toBe("storedKey");
         expect(wrapper.vm.$data["pollingTimer"]).not.toBeNull();
