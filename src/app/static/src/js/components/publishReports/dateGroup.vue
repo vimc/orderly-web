@@ -14,7 +14,7 @@
             <report-draft v-for="draft in drafts"
                           :draft="draft"
                           :selected-ids="selectedIds"
-                          @change="handleChangeFromChild"></report-draft>
+                          @select-draft="handleDraftSelect"></report-draft>
         </div>
     </div>
 </template>
@@ -33,8 +33,8 @@
                     return this.selectedDates[this.date]
                 },
                 set(value) {
-                    this.$emit("change", {ids: this.draftIds, value});
-                    this.$emit("change-group", {date: this.date, value});
+                    this.$emit("select-draft", {ids: this.draftIds, value});
+                    this.$emit("select-group", {date: this.date, value});
                 }
             },
             draftIds() {
@@ -45,15 +45,15 @@
             selectGroup(e) {
                 const value = e.target.checked
                 this.selected = value
-                this.$emit("change", {ids: this.draftIds, value});
-                this.$emit("change-group", {date: this.date, value});
+                this.$emit("select-draft", {ids: this.draftIds, value});
+                this.$emit("select-group", {date: this.date, value});
             },
-            handleChangeFromChild(value) {
+            handleDraftSelect(value) {
                 if (!value.value) {
                     // don't want the parent checkbox selected if any child is not
-                    this.$emit("change-group", {date: this.date, false});
+                    this.$emit("select-group", {date: this.date, value: false});
                 }
-                this.$emit("change", value)
+                this.$emit("select-draft", value)
             }
         }
     }

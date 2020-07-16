@@ -16,19 +16,23 @@
                         :date="group.date"
                         :drafts="group.drafts"
                         :selected-ids="selectedIds"
-                        @change="handleChangeFromChild"
-                        @change-group="handleGroupChange"></date-group>
+                        :selected-dates="selectedDates"
+                        @select-draft="handleDraftSelect"
+                        @select-group="handleGroupSelect"></date-group>
         </div>
     </div>
 </template>
 <script>
     import DateGroup from "./dateGroup";
-    import selectableParentMixin from "./selectableParentMixin";
 
     export default {
         components: {DateGroup},
-        props: ["report", "selectedIds"],
-        mixins: [selectableParentMixin],
+        props: ["report", "selectedIds", "selectedDates"],
+        data() {
+            return {
+                selected: false
+            }
+        },
         computed: {
             dates() {
                 return this.report.date_groups.map(g => g.date)
@@ -38,14 +42,21 @@
             }
         },
         methods: {
-            handleGroupChange(value) {
-                this.$emit("change-group", value);
-            },
             selectReport(e) {
                 const value = e.target.checked
                 this.selected = value
-                this.$emit("change", {ids: this.draftIds, value});
-                this.$emit("change-group", {date: this.dates, value});
+                this.$emit("select-draft", {ids: this.draftIds, value});
+                this.$emit("select-group", {dates: this.dates, value});
+            },
+            handleDraftSelect(value) {
+                if (!value.value) {
+                    // don't want the parent checkbox selected if any child is not
+                    this.selected = false
+                }
+                this.$emit("select-draft", value)
+            },
+            handleGroupSelect(value) {
+                this.$emit("select-group", value);
             }
         }
     }

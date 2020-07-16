@@ -1,13 +1,3 @@
-
-.btn-published {
-  @include button-variant($published-color, $gray-400);
-}
-
-.btn-internal {
-  @include button-variant(darken($warning, 10%), $gray-400);
-  color: #ffffff;
-}
-
 .sidebar {
   border-bottom: 1px solid $gray-200;
 

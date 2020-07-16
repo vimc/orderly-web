@@ -5,12 +5,16 @@
                 :report="report"
                 :selected-ids="selectedIds"
                 :selected-dates="selectedDates"
-                @change="change"
-                @change-group="handleGroupChange"></report>
+                @select-draft="handleDraftSelect"
+                @select-group="handleGroupSelect"></report>
+        <button class="btn btn-published"
+                @click="publishDrafts">Publish
+        </button>
     </div>
 </template>
 <script>
     import report from "./report";
+    import {api} from "../../utils/api";
 
     export default {
         name: "publishReports",
@@ -30,7 +34,7 @@
             }
         },
         methods: {
-            change(value) {
+            handleDraftSelect(value) {
                 if (value.id) {
                     this.selectedIds[value.id] = value.value
                 }
@@ -38,8 +42,24 @@
                     value.ids.map(id => this.selectedIds[id] = value.value)
                 }
             },
-            handleGroupChange(value) {
-                this.selectedDates[value.date] = value.value
+            handleGroupSelect(value) {
+                if (value.date) {
+                    this.selectedDates[value.date] = value.value
+                }
+                if (value.dates) {
+                    value.dates.map(d => this.selectedDates[d] = value.value)
+                }
+            },
+            publishDrafts() {
+                const ids = Object.keys(this.selectedIds)
+                    .filter(id => this.selectedIds[id])
+                api.post("/bulk-publish/", {ids})
+                    .then(() => {
+                        // refresh reports
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             }
         }
     }

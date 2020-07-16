@@ -34,11 +34,10 @@
         computed: {
             selected: {
                 get() {
-                    console.log("changed", this.selectedIds[this.draft.id])
                     return this.selectedIds[this.draft.id]
                 },
                 set(value) {
-                    this.$emit("change", {id: this.draft.id, value})
+                    this.$emit("select-draft", {id: this.draft.id, value})
                 }
             }
         },
