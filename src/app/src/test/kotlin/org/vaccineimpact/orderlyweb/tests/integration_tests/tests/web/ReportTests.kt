@@ -56,7 +56,7 @@ class ReportTests : IntegrationTest()
     @Test
     fun `only report reviewers can publish reports`()
     {
-        val url = "/publish-reports/"
+        val url = "/bulk-publish/"
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,
@@ -70,7 +70,7 @@ class ReportTests : IntegrationTest()
         insertReport("report", "v1", published = false)
         insertReport("report", "v2", published = false)
 
-        val url = "/publish-reports/"
+        val url = "/bulk-publish/"
         webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.review", Scope.Global())),
                 method = HttpMethod.post,

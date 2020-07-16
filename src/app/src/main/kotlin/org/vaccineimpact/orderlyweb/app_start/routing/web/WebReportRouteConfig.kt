@@ -40,7 +40,7 @@ object WebReportRouteConfig : RouteConfig
                     ReportController::class, "getRunReport")
                     .secure(runReports),
             WebEndpoint(
-                    "/publish-reports/",
+                    "/bulk-publish/",
                     ReportController::class, "publishReports")
                     .post()
                     .json()
