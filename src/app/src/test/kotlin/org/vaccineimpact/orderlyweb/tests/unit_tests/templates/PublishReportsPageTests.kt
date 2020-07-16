@@ -25,7 +25,8 @@ class PublishReportsPageTests : TeamcityTests()
     @Test
     fun `renders page`()
     {
-        assertThat(doc.select("h2")[0].text()).isEqualTo("Latest drafts")
+        val publishComponent = doc.select("#publishReportsApp").select("publish-reports")
+        assertThat(publishComponent.attr(":reports-with-drafts")).isEqualTo("reportsWithDrafts")
     }
 
     @Test
@@ -38,5 +39,12 @@ class PublishReportsPageTests : TeamcityTests()
         assertThat(breadcrumbs[0].child(0).attr("href")).isEqualTo("http://localhost:8888")
         assertThat(breadcrumbs[1].child(0).text()).isEqualTo("Publish reports")
         assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+    }
+
+    @Test
+    fun `renders script bundle`()
+    {
+        val script = doc.select("script")[3]
+        assertThat(script.attr("src")).isEqualTo("http://localhost:8888/js/publishReports.bundle.js")
     }
 }
