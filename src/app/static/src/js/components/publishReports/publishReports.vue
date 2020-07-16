@@ -1,5 +1,6 @@
 <template>
     <div>
+        <h1 class="h3">Publish reports</h1>
         <span class="text-muted">
             Here you can publish the latest drafts (unpublished versions) of reports in bulk.
             You can also manage the publish status of an individual report version directly from its report page.
