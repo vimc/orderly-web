@@ -64,11 +64,16 @@ class ReportController(context: ActionContext,
     fun getPublishReports()
             : PublishReportsViewModel
     {
+        return PublishReportsViewModel(context)
+    }
+
+    fun getDrafts(): List<ReportWithDraftsViewModel>
+    {
         val reports = reportRepository.getReportsWithPublishStatus()
         val drafts = reportRepository.getDrafts()
-        return PublishReportsViewModel(context, reports.map { report ->
+        return reports.map { report ->
             ReportWithDraftsViewModel.build(report, drafts.filter { it.name == report.name })
-        }.filter { it.dateGroups.any() })
+        }.filter { it.dateGroups.any() }
     }
 
     fun setGlobalPinnedReports(): String

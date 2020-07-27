@@ -4,7 +4,7 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
@@ -18,15 +18,14 @@ class PublishReportsPageTests : TeamcityTests()
         val template = FreemarkerTestRule("publish-reports.ftl")
     }
 
-    private val testModel = PublishReportsViewModel(mock(),listOf())
+    private val testModel = PublishReportsViewModel(mock<ActionContext>())
 
     private val doc = template.jsoupDocFor(testModel)
 
     @Test
     fun `renders page`()
     {
-        val publishComponent = doc.select("#publishReportsApp").select("publish-reports")
-        assertThat(publishComponent.attr(":reports-with-drafts")).isEqualTo("reportsWithDrafts")
+        assertThat(doc.select("#publishReportsApp").count()).isEqualTo(1)
     }
 
     @Test
@@ -42,17 +41,9 @@ class PublishReportsPageTests : TeamcityTests()
     }
 
     @Test
-    fun `renders reports to script tag`()
-    {
-        val script = doc.select("script")[2]
-        val reportsJson = Serializer.instance.gson.toJson(testModel.reportsWithDrafts)
-        assertThat(script.html()).isEqualToIgnoringWhitespace("var reportsWithDrafts = ${reportsJson};")
-    }
-
-    @Test
     fun `renders script bundle`()
     {
-        val script = doc.select("script")[3]
+        val script = doc.select("script")[2]
         assertThat(script.attr("src")).isEqualTo("http://localhost:8888/js/publishReports.bundle.js")
     }
 }

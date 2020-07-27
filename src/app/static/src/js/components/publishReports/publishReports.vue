@@ -34,19 +34,26 @@
 </template>
 <script>
     import DateGroup from "./dateGroup";
+    import {api} from "../../utils/api";
 
     export default {
         name: "publishReports",
         components: {DateGroup},
-        props: ["reportsWithDrafts"],
         data() {
             return {
+                reportsWithDrafts: [],
                 publishedOnly: false,
                 expandClicked: 0,
                 collapseClicked: 0
             }
         },
         methods: {
+            getReportsWithDrafts() {
+                api.get("/report-drafts/")
+                    .then(({data}) => {
+                        this.reportsWithDrafts = data.data
+                    })
+            },
             expandChangelogs(e) {
                 e.preventDefault();
                 this.expandClicked = this.expandClicked + 1;
@@ -55,6 +62,9 @@
                 e.preventDefault();
                 this.collapseClicked = this.collapseClicked + 1;
             }
+        },
+        mounted() {
+            this.getReportsWithDrafts();
         }
     }
 </script>
