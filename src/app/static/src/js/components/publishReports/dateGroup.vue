@@ -14,19 +14,20 @@
             <report-draft v-for="draft in drafts"
                           :draft="draft"
                           :selected-ids="selectedIds"
-                          @select-draft="handleDraftSelect"></report-draft>
+                          @select-draft="handleDraftSelect"
+                          :expand-clicked="expandClicked"
+                          :collapse-clicked="collapseClicked"></report-draft>
         </div>
     </div>
 </template>
 
 <script>
     import ReportDraft from "./reportDraft";
-    import selectableParentMixin from "./selectableParentMixin";
 
     export default {
         name: "dateGroup",
         components: {ReportDraft},
-        props: ["date", "drafts", "selectedIds", "selectedDates"],
+        props: ["date", "drafts", "selectedIds", "selectedDates", "expandClicked", "collapseClicked"],
         computed: {
             selected: {
                 get() {

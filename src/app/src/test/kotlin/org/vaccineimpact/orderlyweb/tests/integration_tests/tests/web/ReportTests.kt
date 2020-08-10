@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
+import com.github.fge.jsonschema.main.JsonValidator
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -51,6 +52,29 @@ class ReportTests : IntegrationTest()
         val pinnedReports = OrderlyReportRepository(true, true).getGlobalPinnedReports()
         assertThat(pinnedReports.count()).isEqualTo(1)
         assertThat(pinnedReports[0].name).isEqualTo("html")
+    }
+
+    @Test
+    fun `only report reviewers can get report drafts`()
+    {
+        val url = "/report-drafts/"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.review", Scope.Global())),
+                contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `report reviewers can get report drafts`()
+    {
+        val url = "/report-drafts/"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.review", Scope.Global())),
+                contentType = ContentTypes.json)
+
+        val data = JSONValidator.getData(response.text)
+        assertThat(data.isArray).isTrue()
+        assertThat(data[0].has("display_name")).isTrue()
+        assertThat(data[0].has("previously_published")).isTrue()
     }
 
     @Test

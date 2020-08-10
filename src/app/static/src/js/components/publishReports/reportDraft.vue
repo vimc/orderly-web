@@ -25,7 +25,7 @@
 <script>
     export default {
         name: 'reportDraft',
-        props: ['draft', 'selectedIds'],
+        props: ['draft', 'selectedIds', 'expandClicked', 'collapseClicked'],
         data() {
             return {
                 showChangelog: false
@@ -45,6 +45,14 @@
             toggleChangelog(e) {
                 e.preventDefault();
                 this.showChangelog = !this.showChangelog;
+            }
+        },
+        watch: {
+            expandClicked() {
+                this.showChangelog = true;
+            },
+            collapseClicked() {
+                this.showChangelog = false;
             }
         }
     }

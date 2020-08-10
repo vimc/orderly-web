@@ -1,66 +1,110 @@
 <template>
-    <div>
-        <h2 class="h4 mb-4">Latest drafts</h2>
-        <report v-for="report in reportsWithDrafts"
-                :report="report"
-                :selected-ids="selectedIds"
-                :selected-dates="selectedDates"
-                @select-draft="handleDraftSelect"
-                @select-group="handleGroupSelect"></report>
-        <button class="btn btn-published"
-                @click="publishDrafts">Publish
-        </button>
+  <div>
+    <h1 class="h3">Publish reports</h1>
+    <span class="text-muted">
+            Here you can publish the latest drafts (unpublished versions) of reports in bulk.
+            You can still manage the publish status of an individual report version directly from its report page.
+        </span>
+    <div class="mb-4 mt-2">
+      <div class="mb-2 custom-control custom-checkbox">
+        <input type="checkbox" class="custom-control-input" id="publishedOnly" v-model="publishedOnly">
+        <label class="custom-control-label" for="publishedOnly">
+          Only show reports with previously published versions
+        </label>
+      </div>
+      <a href="#" @click="expandChangelogs">
+        Expand all changelogs
+      </a>
+      <span>&nbsp;/&nbsp;</span>
+      <a href="#" @click="collapseChangelogs">
+        Collapse all changelogs
+      </a>
     </div>
+    <report v-for="report in reportsWithDrafts"
+            v-if="!publishedOnly || report.previously_published"
+            :report="report"
+            :selected-ids="selectedIds"
+            :selected-dates="selectedDates"
+            :expand-clicked="expandClicked"
+            :collapse-clicked="collapseClicked"
+            @select-draft="handleDraftSelect"
+            @select-group="handleGroupSelect"></report>
+    <button class="btn btn-published"
+            @click="publishDrafts">Publish
+    </button>
+  </div>
 </template>
 <script>
-    import report from "./report";
-    import {api} from "../../utils/api";
+import Report from "./report";
+import {api} from "../../utils/api";
 
-    export default {
-        name: "publishReports",
-        components: {report},
-        props: ["reportsWithDrafts"],
-        data() {
+export default {
+  name: "publishReports",
+  components: {Report},
+  data() {
+    return {
+      selectedDates: {},
+      selectedIds: {},
+      reportsWithDrafts: [],
+      publishedOnly: false,
+      expandClicked: 0,
+      collapseClicked: 0
+    }
+  },
+  methods: {
+    handleDraftSelect(value) {
+      if (value.id) {
+        this.selectedIds[value.id] = value.value
+      }
+      if (value.ids) {
+        value.ids.map(id => this.selectedIds[id] = value.value)
+      }
+    },
+    handleGroupSelect(value) {
+      if (value.date) {
+        this.selectedDates[value.date] = value.value
+      }
+      if (value.dates) {
+        value.dates.map(d => this.selectedDates[d] = value.value)
+      }
+    },
+    publishDrafts() {
+      const ids = Object.keys(this.selectedIds)
+          .filter(id => this.selectedIds[id])
+      api.post("/bulk-publish/", {ids})
+          .then(() => {
+            this.getReportsWithDrafts();
+          })
+          .catch((error) => {
+            console.log(error)
+          })
+    },
+    getReportsWithDrafts() {
+      api.get("/report-drafts/")
+          .then(({data}) => {
             const selectedIds = {}
             const selectedDates = {}
-            this.reportsWithDrafts.map(r => r.date_groups
+            data.data.map(r => r.date_groups
                 .map(g => {
-                    selectedDates[g.date] = false;
-                    g.drafts.map(d => selectedIds[d.id] = false)
-                }))
-            return {
-                selectedDates,
-                selectedIds
-            }
-        },
-        methods: {
-            handleDraftSelect(value) {
-                if (value.id) {
-                    this.selectedIds[value.id] = value.value
-                }
-                if (value.ids) {
-                    value.ids.map(id => this.selectedIds[id] = value.value)
-                }
-            },
-            handleGroupSelect(value) {
-                if (value.date) {
-                    this.selectedDates[value.date] = value.value
-                }
-                if (value.dates) {
-                    value.dates.map(d => this.selectedDates[d] = value.value)
-                }
-            },
-            publishDrafts() {
-                const ids = Object.keys(this.selectedIds)
-                    .filter(id => this.selectedIds[id])
-                api.post("/bulk-publish/", {ids})
-                    .then(() => {
-                        // refresh reports
-                    })
-                    .catch((error) => {
-                        console.log(error)
-                    })
-            }
-        }
+                  selectedDates[g.date] = false;
+                  g.drafts.map(d => selectedIds[d.id] = false)
+                }));
+            this.selectedDates = selectedDates
+            this.selectedIds = selectedIds
+            this.reportsWithDrafts = data.data
+          })
+    },
+    expandChangelogs(e) {
+      e.preventDefault();
+      this.expandClicked = this.expandClicked + 1;
+    },
+    collapseChangelogs(e) {
+      e.preventDefault();
+      this.collapseClicked = this.collapseClicked + 1;
     }
+  },
+  mounted() {
+    this.getReportsWithDrafts();
+  }
+}
 </script>
