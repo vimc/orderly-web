@@ -189,13 +189,22 @@ describe("publishReports", () => {
                 value: true
             });
 
-        rendered.find("button").trigger("click");
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
+
+        const btn = rendered.find("button");
+        btn.trigger("click");
+        expect(btn.text()).toBe("Publish");
         await Vue.nextTick();
 
         expect(mockAxios.history.post[0].data).toEqual(JSON.stringify({ids: ["20190824-161244-6e9b57d4"]}));
 
         await Vue.nextTick();
         expect(mockAxios.history.get.length).toBe(2);
+
+        await Vue.nextTick();
+
+        // because the data has been refreshed with the same fake data as before, this will now be false again
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(false);
     });
 
 });

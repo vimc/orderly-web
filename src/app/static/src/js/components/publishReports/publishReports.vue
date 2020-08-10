@@ -20,7 +20,9 @@
                 Collapse all changelogs
             </a>
         </div>
+        <!-- use first draft id as the key as just need something unique -->
         <report v-for="report in reportsWithDrafts"
+                :key="report.date_groups[0].drafts[0].id"
                 v-if="!publishedOnly || report.previously_published"
                 :report="report"
                 :selected-ids="selectedIds"
