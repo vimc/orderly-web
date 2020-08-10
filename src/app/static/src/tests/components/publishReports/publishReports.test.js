@@ -54,6 +54,8 @@ describe("publishReports", () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/report-drafts/')
             .reply(200, {"data": testReportsWithDrafts});
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(200);
     });
 
     it("loads reports on mount", async () => {
@@ -175,6 +177,25 @@ describe("publishReports", () => {
             });
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
         expect(rendered.vm.$data["selectedDates"]["Sun Jul 28 2019"]).toBe(true);
+    });
+
+    it("publishes selected reports and refreshes reports", async () => {
+        const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-draft",
+            {
+                id: "20190824-161244-6e9b57d4",
+                value: true
+            });
+
+        rendered.find("button").trigger("click");
+        await Vue.nextTick();
+
+        expect(mockAxios.history.post[0].data).toEqual(JSON.stringify({ids: ["20190824-161244-6e9b57d4"]}));
+
+        await Vue.nextTick();
+        expect(mockAxios.history.get.length).toBe(2);
     });
 
 });

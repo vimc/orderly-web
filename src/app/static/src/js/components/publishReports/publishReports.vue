@@ -29,68 +29,82 @@
                 :collapse-clicked="collapseClicked"
                 @select-draft="handleDraftSelect"
                 @select-group="handleGroupSelect"></report>
+        <button class="btn btn-published"
+                @click="publishDrafts">Publish
+        </button>
     </div>
 </template>
 <script>
-    import Report from "./report";
-    import {api} from "../../utils/api";
+import Report from "./report";
+import {api} from "../../utils/api";
 
-    export default {
-        name: "publishReports",
-        components: {Report},
-        data() {
-            return {
-                selectedDates: {},
-                selectedIds: {},
-                reportsWithDrafts: [],
-                publishedOnly: false,
-                expandClicked: 0,
-                collapseClicked: 0
-            }
-        },
-        methods: {
-            handleDraftSelect(value) {
-                if (value.id) {
-                    this.selectedIds[value.id] = value.value
-                }
-                if (value.ids) {
-                    value.ids.map(id => this.selectedIds[id] = value.value)
-                }
-            },
-            handleGroupSelect(value) {
-                if (value.date) {
-                    this.selectedDates[value.date] = value.value
-                }
-                if (value.dates) {
-                    value.dates.map(d => this.selectedDates[d] = value.value)
-                }
-            },
-            getReportsWithDrafts() {
-                api.get("/report-drafts/")
-                    .then(({data}) => {
-                        const selectedIds = {}
-                        const selectedDates = {}
-                        data.data.map(r => r.date_groups
-                            .map(g => {
-                                selectedDates[g.date] = false;
-                                g.drafts.map(d => selectedIds[d.id] = false)
-                            }));
-                        this.selectedDates = selectedDates
-                        this.selectedIds = selectedIds
-                        this.reportsWithDrafts = data.data
-                    })
-            },
-            expandChangelogs(e) {
-                e.preventDefault();
-                this.expandClicked = this.expandClicked + 1;
-            },
-            collapseChangelogs(e) {
-                e.preventDefault();
-                this.collapseClicked = this.collapseClicked + 1;
-            }
-        },
-        mounted() {
-            this.getReportsWithDrafts();
+export default {
+    name: "publishReports",
+    components: {Report},
+    data() {
+        return {
+            selectedDates: {},
+            selectedIds: {},
+            reportsWithDrafts: [],
+            publishedOnly: false,
+            expandClicked: 0,
+            collapseClicked: 0
         }
+    },
+    methods: {
+        publishDrafts() {
+            const ids = Object.keys(this.selectedIds)
+                .filter(id => this.selectedIds[id])
+            api.post("/bulk-publish/", {ids})
+                .then(() => {
+                    this.getReportsWithDrafts();
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
+        },
+        handleDraftSelect(value) {
+            if (value.id) {
+                this.selectedIds[value.id] = value.value
+            }
+            if (value.ids) {
+                value.ids.map(id => this.selectedIds[id] = value.value)
+            }
+        },
+        handleGroupSelect(value) {
+            if (value.date) {
+                this.selectedDates[value.date] = value.value
+            }
+            if (value.dates) {
+                value.dates.map(d => this.selectedDates[d] = value.value)
+            }
+        },
+        getReportsWithDrafts() {
+            api.get("/report-drafts/")
+                .then(({data}) => {
+                    const selectedIds = {}
+                    const selectedDates = {}
+                    data.data.map(r => r.date_groups
+                        .map(g => {
+                            selectedDates[g.date] = false;
+                            g.drafts.map(d => selectedIds[d.id] = false)
+                        }));
+                    this.selectedDates = selectedDates
+                    this.selectedIds = selectedIds
+                    this.reportsWithDrafts = data.data
+                })
+        },
+        expandChangelogs(e) {
+            e.preventDefault();
+            this.expandClicked = this.expandClicked + 1;
+        },
+        collapseChangelogs(e) {
+            e.preventDefault();
+            this.collapseClicked = this.collapseClicked + 1;
+        }
+    },
+    mounted() {
+        this.getReportsWithDrafts();
     }
+}
 </script>
