@@ -52,7 +52,6 @@ export default {
         },
         handleDraftSelect(value) {
             if (!value.value) {
-                console.log("hi")
                 // don't want the parent checkbox selected if any child is not
                 this.selected = false
             }
