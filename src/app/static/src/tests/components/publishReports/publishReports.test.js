@@ -1,10 +1,28 @@
 import Vue from "vue";
 import publishReports from "../../../js/components/publishReports/publishReports";
+import report from "../../../js/components/publishReports/report";
 import {mount, shallowMount} from "@vue/test-utils";
-import dateGroup from "../../../js/components/publishReports/dateGroup";
 import {mockAxios} from "../../mockAxios";
 
 describe("publishReports", () => {
+
+    const fakeDraft = {
+        "id": "20190824-161244-6e9b57d4",
+        "url": "http://localhost:8888/changelog/20190824-161244-6e9b57d4",
+        "changelog": [
+            {
+                "label": "public",
+                "value": "You think water moves fast? You should see ice. It moves like it has\na mind. Like it knows it killed the world once and got a taste for\nmurder. After the avalanche, it took us a week to climb out. Now, I\ndon't know exactly when we turned on each other, but I know that\nseven of us survived the slide... and only five made it out. Now we\ntook an oath, that I'm breaking now. We said we'd say it was the\nsnow that killed the other two, but it wasn't. Nature is lethal but\nit doesn't hold a candle to man.",
+                "css_class": "public"
+            },
+            {
+                "label": "internal",
+                "value": "Do you see any Teletubbies in here? Do you see a slender plastic tag\nclipped to my shirt with my name printed on it? Do you see a little\nAsian child with a blank expression on his face sitting outside on a\nmechanical helicopter that shakes when you put quarters in it? No?\nWell, that's what you see at a toy store. And you must think you're in\na toy store, because you're here shopping for an infant named Jeb.",
+                "css_class": "internal"
+            }
+        ],
+        "parameter_values": "nmin=0"
+    }
 
     const testReportsWithDrafts = [
         {
@@ -27,28 +45,10 @@ describe("publishReports", () => {
             "date_groups": [
                 {
                     "date": "Mon Jul 29 2019",
-                    "drafts": []
+                    "drafts": [fakeDraft]
                 }
             ]
         }]
-
-    const fakeDraft = {
-            "id": "20190824-161244-6e9b57d4",
-            "url": "http://localhost:8888/changelog/20190824-161244-6e9b57d4",
-            "changelog": [
-                {
-                    "label": "public",
-                    "value": "You think water moves fast? You should see ice. It moves like it has\na mind. Like it knows it killed the world once and got a taste for\nmurder. After the avalanche, it took us a week to climb out. Now, I\ndon't know exactly when we turned on each other, but I know that\nseven of us survived the slide... and only five made it out. Now we\ntook an oath, that I'm breaking now. We said we'd say it was the\nsnow that killed the other two, but it wasn't. Nature is lethal but\nit doesn't hold a candle to man.",
-                    "css_class": "public"
-                },
-                {
-                    "label": "internal",
-                    "value": "Do you see any Teletubbies in here? Do you see a slender plastic tag\nclipped to my shirt with my name printed on it? Do you see a little\nAsian child with a blank expression on his face sitting outside on a\nmechanical helicopter that shakes when you put quarters in it? No?\nWell, that's what you see at a toy store. And you must think you're in\na toy store, because you're here shopping for an infant named Jeb.",
-                    "css_class": "internal"
-                }
-            ],
-            "parameter_values": "nmin=0"
-        }
 
     beforeEach(() => {
         mockAxios.reset();
@@ -61,37 +61,28 @@ describe("publishReports", () => {
         await Vue.nextTick(); // once for axios to return
         await Vue.nextTick(); // once for date to update
         expect(mockAxios.history.get.length).toBe(1);
-        expect(rendered.findAll(".report").length).toBe(2);
+        expect(rendered.findAll(report).length).toBe(2);
     })
 
-    it("displays report names", async () => {
+    it("displays reports", async () => {
         const rendered = shallowMount(publishReports);
         await Vue.nextTick();
         await Vue.nextTick();
-        const reports = rendered.findAll(".report");
+        const reports = rendered.findAll(report);
         expect(reports.length).toBe(2);
-        expect(reports.at(0).find("h5").text()).toBe("another report");
-        expect(reports.at(1).find("h5").text()).toBe("global");
-    });
-
-    it("displays date groups", async () => {
-        const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
-        await Vue.nextTick();
-        const reports = rendered.findAll(".report");
-        let groups = reports.at(0).findAll(dateGroup);
-
-        expect(groups.length).toBe(2);
-        expect(groups.at(0).props("date")).toBe("Sat Jul 27 2019");
-        expect(groups.at(0).props("drafts")).toEqual([]);
-        expect(groups.at(1).props("date")).toBe("Sat Jul 20 2019");
-        expect(groups.at(1).props("drafts")).toEqual([]);
-
-        groups = reports.at(1).findAll(dateGroup);
-
-        expect(groups.length).toBe(1);
-        expect(groups.at(0).props("date")).toBe("Mon Jul 29 2019");
-        expect(groups.at(0).props("drafts")).toEqual([]);
+        expect(reports.at(0).props()).toEqual({
+            report: testReportsWithDrafts[0],
+            selectedIds: {
+                "20190824-161244-6e9b57d4": false
+            },
+            selectedDates: {
+                "Mon Jul 29 2019": false,
+                "Sat Jul 20 2019": false,
+                "Sat Jul 27 2019": false
+            },
+            expandClicked: 0,
+            collapseClicked: 0
+        });
     });
 
     it("renders title and help text", () => {
@@ -129,21 +120,61 @@ describe("publishReports", () => {
 
     });
 
-
     it("displays only previously published reports when option is checked", async () => {
         const rendered = shallowMount(publishReports);
         await Vue.nextTick();
         await Vue.nextTick();
-        let reports = rendered.findAll(".report");
+        let reports = rendered.findAll(report);
         expect(reports.length).toBe(2);
         rendered.find("input").setChecked(true);
 
         await Vue.nextTick();
 
-        reports = rendered.findAll(".report");
+        reports = rendered.findAll(report);
         expect(reports.length).toBe(1);
-        expect(reports.at(0).find("h5").text()).toBe("another report");
+        expect(reports.at(0).props("report")).toEqual(testReportsWithDrafts[0]);
     });
 
+    it("updates selectedIds when select-draft event with single id is emitted", async () => {
+        const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
+        expect(rendered.vm.$data["selectedIds"]["20190727-123215-97e39008"]).toBe(true);
+    });
+
+    it("updates selectedIds when select-draft event with multiple ids is emitted", async () => {
+        const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-draft",
+            {
+                ids: ["20190727-123215-97e39008", "20190727-201131-d320fa9e"],
+                value: true
+            });
+        expect(rendered.vm.$data["selectedIds"]["20190727-123215-97e39008"]).toBe(true);
+        expect(rendered.vm.$data["selectedIds"]["20190727-201131-d320fa9e"]).toBe(true);
+    });
+
+    it("updates selectedDates when select-group event with single date is emitted", async () => {
+        const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
+        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
+    });
+
+    it("updates selectedDates when select-group event with multiple dates is emitted", async () => {
+        const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-group",
+            {
+                dates: ["Sat Jul 27 2019", "Sun Jul 28 2019"],
+                value: true
+            });
+        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
+        expect(rendered.vm.$data["selectedDates"]["Sun Jul 28 2019"]).toBe(true);
+    });
 
 });

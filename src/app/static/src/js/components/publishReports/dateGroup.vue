@@ -43,12 +43,6 @@ export default {
         }
     },
     methods: {
-        selectGroup(e) {
-            const value = e.target.checked
-            this.selected = value
-            this.$emit("select-draft", {ids: this.draftIds, value});
-            this.$emit("select-group", {date: this.date, value});
-        },
         handleDraftSelect(value) {
             if (!value.value) {
                 // don't want the parent checkbox selected if any child is not
