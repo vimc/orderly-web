@@ -1,6 +1,15 @@
 <template>
     <div class="mb-3">
-        <a :href="draft.url">{{draft.id}}</a>
+        <div class="pr-2 d-inline custom-control custom-checkbox">
+            <input type="checkbox"
+                   class="custom-control-input"
+                   v-model="selected"
+                   :id="draft.id">
+            <label class="custom-control-label"
+                   :for="draft.id">
+                <a :href="draft.url">{{draft.id}}</a>
+            </label>
+        </div>
         <span class="text-muted pl-3">{{draft.parameter_values}}</span>
         <div class="changelog-container" :class="{'open': showChangelog}">
             <a v-if="draft.changelog.length > 0" href="#" class="text-muted" @click="toggleChangelog">changelog</a>
@@ -14,27 +23,37 @@
     </div>
 </template>
 <script>
-    export default {
-        name: 'reportDraft',
-        props: ['draft', 'expandClicked', 'collapseClicked'],
-        data() {
-            return {
-                showChangelog: false
-            }
-        },
-        methods: {
-            toggleChangelog(e) {
-                e.preventDefault();
-                this.showChangelog = !this.showChangelog;
-            }
-        },
-        watch: {
-            expandClicked() {
-                this.showChangelog = true;
+export default {
+    name: 'reportDraft',
+    props: ['draft', 'selectedIds', 'expandClicked', 'collapseClicked'],
+    data() {
+        return {
+            showChangelog: false
+        }
+    },
+    computed: {
+        selected: {
+            get() {
+                return this.selectedIds[this.draft.id]
             },
-            collapseClicked() {
-                this.showChangelog = false;
+            set(value) {
+                this.$emit("select-draft", {id: this.draft.id, value})
             }
         }
+    },
+    methods: {
+        toggleChangelog(e) {
+            e.preventDefault();
+            this.showChangelog = !this.showChangelog;
+        }
+    },
+    watch: {
+        expandClicked() {
+            this.showChangelog = true;
+        },
+        collapseClicked() {
+            this.showChangelog = false;
+        }
     }
+}
 </script>

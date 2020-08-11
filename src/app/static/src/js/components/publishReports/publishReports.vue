@@ -20,51 +20,93 @@
                 Collapse all changelogs
             </a>
         </div>
-        <div v-for="report in reportsWithDrafts" v-if="!publishedOnly || report.previously_published" class="report">
-            <h5>{{report.display_name}}</h5>
-            <div class="ml-5">
-                <date-group v-for="group in report.date_groups"
-                            :date="group.date"
-                            :drafts="group.drafts"
-                            :expand-clicked="expandClicked"
-                            :collapse-clicked="collapseClicked"></date-group>
-            </div>
-        </div>
+        <report v-for="report in reportsWithDrafts"
+                v-if="!publishedOnly || report.previously_published"
+                :report="report"
+                :selected-ids="selectedIds"
+                :selected-dates="selectedDates"
+                :expand-clicked="expandClicked"
+                :collapse-clicked="collapseClicked"
+                @select-draft="handleDraftSelect"
+                @select-group="handleGroupSelect"></report>
     </div>
 </template>
 <script>
-    import DateGroup from "./dateGroup";
-    import {api} from "../../utils/api";
+import Report from "./report";
+import {api} from "../../utils/api";
 
-    export default {
-        name: "publishReports",
-        components: {DateGroup},
-        data() {
-            return {
-                reportsWithDrafts: [],
-                publishedOnly: false,
-                expandClicked: 0,
-                collapseClicked: 0
-            }
-        },
-        methods: {
-            getReportsWithDrafts() {
-                api.get("/report-drafts/")
-                    .then(({data}) => {
-                        this.reportsWithDrafts = data.data
-                    })
-            },
-            expandChangelogs(e) {
-                e.preventDefault();
-                this.expandClicked = this.expandClicked + 1;
-            },
-            collapseChangelogs(e) {
-                e.preventDefault();
-                this.collapseClicked = this.collapseClicked + 1;
-            }
-        },
-        mounted() {
-            this.getReportsWithDrafts();
+export default {
+    name: "publishReports",
+    components: {Report},
+    data() {
+        return {
+            selectedDates: {},
+            selectedIds: {},
+            reportsWithDrafts: [],
+            publishedOnly: false,
+            expandClicked: 0,
+            collapseClicked: 0
         }
+    },
+    methods: {
+        handleDraftSelect(value) {
+            if (value.id) {
+                this.selectedIds[value.id] = value.value
+            }
+            if (value.ids) {
+                value.ids.map(id => this.selectedIds[id] = value.value)
+            }
+        },
+        handleGroupSelect(value) {
+            if (value.date) {
+                this.selectedDates[value.date] = value.value
+            }
+            if (value.dates) {
+                value.dates.map(d => this.selectedDates[d] = value.value)
+            }
+        },
+        getReportsWithDrafts() {
+            api.get("/report-drafts/")
+                .then(({data}) => {
+                    const selectedIds = {}
+                    const selectedDates = {}
+                    data.data.map(r => r.date_groups
+                        .map(g => {
+                            selectedDates[g.date] = false;
+                            g.drafts.map(d => selectedIds[d.id] = false)
+                        }));
+                    this.selectedDates = selectedDates
+                    this.selectedIds = selectedIds
+                    this.reportsWithDrafts = data.data
+                })
+        },
+        expandChangelogs(e) {
+            e.preventDefault();
+            this.expandClicked = this.expandClicked + 1;
+        },
+        collapseChangelogs(e) {
+            e.preventDefault();
+            this.collapseClicked = this.collapseClicked + 1;
+        }
+    },
+    watch: {
+        publishedOnly(newVal) {
+            if (newVal) {
+                this.reportsWithDrafts.map(r => {
+                    if (!r.previously_published) {
+                        // if this report has not been published, deselect all its dates and drafts
+                        r.date_groups
+                            .map(g => {
+                                this.selectedDates[g.date] = false;
+                                g.drafts.map(d => this.selectedIds[d.id] = false)
+                            })
+                    }
+                });
+            }
+        }
+    },
+    mounted() {
+        this.getReportsWithDrafts();
     }
+}
 </script>

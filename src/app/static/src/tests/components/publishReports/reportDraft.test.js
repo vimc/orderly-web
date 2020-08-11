@@ -4,7 +4,7 @@ import reportDraft from "../../../js/components/publishReports/reportDraft";
 
 describe("reportDraft", () => {
 
-    const fakeDraft =  {
+    const fakeDraft = {
         "id": "20190824-161244-6e9b57d4",
         "url": "http://localhost:8888/changelog/20190824-161244-6e9b57d4",
         "changelog": [
@@ -23,18 +23,18 @@ describe("reportDraft", () => {
     }
 
     it("displays link to report", () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraft}});
         expect(rendered.find("a").text()).toBe("20190824-161244-6e9b57d4");
         expect(rendered.find("a").attributes("href")).toBe("http://localhost:8888/changelog/20190824-161244-6e9b57d4");
     });
 
     it("displays parameters", () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraft}});
         expect(rendered.find("span").text()).toBe("nmin=0");
     });
 
     it("renders changelogs", () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraft}});
         const logs = rendered.findAll(".changelog");
         expect(logs.length).toBe(2);
 
@@ -46,14 +46,14 @@ describe("reportDraft", () => {
 
     it("does not render changelog link if there are no changelogs", () => {
         const fakeDraftNoChangelogs = {...fakeDraft, changelog: []};
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraftNoChangelogs}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraftNoChangelogs}});
 
         expect(rendered.findAll(".changelog").length).toBe(0);
         expect(rendered.find(".changelog-container").findAll("a").length).toBe(0);
     });
 
     it("can toggle changelog visibility", async () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraft}});
 
         let logs = rendered.findAll(".changelog");
         expect(logs.at(0).isVisible()).toBe(false);
@@ -85,7 +85,13 @@ describe("reportDraft", () => {
     });
 
     it("collapses changelog if collapse increments", async () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, collapseClicked: 0}});
+        const rendered = shallowMount(reportDraft, {
+            propsData: {
+                selectedIds: {},
+                draft: fakeDraft,
+                collapseClicked: 0
+            }
+        });
         expect(rendered.findAll(".changelog").length).toBe(2);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
@@ -104,7 +110,7 @@ describe("reportDraft", () => {
     });
 
     it("expands changelog if expand increments", async () => {
-        const rendered = shallowMount(reportDraft, {propsData: {draft: fakeDraft, expandClicked: 0}});
+        const rendered = shallowMount(reportDraft, {propsData: {selectedIds: {}, draft: fakeDraft, expandClicked: 0}});
         expect(rendered.findAll(".changelog").length).toBe(2);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
@@ -113,6 +119,45 @@ describe("reportDraft", () => {
         await Vue.nextTick();
 
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(2);
+    });
+
+    it("input is checked based on selectedIds", async () => {
+        const rendered = shallowMount(reportDraft, {
+            propsData: {
+                selectedIds: {[fakeDraft.id]: false},
+                draft: fakeDraft
+            }
+        });
+
+        expect(rendered.find("input").element.checked).toBe(false);
+
+        rendered.setProps({selectedIds: {[fakeDraft.id]: true}});
+
+        await Vue.nextTick();
+
+        expect(rendered.find("input").element.checked).toBe(true);
+    });
+
+    it("emits select-draft event when checked or un-checked", async () => {
+        const rendered = shallowMount(reportDraft, {
+            propsData: {
+                selectedIds: {},
+                draft: fakeDraft
+            }
+        });
+
+        rendered.find("input").setChecked(true);
+
+        await Vue.nextTick();
+
+        expect(rendered.emitted("select-draft")[0][0]).toEqual({id: fakeDraft.id, value: true});
+
+        rendered.find("input").setChecked(false);
+
+        await Vue.nextTick();
+
+        expect(rendered.emitted("select-draft")[1][0]).toEqual({id: fakeDraft.id, value: false});
+
     });
 
 });
