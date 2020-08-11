@@ -34,15 +34,17 @@
         <button class="btn btn-published"
                 @click="publishDrafts">Publish
         </button>
+        <error-info :api-error="apiError" :default-message="defaultMessage"></error-info>
     </div>
 </template>
 <script>
 import Report from "./report";
 import {api} from "../../utils/api";
+import ErrorInfo from "../errorInfo";
 
 export default {
     name: "publishReports",
-    components: {Report},
+    components: {ErrorInfo, Report},
     data() {
         return {
             selectedDates: {},
@@ -50,11 +52,14 @@ export default {
             reportsWithDrafts: [],
             publishedOnly: false,
             expandClicked: 0,
-            collapseClicked: 0
+            collapseClicked: 0,
+            apiError: null,
+            defaultMessage: "Something went wrong. Please try again or contact support."
         }
     },
     methods: {
         publishDrafts() {
+            this.apiError = null;
             const ids = Object.keys(this.selectedIds)
                 .filter(id => this.selectedIds[id])
             api.post("/bulk-publish/", {ids})
@@ -62,7 +67,7 @@ export default {
                     this.getReportsWithDrafts();
                 })
                 .catch((error) => {
-                    console.log(error)
+                    this.apiError = error;
                 })
         },
         handleDraftSelect(value) {

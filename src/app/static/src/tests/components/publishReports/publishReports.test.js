@@ -1,4 +1,5 @@
 import Vue from "vue";
+import errorInfo from "../../../js/components/errorInfo";
 import publishReports from "../../../js/components/publishReports/publishReports";
 import report from "../../../js/components/publishReports/report";
 import {mount, shallowMount} from "@vue/test-utils";
@@ -64,7 +65,7 @@ describe("publishReports", () => {
         await Vue.nextTick(); // once for date to update
         expect(mockAxios.history.get.length).toBe(1);
         expect(rendered.findAll(report).length).toBe(2);
-    })
+    });
 
     it("displays reports", async () => {
         const rendered = shallowMount(publishReports);
@@ -204,6 +205,40 @@ describe("publishReports", () => {
 
         // because the data has been refreshed with the same fake data as before, this will now be false again
         expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(false);
+    });
+
+    it("displays error message if publishing fails", async () => {
+
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(500, "TEST ERROR");
+
+        const rendered = shallowMount(publishReports);
+        const btn = rendered.find("button");
+        btn.trigger("click");
+
+        await Vue.nextTick(); // once to trigger click
+        await Vue.nextTick(); // once for api to return
+        await Vue.nextTick(); // once for props to update
+
+        expect(rendered.find(errorInfo).props().apiError.response.data).toBe("TEST ERROR")
+        expect(rendered.find(errorInfo).props().defaultMessage)
+            .toBe("Something went wrong. Please try again or contact support.");
+
+        // error should be cleared after a successful publish
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(200);
+
+        btn.trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find(errorInfo).props()).toEqual({
+            apiError: null,
+            defaultMessage: "Something went wrong. Please try again or contact support."
+        });
+
     });
 
 });
