@@ -110,6 +110,22 @@ export default {
             this.collapseClicked = this.collapseClicked + 1;
         }
     },
+    watch: {
+        publishedOnly(newVal) {
+            if (newVal) {
+                this.reportsWithDrafts.map(r => {
+                    if (!r.previously_published) {
+                        // if this report has not been published, deselect all its dates and drafts
+                        r.date_groups
+                            .map(g => {
+                                this.selectedDates[g.date] = false;
+                                g.drafts.map(d => this.selectedIds[d.id] = false)
+                            })
+                    }
+                });
+            }
+        }
+    },
     mounted() {
         this.getReportsWithDrafts();
     }
