@@ -135,6 +135,24 @@ describe("publishReports", () => {
         expect(reports.at(0).props("report")).toEqual(testReportsWithDrafts[0]);
     });
 
+    it("updates selectedIds and selectedDates when only previously published reports option is checked", async () => {
+        const rendered = shallowMount(publishReports);
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
+        await Vue.nextTick();
+
+        rendered.find(report).vm.$emit("select-draft", {id: "20190824-161244-6e9b57d4", value: true});
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
+        rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
+        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
+
+        rendered.find("input").setChecked(true);
+
+        await Vue.nextTick();
+
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(false);
+        expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(false);
+    });
+
     it("updates selectedIds when select-draft event with single id is emitted", async () => {
         const rendered = shallowMount(publishReports);
         await Vue.nextTick();
