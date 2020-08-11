@@ -31,11 +31,11 @@ describe("publishReports", () => {
             "date_groups": [
                 {
                     "date": "Sat Jul 27 2019",
-                    "drafts": []
+                    "drafts": [{...fakeDraft, id: "20191024-161244-6e9b57d4"}]
                 },
                 {
                     "date": "Sat Jul 20 2019",
-                    "drafts": []
+                    "drafts": [{...fakeDraft, id: "20190924-161244-6e9b57d4"}]
                 }
             ]
         },
@@ -75,7 +75,10 @@ describe("publishReports", () => {
         expect(reports.at(0).props()).toEqual({
             report: testReportsWithDrafts[0],
             selectedIds: {
-                "20190824-161244-6e9b57d4": false
+                "20190824-161244-6e9b57d4": false,
+                "20191024-161244-6e9b57d4": false,
+                "20190924-161244-6e9b57d4": false
+
             },
             selectedDates: {
                 "Mon Jul 29 2019": false,
@@ -96,15 +99,11 @@ describe("publishReports", () => {
     });
 
     it("can expand all changelogs", async () => {
-        const testReportsWithChangelogs = [...testReportsWithDrafts];
-        testReportsWithChangelogs[0].date_groups[0].drafts = [fakeDraft];
-        testReportsWithChangelogs[1].date_groups[0].drafts = [fakeDraft];
-
         const rendered = mount(publishReports);
-        rendered.setData({reportsWithDrafts: testReportsWithChangelogs});
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
 
-        expect(rendered.findAll(".changelog").length).toBe(4);
+        expect(rendered.findAll(".changelog").length).toBe(6);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
         const links = rendered.findAll("a");
@@ -112,7 +111,7 @@ describe("publishReports", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(4);
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(6);
 
         links.at(1).trigger("click");
 
@@ -124,7 +123,7 @@ describe("publishReports", () => {
 
     it("displays only previously published reports when option is checked", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         let reports = rendered.findAll(report);
         expect(reports.length).toBe(2);
@@ -139,7 +138,7 @@ describe("publishReports", () => {
 
     it("updates selectedIds when select-draft event with single id is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
         expect(rendered.vm.$data["selectedIds"]["20190727-123215-97e39008"]).toBe(true);
@@ -147,7 +146,7 @@ describe("publishReports", () => {
 
     it("updates selectedIds when select-draft event with multiple ids is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-draft",
             {
@@ -160,7 +159,7 @@ describe("publishReports", () => {
 
     it("updates selectedDates when select-group event with single date is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
@@ -168,7 +167,7 @@ describe("publishReports", () => {
 
     it("updates selectedDates when select-group event with multiple dates is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-group",
             {
@@ -181,7 +180,7 @@ describe("publishReports", () => {
 
     it("publishes selected reports and refreshes reports", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-draft",
             {
