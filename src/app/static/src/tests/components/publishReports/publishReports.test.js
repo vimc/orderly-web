@@ -1,4 +1,5 @@
 import Vue from "vue";
+import errorInfo from "../../../js/components/errorInfo";
 import publishReports from "../../../js/components/publishReports/publishReports";
 import report from "../../../js/components/publishReports/report";
 import {mount, shallowMount} from "@vue/test-utils";
@@ -31,11 +32,11 @@ describe("publishReports", () => {
             "date_groups": [
                 {
                     "date": "Sat Jul 27 2019",
-                    "drafts": []
+                    "drafts": [{...fakeDraft, id: "20191024-161244-6e9b57d4"}]
                 },
                 {
                     "date": "Sat Jul 20 2019",
-                    "drafts": []
+                    "drafts": [{...fakeDraft, id: "20190924-161244-6e9b57d4"}]
                 }
             ]
         },
@@ -54,6 +55,8 @@ describe("publishReports", () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/report-drafts/')
             .reply(200, {"data": testReportsWithDrafts});
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(200);
     });
 
     it("loads reports on mount", async () => {
@@ -62,7 +65,7 @@ describe("publishReports", () => {
         await Vue.nextTick(); // once for date to update
         expect(mockAxios.history.get.length).toBe(1);
         expect(rendered.findAll(report).length).toBe(2);
-    })
+    });
 
     it("displays reports", async () => {
         const rendered = shallowMount(publishReports);
@@ -73,7 +76,10 @@ describe("publishReports", () => {
         expect(reports.at(0).props()).toEqual({
             report: testReportsWithDrafts[0],
             selectedIds: {
-                "20190824-161244-6e9b57d4": false
+                "20190824-161244-6e9b57d4": false,
+                "20191024-161244-6e9b57d4": false,
+                "20190924-161244-6e9b57d4": false
+
             },
             selectedDates: {
                 "Mon Jul 29 2019": false,
@@ -94,15 +100,11 @@ describe("publishReports", () => {
     });
 
     it("can expand all changelogs", async () => {
-        const testReportsWithChangelogs = [...testReportsWithDrafts];
-        testReportsWithChangelogs[0].date_groups[0].drafts = [fakeDraft];
-        testReportsWithChangelogs[1].date_groups[0].drafts = [fakeDraft];
-
         const rendered = mount(publishReports);
-        rendered.setData({reportsWithDrafts: testReportsWithChangelogs});
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
 
-        expect(rendered.findAll(".changelog").length).toBe(4);
+        expect(rendered.findAll(".changelog").length).toBe(6);
         expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(0);
 
         const links = rendered.findAll("a");
@@ -110,7 +112,7 @@ describe("publishReports", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(4);
+        expect(rendered.findAll(".changelog").filter(c => c.isVisible()).length).toBe(6);
 
         links.at(1).trigger("click");
 
@@ -122,7 +124,7 @@ describe("publishReports", () => {
 
     it("displays only previously published reports when option is checked", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         let reports = rendered.findAll(report);
         expect(reports.length).toBe(2);
@@ -155,7 +157,7 @@ describe("publishReports", () => {
 
     it("updates selectedIds when select-draft event with single id is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
         expect(rendered.vm.$data["selectedIds"]["20190727-123215-97e39008"]).toBe(true);
@@ -163,7 +165,7 @@ describe("publishReports", () => {
 
     it("updates selectedIds when select-draft event with multiple ids is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-draft",
             {
@@ -176,7 +178,7 @@ describe("publishReports", () => {
 
     it("updates selectedDates when select-group event with single date is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
@@ -184,7 +186,7 @@ describe("publishReports", () => {
 
     it("updates selectedDates when select-group event with multiple dates is emitted", async () => {
         const rendered = shallowMount(publishReports);
-        await Vue.nextTick();
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
         rendered.find(report).vm.$emit("select-group",
             {
@@ -193,6 +195,68 @@ describe("publishReports", () => {
             });
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
         expect(rendered.vm.$data["selectedDates"]["Sun Jul 28 2019"]).toBe(true);
+    });
+
+    it("publishes selected reports and refreshes reports", async () => {
+        const rendered = shallowMount(publishReports);
+        rendered.setData({reportsWithDrafts: testReportsWithDrafts});
+        await Vue.nextTick();
+        rendered.find(report).vm.$emit("select-draft",
+            {
+                id: "20190824-161244-6e9b57d4",
+                value: true
+            });
+
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
+
+        const btn = rendered.find("button");
+        btn.trigger("click");
+        expect(btn.text()).toBe("Publish");
+        await Vue.nextTick();
+
+        expect(mockAxios.history.post[0].data).toEqual(JSON.stringify({ids: ["20190824-161244-6e9b57d4"]}));
+
+        await Vue.nextTick();
+        expect(mockAxios.history.get.length).toBe(2);
+
+        await Vue.nextTick();
+
+        // because the data has been refreshed with the same fake data as before, this will now be false again
+        expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(false);
+    });
+
+    it("displays error message if publishing fails", async () => {
+
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(500, "TEST ERROR");
+
+        const rendered = shallowMount(publishReports);
+        const btn = rendered.find("button");
+        btn.trigger("click");
+
+        await Vue.nextTick(); // once to trigger click
+        await Vue.nextTick(); // once for api to return
+        await Vue.nextTick(); // once for props to update
+
+        expect(rendered.find(errorInfo).props().apiError.response.data).toBe("TEST ERROR")
+        expect(rendered.find(errorInfo).props().defaultMessage)
+            .toBe("Something went wrong. Please try again or contact support.");
+
+        // error should be cleared after a successful publish
+        mockAxios.onPost('http://app/bulk-publish/')
+            .reply(200);
+
+        btn.trigger("click");
+
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+
+        expect(rendered.find(errorInfo).props()).toEqual({
+            apiError: null,
+            defaultMessage: "Something went wrong. Please try again or contact support."
+        });
+
     });
 
 });

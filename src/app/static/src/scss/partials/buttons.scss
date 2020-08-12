@@ -21,6 +21,15 @@ button:disabled, .button.disabled {
   @include button-size($btn-padding-y-lg, $btn-padding-x-lg, 2rem, $btn-line-height-lg, $btn-border-radius-lg);
 }
 
+.btn-published {
+  @include button-variant($published-color, $gray-400);
+}
+
+.btn-internal {
+  @include button-variant(darken($warning, 10%), $gray-400);
+  color: #ffffff;
+}
+
 .arrowDown:before {
   content: "\25be";
   float: right;

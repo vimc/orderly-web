@@ -20,7 +20,9 @@
                 Collapse all changelogs
             </a>
         </div>
+        <!-- use first draft id as the key as just need something unique -->
         <report v-for="report in reportsWithDrafts"
+                :key="report.date_groups[0].drafts[0].id"
                 v-if="!publishedOnly || report.previously_published"
                 :report="report"
                 :selected-ids="selectedIds"
@@ -29,15 +31,20 @@
                 :collapse-clicked="collapseClicked"
                 @select-draft="handleDraftSelect"
                 @select-group="handleGroupSelect"></report>
+        <button class="btn btn-published"
+                @click="publishDrafts">Publish
+        </button>
+        <error-info :api-error="apiError" :default-message="defaultMessage"></error-info>
     </div>
 </template>
 <script>
 import Report from "./report";
 import {api} from "../../utils/api";
+import ErrorInfo from "../errorInfo";
 
 export default {
     name: "publishReports",
-    components: {Report},
+    components: {ErrorInfo, Report},
     data() {
         return {
             selectedDates: {},
@@ -45,10 +52,24 @@ export default {
             reportsWithDrafts: [],
             publishedOnly: false,
             expandClicked: 0,
-            collapseClicked: 0
+            collapseClicked: 0,
+            apiError: null,
+            defaultMessage: "Something went wrong. Please try again or contact support."
         }
     },
     methods: {
+        publishDrafts() {
+            this.apiError = null;
+            const ids = Object.keys(this.selectedIds)
+                .filter(id => this.selectedIds[id])
+            api.post("/bulk-publish/", {ids})
+                .then(() => {
+                    this.getReportsWithDrafts();
+                })
+                .catch((error) => {
+                    this.apiError = error;
+                })
+        },
         handleDraftSelect(value) {
             if (value.id) {
                 this.selectedIds[value.id] = value.value
