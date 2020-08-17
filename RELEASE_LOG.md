@@ -226,3 +226,24 @@
 
 ## Other branches merged in this release
 
+# v1.3.0
+
+## Tickets
+* mrc-1484_component: Widget that displays all unpublished report versions
+* mrc-1484_page: Widget that displays all unpublished report versions
+* mrc-1485_repo: Endpoint to return unpublished report versions, grouped by report and then by date
+* mrc-1485_tinyrefactor: Endpoint to return unpublished report versions, grouped by report and then by date
+* mrc-1485_vms: Endpoint to return unpublished report versions, grouped by report and then by date
+* mrc-1684: Running reports through the web UI reports their status incorrectly
+* mrc-1687: Bulk publishing endpoint
+* mrc-1688_backend: Publish selected reports from the new publish-reports page
+* mrc-1688_refactor_select: Publish selected reports from the new publish-reports page
+* mrc-1689: Filter report drafts by those with previously published versions
+* mrc-1690: Option to toggle all changelogs at once on bulk publishing page
+
+## Other branches merged in this release
+* chromedriver-83
+* dependabot/npm_and_yarn/src/app/static/elliptic-6.5.3
+* dependabot/npm_and_yarn/src/app/static/lodash-4.17.19
+* improve_scripts
+
