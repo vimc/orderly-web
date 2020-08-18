@@ -1,7 +1,7 @@
 version: '2'
 services:
   proxy:
-    image: docker.montagu.dide.ic.ac.uk:5000/montagu-reverse-proxy-minimal:master
+    image: vimc/montagu-reverse-proxy-minimal:master
     ports:
     - 80:80
     depends_on:
