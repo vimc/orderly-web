@@ -11,7 +11,6 @@ object WebGitRouteConfig : RouteConfig
             WebEndpoint("/git/branch/:branch/commits/",
                    GitController::class, "getCommits")
                     .secure(runReports)
-                    .transform()
                     .json()
     )
 }

@@ -1,7 +1,11 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.KHttpClient
+import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -18,11 +22,16 @@ import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
+                       val orderlyServerAPI: OrderlyServerAPI,
                        private val reportRepository: ReportRepository,
                        private val tagRepository: TagRepository) : Controller(context)
 {
     constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
+            : this(context,
+            Orderly(context),
+            OrderlyServer(AppConfig(), KHttpClient()),
+            OrderlyReportRepository(context),
+            OrderlyWebTagRepository())
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportVersionPageViewModel
@@ -42,9 +51,23 @@ class ReportController(context: ActionContext,
         val runReportMetadata = RunReportMetadata(true, true,
                 listOf("support", "annex"), listOf("internal", "published"))
 
-        //TODO: as above, need to get this from orderly server when endpoint is available
-        //TODO: Don't attempt get get git branches if metadata.git_supported is false
-        val gitBranches = listOf("master", "dev_branch")
+        val gitBranches = if (runReportMetadata.gitSupported)
+        {
+            val response = orderlyServerAPI.get("/git/branches", context)
+            if (response.statusCode == 200)
+            {
+                response.data<List<Map<String, String>>>()
+                        .mapNotNull { it["name"] }
+            }
+            else
+            {
+                listOf()
+            }
+        }
+        else
+        {
+            listOf()
+        }
 
         return RunReportViewModel(context, runReportMetadata, gitBranches)
     }

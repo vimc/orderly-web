@@ -17,7 +17,7 @@ class PublishTests : TeamcityTests() {
         val mockContext = mock<ActionContext> {
             on { postData<List<String>>("ids")} doReturn listOf("v1", "v2")
         }
-        val sut = ReportController(mockContext, mock(), mockRepo, mock())
+        val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
         sut.publishReports()
 
         verify(mockRepo).publish(listOf("v1", "v2"))

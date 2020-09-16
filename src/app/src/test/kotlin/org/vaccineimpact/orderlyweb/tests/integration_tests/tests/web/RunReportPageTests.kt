@@ -1,8 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.assertj.core.api.Assertions
+import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions.*
 import org.jsoup.Jsoup
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.KHttpClient
+import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
@@ -23,9 +29,22 @@ class RunReportPageTests : IntegrationTest()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie("/run-report", sessionCookie)
-        Assertions.assertThat(response.statusCode).isEqualTo(200)
+        assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
-        Assertions.assertThat(page.selectFirst("#runReportVueApp")).isNotNull()
+        assertThat(page.selectFirst("#runReportVueApp")).isNotNull()
+    }
+
+    @Test
+    fun `fetches git branches`()
+    {
+        val controller = ReportController(mock(),
+                mock(),
+                OrderlyServer(AppConfig(), KHttpClient()),
+                mock(),
+                OrderlyWebTagRepository())
+
+        val result = controller.getRunReport()
+        assertThat(result.gitBranches).containsExactly("master", "other")
     }
 }

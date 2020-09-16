@@ -16,19 +16,13 @@ services:
       - "8321:8321"
     volumes:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
-    logging:
-      driver: none
   api:
     image: docker.montagu.dide.ic.ac.uk:5000/montagu-api:master
     ports:
     - "8080:8080"
     depends_on:
     - db
-    logging:
-      driver: none
   db:
     image: docker.montagu.dide.ic.ac.uk:5000/montagu-db:master
     ports:
     - "5432:5432"
-    logging:
-      driver: none
