@@ -7,25 +7,25 @@ import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.json.JSONObject
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.HttpClient
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyServerTests: TeamcityTests()
+class OrderlyServerTests : TeamcityTests()
 {
 
     private val mockResponse = mock<Response> {
-        on {this.jsonObject} doReturn JSONObject()
+        on { this.jsonObject } doReturn JSONObject()
     }
 
     private val mockHttpclient = mock<HttpClient> {
-        on {this.get(any(), any())} doReturn mockResponse
-        on {this.post(any(), any(), any())} doReturn mockResponse
+        on { this.get(any(), any()) } doReturn mockResponse
+        on { this.post(any(), any(), any()) } doReturn mockResponse
     }
     private val mockConfig = mock<Config>() {
         on { this.get("orderly.server") } doReturn "http://orderly"
@@ -129,15 +129,72 @@ class OrderlyServerTests: TeamcityTests()
         testTranslatedResponse(json, json)
     }
 
-    private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String) {
+    @Test
+    fun `throws on failure if specified`()
+    {
+        val text = """{"status": "failure", "data": null, "errors": []}"""
+        val rawJson = JSONObject(text)
+        val mockRawResponse = mock<Response> {
+            on { this.jsonObject } doReturn rawJson
+            on { this.statusCode } doReturn 400
+        }
+
+        val mockClient = mock<HttpClient> {
+            on { this.get(any(), any()) } doReturn mockRawResponse
+        }
+
+        val sut = OrderlyServer(mockConfig, mockClient)
+                .throwOnError()
+
+        assertThatThrownBy { sut.get("/whatever", mock()) }
+                .isInstanceOf(OrderlyServerError::class.java)
+                .hasMessageContaining("Orderly server request failed for url /whatever")
+                .matches { (it as OrderlyServerError).httpStatus == 400 }
+    }
+
+    @Test
+    fun `can parse primitive data`()
+    {
+        val text = """{"status": "success", "data": 10, "errors": []}"""
+        val response = OrderlyServerResponse(text, 200)
+        val data = response.data(Int::class.java)
+        assertThat(data).isEqualTo(10)
+    }
+
+    @Test
+    fun `can parse object data and transform snake case to camel case`()
+    {
+        val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48", 
+            |"display_date_time": "Monday"}, "errors": []}""".trimMargin()
+        val response = OrderlyServerResponse(text, 200)
+        val data = response.data(GitCommit::class.java)
+        assertThat(data.dateTime).isEqualTo("2019-03-29 16:25:48")
+        assertThat(data.displayDateTime).isEqualTo("Monday")
+        assertThat(data.id).isEqualTo("12345")
+    }
+
+    @Test
+    fun `can parse list data`()
+    {
+        val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48", 
+            |"display_date_time": "Monday"}], "errors": []}""".trimMargin()
+        val response = OrderlyServerResponse(text, 200)
+        val data = response.listData(GitCommit::class.java)
+        assertThat(data[0].id).isEqualTo("12345")
+        assertThat(data[0].dateTime).isEqualTo("2019-03-29 16:25:48")
+        assertThat(data[0].displayDateTime).isEqualTo("Monday")
+    }
+
+    private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String)
+    {
         val rawJson = JSONObject(rawResponse)
         val mockRawResponse = mock<Response> {
-            on {this.jsonObject} doReturn rawJson
-            on {this.statusCode} doReturn 400
+            on { this.jsonObject } doReturn rawJson
+            on { this.statusCode } doReturn 400
         }
         val mockClient = mock<HttpClient> {
-            on {this.get(any(), any())} doReturn mockRawResponse
-            on {this.post(any(), any(), any())} doReturn mockRawResponse
+            on { this.get(any(), any()) } doReturn mockRawResponse
+            on { this.post(any(), any(), any()) } doReturn mockRawResponse
         }
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
