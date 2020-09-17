@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.GitBranch
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
@@ -52,16 +53,12 @@ class ReportController(context: ActionContext,
                 listOf("support", "annex"), listOf("internal", "published"))
 
         // TODO only fetch branches if metadata supports it
-        val branchResponse = orderlyServerAPI.get("/git/branches", context)
-        val gitBranches = if (branchResponse.statusCode == 200)
-        {
-            branchResponse.data<List<Map<String, String>>>()
-                    ?.mapNotNull { it["name"] }?: listOf()
-        }
-        else
-        {
-            listOf()
-        }
+        val branchResponse = orderlyServerAPI
+                .throwOnError()
+                .get("/git/branches", context)
+
+        val gitBranches = branchResponse.listData(GitBranch::class.java)
+                .map { it.name }
 
         return RunReportViewModel(context, runReportMetadata, gitBranches)
     }
