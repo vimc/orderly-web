@@ -133,7 +133,7 @@ class OrderlyServerTests: TeamcityTests()
     {
         val text = """{"status": "success", "data": ["some data"], "errors": []}"""
         val response = OrderlyServerResponse(text, 200)
-        val data = response.data<List<String>>()!!
+        val data = response.listData(String::class.java)
         assertThat(data[0]).isEqualTo("some data")
     }
 

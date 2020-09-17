@@ -32,7 +32,6 @@ class RunReportTests : TeamcityTests()
         assertThat(result.gitBranches).hasSameElementsAs(listOf("master", "dev"))
         assertThat(result.runReportMetadata.gitSupported).isTrue()
         assertThat(result.runReportMetadata.instancesSupported).isTrue()
-        assertThat(result.runReportMetadata.instances).hasSameElementsAs(listOf("support", "annex"))
         assertThat(result.runReportMetadata.changelogTypes).hasSameElementsAs(listOf("internal", "published"))
     }
 

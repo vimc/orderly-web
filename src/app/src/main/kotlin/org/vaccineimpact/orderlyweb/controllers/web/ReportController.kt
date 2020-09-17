@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.GitBranch
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
@@ -47,23 +48,26 @@ class ReportController(context: ActionContext,
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        //TODO: replace with call to orderly server
-        val runReportMetadata = RunReportMetadata(true, true,
-                listOf("support", "annex"), listOf("internal", "published"))
+        val metadata = orderlyServerAPI
+                .throwOnError()
+                .get("/run-metadata", context)
+                .data(RunReportMetadata::class.java)
 
-        // TODO only fetch branches if metadata supports it
-        val branchResponse = orderlyServerAPI.get("/git/branches", context)
-        val gitBranches = if (branchResponse.statusCode == 200)
+        val gitBranches = if (metadata.gitSupported)
         {
-            branchResponse.data<List<Map<String, String>>>()
-                    ?.mapNotNull { it["name"] }?: listOf()
+            val branchResponse = orderlyServerAPI
+                    .throwOnError()
+                    .get("/git/branches", context)
+
+            branchResponse.listData(GitBranch::class.java)
+                    .map { it.name }
         }
         else
         {
             listOf()
         }
 
-        return RunReportViewModel(context, runReportMetadata, gitBranches)
+        return RunReportViewModel(context, metadata, gitBranches)
     }
 
     fun tagVersion(): String
