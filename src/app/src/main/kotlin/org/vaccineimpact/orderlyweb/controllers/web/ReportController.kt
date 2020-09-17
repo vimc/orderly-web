@@ -47,22 +47,16 @@ class ReportController(context: ActionContext,
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        //TODO: Orderly server does not yet support fetching this metadata, so we hardcode dummy data for now
+        //TODO: replace with call to orderly server
         val runReportMetadata = RunReportMetadata(true, true,
                 listOf("support", "annex"), listOf("internal", "published"))
 
-        val gitBranches = if (runReportMetadata.gitSupported)
+        // TODO only fetch branches if metadata supports it
+        val branchResponse = orderlyServerAPI.get("/git/branches", context)
+        val gitBranches = if (branchResponse.statusCode == 200)
         {
-            val response = orderlyServerAPI.get("/git/branches", context)
-            if (response.statusCode == 200)
-            {
-                response.data<List<Map<String, String>>>()
-                        .mapNotNull { it["name"] }
-            }
-            else
-            {
-                listOf()
-            }
+            branchResponse.data<List<Map<String, String>>>()
+                    ?.mapNotNull { it["name"] }?: listOf()
         }
         else
         {

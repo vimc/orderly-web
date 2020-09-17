@@ -1,11 +1,10 @@
 package org.vaccineimpact.orderlyweb
 
-import org.vaccineimpact.orderlyweb.models.Result
-import com.fasterxml.jackson.core.JsonParseException
 import khttp.responses.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.models.Result
 
 interface OrderlyServerAPI
 {
@@ -13,23 +12,18 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 }
 
-data class OrderlyServerResponse(val text: String, val statusCode: Int) {
+data class OrderlyServerResponse(val text: String, val statusCode: Int)
+{
 
-    fun <T>data(): T {
+    fun <T> data(): T?
+    {
         val json = parseJson(text)
-        return json.data as T
+        return json.data as T?
     }
 
     private fun parseJson(jsonAsString: String): Result
     {
-        return try
-        {
-            Serializer.instance.gson.fromJson<Result>(jsonAsString, Result::class.java)
-        }
-        catch (e: JsonParseException)
-        {
-            throw Exception("Failed to parse text as JSON.\nText was: $jsonAsString\n\n$e")
-        }
+        return Serializer.instance.gson.fromJson<Result>(jsonAsString, Result::class.java)
     }
 }
 
@@ -46,7 +40,7 @@ class OrderlyServer(config: Config, private val httpClient: HttpClient) : Orderl
     {
         val fullUrl = buildFullUrl(url, context.queryString())
         val postData = context.postData<String>()
-        val response =  httpClient.post(fullUrl, standardHeaders, postData)
+        val response = httpClient.post(fullUrl, standardHeaders, postData)
         return transformResponse(response)
     }
 

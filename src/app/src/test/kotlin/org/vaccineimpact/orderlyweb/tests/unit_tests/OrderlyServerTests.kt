@@ -1,18 +1,17 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.JsonParseException
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
 import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.json.JSONObject
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.HttpClient
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
@@ -127,6 +126,15 @@ class OrderlyServerTests: TeamcityTests()
         val json = """{"status": "success", "data": ["some data"], 
                                   "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
         testTranslatedResponse(json, json)
+    }
+
+    @Test
+    fun `can parse well formed data`()
+    {
+        val text = """{"status": "success", "data": ["some data"], "errors": []}"""
+        val response = OrderlyServerResponse(text, 200)
+        val data = response.data<List<String>>()!!
+        assertThat(data[0]).isEqualTo("some data")
     }
 
     private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String) {
