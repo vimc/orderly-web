@@ -54,7 +54,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionWorkflow;
 import org.vaccineimpact.orderlyweb.db.tables.Tag;
+import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 
 
 /**
@@ -70,7 +72,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Tag;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -134109157;
+    private static final long serialVersionUID = -885371611;
 
     /**
      * The reference instance of <code></code>
@@ -283,9 +285,19 @@ public class DefaultSchema extends SchemaImpl {
     public final ReportVersionView REPORT_VERSION_VIEW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionView.REPORT_VERSION_VIEW;
 
     /**
+     * The table <code>report_version_workflow</code>.
+     */
+    public final ReportVersionWorkflow REPORT_VERSION_WORKFLOW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionWorkflow.REPORT_VERSION_WORKFLOW;
+
+    /**
      * The table <code>tag</code>.
      */
     public final Tag TAG = org.vaccineimpact.orderlyweb.db.tables.Tag.TAG;
+
+    /**
+     * The table <code>workflow</code>.
+     */
+    public final Workflow WORKFLOW = org.vaccineimpact.orderlyweb.db.tables.Workflow.WORKFLOW;
 
     /**
      * No further instances allowed
@@ -353,6 +365,8 @@ public class DefaultSchema extends SchemaImpl {
             ReportVersionPackage.REPORT_VERSION_PACKAGE,
             ReportVersionTag.REPORT_VERSION_TAG,
             ReportVersionView.REPORT_VERSION_VIEW,
-            Tag.TAG);
+            ReportVersionWorkflow.REPORT_VERSION_WORKFLOW,
+            Tag.TAG,
+            Workflow.WORKFLOW);
     }
 }

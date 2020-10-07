@@ -47,7 +47,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionWorkflow;
 import org.vaccineimpact.orderlyweb.db.tables.Tag;
+import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 import org.vaccineimpact.orderlyweb.db.tables.records.ArtefactFormatRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogLabelRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ChangelogRecord;
@@ -86,7 +88,9 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionPackageRecord
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionTagRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionViewRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionWorkflowRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.TagRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.WorkflowRecord;
 
 
 /**
@@ -145,7 +149,9 @@ public class Keys {
     public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = UniqueKeys0.PK_REPORT_VERSION_PACKAGE;
     public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = UniqueKeys0.PK_REPORT_VERSION_TAG;
     public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = UniqueKeys0.PK_REPORT_VERSION_VIEW;
+    public static final UniqueKey<ReportVersionWorkflowRecord> PK_REPORT_VERSION_WORKFLOW = UniqueKeys0.PK_REPORT_VERSION_WORKFLOW;
     public static final UniqueKey<TagRecord> PK_TAG = UniqueKeys0.PK_TAG;
+    public static final UniqueKey<WorkflowRecord> PK_WORKFLOW = UniqueKeys0.PK_WORKFLOW;
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -231,7 +237,9 @@ public class Keys {
         public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = createUniqueKey(ReportVersionPackage.REPORT_VERSION_PACKAGE, "pk_report_version_package", ReportVersionPackage.REPORT_VERSION_PACKAGE.ID);
         public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = createUniqueKey(ReportVersionTag.REPORT_VERSION_TAG, "pk_report_version_tag", ReportVersionTag.REPORT_VERSION_TAG.ID);
         public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = createUniqueKey(ReportVersionView.REPORT_VERSION_VIEW, "pk_report_version_view", ReportVersionView.REPORT_VERSION_VIEW.ID);
+        public static final UniqueKey<ReportVersionWorkflowRecord> PK_REPORT_VERSION_WORKFLOW = createUniqueKey(ReportVersionWorkflow.REPORT_VERSION_WORKFLOW, "pk_report_version_workflow", ReportVersionWorkflow.REPORT_VERSION_WORKFLOW.REPORT_VERSION);
         public static final UniqueKey<TagRecord> PK_TAG = createUniqueKey(Tag.TAG, "pk_tag", Tag.TAG.ID);
+        public static final UniqueKey<WorkflowRecord> PK_WORKFLOW = createUniqueKey(Workflow.WORKFLOW, "pk_workflow", Workflow.WORKFLOW.ID);
     }
 
     private static class ForeignKeys0 extends AbstractKeys {

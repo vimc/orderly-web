@@ -47,7 +47,9 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionWorkflow;
 import org.vaccineimpact.orderlyweb.db.tables.Tag;
+import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 
 
 /**
@@ -269,7 +271,17 @@ public class Tables {
     public static final ReportVersionView REPORT_VERSION_VIEW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionView.REPORT_VERSION_VIEW;
 
     /**
+     * The table <code>report_version_workflow</code>.
+     */
+    public static final ReportVersionWorkflow REPORT_VERSION_WORKFLOW = org.vaccineimpact.orderlyweb.db.tables.ReportVersionWorkflow.REPORT_VERSION_WORKFLOW;
+
+    /**
      * The table <code>tag</code>.
      */
     public static final Tag TAG = org.vaccineimpact.orderlyweb.db.tables.Tag.TAG;
+
+    /**
+     * The table <code>workflow</code>.
+     */
+    public static final Workflow WORKFLOW = org.vaccineimpact.orderlyweb.db.tables.Workflow.WORKFLOW;
 }

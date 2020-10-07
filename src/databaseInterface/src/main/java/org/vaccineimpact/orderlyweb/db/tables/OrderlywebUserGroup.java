@@ -33,7 +33,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebUserGroup extends TableImpl<OrderlywebUserGroupRecord> {
 
-    private static final long serialVersionUID = -152047595;
+    private static final long serialVersionUID = -1388797837;
 
     /**
      * The reference instance of <code>orderlyweb_user_group</code>
@@ -52,6 +52,11 @@ public class OrderlywebUserGroup extends TableImpl<OrderlywebUserGroupRecord> {
      * The column <code>orderlyweb_user_group.id</code>.
      */
     public final TableField<OrderlywebUserGroupRecord, String> ID = createField("id", org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_user_group.readonly</code>.
+     */
+    public final TableField<OrderlywebUserGroupRecord, Boolean> READONLY = createField("readonly", org.jooq.impl.SQLDataType.BOOLEAN, this, "");
 
     /**
      * Create a <code>orderlyweb_user_group</code> table reference
