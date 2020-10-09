@@ -6,4 +6,6 @@ steps:
       - buildkite/migrate_build.sh
       - buildkite/run_dependencies.sh
       - ./src/gradlew -p src :customConfigTests:copyDemo
+      - ./src/gradlew -p src :app:test
+      - ./src/gradlew -p src :customConfigTests:test --stacktrace
       - scripts/clear-docker.sh
