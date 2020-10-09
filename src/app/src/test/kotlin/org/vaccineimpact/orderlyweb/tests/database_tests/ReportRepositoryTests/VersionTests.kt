@@ -88,6 +88,20 @@ class VersionTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `reviewer can get version details for report with no publish record`()
+    {
+        insertReport("test", "version1", addOrderlyWebReportVersion = false)
+
+        val sut = createSut(isReviewer = true)
+
+        val result = sut.getReportVersion("test", "version1")
+
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.published).isFalse()
+    }
+
+    @Test
     fun `reviewer can get unpublished version details`()
     {
         insertReport("test", "version1", published = false)
