@@ -1,0 +1,3 @@
+steps:
+  - label: ":whale: Pull docker images"
+    command: buildkite/pull_images.sh
