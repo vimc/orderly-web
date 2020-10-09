@@ -3,6 +3,7 @@ steps:
     commands:
       - scripts/clear-docker.sh
       - buildkite/pull_docker_images.sh
-      - buildkite/migrate-build.sh
+      - buildkite/migrate_build.sh
       - buildkite/run_dependencies.sh
+      - ./src/gradlew -p src :customConfigTests:copyDemo
       - scripts/clear-docker.sh
