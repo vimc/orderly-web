@@ -2,7 +2,7 @@ steps:
   - label: ":mag: Run tests"
     commands:
       - scripts/clear-docker.sh
-      - buildkite/pull_images.sh
+      - buildkite/pull_docker_images.sh
       - buildkite/run_dependencies.sh
       - scripts/clear-docker.sh
 # todo: add codecov
