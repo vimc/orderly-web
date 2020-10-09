@@ -1,3 +1,8 @@
 steps:
-  - label: ":whale: Pull docker images"
-    command: buildkite/pull_images.sh
+  - label: ":mag: Run tests"
+    commands:
+      - scripts/clear-docker.sh
+      - buildkite/pull_images.sh
+      - buildkite/run_dependencies.sh
+      - scripts/clear-docker.sh
+# todo: add codecov
