@@ -3,7 +3,6 @@ steps:
     commands:
       - scripts/clear-docker.sh
       - buildkite/pull_docker_images.sh
-      - scripts/migrate-build.sh
+      - buildkite/migrate-build.sh
       - buildkite/run_dependencies.sh
       - scripts/clear-docker.sh
-# todo: add codecov
