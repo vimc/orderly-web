@@ -11,9 +11,9 @@ mainClassName = "org.vaccineimpact.orderlyweb.generateDatabaseInterface.AppKt"
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
 
-    compile "org.jooq:jooq:3.9.1"
-    compile "org.jooq:jooq-meta:3.9.1"
-    compile "org.jooq:jooq-codegen:3.9.1"
+    compile "org.jooq:jooq:3.13.5"
+    compile "org.jooq:jooq-meta:3.13.5"
+    compile "org.jooq:jooq-codegen:3.13.5"
 
     compile "org.xerial:sqlite-jdbc:3.19.3"
 }

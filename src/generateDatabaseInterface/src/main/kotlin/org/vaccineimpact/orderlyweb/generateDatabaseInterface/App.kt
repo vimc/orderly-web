@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.generateDatabaseInterface
 
-import org.jooq.util.GenerationTool
+import org.jooq.codegen.GenerationTool
 
 fun main(args: Array<String>)
 {

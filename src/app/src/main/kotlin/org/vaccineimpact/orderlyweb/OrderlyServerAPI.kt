@@ -19,7 +19,6 @@ interface OrderlyServerAPI
 
 data class OrderlyServerResponse(val text: String, val statusCode: Int)
 {
-
     fun <T> data(klass: Class<T>): T
     {
         val data = parseJson(text)

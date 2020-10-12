@@ -1,21 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.6.0.xsd">
+<configuration xmlns="http://www.jooq.org/xsd/jooq-codegen-3.13.0.xsd">
     <jdbc>
         <driver>org.sqlite.JDBC</driver>
         <url>jdbc:sqlite://${project_dir}/${orderly_root}orderly.sqlite</url>
     </jdbc>
 
     <generator>
-        <name>org.jooq.util.JavaGenerator</name>
-
+        <name>org.jooq.codegen.JavaGenerator</name>
         <database>
-            <name>org.jooq.util.sqlite.SQLiteDatabase</name>
+            <name>org.jooq.meta.sqlite.SQLiteDatabase</name>
             <includes>.*</includes>
             <excludes>
                 flyway_schema_history
             </excludes>
+            <forcedTypes>
+                <forcedType>
+                    <name>BOOLEAN</name>
+                    <includeExpression>orderlyweb_report_version_full.published</includeExpression>
+                </forcedType>
+            </forcedTypes>
         </database>
-
+        <generate>
+            <javaTimeTypes>false</javaTimeTypes>
+        </generate>
         <target>
             <packageName>org.vaccineimpact.orderlyweb.db</packageName>
             <directory>../databaseInterface/src/main/java</directory>
