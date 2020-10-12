@@ -1,3 +1,8 @@
 steps:
     - label: ":construction_worker: Make shared build env"
       command: buildkite/make-build-env.sh
+
+    - wait
+
+    - label: ":shipit: Build test data image"
+      command: buildkite/generate-test-data.sh

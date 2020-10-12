@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
-set -e
+set -ex
+
 HERE=$(dirname $0)
-. $HERE/common
+. $HERE/common.sh
 
 docker build --tag $BUILD_ENV_TAG .
 

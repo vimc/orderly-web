@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+set -ex
+
 ORG=vimc
 
 if [ "$BUILDKITE" = "true" ]; then
@@ -24,11 +26,11 @@ BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 BUILD_ENV_TAG=$ORG/orderly-web-shared-build-env:$GIT_SHA
 
 # Export env vars needed for running test dependencies
-export ORDERLY_SERVER_VERSION=$(<$src/config/orderly_server_version)
+export ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
 #export DB_PORT=5432
 #export NETWORK=test_nw
 export GIT_SHA=$GIT_SHA
 export GIT_BRANCH=$GIT_BRANCH
-export BUILD_ENV_TAG=orderly-web-build-environment
+export BUILD_ENV_TAG=$BUILD_ENV_TAG
 
 
