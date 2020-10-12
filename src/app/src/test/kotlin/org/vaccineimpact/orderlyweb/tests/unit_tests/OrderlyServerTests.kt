@@ -130,6 +130,7 @@ class OrderlyServerTests : TeamcityTests()
         testTranslatedResponse(json, json)
     }
 
+    @Test
     fun `throws on failure if specified`()
     {
         val text = """{"status": "failure", "data": null, "errors": []}"""
