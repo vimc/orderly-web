@@ -2,7 +2,7 @@
 set -ex
 
 HERE=$(dirname $0)
-. $HERE/common.sh
+. $HERE/common
 
 docker build --tag $BUILD_ENV_TAG .
 
