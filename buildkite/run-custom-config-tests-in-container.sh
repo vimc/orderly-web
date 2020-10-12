@@ -11,8 +11,6 @@ docker build --tag orderly-web-custom-config-tests \
 	.
 
 ## Run all dependencies
-export MONTAGU_ORDERLY_PATH=$PWD/git
-export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
 function cleanup(){

@@ -30,5 +30,7 @@ export ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
 #export BUILD_ENV_TAG=$BUILD_ENV_TAG
+export MONTAGU_ORDERLY_PATH=$PWD/git
+export ORDERLY_SERVER_USER_ID=$UID
 
 

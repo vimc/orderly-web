@@ -1,17 +1,11 @@
 #!/usr/bin/env bash
 
-# TODO: This teamcity script will be superseded by its namesake in /buildkite, and can be removed when that is working
-
 set -ex
-here=$(dirname $0)
-
-git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
+HERE=$(dirname $0)
+. $HERE/common
 
 ## Run all dependencies
-export MONTAGU_ORDERLY_PATH=$PWD/git
-export ORDERLY_SERVER_USER_ID=$UID
-$here/run-dependencies.sh
+$here/../scripts/run-dependencies.sh
 
 # Run the OrderlyWeb image
 docker run --rm \
@@ -19,7 +13,7 @@ docker run --rm \
     -v $PWD/demo:/orderly \
     -p 8888:8888 \
     --name orderly-web \
-    docker.montagu.dide.ic.ac.uk:5000/orderly-web:$git_id
+    vimc/orderly-web:$git_id
 
 function cleanup(){
     docker stop orderly-web
