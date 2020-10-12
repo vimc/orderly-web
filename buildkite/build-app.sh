@@ -26,6 +26,22 @@ function cleanup {
 }
 trap cleanup EXIT
 
+#TODO - pull this out into a script to be called both from here and migrate - even in common?
+ORDERLY_IMAGE=$REGISTRY/orderly:master
+
+rm demo -rf
+rm git -rf
+
+docker pull $ORDERLY_IMAGE
+docker run --rm \
+    --entrypoint 'create_orderly_demo.sh' \
+    -u $UID \
+    -v $PWD:/orderly \
+    -w "/orderly" \
+    $ORDERLY_IMAGE \
+    "."
+
+
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
