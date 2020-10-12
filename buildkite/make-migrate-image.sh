@@ -10,14 +10,12 @@ NAME=orderlyweb-migrate
 COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
 BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
 
-echo "BUILDING MIGRATE IMAGE"
 docker build \
        --tag $COMMIT_TAG \
        --tag $BRANCH_TAG \
        -f migrations/Dockerfile \
        .
 
-echo "TESTING MIGRATE IMAGE"
 ORDERLY_IMAGE=$REGISTRY/orderly:master
 
 rm demo -rf
@@ -35,7 +33,6 @@ docker run --rm \
 docker run --rm -v ${PWD}/demo:/orderly $COMMIT_TAG
 docker run --rm -v ${PWD}/git:/orderly $COMMIT_TAG
 
-echo "PUSHING MIGRATE IMAGE"
 docker push $COMMIT_TAG
 docker push $BRANCH_TAG
 

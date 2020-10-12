@@ -7,6 +7,9 @@ HERE=$(dirname $0)
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
+# create the db
+$here/make-db.sh
+
 # Run the OrderlyWeb image
 docker run --rm \
     -d \
