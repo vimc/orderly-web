@@ -4,7 +4,7 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
-# TODO: This teamcity script will be superceded by its namesake in /buildkite, and can be removed when that is working
+# TODO: This teamcity script will be superseded by its namesake in /buildkite, and can be removed when that is working
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
 docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
