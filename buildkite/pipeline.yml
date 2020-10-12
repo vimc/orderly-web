@@ -6,3 +6,6 @@ steps:
 
     - label: "Build and test app"
       commands: buildkite/build-app.sh
+
+    - label: "Run custom config tests in container"
+        commands: buildkite/run-custom-config-tests-in-container.sh

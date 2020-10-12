@@ -10,7 +10,7 @@ $here/make-build-env.sh
 # Create an image based on the shared build env that compiles, tests and dockerises
 # the app
 docker build --tag orderly-web-app-build \
-	--build-arg git_id=$GIT_SHA \
+	--build-arg git_id=$GIT_ID \
 	--build-arg git_branch=$GIT_BRANCH \
     -f app.Dockerfile \
 	.

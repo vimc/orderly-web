@@ -2,9 +2,9 @@
 set -ex
 
 if [ "$BUILDKITE" = "true" ]; then
-    GIT_SHA=${BUILDKITE_COMMIT:0:7}
+    GIT_ID=${BUILDKITE_COMMIT:0:7}
 else
-    GIT_SHA=$(git rev-parse --short=7 HEAD)
+    GIT_ID=$(git rev-parse --short=7 HEAD)
 fi
 
 if [ "$BUILDKITE" = "true" ]; then
@@ -21,15 +21,13 @@ fi
 GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
 
 BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
-BUILD_ENV_TAG=$REGISTRY/orderly-web-shared-build-env:$GIT_SHA
 
 # Export env vars needed for running test dependencies
 export REGISTRY=vimc
 export ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
 #export DB_PORT=5432
 #export NETWORK=test_nw
-export GIT_SHA=$GIT_SHA
-export GIT_ID=$GIT_SHA
+export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
 #export BUILD_ENV_TAG=$BUILD_ENV_TAG
 
