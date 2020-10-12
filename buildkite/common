@@ -24,12 +24,9 @@ BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 
 # Export env vars needed for running test dependencies
 export REGISTRY=vimc
-export ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
-#export DB_PORT=5432
-#export NETWORK=test_nw
+export MONTAGU_ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH
-#export BUILD_ENV_TAG=$BUILD_ENV_TAG
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 
