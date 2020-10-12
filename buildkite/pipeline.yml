@@ -1,4 +1,3 @@
 steps:
-  - steps:
-      - label: ":construction_worker: Make shared build env"
-        command: buildkite/make-build-env.sh
+    - label: ":construction_worker: Make shared build env"
+      command: buildkite/make-build-env.sh
