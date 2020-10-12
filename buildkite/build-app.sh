@@ -28,6 +28,7 @@ trap cleanup EXIT
 
 #TODO - pull this out into a script to be called both from here and migrate - even in common?
 ORDERLY_IMAGE=$REGISTRY/orderly:master
+MIGRATE_IMAGE=$REGISTRY/orderlyweb-migrate:$GIT_ID
 
 rm demo -rf
 rm git -rf
@@ -41,6 +42,10 @@ docker run --rm \
     $ORDERLY_IMAGE \
     "."
 
+docker pull $MIGRATE_IMAGE
+docker run --rm -v ${PWD}/demo:/orderly $MIGRATE_IMAGE
+docker run --rm -v ${PWD}/git:/orderly $MIGRATE_IMAGE
+### pull out to here
 
 # Run the created image
 docker run --rm \
