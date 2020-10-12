@@ -1,11 +1,11 @@
 steps:
     - label: "Make migrate image"
-      commands: buildkite/make-migrate-image.sh
+      command: buildkite/make-migrate-image.sh
 
     - wait
 
     - label: "Build and test app"
-      commands: buildkite/build-app.sh
+      command: buildkite/build-app.sh
 
     - label: "Run custom config tests in container"
-        commands: buildkite/run-custom-config-tests-in-container.sh
+      command: buildkite/run-custom-config-tests-in-container.sh
