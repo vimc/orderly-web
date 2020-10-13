@@ -18,4 +18,3 @@ CMD docker build --tag orderly-web-dist-base --file dist.Dockerfile . \
     && docker tag $APP_DOCKER_COMMIT_TAG $APP_DOCKER_BRANCH_TAG \
     && docker push $APP_DOCKER_BRANCH_TAG \
     && docker push $APP_DOCKER_COMMIT_TAG \
-    && docker push $APP_COMMIT_BRANCH_TAG \

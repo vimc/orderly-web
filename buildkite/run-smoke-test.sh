@@ -4,6 +4,9 @@ set -ex
 HERE=$(dirname $0)
 . $HERE/common
 
+# create the db
+$HERE/make-db.sh
+
 ## Run all dependencies
 $HERE/../scripts/run-dependencies.sh
 
@@ -13,16 +16,15 @@ function cleanup(){
 }
 trap cleanup EXIT
 
-# create the db
-$HERE/make-db.sh
-
 # Run the OrderlyWeb image
+IMAGE=$REGISTRY/orderly-web:$GIT_ID
+docker pull $IMAGE
 docker run --rm \
     -d \
     -v $PWD/demo:/orderly \
     -p 8888:8888 \
     --name orderly-web \
-    $REGISTRY/orderly-web:$GIT_ID
+    $IMAGE
 
 docker exec orderly-web mkdir -p /etc/orderly/web
 docker exec orderly-web touch /etc/orderly/web/go_signal

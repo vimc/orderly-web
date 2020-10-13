@@ -10,6 +10,9 @@ docker build --tag orderly-web-custom-config-tests \
     -f customConfigTests.Dockerfile \
 	.
 
+# create the db
+$HERE/make-db.sh
+
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
