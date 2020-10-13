@@ -1,19 +1,19 @@
 steps:
-    - label: "Make migrate image"
+    - label: ":construction_worker: Make migrate image"
       command: buildkite/make-migrate-image.sh
 
     - wait
 
-    - label: "Build and test app"
+    - label: ":mag: Build and test app"
       command: buildkite/build-app.sh
 
     - wait
 
-    - label: "Run smoke test"
+    - label: ":mag: Run smoke test"
       command: buildkite/run-smoke-test.sh
 
-    - label: "Run custom config tests in container"
+    - label: ":mag: Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh
 
-    - label: "Build css generator"
+    - label: ":sparkle: Build css generator"
       command: buildkite/build-css-generator.sh
