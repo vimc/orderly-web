@@ -12,7 +12,7 @@ $here/../scripts/run-dependencies.sh
 
 function cleanup(){
     docker stop orderly-web
-    docker-compose -f $HERE/../scripts/docker-compose.yml  --project-name montagu down
+    docker-compose -f $here/../scripts/docker-compose.yml  --project-name montagu down
 }
 trap cleanup EXIT
 

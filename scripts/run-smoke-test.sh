@@ -19,7 +19,7 @@ docker run --rm \
     -v $PWD/demo:/orderly \
     -p 8888:8888 \
     --name orderly-web \
-    docker.montagu.dide.ic.ac.uk:5000/orderly-web:$git_id
+    vimc/orderly-web:$git_id
 
 function cleanup(){
     docker stop orderly-web
