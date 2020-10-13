@@ -5,10 +5,16 @@ HERE=$(dirname $0)
 . $HERE/common
 
 ## Run all dependencies
-$here/../scripts/run-dependencies.sh
+$HERE/../scripts/run-dependencies.sh
+
+function cleanup(){
+    docker stop orderly-web
+    docker-compose -f $here/docker-compose.yml --project-name montagu down
+}
+trap cleanup EXIT
 
 # create the db
-$here/make-db.sh
+$HERE/make-db.sh
 
 # Run the OrderlyWeb image
 docker run --rm \
@@ -16,13 +22,7 @@ docker run --rm \
     -v $PWD/demo:/orderly \
     -p 8888:8888 \
     --name orderly-web \
-    vimc/orderly-web:$git_id
-
-function cleanup(){
-    docker stop orderly-web
-    docker-compose -f $here/docker-compose.yml --project-name montagu down
-}
-trap cleanup EXIT
+    $REGISTRY/orderly-web:$GIT_ID
 
 docker exec orderly-web mkdir -p /etc/orderly/web
 docker exec orderly-web touch /etc/orderly/web/go_signal
