@@ -14,6 +14,7 @@ RUN mkdir -p /etc/orderly/web
 RUN touch /etc/orderly/web/go_signal
 
 CMD docker build --tag orderly-web-dist-base --file dist.Dockerfile . \
+    && ./gradlew :app:test --tests org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPageTests \
     && ./gradlew :app:test :app:distDocker -i -Pdocker_version=$GIT_ID -Pdocker_name=$APP_DOCKER_TAG \
     && docker tag $APP_DOCKER_COMMIT_TAG $APP_DOCKER_BRANCH_TAG \
     && docker push $APP_DOCKER_BRANCH_TAG \
