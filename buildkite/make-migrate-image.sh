@@ -3,8 +3,8 @@ set -ex
 
 # This script combines building, testing and pushing the migrate image for running in a buildkite step
 
-HERE=$(dirname $0)
-. $HERE/common
+here=$(dirname $0)
+. $here/common
 
 NAME=orderlyweb-migrate
 COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID

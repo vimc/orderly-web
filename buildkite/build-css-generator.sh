@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 
 set -ex
+
 here=$(dirname $0)
+. $here/common
 
 NAME=orderly-web-css-generator
 

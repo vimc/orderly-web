@@ -14,3 +14,6 @@ steps:
 
     - label: "Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh
+
+    label: "Build css generator"
+      command: buildkite/build-css-generator.sh

@@ -30,4 +30,9 @@ export GIT_BRANCH=$GIT_BRANCH
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 
+function cleardocker() {
+  $here/../scripts/clear-docker.sh
+}
+trap cleardocker EXIT
+
 

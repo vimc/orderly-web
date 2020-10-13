@@ -23,12 +23,6 @@ export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
-function cleanup {
-    set +e
-    docker-compose -f $here/../scripts/docker-compose.yml  --project-name montagu down
-}
-trap cleanup EXIT
-
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \

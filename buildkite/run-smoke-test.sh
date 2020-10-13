@@ -10,12 +10,6 @@ $here/make-db.sh
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
-function cleanup(){
-    docker stop orderly-web
-    docker-compose -f $here/../scripts/docker-compose.yml  --project-name montagu down
-}
-trap cleanup EXIT
-
 # Run the OrderlyWeb image
 IMAGE=$REGISTRY/orderly-web:$GIT_ID
 docker pull $IMAGE

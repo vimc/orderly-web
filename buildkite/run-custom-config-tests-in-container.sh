@@ -17,11 +17,6 @@ $here/make-db.sh
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
-function cleanup(){
-    docker-compose -f $here/docker-compose.yml --project-name montagu down
-}
-trap cleanup EXIT
-
 export NETWORK=montagu_default
 
 $here/../scripts/montagu-cli.sh add "Test User" test.user \
