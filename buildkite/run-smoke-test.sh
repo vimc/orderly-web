@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 
 set -ex
-HERE=$(dirname $0)
-. $HERE/common
+here=$(dirname $0)
+. $here/common
 
 # create the db
-$HERE/make-db.sh
+$here/make-db.sh
 
 ## Run all dependencies
-$HERE/../scripts/run-dependencies.sh
+$here/../scripts/run-dependencies.sh
 
 function cleanup(){
     docker stop orderly-web
-    docker-compose -f $here/docker-compose.yml --project-name montagu down
+    docker-compose -f $HERE/../scripts/docker-compose.yml  --project-name montagu down
 }
 trap cleanup EXIT
 
