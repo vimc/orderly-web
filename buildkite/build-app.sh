@@ -15,6 +15,9 @@ docker build --tag orderly-web-app-build \
     -f app.Dockerfile \
 	.
 
+# Generate orderly data and migrate for orderly web tables
+$here/make-db.sh
+
 # Run all dependencies
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
@@ -25,8 +28,6 @@ function cleanup {
     docker-compose -f $here/../scripts/docker-compose.yml  --project-name montagu down
 }
 trap cleanup EXIT
-
-$here/make-db.sh
 
 # Run the created image
 docker run --rm \
