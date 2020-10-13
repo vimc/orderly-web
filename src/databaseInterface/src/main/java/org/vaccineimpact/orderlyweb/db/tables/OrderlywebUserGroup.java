@@ -11,7 +11,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row1;
+import org.jooq.Row2;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -30,7 +30,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebUserGroup extends TableImpl<OrderlywebUserGroupRecord> {
 
-    private static final long serialVersionUID = -1120763343;
+    private static final long serialVersionUID = 483718107;
 
     /**
      * The reference instance of <code>orderlyweb_user_group</code>
@@ -49,6 +49,11 @@ public class OrderlywebUserGroup extends TableImpl<OrderlywebUserGroupRecord> {
      * The column <code>orderlyweb_user_group.id</code>.
      */
     public final TableField<OrderlywebUserGroupRecord, String> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_user_group.readonly</code>.
+     */
+    public final TableField<OrderlywebUserGroupRecord, Boolean> READONLY = createField(DSL.name("readonly"), org.jooq.impl.SQLDataType.BOOLEAN.defaultValue(org.jooq.impl.DSL.field("0", org.jooq.impl.SQLDataType.BOOLEAN)), this, "");
 
     /**
      * Create a <code>orderlyweb_user_group</code> table reference
@@ -125,11 +130,11 @@ public class OrderlywebUserGroup extends TableImpl<OrderlywebUserGroupRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row1 type methods
+    // Row2 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row1<String> fieldsRow() {
-        return (Row1) super.fieldsRow();
+    public Row2<String, Boolean> fieldsRow() {
+        return (Row2) super.fieldsRow();
     }
 }
