@@ -48,8 +48,8 @@ describe("reportTags", () => {
             }});
 
         const mockCommits = [
-            { id: "abcdef", display_date_time: "Mon Jun 08, 12:01" },
-            { id: "abc123", display_date_time: "Tue Jun 09, 13:11" }
+            { id: "abcdef", date_time: "Mon Jun 08, 12:01" },
+            { id: "abc123", date_time: "Tue Jun 09, 13:11" }
         ];
 
         mockAxios.onGet('http://app/git/branch/master/commits/')

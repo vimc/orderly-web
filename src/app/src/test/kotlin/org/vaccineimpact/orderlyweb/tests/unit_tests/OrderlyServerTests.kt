@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.JsonParseException
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -45,7 +46,7 @@ class OrderlyServerTests : TeamcityTests()
         val sut = OrderlyServer(mockConfig, mockHttpclient)
         sut.post("/some/path/", mockContext)
 
-        verify(mockHttpclient).post("http://orderly/v1/some/path/", standardHeaders, mapOf("key1" to "val1"))
+        verify(mockHttpclient).post("http://orderly/some/path/", standardHeaders, mapOf("key1" to "val1"))
     }
 
     @Test
@@ -57,7 +58,7 @@ class OrderlyServerTests : TeamcityTests()
         val sut = OrderlyServer(mockConfig, mockHttpclient)
         sut.post("/some/path/", mockContext)
 
-        verify(mockHttpclient).post("http://orderly/v1/some/path/?key1=val1", standardHeaders, mapOf())
+        verify(mockHttpclient).post("http://orderly/some/path/?key1=val1", standardHeaders, mapOf())
     }
 
     @Test
@@ -69,7 +70,7 @@ class OrderlyServerTests : TeamcityTests()
         val sut = OrderlyServer(mockConfig, mockHttpclient)
         sut.get("/some/path/", mockContext)
 
-        verify(mockHttpclient).get("http://orderly/v1/some/path/?key1=val1", standardHeaders)
+        verify(mockHttpclient).get("http://orderly/some/path/?key1=val1", standardHeaders)
     }
 
     @Test

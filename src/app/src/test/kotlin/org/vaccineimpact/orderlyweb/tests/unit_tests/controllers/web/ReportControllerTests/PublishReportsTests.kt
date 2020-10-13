@@ -36,7 +36,7 @@ class PublishReportsTests : TeamcityTests()
             on { getDrafts() } doReturn fakeDrafts
         }
 
-        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mock(), mock(), mock(), mockRepo, mock())
 
         val result = sut.getDrafts()
 
@@ -90,7 +90,7 @@ class PublishReportsTests : TeamcityTests()
             on { getDrafts() } doReturn fakeDrafts
         }
 
-        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mock(), mock(), mock(), mockRepo, mock())
         val result = sut.getDrafts()
         assertThat(result.count()).isEqualTo(1)
     }
@@ -115,7 +115,7 @@ class PublishReportsTests : TeamcityTests()
             on { getDrafts() } doReturn fakeDrafts
         }
 
-        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mock(), mock(), mock(), mockRepo, mock())
         val result = sut.getDrafts()
         val draft = result[0].dateGroups[0].drafts[0]
         assertThat(draft.parameterValues).isEqualTo("p1=param1,p2=param2")
@@ -146,7 +146,7 @@ class PublishReportsTests : TeamcityTests()
             on { getDrafts() } doReturn fakeDrafts
         }
 
-        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mock(), mock(), mock(), mockRepo, mock())
         val result = sut.getDrafts()
 
         assertThat(result[0].displayName).isEqualTo("The second report")
@@ -161,7 +161,7 @@ class PublishReportsTests : TeamcityTests()
             on { getDrafts() } doReturn listOf<ReportVersionWithChangelogsParams>()
         }
 
-        val sut = ReportController(mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mock(), mock(), mock(), mockRepo, mock())
         val model = sut.getPublishReports()
         assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
                 Breadcrumb("Publish reports", "http://localhost:8888/publish-reports"))

@@ -16,7 +16,7 @@
                     <div class="col-sm-6">
                         <select class="form-control" id="git-commit" v-model="selectedCommitId">
                             <option v-for="commit in gitCommits" :value="commit.id">
-                                {{commit.id}} ({{commit.display_date_time}})
+                                {{commit.id}} ({{commit.date_time}})
                             </option>
                         </select>
                     </div>

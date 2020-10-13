@@ -8,6 +8,7 @@ import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import java.io.File
+import java.net.URI
 
 class JSONValidator
 {
@@ -27,6 +28,16 @@ class JSONValidator
         // Then use the more specific schema on the data portion
         val data = json["data"]
         assertValidates(schemaName, data)
+    }
+
+    fun validateAgainstOrderlySchema(response: String, schemaName: String)
+    {
+        val json = parseJson(response)
+        // Everything must meet the basic response schema
+        checkResultSchema(json, "success")
+        // Then use the more specific schema on the data portion
+        val data = json["data"]
+        assertValidates(schemaName, data, true)
     }
 
     fun validateError(response: String,
@@ -63,17 +74,22 @@ class JSONValidator
     {
         assertValidates("Response", json)
         val status = json["status"].textValue()
-        Assertions.assertThat(status)
+        assertThat(status)
                 .isEqualTo(expectedStatus)
     }
 
-    private fun assertValidates(name: String, json: JsonNode)
+    private fun assertValidates(name: String, json: JsonNode, orderlySchema: Boolean = false)
     {
-        val file = File("../../docs/spec/$name.schema.json").toURI()
-        val report = schemaFactory.getJsonSchema(file.toString()).validate(json)
+        val uri = if (orderlySchema){
+            URI("https://raw.githubusercontent.com/vimc/orderly.server/master/inst/schema/$name.schema.json")
+        }
+        else {
+            File("../../docs/spec/$name.schema.json").toURI()
+        }
+        val report = schemaFactory.getJsonSchema(uri.toString()).validate(json)
         if (!report.isSuccess)
         {
-            Assertions.fail("JSON failed schema validation. Attempted to validate: $json against $name. Report follows: $report")
+            fail("JSON failed schema validation. Attempted to validate: $json against $name. Report follows: $report")
         }
     }
 
