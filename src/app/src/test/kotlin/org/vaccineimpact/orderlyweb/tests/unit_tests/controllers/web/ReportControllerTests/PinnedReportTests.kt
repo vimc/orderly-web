@@ -28,7 +28,7 @@ class PinnedReportTests : TeamcityTests()
     @Test
     fun `setGlobalPinnedReports calls repo`()
     {
-        val sut = ReportController(mockContext, mock(), mockRepo, mock())
+        val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
         val result = sut.setGlobalPinnedReports()
         assertThat(result).isEqualTo("OK")
         verify(mockRepo).setGlobalPinnedReports(reports)
@@ -42,7 +42,7 @@ class PinnedReportTests : TeamcityTests()
             on { reportExists("r2") } doReturn false
         }
 
-        val sut = ReportController(mockContext, mock(), notFoundRepo, mock())
+        val sut = ReportController(mockContext, mock(), mock(), notFoundRepo, mock())
         assertThatThrownBy{ sut.setGlobalPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Report 'r2' does not exist")
 
@@ -55,7 +55,7 @@ class PinnedReportTests : TeamcityTests()
             on { postData<List<String>>("reports") } doReturn listOf("r1", "r1")
         }
 
-        val sut = ReportController(dupesContext, mock(), mockRepo, mock())
+        val sut = ReportController(dupesContext, mock(), mock(), mockRepo, mock())
         assertThatThrownBy{ sut.setGlobalPinnedReports() }.isInstanceOf(BadRequest::class.java)
                 .hasMessageContaining("Cannot include the same pinned report twice")
     }

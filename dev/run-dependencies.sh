@@ -8,6 +8,7 @@ here=$(dirname $0)
 	rm app/demo -rf
 	rm app/git -rf
 	./gradlew :generateTestData
+	./gradlew :customConfigTests:copyGitDemo
 )
 
 $here/migrate-local-test.sh

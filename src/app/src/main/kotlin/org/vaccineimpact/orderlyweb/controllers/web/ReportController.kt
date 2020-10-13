@@ -1,7 +1,11 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.KHttpClient
+import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
@@ -9,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.GitBranch
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
@@ -18,11 +23,16 @@ import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
 class ReportController(context: ActionContext,
                        val orderly: OrderlyClient,
+                       val orderlyServerAPI: OrderlyServerAPI,
                        private val reportRepository: ReportRepository,
                        private val tagRepository: TagRepository) : Controller(context)
 {
     constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
+            : this(context,
+            Orderly(context),
+            OrderlyServer(AppConfig(), KHttpClient()),
+            OrderlyReportRepository(context),
+            OrderlyWebTagRepository())
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportVersionPageViewModel
@@ -38,13 +48,17 @@ class ReportController(context: ActionContext,
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        //TODO: Orderly server does not yet support fetching this metadata, so we hardcode dummy data for now
+        //TODO: replace with call to orderly server
         val runReportMetadata = RunReportMetadata(true, true,
                 listOf("support", "annex"), listOf("internal", "published"))
 
-        //TODO: as above, need to get this from orderly server when endpoint is available
-        //TODO: Don't attempt get get git branches if metadata.git_supported is false
-        val gitBranches = listOf("master", "dev_branch")
+        // TODO only fetch branches if metadata supports it
+        val branchResponse = orderlyServerAPI
+                .throwOnError()
+                .get("/git/branches", context)
+
+        val gitBranches = branchResponse.listData(GitBranch::class.java)
+                .map { it.name }
 
         return RunReportViewModel(context, runReportMetadata, gitBranches)
     }

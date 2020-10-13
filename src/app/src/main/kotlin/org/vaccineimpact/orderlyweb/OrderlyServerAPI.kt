@@ -11,7 +11,10 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
 interface OrderlyServerAPI
 {
+    @Throws(OrderlyServerError::class)
     fun post(url: String, context: ActionContext): OrderlyServerResponse
+
+    @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     fun throwOnError(): OrderlyServerAPI
@@ -43,7 +46,7 @@ class OrderlyServer(private val config: Config,
                     private val httpClient: HttpClient,
                     private val throwOnError: Boolean = false) : OrderlyServerAPI
 {
-    private val urlBase: String = "${config["orderly.server"]}/v1"
+    private val urlBase: String = config["orderly.server"]
 
     private val standardHeaders = mapOf(
             "Accept" to ContentTypes.json,

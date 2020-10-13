@@ -30,7 +30,7 @@ class ReportController(context: ActionContext,
     fun run(): String
     {
         val name = context.params(":name")
-        val response = orderlyServerAPI.post("/reports/$name/run/", context)
+        val response = orderlyServerAPI.post("/v1/reports/$name/run/", context)
         return passThroughResponse(response)
     }
 
@@ -44,7 +44,7 @@ class ReportController(context: ActionContext,
     fun status(): String
     {
         val key = context.params(":key")
-        val response = orderlyServerAPI.get("/reports/$key/status/", context)
+        val response = orderlyServerAPI.get("/v1/reports/$key/status/", context)
         return passThroughResponse(response)
     }
 

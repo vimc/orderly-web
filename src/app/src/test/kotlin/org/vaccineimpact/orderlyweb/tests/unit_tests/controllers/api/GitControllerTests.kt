@@ -17,7 +17,7 @@ class GitControllerTests : ControllerTest()
     fun `status gets status from orderly`()
     {
         val mockOrderly = mock<OrderlyServerAPI>{
-            on { it.get("/reports/git/status/", mockContext) } doReturn mockResponse
+            on { it.get("/v1/reports/git/status/", mockContext) } doReturn mockResponse
         }
 
         val sut = GitController(mockContext, mockOrderly)
@@ -30,7 +30,7 @@ class GitControllerTests : ControllerTest()
     fun `fetch gets response from orderly`()
     {
         val mockOrderly = mock<OrderlyServerAPI>{
-            on { it.post("/reports/git/fetch/", mockContext) } doReturn mockResponse
+            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
         }
 
         val sut = GitController(mockContext, mockOrderly)
@@ -43,7 +43,7 @@ class GitControllerTests : ControllerTest()
     fun `pull gets response from orderly`()
     {
         val mockOrderly = mock<OrderlyServerAPI>{
-            on { it.post("/reports/git/pull/", mockContext) } doReturn mockResponse
+            on { it.post("/v1/reports/git/pull/", mockContext) } doReturn mockResponse
         }
 
         val sut = GitController(mockContext, mockOrderly)

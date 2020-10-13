@@ -31,7 +31,7 @@ class TagTests : TeamcityTests()
 
         val mockTagRepo = mock<TagRepository>()
         val mockOrderly = mock<OrderlyClient>()
-        val sut = ReportController(mockContext, mockOrderly, mockReportRepo, mockTagRepo)
+        val sut = ReportController(mockContext, mockOrderly, mock(), mockReportRepo, mockTagRepo)
         val result = sut.tagVersion()
         assertThat(result).isEqualTo("OK")
         verify(mockTagRepo).updateTags(eq("r1"), eq("v1"), eq(ReportVersionTags(listOf("v-tag"), listOf("r-tag"), listOf())))
