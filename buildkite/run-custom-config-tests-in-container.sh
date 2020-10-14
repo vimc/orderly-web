@@ -17,11 +17,6 @@ $here/make-db.sh
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
-$here/../scripts/montagu-cli.sh add "Test User" test.user \
-    test.user@example.com password \
-
-$here/../scripts/montagu-cli.sh addRole test.user user
-
 # Run the created image
 docker run --rm \
     -v $PWD/git:/api/src/customConfigTests/git \
