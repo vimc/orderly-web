@@ -87,34 +87,26 @@ rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
 ```
 
 ## Docker build
-The app is dockerised by running `./build-app.sh` which does the following:
-1. Calls `./make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the gradle and npm dependencies needed to 
+The app is dockerised by running `./buildkite/build-app.sh` which does the following:
+1. Calls `./buildkite/make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the gradle and npm dependencies needed to 
 distribute the app. This image will also be re-used for the blackbox tests.
 1. Builds the app specific build environment image based on `app.Dockerfile` which inherits from the above.
+1. Generates an orderly-web database containing test data with `./buildkite/make-db/sh`
 1. Runs all dependencies needed for tests as a docker network
 1. Runs the image created in step 2. which tests the app and if successful, runs the `distDocker` task which builds and 
 pushes the final docker image containing just the compiled app.
 
-This script is designed to be run on Teamcity. To run it locally you will first have to generate test data by running
-    
-    ./scripts/generate-test-data.sh
-    
-and to push the image locally you will need to pass your docker login information as an argument to the script, i.e.
-  
-    ./scripts/build-app.sh /home/{user}/.docker/config.json
+This script is designed to be run on Buildkite, but can also be run locally.
  
-### Teamcity
-The Teamcity build:
-1. Pulls in artifacts `demo` and `git` from the Orderly container build.
-1. Runs `./scripts/migrate-build.sh` to build the migrations image.
-1. Runs `./scripts/migrate-test.sh` to test the image build in the previous step.
-1. Runs `./scripts/migrate-push.sh` to push the tested image to our registry.
-1. Runs `./scripts/build-app.sh` which mounts the `demo` folder as a volume, to compile code, 
-run tests (for this purpose also running an Orderly Server image with the `git` folder mounted as a volume) and
- build a Docker image containing the compiled app code (see steps [here](#docker-build))
-1. Runs `./scripts/run-smoke-test.sh` which runs up the image and checks that the app starts ok
-1. Runs `./scripts/run-custom-config-tests-in-container.sh`
-1. Runs `./scripts/build-css-generator.sh` which creates a docker image that can compile the 
+### Buildkite
+The Buildkite build runs a series of independent steps, some of which are run in parallel. See `/buildkite/pipeline.yml` where
+this is defined. These steps:
+1. Build, test and push the database migrations image with `./buildkite/make-migrate-image.sh`.
+1. Run `./buildkite/build-app.sh` which compiles code, run tests alongside a database containing test data and
+ builds a Docker image containing the compiled app code (see steps [here](#docker-build))
+1. Run `./buildkite/run-smoke-test.sh` which runs up the image and checks that the app starts ok
+1. Run `./buildkite/run-custom-config-tests-in-container.sh`
+1. Run `./buildkite/build-css-generator.sh` which creates a docker image that can compile the 
 front-end sass to css - for usage during deployment to create custom style overrides 
 (see [this deploy config](https://github.com/vimc/orderly-web-deploy/blob/d0691f6b84e590d09c50b15310a08fceabb7db98/config/customcss/orderly-web.yml))
 
@@ -124,8 +116,8 @@ see [build.md](/docs/build.md)
 ## Docker run
 To make use of a built image, run:
 
-        docker pull docker.montagu.dide.ic.ac.uk:5000/orderly-web:master
-        docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly docker.montagu.dide.ic.ac.uk:5000/orderly-web:master
+        docker pull vimc/orderly-web:master
+        docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly vimc/orderly-web:master
 
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
 

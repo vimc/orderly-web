@@ -4,11 +4,6 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
-# TODO: This teamcity script will be superseded by its namesake in /buildkite, and can be removed when that is working
-# This is the path for teamcity agents. If running locally, pass in your own docker config location
-# i.e. /home/{user}/.docker/config.json
-docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}
-
 # Make the build environment image that is shared between multiple build targets
 $here/make-build-env.sh
 
@@ -20,21 +15,18 @@ docker build --tag orderly-web-app-build \
     -f app.Dockerfile \
 	.
 
+# Generate orderly data and migrate for orderly web tables
+$here/make-db.sh
+
 # Run all dependencies
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
-$here/run-dependencies.sh
-
-function cleanup {
-    set +e
-    $here/../scripts/clear-docker.sh
-}
-trap cleanup EXIT
+$here/../scripts/run-dependencies.sh
 
 # Run the created image
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
-    -v $docker_auth_path:/root/.docker/config.json \
+    -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
     --network=host \

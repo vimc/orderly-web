@@ -1,31 +1,24 @@
 #!/usr/bin/env bash
 
-# TODO: This teamcity script will be superseded by its namesake in /buildkite, and can be removed when that is working
-
 set -ex
 here=$(dirname $0)
+. $here/common
 
-git_id=$(git rev-parse --short=7 HEAD)
-git_branch=$(git symbolic-ref --short HEAD | sed 's;/;-;g')
+# create the db
+$here/make-db.sh
 
 ## Run all dependencies
-export MONTAGU_ORDERLY_PATH=$PWD/git
-export ORDERLY_SERVER_USER_ID=$UID
-$here/run-dependencies.sh
+$here/../scripts/run-dependencies.sh
 
 # Run the OrderlyWeb image
+IMAGE=$ORG/orderly-web:$GIT_ID
+docker pull $IMAGE
 docker run --rm \
     -d \
     -v $PWD/demo:/orderly \
     -p 8888:8888 \
     --name orderly-web \
-    vimc/orderly-web:$git_id
-
-function cleanup(){
-    docker stop orderly-web
-    docker-compose -f $here/docker-compose.yml --project-name montagu down
-}
-trap cleanup EXIT
+    $IMAGE
 
 docker exec orderly-web mkdir -p /etc/orderly/web
 docker exec orderly-web touch /etc/orderly/web/go_signal
