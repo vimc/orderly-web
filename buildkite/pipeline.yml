@@ -7,13 +7,13 @@ steps:
     - label: ":mag: Build and test app"
       command: buildkite/build-app.sh
 
-    - wait
-
     - label: ":mag: Run smoke test"
       command: buildkite/run-smoke-test.sh
 
     - label: ":mag: Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh
+
+    - wait
 
     - label: ":sparkle: Build css generator"
       command: buildkite/build-css-generator.sh

@@ -13,6 +13,5 @@ docker run --rm \
     $ORDERLY_IMAGE \
     "."
 
-docker pull $MIGRATE_IMAGE
 docker run --rm -v ${PWD}/demo:/orderly $MIGRATE_IMAGE
 docker run --rm -v ${PWD}/git:/orderly $MIGRATE_IMAGE
