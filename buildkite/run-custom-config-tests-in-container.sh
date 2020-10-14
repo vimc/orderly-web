@@ -17,8 +17,6 @@ $here/make-db.sh
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 
-export NETWORK=montagu_default
-
 $here/../scripts/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
