@@ -27,7 +27,7 @@ $here/../scripts/setup-montagu-db.sh
 docker exec montagu_api_1 mkdir -p /etc/montagu/api
 docker exec montagu_api_1 touch /etc/montagu/api/go_signal
 
-$here/scripts/montagu-cli.sh add "Test User" test.user \
+$here/../scripts/montagu-cli.sh add "Test User" test.user \
     test.user@example.com password \
 
-$here/scripts/montagu-cli.sh addRole test.user user
+$here/../scripts/montagu-cli.sh addRole test.user user
