@@ -7,9 +7,9 @@ here=$(dirname $0)
 
 NAME=orderly-web-css-generator
 
-TAG=$REGISTRY/$NAME
-COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
-BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
+TAG=$ORG/$NAME
+COMMIT_TAG=$ORG/$NAME:$GIT_ID
+BRANCH_TAG=$ORG/$NAME:$GIT_BRANCH
 
 docker build \
         --tag $COMMIT_TAG \

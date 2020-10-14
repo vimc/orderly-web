@@ -23,7 +23,7 @@ GIT_BRANCH=$(echo $GIT_BRANCH | sed 's;/;-;g')
 BUILDKITE_DOCKER_AUTH_PATH=/var/lib/buildkite-agent/.docker/config.json
 
 # Export env vars needed for running test dependencies
-export REGISTRY=vimc
+export ORG=vimc
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$HERE/../config/orderly_server_version)
 export GIT_ID=$GIT_ID
 export GIT_BRANCH=$GIT_BRANCH

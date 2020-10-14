@@ -1,5 +1,5 @@
-ORDERLY_IMAGE=$REGISTRY/orderly:master
-MIGRATE_IMAGE=$REGISTRY/orderlyweb-migrate:$GIT_ID
+ORDERLY_IMAGE=$ORG/orderly:master
+MIGRATE_IMAGE=$ORG/orderlyweb-migrate:$GIT_ID
 
 rm demo -rf
 rm git -rf

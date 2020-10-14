@@ -11,7 +11,7 @@ $here/make-db.sh
 $here/../scripts/run-dependencies.sh
 
 # Run the OrderlyWeb image
-IMAGE=$REGISTRY/orderly-web:$GIT_ID
+IMAGE=$ORG/orderly-web:$GIT_ID
 docker pull $IMAGE
 docker run --rm \
     -d \

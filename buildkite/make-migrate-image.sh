@@ -7,8 +7,8 @@ here=$(dirname $0)
 . $here/common
 
 NAME=orderlyweb-migrate
-COMMIT_TAG=$REGISTRY/$NAME:$GIT_ID
-BRANCH_TAG=$REGISTRY/$NAME:$GIT_BRANCH
+COMMIT_TAG=$ORG/$NAME:$GIT_ID
+BRANCH_TAG=$ORG/$NAME:$GIT_BRANCH
 
 docker build \
        --tag $COMMIT_TAG \
