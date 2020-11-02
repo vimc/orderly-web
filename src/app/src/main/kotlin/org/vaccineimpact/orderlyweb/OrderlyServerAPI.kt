@@ -20,8 +20,8 @@ interface OrderlyServerAPI
     fun throwOnError(): OrderlyServerAPI
 }
 
-data class OrderlyServerResponse(val text: String, val statusCode: Int) {
-
+data class OrderlyServerResponse(val text: String, val statusCode: Int)
+{
     fun <T> data(klass: Class<T>): T
     {
         val data = parseJson(text)
@@ -79,7 +79,7 @@ class OrderlyServer(private val config: Config,
         val messageKey = "message"
         val detailKey = "detail"
 
-        val json = rawResponse.jsonObject;
+        val json = rawResponse.jsonObject
         val newErrors = JSONArray()
         if (json.has(errorsKey) && json[errorsKey] is JSONArray)
         {

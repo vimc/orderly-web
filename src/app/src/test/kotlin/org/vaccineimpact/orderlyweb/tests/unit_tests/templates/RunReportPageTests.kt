@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
@@ -20,12 +19,13 @@ class RunReportPageTests : TeamcityTests()
         val template = FreemarkerTestRule("run-report-page.ftl")
     }
 
-    private val testModel = RunReportViewModel(mock<ActionContext>(),
+    private val testModel = RunReportViewModel(mock(),
             RunReportMetadata(true, true,
-                    listOf("support", "annex"), listOf("internal", "published")),
+                    mapOf("source" to listOf("support", "annex")),
+                    listOf("internal", "published")),
             listOf("master", "dev"))
 
-    private val doc = RunReportPageTests.template.jsoupDocFor(testModel)
+    private val doc = template.jsoupDocFor(testModel)
 
     @Test
     fun `renders outline correctly`()
@@ -77,6 +77,6 @@ class RunReportPageTests : TeamcityTests()
         val script = doc.select("script")[2]
         val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
         assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
-                                                    + " var gitBranches = [ \"master\", \"dev\" ];")
+                + " var gitBranches = [ \"master\", \"dev\" ];")
     }
 }

@@ -48,19 +48,26 @@ class ReportController(context: ActionContext,
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        //TODO: replace with call to orderly server
-        val runReportMetadata = RunReportMetadata(true, true,
-                listOf("support", "annex"), listOf("internal", "published"))
-
-        // TODO only fetch branches if metadata supports it
-        val branchResponse = orderlyServerAPI
+        val metadata = orderlyServerAPI
                 .throwOnError()
-                .get("/git/branches", context)
+                .get("/run-metadata", context)
+                .data(RunReportMetadata::class.java)
 
-        val gitBranches = branchResponse.listData(GitBranch::class.java)
-                .map { it.name }
+        val gitBranches = if (metadata.gitSupported)
+        {
+            val branchResponse = orderlyServerAPI
+                    .throwOnError()
+                    .get("/git/branches", context)
 
-        return RunReportViewModel(context, runReportMetadata, gitBranches)
+            branchResponse.listData(GitBranch::class.java)
+                    .map { it.name }
+        }
+        else
+        {
+            listOf()
+        }
+
+        return RunReportViewModel(context, metadata, gitBranches)
     }
 
     fun tagVersion(): String
