@@ -9,11 +9,16 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class RunReportTests : TeamcityTests()
 {
     private val fakeBranchResponse = listOf(mapOf("name" to "master"), mapOf("name" to "dev"))
+    private val fakeMetadata = RunReportMetadata(instancesSupported = true,
+            gitSupported = true,
+            instances = mapOf("source" to listOf("uat", "science")),
+            changelogTypes = listOf("internal", "published"))
 
     @Test
     fun `getRunReport creates viewmodel`()
@@ -22,6 +27,8 @@ class RunReportTests : TeamcityTests()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+            on { get("/run-metadata", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
@@ -36,29 +43,21 @@ class RunReportTests : TeamcityTests()
         assertThat(result.runReportMetadata.gitSupported).isTrue()
         assertThat(result.runReportMetadata.instancesSupported).isTrue()
         assertThat(result.runReportMetadata.changelogTypes).hasSameElementsAs(listOf("internal", "published"))
+        assertThat(result.runReportMetadata.instances["source"]).hasSameElementsAs(listOf("uat", "science"))
     }
 
     @Test
-    fun `getRunReport returns no branches if orderly server returns an error`()
+    fun `getRunReport returns no branches if git is not supported`()
     {
         val mockContext = mock<ActionContext>()
-        val mockOrderlyServer = mock<OrderlyServerAPI> {
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
+            on { get("/run-metadata", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
             on { get("/git/branches", mockContext) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(null), 500)
+                    OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getRunReport()
-
-        assertThat(result.gitBranches).isEmpty()
-    }
-
-    @Test
-    fun `getRunReport returns no branches if orderly server response is malformed`()
-    {
-        val mockContext = mock<ActionContext>()
         val mockOrderlyServer = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mockContext) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(listOf(mapOf("something" to "something"))), 200)
+            on { throwOnError() } doReturn mockOrderlyServerWithError
         }
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getRunReport()
@@ -71,7 +70,7 @@ class RunReportTests : TeamcityTests()
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mockContext) } doThrow OrderlyServerError("/git/branches", 400)
+            on { get("/run-metadata", mockContext) } doThrow OrderlyServerError("/run-metadata", 400)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
