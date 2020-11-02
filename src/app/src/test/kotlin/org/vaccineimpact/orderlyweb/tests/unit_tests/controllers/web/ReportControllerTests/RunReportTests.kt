@@ -1,14 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
 
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 class RunReportTests : TeamcityTests()
@@ -19,9 +19,12 @@ class RunReportTests : TeamcityTests()
     fun `getRunReport creates viewmodel`()
     {
         val mockContext = mock<ActionContext>()
-        val mockOrderlyServer = mock<OrderlyServerAPI> {
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
+        }
+        val mockOrderlyServer = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn mockOrderlyServerWithError
         }
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getRunReport()
@@ -61,6 +64,21 @@ class RunReportTests : TeamcityTests()
         val result = sut.getRunReport()
 
         assertThat(result.gitBranches).isEmpty()
+    }
+
+    @Test
+    fun `getRunReport throws if orderly server returns an error`()
+    {
+        val mockContext = mock<ActionContext>()
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
+            on { get("/git/branches", mockContext) } doThrow OrderlyServerError("/git/branches", 400)
+        }
+        val mockOrderlyServer = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn mockOrderlyServerWithError
+        }
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        assertThatThrownBy { sut.getRunReport() }
+                .isInstanceOf(OrderlyServerError::class.java)
     }
 
 }

@@ -59,8 +59,8 @@ class ReportController(context: ActionContext,
                     .throwOnError()
                     .get("/git/branches", context)
 
-            branchResponse.listData(GitBranch::class.java)
-                    .map { it.name }
+           branchResponse.listData(GitBranch::class.java)
+                .map { it.name }
         }
         else
         {

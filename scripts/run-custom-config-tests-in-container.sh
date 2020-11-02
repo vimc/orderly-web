@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# TODO: This teamcity script will be superseded by its namesake in /buildkite, and can be removed when that is working
 set -ex
 here=$(dirname $0)
 

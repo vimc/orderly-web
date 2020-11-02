@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.JsonParseException
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock

@@ -1,7 +1,7 @@
 # Building the images
 
 The build process is fairly complicated. There is a shared build environment image based on the `Dockerfile` in 
-this repository and built by `./scripts/make-build-env.sh` that has node, docker and openjdk installed.
+this repository and built by `./buildkite/make-build-env.sh` that has node, docker and openjdk installed.
  3 further images inherit from this one: 
 1. a build environment for compiling the main app
 1. a build environment for compiling the user cli

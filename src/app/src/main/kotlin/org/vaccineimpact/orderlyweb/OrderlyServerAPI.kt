@@ -11,7 +11,10 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
 interface OrderlyServerAPI
 {
+    @Throws(OrderlyServerError::class)
     fun post(url: String, context: ActionContext): OrderlyServerResponse
+
+    @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     fun throwOnError(): OrderlyServerAPI
