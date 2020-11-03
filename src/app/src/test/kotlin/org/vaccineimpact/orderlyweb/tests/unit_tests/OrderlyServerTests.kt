@@ -209,6 +209,7 @@ class OrderlyServerTests : TeamcityTests()
         val mockClient = mock<HttpClient> {
             on { this.get(any(), any()) } doReturn mockRawResponse
             on { this.post(any(), any(), any()) } doReturn mockRawResponse
+            on { this.delete(any(), any()) } doReturn mockRawResponse
         }
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
