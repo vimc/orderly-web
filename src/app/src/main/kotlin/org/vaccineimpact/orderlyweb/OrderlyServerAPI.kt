@@ -90,6 +90,7 @@ class OrderlyServer(private val config: Config,
         val detailKey = "detail"
 
         val json = rawResponse.jsonObject
+
         val newErrors = JSONArray()
         if (json.has(errorsKey) && json[errorsKey] is JSONArray)
         {

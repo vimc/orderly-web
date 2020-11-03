@@ -31,6 +31,7 @@ class ReportControllerTests : ControllerTest()
     }
 
     private val reportName = "report1"
+    private val reportKey = "123"
 
     private val reports = listOf(Report(reportName, "test full name 1", "v1"),
             Report("testname2", "test full name 2", "v1"))
@@ -68,6 +69,25 @@ class ReportControllerTests : ControllerTest()
         val sut = ReportController(actionContext, mock(), mockReportRepo, apiClient, mockConfig)
 
         val result = sut.run()
+
+        assertThat(result).isEqualTo("okayresponse")
+    }
+
+    @Test
+    fun `kills a report`()
+    {
+        val actionContext = mock<ActionContext> {
+            on { this.params(":key") } doReturn reportKey
+        }
+
+        val mockAPIResponse = OrderlyServerResponse("okayresponse", 200)
+
+        val apiClient = mock<OrderlyServerAPI>() {
+            on { this.delete("/v1/reports/$reportKey/kill/", actionContext) } doReturn mockAPIResponse
+        }
+
+        val sut = ReportController(actionContext, mock(), mockReportRepo, apiClient, mockConfig)
+        val result = sut.kill()
 
         assertThat(result).isEqualTo("okayresponse")
     }

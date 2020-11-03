@@ -30,6 +30,6 @@ class KHttpClient : HttpClient
 
     override fun delete(url: String, headers: Map<String, String>): Response
     {
-        return khttp.delete(url, headers)
+        return  khttp.delete(url, headers)
     }
 }

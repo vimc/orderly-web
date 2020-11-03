@@ -30,6 +30,10 @@ class APIPermissionChecker(url: String,
             {
                 requestHelper.postWithPermissions(this.url, this.postData, this.contentType, permissions)
             }
+            HttpMethod.delete ->
+            {
+                requestHelper.deleteWithPermissions(this.url, this.contentType, permissions)
+            }
             else ->
             {
                 throw InvalidOperationError("Only GET and POST supported")

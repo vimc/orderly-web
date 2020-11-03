@@ -7,6 +7,8 @@ import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
@@ -33,6 +35,27 @@ class ReportTests : IntegrationTest()
         assertSuccessfulWithResponseText(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Run")
+
+        val key = JSONValidator.getData(response.text)["key"].asText()
+        apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
+    }
+
+    @Test
+    fun `kills report`()
+    {
+        val runResponse = apiRequestHelper.post("/reports/minimal/run/", mapOf(),
+                userEmail = fakeGlobalReportReviewer())
+        assertSuccessfulWithResponseText(runResponse)
+        val key = JSONValidator.getData(runResponse.text)["key"].asText()
+
+        //Until https://mrc-ide.myjetbrains.com/youtrack/issue/VIMC-3849 is fixed, the orderly server endpoint works but
+        //spuriously returns a 400 when successful. So here do not test response, but check status to see if kill worked
+        apiRequestHelper.delete("/reports/$key/kill/", userEmail = fakeGlobalReportReviewer())
+
+        val statusResponse = apiRequestHelper.get("/reports/$key/status",
+                userEmail = fakeGlobalReportReviewer())
+        val status = JSONValidator.getData(statusResponse.text)["status"].asText()
+        assertThat(status).isEqualTo("killed")
     }
 
     @Test
@@ -43,6 +66,21 @@ class ReportTests : IntegrationTest()
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.post,
                 contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `only report runners can kill report`()
+    {
+        val url = "/reports/agronomic_seahorse/kill/"
+
+        val deniedChecker =  APIPermissionChecker(url, setOf(), ContentTypes.json, HttpMethod.delete)
+        var response = deniedChecker.requestWithPermissions(setOf())
+        assertThat(response.statusCode).isEqualTo(403)
+
+        val permissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
+        val allowedChecker = APIPermissionChecker(url, permissions, ContentTypes.json, HttpMethod.delete)
+        response = allowedChecker.requestWithPermissions(permissions)
+        assertThat(response.statusCode).isEqualTo(400)
     }
 
     @Test
