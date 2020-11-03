@@ -48,6 +48,13 @@ class ReportController(context: ActionContext,
         return passThroughResponse(response)
     }
 
+    fun kill(): String
+    {
+        val key = context.params(":key")
+        val response = orderlyServerAPI.delete("/v1/reports/$key/kill/", context)
+        return passThroughResponse(response)
+    }
+
     fun getAllReports(): List<Report>
     {
         if (!canReadReports())

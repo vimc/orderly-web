@@ -6,6 +6,7 @@ interface HttpClient
 {
     fun post(url: String, headers: Map<String, String>, json: Map<String, String> = mapOf()): Response
     fun get(url: String, headers: Map<String, String>): Response
+    fun delete(url: String, headers: Map<String, String>): Response
 }
 
 class KHttpClient : HttpClient
@@ -25,5 +26,10 @@ class KHttpClient : HttpClient
     override fun get(url: String, headers: Map<String, String>): Response
     {
         return khttp.get(url, headers)
+    }
+
+    override fun delete(url: String, headers: Map<String, String>): Response
+    {
+        return khttp.delete(url, headers)
     }
 }
