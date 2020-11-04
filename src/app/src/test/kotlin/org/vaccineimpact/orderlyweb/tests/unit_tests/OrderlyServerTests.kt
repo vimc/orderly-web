@@ -27,6 +27,7 @@ class OrderlyServerTests : TeamcityTests()
     private val mockHttpclient = mock<HttpClient> {
         on { this.get(any(), any()) } doReturn mockResponse
         on { this.post(any(), any(), any()) } doReturn mockResponse
+        on { this.delete(any(), any()) } doReturn mockResponse
     }
     private val mockConfig = mock<Config>() {
         on { this.get("orderly.server") } doReturn "http://orderly"
@@ -71,6 +72,18 @@ class OrderlyServerTests : TeamcityTests()
         sut.get("/some/path/", mockContext)
 
         verify(mockHttpclient).get("http://orderly/some/path/?key1=val1", standardHeaders)
+    }
+
+    @Test
+    fun `makes DELETE call on http client`()
+    {
+        val mockContext = mock<ActionContext>() {
+            on { this.queryString() } doReturn "key1=val1"
+        }
+        val sut = OrderlyServer(mockConfig, mockHttpclient)
+        sut.delete("/some/path/", mockContext)
+
+        verify(mockHttpclient).delete("http://orderly/some/path/?key1=val1", standardHeaders)
     }
 
     @Test
@@ -196,6 +209,7 @@ class OrderlyServerTests : TeamcityTests()
         val mockClient = mock<HttpClient> {
             on { this.get(any(), any()) } doReturn mockRawResponse
             on { this.post(any(), any(), any()) } doReturn mockRawResponse
+            on { this.delete(any(), any()) } doReturn mockRawResponse
         }
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
@@ -208,6 +222,10 @@ class OrderlyServerTests : TeamcityTests()
         assertThat(getResult.statusCode).isEqualTo(400)
 
         val postResult = sut.get("anyUrl", mock())
+        assertThat(mapper.readTree(postResult.text).equals(expectedJson)).isTrue()
+        assertThat(postResult.statusCode).isEqualTo(400)
+
+        val deleteResult = sut.delete("anyUrl", mock())
         assertThat(mapper.readTree(postResult.text).equals(expectedJson)).isTrue()
         assertThat(postResult.statusCode).isEqualTo(400)
     }

@@ -35,6 +35,17 @@ class APIRequestHelper : RequestHelper()
         return get(url, contentType, MontaguTestUser)
     }
 
+    fun deleteWithPermissions(url: String,
+                           contentType: String = ContentTypes.json,
+                           withPermissions: Set<ReifiedPermission> = setOf()): Response
+    {
+        userRepo.addUser(MontaguTestUser, "test.user", "Test User", UserSource.CLI)
+        withPermissions.forEach {
+            authRepo.ensureUserGroupHasPermission(MontaguTestUser, it)
+        }
+        return delete(url, contentType, MontaguTestUser)
+    }
+
     fun postWithPermissions(url: String,
                             body: Map<String, Any>?,
                             contentType: String = ContentTypes.json,
@@ -53,6 +64,14 @@ class APIRequestHelper : RequestHelper()
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
         return get(baseUrl + url, headers)
+    }
+
+    fun delete(url: String, contentType: String = ContentTypes.json,
+            userEmail: String = fakeGlobalReportReader()): Response
+    {
+        val token = generateToken(userEmail)
+        val headers = standardHeaders(contentType).withAuthorizationHeader(token)
+        return khttp.delete(baseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, Any>?, contentType: String = ContentTypes.json,

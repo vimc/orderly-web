@@ -17,6 +17,9 @@ interface OrderlyServerAPI
     @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
+    @Throws(OrderlyServerError::class)
+    fun delete(url: String, context: ActionContext): OrderlyServerResponse
+
     fun throwOnError(): OrderlyServerAPI
 }
 
@@ -73,6 +76,13 @@ class OrderlyServer(private val config: Config,
         return transformResponse(url, response)
     }
 
+    override fun delete(url: String, context: ActionContext): OrderlyServerResponse
+    {
+        val fullUrl = buildFullUrl(url, context.queryString())
+        val response = httpClient.delete(fullUrl, standardHeaders)
+        return transformResponse(url, response)
+    }
+
     private fun transformResponse(url: String, rawResponse: Response): OrderlyServerResponse
     {
         val errorsKey = "errors"
@@ -80,6 +90,7 @@ class OrderlyServer(private val config: Config,
         val detailKey = "detail"
 
         val json = rawResponse.jsonObject
+
         val newErrors = JSONArray()
         if (json.has(errorsKey) && json[errorsKey] is JSONArray)
         {
