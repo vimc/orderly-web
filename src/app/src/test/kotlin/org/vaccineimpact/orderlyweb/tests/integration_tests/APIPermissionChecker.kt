@@ -36,7 +36,7 @@ class APIPermissionChecker(url: String,
             }
             else ->
             {
-                throw InvalidOperationError("Only GET and POST supported")
+                throw InvalidOperationError("Only GET, POST and DELETE supported")
             }
         }
     }
