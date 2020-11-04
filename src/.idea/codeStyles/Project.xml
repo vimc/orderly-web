@@ -19,6 +19,9 @@
       </option>
       <option name="LBRACE_ON_NEXT_LINE" value="true" />
     </JetCodeStyleSettings>
+    <VueCodeStyleSettings>
+      <option name="INDENT_CHILDREN_OF_TOP_LEVEL" value="template, script" />
+    </VueCodeStyleSettings>
     <codeStyleSettings language="Vue">
       <indentOptions>
         <option name="INDENT_SIZE" value="4" />
