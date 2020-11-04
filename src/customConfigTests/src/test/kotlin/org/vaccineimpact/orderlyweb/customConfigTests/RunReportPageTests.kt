@@ -35,7 +35,7 @@ class RunReportPageTests : SeleniumTest()
 
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
         val select = Select(tab.findElement(By.tagName("select")))
-        assertThat(select.firstSelectedOption.text).isEqualTo(" -- Select a branch -- ")
+        assertThat(select.firstSelectedOption.text).isEqualTo("master")
     }
 
     @Test
