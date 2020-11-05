@@ -112,7 +112,7 @@ describe("reportTags", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {
-                    git_supported: true,
+                    git_supported: false,
                     instances_supported: true,
                     instances: {
                         source: ["prod", "uat"],

@@ -20,17 +20,17 @@
                         </select>
                     </div>
                 </div>
-                <div v-for="(options, name) in metadata.instances"
-                     v-if="metadata.instances_supported && options.length > 1"
-                     class="form-group row">
-                    <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
-                            <option v-for="option in options" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
+            </div>
+            <div v-for="(options, name) in metadata.instances"
+                 v-if="metadata.instances_supported && options.length > 1"
+                 class="form-group row">
+                <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
+                <div class="col-sm-6">
+                    <select class="form-control" :id="name" v-model="selectedInstances[name]">
+                        <option v-for="option in options" :value="option">
+                            {{ option }}
+                        </option>
+                    </select>
                 </div>
             </div>
         </form>
