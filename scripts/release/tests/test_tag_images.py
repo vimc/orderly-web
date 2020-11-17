@@ -32,13 +32,13 @@ def test_set_image_tags(mock_docker, mock_run):
 
     for container in containers:
         # assert that images were pulled for each container
-        mock_docker_client.images.pull.assert_any_call("docker.montagu.dide.ic.ac.uk:5000/{}:sha".format(container))
+        mock_docker_client.images.pull.assert_any_call("vimc/{}:sha".format(container))
 
         # assert image was tagged for each container
-        mock_img.tag.assert_any_call("docker.montagu.dide.ic.ac.uk:5000/{}".format(container), "v1.0.0")
+        mock_img.tag.assert_any_call("vimc/{}".format(container), "v1.0.0")
 
         # assert that run was called to push image for each container
-        mock_run.assert_any_call(["docker", "push", "docker.montagu.dide.ic.ac.uk:5000/{}:v1.0.0".format(container)],
+        mock_run.assert_any_call(["docker", "push", "vimc/{}:v1.0.0".format(container)],
                                  check=True)
 
 
@@ -52,19 +52,14 @@ def test_publish_images(mock_docker, mock_run):
     mock_docker_client.images.get = mock.MagicMock(return_value=mock_img)
 
     mock_img.tags = [
-        "docker.montagu.dide.ic.ac.uk:5000/image:sha",
         "vimc/image:sha",
-        "docker.montagu.dide.ic.ac.uk:5000/image:v1.0.0"
+        "vimc/image:v1.0.0"
     ]
 
     publish_images("v1.0.0")
 
     for container in containers:
-        # assert that version and release tags have both been tagged and pushed to publish registry
-        mock_img.tag.assert_any_call("vimc/{}".format(container), "v1.0.0")
+        # assert that release tag has been pushed to publish registry
         mock_img.tag.assert_any_call("vimc/{}".format(container), "release")
-
-        mock_run.assert_any_call(["docker", "push", "vimc/{}:v1.0.0".format(container)],
-                                 check=True)
         mock_run.assert_any_call(["docker", "push", "vimc/{}:release".format(container)],
                                  check=True)

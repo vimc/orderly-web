@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.com/vimc/orderly-web.svg?branch=master)](https://travis-ci.com/vimc/orderly-web)
 [![codecov.io](https://codecov.io/github/vimc/orderly-web/coverage.svg?branch=master)](https://codecov.io/github/vimc/orderly-web?branch=master)
 
-See [spec.md](/src/app/src/test/resources/spec/spec.md) for the full API specification.
+See [spec.md](/docs/spec/spec.md) for the full API specification.
 
 See [Release process](ReleaseProcess.md) for how to make a release 
 
@@ -20,21 +20,13 @@ v1.23.0 which appends random strings to container names each time they run.
 1. Install Docker and add your user to the Docker group 
    (e.g. https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-on-ubuntu-16-04.) 
    You may need to restart your machine for group changes to take effect.
-1. Configure your Docker client to use our registry by following instructions 
-   here: https://github.com/vimc/montagu-registry/tree/master#login 
-   
-   This is where you will need to have Vault 
-   installed, and the VAULT_ADDR variable specified, e.g. by adding 
-   `export VAULT_ADDR='https://support.montagu.dide.ic.ac.uk:8200'` to your profile using ` sudo nano ~/.profile` 
 1. Install node dependencies by running `npm install --prefix src/app/static`. Javascript and CSS will be compiled automatically as part of the gradle build.
+1. For local development and testing run all dependencies (Orderly Server etc.) with `./dev/run-dependencies.sh`.
+1. If running the app locally for manual testing, also add test user accounts with `./dev/add-test-users.sh`. You can then log in
+with username "test.user@example.com" and password "password".
 1. Run the app, either with `./gradlew :run` from the src dir, or through your IDE e.g by opening src/build.gradle as a 
    project in IntelliJ, which will display available gradle tasks in the UI. Follow the instructions for triggering a
    go signal. The app will now be available on your local machine at http://127.0.0.1:8888 and the API at http://127.0.0.1:8888/api/v1
-1. To test the API you can run all dependencies (Orderly Server etc.) with `./dev/run-dependencies.sh`.
-   To interact with the webapp you will instead have to run a full copy of Montagu; the easiest way to do this is to 
-   clone the [reverse proxy](https://github.com/vimc/montagu-proxy) and run it in dev mode (see https://github.com/vimc/montagu-proxy#build-and-run-locally).
-    Note that the app will redirect you to your local Montagu to login, but Montagu will not yet redirect you back to the app. 
-    You can do this manually by navigating to http://localhost:8888/login after a successful Montagu login.
 1. If you want to manually test any functionality which requires interaction with the orderly server (e.g. publish or 
    run report), you will need the application to use the database in the `/git` subdirectory of `/src/app`, not the 
    default `/demo` subdirectory. This will give you access to the git test data, which only has the 'minimal' report, 
@@ -91,7 +83,7 @@ The app is dockerised by running `./buildkite/build-app.sh` which does the follo
 1. Calls `./buildkite/make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the gradle and npm dependencies needed to 
 distribute the app. This image will also be re-used for the blackbox tests.
 1. Builds the app specific build environment image based on `app.Dockerfile` which inherits from the above.
-1. Generates an orderly-web database containing test data with `./buildkite/make-db/sh`
+1. Generates an orderly-web database containing test data with `./buildkite/make-db.sh`
 1. Runs all dependencies needed for tests as a docker network
 1. Runs the image created in step 2. which tests the app and if successful, runs the `distDocker` task which builds and 
 pushes the final docker image containing just the compiled app.
@@ -117,7 +109,7 @@ see [build.md](/docs/build.md)
 To make use of a built image, run:
 
         docker pull vimc/orderly-web:master
-        docker run --rm -p 8080:8080 -v {PATH_TO_ORDERLY}:/orderly vimc/orderly-web:master
+        docker run --rm -p 8888:8888 -v {PATH_TO_ORDERLY}:/orderly vimc/orderly-web:master
 
 replacing `{PATH_TO_ORDERLY}` with an absolute path to an Orderly directory.
 

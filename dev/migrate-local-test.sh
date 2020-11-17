@@ -12,13 +12,13 @@ if [[ -d ${HERE}/../src/app/demo ]]
 then
   echo "Orderly demo folder already exists, not re-creating it"
 else
-  docker pull docker.montagu.dide.ic.ac.uk:5000/orderly:master | true
+  docker pull vimc/orderly:master | true
 
   docker run --rm --entrypoint create_orderly_demo.sh \
       -u ${UID} \
       -v ${PWD}:/orderly \
       -w /orderly \
-      docker.montagu.dide.ic.ac.uk:5000/orderly:master \
+      vimc/orderly:master \
       "./src/app/"
 fi
 
