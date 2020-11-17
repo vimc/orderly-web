@@ -6,12 +6,11 @@ import com.nimbusds.jwt.JWTParser
 import org.pac4j.jwt.credentials.authenticator.JwtAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.issuing.TokenIssuer
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.Duration
 import java.time.Instant
 import java.util.*
 
-class TokenIssuerTests : TeamcityTests()
+class TokenIssuerTests
 {
     private val keyPair= KeyHelper.generateKeyPair()
     private val userEmail = "test@email.com"

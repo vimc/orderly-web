@@ -4,9 +4,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.ScopeRequirement
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class ScopeRequirementTests: TeamcityTests()
+class ScopeRequirementTests
 {
     @Test
     fun `can parse specific`()

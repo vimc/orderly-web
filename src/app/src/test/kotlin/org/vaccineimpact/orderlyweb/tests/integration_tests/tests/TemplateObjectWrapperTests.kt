@@ -15,12 +15,11 @@ import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DocumentsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 
-class TemplateObjectWrapperTests : TeamcityTests()
+class TemplateObjectWrapperTests
 {
     class TestClass(@Serialise("reportJson") val report: Report)
 

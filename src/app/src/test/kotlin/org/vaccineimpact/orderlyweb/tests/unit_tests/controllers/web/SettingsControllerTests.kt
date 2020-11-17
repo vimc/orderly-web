@@ -12,9 +12,8 @@ import org.vaccineimpact.orderlyweb.controllers.web.SettingsController
 import org.vaccineimpact.orderlyweb.db.repositories.SettingsRepository
 import org.vaccineimpact.orderlyweb.errors.InvalidOperationError
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class SettingsControllerTests : TeamcityTests()
+class SettingsControllerTests
 {
     val mockAuthConfig = mock<AuthenticationConfig>{
         on { canAllowGuestUser } doReturn true

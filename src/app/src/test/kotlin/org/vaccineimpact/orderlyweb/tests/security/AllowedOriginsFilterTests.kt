@@ -3,12 +3,11 @@ package org.vaccineimpact.orderlyweb.tests.security
 import com.nhaarman.mockito_kotlin.*
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Request
 import spark.Response
 import javax.servlet.http.HttpServletResponse
 
-class AllowedOriginsFilterTests: TeamcityTests()
+class AllowedOriginsFilterTests
 {
     @Test
     fun `adds header if origin matches allowed origin`()

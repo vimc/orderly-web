@@ -5,11 +5,10 @@ import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.jooq.JoinType
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.*
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import java.lang.IllegalArgumentException
 
-class JoinPathTests: TeamcityTests()
+class JoinPathTests
 {
     @Test
     fun `JoinPathStep throws MissingRelationsBetweenTables when no immediate relationship`()

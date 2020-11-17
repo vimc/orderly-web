@@ -14,10 +14,9 @@ import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 
-class GithubOAuthProfileCreatorTests : TeamcityTests()
+class GithubOAuthProfileCreatorTests
 {
     private val mockUser = User().apply {
         login = "user.name"

@@ -6,9 +6,8 @@ import org.mockito.internal.verification.Times
 import org.vaccineimpact.orderlyweb.security.GuestUserManager
 import org.vaccineimpact.orderlyweb.security.OrderlyWebSecurityLogic
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyWebSecurityLogicTests : TeamcityTests()
+class OrderlyWebSecurityLogicTests
 {
     @Test
     fun `guest user profile is updated with expected param if allow guest is true`()

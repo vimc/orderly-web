@@ -10,9 +10,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class PinnedReportTests : TeamcityTests()
+class PinnedReportTests
 {
     private val reports = listOf("r1", "r2")
 

@@ -10,10 +10,9 @@ import org.vaccineimpact.orderlyweb.APIEndpoint
 import org.vaccineimpact.orderlyweb.SparkWrapper
 import org.vaccineimpact.orderlyweb.app_start.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.TemplateEngine
 
-class RouterTests : TeamcityTests()
+class RouterTests
 {
     private val mockTemplateEngine = mock<TemplateEngine>()
     private val mockActionResolver = ActionResolver(mockTemplateEngine)

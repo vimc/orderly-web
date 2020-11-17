@@ -11,11 +11,10 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.ChangelogItemViewModel
 import java.time.Instant
 
-class GetByNameAndVersionTests : TeamcityTests()
+class GetByNameAndVersionTests
 {
     private val versionId = "20170103-143015-1234abcd"
     private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest("r1",

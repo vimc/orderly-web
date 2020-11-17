@@ -9,9 +9,8 @@ import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthentic
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class GithubIndirectClientTests : TeamcityTests()
+class GithubIndirectClientTests
 {
     @Test
     fun `initialises as expected`()

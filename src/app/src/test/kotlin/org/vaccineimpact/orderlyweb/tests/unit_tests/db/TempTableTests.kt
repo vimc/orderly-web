@@ -5,9 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
 import org.vaccineimpact.orderlyweb.db.TempTable
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class TempTableTests : TeamcityTests()
+class TempTableTests
 {
     @Test
     fun `can get field`()

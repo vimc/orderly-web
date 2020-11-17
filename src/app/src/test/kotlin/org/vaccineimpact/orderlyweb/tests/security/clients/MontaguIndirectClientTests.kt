@@ -13,9 +13,8 @@ import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationG
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClientRedirectActionBuilder
 import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguIndirectClientTests : TeamcityTests()
+class MontaguIndirectClientTests
 {
     @Test
     fun `initialises as expected`()

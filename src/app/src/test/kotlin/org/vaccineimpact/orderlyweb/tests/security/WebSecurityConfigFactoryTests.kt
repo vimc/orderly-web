@@ -12,9 +12,8 @@ import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.WebActionAdaptor
 import org.vaccineimpact.orderlyweb.security.WebSecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAuthorizer
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class WebSecurityConfigFactoryTests: TeamcityTests()
+class WebSecurityConfigFactoryTests
 {
     @Test
     fun `builds expected config`()

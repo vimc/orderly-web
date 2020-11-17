@@ -7,9 +7,8 @@ import org.mockito.ArgumentCaptor
 import org.pac4j.core.context.Cookie
 import org.pac4j.core.context.WebContext
 import org.vaccineimpact.orderlyweb.security.clients.MontaguLogoutActionBuilder
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguLogoutActionBuilderTests : TeamcityTests()
+class MontaguLogoutActionBuilderTests
 {
     @Test
     fun `returns expected redirect action`()

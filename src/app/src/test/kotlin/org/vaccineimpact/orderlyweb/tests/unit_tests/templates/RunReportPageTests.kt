@@ -6,11 +6,10 @@ import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
-class RunReportPageTests : TeamcityTests()
+class RunReportPageTests
 {
     companion object
     {

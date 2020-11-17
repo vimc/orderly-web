@@ -14,9 +14,8 @@ import org.vaccineimpact.orderlyweb.security.clients.GitHubDirectClient
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguDirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class AuthenticationConfigTests : TeamcityTests()
+class AuthenticationConfigTests
 {
     @Test
     fun `getConfiguredProvider is case insensitive`()
