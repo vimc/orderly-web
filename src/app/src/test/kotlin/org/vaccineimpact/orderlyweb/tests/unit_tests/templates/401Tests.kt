@@ -6,12 +6,11 @@ import org.hamcrest.MatcherAssert.assertThat
 import org.hamcrest.Matchers.*
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.AppViewModel
 import org.xmlmatchers.XmlMatchers.hasXPath
 
-class _401Tests: TeamcityTests()
+class _401Tests
 {
     companion object
     {

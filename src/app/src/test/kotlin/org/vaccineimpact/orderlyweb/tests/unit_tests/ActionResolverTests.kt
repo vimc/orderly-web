@@ -11,10 +11,9 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.app_start.ActionResolver
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.controllers.web.Template
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.TemplateEngine
 
-class ActionResolverTests : TeamcityTests()
+class ActionResolverTests
 {
     private val mockTemplateEngine = mock<TemplateEngine> {
         on { render(any()) } doReturn "rendered"

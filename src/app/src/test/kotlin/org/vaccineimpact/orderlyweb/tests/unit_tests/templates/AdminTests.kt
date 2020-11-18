@@ -5,11 +5,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.AdminViewModel
 
-class AdminTests : TeamcityTests()
+class AdminTests
 {
     companion object
     {

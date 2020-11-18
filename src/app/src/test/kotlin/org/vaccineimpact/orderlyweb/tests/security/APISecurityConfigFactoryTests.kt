@@ -11,9 +11,8 @@ import org.vaccineimpact.orderlyweb.security.SkipOptionsMatcher
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
 import org.vaccineimpact.orderlyweb.security.clients.*
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class APISecurityClientsConfigFactoryTests: TeamcityTests()
+class APISecurityClientsConfigFactoryTests
 {
     @Test
     fun `gets all clients`()

@@ -16,9 +16,8 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class UserControllerTests : TeamcityTests()
+class UserControllerTests
 {
     @Test
     fun `gets user emails`()

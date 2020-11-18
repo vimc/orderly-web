@@ -17,10 +17,9 @@ import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import javax.servlet.http.HttpServletRequest
 
-class GuestUserManagerTests : TeamcityTests()
+class GuestUserManagerTests
 {
     private val realUser = CommonProfile().apply { id = "some.real.user" }
     private val guestUser = CommonProfile().apply { id = "guest" }

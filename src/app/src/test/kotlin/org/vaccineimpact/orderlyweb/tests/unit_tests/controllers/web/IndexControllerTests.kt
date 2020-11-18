@@ -15,14 +15,13 @@ import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
 import java.time.Duration
 import java.time.Instant
 
-class IndexControllerTests : TeamcityTests()
+class IndexControllerTests
 {
 
     private val globalReaderContext = mock<ActionContext> {

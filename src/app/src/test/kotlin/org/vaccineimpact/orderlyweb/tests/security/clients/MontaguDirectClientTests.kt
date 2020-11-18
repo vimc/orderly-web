@@ -9,9 +9,8 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.MontaguAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.MontaguDirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguDirectClientTests : TeamcityTests()
+class MontaguDirectClientTests
 {
     @Test
     fun `initialises as expected`()

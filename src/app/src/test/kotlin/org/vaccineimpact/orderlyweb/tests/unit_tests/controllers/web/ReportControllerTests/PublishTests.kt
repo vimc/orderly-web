@@ -7,9 +7,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class PublishTests : TeamcityTests() {
+class PublishTests {
 
     @Test
     fun `can publish multiple versions`() {

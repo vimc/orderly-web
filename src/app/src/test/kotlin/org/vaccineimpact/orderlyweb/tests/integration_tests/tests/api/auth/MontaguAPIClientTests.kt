@@ -9,10 +9,9 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
 import org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
 
-class MontaguAPIClientTests : TeamcityTests()
+class MontaguAPIClientTests
 {
     @Test
     fun `okhttpMontaguAPIClient can talk to API`()

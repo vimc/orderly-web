@@ -8,9 +8,8 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerToke
 import org.vaccineimpact.orderlyweb.security.authentication.TokenVerifier
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.JWTCookieClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class JWTCookieClientTests : TeamcityTests()
+class JWTCookieClientTests
 {
     private val mockTokenVerifier = mock<TokenVerifier> {
         on { it.expectedIssuer } doReturn "testIssuer"

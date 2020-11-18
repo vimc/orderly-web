@@ -9,13 +9,12 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithChangelogsParams
 import org.vaccineimpact.orderlyweb.models.ReportWithPublishStatus
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class PublishReportsTests : TeamcityTests()
+class PublishReportsTests
 {
     @Test
     fun `can build report draft view models with most recent drafts first`()

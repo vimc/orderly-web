@@ -4,10 +4,9 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.security.clients.NeverInvokedCredentialsExtractor
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.lang.UnsupportedOperationException
 
-class NeverInvokedCredentialsExtractorTestsTests: TeamcityTests()
+class NeverInvokedCredentialsExtractorTestsTests
 {
     @Test
     fun `throws exception when invoked`()

@@ -15,9 +15,8 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.GitCommit
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyServerTests : TeamcityTests()
+class OrderlyServerTests
 {
 
     private val mockResponse = mock<Response> {

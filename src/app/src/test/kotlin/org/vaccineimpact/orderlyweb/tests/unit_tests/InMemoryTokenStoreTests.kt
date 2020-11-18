@@ -3,9 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.InMemoryTokenStore
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class InMemoryTokenStoreTests : TeamcityTests()
+class InMemoryTokenStoreTests
 {
     val token = "Cupcakes"
     val badToken = "Biscuits"

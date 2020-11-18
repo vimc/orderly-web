@@ -8,9 +8,8 @@ import org.junit.Test
 import org.pac4j.oauth.config.OAuth20Configuration
 import org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator
 import org.vaccineimpact.orderlyweb.security.providers.GithubAuthHelper
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class GithubOAuthAuthenticatorTests : TeamcityTests()
+class GithubOAuthAuthenticatorTests
 {
 
     private val mockGithubAuthHelper = mock<GithubAuthHelper> {

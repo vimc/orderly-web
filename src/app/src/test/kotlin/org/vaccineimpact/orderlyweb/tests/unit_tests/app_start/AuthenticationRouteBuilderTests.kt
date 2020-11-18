@@ -9,9 +9,8 @@ import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
 import org.vaccineimpact.orderlyweb.security.clients.GithubIndirectClient
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class AuthenticationRouteBuilderTests : TeamcityTests()
+class AuthenticationRouteBuilderTests
 {
     @Test
     fun `creates GitHub logout callback`()

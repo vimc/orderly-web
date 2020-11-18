@@ -9,9 +9,8 @@ import org.pac4j.http.credentials.extractor.CookieExtractor
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClientRedirectActionBuilder
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIClient
 import org.vaccineimpact.orderlyweb.security.providers.MontaguAPIException
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class MontaguIndirectClientRedirectActionBuilderTests : TeamcityTests()
+class MontaguIndirectClientRedirectActionBuilderTests
 {
     @Test
     fun `redirects user to Montagu if can't extract cookie`()

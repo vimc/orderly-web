@@ -8,7 +8,6 @@ import org.mockito.ArgumentCaptor
 import org.pac4j.core.authorization.authorizer.Authorizer
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.pac4j.sparkjava.SecurityFilter
 import org.pac4j.core.config.Config
 import org.pac4j.core.profile.CommonProfile
@@ -17,7 +16,7 @@ import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import spark.Filter
 import spark.route.HttpMethod
 
-class APIEndpointTests: TeamcityTests()
+class APIEndpointTests
 {
     private class TestController(actionContext: ActionContext) : Controller(actionContext)
 

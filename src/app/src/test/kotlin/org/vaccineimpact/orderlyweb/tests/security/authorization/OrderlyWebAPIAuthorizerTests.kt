@@ -7,9 +7,8 @@ import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyWebAPIAuthorizer
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyWebAPIAuthorizerTests : TeamcityTests()
+class OrderlyWebAPIAuthorizerTests
 {
     @Test
     fun `is not authorized if url claim does not match request`()

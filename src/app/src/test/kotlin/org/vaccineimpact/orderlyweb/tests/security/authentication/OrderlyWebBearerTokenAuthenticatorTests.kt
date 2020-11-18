@@ -12,9 +12,8 @@ import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebBearerTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyWebBearerTokenAuthenticatorTests: TeamcityTests()
+class OrderlyWebBearerTokenAuthenticatorTests
 {
     lateinit var helper: WebTokenHelper
     val fakeUserEmail = "user@email.com"

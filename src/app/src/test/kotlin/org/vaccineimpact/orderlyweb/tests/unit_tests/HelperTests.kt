@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -11,7 +10,7 @@ import java.time.temporal.TemporalUnit
 import java.util.*
 
 
-class HelperTests : TeamcityTests()
+class HelperTests
 {
     @Test
     fun `html can render in browser`()

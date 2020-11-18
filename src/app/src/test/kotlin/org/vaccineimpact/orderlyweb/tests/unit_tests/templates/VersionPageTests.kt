@@ -13,14 +13,13 @@ import org.vaccineimpact.orderlyweb.models.Artefact
 import org.vaccineimpact.orderlyweb.models.ArtefactFormat
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.*
 import java.sql.Timestamp
 
 //This will also test the partials which the report-page template includes
 
-class VersionPageTests : TeamcityTests()
+class VersionPageTests
 {
     companion object
     {

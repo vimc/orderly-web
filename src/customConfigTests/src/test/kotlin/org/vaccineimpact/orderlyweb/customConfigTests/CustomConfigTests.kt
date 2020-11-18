@@ -7,12 +7,11 @@ import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
 
-abstract class CustomConfigTests : TeamcityTests()
+abstract class CustomConfigTests
 {
     fun startApp(customConfig: String)
     {
