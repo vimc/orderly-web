@@ -7,3 +7,6 @@
 .logout .dropdown-item:focus, .logout .dropdown-item:hover {
     text-decoration: underline;
 }
+.logout .dropdown-item:active {
+    background-color: inherit;
+}
