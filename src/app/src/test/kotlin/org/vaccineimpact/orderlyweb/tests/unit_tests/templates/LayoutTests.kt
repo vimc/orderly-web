@@ -93,7 +93,7 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(3)
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
         assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Manage access")
         assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/manage-access")
     }
@@ -114,7 +114,7 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
         assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 
@@ -142,7 +142,7 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
         assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 

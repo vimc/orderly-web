@@ -35,7 +35,9 @@
             <#if isAdmin && fineGrainedAuth>
             <a class="dropdown-item" href="${appUrl}/manage-access">Manage access</a>
             </#if>
+            <#if isReviewer && fineGrainedAuth>
             <a class="dropdown-item" href="${appUrl}/publish-reports">Publish reports</a>
+            </#if>
             <a id="logout-link" class="dropdown-item" <#if authProvider?lower_case == "montagu">href="#" onclick="logoutViaMontagu()"<#else>href="${appUrl}/logout"</#if>>Logout</a>
         </div>
     </div>
