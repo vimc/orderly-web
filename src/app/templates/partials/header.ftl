@@ -31,7 +31,7 @@
         <a class="dropdown-toggle" href="#" data-toggle="dropdown">
             Logged in as ${user}
         </a>
-        <div class="dropdown-menu">
+        <div class="dropdown-menu dropdown-menu-right">
             <#if isAdmin && fineGrainedAuth>
             <a class="dropdown-item" href="${appUrl}/manage-access">Manage access</a>
             </#if>
