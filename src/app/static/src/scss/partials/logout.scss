@@ -4,3 +4,6 @@
 .logout a, .logout a:visited, .logout a:hover {
     color: inherit;
 }
+.logout .dropdown-item:focus, .logout .dropdown-item:hover {
+    text-decoration: underline;
+}
