@@ -4,6 +4,8 @@
 <#-- @ftlvariable name="user" type="String" -->
 <#-- @ftlvariable name="logo" type="String" -->
 <#-- @ftlvariable name="appUrl" type="String" -->
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <#if styles??>
         <@styles></@styles>
@@ -25,22 +27,21 @@
         </a>
     </div>
     <#if loggedIn && !isGuest>
-        <div class="logout">
+    <div class="logout dropdown float-right">
+        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+            Logged in as ${user}
+        </a>
+        <div class="dropdown-menu">
             <#if isAdmin && fineGrainedAuth>
-                <span>
-                    <a href="${appUrl}/manage-access">Manage access</a> |
-                </span>
+            <a class="dropdown-item" href="${appUrl}/manage-access">Manage access</a>
             </#if>
-            <span>Logged in as ${user} | <a id="logout-link"
-              <#if authProvider?lower_case == "montagu">
-                href="#" onclick="logoutViaMontagu()"
-              <#else>
-                  href="${appUrl}/logout"
-                        </#if>>Logout</a></span>
+            <a class="dropdown-item" href="${appUrl}/publish-reports">Publish reports</a>
+            <a id="logout-link" class="dropdown-item" <#if authProvider?lower_case == "montagu">href="#" onclick="logoutViaMontagu()"<#else>href="${appUrl}/logout"</#if>>Logout</a>
         </div>
+    </div>
     </#if>
     <#if isGuest>
-    <div class="login">
+    <div class="login float-right">
         <span>
             <a href="${appUrl}/weblogin">Login</a>
         </span>

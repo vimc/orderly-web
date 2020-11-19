@@ -3,6 +3,8 @@
     var appUrl = "${appUrl}"
 </script>
 <script type="text/javascript" src="${appUrl}/js/lib/jquery.slim.min.js"></script>
+<script type="text/javascript" src="${appUrl}/js/lib/popper.min.js"></script>
+<script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
 <#if scripts??>
     <@scripts></@scripts>
 </#if>

@@ -44,6 +44,5 @@
             var gitBranches = ${gitBranchesJson};
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
-        <script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
     </#macro>
 </@layoutwide>

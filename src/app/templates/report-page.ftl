@@ -79,8 +79,6 @@
             var report = ${reportJson};
         </script>
 
-        <script type="text/javascript" src="${appUrl}/js/lib/popper.min.js"></script>
-        <script type="text/javascript" src="${appUrl}/js/lib/bootstrap.min.js"></script>
         <script type="text/javascript" src="${appUrl}/js/report.bundle.js"></script>
     </#macro>
 </@layoutwide>
