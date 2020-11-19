@@ -42,12 +42,12 @@ class DocumentsPageTests : TeamcityTests()
     {
         var viewModel = DocumentsViewModel(listOf(), false, testDefaultModel)
         var doc = template.jsoupDocFor(viewModel)
-        var script = doc.getElementsByTag("script")[2].html().split("\n")[1]
+        var script = doc.getElementsByTag("script")[4].html().split("\n")[1]
         Assertions.assertThat(script.trim()).isEqualTo("var canManage = false;")
 
         viewModel = DocumentsViewModel(listOf(), true, testDefaultModel)
         doc = template.jsoupDocFor(viewModel)
-        script = doc.getElementsByTag("script")[2].html().split("\n")[1]
+        script = doc.getElementsByTag("script")[4].html().split("\n")[1]
         Assertions.assertThat(script.trim()).isEqualTo("var canManage = true;")
     }
 

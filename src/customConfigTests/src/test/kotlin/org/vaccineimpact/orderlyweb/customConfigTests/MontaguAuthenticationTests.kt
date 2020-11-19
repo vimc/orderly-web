@@ -34,7 +34,8 @@ class MontaguAuthenticationTests : SeleniumTest()
         assertThat(loggedInCookies.first{ it.name == "jwt_token" }.value).isNotEmpty()
         assertThat(loggedInCookies.first{ it.name == "montagu_jwt_token" }.value).isNotEmpty()
 
-        driver.findElement(By.className("logout")).findElement(By.cssSelector("a")).click()
+        driver.findElement(By.cssSelector(".logout .dropdown-toggle")).click()
+        driver.findElement(By.id("logout-link")).click()
 
         //This should log out of the montagu api then redirect to montagu
         wait.until(ExpectedConditions.titleIs("Vaccine Impact Modelling Consortium - Montagu"))

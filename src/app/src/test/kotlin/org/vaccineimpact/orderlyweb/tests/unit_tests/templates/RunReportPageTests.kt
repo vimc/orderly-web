@@ -74,7 +74,7 @@ class RunReportPageTests : TeamcityTests()
     @Test
     fun `renders metadata and git branches to script tag`()
     {
-        val script = doc.select("script")[2]
+        val script = doc.select("script")[4]
         val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
         assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
                 + " var gitBranches = [ \"master\", \"dev\" ];")

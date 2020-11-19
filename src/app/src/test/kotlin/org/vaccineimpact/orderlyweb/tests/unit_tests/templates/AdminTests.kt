@@ -27,6 +27,6 @@ class AdminTests : TeamcityTests()
         assertThat(doc.select("#adminVueApp manage-roles")).isNotNull()
         assertThat(doc.select("#adminVueApp manage-users")).isNotNull()
         assertThat(doc.select("#adminVueApp manage-role-permissions")).isNotNull()
-        assertThat(doc.select("body script")[2].toString()).contains("let canAllowGuest = true;")
+        assertThat(doc.select("body script")[4].toString()).contains("let canAllowGuest = true;")
     }
 }

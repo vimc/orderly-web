@@ -67,11 +67,11 @@ class LayoutTests : TeamcityTests()
 
         assertHeaderRenderedCorrectly(doc, xml)
 
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
-        assertThat(doc.selectFirst(".logout span a").attr("onclick")).isEqualTo("logoutViaMontagu()")
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+        assertThat(doc.select("#logout-link").attr("href")).isEqualTo("#")
+        assertThat(doc.select("#logout-link").attr("onclick")).isEqualTo("logoutViaMontagu()")
 
-        assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
+        assertThat(doc.select("#logout-link").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
         val script = doc.getElementsByTag("script")[0].html()
         assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
@@ -93,9 +93,9 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Manage access |")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("http://localhost:8888/manage-access")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(3)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Manage access")
+        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/manage-access")
     }
 
     @Test
@@ -114,8 +114,8 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 
     @Test
@@ -142,8 +142,8 @@ class LayoutTests : TeamcityTests()
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 
     private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)

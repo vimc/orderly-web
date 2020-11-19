@@ -103,7 +103,7 @@ class GuestUserTests: SeleniumTest() {
         // user should see logout link and should no longer see login link
         assertThat(driver.findElements(By.className("login")).count()).isEqualTo(0)
         assertThat(driver.findElements(By.className("logout")).count()).isEqualTo(1)
-        assertThat(driver.findElement(By.className("logout")).text).isEqualTo("Logged in as notarealemail | Logout")
+        assertThat(driver.findElement(By.cssSelector(".logout > a")).text).isEqualTo("Logged in as notarealemail")
         println("Saw expected response for logged in user")
 
         // user should see reports in report table
