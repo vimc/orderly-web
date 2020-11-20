@@ -145,6 +145,26 @@ class LayoutTests
         assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 
+    fun `reviewers can see publish link`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+            } doReturn true
+        }
+
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Publish reports")
+        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+    }
+
     private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)
     {
         val appName = AppConfig()["app.name"]
