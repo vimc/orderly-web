@@ -19,10 +19,9 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.viewmodels.RoleViewModel
 
-class RoleControllerTests : TeamcityTests()
+class RoleControllerTests
 {
     private val testPermissions = listOf(ReifiedPermission("reports.read", Scope.Global()),
             ReifiedPermission("reports.review", Scope.Specific("report", "r1")))

@@ -10,12 +10,11 @@ import org.vaccineimpact.orderlyweb.app_start.ResponseErrorHandler
 import org.vaccineimpact.orderlyweb.errors.OrderlyWebError
 import org.vaccineimpact.orderlyweb.errors.UnableToParseJsonError
 import org.vaccineimpact.orderlyweb.errors.UnexpectedError
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Request
 import spark.Response
 import java.lang.reflect.InvocationTargetException
 
-class ErrorHandlerTests : TeamcityTests()
+class ErrorHandlerTests
 {
     private val mockAPIHandler = mock<ResponseErrorHandler>()
     private val mockWebHandler = mock<ResponseErrorHandler>()

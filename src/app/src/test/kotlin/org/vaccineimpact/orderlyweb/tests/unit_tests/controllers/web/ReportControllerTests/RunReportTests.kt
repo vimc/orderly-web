@@ -10,9 +10,8 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.RunReportMetadata
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class RunReportTests : TeamcityTests()
+class RunReportTests
 {
     private val fakeBranchResponse = listOf(mapOf("name" to "master"), mapOf("name" to "dev"))
     private val fakeMetadata = RunReportMetadata(instancesSupported = true,

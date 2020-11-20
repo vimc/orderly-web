@@ -13,9 +13,8 @@ import org.pac4j.core.exception.CredentialsException
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
 import org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class GithubApiClientAuthHelperTests : TeamcityTests()
+class GithubApiClientAuthHelperTests
 {
     private val mockTeam = Team().apply {
         name = "teamName"

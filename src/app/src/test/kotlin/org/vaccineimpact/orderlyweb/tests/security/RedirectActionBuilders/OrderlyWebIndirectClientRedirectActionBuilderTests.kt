@@ -7,9 +7,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.pac4j.core.context.WebContext
 import org.pac4j.core.redirect.RedirectAction
 import org.vaccineimpact.orderlyweb.security.clients.OrderlyWebIndirectClientRedirectActionBuilder
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class OrderlyWebIndirectClientRedirectActionBuilderTests: TeamcityTests()
+class OrderlyWebIndirectClientRedirectActionBuilderTests
 {
     @Test
     fun `returns expected RedirectAction`()

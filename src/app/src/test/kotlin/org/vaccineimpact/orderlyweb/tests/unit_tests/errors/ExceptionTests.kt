@@ -3,10 +3,9 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.errors
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.*
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.security.Permission
 
-class ExceptionTests: TeamcityTests()
+class ExceptionTests
 {
     @Test
     fun `can create UnsupportedValueException`()

@@ -13,11 +13,10 @@ import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.security.*
 import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebOnetimeTokenAuthenticator
 import org.vaccineimpact.orderlyweb.security.issuing.KeyHelper
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.time.Instant
 import java.util.*
 
-class OrderlyWebOnetimeTokenAuthenticatorTests : TeamcityTests()
+class OrderlyWebOnetimeTokenAuthenticatorTests
 {
     lateinit var helper: WebTokenHelper
     val fakeUser = "testuser@email.com"

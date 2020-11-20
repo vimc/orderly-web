@@ -5,11 +5,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.BadConfigurationError
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.ServerErrorViewModel
 
-class _500Tests : TeamcityTests()
+class _500Tests
 {
     companion object
     {

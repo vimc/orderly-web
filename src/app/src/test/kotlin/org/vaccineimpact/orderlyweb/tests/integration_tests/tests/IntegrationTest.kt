@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
@@ -18,7 +17,7 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.WebRequestHe
 import spark.route.HttpMethod
 import java.io.File
 
-abstract class IntegrationTest : TeamcityTests()
+abstract class IntegrationTest
 {
     val apiRequestHelper = APIRequestHelper()
     val webRequestHelper = WebRequestHelper()

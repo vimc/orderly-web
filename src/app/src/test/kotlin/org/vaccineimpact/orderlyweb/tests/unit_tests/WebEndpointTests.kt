@@ -15,11 +15,10 @@ import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.security.APISecurityConfigFactory
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationProvider
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Filter
 import spark.route.HttpMethod
 
-class WebEndpointTests : TeamcityTests()
+class WebEndpointTests
 {
     private class TestController(actionContext: ActionContext) : Controller(actionContext)
 

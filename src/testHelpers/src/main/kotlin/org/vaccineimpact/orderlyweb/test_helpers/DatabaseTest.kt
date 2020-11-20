@@ -3,10 +3,9 @@ package org.vaccineimpact.orderlyweb.test_helpers
 import org.junit.AfterClass
 import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import java.io.File
 
-abstract class DatabaseTests : TeamcityTests()
+abstract class DatabaseTests
 {
 
     companion object

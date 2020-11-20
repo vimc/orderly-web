@@ -15,12 +15,11 @@ import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import spark.Request
 import spark.Response
 import javax.servlet.http.HttpServletResponse
 
-class DirectActionContextTests : TeamcityTests()
+class DirectActionContextTests
 {
     val mockUserProfile = mock<CommonProfile> {
         on { it.getAttributes() } doReturn mapOf(

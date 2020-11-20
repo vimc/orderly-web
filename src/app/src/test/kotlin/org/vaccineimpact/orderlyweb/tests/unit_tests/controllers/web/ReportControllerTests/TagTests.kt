@@ -12,9 +12,8 @@ import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class TagTests : TeamcityTests()
+class TagTests
 {
 
     @Test

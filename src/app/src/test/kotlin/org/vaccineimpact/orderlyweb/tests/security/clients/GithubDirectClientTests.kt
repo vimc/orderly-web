@@ -9,9 +9,8 @@ import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.security.authentication.GithubAuthenticator
 import org.vaccineimpact.orderlyweb.security.authorization.OrderlyAuthorizationGenerator
 import org.vaccineimpact.orderlyweb.security.clients.GitHubDirectClient
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class GithubDirectClientTests : TeamcityTests()
+class GithubDirectClientTests
 {
     @Test
     fun `initialises as expected`()

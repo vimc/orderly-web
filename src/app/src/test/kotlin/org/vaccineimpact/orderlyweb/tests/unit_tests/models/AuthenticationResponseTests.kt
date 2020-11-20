@@ -3,9 +3,8 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.models
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.AuthenticationResponse
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class AuthenticationResponseTests: TeamcityTests()
+class AuthenticationResponseTests
 {
     @Test
     fun `can create`()

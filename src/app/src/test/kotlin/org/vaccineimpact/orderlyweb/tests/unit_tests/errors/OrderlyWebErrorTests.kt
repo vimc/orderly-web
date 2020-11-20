@@ -5,10 +5,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.*
 import org.vaccineimpact.orderlyweb.models.ResultStatus
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
 
-class OrderlyWebErrorTests: TeamcityTests()
+class OrderlyWebErrorTests
 {
 
     @Test

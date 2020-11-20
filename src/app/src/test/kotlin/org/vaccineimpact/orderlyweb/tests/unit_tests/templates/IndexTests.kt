@@ -4,14 +4,13 @@ import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 
-class IndexTests : TeamcityTests()
+class IndexTests
 {
     companion object
     {

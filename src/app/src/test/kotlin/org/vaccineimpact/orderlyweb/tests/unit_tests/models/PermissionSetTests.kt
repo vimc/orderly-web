@@ -5,9 +5,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class PermissionSetTests: TeamcityTests()
+class PermissionSetTests
 {
 
     val perms = setOf(

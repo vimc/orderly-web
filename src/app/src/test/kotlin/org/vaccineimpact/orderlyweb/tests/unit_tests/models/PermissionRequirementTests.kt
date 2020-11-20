@@ -6,9 +6,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.errors.PermissionRequirementParseException
 import org.vaccineimpact.orderlyweb.models.PermissionRequirement
 import org.vaccineimpact.orderlyweb.models.ScopeRequirement
-import org.vaccineimpact.orderlyweb.test_helpers.TeamcityTests
 
-class PermissionRequimentTests: TeamcityTests()
+class PermissionRequimentTests
 {
     @Test
     fun `can parse`()
