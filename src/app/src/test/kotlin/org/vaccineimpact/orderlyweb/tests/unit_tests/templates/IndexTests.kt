@@ -157,7 +157,7 @@ class IndexTests
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
                 true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
 
-        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
+        val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[4].html()
         assertThat(scriptEl.indexOf("var reportDisplayNames = {\n" +
                 "  \"r1\": \"r1 display\",\n" +
                 "  \"r2\": \"r2 display\"\n" +

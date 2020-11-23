@@ -66,11 +66,11 @@ class LayoutTests
 
         assertHeaderRenderedCorrectly(doc, xml)
 
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("#")
-        assertThat(doc.selectFirst(".logout span a").attr("onclick")).isEqualTo("logoutViaMontagu()")
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+        assertThat(doc.select("#logout-link").attr("href")).isEqualTo("#")
+        assertThat(doc.select("#logout-link").attr("onclick")).isEqualTo("logoutViaMontagu()")
 
-        assertThat(doc.selectFirst(".logout span a").text()).isEqualTo("Logout")
+        assertThat(doc.select("#logout-link").text()).isEqualTo("Logout")
         assertThat(doc.select("#content").count()).isEqualTo(1)
         val script = doc.getElementsByTag("script")[0].html()
         assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
@@ -92,9 +92,9 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Manage access |")
-        assertThat(doc.selectFirst(".logout span a").attr("href")).isEqualTo("http://localhost:8888/manage-access")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Manage access")
+        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/manage-access")
     }
 
     @Test
@@ -113,8 +113,8 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
     }
 
     @Test
@@ -141,8 +141,76 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout span").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout span").text()).isEqualTo("Logged in as test.user | Logout")
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+    }
+
+    @Test
+    fun `reviewers can see publish link`() {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+            } doReturn true
+        }
+
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Publish reports")
+        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+    }
+
+    @Test
+    fun `non reviewers can see publish link if fine grained auth is turned off`() {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+            } doReturn false
+        }
+
+        val mockConfig = mock<Config> {
+            on { authorizationEnabled } doReturn false
+            on { get("app.name") } doReturn "appName"
+            on { get("app.url") } doReturn "http://localhost:8888"
+            on { get("app.logo") } doReturn "logo.png"
+            on { get("montagu.url") } doReturn "montagu"
+        }
+
+        val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel)
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Publish reports")
+        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+    }
+
+    @Test
+    fun `non reviewers cannot see publish link if fine grained auth is turned on`() {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("reports.review", Scope.Global()))
+            } doReturn false
+        }
+
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+
+        val doc = template.jsoupDocFor(testModel)
+
+        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Logout")
     }
 
     private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)

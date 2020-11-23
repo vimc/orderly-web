@@ -42,7 +42,7 @@ class PublishReportsPageTests
     @Test
     fun `renders script bundle`()
     {
-        val script = doc.select("script")[2]
+        val script = doc.select("script")[4]
         assertThat(script.attr("src")).isEqualTo("http://localhost:8888/js/publishReports.bundle.js")
     }
 }
