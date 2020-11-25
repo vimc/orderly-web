@@ -32,6 +32,7 @@ interface ActionContext
     fun setStatusCode(statusCode: Int)
     fun<T> postData(): Map<String, T>
     fun getRequestBody(): String
+    fun getRequestBodyAsBytes(): ByteArray
 
     @Throws(MissingParameterError::class)
     fun<T> postData(key: String): T

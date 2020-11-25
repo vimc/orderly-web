@@ -518,3 +518,10 @@ Download a data set in rds format.
 
 Required permissions: `reports.read`.
 
+## POST /bundle/pack/:name/
+
+> TODO
+
+## POST /bundle/import/
+
+> TODO

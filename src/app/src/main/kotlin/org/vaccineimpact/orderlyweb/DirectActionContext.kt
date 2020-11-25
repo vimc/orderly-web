@@ -116,6 +116,11 @@ open class DirectActionContext(private val context: SparkWebContext,
     {
         return request.body()
     }
+
+    override fun getRequestBodyAsBytes(): ByteArray
+    {
+        return request.bodyAsBytes()
+    }
 }
 
 fun ActionContext.permissionFromPostData(): ReifiedPermission
