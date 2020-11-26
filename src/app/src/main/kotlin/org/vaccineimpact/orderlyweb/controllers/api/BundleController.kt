@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
 class BundleController(
@@ -24,7 +25,7 @@ class BundleController(
         )
 
     fun pack(): Boolean {
-        val name = context.params(":name") // TODO check this is provided
+        val name = context.params(":name") ?: throw MissingParameterError("name")
 
         val url = appConfig["orderly.server"] + "/v1/bundle/pack/$name" + (if (context.queryString() != null) "?" + context.queryString() else "")
         val json = Gson().toJson(context.postData<String>()) // TODO check json is passed through
