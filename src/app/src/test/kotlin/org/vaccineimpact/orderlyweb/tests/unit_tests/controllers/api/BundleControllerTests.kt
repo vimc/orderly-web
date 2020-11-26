@@ -36,7 +36,7 @@ class BundleControllerTests : ControllerTest() {
             on { getSparkResponse() } doReturn mockSparkResponse
             // on { this.permissions } doReturn PermissionSet()
         }
-        val httpClient = getHttpClient(context, "/v1/bundle/pack/" + context.params(":name"), ByteArray(0))
+        val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
 
         assertThat(controller.pack()).isTrue()
@@ -54,7 +54,7 @@ class BundleControllerTests : ControllerTest() {
             on { getSparkResponse() } doReturn mockSparkResponse
             // on { this.permissions } doReturn PermissionSet()
         }
-        val httpClient = getHttpClient(context, "/v1/bundle/pack/" + context.params(":name"), ByteArray(0))
+        val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(MissingParameterError::class.java)
@@ -66,13 +66,13 @@ class BundleControllerTests : ControllerTest() {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
             // on { this.permissions } doReturn PermissionSet()
         }
-        val body = "true"
+        val body = """{"status":"success","errors":null,"data":true}"""
         val httpClient = getHttpClient(context, "/v1/bundle/import", body.toByteArray())
         val controller = BundleController(context, config, httpClient)
         assertThat(controller.import()).isEqualTo(body)
     }
 
-    private fun getHttpClient(context: ActionContext, path: String, body: ByteArray): OkHttpClient {
+    private fun getHttpClient(context: ActionContext, path: String, body: ByteArray = ByteArray(0)): OkHttpClient {
         val request = Request.Builder()
             .url(config["orderly.server"] + path)
             .build()

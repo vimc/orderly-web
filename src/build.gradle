@@ -113,19 +113,24 @@ subprojects {
     }
     task copyTestConfig(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/test/resources'
-        include '*'
+        include '*.properties'
         into 'build/classes/test/'
         expand(rootProject.ext.props)
     }
     task copyTestConfigToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
         from 'src/test/resources'
-        include '*'
+        include '*.properties'
         into 'build/resources/test/'
         expand(rootProject.ext.props)
     }
+    task copyTestDataToResources(type: Copy, dependsOn: ':loadPropertiesTask') {
+        from 'src/test/resources'
+        exclude '*.properties'
+        into 'build/resources/test/'
+    }
 
     processResources.finalizedBy 'copyConfig', 'copyConfigToResources'
-    processTestResources.finalizedBy 'copyTestConfigToResources', 'copyTestConfig'
+    processTestResources.finalizedBy 'copyTestConfigToResources', 'copyTestConfig', 'copyTestDataToResources'
 
     task showConfig(dependsOn: 'copyConfig') {
         doLast {

@@ -18,7 +18,7 @@ object BundleRouteConfig : RouteConfig {
             .secure(runReports),
 
         APIEndpoint("/bundle/import/", controller, "import", method = HttpMethod.post)
-            .json()
             .secure(runReports)
+            .json()
     )
 }
