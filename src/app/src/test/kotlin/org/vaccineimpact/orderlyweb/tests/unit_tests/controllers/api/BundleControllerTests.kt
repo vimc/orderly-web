@@ -46,6 +46,7 @@ class BundleControllerTests : ControllerTest() {
                 assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
             }
         )
+        verify(servletResponse).setContentType("application/zip")
     }
 
     @Test
