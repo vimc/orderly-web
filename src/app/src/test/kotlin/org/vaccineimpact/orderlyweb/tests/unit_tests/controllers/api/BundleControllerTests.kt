@@ -50,6 +50,17 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
+    fun `packs a report fails on orderly server error`() {
+        val context = mock<ActionContext> {
+            on { params(":name") } doReturn "report1"
+        }
+        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}", responseCode = 500, responseMessage = "Internal Server Error")
+        val controller = BundleController(context, config, httpClient)
+
+        assertThatThrownBy { controller.pack() }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    @Test
     fun `packs a report fails if name not provided`() {
         val context = mock<ActionContext> {
             on { getSparkResponse() } doReturn mockSparkResponse
