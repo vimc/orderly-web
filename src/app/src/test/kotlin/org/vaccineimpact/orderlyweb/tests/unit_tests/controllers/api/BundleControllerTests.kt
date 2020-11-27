@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
+import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.check
 import com.nhaarman.mockito_kotlin.doReturn
@@ -43,7 +44,7 @@ class BundleControllerTests : ControllerTest() {
         verify(httpClient).newCall(
             check {
                 assertThat(it.body!!.contentType().toString()).isEqualTo("application/json; charset=utf-8")
-                assertThat(it.body!!.contentLength()).isEqualTo(9) // {"a": "b"}
+                assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
             }
         )
     }
