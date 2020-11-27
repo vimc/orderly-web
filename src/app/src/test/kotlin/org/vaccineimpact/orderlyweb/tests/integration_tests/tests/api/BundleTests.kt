@@ -7,7 +7,6 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.getResource
@@ -26,6 +25,12 @@ class BundleTests : IntegrationTest() {
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
         val contents = getZipEntries(response).map { it.split('/', limit = 2).last() }
         assertThat(contents).contains("meta/manifest.rds", "pack/orderly.yml")
+    }
+
+    @Test
+    fun `packs report fails without required permission`() {
+        val response = apiRequestHelper.post("/bundle/pack/minimal/", emptyMap(), ContentTypes.zip)
+        assertThat(response.statusCode).isEqualTo(403)
     }
 
     @Test
