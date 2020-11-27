@@ -50,6 +50,25 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
+    fun `packs a report passes through instance`() {
+        val context = mock<ActionContext> {
+            on { params(":name") } doReturn "report1"
+            on { queryString() } doReturn "instance=foo"
+            on { getSparkResponse() } doReturn mockSparkResponse
+        }
+        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
+        val controller = BundleController(context, config, httpClient)
+
+        assertThat(controller.pack()).isTrue()
+        verify(httpClient).newCall(
+            check {
+                assertThat(it.url.query).isEqualTo("instance=foo")
+            }
+        )
+    }
+
+
+    @Test
     fun `packs a report fails on orderly server error`() {
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report1"
