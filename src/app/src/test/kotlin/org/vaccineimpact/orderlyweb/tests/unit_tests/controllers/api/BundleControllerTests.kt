@@ -24,7 +24,6 @@ class BundleControllerTests : ControllerTest() {
 
     private val config = mock<Config> {
         on { get("orderly.server") } doReturn "http://example.com"
-        // on { this.authorizationEnabled } doReturn true
     }
 
     @Test
@@ -35,7 +34,6 @@ class BundleControllerTests : ControllerTest() {
                 "a" to "b"
             )
             on { getSparkResponse() } doReturn mockSparkResponse
-            // on { this.permissions } doReturn PermissionSet()
         }
         val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
@@ -53,7 +51,6 @@ class BundleControllerTests : ControllerTest() {
     fun `packs a report fails if name not provided`() {
         val context = mock<ActionContext> {
             on { getSparkResponse() } doReturn mockSparkResponse
-            // on { this.permissions } doReturn PermissionSet()
         }
         val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
@@ -65,7 +62,6 @@ class BundleControllerTests : ControllerTest() {
     fun `imports a report`() {
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
-            // on { this.permissions } doReturn PermissionSet()
         }
         val body = """{"status":"success","errors":null,"data":true}"""
         val httpClient = getHttpClient(context, "/v1/bundle/import", body.toByteArray())

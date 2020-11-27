@@ -39,10 +39,8 @@ class BundleTests : IntegrationTest() {
         val reportName = "minimal"
         val reportVersion = "20201126-153124-9a32811a"
         val orderlyRoot = AppConfig()["orderly.root"]
-        // val orderlyRoot = "git/"
 
         File("${orderlyRoot}archive/$reportName/$reportVersion/").deleteRecursively()
-        // JooqContext(enableForeignKeyConstraints=false).use {
         JooqContext("${orderlyRoot}orderly.sqlite", false).use {
             it.dsl.deleteFrom(Tables.REPORT_VERSION)
                 .where(Tables.REPORT_VERSION.ID.eq(reportVersion))
