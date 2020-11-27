@@ -19,6 +19,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.api.BundleController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
 class BundleControllerTests : ControllerTest() {
 
@@ -35,7 +36,7 @@ class BundleControllerTests : ControllerTest() {
             )
             on { getSparkResponse() } doReturn mockSparkResponse
         }
-        val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
+        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
 
         assertThat(controller.pack()).isTrue()
@@ -52,7 +53,7 @@ class BundleControllerTests : ControllerTest() {
         val context = mock<ActionContext> {
             on { getSparkResponse() } doReturn mockSparkResponse
         }
-        val httpClient = getHttpClient(context, "/v1/bundle/pack/${context.params(":name")}")
+        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
         val controller = BundleController(context, config, httpClient)
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(MissingParameterError::class.java)
@@ -64,21 +65,32 @@ class BundleControllerTests : ControllerTest() {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
         val body = """{"status":"success","errors":null,"data":true}"""
-        val httpClient = getHttpClient(context, "/v1/bundle/import", body.toByteArray())
+        val httpClient = getHttpClient("/v1/bundle/import", body.toByteArray())
         val controller = BundleController(context, config, httpClient)
         assertThat(controller.import()).isEqualTo(body)
     }
 
-    private fun getHttpClient(context: ActionContext, path: String, body: ByteArray = ByteArray(0)): OkHttpClient {
+    @Test
+    fun `imports a report fails on orderly server error`() {
+        val context = mock<ActionContext> {
+            on { getRequestBodyAsBytes() } doReturn ByteArray(0)
+        }
+        val httpClient = getHttpClient("/v1/bundle/import", responseCode = 500, responseMessage = "Internal Server Error")
+        val controller = BundleController(context, config, httpClient)
+
+        assertThatThrownBy { controller.import() }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient {
         val request = Request.Builder()
             .url(config["orderly.server"] + path)
             .build()
         val response = Response.Builder()
             .request(request)
             .protocol(HTTP_1_1)
-            .code(200)
-            .message("OK")
-            .body(body.toResponseBody())
+            .code(responseCode)
+            .message(responseMessage)
+            .body(responseBody.toResponseBody())
             .build()
         val call = mock<Call>() {
             on { execute() } doReturn response
