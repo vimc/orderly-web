@@ -28,7 +28,7 @@ class BundleController(
         val name = context.params(":name") ?: throw MissingParameterError("name")
 
         val url = appConfig["orderly.server"] + "/v1/bundle/pack/$name" + (if (context.queryString() != null) "?" + context.queryString() else "")
-        val json = Gson().toJson(context.postData<String>()) // TODO check json is passed through
+        val json = Gson().toJson(context.postData<String>()) // TODO do we need to handle non-String values?
         val request = Request.Builder()
             .url(url)
             .post(json.toRequestBody("application/json".toMediaType()))
