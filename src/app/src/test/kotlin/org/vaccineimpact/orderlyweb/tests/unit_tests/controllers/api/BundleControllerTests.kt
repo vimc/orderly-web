@@ -67,7 +67,6 @@ class BundleControllerTests : ControllerTest() {
         )
     }
 
-
     @Test
     fun `packs a report fails on orderly server error`() {
         val context = mock<ActionContext> {
