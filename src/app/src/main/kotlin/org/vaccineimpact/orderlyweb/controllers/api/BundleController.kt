@@ -36,7 +36,7 @@ class BundleController(
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw OrderlyServerError(url, response.code)
             val servletResponse = context.getSparkResponse().raw()
-            servletResponse.contentType = "application/zip"
+            servletResponse.contentType = "application/zip" // TODO content type can be passed through after VIMC-4388
             servletResponse.outputStream.write(response.body!!.bytes()) // TODO stream?
         }
         return true
@@ -46,7 +46,7 @@ class BundleController(
         val url = appConfig["orderly.server"] + "/v1/bundle/import"
         val request = Request.Builder()
             .url(url)
-            .post(context.getRequestBodyAsBytes().toRequestBody("application/octet-stream".toMediaType())) // TODO stream?
+            .post(context.getRequestBodyAsBytes().toRequestBody("application/octet-stream".toMediaType())) // TODO stream? // TODO application/zip after VIMC-4388
             .build()
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw OrderlyServerError(url, response.code)
