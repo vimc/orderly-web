@@ -520,8 +520,12 @@ Required permissions: `reports.read`.
 
 ## POST /bundle/pack/:name/
 
-> TODO
+Downloads a [bundle](https://www.vaccineimpact.org/orderly/articles/bundles.html) for the named report in zip format. The bundle is expected to be "completed" (i.e. run locally) before being imported.
+
+Required permissions: `reports.run`.
 
 ## POST /bundle/import/
 
-> TODO
+Imports a completed bundle in zip format.
+
+Required permissions: `reports.run`.
