@@ -1,11 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.google.gson.Gson
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.check
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.*
 import okhttp3.Call
 import okhttp3.OkHttpClient
 import okhttp3.Protocol.HTTP_1_1
@@ -32,7 +28,7 @@ class BundleControllerTests : ControllerTest() {
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report1"
             on { postData<String>() } doReturn mapOf(
-                "a" to "b"
+                    "a" to "b"
             )
             on { getSparkResponse() } doReturn mockSparkResponse
         }
@@ -41,12 +37,12 @@ class BundleControllerTests : ControllerTest() {
 
         assertThat(controller.pack()).isTrue()
         verify(httpClient).newCall(
-            check {
-                assertThat(it.body!!.contentType().toString()).isEqualTo("application/json; charset=utf-8")
-                assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
-            }
+                check {
+                    assertThat(it.body!!.contentType().toString()).isEqualTo("application/json; charset=utf-8")
+                    assertThat(it.body!!.contentLength()).isEqualTo(Gson().toJson(context.postData<String>()).length.toLong())
+                }
         )
-        verify(servletResponse).setContentType("application/zip")
+        verify(servletResponse).contentType = "application/zip"
     }
 
     @Test
@@ -61,9 +57,9 @@ class BundleControllerTests : ControllerTest() {
 
         assertThat(controller.pack()).isTrue()
         verify(httpClient).newCall(
-            check {
-                assertThat(it.url.query).isEqualTo("instance=foo")
-            }
+                check {
+                    assertThat(it.url.query).isEqualTo("instance=foo")
+                }
         )
     }
 
@@ -113,21 +109,20 @@ class BundleControllerTests : ControllerTest() {
 
     private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient {
         val request = Request.Builder()
-            .url(config["orderly.server"] + path)
-            .build()
+                .url(config["orderly.server"] + path)
+                .build()
         val response = Response.Builder()
-            .request(request)
-            .protocol(HTTP_1_1)
-            .code(responseCode)
-            .message(responseMessage)
-            .body(responseBody.toResponseBody())
-            .build()
-        val call = mock<Call>() {
+                .request(request)
+                .protocol(HTTP_1_1)
+                .code(responseCode)
+                .message(responseMessage)
+                .body(responseBody.toResponseBody())
+                .build()
+        val call = mock<Call> {
             on { execute() } doReturn response
         }
-        val httpClient = mock<OkHttpClient>() {
-            on { newCall(any<Request>()) } doReturn call
+        return mock {
+            on { newCall(any()) } doReturn call
         }
-        return httpClient
     }
 }

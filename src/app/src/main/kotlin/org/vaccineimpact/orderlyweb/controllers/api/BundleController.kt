@@ -13,16 +13,16 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
 class BundleController(
-    context: ActionContext,
-    config: Config,
-    private val httpClient: OkHttpClient
+        context: ActionContext,
+        config: Config,
+        private val httpClient: OkHttpClient
 ) : Controller(context, config) {
     constructor(context: ActionContext) :
-        this(
-            context,
-            AppConfig(),
-            OkHttpClient()
-        )
+            this(
+                    context,
+                    AppConfig(),
+                    OkHttpClient()
+            )
 
     fun pack(): Boolean {
         val name = context.params(":name") ?: throw MissingParameterError("name")
@@ -30,9 +30,9 @@ class BundleController(
         val url = appConfig["orderly.server"] + "/v1/bundle/pack/$name" + (if (context.queryString() != null) "?" + context.queryString() else "")
         val json = Gson().toJson(context.postData<String>())
         val request = Request.Builder()
-            .url(url)
-            .post(json.toRequestBody("application/json".toMediaType()))
-            .build()
+                .url(url)
+                .post(json.toRequestBody("application/json".toMediaType()))
+                .build()
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw OrderlyServerError(url, response.code)
             val servletResponse = context.getSparkResponse().raw()
@@ -45,9 +45,9 @@ class BundleController(
     fun import(): String {
         val url = appConfig["orderly.server"] + "/v1/bundle/import"
         val request = Request.Builder()
-            .url(url)
-            .post(context.getRequestBodyAsBytes().toRequestBody("application/octet-stream".toMediaType())) // TODO application/zip after VIMC-4388
-            .build()
+                .url(url)
+                .post(context.getRequestBodyAsBytes().toRequestBody("application/octet-stream".toMediaType())) // TODO application/zip after VIMC-4388
+                .build()
         httpClient.newCall(request).execute().use { response ->
             if (!response.isSuccessful) throw OrderlyServerError(url, response.code)
             return response.body!!.string()
