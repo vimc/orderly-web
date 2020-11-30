@@ -11,7 +11,9 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.controllers.api.BundleController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
@@ -81,11 +83,12 @@ class BundleControllerTests : ControllerTest()
     @Test
     fun `packs a report fails if name not provided`()
     {
-        val context = mock<ActionContext> {
-            on { getSparkResponse() } doReturn mockSparkResponse
+        val request = mock<spark.Request>()
+        val context = mock<SparkWebContext> {
+            on { sparkRequest } doReturn request
         }
-        val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
-        val controller = BundleController(context, config, httpClient)
+        val httpClient = getHttpClient("/v1/bundle/pack/foo")
+        val controller = BundleController(DirectActionContext(context, config), config, httpClient)
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(MissingParameterError::class.java)
     }

@@ -16,7 +16,7 @@ interface ActionContext
 
     fun queryString(): String?
     fun queryParams(key: String): String?
-    fun params(): Map<String, String>
+    fun params(): Map<String, String?>
     fun params(key: String): String
     fun splat() : Array<String>?
     fun addResponseHeader(key: String, value: String)
