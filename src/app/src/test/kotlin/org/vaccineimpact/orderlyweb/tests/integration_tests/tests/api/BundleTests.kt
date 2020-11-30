@@ -18,9 +18,11 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.zip.ZipInputStream
 
-class BundleTests : IntegrationTest() {
+class BundleTests : IntegrationTest()
+{
     @Test
-    fun `packs report`() {
+    fun `packs report`()
+    {
         val response = apiRequestHelper.post("/bundle/pack/minimal/", emptyMap(), ContentTypes.zip, fakeGlobalReportReviewer())
         assertThat(response.statusCode).isEqualTo(200)
         assertThat(response.headers["content-type"]).isEqualTo("application/zip")
@@ -29,13 +31,15 @@ class BundleTests : IntegrationTest() {
     }
 
     @Test
-    fun `packs report fails without required permission`() {
+    fun `packs report fails without required permission`()
+    {
         val response = apiRequestHelper.post("/bundle/pack/minimal/", emptyMap(), ContentTypes.zip)
         assertThat(response.statusCode).isEqualTo(403)
     }
 
     @Test
-    fun `imports report()`() {
+    fun `imports report()`()
+    {
         val reportName = "minimal"
         val reportVersion = "20201126-153124-9a32811a"
         val orderlyRoot = AppConfig()["orderly.root"]
@@ -59,10 +63,12 @@ class BundleTests : IntegrationTest() {
         File("${orderlyRoot}archive/$reportName/$reportVersion/").deleteRecursively()
     }
 
-    private fun getZipEntries(response: khttp.responses.Response): MutableList<String> {
+    private fun getZipEntries(response: khttp.responses.Response): MutableList<String>
+    {
         val entries = mutableListOf<String>()
         ZipInputStream(ByteArrayInputStream(response.content)).use { zis ->
-            while (true) {
+            while (true)
+            {
                 val entry = zis.nextEntry ?: break
                 entries.add(entry.name)
             }

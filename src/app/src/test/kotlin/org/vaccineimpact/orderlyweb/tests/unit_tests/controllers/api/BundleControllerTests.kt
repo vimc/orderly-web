@@ -17,14 +17,16 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 
-class BundleControllerTests : ControllerTest() {
+class BundleControllerTests : ControllerTest()
+{
 
     private val config = mock<Config> {
         on { get("orderly.server") } doReturn "http://example.com"
     }
 
     @Test
-    fun `packs a report`() {
+    fun `packs a report`()
+    {
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report1"
             on { postData<String>() } doReturn mapOf(
@@ -46,7 +48,8 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `packs a report passes through instance`() {
+    fun `packs a report passes through instance`()
+    {
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report1"
             on { queryString() } doReturn "instance=foo"
@@ -64,7 +67,8 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `packs a report fails on orderly server error`() {
+    fun `packs a report fails on orderly server error`()
+    {
         val context = mock<ActionContext> {
             on { params(":name") } doReturn "report1"
         }
@@ -75,7 +79,8 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `packs a report fails if name not provided`() {
+    fun `packs a report fails if name not provided`()
+    {
         val context = mock<ActionContext> {
             on { getSparkResponse() } doReturn mockSparkResponse
         }
@@ -86,7 +91,8 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `imports a report`() {
+    fun `imports a report`()
+    {
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
@@ -97,7 +103,8 @@ class BundleControllerTests : ControllerTest() {
     }
 
     @Test
-    fun `imports a report fails on orderly server error`() {
+    fun `imports a report fails on orderly server error`()
+    {
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
@@ -107,7 +114,8 @@ class BundleControllerTests : ControllerTest() {
         assertThatThrownBy { controller.import() }.isInstanceOf(OrderlyServerError::class.java)
     }
 
-    private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient {
+    private fun getHttpClient(path: String, responseBody: ByteArray = ByteArray(0), responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient
+    {
         val request = Request.Builder()
                 .url(config["orderly.server"] + path)
                 .build()

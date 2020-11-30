@@ -16,7 +16,8 @@ class BundleController(
         context: ActionContext,
         config: Config,
         private val httpClient: OkHttpClient
-) : Controller(context, config) {
+) : Controller(context, config)
+{
     @Suppress("unused")
     constructor(context: ActionContext) :
             this(
@@ -25,7 +26,8 @@ class BundleController(
                     OkHttpClient()
             )
 
-    fun pack(): Boolean {
+    fun pack(): Boolean
+    {
         val name = context.params(":name") ?: throw MissingParameterError("name")
 
         val url = appConfig["orderly.server"] + "/v1/bundle/pack/$name" + (if (context.queryString() != null) "?" + context.queryString() else "")
@@ -43,7 +45,8 @@ class BundleController(
         return true
     }
 
-    fun import(): String {
+    fun import(): String
+    {
         val url = appConfig["orderly.server"] + "/v1/bundle/import"
         val request = Request.Builder()
                 .url(url)
