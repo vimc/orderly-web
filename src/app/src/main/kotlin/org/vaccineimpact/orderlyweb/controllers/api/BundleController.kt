@@ -17,6 +17,7 @@ class BundleController(
         config: Config,
         private val httpClient: OkHttpClient
 ) : Controller(context, config) {
+    @Suppress("unused")
     constructor(context: ActionContext) :
             this(
                     context,
