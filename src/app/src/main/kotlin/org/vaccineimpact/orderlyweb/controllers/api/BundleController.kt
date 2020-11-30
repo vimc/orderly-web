@@ -29,7 +29,7 @@ class BundleController(
     {
         val name = context.params(":name")
 
-        val url = appConfig["orderly.server"] + "/v1/bundle/pack/$name" + (if (context.queryString() != null) "?" + context.queryString() else "")
+        val url = "${appConfig["orderly.server"]}/v1/bundle/pack/$name?${context.queryString() ?: ""}"
         val json = Gson().toJson(context.postData<String>())
         val request = Request.Builder()
                 .url(url)
@@ -46,7 +46,7 @@ class BundleController(
 
     fun import(): String
     {
-        val url = appConfig["orderly.server"] + "/v1/bundle/import"
+        val url = "${appConfig["orderly.server"]}/v1/bundle/import"
         val request = Request.Builder()
                 .url(url)
                 .post(context.getRequestBodyAsBytes().toRequestBody("application/octet-stream".toMediaType())) // TODO application/zip after VIMC-4388
