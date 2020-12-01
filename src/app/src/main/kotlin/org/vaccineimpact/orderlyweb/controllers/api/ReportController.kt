@@ -24,7 +24,7 @@ class ReportController(context: ActionContext,
             this(context,
                     Orderly(context),
                     OrderlyReportRepository(context),
-                    OrderlyServer(AppConfig(), KHttpClient()),
+                    OrderlyServer(AppConfig()),
                     AppConfig())
 
     fun run(): String
