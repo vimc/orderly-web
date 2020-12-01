@@ -1,10 +1,10 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.nhaarman.mockito_kotlin.mock
+import okhttp3.OkHttpClient
 import org.assertj.core.api.Assertions.*
 import org.jsoup.Jsoup
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.KHttpClient
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -40,7 +40,7 @@ class RunReportPageTests : IntegrationTest()
     {
         val controller = ReportController(mock(),
                 mock(),
-                OrderlyServer(AppConfig(), KHttpClient()),
+                OrderlyServer(AppConfig(), OkHttpClient()),
                 mock(),
                 OrderlyWebTagRepository())
 

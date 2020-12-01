@@ -1,15 +1,13 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.JsonParseException
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import khttp.responses.Response
+import com.nhaarman.mockito_kotlin.*
+import okhttp3.*
+import okhttp3.Headers.Companion.toHeaders
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.json.JSONObject
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.db.Config
@@ -19,17 +17,8 @@ import org.vaccineimpact.orderlyweb.models.GitCommit
 class OrderlyServerTests
 {
 
-    private val mockResponse = mock<Response> {
-        on { this.jsonObject } doReturn JSONObject()
-    }
-
-    private val mockHttpclient = mock<HttpClient> {
-        on { this.get(any(), any()) } doReturn mockResponse
-        on { this.post(any(), any(), any()) } doReturn mockResponse
-        on { this.delete(any(), any()) } doReturn mockResponse
-    }
-    private val mockConfig = mock<Config>() {
-        on { this.get("orderly.server") } doReturn "http://orderly"
+    private val mockConfig = mock<Config> {
+        on { this["orderly.server"] } doReturn "http://orderly"
     }
 
     private val standardHeaders = mapOf(
@@ -40,13 +29,21 @@ class OrderlyServerTests
     @Test
     fun `passes through POST body`()
     {
-        val mockContext = mock<ActionContext>() {
+        val mockContext = mock<ActionContext> {
             on { this.postData<String>() } doReturn mapOf("key1" to "val1")
         }
-        val sut = OrderlyServer(mockConfig, mockHttpclient)
-        sut.post("/some/path/", mockContext)
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).post("/some/path/", mockContext)
 
-        verify(mockHttpclient).post("http://orderly/some/path/", standardHeaders, mapOf("key1" to "val1"))
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                    val buffer = Buffer()
+                    it.body!!.writeTo(buffer)
+                    assertThat(buffer.readUtf8()).isEqualTo("""{"key1":"val1"}""")
+                }
+        )
     }
 
     @Test
@@ -55,10 +52,15 @@ class OrderlyServerTests
         val mockContext = mock<ActionContext>() {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val sut = OrderlyServer(mockConfig, mockHttpclient)
-        sut.post("/some/path/", mockContext)
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).post("/some/path/", mockContext)
 
-        verify(mockHttpclient).post("http://orderly/some/path/?key1=val1", standardHeaders, mapOf())
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?key1=val1")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
     }
 
     @Test
@@ -67,10 +69,15 @@ class OrderlyServerTests
         val mockContext = mock<ActionContext>() {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val sut = OrderlyServer(mockConfig, mockHttpclient)
-        sut.get("/some/path/", mockContext)
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).get("/some/path/", mockContext)
 
-        verify(mockHttpclient).get("http://orderly/some/path/?key1=val1", standardHeaders)
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?key1=val1")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
     }
 
     @Test
@@ -79,10 +86,15 @@ class OrderlyServerTests
         val mockContext = mock<ActionContext>() {
             on { this.queryString() } doReturn "key1=val1"
         }
-        val sut = OrderlyServer(mockConfig, mockHttpclient)
-        sut.delete("/some/path/", mockContext)
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).delete("/some/path/", mockContext)
 
-        verify(mockHttpclient).delete("http://orderly/some/path/?key1=val1", standardHeaders)
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?key1=val1")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
     }
 
     @Test
@@ -103,10 +115,10 @@ class OrderlyServerTests
     @Test
     fun `translates response error detail to error message`()
     {
-        val raw = """{"status": "success", "data": ["some data"], 
+        val raw = """{"status": "success", "data": ["some data"],
                                   "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": "msg2"}]}"""
 
-        val expected = """{"status": "success", "data": ["some data"], 
+        val expected = """{"status": "success", "data": ["some data"],
                                   "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": "msg2"}]}"""
 
         testTranslatedResponse(raw, expected)
@@ -115,10 +127,10 @@ class OrderlyServerTests
     @Test
     fun `translates response null error detail to empty string error message`()
     {
-        val raw = """{"status": "success", "data": ["some data"], 
+        val raw = """{"status": "success", "data": ["some data"],
                                   "errors": [{"code": "TEST1", "detail": "msg1"}, {"code": "TEST2", "detail": null}]}"""
 
-        val expected = """{"status": "success", "data": ["some data"], 
+        val expected = """{"status": "success", "data": ["some data"],
                                   "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
 
         testTranslatedResponse(raw, expected)
@@ -137,7 +149,7 @@ class OrderlyServerTests
     @Test
     fun `passes response errors through unchanged if no detail key`()
     {
-        val json = """{"status": "success", "data": ["some data"], 
+        val json = """{"status": "success", "data": ["some data"],
                                   "errors": [{"code": "TEST1", "message": "msg1"}, {"code": "TEST2", "message": ""}]}"""
         testTranslatedResponse(json, json)
     }
@@ -146,17 +158,9 @@ class OrderlyServerTests
     fun `throws on failure if specified`()
     {
         val text = """{"status": "failure", "data": null, "errors": []}"""
-        val rawJson = JSONObject(text)
-        val mockRawResponse = mock<Response> {
-            on { this.jsonObject } doReturn rawJson
-            on { this.statusCode } doReturn 400
-        }
+        val client = getHttpClient(text, 400)
 
-        val mockClient = mock<HttpClient> {
-            on { this.get(any(), any()) } doReturn mockRawResponse
-        }
-
-        val sut = OrderlyServer(mockConfig, mockClient)
+        val sut = OrderlyServer(mockConfig, client)
                 .throwOnError()
 
         assertThatThrownBy { sut.get("/whatever", mock()) }
@@ -177,7 +181,7 @@ class OrderlyServerTests
     @Test
     fun `can parse object data and transform snake case to camel case`()
     {
-        val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48", 
+        val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"display_date_time": "Monday"}, "errors": []}""".trimMargin()
         val response = OrderlyServerResponse(text, 200)
         val data = response.data(GitCommit::class.java)
@@ -189,7 +193,7 @@ class OrderlyServerTests
     @Test
     fun `can parse list data`()
     {
-        val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48", 
+        val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48",
             |"display_date_time": "Monday"}], "errors": []}""".trimMargin()
         val response = OrderlyServerResponse(text, 200)
         val data = response.listData(GitCommit::class.java)
@@ -200,33 +204,44 @@ class OrderlyServerTests
 
     private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String)
     {
-        val rawJson = JSONObject(rawResponse)
-        val mockRawResponse = mock<Response> {
-            on { this.jsonObject } doReturn rawJson
-            on { this.statusCode } doReturn 400
-        }
-        val mockClient = mock<HttpClient> {
-            on { this.get(any(), any()) } doReturn mockRawResponse
-            on { this.post(any(), any(), any()) } doReturn mockRawResponse
-            on { this.delete(any(), any()) } doReturn mockRawResponse
-        }
         val mapper = ObjectMapper()
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
 
-
-        val sut = OrderlyServer(mockConfig, mockClient)
-
-        val getResult = sut.get("anyUrl", mock())
+        val sut1 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val getResult = sut1.get("anyUrl", mock())
         assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
         assertThat(getResult.statusCode).isEqualTo(400)
 
-        val postResult = sut.get("anyUrl", mock())
-        assertThat(mapper.readTree(postResult.text).equals(expectedJson)).isTrue()
+        val sut2 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val postResult = sut2.post("anyUrl", mock())
+        assertThat(mapper.readTree(postResult.text)).isEqualTo(expectedJson)
         assertThat(postResult.statusCode).isEqualTo(400)
 
-        val deleteResult = sut.delete("anyUrl", mock())
-        assertThat(mapper.readTree(postResult.text).equals(expectedJson)).isTrue()
-        assertThat(postResult.statusCode).isEqualTo(400)
+        val sut3 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
+        val deleteResult = sut3.delete("anyUrl", mock())
+        assertThat(mapper.readTree(deleteResult.text)).isEqualTo(expectedJson)
+        assertThat(deleteResult.statusCode).isEqualTo(400)
     }
+
+    private fun getHttpClient(responseBody: String = "{}", responseCode: Int = 200, responseMessage: String = "OK"): OkHttpClient
+    {
+        val request = Request.Builder()
+                .url("http://orderly")
+                .build()
+        val response = Response.Builder()
+                .request(request)
+                .protocol(Protocol.HTTP_1_1)
+                .code(responseCode)
+                .message(responseMessage)
+                .body(responseBody.toResponseBody())
+                .build()
+        val call = mock<Call> {
+            on { execute() } doReturn response
+        }
+        return mock {
+            on { newCall(any()) } doReturn call
+        }
+    }
+
 }
 
