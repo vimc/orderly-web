@@ -10,7 +10,7 @@ class GitController(context: ActionContext,
                     private val orderlyServerAPI: OrderlyServerAPI): Controller(context)
 {
     constructor(context: ActionContext) :
-            this(context, OrderlyServer(AppConfig(), KHttpClient()))
+            this(context, OrderlyServer(AppConfig()))
 
     fun getCommits() : String
     {

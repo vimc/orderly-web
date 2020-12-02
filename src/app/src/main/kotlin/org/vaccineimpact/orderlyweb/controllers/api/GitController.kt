@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.KHttpClient
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
@@ -12,7 +11,7 @@ class GitController(context: ActionContext,
 {
 
     constructor(context: ActionContext) :
-            this(context, OrderlyServer(AppConfig(), KHttpClient()))
+            this(context, OrderlyServer(AppConfig()))
 
     fun status(): String
     {
