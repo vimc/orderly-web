@@ -29,5 +29,9 @@ docker run --rm \
     -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
+    -v $PWD/reports:/api/src/app/build/reports \
     --network=host \
     orderly-web-app-build
+
+# Persist the test reports
+buildkite-agent artifact upload "reports/**/*"
