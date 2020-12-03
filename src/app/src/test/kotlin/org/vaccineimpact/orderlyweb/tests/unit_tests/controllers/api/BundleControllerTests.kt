@@ -14,6 +14,7 @@ import org.junit.Test
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.api.BundleController
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
@@ -37,7 +38,7 @@ class BundleControllerTests : ControllerTest()
             on { getSparkResponse() } doReturn mockSparkResponse
         }
         val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
-        val controller = BundleController(context, config, httpClient)
+        val controller = BundleController(context, config, OrderlyServer(config, httpClient))
 
         assertThat(controller.pack()).isTrue()
         verify(httpClient).newCall(
@@ -58,7 +59,7 @@ class BundleControllerTests : ControllerTest()
             on { getSparkResponse() } doReturn mockSparkResponse
         }
         val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}")
-        val controller = BundleController(context, config, httpClient)
+        val controller = BundleController(context, config, OrderlyServer(config, httpClient))
 
         assertThat(controller.pack()).isTrue()
         verify(httpClient).newCall(
@@ -72,10 +73,10 @@ class BundleControllerTests : ControllerTest()
     fun `packs a report fails on orderly server error`()
     {
         val context = mock<ActionContext> {
-            on { params(":name") } doReturn "report1"
+            on { params(":name") } doReturn "report2"
         }
         val httpClient = getHttpClient("/v1/bundle/pack/${context.params(":name")}", responseCode = 500, responseMessage = "Internal Server Error")
-        val controller = BundleController(context, config, httpClient)
+        val controller = BundleController(context, config, OrderlyServer(config, httpClient).throwOnError())
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(OrderlyServerError::class.java)
     }
@@ -87,8 +88,7 @@ class BundleControllerTests : ControllerTest()
         val context = mock<SparkWebContext> {
             on { sparkRequest } doReturn request
         }
-        val httpClient = getHttpClient("/v1/bundle/pack/foo")
-        val controller = BundleController(DirectActionContext(context, config), config, httpClient)
+        val controller = BundleController(DirectActionContext(context, config), config, mock())
 
         assertThatThrownBy { controller.pack() }.isInstanceOf(MissingParameterError::class.java)
     }
@@ -99,10 +99,9 @@ class BundleControllerTests : ControllerTest()
         val context = mock<ActionContext> {
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
-        val body = """{"status":"success","errors":null,"data":true}"""
-        val httpClient = getHttpClient("/v1/bundle/import", body.toByteArray())
-        val controller = BundleController(context, config, httpClient)
-        assertThat(controller.import()).isEqualTo(body)
+        val httpClient = getHttpClient("/v1/bundle/import", """{"status":"success","errors":null,"data":true}""".toByteArray())
+        val controller = BundleController(context, config, OrderlyServer(config, httpClient))
+        assertThat(controller.import()).isEqualTo("""{"data":true,"errors":[],"status":"success"}""")
     }
 
     @Test
@@ -112,7 +111,7 @@ class BundleControllerTests : ControllerTest()
             on { getRequestBodyAsBytes() } doReturn ByteArray(0)
         }
         val httpClient = getHttpClient("/v1/bundle/import", responseCode = 500, responseMessage = "Internal Server Error")
-        val controller = BundleController(context, config, httpClient)
+        val controller = BundleController(context, config, OrderlyServer(config, httpClient).throwOnError())
 
         assertThatThrownBy { controller.import() }.isInstanceOf(OrderlyServerError::class.java)
     }

@@ -4,7 +4,6 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.verify
-import khttp.responses.Response
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -63,7 +62,7 @@ class ReportControllerTests : ControllerTest()
         val mockAPIResponse = OrderlyServerResponse("okayresponse", 200)
 
         val apiClient = mock<OrderlyServerAPI>() {
-            on { this.post(any(), any()) } doReturn mockAPIResponse
+            on { this.post(any(), any(), any(), any()) } doReturn mockAPIResponse
         }
 
         val sut = ReportController(actionContext, mock(), mockReportRepo, apiClient, mockConfig)
