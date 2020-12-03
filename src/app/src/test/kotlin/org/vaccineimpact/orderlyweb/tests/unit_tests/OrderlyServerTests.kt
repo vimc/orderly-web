@@ -27,6 +27,23 @@ class OrderlyServerTests
     )
 
     @Test
+    fun `passes through query string to GET`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.queryString() } doReturn "key1=val1"
+        }
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).get("/some/path/", mockContext)
+
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?key1=val1")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
+    }
+
+    @Test
     fun `passes through JSON POST body`()
     {
         val mockContext = mock<ActionContext> {
@@ -68,7 +85,7 @@ class OrderlyServerTests
     }
 
     @Test
-    fun `disabling response transformation works as expected`()
+    fun `disabling response transformation works for POST`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text)
@@ -102,32 +119,6 @@ class OrderlyServerTests
     }
 
     @Test
-    fun `passes through query string to GET`()
-    {
-        val mockContext = mock<ActionContext> {
-            on { this.queryString() } doReturn "key1=val1"
-        }
-        val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path/", mockContext)
-
-        verify(client).newCall(
-                check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?key1=val1")
-                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
-                }
-        )
-    }
-
-    @Test
-    fun `throws on error`()
-    {
-        val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
-        val client = getHttpClient(text, 500)
-        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
-        assertThatThrownBy { orderlyServerAPI.get("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
-    }
-
-    @Test
     fun `makes DELETE call on http client`()
     {
         val mockContext = mock<ActionContext> {
@@ -142,6 +133,17 @@ class OrderlyServerTests
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
                 }
         )
+    }
+
+    @Test
+    fun `throws error on failure`()
+    {
+        val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
+        val client = getHttpClient(text, 500)
+        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
+        assertThatThrownBy { orderlyServerAPI.get("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
     }
 
     @Test
