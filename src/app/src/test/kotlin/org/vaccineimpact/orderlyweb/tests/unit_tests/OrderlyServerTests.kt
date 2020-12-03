@@ -68,7 +68,7 @@ class OrderlyServerTests
     }
 
     @Test
-    fun `does not transform response`()
+    fun `disabling response transformation works as expected`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text)
