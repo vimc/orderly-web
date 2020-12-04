@@ -175,4 +175,3 @@ the joining rows.
 Defines report version level permissions. If one or more rows in this table joins against a user_group_permission then the 
 group has that permission in the context of the report version(s) specified by the 'version' column values in the 
 joining rows. 
-
