@@ -98,7 +98,6 @@ class OrderlyServerTests
                 }
         )
         assertThat(response.text).isEqualTo(text)
-
     }
 
     @Test
@@ -136,7 +135,7 @@ class OrderlyServerTests
     }
 
     @Test
-    fun `throws error on failure`()
+    fun `throws error on failure with throwsOnError`()
     {
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text, 500)
@@ -144,6 +143,19 @@ class OrderlyServerTests
         assertThatThrownBy { orderlyServerAPI.get("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    @Test
+    fun `does not throw error on failure without throwsOnError`()
+    {
+        val client = getHttpClient(
+                """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}""",
+                500
+        )
+        val response = OrderlyServer(mockConfig, client).get("/some/path/", mock())
+        assertThat(response.text).isEqualTo(
+                """{"data":null,"errors":[{"error":"FOO","message":"bar"}],"status":"failure"}"""
+        )
     }
 
     @Test
