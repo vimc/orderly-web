@@ -9,7 +9,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.json.JSONArray
 import org.json.JSONObject
 import org.vaccineimpact.orderlyweb.db.Config
@@ -18,7 +17,7 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 interface OrderlyServerAPI
 {
     @Throws(OrderlyServerError::class)
-    fun post(url: String, context: ActionContext): OrderlyServerResponse
+    fun post(url: String, context: ActionContext, rawRequest: Boolean = false, transformResponse: Boolean = true): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
@@ -29,8 +28,12 @@ interface OrderlyServerAPI
     fun throwOnError(): OrderlyServerAPI
 }
 
-data class OrderlyServerResponse(val text: String, val statusCode: Int)
+class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
 {
+    constructor(text: String, statusCode: Int) : this(text.toByteArray(), statusCode)
+
+    val text get() = String(bytes)
+
     fun <T> data(klass: Class<T>): T
     {
         val data = parseJson(text)
@@ -51,11 +54,13 @@ data class OrderlyServerResponse(val text: String, val statusCode: Int)
     }
 }
 
-class OrderlyServer(private val config: Config,
-                    private val client: OkHttpClient = OkHttpClient(),
-                    private val throwOnError: Boolean = false) : OrderlyServerAPI
+class OrderlyServer(config: Config,
+                    private val client: OkHttpClient = OkHttpClient()
+) : OrderlyServerAPI
 {
-    private val headers = mapOf(
+    private var throwOnError = false
+
+    private val standardHeaders = mapOf(
             "Accept" to ContentTypes.json,
             "Accept-Encoding" to "gzip"
     )
@@ -64,29 +69,50 @@ class OrderlyServer(private val config: Config,
 
     override fun throwOnError(): OrderlyServerAPI
     {
-        return OrderlyServer(config, client, true)
+        return apply {
+            throwOnError = true
+        }
     }
 
     override fun get(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
-                .headers(headers.toHeaders())
+                .headers(standardHeaders.toHeaders())
                 .build()
         val response = client.newCall(request).execute()
-        return transformResponse(url, response)
+        if (!response.isSuccessful && throwOnError)
+        {
+            throw OrderlyServerError(url, response.code)
+        }
+        return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun post(url: String, context: ActionContext): OrderlyServerResponse
+    override fun post(url: String, context: ActionContext, rawRequest: Boolean, transformResponse: Boolean): OrderlyServerResponse
     {
-        val json = context.postData<String>()
-        val body = if (json.any())
+        val body = if (rawRequest)
         {
-            Gson().toJson(json).toRequestBody(ContentTypes.json.toMediaType())
+            context.getRequestBodyAsBytes().toRequestBody(ContentTypes.binarydata.toMediaType())
         }
         else
         {
-            "".toRequestBody()
+            val json = context.postData<String>()
+            if (json.any())
+            {
+                Gson().toJson(json).toRequestBody(ContentTypes.json.toMediaType())
+            }
+            else
+            {
+                "".toRequestBody()
+            }
+        }
+        val headers = if (transformResponse)
+        {
+            standardHeaders
+        }
+        else
+        {
+            emptyMap()
         }
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
@@ -94,27 +120,42 @@ class OrderlyServer(private val config: Config,
                 .post(body)
                 .build()
         val response = client.newCall(request).execute()
-        return transformResponse(url, response)
+        if (!response.isSuccessful && throwOnError)
+        {
+            throw OrderlyServerError(url, response.code)
+        }
+        return if (transformResponse)
+        {
+            transformResponse(response.code, response.body!!.string())
+        }
+        else
+        {
+            OrderlyServerResponse(response.body!!.bytes(), response.code)
+        }
     }
 
     override fun delete(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
                 .url(buildFullUrl(url, context.queryString()))
-                .headers(headers.toHeaders())
+                .headers(standardHeaders.toHeaders())
                 .delete()
                 .build()
         val response = client.newCall(request).execute()
-        return transformResponse(url, response)
+        if (!response.isSuccessful && throwOnError)
+        {
+            throw OrderlyServerError(url, response.code)
+        }
+        return transformResponse(response.code, response.body!!.string())
     }
 
-    private fun transformResponse(url: String, rawResponse: Response): OrderlyServerResponse
+    private fun transformResponse(code: Int, text: String): OrderlyServerResponse
     {
         val errorsKey = "errors"
         val messageKey = "message"
         val detailKey = "detail"
 
-        val json = JSONObject(rawResponse.body!!.string())
+        val json = JSONObject(text)
 
         val newErrors = JSONArray()
         if (json.has(errorsKey) && json[errorsKey] is JSONArray)
@@ -144,11 +185,7 @@ class OrderlyServer(private val config: Config,
         }
         json.put("errors", newErrors)
 
-        if (!rawResponse.isSuccessful && throwOnError)
-        {
-            throw OrderlyServerError(url, rawResponse.code)
-        }
-        return OrderlyServerResponse(json.toString(), rawResponse.code)
+        return OrderlyServerResponse(json.toString(), code)
     }
 
     private fun buildFullUrl(url: String, queryString: String?) = "${urlBase}${url}?${queryString ?: ""}"

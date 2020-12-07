@@ -16,7 +16,7 @@ interface ActionContext
 
     fun queryString(): String?
     fun queryParams(key: String): String?
-    fun params(): Map<String, String>
+    fun params(): Map<String, String?>
     fun params(key: String): String
     fun splat() : Array<String>?
     fun addResponseHeader(key: String, value: String)
@@ -32,6 +32,7 @@ interface ActionContext
     fun setStatusCode(statusCode: Int)
     fun<T> postData(): Map<String, T>
     fun getRequestBody(): String
+    fun getRequestBodyAsBytes(): ByteArray
 
     @Throws(MissingParameterError::class)
     fun<T> postData(key: String): T

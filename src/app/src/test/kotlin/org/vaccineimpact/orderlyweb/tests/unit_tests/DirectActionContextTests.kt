@@ -40,6 +40,7 @@ class DirectActionContextTests
 
     val mockPostRequest = mock<Request> {
         on { it.body() } doReturn "{ \"some\" : \"value\" }"
+        on { it.bodyAsBytes() } doReturn "{ \"some\" : \"value\" }".toByteArray()
     }
 
     val mockPostSparkContext = mock<SparkWebContext> {
@@ -73,6 +74,14 @@ class DirectActionContextTests
         val sut = DirectActionContext(mockPostSparkContext)
         val result = sut.getRequestBody()
         assert(result.equals("{ \"some\" : \"value\" }"))
+    }
+
+    @Test
+    fun `can get request body as bytes`()
+    {
+        val sut = DirectActionContext(mockPostSparkContext)
+        val result = sut.getRequestBodyAsBytes()
+        assert(String(result).equals("{ \"some\" : \"value\" }"))
     }
 
     @Test
