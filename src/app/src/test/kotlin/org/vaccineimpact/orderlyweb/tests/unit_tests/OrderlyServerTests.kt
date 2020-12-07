@@ -153,6 +153,7 @@ class OrderlyServerTests
                 500
         )
         val response = OrderlyServer(mockConfig, client).get("/some/path/", mock())
+        assertThat(response.statusCode).isEqualTo(500)
         assertThat(response.text).isEqualTo(
                 """{"data":null,"errors":[{"error":"FOO","message":"bar"}],"status":"failure"}"""
         )
