@@ -24,10 +24,12 @@ export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
 # Run the created image
+CI_ENV=$(curl -s https://codecov.io/env | bash)
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
     --network=host \
+    $CI_ENV \
     orderly-web-app-build
