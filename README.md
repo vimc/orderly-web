@@ -79,16 +79,24 @@ rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
 ```
 
 ## Docker build
-The app is dockerised by running `./buildkite/build-app.sh` which does the following:
+The app is dockerised by running the `./buildkite/build-app.sh` script, which does the following:
 1. Calls `./buildkite/make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the gradle and npm dependencies needed to 
 distribute the app. This image will also be re-used for the blackbox tests.
 1. Builds the app specific build environment image based on `app.Dockerfile` which inherits from the above.
 1. Generates an orderly-web database containing test data with `./buildkite/make-db.sh`
 1. Runs all dependencies needed for tests as a docker network
-1. Runs the image created in step 2. which tests the app and if successful, runs the `distDocker` task which builds and 
-pushes the final docker image containing just the compiled app.
+1. Runs the image created in step 2. which tests the app and if successful, uploads coverage to Codecov and runs the
+`distDocker` task which builds and pushes the final docker image containing just the compiled app. Note that `CI_ENV` is
+used to pass relevant variables from the Buildkite environment into the Docker container for coverage upload,
+specifically metadata on the most recent git revision and the Codecov upload token.
 
-This script is designed to be run on Buildkite, but can also be run locally.
+This script is designed to be run on Buildkite, but can also be run locally. In this case you will need to set the
+following environment variables for Codecov:
+```bash
+export CODECOV_TOKEN=xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # See https://app.codecov.io/gh/vimc/orderly-web/settings
+export VCS_COMMIT_ID=$(git log -1 --format="%H")
+export VCS_BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+```
  
 ### Buildkite
 The Buildkite build runs a series of independent steps, some of which are run in parallel. See `/buildkite/pipeline.yml` where
