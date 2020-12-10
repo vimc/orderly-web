@@ -15,9 +15,6 @@ abstract class DatabaseTests
         @JvmStatic
         fun createDatabase()
         {
-            println("Looking for sqlite database at path: ${AppConfig()["db.template"]}")
-            println("Working directory: ${System.getProperty("user.dir")}")
-
             val newDbFile = File(AppConfig()["db.location"])
             val source = File(AppConfig()["db.template"])
 
