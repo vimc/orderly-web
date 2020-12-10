@@ -18,6 +18,8 @@ import java.io.File
 import java.io.StringWriter
 import java.io.Writer
 import java.net.URL
+import java.util.logging.Level
+import java.util.logging.Logger
 import javax.xml.transform.Source
 
 
@@ -31,6 +33,7 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
 
         fun getWebClient(): WebClient
         {
+            Logger.getLogger("com.gargoylesoftware").setLevel(Level.OFF);
             val client = WebClient()
             client.isThrowExceptionOnFailingStatusCode = false
             client.isThrowExceptionOnScriptError = false
@@ -38,6 +41,7 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
         }
 
         val anyWindow = getWebClient().currentWindow
+
 
     }
 

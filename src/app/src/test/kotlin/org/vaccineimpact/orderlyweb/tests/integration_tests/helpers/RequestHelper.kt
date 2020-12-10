@@ -35,7 +35,6 @@ abstract class RequestHelper
                 auth = auth
         )
         val text = response.text
-        println(text)
         return Parser().parse(StringBuilder(text)) as JsonObject
     }
 }

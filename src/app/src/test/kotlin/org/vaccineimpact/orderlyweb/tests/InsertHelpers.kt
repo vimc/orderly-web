@@ -271,7 +271,6 @@ fun createArchiveFolder(reportName: String, reportVersion: String, config: Confi
     val folder = File(folderName)
     if (!folder.exists())
     {
-        println("creating archive folder $folderName")
         folder.mkdirs()
     }
 }

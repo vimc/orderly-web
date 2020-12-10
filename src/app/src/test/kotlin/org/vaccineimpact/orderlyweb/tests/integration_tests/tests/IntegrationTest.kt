@@ -43,8 +43,6 @@ abstract class IntegrationTest
     @Before
     fun createDatabase()
     {
-        println("Copying database from: ${AppConfig()["db.template"]}")
-
         val newDbFile = File(AppConfig()["db.location"])
         val source = File(AppConfig()["db.template"])
 

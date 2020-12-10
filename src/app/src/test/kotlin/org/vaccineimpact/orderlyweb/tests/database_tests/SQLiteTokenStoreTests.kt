@@ -16,14 +16,8 @@ class SQLiteTokenStoreTests
     @Before
     fun createDatabase()
     {
-        println("Looking for sqlite database at path: ${AppConfig()["onetime_token.db.template"]}")
-        println("Working directory: ${System.getProperty("user.dir")}")
-
         val newDbFile = File(AppConfig()["onetime_token.db.location"])
         val source = File(AppConfig()["onetime_token.db.template"])
-
-        println("Creating sqlite database at path: ${AppConfig()["onetime_token.db.location"]}")
-
         source.copyTo(newDbFile, true)
     }
 
@@ -31,7 +25,6 @@ class SQLiteTokenStoreTests
     fun deleteDatabase()
     {
 
-        println("Removing database at path: ${AppConfig()["onetime_token.db.location"]}")
         File(AppConfig()["onetime_token.db.location"]).delete()
     }
 

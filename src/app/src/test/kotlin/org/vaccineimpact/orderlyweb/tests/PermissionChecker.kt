@@ -38,19 +38,16 @@ abstract class PermissionChecker(protected val url: String,
         // also remove the global permission which should always be stronger than the scoped one
         removePermission(requestHelper.MontaguTestUser, permission.name, "")
 
-        println("Checking that permission '$permission' is required for $url")
         checkThesePermissionsAreInsufficient(limitedPermissions, assertionText)
 
         if (permission.scope is Scope.Specific)
         {
             val scope = permission.scope as Scope.Specific
 
-            println("Checking that same permission with different scope will not satisfy the requirement")
             val badPermission = ReifiedPermission(permission.name, Scope.Specific(scope.databaseScopePrefix, "bad-id"))
             insertReport("bad-id", "v1")
             checkThesePermissionsAreInsufficient(limitedPermissions + badPermission, assertionText)
 
-            println("Checking that same permission with the global scope WILL satisfy the requirement")
             val betterPermission = ReifiedPermission(permission.name, Scope.Global())
             checkThesePermissionsAreSufficient(limitedPermissions + betterPermission,
                     "Expected to be able to substitute '$betterPermission' in place of '$permission' for $url")
