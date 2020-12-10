@@ -42,7 +42,6 @@ class FreemarkerTestRule(val templateName: String, val templatePath: String = "t
 
         val anyWindow = getWebClient().currentWindow
 
-
     }
 
     private var template: Template? = null
