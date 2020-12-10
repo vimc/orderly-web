@@ -69,6 +69,15 @@ with `npm test`
 Python tests of the release scripts are in `/scripts/release/tests` and can be run from the top level `orderly-web`
 directory by running `./scripts/release/tests/test-release.sh`
 
+### Run linter
+To run (detekt)[https://detekt.github.io/detekt/index.html] against the main code (i.e. excluding tests):
+```sh
+cd src
+./gradlew :app:detektMain
+```
+This will ignore "baseline" issues i.e. those present prior to the introduction of linting. If you are working to
+resolve all issues in an existing file then remove any references to it from `config/detekt/baseline-main.yml`.
+
 ### Regenerate database interface
 ```
 cd src
