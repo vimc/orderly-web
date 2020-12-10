@@ -1,0 +1,19 @@
+comments:
+  active: false
+
+complexity:
+  active: false
+
+formatting:
+  Indentation:
+    active: true
+  NoWildcardImports:
+    active: false
+
+style:
+  MandatoryBracesIfStatements:
+    active: true
+  MandatoryBracesLoops:
+    active: true
+  WildcardImport:
+    active: false
