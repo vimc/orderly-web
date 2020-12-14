@@ -94,8 +94,9 @@ gradle and npm dependencies needed to distribute the app. This image will also b
 1. Builds the app specific build environment image based on `app.Dockerfile` which inherits from the above.
 1. Generates an orderly-web database containing test data with `./buildkite/make-db.sh`
 1. Runs all dependencies needed for tests as a docker network
-1. Runs the image created in step 2. which tests the app and if successful, uploads coverage to Codecov and runs the
-`distDocker` task which builds and pushes the final docker image containing just the compiled app.
+1. Runs the image created in step 2. which tests the app and if successful runs the `distDocker` task which builds the
+   final docker image containing just the compiled app, and then tags the image and uploads it to Docker Hub
+1. Archives the linting and test reports, and uploads test coverage results to Codecov
 
 This script is designed to be run on Buildkite but can also be run locally, in which case you will need to set the
 following environment variable for Codecov:
@@ -107,8 +108,8 @@ export CODECOV_TOKEN=xxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx # See https://app.codec
 The Buildkite build runs a series of independent steps, some of which are run in parallel. See `/buildkite/pipeline.yml` where
 this is defined. These steps:
 1. Build, test and push the database migrations image with `./buildkite/make-migrate-image.sh`.
-1. Run `./buildkite/build-app.sh` which compiles code, run tests alongside a database containing test data and
- builds a Docker image containing the compiled app code (see steps [here](#docker-build))
+1. Run `./buildkite/build-app.sh` which compiles the code, run tests alongside a database containing test data, builds a
+   Docker image containing the compiled app code (see steps [here](#docker-build)) and uploads test results as artifacts
 1. Run `./buildkite/run-smoke-test.sh` which runs up the image and checks that the app starts ok
 1. Run `./buildkite/run-custom-config-tests-in-container.sh`
 1. Run `./buildkite/build-css-generator.sh` which creates a docker image that can compile the 
