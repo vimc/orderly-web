@@ -8,7 +8,8 @@ import org.junit.ClassRule
 import org.openqa.selenium.By
 import org.openqa.selenium.Proxy
 import org.openqa.selenium.WebDriver
-import org.openqa.selenium.chrome.ChromeDriver
+import org.openqa.selenium.firefox.FirefoxDriver
+import org.openqa.selenium.firefox.FirefoxOptions
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.WebDriverWait
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
@@ -39,9 +40,9 @@ abstract class SeleniumTest : CustomConfigTests()
         proxy.httpProxy = "localhost:" + hoverflyRule.proxyPort
         proxy.sslProxy = "localhost:" + hoverflyRule.proxyPort
 
-        driver = ChromeDriver(org.openqa.selenium.chrome.ChromeOptions()
+        driver = FirefoxDriver(FirefoxOptions()
                 .apply {
-                    addArguments("--ignore-certificate-errors", "--headless", "--no-sandbox")
+                    addArguments("-headless")
                     setProxy(proxy)
                 })
         driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS)

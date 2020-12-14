@@ -8,7 +8,7 @@ dependencies {
     testCompile "org.assertj:assertj-core:3.6.2"
     testCompile "com.beust:klaxon:0.31"
     testCompile "com.github.fge:json-schema-validator:2.2.6"
-    testCompile "org.seleniumhq.selenium:selenium-java:3.11.0"
+    testCompile "org.seleniumhq.selenium:selenium-java:3.141.59"
     testCompile "io.specto:hoverfly-java:0.12.0"
 
     testCompile project(":databaseInterface")
