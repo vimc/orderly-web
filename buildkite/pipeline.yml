@@ -6,6 +6,11 @@ steps:
 
     - label: ":mag: Build and test app"
       command: buildkite/build-app.sh
+      key: build-app
+      artifact_paths:
+        - reports.zip
+        - reports/tests/test/index.html
+        - reports/detekt/main.html
 
     - label: ":mag: Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh

@@ -79,7 +79,6 @@ docker {
 
 distDocker {
     dependsOn = [build]
-    push = true
     tag = api_docker_name
     tagVersion = api_docker_version
 }
