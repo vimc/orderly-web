@@ -39,6 +39,14 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can view git commits`()
+    {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("git-commit")))
+        val commitsSelect = Select(driver.findElement(By.id("git-commit")))
+        assertThat(commitsSelect.options.size).isEqualTo(2)
+    }
+
+    @Test
     fun `can view logs tab`()
     {
         driver.findElement(By.id("logs-link")).click()

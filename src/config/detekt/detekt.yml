@@ -6,8 +6,14 @@ complexity:
 
 formatting:
   Indentation:
-    active: true
+    active: false
+  NoLineBreakAfterElse:
+    active: false
   NoWildcardImports:
+    active: false
+  SpacingAroundCurly:
+    active: false
+  SpacingAroundKeyword:
     active: false
 
 style:

@@ -44,6 +44,19 @@ class OrderlyServerTests
     }
 
     @Test
+    fun `passes query parameters from URL`()
+    {
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).get("/some/path?key1=val1", mock())
+
+        verify(client).newCall(
+            check {
+                assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key1=val1")
+            }
+        )
+    }
+
+    @Test
     fun `passes through JSON POST body`()
     {
         val mockContext = mock<ActionContext> {
@@ -54,7 +67,7 @@ class OrderlyServerTests
 
         verify(client).newCall(
                 check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?")
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
                     val buffer = Buffer()
                     it.body!!.writeTo(buffer)
@@ -75,7 +88,7 @@ class OrderlyServerTests
 
         verify(client).newCall(
                 check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?")
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
                     val buffer = Buffer()
                     it.body!!.writeTo(buffer)
@@ -93,7 +106,7 @@ class OrderlyServerTests
 
         verify(client).newCall(
                 check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?")
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/")
                     assertThat(it.headers).isEqualTo(emptyMap<String, String>().toHeaders())
                 }
         )

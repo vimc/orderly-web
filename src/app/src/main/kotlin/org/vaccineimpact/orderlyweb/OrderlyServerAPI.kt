@@ -188,5 +188,16 @@ class OrderlyServer(config: Config,
         return OrderlyServerResponse(json.toString(), code)
     }
 
-    private fun buildFullUrl(url: String, queryString: String?) = "${urlBase}${url}?${queryString ?: ""}"
+    private fun buildFullUrl(url: String, queryString: String?): String
+    {
+        val parameters = if (queryString != null)
+        {
+            "?$queryString"
+        }
+        else
+        {
+            ""
+        }
+        return "$urlBase$url$parameters"
+    }
 }
