@@ -31,6 +31,8 @@ export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
 
 function cleardocker() {
+  echo here is
+  echo $here
   $here/../scripts/clear-docker.sh
 }
 trap cleardocker EXIT
