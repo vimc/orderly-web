@@ -247,3 +247,30 @@
 * dependabot/npm_and_yarn/src/app/static/lodash-4.17.19
 * improve_scripts
 
+# v1.4.0
+
+## Tickets
+* mrc-1597_backend: Get available Git commits
+* mrc-1601: Use real Orderly server endpoints to get run metadata
+* mrc-1601_refactor: Use real Orderly server endpoints to get run metadata
+* mrc-1602: Run report page: show instances available
+* mrc-1685: Move orderly-web build to buildkite
+* mrc-1686: Move top right navigation into a dropdown
+* mrc-1812: Add readonly flag to user in db
+* mrc-1817: Bug - regenerating the OW db interface breaks the codebase
+* mrc-1828: Remove TeamcityTest class
+* mrc-1830: Remove teamcity scripts and switch off teamcity build
+* mrc-1898: Add kill running report endpoint to OrderlyWeb
+* mrc-1908: Expose bundle interface to orderlyweb
+* mrc-1976: Ensure ChromeDriver/Chrome compatibility
+* mrc-2009: Add Detekt to the OrderlyWeb CI build for Kotlin linting
+* mrc-2013: Remove khttp dependency from OrderlyServerAPI
+* mrc-2025: Save kotlin HTML test logs as build artefacts
+* mrc-2036: Add Codecov to Buildkite
+* mrc-2043: Update Kotlin to latest v1.3.x
+* mrc-2065: Correctly handle requests with query parameters in OrderlyServerAPI
+* vimc-4228: Remove proxy containers from private registry
+* vimc-4407: Fix Selenium tests
+
+## Other branches merged in this release
+
