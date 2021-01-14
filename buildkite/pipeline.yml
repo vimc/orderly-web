@@ -20,6 +20,9 @@ steps:
 
     - wait
 
+    - label: ":construction_worker: Make user CLI"
+      command: buildkite/build-cli.sh
+
     - label: ":mag: Run smoke test"
       command: buildkite/run-smoke-test.sh
 
