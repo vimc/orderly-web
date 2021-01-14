@@ -19,9 +19,6 @@ docker build --tag orderly-web-cli-build \
     -f cli.Dockerfile \
     .
 
-# Migrate the test db
-#. $here/migrate-test.sh
-
 # Generate orderly data and migrate for orderly web tables
 $here/make-db.sh
 
