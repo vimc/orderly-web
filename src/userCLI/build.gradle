@@ -42,6 +42,12 @@ distDocker {
     tagVersion = cli_docker_version
 }
 
+detekt {
+    config = files("$rootDir/config/detekt/detekt.yml")
+    buildUponDefaultConfig = true
+    baseline = file("$rootDir/config/detekt/baseline-userCLI.xml")
+}
+
 task copyDemo(type: Copy) {
     from '../app/demo'
     include '*'
