@@ -274,3 +274,10 @@
 
 ## Other branches merged in this release
 
+# v1.5.0
+
+## Tickets
+* mrc-2116: Add CLI to buildkite build
+
+## Other branches merged in this release
+
