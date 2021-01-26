@@ -26,7 +26,7 @@ with username "test.user@example.com" and password "password".
 1. Run the app, either with: 
     - `./gradlew :run` from the src dir; 
     - or through your IDE e.g by opening src/build.gradle as a project in IntelliJ, which will display available gradle tasks in the UI. 
-1. Follow the instructions for triggering a go signal. 
+1. Follow the instructions in the CLI logs for triggering a go signal. 
 Linux users may need to create the directory from their root directory first `sudo mkdir -p /etc/orderly/web` and then add the go_signal file `sudo touch /etc/orderly/web/go_signal`
 The app will now be available on your local machine at http://127.0.0.1:8888 and the API at http://127.0.0.1:8888/api/v1
 1. If you want to manually test any functionality which requires interaction with the orderly server (e.g. publish or 
