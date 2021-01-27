@@ -34,7 +34,7 @@
                 </div>
             </div>
         </form>
-        <button @click="'nothing'" class="btn mt-2" type="submit">Refresh git</button>
+        <button @click="refreshGit" class="btn mt-2" type="submit">Refresh git</button>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -64,11 +64,12 @@
         },
         methods: {
             refreshGit: function () {
+                            console.log('this fired 1')
                 // if (this.selectedBranch) {
                     api.post('/v1/reports/git/fetch/')
                         .then(() => {
                             this.changedBranch()
-                            console.log('this fired')
+                            console.log('this fired 2')
                         })
                         .catch((error) => {
                             this.error = error;
