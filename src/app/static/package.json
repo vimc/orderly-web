@@ -30,7 +30,7 @@
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-rename": "^1.4.0",
-    "gulp-sass": "^4.0.2",
+    "gulp-sass": "^4.1.0",
     "jest": "^24.9.0",
     "jest-canvas-mock": "^2.2.0",
     "jest-teamcity-reporter": "^0.9.0",
