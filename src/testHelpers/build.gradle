@@ -2,7 +2,9 @@ dependencies {
     compile "junit:junit:4.12"
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
-    compile "khttp:khttp:0.1.0"
+    compile "org.json:json:20201115"
+    compile "com.squareup.okhttp3:okhttp:4.8.1"
+    compile "com.squareup.okhttp3:okhttp-urlconnection:4.8.1"
     compile "org.assertj:assertj-core:3.6.2"
     compile "com.github.fge:json-schema-validator:2.2.6"
 

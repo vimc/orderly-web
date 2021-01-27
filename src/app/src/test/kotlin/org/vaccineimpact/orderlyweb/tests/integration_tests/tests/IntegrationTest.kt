@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
-import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
@@ -10,6 +9,7 @@ import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.WebPermissionChecker
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.APIRequestHelper
@@ -62,8 +62,6 @@ abstract class IntegrationTest
     {
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
-
-        Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
     protected fun assertSuccessfulWithResponseText(response: Response)
@@ -71,8 +69,6 @@ abstract class IntegrationTest
         Assertions.assertThat(response.statusCode)
                 .withFailMessage(response.text)
                 .isEqualTo(200)
-
-        Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
     protected fun assertUnauthorized(response: Response, reportName: String)
