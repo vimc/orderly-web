@@ -34,6 +34,7 @@
                 </div>
             </div>
         </form>
+        <button @click="'nothing'" class="btn mt-2" type="submit">Refresh git</button>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -62,6 +63,19 @@
             }
         },
         methods: {
+            refreshGit: function () {
+                // if (this.selectedBranch) {
+                    api.post('/v1/reports/git/fetch/')
+                        .then(() => {
+                            this.changedBranch()
+                            console.log('this fired')
+                        })
+                        .catch((error) => {
+                            this.error = error;
+                            this.defaultMessage = "An error occurred refreshing Git commits";
+                        });
+                // }
+            },
             changedBranch: function () {
                 if (this.selectedBranch) {
                     api.get(`/git/branch/${this.selectedBranch}/commits/`)
