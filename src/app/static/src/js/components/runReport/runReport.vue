@@ -20,7 +20,28 @@
                         </select>
                     </div>
                 </div>
-            </div>
+                <div id="parameters" class="form-group row">
+                  <label class="col-sm-2 col-form-label text-right">Parameters</label>
+                  <div class="col-sm-6">
+                    <table class="table table-sm table-bordered">
+                      <thead>
+                      <tr>
+                        <th>disease</th>
+                        <th>group</th>
+                        <th>by_country</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      <tr>
+                        <th><input type="text" class="form-control" id="disease-control"/></th>
+                        <th><input type="text" class="form-control" id="group-control"/></th>
+                        <th><input type="text" class="form-control" id="by_country-control"/></th>
+                      </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
             <div v-for="(options, name) in metadata.instances"
                  v-if="metadata.instances_supported && options.length > 1"
                  class="form-group row">
