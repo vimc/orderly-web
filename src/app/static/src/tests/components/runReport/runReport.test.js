@@ -189,11 +189,6 @@ describe("reportTags", () => {
                     changelog_types: changelogTypes
                 },
                 gitBranches
-            },
-            data() {
-                return {
-                    gitCommits: ""
-                }
             }
         });
         expect(wrapper.find("#changelog-message").exists()).toBe(false);
