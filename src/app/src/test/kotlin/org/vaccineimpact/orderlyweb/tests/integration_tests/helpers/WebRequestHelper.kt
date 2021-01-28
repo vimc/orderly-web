@@ -5,13 +5,14 @@ import com.beust.klaxon.json
 import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonElement
-import khttp.responses.Response
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.clients.MontaguIndirectClient
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import spark.route.HttpMethod
 
 class WebRequestHelper : RequestHelper()
@@ -26,7 +27,7 @@ class WebRequestHelper : RequestHelper()
     ): Response
     {
         val headers = standardHeaders(contentType)
-        return get(baseUrl + url, headers)
+        return HttpClient.get(baseUrl + url, headers, true)
     }
 
     fun loginWithMontaguAndMakeRequest(url: String,
@@ -59,7 +60,7 @@ class WebRequestHelper : RequestHelper()
         val cookieName = MontaguIndirectClient.cookie
         val headers = standardHeaders(contentType) +
                 mapOf("Cookie" to "$cookieName=$montaguToken")
-        return khttp.get(baseUrl + url, headers, allowRedirects = allowRedirects)
+        return HttpClient.get(baseUrl + url, headers, allowRedirects = allowRedirects)
     }
 
     fun webLoginWithMontagu(withPermissions: Set<ReifiedPermission> = setOf()): String
@@ -70,7 +71,7 @@ class WebRequestHelper : RequestHelper()
         }
         val montaguToken = loginWithMontagu()["access_token"] as String
         val loginResponse = getWithMontaguCookie("/login/", montaguToken)
-        return loginResponse.headers["Set-Cookie"].toString()
+        return loginResponse.headers["set-cookie"].toString()
     }
 
     fun requestWithSessionCookie(url: String,
@@ -99,9 +100,9 @@ class WebRequestHelper : RequestHelper()
         }
         return when (method)
         {
-            HttpMethod.get -> khttp.get(fullUrl, headers)
-            HttpMethod.post -> khttp.post(fullUrl, headers, data = data)
-            HttpMethod.delete -> khttp.delete(fullUrl, headers)
+            HttpMethod.get -> HttpClient.get(fullUrl, headers)
+            HttpMethod.post -> HttpClient.post(fullUrl, headers, data = data)
+            HttpMethod.delete -> HttpClient.delete(fullUrl, headers)
             else -> throw IllegalArgumentException("Method not supported")
         }
     }

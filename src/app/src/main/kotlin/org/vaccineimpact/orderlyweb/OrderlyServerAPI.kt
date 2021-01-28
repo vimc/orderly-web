@@ -17,7 +17,12 @@ import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 interface OrderlyServerAPI
 {
     @Throws(OrderlyServerError::class)
-    fun post(url: String, context: ActionContext, rawRequest: Boolean = false, transformResponse: Boolean = true): OrderlyServerResponse
+    fun post(
+        url: String,
+        context: ActionContext,
+        rawRequest: Boolean = false,
+        transformResponse: Boolean = true
+    ): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
@@ -54,16 +59,14 @@ class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
     }
 }
 
-class OrderlyServer(config: Config,
-                    private val client: OkHttpClient = OkHttpClient()
+class OrderlyServer(
+    config: Config,
+    private val client: OkHttpClient = OkHttpClient()
 ) : OrderlyServerAPI
 {
     private var throwOnError = false
 
-    private val standardHeaders = mapOf(
-            "Accept" to ContentTypes.json,
-            "Accept-Encoding" to "gzip"
-    )
+    private val standardHeaders = mapOf("Accept" to ContentTypes.json)
 
     private val urlBase: String = config["orderly.server"]
 
@@ -77,9 +80,9 @@ class OrderlyServer(config: Config,
     override fun get(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
-                .url(buildFullUrl(url, context.queryString()))
-                .headers(standardHeaders.toHeaders())
-                .build()
+            .url(buildFullUrl(url, context.queryString()))
+            .headers(standardHeaders.toHeaders())
+            .build()
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {
@@ -88,7 +91,12 @@ class OrderlyServer(config: Config,
         return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun post(url: String, context: ActionContext, rawRequest: Boolean, transformResponse: Boolean): OrderlyServerResponse
+    override fun post(
+        url: String,
+        context: ActionContext,
+        rawRequest: Boolean,
+        transformResponse: Boolean
+    ): OrderlyServerResponse
     {
         val body = if (rawRequest)
         {
@@ -115,10 +123,10 @@ class OrderlyServer(config: Config,
             emptyMap()
         }
         val request = Request.Builder()
-                .url(buildFullUrl(url, context.queryString()))
-                .headers(headers.toHeaders())
-                .post(body)
-                .build()
+            .url(buildFullUrl(url, context.queryString()))
+            .headers(headers.toHeaders())
+            .post(body)
+            .build()
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {
@@ -137,10 +145,10 @@ class OrderlyServer(config: Config,
     override fun delete(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
-                .url(buildFullUrl(url, context.queryString()))
-                .headers(standardHeaders.toHeaders())
-                .delete()
-                .build()
+            .url(buildFullUrl(url, context.queryString()))
+            .headers(standardHeaders.toHeaders())
+            .delete()
+            .build()
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {

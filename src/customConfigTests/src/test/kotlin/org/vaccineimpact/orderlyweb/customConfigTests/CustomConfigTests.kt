@@ -1,12 +1,12 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.getResource
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import java.io.File
 import java.net.BindException
 import java.net.ServerSocket
@@ -62,8 +62,6 @@ abstract class CustomConfigTests
     {
         Assertions.assertThat(response.statusCode)
                 .isEqualTo(200)
-
-        Assertions.assertThat(response.headers["Content-Encoding"]).isEqualTo("gzip")
     }
 
     protected fun assertHtmlContentType(response: Response)

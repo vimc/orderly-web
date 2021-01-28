@@ -1,8 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.api.auth
 
 import com.github.fge.jackson.JsonLoader
-import khttp.options
-import khttp.post
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
@@ -14,7 +13,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `authentication fails without Auth header`()
     {
-        val result = post(url)
+        val result = HttpClient.post(url)
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "montagu-token-invalid",
@@ -24,7 +23,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `authentication fails with malformed Auth header`()
     {
-        val result = post(url, auth = TestTokenHeader("token", "wrongprefix"))
+        val result = HttpClient.post(url, auth = TestTokenHeader("token", "wrongprefix"))
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "montagu-token-invalid",
@@ -34,7 +33,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `authentication fails with invalid token`()
     {
-        val result = post(url, auth = TestTokenHeader("badtoken"))
+        val result = HttpClient.post(url, auth = TestTokenHeader("badtoken"))
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "montagu-token-invalid",
@@ -46,7 +45,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     {
         val token = APIRequestHelper().loginWithMontagu()["access_token"].toString()
 
-        val result = post(url, auth = TestTokenHeader(token))
+        val result = HttpClient.post(url, auth = TestTokenHeader(token))
 
         assertSuccessful(result)
 
@@ -59,7 +58,7 @@ class MontaguAuthenticationTests : IntegrationTest()
     @Test
     fun `can get OPTIONS for authentication endpoint`()
     {
-        val result = options(url)
+        val result = HttpClient.options(url)
         assertThat(result.statusCode).isEqualTo(200)
     }
 
