@@ -70,18 +70,11 @@ class ReportController(
         return RunReportViewModel(context, metadata, gitBranches)
     }
 
-    fun getListReports(): List<Map<String, Any?>>
+    fun getRunnableReports(): List<ReportWithDate>
     {
-        val response = orderlyServerAPI.get("/reports/source", context)
-        val versionedReports = reportRepository.getAllReportVersions()
-        return response
-            .listData(String::class.java)
-            .map { name ->
-                mapOf(
-                    "name" to name,
-                    "date" to versionedReports.find { it.name == name }?.date
-                )
-            }
+        val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)
+        val versionedReports = reportRepository.getLatestReportVersions(reports)
+        return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
 
     fun tagVersion(): String
