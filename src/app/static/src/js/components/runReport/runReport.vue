@@ -64,10 +64,17 @@
         },
         methods: {
             refreshGit: function () {
+
+                // await api()
+                // .withSuccess(console.log('success'))
+                // .withError(ModelRunMutation.RunResultError)
+                // .post('/v1/reports/git/fetch/');
                             console.log('this fired 1')
                 // if (this.selectedBranch) {
+                    // api.get('/git/status/')
                     api.post('/v1/reports/git/fetch/')
-                        .then(() => {
+                        .then(({data}) => {
+                            console.log(data)
                             this.changedBranch()
                             console.log('this fired 2')
                         })
