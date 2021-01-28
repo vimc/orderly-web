@@ -156,4 +156,48 @@ describe("reportTags", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
+    it("it does render changelog message and type correctly if commits control exists", () => {
+        const changelogTypes =  ["internal", "public"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    changelog_types: changelogTypes
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: mockCommits
+                }
+            }
+        });
+
+        expect(wrapper.find("#changelog-message").exists()).toBe(true);
+        const options = wrapper.find("#changelog-type").find("select")
+            .findAll("option")
+        expect(options.at(0).text()).toBe(changelogTypes[0]);
+        expect(options.at(1).text()).toBe(changelogTypes[1]);
+    });
+
+    it("it does not render changelog message and type if commits control doesnt exists", () => {
+        const changelogTypes =  ["internal", "public"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: false,
+                    changelog_types: changelogTypes
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: ""
+                }
+            }
+        });
+        expect(wrapper.find("#changelog-message").exists()).toBe(false);
+        expect(wrapper.find("#changelog-type").exists()).toBe(false);
+    });
+
 });

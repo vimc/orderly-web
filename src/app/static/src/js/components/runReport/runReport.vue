@@ -33,6 +33,24 @@
                     </select>
                 </div>
             </div>
+          <div v-if="showChangelog">
+          <div id="changelog-message" class="form-group row">
+            <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
+            <div class="col-sm-6">
+              <textarea class="form-control" id="changelogMessage" rows="2"></textarea>
+            </div>
+          </div>
+          <div id="changelog-type" class="form-group row">
+            <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
+            <div class="col-sm-6">
+              <select class="form-control" :id="changelogType">
+                <option v-for="option in metadata.changelog_types" :value="option">
+                  {{ option }}
+                </option>
+              </select>
+            </div>
+          </div>
+          </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
@@ -59,6 +77,9 @@
         computed: {
             showCommits: function () {
                 return this.gitCommits && this.gitCommits.length;
+            },
+            showChangelog: function () {
+              return this.showCommits
             }
         },
         methods: {
