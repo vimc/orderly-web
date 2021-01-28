@@ -10,7 +10,10 @@ import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_PINNED_REPORT_GLOBAL
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_SETTINGS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.test_helpers.*
+import java.sql.Timestamp
+import java.time.Instant
 
 class ReportTests : CleanDatabaseTests()
 {
@@ -326,5 +329,26 @@ class ReportTests : CleanDatabaseTests()
         assertThat(result[2].name).isEqualTo("test")
         assertThat(result[2].displayName).isEqualTo("newer display name")
         assertThat(result[2].hasBeenPublished).isEqualTo(true)
+    }
+
+    @Test
+    fun `can get latest dates for selected reports`()
+    {
+        val now = Instant.now()
+
+        insertReport("test1", "v1", date = Timestamp.from(now.minusSeconds(60)))
+        insertReport("test1", "v2", date = Timestamp.from(now))
+        insertReport("test1", "v3", date = Timestamp.from(now.minusSeconds(120)))
+        insertReport("test2", "v4", date = Timestamp.from(now))
+
+        val sut = createSut()
+        val result = sut.getLatestReportVersions(listOf(
+            "test1",
+            "test2"
+        ))
+        assertThat(result).containsExactly(
+            ReportWithDate("test1", now),
+            ReportWithDate("test2", now)
+        )
     }
 }
