@@ -1,13 +1,12 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
-import khttp.options
-import khttp.post
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 
 class GithubAuthenticationTests : CustomConfigTests()
 {
@@ -21,7 +20,7 @@ class GithubAuthenticationTests : CustomConfigTests()
     @Test
     fun `authentication fails without Auth header`()
     {
-        val result = post(url)
+        val result = HttpClient.post(url)
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -31,7 +30,7 @@ class GithubAuthenticationTests : CustomConfigTests()
     @Test
     fun `authentication fails with malformed Auth header`()
     {
-        val result = post(url, auth = TestTokenHeader("token", "bearer"))
+        val result = HttpClient.post(url, auth = TestTokenHeader("token", "bearer"))
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -41,7 +40,7 @@ class GithubAuthenticationTests : CustomConfigTests()
     @Test
     fun `authentication fails with invalid github token`()
     {
-        val result = post(url, auth = TestTokenHeader("badtoken"))
+        val result = HttpClient.post(url, auth = TestTokenHeader("badtoken"))
         assertThat(result.statusCode).isEqualTo(401)
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -55,7 +54,7 @@ class GithubAuthenticationTests : CustomConfigTests()
         // reversed so GitHub doesn't spot it and invalidate it
         val token = "fcef1c6821f7561259ce45d4840965642607e5a4".reversed()
 
-        val result = post(url, auth = TestTokenHeader(token))
+        val result = HttpClient.post(url, auth = TestTokenHeader(token))
 
         assertSuccessful(result)
 
@@ -72,7 +71,7 @@ class GithubAuthenticationTests : CustomConfigTests()
         // reversed so GitHub doesn't spot it and invalidate it
         val tokenWithoutEmailReadingScope = "e0182507b0c6ad077a3036fd181a6260c0376e1c".reversed()
 
-        val result = post(url, auth = TestTokenHeader(tokenWithoutEmailReadingScope))
+        val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutEmailReadingScope))
 
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -87,7 +86,7 @@ class GithubAuthenticationTests : CustomConfigTests()
         // reversed so GitHub doesn't spot it and invalidate it
         val tokenWithoutUserReadingScope = "285d9b1b6620ab4dfd6c403b29451d52aa38a158".reversed()
 
-        val result = post(url, auth = TestTokenHeader(tokenWithoutUserReadingScope))
+        val result = HttpClient.post(url, auth = TestTokenHeader(tokenWithoutUserReadingScope))
 
         JSONValidator.validateError(result.text,
                 expectedErrorCode = "github-token-invalid",
@@ -98,7 +97,7 @@ class GithubAuthenticationTests : CustomConfigTests()
     @Test
     fun `can get OPTIONS for authentication endpoint`()
     {
-        val result = options(url)
+        val result = HttpClient.options(url)
         assertThat(result.statusCode).isEqualTo(200)
     }
 

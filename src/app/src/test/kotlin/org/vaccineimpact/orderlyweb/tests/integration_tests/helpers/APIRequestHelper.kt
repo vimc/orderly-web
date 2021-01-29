@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
 import com.github.salomonbrys.kotson.get
 import com.google.gson.JsonParser
-import khttp.responses.Response
 import org.assertj.core.api.Assertions
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -12,6 +11,8 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.UserSource
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -63,7 +64,7 @@ class APIRequestHelper : RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return HttpClient.get(baseUrl + url, headers)
     }
 
     fun delete(url: String, contentType: String = ContentTypes.json,
@@ -71,7 +72,7 @@ class APIRequestHelper : RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return khttp.delete(baseUrl + url, headers)
+        return HttpClient.delete(baseUrl + url, headers)
     }
 
     fun post(url: String, body: Map<String, Any>?, contentType: String = ContentTypes.json,
@@ -79,7 +80,7 @@ class APIRequestHelper : RequestHelper()
     {
         val token = generateToken(userEmail)
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return khttp.post(baseUrl + url, headers, json = body)
+        return HttpClient.post(baseUrl + url, headers, json = body)
     }
 
     fun generateOnetimeToken(url: String, userEmail: String = fakeGlobalReportReader()): String
@@ -97,25 +98,25 @@ class APIRequestHelper : RequestHelper()
     {
         val token = "faketoken"
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return HttpClient.get(baseUrl + url, headers)
     }
 
     fun getWithToken(url: String, bearerToken: String): Response
     {
         val headers = standardHeaders(ContentTypes.json).withAuthorizationHeader(bearerToken)
-        return get(baseUrl + url, headers)
+        return HttpClient.get(baseUrl + url, headers)
     }
 
     fun getWrongPermissions(url: String, contentType: String = ContentTypes.json): Response
     {
         val token = generateToken("bademail@gmail.com")
         val headers = standardHeaders(contentType).withAuthorizationHeader(token)
-        return get(baseUrl + url, headers)
+        return HttpClient.get(baseUrl + url, headers)
     }
 
     fun getNoAuth(url: String, contentType: String = ContentTypes.json): Response
     {
-        return get(baseUrl + url, standardHeaders(contentType))
+        return HttpClient.get(baseUrl + url, standardHeaders(contentType))
     }
 
     private fun Map<String, String>.withAuthorizationHeader(token: String) = this +

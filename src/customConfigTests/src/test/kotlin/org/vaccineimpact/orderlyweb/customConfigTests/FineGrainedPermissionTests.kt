@@ -1,12 +1,12 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
 import com.github.fge.jackson.JsonLoader
-import khttp.post
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.TestTokenHeader
+import org.vaccineimpact.orderlyweb.test_helpers.http.HttpClient
 
 class FineGrainedPermissionTests : CustomConfigTests()
 {
@@ -19,7 +19,7 @@ class FineGrainedPermissionTests : CustomConfigTests()
         startApp("auth.fine_grained=false")
 
         val token = RequestHelper().loginWithMontagu()["access_token"].toString()
-        val result = post(url, auth = TestTokenHeader(token))
+        val result = HttpClient.post(url, auth = TestTokenHeader(token))
 
         assertSuccessful(result)
 
@@ -53,7 +53,7 @@ class FineGrainedPermissionTests : CustomConfigTests()
 
         val token = RequestHelper().loginWithMontagu()["access_token"].toString()
 
-        val result = post(url, auth = TestTokenHeader(token))
+        val result = HttpClient.post(url, auth = TestTokenHeader(token))
 
         assertSuccessful(result)
 

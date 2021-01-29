@@ -21,10 +21,7 @@ class OrderlyServerTests
         on { this["orderly.server"] } doReturn "http://orderly"
     }
 
-    private val standardHeaders = mapOf(
-            "Accept" to ContentTypes.json,
-            "Accept-Encoding" to "gzip"
-    )
+    private val standardHeaders = mapOf("Accept" to ContentTypes.json)
 
     @Test
     fun `passes through query string to GET`()

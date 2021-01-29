@@ -47,13 +47,12 @@ dependencies {
 
     compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
 
-    compile "khttp:khttp:0.1.0"
-    compile "com.squareup.okhttp3:okhttp:4.0.0-RC1"
+    compile "org.json:json:20201115"
+    compile "com.squareup.okhttp3:okhttp:4.8.1"
 
     compile "org.ocpsoft.prettytime:prettytime:4.0.5.Final"
 
     testCompile "org.slf4j:slf4j-simple:1.7.21"
-    testCompile "khttp:khttp:0.1.0"
     testCompile "com.beust:klaxon:0.31"
     testCompile "com.opencsv:opencsv:3.9"
 
