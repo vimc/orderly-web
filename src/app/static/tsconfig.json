@@ -1,0 +1,20 @@
+
+{
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": false ,
+    "outDir": "public",
+    "strict": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "./src/js/**/*.ts",
+    "./src/js/**/*.tsx",
+    "./src/js/**/*.js",
+    "./src/js/**/*.vue"
+  ]
+}

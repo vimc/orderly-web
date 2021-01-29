@@ -9,10 +9,11 @@ module.exports = {
                 loader: 'vue-loader'
             },
             {
-                test: /\.js$/,
-                loader: 'babel-loader',
+                test: /\.tsx?$/,
+                loader: 'ts-loader',
+                exclude: /node_modules/,
                 options: {
-                    presets: ['@babel/preset-env']
+                    appendTsSuffixTo: [/\.vue$/],
                 }
             },
             {
@@ -36,7 +37,7 @@ module.exports = {
     ],
     output: {filename: '[name].bundle.js', path: path.resolve(__dirname, 'public/js')},
     resolve: {
-        extensions: ['*', '.js', '.vue', '.json'],
+        extensions: ['*', '.js', '.vue', '.json', 'ts', 'tsx'],
         alias: {
             'vue$': process.env.NODE_ENV === 'production' ?
                 'vue/dist/vue.min.js' : 'vue/dist/vue.js'

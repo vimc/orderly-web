@@ -4,8 +4,10 @@
     </div>
 </template>
 
-<script>
-    export default {
+<script lang="ts">
+import Vue from "vue";
+
+    export default Vue.extend({
         name: "errorInfo",
         props: ["apiError", "defaultMessage"],
         computed: {
@@ -24,5 +26,5 @@
                 response.data.errors[0] &&
                 response.data.errors[0].message
         }
-    }
+    })
 </script>

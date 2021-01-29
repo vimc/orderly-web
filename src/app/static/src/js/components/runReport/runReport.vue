@@ -59,11 +59,14 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import {api} from "../../utils/api";
+    import {Parameters} from "../../utils/types";
     import ErrorInfo from "../errorInfo";
+    import Vue from "vue";
 
-    export default {
+    export default Vue.extend({
+
         name: "runReport",
         props: ['metadata', 'gitBranches'],
         components: {ErrorInfo},
@@ -79,6 +82,7 @@
         },
         computed: {
             showCommits: function () {
+             console.log("Object here f: ")
                 return this.gitCommits && this.gitCommits.length;
             }
         },
@@ -115,5 +119,5 @@
                 }
             }
         }
-    }
+    })
 </script>
