@@ -25,7 +25,7 @@
                   <div class="col-sm-6">
                     <table class="table table-sm table-bordered">
                       <thead>
-                      <tr>
+                      <tr v-for="param in parameters">
                         <th>disease</th>
                         <th>group</th>
                         <th>by_country</th>
