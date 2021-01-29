@@ -18,4 +18,22 @@ class GitController(context: ActionContext,
         val response = orderlyServerAPI.get("/git/commits?branch=${branch}", context)
         return passThroughResponse(response)
     }
+
+    fun status(): String
+    {
+        val response = orderlyServerAPI.get("/v1/reports/git/status/", context)
+        return passThroughResponse(response)
+    }
+
+    fun fetch(): String
+    {
+        val response = orderlyServerAPI.post("/v1/reports/git/fetch/", context)
+        return passThroughResponse(response)
+    }
+
+    fun pull(): String
+    {
+        val response = orderlyServerAPI.post("/v1/reports/git/pull/", context)
+        return passThroughResponse(response)
+    }
 }

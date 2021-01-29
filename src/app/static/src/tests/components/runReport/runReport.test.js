@@ -9,12 +9,16 @@ describe("reportTags", () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": mockCommits});
+        mockAxios.onPost('http://app/v1/reports/git/fetch/')
+            .reply(200, {"data": mockFetch});
     });
 
     const mockCommits = [
         {id: "abcdef", date_time: "Mon Jun 08, 12:01"},
         {id: "abc123", date_time: "Tue Jun 09, 13:11"}
     ];
+
+    const mockFetch = 'mockFetch'
 
     const gitBranches = ["master", "dev"];
 
@@ -106,6 +110,12 @@ describe("reportTags", () => {
             expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
             done();
         })
+    });
+
+    it("calls api to post refreshed git repos", (done) => {
+        mockAxios.onPost('http://app/v1/reports/git/fetch/')
+            .reply(200, {"data": mockFetch});
+
     });
 
     it("shows instances if instances supported", () => {

@@ -71,10 +71,10 @@
                 // .post('/v1/reports/git/fetch/');
                             console.log('this fired 1')
                 // if (this.selectedBranch) {
-                    // api.get('/git/status/')
+                    // api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     api.post('/v1/reports/git/fetch/')
-                        .then(({data}) => {
-                            console.log(data)
+                        .then(() => {
+                            // console.log(data)
                             this.changedBranch()
                             console.log('this fired 2')
                         })
