@@ -8,7 +8,7 @@ module.exports = {
         "appUrl": "http://app"
     },
     "transformIgnorePatterns": [
-        "node_modules/(?!(vue-bootstrap-typeahead)/)"
+        "node_modules/(?!(vue-typeahead-bootstrap)/)",
     ],
     "moduleFileExtensions": [
         "js",

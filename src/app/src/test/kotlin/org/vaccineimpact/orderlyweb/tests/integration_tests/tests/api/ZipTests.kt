@@ -9,6 +9,7 @@ import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.db.joinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.createArchiveFolder
 import org.vaccineimpact.orderlyweb.tests.deleteArchiveFolder
@@ -127,7 +128,7 @@ class ZipTests : IntegrationTest()
                 "$version/README.md")
     }
 
-    private fun getZipEntries(response: khttp.responses.Response): MutableList<String>
+    private fun getZipEntries(response: Response): MutableList<String>
     {
         val entries = mutableListOf<String>()
         ZipInputStream(ByteArrayInputStream(response.content)).use {

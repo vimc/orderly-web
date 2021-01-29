@@ -41,9 +41,21 @@ class RunReportPageTests : SeleniumTest()
     @Test
     fun `can view git commits`()
     {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("git-commit")))
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))
         assertThat(commitsSelect.options.size).isEqualTo(2)
+        assertThat(commitsSelect.options).allMatch { it.text.contains(Regex("[0-9a-f]{7}")) }
+    }
+
+    @Test
+    fun `can view and select reports`()
+    {
+        val typeahead = driver.findElement(By.id("report"))
+        assertThat(typeahead.findElements(By.tagName("a")).size).isEqualTo(2)
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("min")
+        val matches = typeahead.findElements(By.tagName("a"))
+        assertThat(matches.size).isEqualTo(1)
+        assertThat(matches[0].text).startsWith("minimal")
     }
 
     @Test

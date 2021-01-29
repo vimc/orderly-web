@@ -12,26 +12,27 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.models.GitBranch
-import org.vaccineimpact.orderlyweb.models.ReportVersionTags
-import org.vaccineimpact.orderlyweb.models.RunReportMetadata
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
-class ReportController(context: ActionContext,
-                       val orderly: OrderlyClient,
-                       val orderlyServerAPI: OrderlyServerAPI,
-                       private val reportRepository: ReportRepository,
-                       private val tagRepository: TagRepository) : Controller(context)
+class ReportController(
+    context: ActionContext,
+    val orderly: OrderlyClient,
+    private val orderlyServerAPI: OrderlyServerAPI,
+    private val reportRepository: ReportRepository,
+    private val tagRepository: TagRepository
+) : Controller(context)
 {
-    constructor(context: ActionContext)
-            : this(context,
-            Orderly(context),
-            OrderlyServer(AppConfig()),
-            OrderlyReportRepository(context),
-            OrderlyWebTagRepository())
+    constructor(context: ActionContext) : this(
+        context,
+        Orderly(context),
+        OrderlyServer(AppConfig()),
+        OrderlyReportRepository(context),
+        OrderlyWebTagRepository()
+    )
 
     @Template("report-page.ftl")
     fun getByNameAndVersion(): ReportVersionPageViewModel
@@ -69,6 +70,13 @@ class ReportController(context: ActionContext,
         return RunReportViewModel(context, metadata, gitBranches)
     }
 
+    fun getRunnableReports(): List<ReportWithDate>
+    {
+        val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)
+        val versionedReports = reportRepository.getLatestReportVersions(reports)
+        return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
+    }
+
     fun tagVersion(): String
     {
         val reportName = context.params(":name")
@@ -81,8 +89,7 @@ class ReportController(context: ActionContext,
     }
 
     @Template("publish-reports.ftl")
-    fun getPublishReports()
-            : PublishReportsViewModel
+    fun getPublishReports(): PublishReportsViewModel
     {
         return PublishReportsViewModel(context)
     }

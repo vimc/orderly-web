@@ -135,7 +135,6 @@ class DirectActionContextTests
         sut.addDefaultResponseHeaders("testContentType")
 
         verify(rawResponse).setContentType("testContentType")
-        verify(rawResponse).addHeader("Content-Encoding", "gzip")
         verify(rawResponse).addHeader("Access-Control-Allow-Credentials", "true")
     }
 

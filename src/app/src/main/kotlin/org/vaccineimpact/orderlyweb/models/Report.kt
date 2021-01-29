@@ -14,3 +14,6 @@ data class ReportWithPublishStatus
 constructor(val name: String,
             val displayName: String?,
             val hasBeenPublished: Boolean)
+
+data class ReportWithDate
+constructor(val name: String, val date: Instant?)

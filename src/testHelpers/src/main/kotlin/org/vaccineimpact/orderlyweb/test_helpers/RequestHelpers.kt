@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.test_helpers
-import khttp.structures.authorization.Authorization
+
+import org.vaccineimpact.orderlyweb.test_helpers.http.Authorization
 
 data class TestTokenHeader(val token: String, val prefix: String = "token") : Authorization
 {
