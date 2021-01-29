@@ -45,6 +45,8 @@ interface ReportRepository
 
     fun publish(ids: List<String>)
 
+    fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -413,6 +415,20 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .where(shouldIncludeReportVersion)
                 .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                 .asTemporaryTable(name = "latest_version_for_each_report")
+    }
+
+    override fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("date")
+            )
+                .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
+                .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                .fetchInto(ReportWithDate::class.java)
+        }
     }
 
     // shouldInclude for the relational schema
