@@ -132,8 +132,8 @@
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
-                //TODO: confirm instances format - orderly web server expects a single string, but our metadata
-                //      suggests should be returning a map. Check which we've settled on.
+                //TODO: confirm instances format and provide instance(s) - orderly web server expects a single string,
+                //      but our metadata suggests should be returning a map. Check which we've settled on.
                 const params = {
                     ref: this.selectedCommitId,
                     instance: ""
@@ -176,6 +176,14 @@
                         this.selectedInstances[key] = instances[key][0]
                     }
                 }
+            }
+        },
+        watch: {
+            selectedReport() {
+                this.runningStatus = "";
+            },
+            selectedInstances() {
+                this.runningStatus = "";
             }
         }
     }
