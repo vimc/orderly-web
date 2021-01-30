@@ -37,6 +37,16 @@
                     </div>
                 </div>
             </template>
+            <div id="run-form-group" class="form-group row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <button v-if="showRunButton" @click.prevent="runReport" class="btn" type="submit">Run report</button>
+                    <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
+                        {{runningStatus}}
+                        <a @click.prevent="checkStatus" href="#">Check status</a>
+                    </div>
+                </div>
+            </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
@@ -67,6 +77,8 @@
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
+                runningStatus: "",
+                runningKey: ""
             }
         },
         computed: {
@@ -78,6 +90,9 @@
             },
             showInstances() {
                 return this.metadata.instances_supported && this.selectedReport;
+            },
+            showRunButton() {
+                return !!this.selectedReport;
             }
         },
         methods: {
@@ -112,6 +127,38 @@
                     .catch((error) => {
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching reports";
+                    });
+            },
+            runReport() {
+                //TODO: Include parameters and changelog message when implemented
+                //TODO: Add link to running report log on response, when implemented
+                //TODO: confirm instances format - orderly web server expects a single string, but our metadata
+                //      suggests should be returning a map. Check which we've settled on.
+                const params = {
+                    ref: this.selectedCommitId,
+                    instance: ""
+                };
+                api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
+                    .then(({data}) => {
+                        this.error = "";
+                        this.runningKey = data.data.key;
+                        this.runningStatus = "Run started";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "Error when running report";
+                    });
+            },
+            checkStatus() {
+                //TODO: This can be removed, along with the check status link once the logging page is in - but is a
+                //handy diagnostic for now
+                api.get(`/report/${this.selectedReport}/actions/status/${this.runningKey}/`)
+                    .then(({data}) => {
+                        this.runningStatus = `Running status: ${data.data.status}`;
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "Error when fetching report status";
                     });
             }
         },

@@ -9,7 +9,7 @@
     >
         <template slot="append">
             <button class="btn btn-outline-secondary" v-on:click.prevent="clear" v-if="query">
-                🗙
+                ×
             </button>
         </template>
         <template slot="suggestion" slot-scope="{ data, htmlText }">
