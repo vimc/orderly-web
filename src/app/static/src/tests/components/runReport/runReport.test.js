@@ -209,4 +209,108 @@ describe("runReport", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
+    it("renders run button group if there is a selected report", () => {
+        const wrapper = shallowMount(RunReport,  {propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: false,
+                },
+                gitBranches
+            }
+        });
+        wrapper.setData({selectedReport: "test-report"});
+        const runGroup = wrapper.find("#run-form-group");
+        expect(runGroup.exists()).toBe(true);
+        expect(runGroup.find("button").text()).toBe("Run report");
+        expect(runGroup.find("run-report-status").exists()).toBe(false);
+    });
+
+    it("does not render run button group if there is no selected report", () => {
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: false,
+                },
+                gitBranches
+            }
+        });
+        wrapper.setData({selectedReport: "test-report"});
+        const runGroup = wrapper.find("#run-form-group");
+        expect(runGroup.exists()).toBe(false);
+    });
+
+    it("clicking run buttton sends run request and displays status on success", async (done) => {
+        const url = 'http://app/report/test-report/actions/run/';
+        mockAxios.onPost(url, {})
+            .reply(200, {data: {key: "test-key"}});
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: false,
+                },
+                gitBranches
+            }
+        });
+
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                selectedCommitId: "test-commit",
+                error: "test-error",
+                defaultMessage: "test-msg"
+            });
+
+            await Vue.nextTick();
+            wrapper.find("#run-form-group button").trigger("click");
+
+            setTimeout(() => {
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.post[0].url).toBe(url);
+                expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: ""});
+                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+                expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
+                expect(wrapper.vm.runningKey).toBe("test-key");
+                expect(wrapper.vm.error).toBe("");
+                expect(wrapper.vm.defaultMessage).toBe("");
+                done();
+            });
+        });
+    });
+
+    it("clicking run buttton sends run request and sets error", async (done) => {
+        const url = 'http://app/report/test-report/actions/run/';
+        mockAxios.onPost(url, {})
+            .reply(500, "TEST ERROR");
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: false,
+                },
+                gitBranches
+            }
+        });
+
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                selectedCommitId: "test-commit",
+                error: "",
+                defaultMessage: ""
+            });
+
+            await Vue.nextTick();
+            wrapper.find("#run-form-group button").trigger("click");
+
+            setTimeout(() => {
+                expect(wrapper.find("#run-report-status").exists()).toBe(false);
+                expect(wrapper.vm.runningKey).toBe("");
+                expect(wrapper.vm.error.response.data).toBe("TEST ERROR");
+                expect(wrapper.vm.defaultMessage).toBe("An error occurred when running report");
+                done();
+            });
+        });
+    });
 });

@@ -140,13 +140,14 @@
                 };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
                     .then(({data}) => {
-                        this.error = "";
                         this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
+                        this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = "Error when running report";
+                        this.defaultMessage = "An error occurred when running report";
                     });
             },
             checkStatus() {
