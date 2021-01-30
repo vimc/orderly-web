@@ -37,10 +37,10 @@
                     </div>
                 </div>
             </template>
-            <div id="run-form-group" class="form-group row">
+            <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <button v-if="showRunButton" @click.prevent="runReport" class="btn" type="submit">Run report</button>
+                    <button @click.prevent="runReport" class="btn" type="submit">Run report</button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{runningStatus}}
                         <a @click.prevent="checkStatus" href="#">Check status</a>
