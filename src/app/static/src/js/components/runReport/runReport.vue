@@ -156,10 +156,12 @@
                 api.get(`/report/${this.selectedReport}/actions/status/${this.runningKey}/`)
                     .then(({data}) => {
                         this.runningStatus = `Running status: ${data.data.status}`;
+                        this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = "Error when fetching report status";
+                        this.defaultMessage = "An error occurred when fetching report status";
                     });
             }
         },

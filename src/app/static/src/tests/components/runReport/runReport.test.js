@@ -209,16 +209,10 @@ describe("runReport", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
-    it("renders run button group if there is a selected report", () => {
-        const wrapper = shallowMount(RunReport,  {propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: false,
-                },
-                gitBranches
-            }
-        });
+    it("renders run button group if there is a selected report", async () => {
+        const wrapper = getWrapper();
         wrapper.setData({selectedReport: "test-report"});
+        await Vue.nextTick();
         const runGroup = wrapper.find("#run-form-group");
         expect(runGroup.exists()).toBe(true);
         expect(runGroup.find("button").text()).toBe("Run report");
@@ -226,16 +220,7 @@ describe("runReport", () => {
     });
 
     it("does not render run button group if there is no selected report", () => {
-        const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: false,
-                },
-                gitBranches
-            }
-        });
-        wrapper.setData({selectedReport: "test-report"});
+        const wrapper = getWrapper();
         const runGroup = wrapper.find("#run-form-group");
         expect(runGroup.exists()).toBe(false);
     });
@@ -244,15 +229,7 @@ describe("runReport", () => {
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(200, {data: {key: "test-key"}});
-        const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: false,
-                },
-                gitBranches
-            }
-        });
+        const wrapper = getWrapper();
 
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
@@ -283,15 +260,7 @@ describe("runReport", () => {
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(500, "TEST ERROR");
-        const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: false,
-                },
-                gitBranches
-            }
-        });
+        const wrapper = getWrapper();
 
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
@@ -312,5 +281,94 @@ describe("runReport", () => {
                 done();
             });
         });
+    });
+
+    it("clicking 'Check status' sends status request and displays status on success", async (done) => {
+        const url = 'http://app/report/test-report/actions/status/test-key/';
+        mockAxios.onGet(url)
+            .reply(200, {data: {status: "test-status"}});
+        const wrapper = getWrapper();
+
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                runningKey: "test-key",
+                error: "test-error",
+                defaultMessage: "test-msg"
+            });
+            await Vue.nextTick();
+
+            //Set data in two stages because runningStatus gets reset by watch on selectedReport change
+            wrapper.setData({
+                runningStatus: "Run started"
+            });
+            await Vue.nextTick();
+
+            wrapper.find("#run-form-group a").trigger("click");
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe(url);
+
+                expect(wrapper.find("#run-report-status").text()).toContain("Running status: test-status");
+                expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
+                expect(wrapper.vm.error).toBe("");
+                expect(wrapper.vm.defaultMessage).toBe("");
+                done();
+            });
+        });
+    });
+
+    it("clicking 'Check status' sends status request and displays error", async (done) => {
+        const url = 'http://app/report/test-report/actions/status/test-key/';
+        mockAxios.onGet(url)
+            .reply(500, "TEST ERROR");
+        const wrapper = getWrapper();
+
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                runningKey: "test-key",
+                error: "test-error",
+                defaultMessage: "test-msg"
+            });
+            await Vue.nextTick();
+
+            //Set data in two stages because runningStatus gets reset by watch on selectedReport change
+            wrapper.setData({
+                runningStatus: "Run started"
+            });
+            await Vue.nextTick();
+
+            wrapper.find("#run-form-group a").trigger("click");
+
+            setTimeout(() => {
+                expect(wrapper.vm.error.response.data).toBe("TEST ERROR");
+                expect(wrapper.vm.defaultMessage).toBe("An error occurred when fetching report status");
+                done();
+            });
+        });
+    });
+
+    it("changing selectedReport resets runningStatus", async () => {
+        const wrapper = getWrapper();
+        wrapper.setData({runningStatus: "test-status"});
+        await Vue.nextTick();
+        expect(wrapper.vm.runningStatus).toBe("test-status");
+
+        wrapper.setData({selectedReport: "test-report"});
+        await Vue.nextTick();
+        expect(wrapper.vm.runningStatus).toBe("");
+    });
+
+    it("changing selectedInstances resets runningStatus", async () => {
+        const wrapper = getWrapper();
+        wrapper.setData({runningStatus: "test-status"});
+        await Vue.nextTick();
+        expect(wrapper.vm.runningStatus).toBe("test-status");
+
+        wrapper.setData({selectedInstances: {source: "uat"}});
+        await Vue.nextTick();
+        expect(wrapper.vm.runningStatus).toBe("");
     });
 });
