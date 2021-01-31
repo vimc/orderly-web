@@ -363,11 +363,15 @@ describe("runReport", () => {
 
     it("changing selectedInstances resets runningStatus", async () => {
         const wrapper = getWrapper();
+        const selectedInstances = {source: "uat"};
+        wrapper.setData({selectedInstances});
+        await Vue.nextTick();
+
         wrapper.setData({runningStatus: "test-status"});
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("test-status");
 
-        wrapper.setData({selectedInstances: {source: "uat"}});
+        wrapper.vm.selectedInstances.source = "science";
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("");
     });

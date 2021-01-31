@@ -185,8 +185,11 @@
             selectedReport() {
                 this.runningStatus = "";
             },
-            selectedInstances() {
-                this.runningStatus = "";
+            selectedInstances: {
+                handler() {
+                    this.runningStatus = "";
+                },
+                deep: true
             }
         }
     }
