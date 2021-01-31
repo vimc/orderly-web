@@ -29,8 +29,9 @@
                 <div v-for="(options, name) in metadata.instances" v-if="options.length > 1" class="form-group row">
                     <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
                     <div class="col-sm-6">
-                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
-                            <option v-for="option in options" :value="option">
+                        <select class="form-control" :id="name" :ref="`instance-${name}`" @change="changeInstance(name)">
+                            <option v-for="option in options" :value="option"
+                                    :selected="option === selectedInstances[name] ? 'selected' : undefined">
                                 {{ option }}
                             </option>
                         </select>
@@ -43,13 +44,14 @@
                     <button @click.prevent="runReport" class="btn" type="submit">Run report</button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{runningStatus}}
-                        <a @click.prevent="checkStatus" href="#">Check status</a>
-                    </div>
-                </div>
+                <a @click.prevent="checkStatus" href="#">Check status</a>
+            </div>
+    </div>
             </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
+
 </template>
 
 <script>
@@ -115,6 +117,11 @@
             changedCommit() {
                 this.updateReports();
             },
+            changeInstance(name) {
+                const value = this.$refs[`instance-${name}`][0].value;
+                this.selectedInstances[name] = value;
+                this.runningStatus = "";
+            },
             updateReports() {
                 this.reports = [];
                 const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
@@ -172,6 +179,7 @@
             } else {
                 this.updateReports();
             }
+
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
@@ -184,12 +192,6 @@
         watch: {
             selectedReport() {
                 this.runningStatus = "";
-            },
-            selectedInstances: {
-                handler() {
-                    this.runningStatus = "";
-                },
-                deep: true
             }
         }
     }

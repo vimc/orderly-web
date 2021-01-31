@@ -361,18 +361,31 @@ describe("runReport", () => {
         expect(wrapper.vm.runningStatus).toBe("");
     });
 
-    it("changing selectedInstances resets runningStatus", async () => {
-        const wrapper = getWrapper();
-        const selectedInstances = {source: "uat"};
-        wrapper.setData({selectedInstances});
+    it("changing a selected instance updates data and resets runningStatus", async () => {
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: true,
+                    instances: {
+                        source: ["prod", "uat"],
+                    }
+                },
+                gitBranches
+            }
+        });
+        wrapper.setData({selectedReport: "test-report"});
         await Vue.nextTick();
-
         wrapper.setData({runningStatus: "test-status"});
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("test-status");
+        expect(wrapper.vm.selectedInstances).toStrictEqual({source: "prod"});
 
-        wrapper.vm.selectedInstances.source = "science";
+        const select = wrapper.find("#source");
+        select.setValue("uat");
         await Vue.nextTick();
+
+        expect(wrapper.vm.selectedInstances).toStrictEqual({source: "uat"});
         expect(wrapper.vm.runningStatus).toBe("");
     });
 });
