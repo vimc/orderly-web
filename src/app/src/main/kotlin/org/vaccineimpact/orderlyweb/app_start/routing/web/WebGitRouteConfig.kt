@@ -1,8 +1,11 @@
 package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.GitController
+import org.vaccineimpact.orderlyweb.json
+import spark.route.HttpMethod
 
 object WebGitRouteConfig : RouteConfig
 {
@@ -10,18 +13,23 @@ object WebGitRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/git/branch/:branch/commits/",
                    GitController::class, "getCommits")
+                    // .console.log("commits was called from config")
                     .secure(runReports)
                     .json(),
 
-            WebEndpoint("/git/status/", GitController::class, "status")
+            WebEndpoint("/git/status/", 
+                    GitController::class, "status")
                     .secure(runReports)
                     .json(),
 
-            WebEndpoint("/git/pull/", GitController::class, "pull", method = HttpMethod.post)
+            WebEndpoint("/git/pull/", 
+                    GitController::class, "pull", method = HttpMethod.post)
                     .secure(runReports)
                     .json(),
 
-            WebEndpoint("/git/fetch/", GitController::class, "fetch", method = HttpMethod.post)
+            WebEndpoint("/git/fetch/", 
+                    GitController::class, "fetch", method = HttpMethod.post)
+                    // .print("fetch was called from config")
                     .secure(runReports)
                     .json()
     )

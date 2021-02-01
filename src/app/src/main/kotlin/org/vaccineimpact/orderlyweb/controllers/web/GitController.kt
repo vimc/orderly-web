@@ -27,6 +27,7 @@ class GitController(context: ActionContext,
 
     fun fetch(): String
     {
+        // print("fetch was called from controller")
         val response = orderlyServerAPI.post("/v1/reports/git/fetch/", context)
         return passThroughResponse(response)
     }
