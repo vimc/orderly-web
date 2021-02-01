@@ -43,26 +43,9 @@
                     </div>
                 </div>
             </template>
-          <div id="parameters" class="form-group row">
+          <div v-if="showParameters" id="parameters" class="form-group row">
             <label class="col-sm-2 col-form-label text-right">Parameters</label>
-            <div class="col-sm-6">
-              <table class="table table-sm table-bordered">
-                <thead>
-                <tr>
-                  <th>disease</th>
-                  <th>group</th>
-                  <th>by_country</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr>
-                  <th><input type="text" class="form-control" id="disease-control"/></th>
-                  <th><input type="text" class="form-control" id="group-control"/></th>
-                  <th><input type="text" class="form-control" id="by_country-control"/></th>
-                </tr>
-                </tbody>
-              </table>
-            </div>
+          <parameter-list :params="parameterValues"></parameter-list>
           </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -71,7 +54,7 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {Parameters} from "../../utils/types";
+    import ParameterList from "./parameterList"
     import ErrorInfo from "../errorInfo";
     import Vue from "vue";
     import ReportList from "./reportList";
@@ -84,7 +67,8 @@
         ],
         components: {
             ErrorInfo,
-            ReportList
+            ReportList,
+            ParameterList
         },
         data: () => {
             return {
@@ -96,9 +80,20 @@
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
+                parameterValues: [{name: "", report_version: "", type: "", value: ""}]
             }
         },
         computed: {
+           demoReport() {
+             /*
+              * This should be replaced to real data. The returned data from
+              * "reports" isn't the right data type to be returned.
+              */
+             const data = []
+             return data.push({name:'minimal', latest: '20210127-110409-c20c0e42'},
+               {name:'minimal2', latest: '1'})
+             return data
+           },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             },
@@ -107,6 +102,9 @@
             },
             showInstances() {
                 return this.metadata.instances_supported && this.selectedReport;
+            },
+            showParameters() {
+             return this.parameterValues && this.reports
             }
         },
         methods: {
@@ -142,9 +140,21 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching reports";
                     });
-            }
+            },
+          getParameters: function () {
+            const latest = this.demoReport.map(report => report.latest)
+            api.post('/run-report/parameters/', {latest})
+                .then(({data}) => {
+                  this.parameterValues = data.data
+                })
+                .catch((error) => {
+                  this.error = error
+                })
+          }
         },
         mounted() {
+          this.getParameters()
+
             if (this.metadata.git_supported) {
                 this.selectedBranch = this.gitBranches[0];
                 this.changedBranch();
@@ -159,6 +169,11 @@
                     }
                 }
             }
+        },
+      watch: {
+        demoReport: function () {
+          this.getParameters()
         }
+      }
     })
 </script>
