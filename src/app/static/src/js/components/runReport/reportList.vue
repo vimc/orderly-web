@@ -9,7 +9,7 @@
     >
         <template slot="append">
             <button class="btn btn-outline-secondary" v-on:click.prevent="clear" v-if="query">
-                🗙
+                <x-icon/>
             </button>
         </template>
         <template slot="suggestion" slot-scope="{ data, htmlText }">
@@ -23,6 +23,7 @@
 
 <script>
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap";
+    import XIcon from "./xIcon";
 
     export default {
         name: "reportList",
@@ -31,7 +32,8 @@
             "report": String
         },
         components: {
-            VueTypeaheadBootstrap
+            VueTypeaheadBootstrap,
+            XIcon
         },
         methods: {
             clear() {
