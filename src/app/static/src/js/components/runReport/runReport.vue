@@ -84,13 +84,14 @@
             }
         },
         computed: {
+          /*
+            * This should be replaced. The returned data from
+            * report isn't the right data to be returned, so
+            * there should it should be amended.
+            */
            demoReport() {
-             /*
-              * This should be replaced to real data. The returned data from
-              * "reports" isn't the right data type to be returned.
-              */
              const data = []
-             return data.push({name:'minimal', latest: '20210127-110409-c20c0e42'},
+             data.push({name:'minimal', latest: '20210127-110409-c20c0e42'},
                {name:'minimal2', latest: '1'})
              return data
            },
