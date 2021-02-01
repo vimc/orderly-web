@@ -34,7 +34,7 @@
                 </div>
             </div>
         </form>
-        <button @click="refreshGit" class="btn mt-2" type="submit">Refresh git</button>
+        <button @click="refreshGit" id="git-refresh-btn" class="btn mt-2" type="submit" v-if="metadata.git_supported">Refresh git</button>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -65,13 +65,27 @@
         methods: {
             refreshGit: function () {
                 api.post('/git/fetch/')
-                    .then(({data}) => {
-                        this.changedBranch()
+                    .then(() => {
+                        this.refreshPage()
                     })
                     .catch((error) => {
                         this.error = error;
                         this.defaultMessage = "An error occurred refreshing Git commits";
                     });
+            },
+            refreshPage: function () {
+                if (this.metadata.git_supported) {
+                    this.selectedBranch = this.gitBranches[0];
+                    this.changedBranch();
+                }
+                if (this.metadata.instances_supported) {
+                    const instances = this.metadata.instances;
+                    for (const key in instances) {
+                        if (instances[key].length > 0) {
+                            this.selectedInstances[key] = instances[key][0]
+                        }
+                    }
+                }
             },
             changedBranch: function () {
                 if (this.selectedBranch) {
@@ -92,18 +106,19 @@
             }
         },
         mounted() {
-            if (this.metadata.git_supported) {
-                this.selectedBranch = this.gitBranches[0];
-                this.changedBranch();
-            }
-            if (this.metadata.instances_supported) {
-                const instances = this.metadata.instances;
-                for (const key in instances) {
-                    if (instances[key].length > 0) {
-                        this.selectedInstances[key] = instances[key][0]
-                    }
-                }
-            }
+            this.refreshPage()
+            // if (this.metadata.git_supported) {
+            //     this.selectedBranch = this.gitBranches[0];
+            //     this.changedBranch();
+            // }
+            // if (this.metadata.instances_supported) {
+            //     const instances = this.metadata.instances;
+            //     for (const key in instances) {
+            //         if (instances[key].length > 0) {
+            //             this.selectedInstances[key] = instances[key][0]
+            //         }
+            //     }
+            // }
         }
     }
 </script>
