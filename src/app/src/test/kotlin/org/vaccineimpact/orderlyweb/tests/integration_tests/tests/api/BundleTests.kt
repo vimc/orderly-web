@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.getResource
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
@@ -44,7 +45,7 @@ class BundlePackTests : IntegrationTest()
                 ContentTypes.zip, HttpMethod.post)
     }
 
-    private fun getZipEntries(response: khttp.responses.Response): MutableList<String>
+    private fun getZipEntries(response: Response): MutableList<String>
     {
         val entries = mutableListOf<String>()
         ZipInputStream(ByteArrayInputStream(response.content)).use { zis ->

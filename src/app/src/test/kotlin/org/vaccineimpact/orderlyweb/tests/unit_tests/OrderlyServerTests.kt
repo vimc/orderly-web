@@ -21,10 +21,7 @@ class OrderlyServerTests
         on { this["orderly.server"] } doReturn "http://orderly"
     }
 
-    private val standardHeaders = mapOf(
-            "Accept" to ContentTypes.json,
-            "Accept-Encoding" to "gzip"
-    )
+    private val standardHeaders = mapOf("Accept" to ContentTypes.json)
 
     @Test
     fun `passes through query string to GET`()
@@ -257,11 +254,11 @@ class OrderlyServerTests
     fun `can parse object data and transform snake case to camel case`()
     {
         val text = """{"status": "success", "data": {"id": "12345", "date_time": "2019-03-29 16:25:48",
-            |"display_date_time": "Monday"}, "errors": []}""".trimMargin()
+            |"age": 3600}, "errors": []}""".trimMargin()
         val response = OrderlyServerResponse(text, 200)
         val data = response.data(GitCommit::class.java)
         assertThat(data.dateTime).isEqualTo("2019-03-29 16:25:48")
-        assertThat(data.displayDateTime).isEqualTo("Monday")
+        assertThat(data.age).isEqualTo(3600)
         assertThat(data.id).isEqualTo("12345")
     }
 
@@ -269,12 +266,12 @@ class OrderlyServerTests
     fun `can parse list data`()
     {
         val text = """{"status": "success", "data": [{"id": "12345", "date_time": "2019-03-29 16:25:48",
-            |"display_date_time": "Monday"}], "errors": []}""".trimMargin()
+            |"age": 3600}], "errors": []}""".trimMargin()
         val response = OrderlyServerResponse(text, 200)
         val data = response.listData(GitCommit::class.java)
         assertThat(data[0].id).isEqualTo("12345")
         assertThat(data[0].dateTime).isEqualTo("2019-03-29 16:25:48")
-        assertThat(data[0].displayDateTime).isEqualTo("Monday")
+        assertThat(data[0].age).isEqualTo(3600)
     }
 
     private fun testTranslatedResponse(rawResponse: String, expectedTranslatedResponse: String)
