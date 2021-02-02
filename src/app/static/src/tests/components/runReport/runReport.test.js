@@ -135,7 +135,6 @@ describe("runReport", () => {
         })
     });
 
-<<<<<<< HEAD
     it("renders refresh git button if git_supported and posts git fetch to api on click ", (done) => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
@@ -156,7 +155,8 @@ describe("runReport", () => {
             expect(mockAxios.history.get.length).toBe(2);
             done();
         })
-=======
+    });
+    
     it("updates reports dropdown by calling api when commit changes", (done) => {
         const wrapper = getWrapper(reports);
 
@@ -180,7 +180,6 @@ describe("runReport", () => {
             expect(wrapper.vm.$data["selectedReport"]).toBe("");
             done();
         });
->>>>>>> master
     });
 
     it("shows instances if instances supported", () => {
