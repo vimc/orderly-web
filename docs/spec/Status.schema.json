@@ -1,42 +1,40 @@
 {
+    "$schema": "http://json-schema.org/draft-04/schema#",
     "id": "Status",
     "type": "object",
     "properties": {
         "key": {"type": "string"},
         "status": {
-            "enum": ["queued", "running", "success", "error", "unknown"]
+            "enum": ["queued", "running", "success", "error", "orphan", "interrupted", "redirect", "missing"]
         },
         "version": {
             "oneOf": [
-                {"type": "null"},
-                {"$ref": "OrderlyId.schema.json"}
+                {
+                    "type": "null"
+                },
+                {
+                    "$ref": "OrderlyId.schema.json"
+                }
             ]
         },
         "output": {
             "oneOf": [
-                {"type": "null"},
                 {
-                    "type": "object",
-                    "properties": {
-                        "stdout": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        },
-                        "stderr": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "required": ["stdout", "stderr"],
-                    "additionalProperties": false
+                    "type": "null"
+                },
+                {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             ]
+        },
+        "queue": {
+            "type": "array",
+            "items": { "type": "string" }
         }
     },
-    "required": ["key", "status", "version", "output"],
+    "required": ["key", "status", "version", "output", "queue"],
     "additionalProperties": false
 }
