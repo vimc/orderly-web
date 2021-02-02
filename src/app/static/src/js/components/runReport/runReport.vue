@@ -105,7 +105,7 @@
                 return this.metadata.instances_supported && this.selectedReport;
             },
             showParameters() {
-             return this.parameterValues && this.reports
+             return this.parameterValues.length && this.reports.length
             }
         },
         methods: {

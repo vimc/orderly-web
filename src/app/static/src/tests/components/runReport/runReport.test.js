@@ -4,6 +4,7 @@ import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
 import ErrorInfo from "../../../js/components/errorInfo";
 import {mockAxios} from "../../mockAxios";
+import ParameterList from "../../../js/components/runReport/parameterList";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -16,6 +17,11 @@ describe("runReport", () => {
         {id: "abcdef", date_time: "Mon Jun 08, 12:01"},
         {id: "abc123", date_time: "Tue Jun 09, 13:11"}
     ];
+
+    const mockParams = [
+        {name: "global", report_version: "every_random", type: "number", value: 23},
+        {name: "minimal", report_version: "random_39id", type: "string", value: "Some value"}
+    ]
 
     const gitBranches = ["master", "dev"];
 
@@ -207,6 +213,73 @@ describe("runReport", () => {
         expect(wrapper.find("#source").exists()).toBe(false);
         expect(wrapper.find("#annex").exists()).toBe(false);
         expect(wrapper.find("#another").exists()).toBe(false);
+    });
+
+    it("it does render parameters correctly if reports control and param exists", () => {
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: mockParams,
+                    reports: reports
+                }
+            }
+        });
+
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        const labels = wrapper.find(ParameterList).findAll("label")
+        expect(labels.at(0).text()).toBe("global");
+        expect(labels.at(1).text()).toBe("minimal");
+
+        const inputs = wrapper.find(ParameterList).findAll("input")
+        expect(inputs.length).toBe(2);
+
+    });
+
+    it("does not render parameters if reports control does not exist", () => {
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: mockParams,
+                    reports: []
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(false);
+        expect(wrapper.find(ParameterList).exists()).toBe(false);
+    });
+
+    it("does not render parameters if parameters and reports control does not exist", () => {
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: [],
+                    reports: []
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(false);
+        expect(wrapper.find(ParameterList).exists()).toBe(false);
     });
 
 });
