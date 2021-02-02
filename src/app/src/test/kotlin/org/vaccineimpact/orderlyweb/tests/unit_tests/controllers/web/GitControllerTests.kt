@@ -20,9 +20,6 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `gets commits for branch`()
     {
-        // val mockContext = mock<ActionContext>() {
-        //     on { params(":branch") } doReturn "master"
-        // }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { get("/git/commits?branch=master", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(listOf(1, 2, 3)), 200)
@@ -34,11 +31,11 @@ class GitControllerTests : ControllerTest()
 
     fun `status gets status from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderlyServer = mock<OrderlyServerAPI>{
             on { it.get("/v1/reports/git/status/", mockContext) } doReturn mockResponse
         }
 
-        val sut = GitController(mockContext, mockOrderly)
+        val sut = GitController(mockContext, mockOrderlyServer)
         val response = sut.status()
 
         assertThat(response).isEqualTo("testResponse")
@@ -47,11 +44,11 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `fetch gets response from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderlyServer = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
         }
 
-        val sut = GitController(mockContext, mockOrderly)
+        val sut = GitController(mockContext, mockOrderlyServer)
         val response = sut.fetch()
 
         assertThat(response).isEqualTo("testResponse")
@@ -60,11 +57,11 @@ class GitControllerTests : ControllerTest()
     @Test
     fun `pull gets response from orderly`()
     {
-        val mockOrderly = mock<OrderlyServerAPI>{
+        val mockOrderlyServer = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/pull/", mockContext) } doReturn mockResponse
         }
 
-        val sut = GitController(mockContext, mockOrderly)
+        val sut = GitController(mockContext, mockOrderlyServer)
         val response = sut.pull()
 
         assertThat(response).isEqualTo("testResponse")
