@@ -13,7 +13,6 @@ object WebGitRouteConfig : RouteConfig
     override val endpoints: List<EndpointDefinition> = listOf(
             WebEndpoint("/git/branch/:branch/commits/",
                    GitController::class, "getCommits")
-                    // .console.log("commits was called from config")
                     .secure(runReports)
                     .json(),
 
@@ -29,7 +28,6 @@ object WebGitRouteConfig : RouteConfig
 
             WebEndpoint("/git/fetch/", 
                     GitController::class, "fetch", method = HttpMethod.post)
-                    // .print("fetch was called from config")
                     .secure(runReports)
                     .json()
     )
