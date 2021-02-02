@@ -13,12 +13,16 @@ import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerT
 
 class GitControllerTests : ControllerTest()
 {
+    private val mockContext = mock<ActionContext>() {
+            on { params(":branch") } doReturn "master"
+        }
+    private val mockResponse = OrderlyServerResponse("testResponse", 200)
     @Test
     fun `gets commits for branch`()
     {
-        val mockContext = mock<ActionContext>() {
-            on { params(":branch") } doReturn "master"
-        }
+        // val mockContext = mock<ActionContext>() {
+        //     on { params(":branch") } doReturn "master"
+        // }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { get("/git/commits?branch=master", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(listOf(1, 2, 3)), 200)
@@ -26,5 +30,43 @@ class GitControllerTests : ControllerTest()
         val sut = GitController(mockContext, mockOrderlyServer)
         val result = sut.getCommits()
         assertThat(result).isEqualTo(Serializer.instance.toResult(listOf(1, 2, 3)))
+    }
+
+    fun `status gets status from orderly`()
+    {
+        val mockOrderly = mock<OrderlyServerAPI>{
+            on { it.get("/v1/reports/git/status/", mockContext) } doReturn mockResponse
+        }
+
+        val sut = GitController(mockContext, mockOrderly)
+        val response = sut.status()
+
+        assertThat(response).isEqualTo("testResponse")
+    }
+
+    @Test
+    fun `fetch gets response from orderly`()
+    {
+        val mockOrderly = mock<OrderlyServerAPI>{
+            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
+        }
+
+        val sut = GitController(mockContext, mockOrderly)
+        val response = sut.fetch()
+
+        assertThat(response).isEqualTo("testResponse")
+    }
+
+    @Test
+    fun `pull gets response from orderly`()
+    {
+        val mockOrderly = mock<OrderlyServerAPI>{
+            on { it.post("/v1/reports/git/pull/", mockContext) } doReturn mockResponse
+        }
+
+        val sut = GitController(mockContext, mockOrderly)
+        val response = sut.pull()
+
+        assertThat(response).isEqualTo("testResponse")
     }
 }

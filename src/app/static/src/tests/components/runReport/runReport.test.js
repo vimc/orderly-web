@@ -113,13 +113,7 @@ describe("reportTags", () => {
         })
     });
 
-    it("renders refresh git button if git_supported and posts git fetch to api and refreshes contents of dropdown on click ", (done) => {
-        // mockAxios.onGet('http://app/git/branch/dev/commits/')
-        //     .reply(200, {"data": mockCommits});
-
-        // mockAxios.onPost('http://app/git/fetch/')
-        //     .reply(200, {"data": mockFetch});
-
+    it("renders refresh git button if git_supported and posts git fetch to api on click ", (done) => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {git_supported: true, instances_supported: false},
@@ -127,38 +121,18 @@ describe("reportTags", () => {
             }
         });
 
-        // setTimeout(() => {
-        //     expect(wrapper.find("#git-commit-form-group").exists()).toBe(true);
-        //     const commitOptions = wrapper.findAll("#git-commit option");
-        //     expect(commitOptions.length).toBe(2);
-        //     expect(commitOptions.at(0).text()).toBe("abcdef (Mon Jun 08, 12:01)");
-        //     expect(commitOptions.at(1).text()).toBe("abc123 (Tue Jun 09, 13:11)");
-
-        //     expect(wrapper.vm.selectedCommitId).toBe("abcdef");
-        //     done();
-        // })
-
         expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
         const button = wrapper.find("#git-refresh-btn");
         expect(mockAxios.history.post.length).toBe(0);
         expect(mockAxios.history.get.length).toBe(0);
-        mockAxios.onGet('http://app/git/branch/master/commits/')
-            .reply(200, {"data": [
-                {id: "new", date_time: "Just now"}
-            ]});
+        
         button.trigger("click")
-        // await Vue.nextTick();
+        
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find("#git-commit-form-group").exists()).toBe(true);
-            const commitOptions = wrapper.findAll("#git-commit option");
-            expect(commitOptions.length).toBe(1);
-            expect(commitOptions.at(0).text()).toBe("new (Just now)");
             done();
         })
-    // })
-
     });
 
     it("shows instances if instances supported", () => {
