@@ -152,7 +152,7 @@ describe("runReport", () => {
         
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.get.length).toBe(2);
+            expect(mockAxios.history.get.length).toBe(4);
             done();
         })
     });
