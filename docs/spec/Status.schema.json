@@ -32,7 +32,18 @@
         },
         "queue": {
             "type": "array",
-            "items": { "type": "string" }
+            "items": {
+                "type": "object",
+                "properties": {
+                    "key": {"type": "string"},
+                    "status": {
+                        "enum": ["queued", "running", "success", "error", "orphan", "interrupted", "redirect", "missing"]
+                    },
+                    "name": {"type": "string"}
+                },
+                "required": ["key", "status", "name"],
+                "additionalProperties": false
+            }
         }
     },
     "required": ["key", "status", "version", "output", "queue"],
