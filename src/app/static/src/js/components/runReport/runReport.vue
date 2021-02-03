@@ -54,10 +54,10 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import ParameterList from "./parameterList"
-    import ErrorInfo from "../errorInfo";
+    import ParameterList from "./parameterList.vue"
+    import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
-    import ReportList from "./reportList";
+    import ReportList from "./reportList.vue";
 
     export default Vue.extend({
         name: "runReport",
