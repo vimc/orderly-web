@@ -91,7 +91,7 @@
             * there should it should be amended.
             */
            demoReport() {
-             const data = [{name:'minimal', latest: '20210127-110409-c20c0e42'}]
+             const data = [{name:'minimal', latest: '20210203-101242-ec7a7fbc'}]
              return data
            },
             showCommits() {
