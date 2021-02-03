@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "es5",
     "sourceMap": true,
-    "module": "es2015",
+    "module": "commonjs",
     "moduleResolution": "node",
     "allowJs": true,
     "checkJs": false,

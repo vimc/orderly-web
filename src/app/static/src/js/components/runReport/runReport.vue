@@ -58,7 +58,6 @@
     import ErrorInfo from "../errorInfo";
     import Vue from "vue";
     import ReportList from "./reportList";
-    import {stringify} from "ts-jest/dist/utils/json";
 
     export default Vue.extend({
         name: "runReport",
@@ -169,11 +168,6 @@
                     }
                 }
             }
-        },
-      watch: {
-        demoReport: function () {
-          this.getParameters()
         }
-      }
     })
 </script>

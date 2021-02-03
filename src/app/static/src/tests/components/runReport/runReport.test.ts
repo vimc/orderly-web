@@ -2,9 +2,9 @@ import Vue from "vue";
 import {shallowMount, mount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
-import ErrorInfo from "../../../js/components/errorInfo";
+import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
-import ParameterList from "../../../js/components/runReport/parameterList";
+import ParameterList from "../../../js/components/runReport/parameterList.vue";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -69,7 +69,7 @@ describe("runReport", () => {
             expect(commitOptions.at(0).text()).toBe("abcdef (Mon Jun 08, 12:01)");
             expect(commitOptions.at(1).text()).toBe("abc123 (Tue Jun 09, 13:11)");
 
-            expect(wrapper.vm.selectedCommitId).toBe("abcdef");
+            expect(wrapper.vm.$data.selectedCommitId).toBe("abcdef");
             done();
         })
     });
@@ -103,7 +103,7 @@ describe("runReport", () => {
 
         wrapper.findAll("#git-branch option").at(1).setSelected();
 
-        expect(wrapper.vm.selectedBranch).toBe("dev");
+        expect(wrapper.vm.$data.selectedBranch).toBe("dev");
 
         setTimeout(() => {
             const options = wrapper.findAll("#git-commit option");
@@ -111,7 +111,7 @@ describe("runReport", () => {
             expect(options.at(0).text()).toBe("abcdef (Mon Jun 08, 12:01)");
             expect(options.at(1).text()).toBe("abc123 (Tue Jun 09, 13:11)");
 
-            expect(wrapper.vm.selectedCommitId).toBe("abcdef");
+            expect(wrapper.vm.$data.selectedCommitId).toBe("abcdef");
 
             expect(wrapper.find(ErrorInfo).props("apiError")).toBe("");
             expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("");
