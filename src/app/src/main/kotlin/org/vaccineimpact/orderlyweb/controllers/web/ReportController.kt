@@ -77,7 +77,7 @@ class ReportController(
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
 
-    fun getParameterRunReports (): List<ParametersForReport>
+    fun getParameterRunReports(): List<ParametersForReport>
     {
         val latest = context.params(":latest")
         return reportRepository.getParametersForRunReport(latest)

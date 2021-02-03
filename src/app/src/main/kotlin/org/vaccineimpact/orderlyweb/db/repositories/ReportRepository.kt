@@ -49,11 +49,9 @@ interface ReportRepository
 
     @Throws(UnknownObjectError::class)
     fun getParametersForRunReport(latest: String): List<ParametersForReport>
-
 }
 
-class OrderlyReportRepository(val isReviewer: Boolean,
-                              val isGlobalReader: Boolean,
+class OrderlyReportRepository(val isReviewer: Boolean, val isGlobalReader: Boolean,
                               reportReadingScopes: List<String> = listOf()) : ReportRepository
 {
 
@@ -124,7 +122,9 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
     {
-        //raise exception if version does not belong to named report, or version does not exist
+        /* raise exception if version does not belong to named report,
+         or version does not exist
+         */
         JooqContext().use {
             return getReportVersion(name, version, it)
         }
@@ -286,7 +286,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
-
         }
     }
 
