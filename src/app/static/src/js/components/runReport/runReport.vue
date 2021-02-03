@@ -58,6 +58,7 @@
     import ErrorInfo from "../errorInfo";
     import Vue from "vue";
     import ReportList from "./reportList";
+    import {stringify} from "ts-jest/dist/utils/json";
 
     export default Vue.extend({
         name: "runReport",
@@ -90,9 +91,7 @@
             * there should it should be amended.
             */
            demoReport() {
-             const data = []
-             data.push({name:'minimal', latest: '20210127-110409-c20c0e42'},
-               {name:'minimal2', latest: '1'})
+             const data = [{name:'minimal', latest: '20210127-110409-c20c0e42'}]
              return data
            },
             showCommits() {
@@ -144,7 +143,7 @@
             },
           getParameters: function () {
             const latest = this.demoReport.map(report => report.latest)
-            api.post('/run-report/parameters/', {latest})
+            api.get(`/run-report/parameters/${latest}`)
                 .then(({data}) => {
                   this.parameterValues = data.data
                 })

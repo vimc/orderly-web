@@ -3,8 +3,10 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
+import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.AppConfig
@@ -25,6 +27,15 @@ class RunReportPageTests : IntegrationTest()
     {
         val url = "/run-report"
         assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `can get parameters`()
+    {
+        val url = "run-report/parameters/20210127-110409-c20c0e42"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                contentType = ContentTypes.json)
     }
 
     @Test
