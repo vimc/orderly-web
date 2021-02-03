@@ -292,15 +292,15 @@ describe("runReport", () => {
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
-                runningKey: "test-key",
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
             await Vue.nextTick();
 
-            //Set data in two stages because runningStatus gets reset by watch on selectedReport change
+            //Set data in two stages becausestatus and key get reset by watch on selectedReport change
             wrapper.setData({
-                runningStatus: "Run started"
+                runningStatus: "Run started",
+                runningKey: "test-key"
             });
             await Vue.nextTick();
 
@@ -328,7 +328,6 @@ describe("runReport", () => {
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
-                runningKey: "test-key",
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
@@ -336,6 +335,7 @@ describe("runReport", () => {
 
             //Set data in two stages because runningStatus gets reset by watch on selectedReport change
             wrapper.setData({
+                runningKey: "test-key",
                 runningStatus: "Run started"
             });
             await Vue.nextTick();

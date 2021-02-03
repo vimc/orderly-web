@@ -29,9 +29,8 @@
                 <div v-for="(options, name) in metadata.instances" v-if="options.length > 1" class="form-group row">
                     <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
                     <div class="col-sm-6">
-                        <select class="form-control" :id="name" :ref="`instance-${name}`" @change="changeInstance(name)">
-                            <option v-for="option in options" :value="option"
-                                    :selected="option === selectedInstances[name] ? 'selected' : undefined">
+                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
+                            <option v-for="option in options" :value="option">
                                 {{ option }}
                             </option>
                         </select>
@@ -41,7 +40,10 @@
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <button @click.prevent="runReport" class="btn" type="submit">Run report</button>
+                    <button @click.prevent="runReport" class="btn" type="submit"
+                            :disabled="disableRun ? 'disabled' : undefined">
+                        Run report
+                    </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{runningStatus}}
                 <a @click.prevent="checkStatus" href="#">Check status</a>
@@ -80,7 +82,8 @@
                 error: "",
                 defaultMessage: "",
                 runningStatus: "",
-                runningKey: ""
+                runningKey: "",
+                disableRun: false
             }
         },
         computed: {
@@ -117,11 +120,6 @@
             changedCommit() {
                 this.updateReports();
             },
-            changeInstance(name) {
-                const value = this.$refs[`instance-${name}`][0].value;
-                this.selectedInstances[name] = value;
-                this.runningStatus = "";
-            },
             updateReports() {
                 this.reports = [];
                 const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
@@ -147,6 +145,7 @@
                 };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
                     .then(({data}) => {
+                        this.disableRun = true;
                         this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
                         this.error = "";
@@ -170,6 +169,12 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred when fetching report status";
                     });
+                this.disableRun = false;
+            },
+            clearRun() {
+                this.runningStatus = "";
+                this.runningKey = "";
+                this.disableRun = false;
             }
         },
         mounted() {
@@ -184,14 +189,20 @@
                 const instances = this.metadata.instances;
                 for (const key in instances) {
                     if (instances[key].length > 0) {
-                        this.selectedInstances[key] = instances[key][0]
+                        this.$set(this.selectedInstances, key, instances[key][0]);
                     }
                 }
             }
         },
         watch: {
             selectedReport() {
-                this.runningStatus = "";
+                this.clearRun();
+            },
+            selectedInstances: {
+                deep: true,
+                handler() {
+                    this.clearRun();
+                }
             }
         }
     }
