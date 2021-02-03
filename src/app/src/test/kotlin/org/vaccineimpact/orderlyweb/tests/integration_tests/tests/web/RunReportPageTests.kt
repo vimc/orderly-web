@@ -32,7 +32,7 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `can get parameters`()
     {
-        val url = "run-report/parameters/20210127-110409-c20c0e42"
+        val url = "run-report/parameters/20200226-132414-5541d887"
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)
