@@ -46,7 +46,7 @@ object WebReportRouteConfig : RouteConfig
                     .secure(runReports)
                     .transform(),
             WebEndpoint(
-                    "/run-report/parameters/:latest/",
+                    "/reports/:name/parameters/:commit/",
                     ReportController::class, "getParameterRunReports")
                     .json()
                     .secure(runReports)

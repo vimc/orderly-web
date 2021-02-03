@@ -77,10 +77,14 @@ class ReportController(
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
 
-    fun getParameterRunReports(): List<ParametersForReport>
+    fun getParameterRunReports(): List<Parameters>
     {
-        val latest = context.params(":latest")
-        return reportRepository.getParametersForRunReport(latest)
+        val name = context.params(":name")
+        val commit = context.params(":commit")
+
+        return orderlyServerAPI
+                .get("/reports/$name/parameters?commit=$commit", context)
+                .listData(Parameters::class.java)
     }
 
     fun tagVersion(): String

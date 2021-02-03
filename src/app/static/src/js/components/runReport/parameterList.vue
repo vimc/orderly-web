@@ -8,7 +8,8 @@
                      {{param.name}}
           </label></th>
           <th><input type="text" class="form-control"
-                     v-model="param.value"
+                     v-model="param.default"
+
                      :id="`param-control-${index}`"/></th></tr>
         </tbody>
       </table>

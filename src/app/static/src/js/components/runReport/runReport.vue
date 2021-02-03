@@ -80,19 +80,10 @@
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
-                parameterValues: [{name: "", report_version: "", type: "", value: ""}]
+                parameterValues: []
             }
         },
         computed: {
-          /*
-            * This should be replaced. The returned data from
-            * report isn't the right data to be returned, so
-            * there should it should be amended.
-            */
-           demoReport() {
-             const data = [{name:'minimal', latest: '20210203-101242-ec7a7fbc'}]
-             return data
-           },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             },
@@ -103,7 +94,7 @@
                 return this.metadata.instances_supported && this.selectedReport;
             },
             showParameters() {
-             return this.parameterValues.length && this.reports.length
+             return this.selectedReport && this.parameterValues.length
             }
         },
         methods: {
@@ -141,8 +132,7 @@
                     });
             },
           getParameters: function () {
-            const latest = this.demoReport.map(report => report.latest)
-            api.get(`/run-report/parameters/${latest}`)
+                api.get(`/reports/${this.selectedReport}/parameters/${this.selectedCommitId}/`)
                 .then(({data}) => {
                   this.parameterValues = data.data
                 })
@@ -152,8 +142,6 @@
           }
         },
         mounted() {
-          this.getParameters()
-
             if (this.metadata.git_supported) {
                 this.selectedBranch = this.gitBranches[0];
                 this.changedBranch();
@@ -168,6 +156,14 @@
                     }
                 }
             }
+        },
+      watch: {
+        selectedReport() {
+          if(this.selectedReport) {
+            this.getParameters()
+          }
+          this.parameterValues.length = 0
         }
+      }
     })
 </script>

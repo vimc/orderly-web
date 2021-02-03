@@ -3,16 +3,14 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.controllers.web.UserController
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.UserRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.*
 import java.time.Instant
@@ -88,22 +86,25 @@ class RunReportTests
     @Test
     fun `gets parametersForRunReport as expected`()
     {
-        val mockContext = mock<ActionContext> {
-            on { this.params(":latest") } doReturn "20210127-110409-c20c0e42"
+        val mockContext: ActionContext = mock {
+            on { params(":name") } doReturn "minimal"
+            on { params(":commit") } doReturn ""
         }
 
-        val parameterList = listOf (
-                ParametersForReport( "20210127-110409-c20c0e42","disease", "number", "20"),
-                ParametersForReport( "20210127-110409-c20c0e42","disease", "string", "test"))
+        val parameters = listOf (
+                Parameters("minimal", "")
+        )
 
-        val mockRepo = mock<ReportRepository> {
-            on { this.getParametersForRunReport("20210127-110409-c20c0e42") } doReturn (parameterList)
+        val commit = ""
+        val mockOrderlyServer: OrderlyServerAPI = mock {
+            on { get("/reports/minimal/parameters?commit=$commit", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
         }
 
-        val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getParameterRunReports()
+        Assertions.assertThat(result.count()).isEqualTo(1)
 
-        Assertions.assertThat(result.count()).isEqualTo(2)
-        Assertions.assertThat(result).isEqualTo(parameterList)
+        Assertions.assertThat(result).isEqualTo(parameters)
     }
 }

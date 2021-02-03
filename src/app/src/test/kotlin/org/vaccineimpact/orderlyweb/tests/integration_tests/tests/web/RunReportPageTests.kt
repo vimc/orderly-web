@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
-import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -32,7 +31,16 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `can get parameters`()
     {
-        val url = "run-report/parameters/20200226-132414-5541d887"
+        val branch = "master"
+        val commits = OrderlyServer(AppConfig()).get(
+                "/git/commits",
+                mock {
+                    on { queryString() } doReturn "branch=$branch"
+                }
+        )
+        val commit = commits.listData(GitCommit::class.java).first().id
+
+        val url = "/reports/minimal/parameters/$commit"
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)

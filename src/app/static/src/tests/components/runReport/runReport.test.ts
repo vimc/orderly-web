@@ -19,8 +19,8 @@ describe("runReport", () => {
     ];
 
     const mockParams = [
-        {name: "global", report_version: "every_random", type: "number", value: 23},
-        {name: "minimal", report_version: "random_39id", type: "string", value: "Some value"}
+        {name: "global", default: 0},
+        {name: "minimal", default: "random_39id"}
     ]
 
     const gitBranches = ["master", "dev"];
@@ -83,7 +83,7 @@ describe("runReport", () => {
         });
 
         await Vue.nextTick();
-        expect(mockAxios.history.get.length).toBe(2);
+        expect(mockAxios.history.get.length).toBe(1);
         expect(wrapper.find("#git-branch-form-group").exists()).toBe(false);
         expect(wrapper.find("#git-commit-form-group").exists()).toBe(false);
     });
@@ -141,7 +141,7 @@ describe("runReport", () => {
         const wrapper = getWrapper(reports);
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(3);
+            expect(mockAxios.history.get.length).toBe(2);
             expect(wrapper.find(ErrorInfo).props("apiError")).toBe("");
             expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("");
             expect(wrapper.find(ReportList).props("reports")).toEqual(expect.arrayContaining(reports));
@@ -227,7 +227,7 @@ describe("runReport", () => {
                 return {
                     gitCommits: gitCommits,
                     parameterValues: mockParams,
-                    reports: reports
+                    selectedReport: "reports"
                 }
             }
         });
@@ -254,7 +254,7 @@ describe("runReport", () => {
                 return {
                     gitCommits: gitCommits,
                     parameterValues: [],
-                    reports: reports
+                    selectedReport: "reports"
                 }
             }
         });
