@@ -371,7 +371,7 @@ describe("runReport", () => {
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
 
-    it("changing a selected instance updates data and resets runningStatus", async () => {
+    it("changing a selected instance updates data and resets runningStatus and disabledRun", async () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {
@@ -386,10 +386,11 @@ describe("runReport", () => {
         });
         wrapper.setData({selectedReport: "test-report"});
         await Vue.nextTick();
-        wrapper.setData({runningStatus: "test-status"});
+        wrapper.setData({runningStatus: "test-status", disableRun: true});
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("test-status");
         expect(wrapper.vm.selectedInstances).toStrictEqual({source: "prod"});
+        expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
 
         const select = wrapper.find("#source");
         select.setValue("uat");
@@ -397,5 +398,6 @@ describe("runReport", () => {
 
         expect(wrapper.vm.selectedInstances).toStrictEqual({source: "uat"});
         expect(wrapper.vm.runningStatus).toBe("");
+        expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
 });

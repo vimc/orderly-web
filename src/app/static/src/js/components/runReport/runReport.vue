@@ -46,9 +46,9 @@
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{runningStatus}}
-                <a @click.prevent="checkStatus" href="#">Check status</a>
-            </div>
-    </div>
+                        <a @click.prevent="checkStatus" href="#">Check status</a>
+                    </div>
+                 </div>
             </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
