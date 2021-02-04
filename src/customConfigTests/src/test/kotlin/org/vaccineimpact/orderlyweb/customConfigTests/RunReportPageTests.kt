@@ -59,6 +59,27 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can run a report and check status`()
+    {
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("min")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-form-group")))
+
+        val button = driver.findElement(By.cssSelector("#run-form-group button"))
+        button.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-report-status")))
+        assertThat(driver.findElement(By.id("run-report-status")).text).startsWith("Run started")
+
+        driver.findElement(By.cssSelector("#run-report-status a")).click()
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("run-report-status"), "Running status:"))
+    }
+
+    @Test
     fun `can view logs tab`()
     {
         driver.findElement(By.id("logs-link")).click()
