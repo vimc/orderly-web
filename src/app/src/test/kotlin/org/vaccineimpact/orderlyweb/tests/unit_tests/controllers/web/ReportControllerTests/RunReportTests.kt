@@ -103,8 +103,8 @@ class RunReportTests
 
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getParameterRunReports()
-        Assertions.assertThat(result.count()).isEqualTo(1)
 
+        Assertions.assertThat(result.count()).isEqualTo(1)
         Assertions.assertThat(result).isEqualTo(parameters)
     }
 }

@@ -46,9 +46,6 @@ interface ReportRepository
     fun publish(ids: List<String>)
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
-
-    @Throws(UnknownObjectError::class)
-    fun getParametersForRunReport(latest: String): List<ParametersForReport>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean, val isGlobalReader: Boolean,
@@ -433,29 +430,6 @@ class OrderlyReportRepository(val isReviewer: Boolean, val isGlobalReader: Boole
                 .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
                 .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                 .fetchInto(ReportWithDate::class.java)
-        }
-    }
-
-    override fun getParametersForRunReport(latest: String): List<ParametersForReport> {
-
-        JooqContext().use {
-            val result = it.dsl.select(
-                    PARAMETERS.REPORT_VERSION.`as`("reportVersion"),
-                    PARAMETERS.NAME.`as`("name"),
-                    PARAMETERS.TYPE.`as`("type"),
-                    PARAMETERS.VALUE.`as`("value")
-            )
-                    .from(PARAMETERS)
-                    .where(PARAMETERS.REPORT_VERSION.`in`(latest))
-
-            if (result.count() == 0)
-            {
-                throw UnknownObjectError(latest, "Parameters: report version")
-            }
-            else
-            {
-                return result.fetchInto(ParametersForReport::class.java)
-            }
         }
     }
 
