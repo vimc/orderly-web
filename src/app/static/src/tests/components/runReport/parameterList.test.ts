@@ -5,7 +5,7 @@ import {Parameters} from "../../../js/utils/types";
 
 describe(`run report parameter list`, () => {
     const params = [
-        {name: "global", default: 23},
+        {name: "global", default: "test"},
         {name: "minimal", default: ""}
         ]
 

@@ -19,7 +19,7 @@ describe("runReport", () => {
     ];
 
     const mockParams = [
-        {name: "global", default: 0},
+        {name: "global", default: "test"},
         {name: "minimal", default: "random_39id"}
     ]
 
@@ -215,7 +215,7 @@ describe("runReport", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
-    it("it does render parameters control correctly if reports and param data exist", () => {
+    it("it does render parameters control correctly if report is selected and param has data", () => {
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
@@ -242,7 +242,7 @@ describe("runReport", () => {
 
     });
 
-    it("does not render parameters control if reports data key does not exists in param data keys", () => {
+    it("does not render parameters control if report is not selected", () => {
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
@@ -262,7 +262,7 @@ describe("runReport", () => {
         expect(wrapper.find(ParameterList).exists()).toBe(false);
     });
 
-    it("does not render parameters control if parameters and reports data do not exist", () => {
+    it("does not render parameters control if parameters and selected report data do not exist", () => {
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
@@ -274,7 +274,7 @@ describe("runReport", () => {
                 return {
                     gitCommits: gitCommits,
                     parameterValues: [],
-                    reports: []
+                    selectedReport: ""
                 }
             }
         });
