@@ -88,31 +88,6 @@ class RunReportTests
     {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
-            on { params(":commit") } doReturn ""
-        }
-
-        val parameters = listOf (
-                Parameters("minimal", "")
-        )
-
-        val commit = ""
-        val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/minimal/parameters?commit=$commit", mockContext) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
-        }
-
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getParameterRunReports()
-
-        Assertions.assertThat(result.count()).isEqualTo(1)
-        Assertions.assertThat(result).isEqualTo(parameters)
-    }
-
-    @Test
-    fun `gets multiple parametersForRunReport as expected`()
-    {
-        val mockContext: ActionContext = mock {
-            on { params(":name") } doReturn "minimal"
             on { params(":commit") } doReturn "test"
         }
 
