@@ -216,6 +216,7 @@ describe("runReport", () => {
         const runGroup = wrapper.find("#run-form-group");
         expect(runGroup.exists()).toBe(true);
         expect(runGroup.find("button").text()).toBe("Run report");
+        expect(runGroup.find("button").attributes("disabled")).toBeUndefined();
         expect(runGroup.find("run-report-status").exists()).toBe(false);
     });
 
@@ -225,7 +226,7 @@ describe("runReport", () => {
         expect(runGroup.exists()).toBe(false);
     });
 
-    it("clicking run buttton sends run request and displays status on success", async (done) => {
+    it("clicking run button sends run request and displays status on success", async (done) => {
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(200, {data: {key: "test-key"}});
@@ -248,6 +249,7 @@ describe("runReport", () => {
                 expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: ""});
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
                 expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
+                expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
                 expect(wrapper.vm.runningKey).toBe("test-key");
                 expect(wrapper.vm.error).toBe("");
                 expect(wrapper.vm.defaultMessage).toBe("");
@@ -256,7 +258,7 @@ describe("runReport", () => {
         });
     });
 
-    it("clicking run buttton sends run request and sets error", async (done) => {
+    it("clicking run button sends run request and sets error", async (done) => {
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(500, "TEST ERROR");
@@ -283,7 +285,7 @@ describe("runReport", () => {
         });
     });
 
-    it("clicking 'Check status' sends status request and displays status on success", async (done) => {
+    it("clicking 'Check status' sends status request and displays status on success, and resets disableRun", async (done) => {
         const url = 'http://app/report/test-report/actions/status/test-key/';
         mockAxios.onGet(url)
             .reply(200, {data: {status: "test-status"}});
@@ -297,13 +299,15 @@ describe("runReport", () => {
             });
             await Vue.nextTick();
 
-            //Set data in two stages becausestatus and key get reset by watch on selectedReport change
+            //Set data in two stages because status and key get reset by watch on selectedReport change
             wrapper.setData({
                 runningStatus: "Run started",
-                runningKey: "test-key"
+                runningKey: "test-key",
+                disableRun: true
             });
             await Vue.nextTick();
 
+            expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
             wrapper.find("#run-form-group a").trigger("click");
 
             setTimeout(() => {
@@ -312,6 +316,7 @@ describe("runReport", () => {
 
                 expect(wrapper.find("#run-report-status").text()).toContain("Running status: test-status");
                 expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
+                expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
                 expect(wrapper.vm.error).toBe("");
                 expect(wrapper.vm.defaultMessage).toBe("");
                 done();
@@ -350,15 +355,20 @@ describe("runReport", () => {
         });
     });
 
-    it("changing selectedReport resets runningStatus", async () => {
+    it("changing selectedReport resets runningStatus and enables run", async () => {
         const wrapper = getWrapper();
-        wrapper.setData({runningStatus: "test-status"});
+        wrapper.setData({selectedReport: "previous-report"});
+        await Vue.nextTick();
+
+        wrapper.setData({runningStatus: "test-status", disableRun: true});
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("test-status");
+        expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
 
         wrapper.setData({selectedReport: "test-report"});
         await Vue.nextTick();
         expect(wrapper.vm.runningStatus).toBe("");
+        expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
 
     it("changing a selected instance updates data and resets runningStatus", async () => {
