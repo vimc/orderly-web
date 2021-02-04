@@ -92,22 +92,6 @@
                         this.defaultMessage = "An error occurred refreshing Git commits";
                     });
             },
-            refreshPage: function () {
-                if (this.metadata.git_supported) {
-                    this.selectedBranch = this.gitBranches[0];
-                    this.changedBranch();
-                } else {
-                    this.updateReports();
-                }
-                if (this.metadata.instances_supported) {
-                    const instances = this.metadata.instances;
-                    for (const key in instances) {
-                        if (instances[key].length > 0) {
-                            this.selectedInstances[key] = instances[key][0]
-                        }
-                    }
-                }
-            },
             changedBranch() {
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -143,7 +127,20 @@
             }
         },
         mounted() {
-            this.refreshPage()
+            if (this.metadata.git_supported) {
+                this.selectedBranch = this.gitBranches[0];
+                this.changedBranch();
+            } else {
+                this.updateReports();
+            }
+            if (this.metadata.instances_supported) {
+                const instances = this.metadata.instances;
+                for (const key in instances) {
+                    if (instances[key].length > 0) {
+                        this.selectedInstances[key] = instances[key][0]
+                    }
+                }
+            }
         }
     }
 </script>
