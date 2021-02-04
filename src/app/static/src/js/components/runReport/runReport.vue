@@ -85,7 +85,7 @@
             refreshGit: function () {
                 api.post('/git/fetch/')
                     .then(() => {
-                        this.refreshPage()
+                        this.changedBranch()
                     })
                     .catch((error) => {
                         this.error = error;
