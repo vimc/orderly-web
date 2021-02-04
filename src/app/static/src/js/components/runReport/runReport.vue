@@ -137,11 +137,21 @@
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
-                //TODO: confirm instances format and provide instance(s) - orderly web server expects a single string,
-                //      but our metadata suggests should be returning a map. Check which we've settled on.
+
+                //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
+                //multiple instances - until multiple are accepted, send the selected instance value for instance with
+                //greatest number of options
+                let instance = "";
+                if (this.metadata.instances_supported && this.metadata.instances &&
+                        Object.keys(this.metadata.instances).length > 0) {
+                    const instances = this.metadata.instances;
+                    const instanceName = Object.keys(instances).sort((a, b) => instances[a] < instances[b] ? 1 : -1)[0];
+                    instance = this.selectedInstances[instanceName]
+                }
+
                 const params = {
                     ref: this.selectedCommitId,
-                    instance: ""
+                    instance
                 };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
                     .then(({data}) => {

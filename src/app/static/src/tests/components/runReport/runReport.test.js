@@ -19,23 +19,25 @@ describe("runReport", () => {
 
     const gitBranches = ["master", "dev"];
 
+    const props = {
+        metadata: {
+            git_supported: true,
+            instances_supported: false
+        },
+        gitBranches
+    };
+
     const reports = [
         {name: "report1", date: new Date().toISOString()},
         {name: "report2", date: null}
     ];
 
-    const getWrapper = (reports) => {
+    const getWrapper = (reports, propsData = props) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
             .reply(200, {"data": reports});
 
         return mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: false
-                },
-                gitBranches
-            }
+            propsData
         });
     }
 
@@ -230,12 +232,25 @@ describe("runReport", () => {
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(200, {data: {key: "test-key"}});
-        const wrapper = getWrapper();
+
+        const propsData =  {
+            metadata: {
+                git_supported: true,
+                instances_supported: true,
+                instances: {
+                    annexe: ["a1", "a2"],
+                    source:  ["uat", "science", "prod"]
+                }
+            },
+            gitBranches
+        };
+        const wrapper = getWrapper(reports, propsData);
 
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
                 selectedCommitId: "test-commit",
+                selectedInstances: {source: "science", annexe: "a1"},
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
@@ -246,7 +261,7 @@ describe("runReport", () => {
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.post[0].url).toBe(url);
-                expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: ""});
+                expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: "science"});
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
                 expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
                 expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
