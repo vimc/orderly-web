@@ -84,21 +84,55 @@ class RunReportTests
     }
 
     @Test
-    fun `gets parametersForRunReport as expected`()
+    fun `gets parametersForRunReport as expected with commitId`()
     {
+        val branch = "master"
+        val commits = OrderlyServer(AppConfig()).get(
+                "/git/commits",
+                mock {
+                    on { queryString() } doReturn "branch=$branch"
+                }
+        )
+        val commitId = commits.listData(GitCommit::class.java).first().id
+
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
-            on { params(":commit") } doReturn "test"
+            on { params(":commit") } doReturn commitId
         }
 
         val parameters = listOf (
                 Parameters("minimal", ""),
-                Parameters("global", "test")
+                Parameters("global", "default")
         )
 
-        val commit = "test"
         val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/minimal/parameters?commit=$commit", mockContext) } doReturn
+            on { get("/reports/minimal/parameters?commit=$commitId", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
+        }
+
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val result = sut.getParameterRunReports()
+
+        Assertions.assertThat(result.count()).isEqualTo(2)
+        Assertions.assertThat(result).isEqualTo(parameters)
+    }
+
+    @Test
+    fun `gets parametersForRunReport as expected without commitId`()
+    {
+        val commitId = ""
+        val mockContext: ActionContext = mock {
+            on { params(":name") } doReturn "minimal"
+            on { params(":commit") } doReturn commitId
+        }
+
+        val parameters = listOf (
+                Parameters("minimal", ""),
+                Parameters("global", "default")
+        )
+
+        val mockOrderlyServer: OrderlyServerAPI = mock {
+            on { get("/reports/minimal/parameters?commit=$commitId", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
         }
 
