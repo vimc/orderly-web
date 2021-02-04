@@ -40,8 +40,7 @@
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <button @click.prevent="runReport" class="btn" type="submit"
-                            :disabled="disableRun ? 'disabled' : undefined">
+                    <button @click.prevent="runReport" class="btn" type="submit" :disabled="disableRun">
                         Run report
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
