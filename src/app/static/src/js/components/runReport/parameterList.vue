@@ -1,5 +1,5 @@
 <template>
-    <div v-if="hasParams" class="col-sm-6">
+    <div class="col-sm-6">
       <table class="table table-sm table-bordered">
         <tbody>
         <tr v-for="(param, index) in params" :key="index">
@@ -9,7 +9,6 @@
           </label></th>
           <th><input type="text" class="form-control"
                      v-model="param.default"
-
                      :id="`param-control-${index}`"/></th></tr>
         </tbody>
       </table>
@@ -24,19 +23,10 @@ interface Props {
   params: Parameters[]
 }
 
-interface Computed {
-  hasParams: boolean
-}
-
-export default Vue.extend<unknown, Computed, unknown, Props>({
+export default Vue.extend<unknown, unknown, unknown, Props>({
   name: "parameterList",
   props: {
     params: []
-  },
-  computed: {
-    hasParams() {
-      return this.params && this.params.length
-    }
   }
 })
 </script>

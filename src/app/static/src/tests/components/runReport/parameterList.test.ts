@@ -5,8 +5,8 @@ import {Parameters} from "../../../js/utils/types";
 
 describe(`run report parameter list`, () => {
     const params = [
-        {name: "global", report_version: "every_random", type: "number", value: 23},
-        {name: "minimal", report_version: "random_39id", type: "string", value: "Some value"}
+        {name: "global", default: 23},
+        {name: "minimal", default: ""}
         ]
 
     const store = () => shallowMount(ParameterList,
@@ -30,6 +30,6 @@ describe(`run report parameter list`, () => {
 
     it(`does not render ParameterList text control when no data to display`, () => {
         const wrapper = shallowMount(ParameterList)
-        expect(wrapper.find("table").exists()).toBe(false)
+        expect(wrapper.find("table").find("tr").exists()).toBe(false)
     });
 });
