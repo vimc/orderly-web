@@ -44,9 +44,22 @@
                     </div>
                 </div>
             </template>
+            <div v-if="showRunButton" id="run-form-group" class="form-group row">
+                <div class="col-sm-2"></div>
+                <div class="col-sm-6">
+                    <button @click.prevent="runReport" class="btn" type="submit" :disabled="disableRun">
+                        Run report
+                    </button>
+                    <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
+                        {{runningStatus}}
+                        <a @click.prevent="checkStatus" href="#">Check status</a>
+                    </div>
+                 </div>
+            </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
+
 </template>
 
 <script>
@@ -76,6 +89,9 @@
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
+                runningStatus: "",
+                runningKey: "",
+                disableRun: false
             }
         },
         computed: {
@@ -87,6 +103,9 @@
             },
             showInstances() {
                 return this.metadata.instances_supported && this.selectedReport;
+            },
+            showRunButton() {
+                return !!this.selectedReport;
             }
         },
         methods: {
@@ -135,6 +154,58 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching reports";
                     });
+            },
+            runReport() {
+                //TODO: Include parameters and changelog message when implemented
+                //TODO: Add link to running report log on response, when implemented
+
+                //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
+                //multiple instances - until multiple are accepted, send the selected instance value for instance with
+                //greatest number of options
+                let instance = "";
+                if (this.metadata.instances_supported && this.metadata.instances &&
+                        Object.keys(this.metadata.instances).length > 0) {
+                    const instances = this.metadata.instances;
+                    const instanceName = Object.keys(instances).sort((a, b) => instances[a] < instances[b] ? 1 : -1)[0];
+                    instance = this.selectedInstances[instanceName]
+                }
+
+                const params = {
+                    ref: this.selectedCommitId,
+                    instance
+                };
+                api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
+                    .then(({data}) => {
+                        this.disableRun = true;
+                        this.runningKey = data.data.key;
+                        this.runningStatus = "Run started";
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred when running report";
+                    });
+            },
+            checkStatus() {
+                //TODO: This can be removed, along with the check status link once the logging page is in - but is a
+                //handy diagnostic for now
+                api.get(`/report/${this.selectedReport}/actions/status/${this.runningKey}/`)
+                    .then(({data}) => {
+                        this.runningStatus = `Running status: ${data.data.status}`;
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred when fetching report status";
+                    });
+                this.disableRun = false;
+            },
+            clearRun() {
+                this.runningStatus = "";
+                this.runningKey = "";
+                this.disableRun = false;
             }
         },
         mounted() {
@@ -144,12 +215,24 @@
             } else {
                 this.updateReports();
             }
+
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
                     if (instances[key].length > 0) {
-                        this.selectedInstances[key] = instances[key][0]
+                        this.$set(this.selectedInstances, key, instances[key][0]);
                     }
+                }
+            }
+        },
+        watch: {
+            selectedReport() {
+                this.clearRun();
+            },
+            selectedInstances: {
+                deep: true,
+                handler() {
+                    this.clearRun();
                 }
             }
         }
