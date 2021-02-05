@@ -148,9 +148,12 @@ export default Vue.extend({
       api.get(`/reports/${this.selectedReport}/${commit}`)
           .then(({data}) => {
             this.parameterValues = data.data
+            this.error = "";
+            this.defaultMessage = "";
           })
           .catch((error) => {
             this.error = error
+            this.defaultMessage = "An error occurred when getting parameters";
           })
     },
     runReport() {

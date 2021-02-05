@@ -38,7 +38,7 @@ describe("runReport", () => {
         {name: "report2", date: null}
     ];
 
-    const getWrapper = (report= reports, propsData = props) => {
+    const getWrapper = (report = reports, propsData = props) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
             .reply(200, {"data": reports});
 
@@ -264,6 +264,60 @@ describe("runReport", () => {
         expect(wrapper.find(ParameterList).exists()).toBe(false);
     });
 
+    it("parameters endpoint can get data successfully", async (done) => {
+        const mockAxiosParam = [{name: "minimal", default: "random_39id"}]
+        const url = "http://app/reports/minimal/?commit=abcdef"
+
+        mockAxios.onGet(url)
+            .reply(200, {"data": mockAxiosParam});
+
+        const wrapper = getWrapper()
+        setTimeout(async () => {
+            wrapper.setData({
+                selectedReport: "minimal",
+                error: "test-error",
+                defaultMessage: "test-msg",
+                parameterValues: []
+            });
+            await Vue.nextTick();
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe(url);
+                expect(wrapper.find("#parameters").exists()).toBe(true);
+                expect(wrapper.vm.$data.parameterValues).toMatchObject(mockAxiosParam);
+                expect(wrapper.vm.$data.error).toBe("");
+                expect(wrapper.vm.$data.defaultMessage).toBe("");
+                done();
+            });
+        });
+    })
+
+    it("parameters endpoint can set defaultmessage when errored", (done) => {
+        const url = "http://app/reports/minimal/?commit=test-commit"
+        mockAxios.onGet(url)
+            .reply(500, "Parameter fetching error");
+
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            wrapper.setData({
+                selectedReport: "minimal",
+                selectedCommitId: "test-commit",
+                error: "",
+                defaultMessage: ""
+            });
+
+            setTimeout(() => {
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe(url);
+                expect(wrapper.find("#parameters").exists()).toBe(false);
+                expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when getting parameters");
+                done();
+            });
+        });
+    });
+
     it("does not render parameters control if parameters and selected report data do not exist", () => {
         const wrapper = mount(RunReport, {
             propsData: {
@@ -302,17 +356,21 @@ describe("runReport", () => {
     });
 
     it("clicking run button sends run request and displays status on success", async (done) => {
+        const param_url = "http://app/reports/test-report/?commit=test-commit"
+        mockAxios.onGet(param_url)
+            .reply(200, {"data": []});
+
         const url = 'http://app/report/test-report/actions/run/';
         mockAxios.onPost(url, {})
             .reply(200, {data: {key: "test-key"}});
 
-        const propsData =  {
+        const propsData = {
             metadata: {
                 git_supported: true,
                 instances_supported: true,
                 instances: {
                     annexe: ["a1", "a2"],
-                    source:  ["uat", "science", "prod"]
+                    source: ["uat", "science", "prod"]
                 }
             },
             gitBranches
@@ -333,6 +391,8 @@ describe("runReport", () => {
 
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.get.length).toBe(3);
+                expect(mockAxios.history.get[2].url).toBe(param_url);
                 expect(mockAxios.history.post[0].url).toBe(url);
                 expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: "science"});
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
