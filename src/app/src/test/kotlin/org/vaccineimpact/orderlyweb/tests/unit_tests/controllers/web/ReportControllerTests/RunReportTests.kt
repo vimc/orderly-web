@@ -85,8 +85,8 @@ class RunReportTests {
         }
 
         val parameters = listOf(
-                Parameters("minimal", ""),
-                Parameters("global", "default")
+                Parameter("minimal", ""),
+                Parameter("global", "default")
         )
 
         val mockOrderlyServer: OrderlyServerAPI = mock {
@@ -107,8 +107,8 @@ class RunReportTests {
         }
 
         val parameters = listOf(
-                Parameters("minimal", ""),
-                Parameters("global", "default")
+                Parameter("minimal", ""),
+                Parameter("global", "default")
         )
 
         val mockOrderlyServer: OrderlyServerAPI = mock {

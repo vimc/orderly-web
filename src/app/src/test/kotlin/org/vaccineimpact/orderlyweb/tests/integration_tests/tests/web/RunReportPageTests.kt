@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.models.GitCommit
-import org.vaccineimpact.orderlyweb.models.Parameters
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
