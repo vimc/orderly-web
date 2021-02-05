@@ -8,6 +8,13 @@
                         <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
                     </select>
                 </div>
+                <button @click.prevent="refreshGit"
+                    id="git-refresh-btn"
+                    class="btn col-sm-1"
+                    :disabled="gitRefreshing"
+                    type="submit">
+                    Refresh git
+                </button>
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -38,7 +45,6 @@
                 </div>
             </template>
         </form>
-        <button @click="refreshGit" id="git-refresh-btn" class="btn mt-2" type="submit" v-if="metadata.git_supported">Refresh git</button>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -60,6 +66,8 @@
         },
         data: () => {
             return {
+                gitRefreshing: false,
+                // gitBranches: [],
                 gitCommits: [],
                 reports: [],
                 selectedBranch: "",
@@ -83,11 +91,14 @@
         },
         methods: {
             refreshGit: function () {
+                this.gitRefreshing = true
                 api.post('/git/fetch/')
                     .then(() => {
+                        this.gitRefreshing = false
                         this.changedBranch()
                     })
                     .catch((error) => {
+                        this.gitRefreshing = false
                         this.error = error;
                         this.defaultMessage = "An error occurred refreshing Git commits";
                     });
