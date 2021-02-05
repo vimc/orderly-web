@@ -5,7 +5,7 @@
                 <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
                     <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                        <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
+                        <option v-for="branch in initialGitBranches" :value="branch">{{ branch }}</option>
                     </select>
                 </div>
                 <button @click.prevent="refreshGit"
@@ -119,7 +119,7 @@
                     .catch((error) => {
                         this.gitRefreshing = false
                         this.error = error;
-                        this.defaultMessage = "An error occurred refreshing Git commits";
+                        this.defaultMessage = "An error occurred refreshing Git";
                     });
             },
             changedBranch() {
@@ -210,8 +210,8 @@
         },
         mounted() {
             if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.gitBranches[0];
+                // this.gitBranches = [...this.initialGitBranches]
+                this.selectedBranch = this.initialGitBranches[0];
                 this.changedBranch();
             } else {
                 this.updateReports();
@@ -230,7 +230,7 @@
             gitBranches(){
                 this.gitCommits = [];
                 this.reports = [];
-                this.selectedBranch = this.gitBranches[0];
+                this.selectedBranch = this.initialGitBranches[0];
                 this.selectedCommitId = [];
                 this.selectedReport = "";
                 this.changedBranch()
