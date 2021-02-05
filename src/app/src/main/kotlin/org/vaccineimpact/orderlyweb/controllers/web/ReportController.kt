@@ -24,19 +24,17 @@ class ReportController(
     private val orderlyServerAPI: OrderlyServerAPI,
     private val reportRepository: ReportRepository,
     private val tagRepository: TagRepository
-) : Controller(context)
-{
+) : Controller(context) {
     constructor(context: ActionContext) : this(
-        context,
-        Orderly(context),
-        OrderlyServer(AppConfig()),
-        OrderlyReportRepository(context),
-        OrderlyWebTagRepository()
+            context,
+            Orderly(context),
+            OrderlyServer(AppConfig()),
+            OrderlyReportRepository(context),
+            OrderlyWebTagRepository()
     )
 
     @Template("report-page.ftl")
-    fun getByNameAndVersion(): ReportVersionPageViewModel
-    {
+    fun getByNameAndVersion(): ReportVersionPageViewModel {
         val reportName = context.params(":name")
         val version = context.params(":version")
         val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
@@ -46,49 +44,40 @@ class ReportController(
     }
 
     @Template("run-report-page.ftl")
-    fun getRunReport(): RunReportViewModel
-    {
+    fun getRunReport(): RunReportViewModel {
         val metadata = orderlyServerAPI
                 .throwOnError()
                 .get("/run-metadata", context)
                 .data(RunReportMetadata::class.java)
 
-        val gitBranches = if (metadata.gitSupported)
-        {
+        val gitBranches = if (metadata.gitSupported) {
             val branchResponse = orderlyServerAPI
                     .throwOnError()
                     .get("/git/branches", context)
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }
-        }
-        else
-        {
+        } else {
             listOf()
         }
 
         return RunReportViewModel(context, metadata, gitBranches)
     }
 
-    fun getRunnableReports(): List<ReportWithDate>
-    {
+    fun getRunnableReports(): List<ReportWithDate> {
         val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)
         val versionedReports = reportRepository.getLatestReportVersions(reports)
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
 
-    fun getParameterRunReports(): List<Parameters>
-    {
+    fun getRunReportParameters(): List<Parameters> {
         val name = context.params(":name")
-        val commit = context.params(":commit")
-
         return orderlyServerAPI
-                .get("/reports/$name/parameters?commit=$commit", context)
+                .get("/reports/$name/parameters", context)
                 .listData(Parameters::class.java)
     }
 
-    fun tagVersion(): String
-    {
+    fun tagVersion(): String {
         val reportName = context.params(":name")
         val versionId = context.params(":version")
         reportRepository.getReportVersion(reportName, versionId)
@@ -99,13 +88,11 @@ class ReportController(
     }
 
     @Template("publish-reports.ftl")
-    fun getPublishReports(): PublishReportsViewModel
-    {
+    fun getPublishReports(): PublishReportsViewModel {
         return PublishReportsViewModel(context)
     }
 
-    fun getDrafts(): List<ReportWithDraftsViewModel>
-    {
+    fun getDrafts(): List<ReportWithDraftsViewModel> {
         val reports = reportRepository.getReportsWithPublishStatus()
         val drafts = reportRepository.getDrafts()
         return reports.map { report ->
@@ -113,18 +100,15 @@ class ReportController(
         }.filter { it.dateGroups.any() }
     }
 
-    fun setGlobalPinnedReports(): String
-    {
+    fun setGlobalPinnedReports(): String {
         val reports = context.postData<List<String>>("reports")
 
         reports.forEach {
-            if (!reportRepository.reportExists(it))
-            {
+            if (!reportRepository.reportExists(it)) {
                 throw BadRequest("Report '$it' does not exist")
             }
         }
-        if (reports.distinct().count() < reports.count())
-        {
+        if (reports.distinct().count() < reports.count()) {
             throw BadRequest("Cannot include the same pinned report twice")
         }
 
@@ -133,8 +117,7 @@ class ReportController(
         return okayResponse()
     }
 
-    fun publishReports(): String
-    {
+    fun publishReports(): String {
         val ids = context.postData<List<String>>("ids")
         reportRepository.publish(ids)
         return okayResponse()

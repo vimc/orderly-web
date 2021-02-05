@@ -13,11 +13,9 @@ import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTes
 import spark.route.HttpMethod
 import java.net.URLEncoder
 
-class VersionTests : IntegrationTest()
-{
+class VersionTests : IntegrationTest() {
     @Test
-    fun `only report reviewers can publish report version`()
-    {
+    fun `only report reviewers can publish report version`() {
         val version = JooqContext().use {
             it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
                     .from(REPORT_VERSION)
@@ -35,22 +33,19 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `only report readers can get resource`()
-    {
+    fun `only report readers can get resource`() {
         val (report, url) = getAnyArtefactUrl()
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))), ContentTypes.binarydata)
     }
 
     @Test
-    fun `only report readers can get artefact`()
-    {
+    fun `only report readers can get artefact`() {
         val (report, url) = getAnyArtefactUrl()
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))), ContentTypes.binarydata)
     }
 
     @Test
-    fun `only report readers can get zip file`()
-    {
+    fun `only report readers can get zip file`() {
         val version = JooqContext().use {
 
             it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
@@ -70,34 +65,30 @@ class VersionTests : IntegrationTest()
     }
 
     @Test
-    fun `only report readers can get csv data`()
-    {
+    fun `only report readers can get csv data`() {
         val (report, url) = getAnyDataUrl()
         assertWebUrlSecured("$url?type=csv", setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
                 contentType = ContentTypes.binarydata)
     }
 
     @Test
-    fun `only report readers can get rds data`()
-    {
+    fun `only report readers can get rds data`() {
         val (report, url) = getAnyDataUrl()
         assertWebUrlSecured("$url?type=rds", setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))),
                 contentType = ContentTypes.binarydata)
     }
 
     @Test
-    fun `only report readers can get tags`()
-    {
+    fun `only report readers can get tags`() {
         val (report, url) = getAnyTagsUrl()
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.read",
                 Scope.Specific("report", report))), ContentTypes.json)
     }
 
-    private fun getAnyTagsUrl(): Pair<String, String>
-    {
+    private fun getAnyTagsUrl(): Pair<String, String> {
         val version = JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID,ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                     .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()
@@ -110,8 +101,7 @@ class VersionTests : IntegrationTest()
         return Pair(reportName, url)
     }
 
-    private fun getAnyDataUrl(): Pair<String, String>
-    {
+    private fun getAnyDataUrl(): Pair<String, String> {
         val data = JooqContext().use {
 
             it.dsl.select(REPORT_VERSION_DATA.NAME, ORDERLYWEB_REPORT_VERSION_FULL.REPORT, REPORT_VERSION_DATA.REPORT_VERSION)
@@ -129,8 +119,7 @@ class VersionTests : IntegrationTest()
         return Pair(report, "/report/$report/version/$version/data/$name/")
     }
 
-    private fun getAnyResourceUrl(): Pair<String, String>
-    {
+    private fun getAnyResourceUrl(): Pair<String, String> {
         val resource = JooqContext().use {
 
             it.dsl.select(FILE_INPUT.FILENAME, FILE_INPUT.REPORT_VERSION, REPORT_VERSION.REPORT)
@@ -150,8 +139,7 @@ class VersionTests : IntegrationTest()
         return Pair(report, "/report/$report/version/$version/resources/$encodedFileName/")
     }
 
-    private fun getAnyArtefactUrl(): Pair<String, String>
-    {
+    private fun getAnyArtefactUrl(): Pair<String, String> {
         val resource = JooqContext().use {
 
             it.dsl.select(FILE_ARTEFACT.FILENAME, REPORT_VERSION_ARTEFACT.REPORT_VERSION, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)

@@ -15,8 +15,6 @@ formatting:
     active: false
   SpacingAroundKeyword:
     active: false
-  ParameterListWrapping:
-    active: false
 
 style:
   MandatoryBracesIfStatements:

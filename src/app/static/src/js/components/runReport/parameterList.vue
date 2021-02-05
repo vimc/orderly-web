@@ -1,32 +1,58 @@
 <template>
-    <div class="col-sm-6">
-      <table class="table table-sm table-bordered">
-        <tbody>
-        <tr v-for="(param, index) in params" :key="index">
-          <th><label :for="`param-control-${index}`"
-                     class="col-sm-2 col-form-label text-right">
-                     {{param.name}}
-          </label></th>
-          <th><input type="text" class="form-control"
-                     v-model="param.default"
-                     :id="`param-control-${index}`"/></th></tr>
-        </tbody>
-      </table>
-    </div>
+  <div class="col-sm-6">
+    <table class="table table-sm table-bordered">
+      <tbody>
+      <tr v-for="(params, index) in paramValues" :key="index">
+        <th><label :for="`param-control-${index}`"
+                   class="col-sm-2 col-form-label text-right">
+          {{ params.name }}
+        </label></th>
+        <td><input type="text" class="form-control"
+                   v-model="getValues[index].default" ref="foo"
+                   :id="`param-control-${index}`"/></td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import {Parameters} from "../../utils/types";
+import {Parameter} from "../../utils/types";
 
 interface Props {
-  params: Parameters[]
+  params: Parameter[]
 }
 
-export default Vue.extend<unknown, unknown, unknown, Props>({
+interface Data {
+  paramValues: Parameter[]
+}
+
+interface Computed {
+  getValues: Parameter[]
+}
+
+export default Vue.extend<Data, Computed, unknown, Props>({
   name: "parameterList",
   props: {
     params: []
+  },
+  data(): Data {
+    return {
+      paramValues: this.params
+    }
+  },
+  computed: {
+    getValues: {
+      set: function (values) {
+        values.forEach((value, key) => {
+          this.paramValues[key] = value
+        })
+      },
+      get: function () {
+        return this.paramValues
+      }
+    }
   }
 })
 </script>

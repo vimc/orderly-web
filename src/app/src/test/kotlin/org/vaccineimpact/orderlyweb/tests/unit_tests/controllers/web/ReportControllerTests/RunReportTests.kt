@@ -10,13 +10,10 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.*
-import java.time.Instant
 
-class RunReportTests
-{
+class RunReportTests {
     private val fakeBranchResponse = listOf(mapOf("name" to "master"), mapOf("name" to "dev"))
     private val fakeMetadata = RunReportMetadata(instancesSupported = true,
             gitSupported = true,
@@ -24,8 +21,7 @@ class RunReportTests
             changelogTypes = listOf("internal", "published"))
 
     @Test
-    fun `getRunReport creates viewmodel`()
-    {
+    fun `getRunReport creates viewmodel`() {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mockContext) } doReturn
@@ -50,8 +46,7 @@ class RunReportTests
     }
 
     @Test
-    fun `getRunReport returns no branches if git is not supported`()
-    {
+    fun `getRunReport returns no branches if git is not supported`() {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mockContext) } doReturn
@@ -69,8 +64,7 @@ class RunReportTests
     }
 
     @Test
-    fun `getRunReport throws if orderly server returns an error`()
-    {
+    fun `getRunReport throws if orderly server returns an error`() {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mockContext) } doThrow OrderlyServerError("/run-metadata", 400)
@@ -84,60 +78,46 @@ class RunReportTests
     }
 
     @Test
-    fun `gets parametersForRunReport as expected with commitId`()
-    {
-        val branch = "master"
-        val commits = OrderlyServer(AppConfig()).get(
-                "/git/commits",
-                mock {
-                    on { queryString() } doReturn "branch=$branch"
-                }
-        )
-        val commitId = commits.listData(GitCommit::class.java).first().id
-
+    fun `gets parameters for RunReport as expected with commitId`() {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
-            on { params(":commit") } doReturn commitId
+            on { queryParams(":commit") } doReturn "?commit=123"
         }
 
-        val parameters = listOf (
+        val parameters = listOf(
                 Parameters("minimal", ""),
                 Parameters("global", "default")
         )
 
         val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/minimal/parameters?commit=$commitId", mockContext) } doReturn
+            on { get("/reports/minimal/parameters", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
         }
 
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getParameterRunReports()
-
+        val result = sut.getRunReportParameters()
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)
     }
 
     @Test
-    fun `gets parametersForRunReport as expected without commitId`()
-    {
-        val commitId = ""
+    fun `gets parameters for RunReport as expected without commitId`() {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
-            on { params(":commit") } doReturn commitId
         }
 
-        val parameters = listOf (
+        val parameters = listOf(
                 Parameters("minimal", ""),
                 Parameters("global", "default")
         )
 
         val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/minimal/parameters?commit=$commitId", mockContext) } doReturn
+            on { get("/reports/minimal/parameters", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
         }
 
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getParameterRunReports()
+        val result = sut.getRunReportParameters()
 
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)

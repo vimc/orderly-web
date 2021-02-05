@@ -17,20 +17,17 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 
-class RunReportPageTests : IntegrationTest()
-{
+class RunReportPageTests : IntegrationTest() {
     private val runReportsPerm = setOf(ReifiedPermission("reports.run", Scope.Global()))
 
     @Test
-    fun `only report runners can see the page`()
-    {
+    fun `only report runners can see the page`() {
         val url = "/run-report"
         assertWebUrlSecured(url, runReportsPerm)
     }
 
     @Test
-    fun `can get parameters`()
-    {
+    fun `can get parameters`() {
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
@@ -39,16 +36,14 @@ class RunReportPageTests : IntegrationTest()
                 }
         )
         val commit = commits.listData(GitCommit::class.java).first().id
-
-        val url = "/reports/minimal/parameters/$commit"
+        val url = "/reports/minimal/?commit=$commit"
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)
     }
 
     @Test
-    fun `correct page is served`()
-    {
+    fun `correct page is served`() {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie("/run-report", sessionCookie)
         assertThat(response.statusCode).isEqualTo(200)
@@ -58,8 +53,7 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `fetches git branches`()
-    {
+    fun `fetches git branches`() {
         val controller = ReportController(mock(),
                 mock(),
                 OrderlyServer(AppConfig()),
@@ -71,30 +65,29 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `lists runnable reports`()
-    {
+    fun `lists runnable reports`() {
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
-            "/git/commits",
-            mock {
-                on { queryString() } doReturn "branch=$branch"
-            }
+                "/git/commits",
+                mock {
+                    on { queryString() } doReturn "branch=$branch"
+                }
         )
         val commit = commits.listData(GitCommit::class.java).first().id
         val repo = OrderlyReportRepository(true, false)
         val controller = ReportController(
-            mock {
-                on { queryString() } doReturn "branch=$branch&commit=$commit"
-            },
-            mock(),
-            OrderlyServer(AppConfig()),
-            repo,
-            mock()
+                mock {
+                    on { queryString() } doReturn "branch=$branch&commit=$commit"
+                },
+                mock(),
+                OrderlyServer(AppConfig()),
+                repo,
+                mock()
         )
         val result = controller.getRunnableReports()
         assertThat(result).containsExactly(
-            ReportWithDate("global", repo.getLatestVersion("global").date),
-            ReportWithDate("minimal", repo.getLatestVersion("minimal").date)
+                ReportWithDate("global", repo.getLatestVersion("global").date),
+                ReportWithDate("minimal", repo.getLatestVersion("minimal").date)
         )
     }
 }

@@ -12,11 +12,9 @@ import org.vaccineimpact.orderlyweb.tests.createGroup
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 
-class RoleRepositoryTests : CleanDatabaseTests()
-{
+class RoleRepositoryTests : CleanDatabaseTests() {
     @Test
-    fun `gets global report reading roles`()
-    {
+    fun `gets global report reading roles`() {
         insertReport("report1", "version1")
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Global()))
         createGroup("Science", ReifiedPermission("reports.read", Scope.Global()))
@@ -31,19 +29,16 @@ class RoleRepositoryTests : CleanDatabaseTests()
         assertThat(result[0].name).isEqualTo("Funder")
         assertThat(result[0].members.map { it.email })
                 .containsExactlyElementsOf(listOf("funder.a@example.com", "funder.b@example.com"))
-        assertThat(result[0].permissions).
-                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertThat(result[0].permissions).containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
 
         assertThat(result[1].name).isEqualTo("Science")
         assertThat(result[1].members.map { it.email })
                 .containsExactlyElementsOf(listOf("science.user@example.com"))
-        assertThat(result[1].permissions).
-                containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
+        assertThat(result[1].permissions).containsExactlyElementsOf(listOf(ReifiedPermission("reports.read", Scope.Global())))
     }
 
     @Test
-    fun `gets all roles`()
-    {
+    fun `gets all roles`() {
         createGroup("Admin", ReifiedPermission("users.manage", Scope.Global()))
         createGroup("Science", ReifiedPermission("reports.read", Scope.Global()))
         createGroup("Reviewer", ReifiedPermission("reports.review", Scope.Global()))
@@ -52,7 +47,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
         insertUser("notInARole@example.com", "Not Role")
 
         val sut = OrderlyRoleRepository()
-        val result = sut.getAllRoles().sortedBy{r -> r.name}
+        val result = sut.getAllRoles().sortedBy { r -> r.name }
 
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("Admin")
@@ -68,8 +63,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderRoles does not return specific report reading groups`()
-    {
+    fun `getGlobalReportReaderRoles does not return specific report reading groups`() {
         insertReport("report1", "version1")
         createGroup("Tech", ReifiedPermission("reports.read", Scope.Specific("report", "report1")))
         addMembers("Tech", "tech.user@example.com")
@@ -81,8 +75,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderRoles does not return non report reading groups`()
-    {
+    fun `getGlobalReportReaderRoles does not return non report reading groups`() {
         createGroup("Admin", ReifiedPermission("users.manage", Scope.Global()))
         addMembers("Admin", "admin.user@example.com")
 
@@ -93,8 +86,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderRoles returns groups with no members`()
-    {
+    fun `getGlobalReportReaderRoles returns groups with no members`() {
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Global()))
 
         val sut = OrderlyRoleRepository()
@@ -104,8 +96,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getGlobalReportReaderRoles does not return identity groups`()
-    {
+    fun `getGlobalReportReaderRoles does not return identity groups`() {
         insertUser("test.user@example.com", "Test User")
         giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Global())
 
@@ -116,8 +107,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `gets scoped report reading roles`()
-    {
+    fun `gets scoped report reading roles`() {
         insertReport("r1", "version1")
         createGroup("Funder", ReifiedPermission("reports.read", Scope.Specific("report", "r1")))
         createGroup("Science", ReifiedPermission("reports.read", Scope.Specific("report", "r1")))
@@ -143,8 +133,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoless does not return global report reading groups`()
-    {
+    fun `getScopedReportReaderRoless does not return global report reading groups`() {
         insertReport("r1", "version1")
         createGroup("Tech", ReifiedPermission("reports.read", Scope.Global()))
         addMembers("Tech", "tech.user@example.com")
@@ -156,8 +145,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoles does not return wrongly scoped report reading groups`()
-    {
+    fun `getScopedReportReaderRoles does not return wrongly scoped report reading groups`() {
         insertReport("r2", "v1")
         createGroup("Admin", ReifiedPermission("users.manage", Scope.Specific("report", "r2")))
         addMembers("Admin", "admin.user@example.com")
@@ -169,8 +157,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoles does not return non report reading groups`()
-    {
+    fun `getScopedReportReaderRoles does not return non report reading groups`() {
         createGroup("Admin", ReifiedPermission("users.manage", Scope.Global()))
         addMembers("Admin", "admin.user@example.com")
 
@@ -181,8 +168,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoles returns groups with no members`()
-    {
+    fun `getScopedReportReaderRoles returns groups with no members`() {
         insertReport("r1", "v1")
         createGroup("Admin", ReifiedPermission("reports.read", Scope.Specific("report", "r1")))
 
@@ -193,8 +179,7 @@ class RoleRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `getScopedReportReaderRoles does not return identity groups`()
-    {
+    fun `getScopedReportReaderRoles does not return identity groups`() {
         insertReport("r1", "v1")
         insertUser("test.user@example.com", "Test User")
         giveUserGroupPermission("test.user@example.com", "reports.read", Scope.Specific("report", "r1"))
