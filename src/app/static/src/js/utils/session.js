@@ -6,6 +6,7 @@ export const session = function () {
     const NEW_VERSION_FROM_RUN = "newVersionFromRun";
 
     const RUNNING_REPORT_STATUS_KEYS = [RUNNING_STATUS, RUNNING_KEY, NEW_VERSION_FROM_RUN];
+    const RUNNING_REPORTS_KEY = "runningReports";
 
     function getItem(key) {
         return window.sessionStorage.getItem(key);
@@ -38,6 +39,12 @@ export const session = function () {
         },
         removeRunningReportStatus: function (reportName) {
             RUNNING_REPORT_STATUS_KEYS.forEach(x => removeItem(buildStorageKey(reportName, x)));
+        },
+        getRunningReports() {
+            return getItem(RUNNING_REPORTS_KEY) ? JSON.parse(getItem(RUNNING_REPORTS_KEY)) : [];
+        },
+        addRunningReport(key, name, date, instances, params, git_branch, git_commit) {
+            setItem(RUNNING_REPORTS_KEY, JSON.stringify(this.getRunningReports().concat({key, name, date, instances, params, git_branch, git_commit})));
         }
     };
 }();

@@ -59,6 +59,7 @@
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo";
     import ReportList from "./reportList";
+    import {session} from "../../utils/session";
 
     export default {
         name: "runReport",
@@ -159,6 +160,15 @@
                         this.runningStatus = "Run started";
                         this.error = "";
                         this.defaultMessage = "";
+                        session.addRunningReport(
+                            this.runningKey,
+                            this.selectedReport,
+                            Date(),
+                            instance || null, // TODO instances
+                            undefined, // TODO params
+                            this.selectedBranch || null,
+                            this.selectedCommitId || null
+                        );
                     })
                     .catch((error) => {
                         this.error = error;
