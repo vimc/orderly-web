@@ -71,7 +71,7 @@
         name: "runReport",
         props: [
             "metadata",
-            "gitBranches",
+            "initialGitBranches",
         ],
         components: {
             ErrorInfo,
@@ -80,7 +80,7 @@
         data: () => {
             return {
                 gitRefreshing: false,
-                // gitBranches: [],
+                gitBranches: [],
                 gitCommits: [],
                 reports: [],
                 selectedBranch: "",
@@ -114,7 +114,7 @@
                 api.post('/git/fetch/')
                     .then(() => {
                         this.gitRefreshing = false
-                        this.changedBranch()
+                        this.gitBranches = [...this.initialGitBranches]
                     })
                     .catch((error) => {
                         this.gitRefreshing = false
@@ -210,6 +210,7 @@
         },
         mounted() {
             if (this.metadata.git_supported) {
+                this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches[0];
                 this.changedBranch();
             } else {
@@ -226,6 +227,14 @@
             }
         },
         watch: {
+            gitBranches(){
+                this.gitCommits = [];
+                this.reports = [];
+                this.selectedBranch = this.gitBranches[0];
+                this.selectedCommitId = [];
+                this.selectedReport = "";
+                this.changedBranch()
+            },
             selectedReport() {
                 this.clearRun();
             },

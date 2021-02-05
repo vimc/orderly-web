@@ -21,14 +21,14 @@ describe("runReport", () => {
 
     const mockFetch = 'mockFetch'
 
-    const gitBranches = ["master", "dev"];
+    const initialGitBranches = ["master", "dev"];
 
     const props = {
         metadata: {
             git_supported: true,
             instances_supported: false
         },
-        gitBranches
+        initialGitBranches
     };
 
     const reports = [
@@ -50,7 +50,7 @@ describe("runReport", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {git_supported: true, instances_supported: false},
-                gitBranches
+                initialGitBranches
             }
         });
 
@@ -78,7 +78,7 @@ describe("runReport", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {git_supported: false, instances_supported: false},
-                gitBranches: null
+                initialGitBranches: null
             }
         });
 
@@ -97,7 +97,7 @@ describe("runReport", () => {
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {git_supported: true, instances_supported: false},
-                gitBranches
+                initialGitBranches
             }
         });
 
@@ -126,7 +126,7 @@ describe("runReport", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {git_supported: true, instances_supported: false},
-                gitBranches
+                initialGitBranches
             }
         });
 
@@ -141,7 +141,7 @@ describe("runReport", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {git_supported: true, instances_supported: false},
-                gitBranches
+                initialGitBranches
             }
         });
 
@@ -149,7 +149,8 @@ describe("runReport", () => {
         const button = wrapper.find("#git-refresh-btn");
         expect(mockAxios.history.post.length).toBe(0);
         expect(mockAxios.history.get.length).toBe(0);
-        
+        // wrapper.vm.$props.gitBranches
+
         button.trigger("click")
         
         setTimeout(() => {
@@ -196,7 +197,7 @@ describe("runReport", () => {
                         another: []
                     }
                 },
-                gitBranches
+                initialGitBranches
             },
             data() {
                 return {
@@ -228,7 +229,7 @@ describe("runReport", () => {
                         another: []
                     }
                 },
-                gitBranches
+                initialGitBranches
             }
         });
 
@@ -268,7 +269,7 @@ describe("runReport", () => {
                     source:  ["uat", "science", "prod"]
                 }
             },
-            gitBranches
+            initialGitBranches
         };
         const wrapper = getWrapper(reports, propsData);
 
@@ -422,7 +423,7 @@ describe("runReport", () => {
                         source: ["prod", "uat"],
                     }
                 },
-                gitBranches
+                initialGitBranches
             }
         });
         wrapper.setData({selectedReport: "test-report"});
