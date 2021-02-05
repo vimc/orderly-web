@@ -78,7 +78,7 @@ class RunReportTests {
     }
 
     @Test
-    fun `gets parameters for RunReport as expected with commitId`() {
+    fun `gets parameters for report as expected with commitId`() {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
             on { queryParams(":commit") } doReturn "?commit=123"
@@ -95,13 +95,13 @@ class RunReportTests {
         }
 
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getRunReportParameters()
+        val result = sut.getReportParameters()
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)
     }
 
     @Test
-    fun `gets parameters for RunReport as expected without commitId`() {
+    fun `gets parameters for report as expected without commitId`() {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
         }
@@ -117,7 +117,7 @@ class RunReportTests {
         }
 
         val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getRunReportParameters()
+        val result = sut.getReportParameters()
 
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)

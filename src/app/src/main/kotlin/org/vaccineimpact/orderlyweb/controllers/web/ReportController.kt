@@ -70,7 +70,7 @@ class ReportController(
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
 
-    fun getRunReportParameters(): List<Parameters> {
+    fun getReportParameters(): List<Parameters> {
         val name = context.params(":name")
         return orderlyServerAPI
                 .get("/reports/$name/parameters", context)

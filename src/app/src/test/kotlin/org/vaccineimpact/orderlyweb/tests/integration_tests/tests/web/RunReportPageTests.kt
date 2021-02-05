@@ -36,7 +36,7 @@ class RunReportPageTests : IntegrationTest() {
                 }
         )
         val commit = commits.listData(GitCommit::class.java).first().id
-        val url = "/reports/minimal/?commit=$commit"
+        val url = "/reports/minimal/parameters/?commit=$commit"
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)

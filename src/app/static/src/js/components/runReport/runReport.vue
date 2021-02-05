@@ -145,7 +145,7 @@ export default Vue.extend({
     },
     getParameters: function () {
       const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-      api.get(`/reports/${this.selectedReport}/${commit}`)
+      api.get(`/reports/${this.selectedReport}/parameters/${commit}`)
           .then(({data}) => {
             this.parameterValues = data.data
             this.error = "";

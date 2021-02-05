@@ -1,12 +1,11 @@
 import {shallowMount} from "@vue/test-utils";
 import ParameterList from "../../../js/components/runReport/parameterList.vue"
-import Vue from "vue"
 
 
 describe(`run report parameter list`, () => {
     const params = [
-        {name: "global", default: ""},
-        {name: "minimal", default: ""}
+        {name: "global", default: "initial value"},
+        {name: "minimal", default: "initial value 2"}
     ]
 
     const store = () => shallowMount(ParameterList,
