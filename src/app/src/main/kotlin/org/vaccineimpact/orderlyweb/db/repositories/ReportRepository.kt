@@ -10,7 +10,8 @@ import org.vaccineimpact.orderlyweb.models.*
 import java.sql.Timestamp
 import java.time.Instant
 
-interface ReportRepository {
+interface ReportRepository
+{
     fun getAllReports(): List<Report>
     fun getGlobalPinnedReports(): List<Report>
 
@@ -45,16 +46,18 @@ interface ReportRepository {
     fun publish(ids: List<String>)
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+
 }
 
-class OrderlyReportRepository(
-    val isReviewer: Boolean,
-    val isGlobalReader: Boolean,
-    reportReadingScopes: List<String> = listOf()) : ReportRepository {
-    constructor(context: ActionContext) : this(context.isReviewer(),
-            context.isGlobalReader(), context.reportReadingScopes)
+class OrderlyReportRepository(val isReviewer: Boolean,
+                              val isGlobalReader: Boolean,
+                              reportReadingScopes: List<String> = listOf()) : ReportRepository
+{
 
-    override fun getAllReports(): List<Report> {
+    constructor(context: ActionContext) : this(context.isReviewer(), context.isGlobalReader(), context.reportReadingScopes)
+
+    override fun getAllReports(): List<Report>
+    {
         JooqContext().use {
 
             // create a temp table containing the latest version ID for each report name
@@ -73,7 +76,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getReportsByName(name: String): List<String> {
+    override fun getReportsByName(name: String): List<String>
+    {
         JooqContext().use {
 
             val result = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID)
@@ -81,15 +85,19 @@ class OrderlyReportRepository(
                     .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(name)
                             .and(shouldIncludeReportVersion))
 
-            if (result.count() == 0) {
+            if (result.count() == 0)
+            {
                 throw UnknownObjectError(name, "report")
-            } else {
+            }
+            else
+            {
                 return result.fetchInto(String::class.java)
             }
         }
     }
 
-    override fun getGlobalPinnedReports(): List<Report> {
+    override fun getGlobalPinnedReports(): List<Report>
+    {
         JooqContext().use {
 
             val versions = it.dsl
@@ -111,16 +119,16 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest {
-        /* raise exception if version does not belong to named report,
-         or version does not exist
-         */
+    override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
+    {
+        //raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
             return getReportVersion(name, version, it)
         }
     }
 
-    override fun getAllReportVersions(): List<ReportVersionWithDescLatest> {
+    override fun getAllReportVersions(): List<ReportVersionWithDescLatest>
+    {
         JooqContext().use {
             // create a temp table containing the latest version ID for each report name
             val latestVersionForEachReport = getLatestVersionsForReports(it)
@@ -143,7 +151,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun togglePublishStatus(name: String, version: String): Boolean {
+    override fun togglePublishStatus(name: String, version: String): Boolean
+    {
         JooqContext().use {
             val existing = getReportVersion(name, version, it)
             val newStatus = !existing.published
@@ -153,12 +162,15 @@ class OrderlyReportRepository(
                     .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
                     .fetchOne(0, Int::class.java)
 
-            if (rowExists > 0) {
+            if (rowExists > 0)
+            {
                 it.dsl.update(ORDERLYWEB_REPORT_VERSION)
                         .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, newStatus)
                         .where(ORDERLYWEB_REPORT_VERSION.ID.eq(version))
                         .execute()
-            } else {
+            }
+            else
+            {
                 val record = it.dsl.newRecord(ORDERLYWEB_REPORT_VERSION)
                         .apply {
                             this.id = version
@@ -170,7 +182,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getAllCustomFields(): Map<String, String?> {
+    override fun getAllCustomFields(): Map<String, String?>
+    {
         JooqContext().use {
             return it.dsl.select(
                     CUSTOM_FIELDS.ID)
@@ -180,7 +193,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>> {
+    override fun getCustomFieldsForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
         JooqContext().use {
             return it.dsl.select(
                     REPORT_VERSION_CUSTOM_FIELDS.KEY,
@@ -190,21 +204,19 @@ class OrderlyReportRepository(
                     .where(REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION.`in`(versionIds))
                     .fetch()
                     .groupBy { it[REPORT_VERSION_CUSTOM_FIELDS.REPORT_VERSION] }
-                    .mapValues {
-                        it.value.associate {
-                            it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to it[REPORT_VERSION_CUSTOM_FIELDS.VALUE]
-                        }
-                    }
+                    .mapValues { it.value.associate { it[REPORT_VERSION_CUSTOM_FIELDS.KEY] to it[REPORT_VERSION_CUSTOM_FIELDS.VALUE] } }
         }
     }
 
-    override fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>> {
+    override fun getParametersForVersions(versionIds: List<String>): Map<String, Map<String, String>>
+    {
         JooqContext().use { ctx ->
             return getParametersForVersions(versionIds, ctx)
         }
     }
 
-    override fun setGlobalPinnedReports(reportNames: List<String>) {
+    override fun setGlobalPinnedReports(reportNames: List<String>)
+    {
         JooqContext().use {
             it.dsl.transaction { config ->
                 val dsl = using(config)
@@ -221,7 +233,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun reportExists(reportName: String): Boolean {
+    override fun reportExists(reportName: String): Boolean
+    {
         JooqContext().use { ctx ->
             return ctx.dsl.selectFrom(REPORT)
                     .where(REPORT.NAME.eq(reportName))
@@ -230,7 +243,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog> {
+    override fun getDatedChangelogForReport(report: String, latestDate: Instant): List<Changelog>
+    {
         return JooqContext().use {
             it.dsl.select(changelogReportVersionColumnForUser.`as`("REPORT_VERSION"),
                     CHANGELOG.LABEL,
@@ -248,7 +262,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getLatestVersion(report: String): ReportVersionWithDescLatest {
+    override fun getLatestVersion(report: String): ReportVersionWithDescLatest
+    {
         JooqContext().use {
             val latestVersionForEachReport = getLatestVersionsForReports(it)
 
@@ -267,12 +282,13 @@ class OrderlyReportRepository(
                     .where(shouldIncludeReportVersion)
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
-                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java)
-                    ?: throw UnknownObjectError(report, "report")
+                    .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
+
         }
     }
 
-    override fun getDrafts(): List<ReportVersionWithChangelogsParams> {
+    override fun getDrafts(): List<ReportVersionWithChangelogsParams>
+    {
         JooqContext().use {
 
             val records = it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.REPORT,
@@ -321,7 +337,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun getReportsWithPublishStatus(): List<ReportWithPublishStatus> {
+    override fun getReportsWithPublishStatus(): List<ReportWithPublishStatus>
+    {
         JooqContext().use {
             return it.dsl.selectDistinct(REPORT.NAME,
                     firstValue(ORDERLYWEB_REPORT_VERSION_FULL.DISPLAYNAME)
@@ -341,7 +358,8 @@ class OrderlyReportRepository(
         }
     }
 
-    override fun publish(ids: List<String>) {
+    override fun publish(ids: List<String>)
+    {
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_REPORT_VERSION)
                     .set(ORDERLYWEB_REPORT_VERSION.PUBLISHED, true)
@@ -350,8 +368,8 @@ class OrderlyReportRepository(
         }
     }
 
-    private fun getParametersForVersions(versionIds: Collection<String>, ctx: JooqContext): Map<String,
-            Map<String, String>> {
+    private fun getParametersForVersions(versionIds: Collection<String>, ctx: JooqContext): Map<String, Map<String, String>>
+    {
         return ctx.dsl.select(
                 PARAMETERS.REPORT_VERSION,
                 PARAMETERS.NAME,
@@ -363,7 +381,8 @@ class OrderlyReportRepository(
                 .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
     }
 
-    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionWithDescLatest {
+    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionWithDescLatest
+    {
         val latestVersionForEachReport = getLatestVersionsForReports(ctx)
 
         return ctx.dsl.withTemporaryTable(latestVersionForEachReport)
@@ -385,7 +404,8 @@ class OrderlyReportRepository(
                 ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 
-    private fun getLatestVersionsForReports(db: JooqContext): TempTable {
+    private fun getLatestVersionsForReports(db: JooqContext): TempTable
+    {
         return db.dsl.select(
                 ORDERLYWEB_REPORT_VERSION_FULL.REPORT,
                 ORDERLYWEB_REPORT_VERSION_FULL.ID.`as`("latestVersion"),
@@ -397,7 +417,8 @@ class OrderlyReportRepository(
                 .asTemporaryTable(name = "latest_version_for_each_report")
     }
 
-    override fun getLatestReportVersions(reports: List<String>): List<ReportWithDate> {
+    override fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+    {
         JooqContext().use {
             return it.dsl.select(
                     ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
@@ -416,16 +437,14 @@ class OrderlyReportRepository(
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.bitOr(isReviewer))
 
     private val shouldIncludeChangelogItem =
-            if (isReviewer) {
+            if (isReviewer)
                 trueCondition()
-            } else {
+            else
                 CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)
-            }
 
     private val changelogReportVersionColumnForUser =
-            if (isReviewer) {
+            if (isReviewer)
                 CHANGELOG.REPORT_VERSION
-            } else {
+            else
                 CHANGELOG.REPORT_VERSION_PUBLIC
-            }
 }
