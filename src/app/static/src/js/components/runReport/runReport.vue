@@ -15,6 +15,7 @@
                     type="submit">
                     Refresh git
                 </button>
+                <div class="col-sm-1" v-if="gitRefreshing">Fetching...</div>
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -66,6 +67,7 @@
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo";
     import ReportList from "./reportList";
+    // import LoadingSpinner from "./LoadingSpinner.vue";
 
     export default {
         name: "runReport",
@@ -74,6 +76,7 @@
             "initialGitBranches",
         ],
         components: {
+            // LoadingSpinner,
             ErrorInfo,
             ReportList
         },
