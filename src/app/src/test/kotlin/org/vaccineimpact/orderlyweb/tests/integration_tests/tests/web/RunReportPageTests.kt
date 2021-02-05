@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
+import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -12,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.models.GitCommit
+import org.vaccineimpact.orderlyweb.models.Parameters
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -27,7 +29,7 @@ class RunReportPageTests : IntegrationTest() {
     }
 
     @Test
-    fun `can get parameters`() {
+    fun `can return parameter data`() {
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
@@ -37,9 +39,14 @@ class RunReportPageTests : IntegrationTest() {
         )
         val commit = commits.listData(GitCommit::class.java).first().id
         val url = "/reports/minimal/parameters/?commit=$commit"
-        assertWebUrlSecured(url,
+
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "ReportParameters")
     }
 
     @Test
