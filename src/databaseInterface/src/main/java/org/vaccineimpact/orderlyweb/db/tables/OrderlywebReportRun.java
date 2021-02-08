@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row11;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportRunRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
-    private static final long serialVersionUID = -1371881699;
+    private static final long serialVersionUID = 2039135957;
 
     /**
      * The reference instance of <code>orderlyweb_report_run</code>
@@ -45,6 +45,11 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     public Class<OrderlywebReportRunRecord> getRecordType() {
         return OrderlywebReportRunRecord.class;
     }
+
+    /**
+     * The column <code>orderlyweb_report_run.id</code>.
+     */
+    public final TableField<OrderlywebReportRunRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER, this, "");
 
     /**
      * The column <code>orderlyweb_report_run.key</code>.
@@ -62,9 +67,9 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     public final TableField<OrderlywebReportRunRecord, Timestamp> DATE = createField(DSL.name("date"), org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
 
     /**
-     * The column <code>orderlyweb_report_run.report_name</code>.
+     * The column <code>orderlyweb_report_run.report</code>.
      */
-    public final TableField<OrderlywebReportRunRecord, String> REPORT_NAME = createField(DSL.name("report_name"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<OrderlywebReportRunRecord, String> REPORT = createField(DSL.name("report"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>orderlyweb_report_run.instances</code>.
@@ -97,9 +102,9 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     public final TableField<OrderlywebReportRunRecord, String> LOGS = createField(DSL.name("logs"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
-     * The column <code>orderlyweb_report_run.report_id</code>.
+     * The column <code>orderlyweb_report_run.report_version</code>.
      */
-    public final TableField<OrderlywebReportRunRecord, String> REPORT_ID = createField(DSL.name("report_id"), org.jooq.impl.SQLDataType.CLOB, this, "");
+    public final TableField<OrderlywebReportRunRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>orderlyweb_report_run</code> table reference
@@ -146,7 +151,7 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
     @Override
     public List<UniqueKey<OrderlywebReportRunRecord>> getKeys() {
-        return Arrays.<UniqueKey<OrderlywebReportRunRecord>>asList(Keys.PK_ORDERLYWEB_REPORT_RUN);
+        return Arrays.<UniqueKey<OrderlywebReportRunRecord>>asList(Keys.PK_ORDERLYWEB_REPORT_RUN, Keys.SQLITE_AUTOINDEX_ORDERLYWEB_REPORT_RUN_1);
     }
 
     @Override
@@ -189,11 +194,11 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row11 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row11<String, String, Timestamp, String, String, String, String, String, String, String, String> fieldsRow() {
-        return (Row11) super.fieldsRow();
+    public Row12<Integer, String, String, Timestamp, String, String, String, String, String, String, String, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }
