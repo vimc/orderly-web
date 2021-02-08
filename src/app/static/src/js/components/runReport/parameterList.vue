@@ -1,20 +1,20 @@
 <template>
-  <div class="col-sm-6">
-    <table class="table table-sm table-bordered">
-      <tbody>
-      <tr v-for="(params, index) in paramValues" :key="index">
-        <td><label :for="`param-control-${index}`"
-                   class="col-sm-2 col-form-label text-right">
-          {{ params.name }}
-        </label></td>
-        <td><input type="text" class="form-control"
-                   v-model="getValues[index].value" ref="foo"
-                   @change="parameters"
-                   :id="`param-control-${index}`"/></td>
-      </tr>
-      </tbody>
-    </table>
-  </div>
+    <div class="col-sm-6">
+        <table class="table table-sm table-bordered">
+            <tbody>
+            <tr v-for="(params, index) in paramValues" :key="index">
+                <td><label :for="`param-control-${index}`"
+                           class="col-sm-2 col-form-label text-right">
+                    {{ params.name }}
+                </label></td>
+                <td><input type="text" class="form-control"
+                           v-model="getValues[index].value" ref="foo"
+                           @change="parameters"
+                           :id="`param-control-${index}`"/></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
 </template>
 
 <script lang="ts">
