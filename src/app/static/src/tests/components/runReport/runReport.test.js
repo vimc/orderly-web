@@ -199,8 +199,9 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.gitRefreshing).toBe(true);
 
         setTimeout(() => {
-            // expect(wrapper.vm.$data.error).toBe("TEST ERROR"");
-            // expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
+            expect(mockAxios.history.post).toBe(1);
+            expect(wrapper.vm.$data.error).toBe("TEST ERROR");
+            expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
             // expect(wrapper.find(ErrorInfo).props("apiError")).toBe("TEST ERROR");
             // expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred refreshing Git");
             done();

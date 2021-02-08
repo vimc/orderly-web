@@ -17,7 +17,7 @@ object WebGitRouteConfig : RouteConfig
                     .json(),
 
             WebEndpoint("/git/fetch/",
-                    GitController::class, "fetch", method = HttpMethod.post)
+                    GitController::class, "fetch")
                     .secure(runReports)
                     .json()
     )

@@ -5,7 +5,7 @@
                 <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
                     <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                        <option v-for="branch in initialGitBranches" :value="branch">{{ branch }}</option>
+                        <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
                     </select>
                 </div>
                 <button @click.prevent="refreshGit"
@@ -13,9 +13,9 @@
                     class="btn col-sm-1"
                     :disabled="gitRefreshing"
                     type="submit">
-                    Refresh git
+                    {{refreshGitText}}
                 </button>
-                <div class="col-sm-1" v-if="gitRefreshing">Fetching...</div>
+                <!-- <div class="col-sm-1" v-if="gitRefreshing">Fetching...</div> -->
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -98,6 +98,9 @@
             }
         },
         computed: {
+            refreshGitText(){
+                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
+            },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             },
@@ -114,10 +117,10 @@
         methods: {
             refreshGit: function () {
                 this.gitRefreshing = true
-                api.post('/git/fetch/')
-                    .then(() => {
+                api.get('/git/fetch/')
+                    .then(({data}) => {
                         this.gitRefreshing = false
-                        this.gitBranches = [...this.initialGitBranches]
+                        this.gitBranches = data.data
                     })
                     .catch((error) => {
                         this.gitRefreshing = false
@@ -212,9 +215,10 @@
             }
         },
         mounted() {
+            this.gitBranches = [...this.initialGitBranches]
             if (this.metadata.git_supported) {
                 // this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.initialGitBranches[0];
+                this.selectedBranch = this.gitBranches[0];
                 this.changedBranch();
             } else {
                 this.updateReports();
@@ -233,7 +237,7 @@
             gitBranches(){
                 this.gitCommits = [];
                 this.reports = [];
-                this.selectedBranch = this.initialGitBranches[0];
+                this.selectedBranch = this.gitBranches[0];
                 this.selectedCommitId = [];
                 this.selectedReport = "";
                 this.changedBranch()
