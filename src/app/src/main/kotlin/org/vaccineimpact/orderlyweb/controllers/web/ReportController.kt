@@ -19,11 +19,11 @@ import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
 class ReportController(
-        context: ActionContext,
-        val orderly: OrderlyClient,
-        private val orderlyServerAPI: OrderlyServerAPI,
-        private val reportRepository: ReportRepository,
-        private val tagRepository: TagRepository
+    context: ActionContext,
+    val orderly: OrderlyClient,
+    private val orderlyServerAPI: OrderlyServerAPI,
+    private val reportRepository: ReportRepository,
+    private val tagRepository: TagRepository
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
