@@ -22,9 +22,9 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
-import XIcon from "./xIcon"
+    import Vue from "vue";
+    import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
+    import XIcon from "./xIcon.vue"
 
     export default Vue.extend({
         name: "reportList",

@@ -19,8 +19,8 @@ describe("runReport", () => {
     ];
 
     const mockParams = [
-        {name: "global", default: "test"},
-        {name: "minimal", default: "random_39id"}
+        {name: "global", value: "test"},
+        {name: "minimal", value: "random_39id"}
     ]
 
     const gitBranches = ["master", "dev"];
@@ -217,7 +217,12 @@ describe("runReport", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
-    it("it does render parameters control correctly if report is selected and param has data", () => {
+    it("it does emit and render parameters correctly if report is selected and param has data",async() => {
+        const emittedParams = [
+            {name: "global", value: "Set new value"},
+            {name: "minimal", value: "Set new value 2"}
+        ]
+
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
@@ -240,8 +245,13 @@ describe("runReport", () => {
         expect(labels.at(1).text()).toBe("minimal");
 
         const inputs = wrapper.find(ParameterList).findAll("input")
-        expect(inputs.length).toBe(2);
+        inputs.at(0).setValue("Set new value");
+        inputs.at(1).setValue("Set new value 2");
+        await Vue.nextTick()
 
+        wrapper.vm.$emit("getParams", emittedParams)
+        expect(wrapper.emitted("getParams").length).toBe(1)
+        expect(wrapper.vm.$data.parameterValues).toMatchObject(emittedParams)
     });
 
     it("does not render parameters control if report is not selected", () => {
@@ -265,8 +275,8 @@ describe("runReport", () => {
     });
 
     it("parameters endpoint can get data successfully", async (done) => {
-        const mockAxiosParam = [{name: "minimal", default: "random_39id"}]
-        const url = "http://app/reports/minimal/parameters/?commit=abcdef"
+        const mockAxiosParam = [{name: "minimal", value: "random_39id"}]
+        const url = "http://app/report/minimal/parameters/?commit=abcdef"
 
         mockAxios.onGet(url)
             .reply(200, {"data": mockAxiosParam});
@@ -294,7 +304,7 @@ describe("runReport", () => {
     })
 
     it("parameters endpoint can set defaultmessage when errored", (done) => {
-        const url = "http://app/reports/minimal/parameters/?commit=test-commit"
+        const url = "http://app/report/minimal/parameters/?commit=test-commit"
         mockAxios.onGet(url)
             .reply(500, "Parameter fetching error");
 
@@ -356,7 +366,7 @@ describe("runReport", () => {
     });
 
     it("clicking run button sends run request and displays status on success", async (done) => {
-        const param_url = "http://app/reports/test-report/parameters/?commit=test-commit"
+        const param_url = "http://app/report/test-report/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
             .reply(200, {"data": []});
 

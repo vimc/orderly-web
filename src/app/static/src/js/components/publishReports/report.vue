@@ -25,41 +25,41 @@
     </div>
 </template>
 <script>
-import DateGroup from "./dateGroup";
+    import DateGroup from "./dateGroup";
 
-export default {
-    components: {DateGroup},
+    export default {
+        components: {DateGroup},
     props: ["report", "selectedIds", "selectedDates", "expandClicked", "collapseClicked"],
-    data() {
-        return {
-            selected: false
-        }
-    },
-    computed: {
-        dates() {
-            return this.report.date_groups.map(g => g.date)
-        },
-        draftIds() {
-            return [].concat.apply([], this.report.date_groups.map(g => g.drafts.map(d => d.id)))
-        }
-    },
-    methods: {
-        selectReport(e) {
-            const value = e.target.checked
-            this.selected = value
-            this.$emit("select-draft", {ids: this.draftIds, value});
-            this.$emit("select-group", {dates: this.dates, value});
-        },
-        handleDraftSelect(value) {
-            if (!value.value) {
-                // don't want the parent checkbox selected if any child is not
-                this.selected = false
+        data() {
+            return {
+                selected: false
             }
-            this.$emit("select-draft", value)
         },
-        handleGroupSelect(value) {
-            this.$emit("select-group", value);
+        computed: {
+            dates() {
+                return this.report.date_groups.map(g => g.date)
+            },
+            draftIds() {
+                return [].concat.apply([], this.report.date_groups.map(g => g.drafts.map(d => d.id)))
+            }
+        },
+        methods: {
+            selectReport(e) {
+                const value = e.target.checked
+                this.selected = value
+                this.$emit("select-draft", {ids: this.draftIds, value});
+                this.$emit("select-group", {dates: this.dates, value});
+            },
+            handleDraftSelect(value) {
+                if (!value.value) {
+                    // don't want the parent checkbox selected if any child is not
+                    this.selected = false
+                }
+                this.$emit("select-draft", value)
+            },
+            handleGroupSelect(value) {
+                this.$emit("select-group", value);
+            }
         }
     }
-}
 </script>

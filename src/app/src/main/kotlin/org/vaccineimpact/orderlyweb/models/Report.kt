@@ -19,4 +19,4 @@ data class ReportWithDate
 constructor(val name: String, val date: Instant?)
 
 data class Parameter
-constructor (val name: String, val default: String)
+constructor (val name: String, val value: String)

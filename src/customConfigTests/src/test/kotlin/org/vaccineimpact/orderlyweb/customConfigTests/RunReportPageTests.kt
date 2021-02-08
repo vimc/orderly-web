@@ -5,6 +5,8 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
@@ -89,5 +91,26 @@ class RunReportPageTests : SeleniumTest()
 
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Report logs")
         assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Report logs coming soon!")
+    }
+
+    @Test
+    fun `can render parameters text`()
+    {
+        val gitBranch = Select(driver.findElement(By.id("git-branch")))
+        gitBranch.selectByVisibleText("other")
+
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("other")
+
+        val parameters = driver.findElement(By.id("parameters"))
+        val paramInput = parameters.findElements(By.tagName("input"))
+        paramInput[0].sendKeys("param value")
+        assertThat(paramInput[0].text).isEqualTo("param value")
+
+        val paramLabel = parameters.findElements(By.tagName("label"))
+        assertThat(paramLabel.size).isEqualTo(2)
+        assertThat(paramLabel[0].text).isEqualTo("Parameters")
+        assertThat(paramLabel[1].text).isEqualTo("nmin")
     }
 }

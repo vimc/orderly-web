@@ -35,7 +35,7 @@
         },
         computed: {
             sortedPermissions() {
-              return this.permissions.sort(this.sortByName)
+                return this.permissions.sort(this.sortByName)
             },
             globalPermissions() {
                 return this.permissions.filter(p => p.source === this.userGroup && !p.scope_id).map(p => p.name)

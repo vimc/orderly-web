@@ -4,8 +4,8 @@ import ParameterList from "../../../js/components/runReport/parameterList.vue"
 
 describe(`run report parameter list`, () => {
     const params = [
-        {name: "global", default: "initial value"},
-        {name: "minimal", default: "initial value 2"}
+        {name: "global", value: "initial value"},
+        {name: "minimal", value: "initial value 2"}
     ]
 
     const store = () => shallowMount(ParameterList,
@@ -30,8 +30,8 @@ describe(`run report parameter list`, () => {
         inputs.at(1).setValue("test Value2")
 
         expect(wrapper.vm.$data.paramValues).toMatchObject([
-            {name: "global", default: "test Value1"},
-            {name: "minimal", default: "test Value2"}
+            {name: "global", value: "test Value1"},
+            {name: "minimal", value: "test Value2"}
         ])
     });
 

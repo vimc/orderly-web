@@ -1,4 +1,4 @@
 export interface Parameter {
     name: string,
-    default: string
+    value: string
 }

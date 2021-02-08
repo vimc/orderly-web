@@ -37,7 +37,7 @@ class RunReportPageTests : IntegrationTest() {
                 }
         )
         val commit = commits.listData(GitCommit::class.java).first().id
-        val url = "/reports/minimal/parameters/?commit=$commit"
+        val url = "/report/minimal/parameters/?commit=$commit"
 
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),

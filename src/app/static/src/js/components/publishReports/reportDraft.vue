@@ -23,15 +23,15 @@
     </div>
 </template>
 <script>
-export default {
-    name: 'reportDraft',
+    export default {
+        name: 'reportDraft',
     props: ['draft', 'selectedIds', 'expandClicked', 'collapseClicked'],
-    data() {
-        return {
-            showChangelog: false
-        }
-    },
-    computed: {
+        data() {
+            return {
+                showChangelog: false
+            }
+        },
+        computed: {
         selected: {
             get() {
                 return this.selectedIds[this.draft.id]
@@ -40,20 +40,20 @@ export default {
                 this.$emit("select-draft", {id: this.draft.id, value})
             }
         }
-    },
-    methods: {
-        toggleChangelog(e) {
-            e.preventDefault();
-            this.showChangelog = !this.showChangelog;
-        }
-    },
-    watch: {
-        expandClicked() {
-            this.showChangelog = true;
         },
-        collapseClicked() {
-            this.showChangelog = false;
+        methods: {
+            toggleChangelog(e) {
+                e.preventDefault();
+                this.showChangelog = !this.showChangelog;
+            }
+        },
+        watch: {
+            expandClicked() {
+                this.showChangelog = true;
+            },
+            collapseClicked() {
+                this.showChangelog = false;
+            }
         }
     }
-}
 </script>

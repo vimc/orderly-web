@@ -6,9 +6,9 @@
     </svg>
 </template>
 <script lang="ts">
-import Vue from "vue";
+    import Vue from "vue";
 
-export default Vue.extend({
-    name: 'XIcon'
-})
+    export default Vue.extend({
+        name: 'XIcon'
+    })
 </script>
