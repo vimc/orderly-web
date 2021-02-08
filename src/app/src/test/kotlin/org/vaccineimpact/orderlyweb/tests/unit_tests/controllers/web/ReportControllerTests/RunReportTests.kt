@@ -13,7 +13,8 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.*
 
-class RunReportTests {
+class RunReportTests
+{
     private val fakeBranchResponse = listOf(mapOf("name" to "master"), mapOf("name" to "dev"))
     private val fakeMetadata = RunReportMetadata(instancesSupported = true,
             gitSupported = true,
@@ -21,7 +22,8 @@ class RunReportTests {
             changelogTypes = listOf("internal", "published"))
 
     @Test
-    fun `getRunReport creates viewmodel`() {
+    fun `getRunReport creates viewmodel`()
+    {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/git/branches", mockContext) } doReturn
@@ -46,7 +48,8 @@ class RunReportTests {
     }
 
     @Test
-    fun `getRunReport returns no branches if git is not supported`() {
+    fun `getRunReport returns no branches if git is not supported`()
+    {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mockContext) } doReturn
@@ -64,7 +67,8 @@ class RunReportTests {
     }
 
     @Test
-    fun `getRunReport throws if orderly server returns an error`() {
+    fun `getRunReport throws if orderly server returns an error`()
+    {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
             on { get("/run-metadata", mockContext) } doThrow OrderlyServerError("/run-metadata", 400)
@@ -78,7 +82,8 @@ class RunReportTests {
     }
 
     @Test
-    fun `gets parameters for report as expected with commitId`() {
+    fun `gets parameters for report as expected with commitId`()
+    {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
             on { queryParams(":commit") } doReturn "?commit=123"
@@ -101,7 +106,8 @@ class RunReportTests {
     }
 
     @Test
-    fun `gets parameters for report as expected without commitId`() {
+    fun `gets parameters for report as expected without commitId`()
+    {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
         }
