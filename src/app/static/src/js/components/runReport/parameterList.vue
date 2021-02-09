@@ -8,7 +8,7 @@
                     {{ params.name }}
                 </label></td>
                 <td><input type="text" class="form-control"
-                           v-model="getValues[index].value" ref="foo"
+                           v-model="getValues[index].value"
                            @change="parameters"
                            :id="`param-control-${index}`"/></td>
             </tr>
