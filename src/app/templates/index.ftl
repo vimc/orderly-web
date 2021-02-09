@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="reportsJson" type="String" -->
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
+<#-- @ftlvariable name="isReportRunner" type="Boolean" -->
 <#-- @ftlvariable name="showProjectDocs" type="Boolean" -->
 <#macro if if then else=""><#if if>${then}<#else>${else}</#if></#macro>
 <@layout>
@@ -18,6 +19,21 @@
                      fill="currentColor">
                     <path fill-rule="evenodd" d="M10 8L4 3v3H0v4h4v3l6-5z"></path>
                 </svg>
+                </a>
+            </button>
+        </h3>
+    </#if>
+    <#if isReportRunner>
+        <h3 class="mb-3">
+            <button class="ml-5 btn-link btn btn-lg"><a href="${appUrl}/run-report">Run a report
+                    <svg height="40" class="octicon octicon-arrow-right"
+                         viewBox="0 0 10 16"
+                         version="1.1"
+                         width="30"
+                         aria-hidden="true"
+                         fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 8L4 3v3H0v4h4v3l6-5z"></path>
+                    </svg>
                 </a>
             </button>
         </h3>
