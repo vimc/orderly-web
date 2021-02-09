@@ -92,14 +92,23 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can fill change type and message`()
+    fun `can get change type and message`()
     {
-        val mes = driver.findElement(By.id("changelogMessage"))
-        mes.sendKeys("New text message")
-        assertThat(mes.text).isEqualTo("New text message")
+        val typeahead = driver.findElement(By.id("report"))
+        assertThat(typeahead.findElements(By.tagName("a")).size).isEqualTo(2)
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("min")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("changelog-message")))
+        val changeLog = driver.findElement(By.id("changelog-message"))
+        val textarea = changeLog.findElement(By.className("form-control"))
+        textarea.sendKeys("New text message")
+        assertThat(textarea.getAttribute("value")).isEqualTo("New text message")
 
         val changelogType = Select(driver.findElement(By.id("changelogType")))
-        changelogType.selectByVisibleText("public")
-        assertThat(changelogType.firstSelectedOption.text).isEqualTo("public")
+        changelogType.selectByValue("public")
+        assertThat(changelogType.firstSelectedOption.getAttribute("value")).isEqualTo("public")
     }
 }
