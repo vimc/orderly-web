@@ -26,6 +26,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlySchemaTables;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebDocument;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebPinnedReportGlobal;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportRun;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportTag;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersion;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebReportVersionFull;
@@ -62,7 +63,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -326655274;
+    private static final long serialVersionUID = -2045228766;
 
     /**
      * The reference instance of <code>DEFAULT_SCHEMA</code>
@@ -148,6 +149,11 @@ public class DefaultSchema extends SchemaImpl {
      * The table <code>orderlyweb_pinned_report_global</code>.
      */
     public final OrderlywebPinnedReportGlobal ORDERLYWEB_PINNED_REPORT_GLOBAL = OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL;
+
+    /**
+     * The table <code>orderlyweb_report_run</code>.
+     */
+    public final OrderlywebReportRun ORDERLYWEB_REPORT_RUN = OrderlywebReportRun.ORDERLYWEB_REPORT_RUN;
 
     /**
      * The table <code>orderlyweb_report_tag</code>.
@@ -321,6 +327,7 @@ public class DefaultSchema extends SchemaImpl {
             OrderlywebDocument.ORDERLYWEB_DOCUMENT,
             OrderlywebPermission.ORDERLYWEB_PERMISSION,
             OrderlywebPinnedReportGlobal.ORDERLYWEB_PINNED_REPORT_GLOBAL,
+            OrderlywebReportRun.ORDERLYWEB_REPORT_RUN,
             OrderlywebReportTag.ORDERLYWEB_REPORT_TAG,
             OrderlywebReportVersion.ORDERLYWEB_REPORT_VERSION,
             OrderlywebReportVersionFull.ORDERLYWEB_REPORT_VERSION_FULL,
