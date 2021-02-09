@@ -84,7 +84,7 @@ resolve all issues in an existing file then remove any references to it from `co
 ```
 cd src
 # Make sure you have a fresh copy of the db
-rm -r app/demo && rm rm -r app/git ./gradlew :app:generateTestData
+rm -r app/demo && rm -r app/git && ./gradlew :app:generateTestData
 # Generate the classes
 ./gradlew :generateDatabaseInterface
 ```
@@ -166,6 +166,12 @@ Defines a type of permission e.g. 'run reports'
 
 ### orderlyweb_report_tag
 Defines tags at a report level
+
+### orderlyweb_report_run
+Information about a report run i.e. a job sent to orderly.server that is expected to result in a new report version.
+Includes metadata about the relevant report (name, git commit etc), runtime parameters, and outputs (logs etc).
+Note that the `key` column is only valid while the job is in progress. The report_id column is populated only on
+successful job completion.
 
 ### orderlyweb_report_version
 Holds report version data which is managed by OrderlyWeb rather than Orderly - currently just the Published flag.
