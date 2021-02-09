@@ -22,13 +22,13 @@ class GitController(context: ActionContext,
     fun fetch(): String
     {
         val fetchResponse = orderlyServerAPI.post("/v1/reports/git/fetch/", context)
-        // if (fetchResponse == 200)
-        // {
-        //     val branchResponse = orderlyServerAPI
-        //             .throwOnError()
-        //             .get("/git/branches", context)
-        //     return passThroughResponse(branchResponse)
-        // }
+        if (fetchResponse.statusCode == 200)
+        {
+            val branchResponse = orderlyServerAPI
+                    .throwOnError()
+                    .get("/git/branches", context)
+            return passThroughResponse(branchResponse)
+        }
         return passThroughResponse(fetchResponse)
     }
 }

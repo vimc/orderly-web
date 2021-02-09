@@ -119,8 +119,9 @@
                 this.gitRefreshing = true
                 api.get('/git/fetch/')
                     .then(({data}) => {
+                        console.log('something was fetched', data)
                         this.gitRefreshing = false
-                        this.gitBranches = data.data
+                        this.gitBranches = data.data.map(branch => branch.name)
                     })
                     .catch((error) => {
                         this.gitRefreshing = false
@@ -218,7 +219,7 @@
             this.gitBranches = [...this.initialGitBranches]
             if (this.metadata.git_supported) {
                 // this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.gitBranches[0];
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
             } else {
                 this.updateReports();
@@ -237,7 +238,13 @@
             gitBranches(){
                 this.gitCommits = [];
                 this.reports = [];
-                this.selectedBranch = this.gitBranches[0];
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
+                // if (this.gitBranches.length){
+                //     this.selectedBranch = this.gitBranches[0]
+                //     if (typeof(this.selectedBranch) !== "string"){
+                //         this.selectedBranch = this.selectedBranch.name
+                //     }
+                // } else this.selectedBranch = []
                 this.selectedCommitId = [];
                 this.selectedReport = "";
                 this.changedBranch()
