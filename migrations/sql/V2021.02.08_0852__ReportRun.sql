@@ -1,7 +1,7 @@
 CREATE TABLE orderlyweb_report_run
 (
     id             INTEGER PRIMARY KEY,
-    key            TEXT      NOT NULL UNIQUE,
+    key            TEXT      NOT NULL,
     email          TEXT      NOT NULL,
     date           TIMESTAMP NOT NULL,
     report         TEXT      NOT NULL,

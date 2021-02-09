@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportRunRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
-    private static final long serialVersionUID = 2039135957;
+    private static final long serialVersionUID = -729066364;
 
     /**
      * The reference instance of <code>orderlyweb_report_run</code>
@@ -151,7 +151,7 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
     @Override
     public List<UniqueKey<OrderlywebReportRunRecord>> getKeys() {
-        return Arrays.<UniqueKey<OrderlywebReportRunRecord>>asList(Keys.PK_ORDERLYWEB_REPORT_RUN, Keys.SQLITE_AUTOINDEX_ORDERLYWEB_REPORT_RUN_1);
+        return Arrays.<UniqueKey<OrderlywebReportRunRecord>>asList(Keys.PK_ORDERLYWEB_REPORT_RUN);
     }
 
     @Override
