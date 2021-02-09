@@ -58,7 +58,6 @@ describe("runReport", () => {
 
         expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
         const options = wrapper.findAll("#git-branch-form-group select option");
-        // expect(options).toBe(2);
         expect(options.length).toBe(2);
         expect(options.at(0).text()).toBe("master");
         expect(options.at(0).attributes().value).toBe("master");
