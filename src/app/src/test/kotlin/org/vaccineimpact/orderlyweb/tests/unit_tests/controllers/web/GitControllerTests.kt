@@ -29,18 +29,6 @@ class GitControllerTests : ControllerTest()
         assertThat(result).isEqualTo(Serializer.instance.toResult(listOf(1, 2, 3)))
     }
 
-    fun `status gets status from orderly`()
-    {
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
-            on { it.get("/v1/reports/git/status/", mockContext) } doReturn mockResponse
-        }
-
-        val sut = GitController(mockContext, mockOrderlyServer)
-        val response = sut.status()
-
-        assertThat(response).isEqualTo("testResponse")
-    }
-
     @Test
     fun `fetch gets response from orderly`()
     {
@@ -50,19 +38,6 @@ class GitControllerTests : ControllerTest()
 
         val sut = GitController(mockContext, mockOrderlyServer)
         val response = sut.fetch()
-
-        assertThat(response).isEqualTo("testResponse")
-    }
-
-    @Test
-    fun `pull gets response from orderly`()
-    {
-        val mockOrderlyServer = mock<OrderlyServerAPI>{
-            on { it.post("/v1/reports/git/pull/", mockContext) } doReturn mockResponse
-        }
-
-        val sut = GitController(mockContext, mockOrderlyServer)
-        val response = sut.pull()
 
         assertThat(response).isEqualTo("testResponse")
     }

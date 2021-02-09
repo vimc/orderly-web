@@ -10,7 +10,7 @@ describe("runReport", () => {
         mockAxios.reset();
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": gitCommits});
-        mockAxios.onPost('http://app/git/fetch/')
+        mockAxios.onGet('http://app/git/fetch/')
             .reply(200, {"data": mockFetch});
     });
 
@@ -45,7 +45,7 @@ describe("runReport", () => {
         });
     }
 
-    it("renders git branch drop down and fetches commits if git supported", (done) => {
+    it("renders git branch drop down and fetches commits if git supported", async (done) => {
 
         const wrapper = shallowMount(RunReport, {
             propsData: {
@@ -54,8 +54,11 @@ describe("runReport", () => {
             }
         });
 
+        await Vue.nextTick()
+
         expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
         const options = wrapper.findAll("#git-branch-form-group select option");
+        // expect(options).toBe(2);
         expect(options.length).toBe(2);
         expect(options.at(0).text()).toBe("master");
         expect(options.at(0).attributes().value).toBe("master");
@@ -88,7 +91,7 @@ describe("runReport", () => {
         expect(wrapper.find("#git-commit-form-group").exists()).toBe(false);
     });
 
-    it("calls api to get commits when branch changes and updates commits drop down", (done) => {
+    it("calls api to get commits when branch changes and updates commits drop down", async (done) => {
         mockAxios.onGet('http://app/git/branch/dev/commits/')
             .reply(200, {"data": gitCommits});
         mockAxios.onGet('http://app/reports/runnable/?branch=dev&commit=abcdef')
@@ -100,6 +103,8 @@ describe("runReport", () => {
                 initialGitBranches
             }
         });
+
+        await Vue.nextTick();
 
         wrapper.findAll("#git-branch option").at(1).setSelected();
 
@@ -137,105 +142,88 @@ describe("runReport", () => {
         })
     });
 
-    // it("renders refresh git button if git_supported and posts git fetch to api on click ", (done) => {
-    //     const wrapper = shallowMount(RunReport, {
-    //         propsData: {
-    //             metadata: {git_supported: true, instances_supported: false},
-    //             initialGitBranches
-    //         }
-    //     });
+    it("renders refresh git button if git_supported and fetches on click ", async (done) => {
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {git_supported: true, instances_supported: false},
+                initialGitBranches
+            }
+        });
 
-    //     expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
-    //     const button = wrapper.find("#git-refresh-btn");
-    //     expect(mockAxios.history.post.length).toBe(0);
-    //     expect(mockAxios.history.get.length).toBe(0);
+        await Vue.nextTick();
 
-    //     expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
-    //     const options = wrapper.findAll("#git-branch-form-group select option");
+        expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
+        const button = wrapper.find("#git-refresh-btn");
+        expect(mockAxios.history.get.length).toBe(2);
 
-    //     wrapper.vm.$props.initialGitBranches = ["master2", "dev2"];
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(true);
+        const options = wrapper.findAll("#git-branch-form-group select option");
 
-    //     expect(options.length).toBe(2);
-    //     expect(options.at(0).text()).toBe("master");
-    //     expect(options.at(0).attributes().value).toBe("master");
-    //     expect(options.at(1).text()).toBe("dev");
-    //     expect(options.at(1).attributes().value).toBe("dev");
+        expect(options.length).toBe(2);
+        expect(options.at(0).text()).toBe("master");
+        expect(options.at(0).attributes().value).toBe("master");
+        expect(options.at(1).text()).toBe("dev");
+        expect(options.at(1).attributes().value).toBe("dev");
         
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(false);
-    //     expect(button.attributes("disabled")).toBeUndefined();
+        expect(wrapper.vm.$data.gitRefreshing).toBe(false);
+        expect(button.attributes("disabled")).toBeUndefined();
+        expect(button.text()).toBe("Refresh git");
 
-    //     button.trigger("click")
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(true);
-    //     // expect(button.attributes("disabled")).toBe("disabled");
+        button.trigger("click")
+        expect(wrapper.vm.$data.gitRefreshing).toBe(true);
+        await Vue.nextTick();
+        expect(button.attributes("disabled")).toBe("disabled");
+        expect(button.text()).toBe("Fetching...");
         
-    //     setTimeout(() => {
-    //         expect(mockAxios.history.post.length).toBe(1);
-    //         expect(mockAxios.history.get.length).toBe(4);
-    //         expect(wrapper.vm.$data.gitRefreshing).toBe(false);
-    //         expect(button.attributes("disabled")).toBeUndefined();
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(6);
+            expect(wrapper.vm.$data.gitRefreshing).toBe(false);
+            expect(button.attributes("disabled")).toBeUndefined();
+            expect(button.text()).toBe("Refresh git");
 
-    //         expect(options.length).toBe(2);
-    //         expect(options.at(0).text()).toBe("master2");
-    //         expect(options.at(0).attributes().value).toBe("master2");
-    //         expect(options.at(1).text()).toBe("dev2");
-    //         expect(options.at(1).attributes().value).toBe("dev2");
-    //         done();
-    //     })
-    // });
+            expect(options.length).toBe(2);
+            expect(options.at(0).text()).toBe("master2");
+            expect(options.at(0).attributes().value).toBe("master2");
+            expect(options.at(1).text()).toBe("dev2");
+            expect(options.at(1).attributes().value).toBe("dev2");
+            done();
+        })
+    });
 
-    // it("show error message if error refreshing git", (done) => {
-    //     mockAxios.onPost('http://app/git/fetch/')
-    //         .reply(500, "TEST ERROR");
+    it("show error message if error refreshing git", async (done) => {
+        mockAxios.onGet('http://app/git/fetch/')
+            .reply(500, "TEST ERROR");
 
-    //     const wrapper = shallowMount(RunReport, {
-    //         propsData: {
-    //             metadata: {git_supported: true, instances_supported: false},
-    //             initialGitBranches
-    //         }
-    //     });
-    //     expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
-    //     const button = wrapper.find("#git-refresh-btn");
-    //     button.trigger("click")
-    //     expect(wrapper.vm.$data.gitRefreshing).toBe(true);
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {git_supported: true, instances_supported: false},
+                initialGitBranches
+            }
+        });
+        expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
+        const button = wrapper.find("#git-refresh-btn");
+        button.trigger("click")
+        expect(wrapper.vm.$data.gitRefreshing).toBe(true);
+        await Vue.nextTick();
+        expect(button.attributes("disabled")).toBe("disabled");
 
-    //     setTimeout(() => {
-    //         expect(mockAxios.history.post).toBe(1);
-    //         expect(wrapper.vm.$data.error).toBe("TEST ERROR");
-    //         expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
-    //         // expect(wrapper.find(ErrorInfo).props("apiError")).toBe("TEST ERROR");
-    //         // expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred refreshing Git");
-    //         done();
-    //     })
-    // });
-
-    // it("clicking git refresh button sends run request and sets error", async (done) => {
-    //     const url = 'http://app/git/fetch/';
-    //     mockAxios.onPost(url, {})
-    //         .reply(500, "TEST ERROR");
-    //     const wrapper = getWrapper();
-
-    //     setTimeout(async () => { //give the wrapper time to fetch reports
-    //         wrapper.setData({
-    //             error: "",
-    //             defaultMessage: ""
-    //         });
-
-    //         await Vue.nextTick();
-    //         wrapper.find("#git-refresh-btn").trigger("click");
-
-    //         setTimeout(() => {
-    //             // expect(wrapper.vm.error.response.data).toBe("TEST ERROR");
-    //             expect(wrapper.vm.defaultMessage).toBe("An error occurred when running report");
-    //             done();
-    //         });
-    //     });
-    // });
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(5);
+            expect(wrapper.vm.$data.gitRefreshing).toBe(false);
+            expect(button.attributes("disabled")).toBeUndefined();
+            // expect(wrapper.vm.$data.error).toBe("TEST ERROR");
+            // expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
+            // expect(wrapper.find(ErrorInfo).props("apiError")).toBe("TEST ERROR");
+            // expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred refreshing Git");
+            done();
+        })
+    });
     
     it("updates reports dropdown by calling api when commit changes", (done) => {
         const wrapper = getWrapper(reports);
 
         setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2);
+            expect(mockAxios.history.get.length).toBe(4);
             expect(wrapper.find(ErrorInfo).props("apiError")).toBe("");
             expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("");
             expect(wrapper.find(ReportList).props("reports")).toEqual(expect.arrayContaining(reports));
@@ -311,6 +299,7 @@ describe("runReport", () => {
 
     it("renders run button group if there is a selected report", async () => {
         const wrapper = getWrapper();
+        await Vue.nextTick();
         wrapper.setData({selectedReport: "test-report"});
         await Vue.nextTick();
         const runGroup = wrapper.find("#run-form-group");
@@ -470,6 +459,7 @@ describe("runReport", () => {
 
     it("changing selectedReport resets runningStatus and enables run", async () => {
         const wrapper = getWrapper();
+        await Vue.nextTick();
         wrapper.setData({selectedReport: "previous-report"});
         await Vue.nextTick();
 
@@ -497,6 +487,7 @@ describe("runReport", () => {
                 initialGitBranches
             }
         });
+        await Vue.nextTick();
         wrapper.setData({selectedReport: "test-report"});
         await Vue.nextTick();
         wrapper.setData({runningStatus: "test-status", disableRun: true});

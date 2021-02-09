@@ -15,7 +15,6 @@
                     type="submit">
                     {{refreshGitText}}
                 </button>
-                <!-- <div class="col-sm-1" v-if="gitRefreshing">Fetching...</div> -->
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -67,7 +66,6 @@
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo";
     import ReportList from "./reportList";
-    // import LoadingSpinner from "./LoadingSpinner.vue";
 
     export default {
         name: "runReport",
@@ -76,7 +74,6 @@
             "initialGitBranches",
         ],
         components: {
-            // LoadingSpinner,
             ErrorInfo,
             ReportList
         },
@@ -124,8 +121,10 @@
                         this.gitBranches = data.data.map(branch => branch.name)
                     })
                     .catch((error) => {
+                        console.log('error was caught')
                         this.gitRefreshing = false
                         this.error = error;
+                        console.log('refresh git error', error)
                         this.defaultMessage = "An error occurred refreshing Git";
                     });
             },
@@ -216,9 +215,8 @@
             }
         },
         mounted() {
-            this.gitBranches = [...this.initialGitBranches]
             if (this.metadata.git_supported) {
-                // this.gitBranches = [...this.initialGitBranches]
+                this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
             } else {
@@ -239,12 +237,6 @@
                 this.gitCommits = [];
                 this.reports = [];
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                // if (this.gitBranches.length){
-                //     this.selectedBranch = this.gitBranches[0]
-                //     if (typeof(this.selectedBranch) !== "string"){
-                //         this.selectedBranch = this.selectedBranch.name
-                //     }
-                // } else this.selectedBranch = []
                 this.selectedCommitId = [];
                 this.selectedReport = "";
                 this.changedBranch()
