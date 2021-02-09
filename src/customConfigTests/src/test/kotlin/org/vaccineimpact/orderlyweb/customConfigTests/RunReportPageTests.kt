@@ -5,12 +5,11 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert
-import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
+import java.util.concurrent.TimeUnit
 
 class RunReportPageTests : SeleniumTest()
 {
@@ -94,23 +93,24 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can render parameters text`()
+    fun `can fill parameter textField`()
     {
         val gitBranch = Select(driver.findElement(By.id("git-branch")))
         gitBranch.selectByVisibleText("other")
 
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("report")))
         val typeahead = driver.findElement(By.id("report"))
         val input = typeahead.findElement(By.tagName("input"))
         input.sendKeys("other")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
 
-        val parameters = driver.findElement(By.id("parameters"))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("parameters")))
+        val parameters = driver.findElement(By.id("params-component"))
         val paramInput = parameters.findElements(By.tagName("input"))
-        paramInput[0].sendKeys("param value")
-        assertThat(paramInput[0].text).isEqualTo("param value")
 
-        val paramLabel = parameters.findElements(By.tagName("label"))
-        assertThat(paramLabel.size).isEqualTo(2)
-        assertThat(paramLabel[0].text).isEqualTo("Parameters")
-        assertThat(paramLabel[1].text).isEqualTo("nmin")
+        paramInput[0].clear()
+        paramInput[0].sendKeys("new value")
+        assertThat(paramInput[0].text).isEqualTo("new value")
     }
 }

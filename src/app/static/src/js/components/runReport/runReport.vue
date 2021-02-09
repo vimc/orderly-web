@@ -38,8 +38,8 @@
                 </div>
             </template>
             <div v-if="showParameters" id="parameters" class="form-group row">
-                <label class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list @getParams="getParameterValues" :params="parameterValues"></parameter-list>
+                <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
+                <parameter-list id="params-component" @getParams="getParameterValues" :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
