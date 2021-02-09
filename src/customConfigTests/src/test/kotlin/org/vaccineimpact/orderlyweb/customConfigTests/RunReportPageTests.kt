@@ -9,7 +9,6 @@ import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.util.concurrent.TimeUnit
 
 class RunReportPageTests : SeleniumTest()
 {
@@ -93,24 +92,14 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can fill parameter textField`()
+    fun `can fill change type and message`()
     {
-        val gitBranch = Select(driver.findElement(By.id("git-branch")))
-        gitBranch.selectByVisibleText("other")
+        val mes = driver.findElement(By.id("changelogMessage"))
+        mes.sendKeys("New text message")
+        assertThat(mes.text).isEqualTo("New text message")
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("report")))
-        val typeahead = driver.findElement(By.id("report"))
-        val input = typeahead.findElement(By.tagName("input"))
-        input.sendKeys("other")
-        val matches = typeahead.findElements(By.tagName("a"))
-        matches[0].click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("parameters")))
-        val parameters = driver.findElement(By.id("params-component"))
-        val paramInput = parameters.findElements(By.tagName("input"))
-
-        paramInput[0].clear()
-        paramInput[0].sendKeys("new value")
-        assertThat(paramInput[0].text).isEqualTo("new value")
+        val changelogType = Select(driver.findElement(By.id("changelogType")))
+        changelogType.selectByVisibleText("public")
+        assertThat(changelogType.firstSelectedOption.text).isEqualTo("public")
     }
 }
