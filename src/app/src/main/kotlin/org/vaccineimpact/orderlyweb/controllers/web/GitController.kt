@@ -20,9 +20,10 @@ class GitController(context: ActionContext,
     }
 
     fun fetch(): String
-    {
+    {   
+        val successCode = 200
         val fetchResponse = orderlyServerAPI.post("/v1/reports/git/fetch/", context)
-        if (fetchResponse.statusCode == 200)
+        if (fetchResponse.statusCode == successCode)
         {
             val branchResponse = orderlyServerAPI
                     .throwOnError()

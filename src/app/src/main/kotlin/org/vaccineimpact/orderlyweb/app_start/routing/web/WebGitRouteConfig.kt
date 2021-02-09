@@ -5,7 +5,6 @@ import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.GitController
 import org.vaccineimpact.orderlyweb.json
-import spark.route.HttpMethod
 
 object WebGitRouteConfig : RouteConfig
 {
