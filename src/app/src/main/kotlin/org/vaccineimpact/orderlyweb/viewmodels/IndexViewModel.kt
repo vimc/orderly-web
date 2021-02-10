@@ -21,8 +21,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val canSetPinnedReports: Boolean,
                           @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel,
-                          val isReportRunner: Boolean? = false)
-    : AppViewModel by appViewModel
+                          val isReportRunner: Boolean? = false) : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
@@ -31,9 +30,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 customFieldKeys: List<String>,
                 showProjectDocs: Boolean,
                 canSetPinnedReports: Boolean,
-                reportDisplayNames: Map<String, String>?)
-            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-            canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
+                reportDisplayNames: Map<String, String>?) : this(reports, tags, pinnedReports, customFieldKeys,
+            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
 
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
@@ -43,9 +41,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 showProjectDocs: Boolean,
                 canSetPinnedReports: Boolean,
                 reportDisplayNames: Map<String, String>?,
-                isReportRunner: Boolean?)
-            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-                    canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isReportRunner)
+                isReportRunner: Boolean?) : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
+            canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isReportRunner)
 
     companion object
     {
@@ -89,19 +86,19 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
             val reportDisplayNames = if (canSetPinnedReports)
             {
-                val reportsWithPublished = reportRows.filter{ it.ttParent != 0 && it.published == true }
-                        .map{ it.ttParent }.distinct()
+                val reportsWithPublished = reportRows.filter { it.ttParent != 0 && it.published == true }
+                        .map { it.ttParent }.distinct()
 
-                reportRows.filter{ it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
-                    .map{ it.name to it.displayName }.toMap()
+                reportRows.filter { it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
+                        .map { it.name to it.displayName }.toMap()
             }
             else
             {
                 null
             }
 
-            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
-                    showDocs, canSetPinnedReports, reportDisplayNames, isReportRunner)
+            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels,
+                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isReportRunner)
         }
     }
 }
