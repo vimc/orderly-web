@@ -295,6 +295,38 @@ class OrderlyServerTests
         assertThat(deleteResult.statusCode).isEqualTo(400)
     }
 
+
+    @Test
+    fun `makes direct POST request`()
+    {
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).post(
+            "/some/path",
+            """{"key1": "val1"}""",
+            mapOf(
+                "key2" to "val2"
+            )
+        )
+        verify(client).newCall(
+            check {
+                assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key2=val2")
+                assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                val buffer = Buffer()
+                it.body!!.writeTo(buffer)
+                assertThat(buffer.readUtf8()).isEqualTo("""{"key1": "val1"}""")
+            }
+        )
+    }
+
+    @Test
+    fun `direct POST request throws on error`()
+    {
+        val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
+        val client = getHttpClient(text, 500)
+        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
+        assertThatThrownBy { orderlyServerAPI.post("/some/path/", "null", emptyMap()) }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
     private fun getHttpClient(
             responseBody: String = """{"data": [], "errors": null, "status": "success"}""",
             responseCode: Int = 200): OkHttpClient
