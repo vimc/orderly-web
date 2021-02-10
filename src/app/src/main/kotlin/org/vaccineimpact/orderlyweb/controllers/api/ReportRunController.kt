@@ -24,7 +24,7 @@ class ReportRunController(
             this(
                 context,
                 OrderlyWebReportRunRepository(),
-                OrderlyServer(AppConfig()),
+                OrderlyServer(AppConfig()).throwOnError(),
                 AppConfig()
             )
 
