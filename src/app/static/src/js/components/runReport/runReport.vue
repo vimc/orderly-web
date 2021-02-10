@@ -184,6 +184,10 @@
                     ref: this.selectedCommitId,
                     instance
                 };
+                const data = {
+                    parameters: this.parameterValues,
+                    changeLogMessage: ""
+                };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
                     .then(({data}) => {
                         this.disableRun = true;
