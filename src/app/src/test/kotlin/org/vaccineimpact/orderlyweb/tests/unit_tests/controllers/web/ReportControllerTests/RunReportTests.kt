@@ -86,7 +86,7 @@ class RunReportTests
     {
         val mockContext: ActionContext = mock {
             on { params(":name") } doReturn "minimal"
-            on { queryParams(":commit") } doReturn "?commit=123"
+            on { queryParams(":commit") } doReturn "123"
         }
 
         val parameters = listOf(

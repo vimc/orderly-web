@@ -38,9 +38,9 @@ describe("runReport", () => {
         {name: "report2", date: null}
     ];
 
-    const getWrapper = (report = reports, propsData = props) => {
+    const getWrapper = (report= reports, propsData = props) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
-            .reply(200, {"data": reports});
+            .reply(200, {"data": report});
 
         return mount(RunReport, {
             propsData

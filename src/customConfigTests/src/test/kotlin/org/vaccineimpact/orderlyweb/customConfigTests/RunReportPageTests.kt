@@ -10,7 +10,6 @@ import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
-import java.util.concurrent.TimeUnit
 
 class RunReportPageTests : SeleniumTest()
 {

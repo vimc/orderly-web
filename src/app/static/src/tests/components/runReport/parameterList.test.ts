@@ -14,7 +14,7 @@ describe(`run report parameter list`, () => {
         }
     )
 
-    it(`can render parameter labels and values as expected`, () => {
+    it(`can render parameter labels and params as expected`, () => {
         const wrapper = store()
         const labels = wrapper.find("table").findAll("label")
 

@@ -25,21 +25,21 @@
 <script>
     export default {
         name: 'reportDraft',
-    props: ['draft', 'selectedIds', 'expandClicked', 'collapseClicked'],
+        props: ['draft', 'selectedIds', 'expandClicked', 'collapseClicked'],
         data() {
             return {
                 showChangelog: false
             }
         },
         computed: {
-        selected: {
-            get() {
-                return this.selectedIds[this.draft.id]
-            },
-            set(value) {
-                this.$emit("select-draft", {id: this.draft.id, value})
+            selected: {
+                get() {
+                    return this.selectedIds[this.draft.id]
+                },
+                set(value) {
+                    this.$emit("select-draft", {id: this.draft.id, value})
+                }
             }
-        }
         },
         methods: {
             toggleChangelog(e) {

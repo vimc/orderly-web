@@ -61,7 +61,8 @@ class ReportController(
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }
-        } else
+        }
+        else
         {
             listOf()
         }
