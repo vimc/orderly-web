@@ -198,7 +198,16 @@ Starts a new Orderly run of a report named `:name`.
 
 Required permissions: `reports.run`.
 
-Accepts as `POST` body json that will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
+Accepts optional arguments as the JSON encoded body of a `POST` request:
+```json
+{
+  "instances": {"database": "instance", …},
+  "params": {"name": "value", …},
+  "gitBranch": "main",
+  "gitCommit": "abc1234"
+}
+```
+`params` will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
 
 Accepts the query parameter `ref`, to try running the report against a particular git reference (e.g., a branch or a commit).  This is not yet actually supported.
 
