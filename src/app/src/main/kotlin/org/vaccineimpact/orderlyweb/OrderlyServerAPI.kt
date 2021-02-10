@@ -27,8 +27,8 @@ interface OrderlyServerAPI
 
     fun post(
         url: String,
-        data: String,
-        params: Map<String, String?>
+        bodyJson: String,
+        queryParams: Map<String, String?>
     ): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
@@ -149,19 +149,19 @@ class OrderlyServer(
         }
     }
 
-    override fun post(url: String, data: String, params: Map<String, String?>): OrderlyServerResponse
+    override fun post(url: String, bodyJson: String, queryParams: Map<String, String?>): OrderlyServerResponse
     {
         val httpUrl = urlBase.toHttpUrl().newBuilder()
             .addPathSegments(url.trimStart('/'))
             .apply {
-                params.forEach { (key, value) ->
+                queryParams.forEach { (key, value) ->
                     addQueryParameter(key, value)
                 }
             }.build()
         val request = Request.Builder()
             .url(httpUrl)
             .headers(standardHeaders.toHeaders())
-            .post(data.toRequestBody(ContentTypes.json.toMediaType()))
+            .post(bodyJson.toRequestBody(ContentTypes.json.toMediaType()))
             .build()
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
