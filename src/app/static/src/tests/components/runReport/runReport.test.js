@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {shallowMount, mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
 import ErrorInfo from "../../../js/components/errorInfo";
@@ -230,7 +230,7 @@ describe("runReport", () => {
 
     it("clicking run button sends run request and displays status on success", async (done) => {
         const url = 'http://app/report/test-report/actions/run/';
-        mockAxios.onPost(url, {})
+        mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
         const propsData =  {
@@ -261,7 +261,17 @@ describe("runReport", () => {
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.post[0].url).toBe(url);
-                expect(mockAxios.history.post[0].params).toStrictEqual({ref: "test-commit", instance: "science"});
+                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+                    {
+                        "instances": {
+                            "source": "science",
+                            "annexe": "science"
+                        },
+                        "params": {},
+                        "gitBranch": "master",
+                        "gitCommit": "test-commit"
+                    }
+                ));
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
                 expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
                 expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
@@ -275,7 +285,7 @@ describe("runReport", () => {
 
     it("clicking run button sends run request and sets error", async (done) => {
         const url = 'http://app/report/test-report/actions/run/';
-        mockAxios.onPost(url, {})
+        mockAxios.onPost(url)
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper();
 
