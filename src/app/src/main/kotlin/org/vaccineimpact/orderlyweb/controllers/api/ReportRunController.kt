@@ -9,9 +9,8 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
+import org.vaccineimpact.orderlyweb.models.ReportRun
 import java.time.Instant
-
-data class ReportRun(val name: String, val key: String, val path: String)
 
 class ReportRunController(
     context: ActionContext,

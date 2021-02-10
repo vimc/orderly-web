@@ -201,8 +201,8 @@ Required permissions: `reports.run`.
 Accepts optional arguments as the JSON encoded body of a `POST` request:
 ```json
 {
-  "instances": {"database": "instance", …},
-  "params": {"name": "value", …},
+  "instances": {"source": "production"},
+  "params": {"name1": "value1", "name2": "value2"},
   "gitBranch": "main",
   "gitCommit": "abc1234"
 }
