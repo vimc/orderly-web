@@ -20,7 +20,7 @@ class GitController(context: ActionContext,
     }
 
     fun fetch(): String
-    {   
+    {
         val successCode = 200
         val fetchResponse = orderlyServerAPI.post("/v1/reports/git/fetch/", context)
         if (fetchResponse.statusCode == successCode)
@@ -28,6 +28,7 @@ class GitController(context: ActionContext,
             val branchResponse = orderlyServerAPI
                     .throwOnError()
                     .get("/git/branches", context)
+                    // NB context param will have no effect as no query string for this request
             return passThroughResponse(branchResponse)
         }
         return passThroughResponse(fetchResponse)

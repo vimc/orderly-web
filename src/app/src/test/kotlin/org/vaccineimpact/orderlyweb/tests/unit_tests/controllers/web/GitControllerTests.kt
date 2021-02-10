@@ -1,12 +1,15 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.OrderlyServerResponse
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.GitController
 import org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api.ControllerTest
@@ -30,15 +33,30 @@ class GitControllerTests : ControllerTest()
     }
 
     @Test
-    fun `fetch gets response from orderly`()
+    fun `fetch gets response from orderly, followed by git branches response`()
     {
         val mockOrderlyServer = mock<OrderlyServerAPI>{
             on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
+            on { it.get("/git/branches/", mockContext) } doReturn mockResponse
         }
 
         val sut = GitController(mockContext, mockOrderlyServer)
         val response = sut.fetch()
 
         assertThat(response).isEqualTo("testResponse")
+    }
+
+    @Test
+    fun `fetch gets faliure response from orderly and git branches does not get called`()
+    {
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI>{
+            on { it.post("/v1/reports/git/fetch/", mockContext) } doThrow OrderlyServerError("/v1/reports/git/fetch/", 400)
+        }
+
+        val sut = GitController(mockContext, mockOrderlyServerWithError)
+        val response = sut.fetch()
+
+        assertThatThrownBy { sut.fetch() }
+                .isInstanceOf(OrderlyServerError::class.java)
     }
 }

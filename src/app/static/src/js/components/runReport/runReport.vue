@@ -234,7 +234,7 @@
                 this.gitCommits = [];
                 this.reports = [];
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.selectedCommitId = [];
+                this.selectedCommitId = "";
                 this.selectedReport = "";
                 this.changedBranch()
             },
