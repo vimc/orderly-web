@@ -14,5 +14,6 @@ class MetricsTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(200)
 
         assertThat(response.text).isEqualTo("running 1")
+        assertJsonContentType(response)
     }
 }
