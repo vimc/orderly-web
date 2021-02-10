@@ -21,10 +21,12 @@ class ReportRunControllerTests : ControllerTest()
     {
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
-            on { queryParams("instance") } doReturn """{"instance": "i1"}"""
-            on { queryParams("params") } doReturn """{"param": "p1"}"""
-            on { queryParams("TODO") } doReturn "branch1"
-            on { queryParams("ref") } doReturn "abc123"
+            on { postData<Any>() } doReturn mapOf(
+                "instances" to mapOf("instance" to "i1"),
+                "params" to mapOf("param" to "p1"),
+                "gitBranch" to "branch1",
+                "gitCommit" to "abc123"
+            )
             on { userProfile } doReturn CommonProfile().apply { id = "a@b.com" }
         }
 
@@ -34,7 +36,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
         val apiClient: OrderlyServerAPI = mock {
-            on { post(any(), any(), any(), any()) } doReturn mockAPIResponse
+            on { post(any<String>(), any<String>(), any<Map<String, String?>>()) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -48,8 +50,8 @@ class ReportRunControllerTests : ControllerTest()
             eq("a@b.com"),
             any<Instant>(),
             eq(reportName),
-            eq("""{"instance": "i1"}"""),
-            eq("""{"param": "p1"}"""),
+            eq(mapOf("instance" to "i1")),
+            eq(mapOf("param" to "p1")),
             eq("branch1"),
             eq("abc123")
         )

@@ -32,10 +32,10 @@ class ReportRunController(
     {
         val name = context.params(":name")
 
-        val instances: Map<String, String> = context.postData("instances")
-        val params: Map<String, String> = context.postData("params")
-        val gitBranch: String = context.postData("gitBranch")
-        val gitCommit: String = context.postData("gitCommit")
+        val instances = context.postData<Map<String, String>>()["instances"] ?: emptyMap()
+        val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
+        val gitBranch = context.postData<String>()["gitBranch"]
+        val gitCommit = context.postData<String>()["gitCommit"]
 
         val response =
             orderlyServerAPI.post(

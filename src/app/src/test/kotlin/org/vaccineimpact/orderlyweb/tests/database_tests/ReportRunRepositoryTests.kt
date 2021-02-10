@@ -25,8 +25,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "user@email.com",
             now,
             "report1",
-            """{"instance1": "pre-staging"}""",
-            """{"parameter1": "value1"}""",
+            mapOf("instance1" to "pre-staging"),
+            mapOf("parameter1" to "value1"),
             "branch1",
             "commit1"
         )
@@ -35,8 +35,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "user@email.com",
             now,
             "report2",
-            """{"instance2": "post-staging"}""",
-            """{"parameter2": "value2"}""",
+            mapOf("instance2" to "post-staging"),
+            mapOf("parameter2" to "value2"),
             "branch1",
             "commit2"
         )
@@ -50,8 +50,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.EMAIL]).isEqualTo("user@email.com")
             assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.DATE].toInstant()).isEqualTo(now)
             assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.REPORT]).isEqualTo("report1")
-            assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.INSTANCES]).isEqualTo("""{"instance1": "pre-staging"}""")
-            assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.PARAMS]).isEqualTo("""{"parameter1": "value1"}""")
+            assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.INSTANCES]).isEqualTo("""{"instance1":"pre-staging"}""")
+            assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.PARAMS]).isEqualTo("""{"parameter1":"value1"}""")
             assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH]).isEqualTo("branch1")
             assertThat(result[0][Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT]).isEqualTo("commit1")
 
@@ -69,8 +69,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "test.user@example.com",
                 Instant.now(),
                 "report2",
-                """{"instance2": "post-staging"}""",
-                """{"parameter2": "value2"}""",
+                mapOf("instance2" to "post-staging"),
+                mapOf("parameter2" to "value2"),
                 "branch1",
                 "commit2"
             )
