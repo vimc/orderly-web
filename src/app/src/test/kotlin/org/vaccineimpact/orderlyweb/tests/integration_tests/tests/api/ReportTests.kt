@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.integration_tests.APIPermissionChecker
+import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReader
 import org.vaccineimpact.orderlyweb.tests.integration_tests.helpers.fakeGlobalReportReviewer
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
