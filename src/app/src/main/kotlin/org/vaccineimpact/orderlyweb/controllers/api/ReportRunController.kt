@@ -52,9 +52,9 @@ class ReportRunController(
                 )
             )
         val reportRun = response.data(ReportRun::class.java)
-        @Suppress("UnsafeCallOnNullableType")
         reportRunRepository.addReportRun(
             reportRun.key,
+            @Suppress("UnsafeCallOnNullableType")
             context.userProfile!!.id,
             Instant.now(),
             reportRun.name,
