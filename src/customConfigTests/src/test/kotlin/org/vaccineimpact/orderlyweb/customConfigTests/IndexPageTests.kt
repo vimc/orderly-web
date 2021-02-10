@@ -124,10 +124,10 @@ class IndexPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl)
 
-        val component = driver.findElements(By.cssSelector(".ml-5 > a:nth-child(1)"))
+        val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(1)
         component[0].click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#git-branch")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report")))
     }
 
     @Test
@@ -142,7 +142,7 @@ class IndexPageTests : SeleniumTest()
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl)
 
-        val component = driver.findElements(By.cssSelector(".ml-5 > a:nth-child(1)"))
+        val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(0)
     }
 }

@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="reportsJson" type="String" -->
 <#-- @ftlvariable name="isReviewer" type="Boolean" -->
-<#-- @ftlvariable name="isReportRunner" type="Boolean" -->
+<#-- @ftlvariable name="isRunner" type="Boolean" -->
 <#-- @ftlvariable name="showProjectDocs" type="Boolean" -->
 <#macro if if then else=""><#if if>${then}<#else>${else}</#if></#macro>
 <@layout>
@@ -8,31 +8,27 @@
         <link rel="stylesheet" href="${appUrl}/css/index.min.css"/>
     </#macro>
     <#include "partials/pinned-reports.ftl">
+    <#macro customSvg>
+        <svg height="40" class="octicon octicon-arrow-right"
+             viewBox="0 0 10 16"
+             version="1.1"
+             width="30"
+             aria-hidden="true"
+             fill="currentColor">
+            <path fill-rule="evenodd" d="M10 8L4 3v3H0v4h4v3l6-5z"></path>
+        </svg>
+    </#macro>
 
     <h3 class="mb-3">
         <#if showProjectDocs>
             <button class="btn-link btn btn-lg"><a href="${appUrl}/project-docs">View project documentation
-                    <svg height="40" class="octicon octicon-arrow-right"
-                         viewBox="0 0 10 16"
-                         version="1.1"
-                         width="30"
-                         aria-hidden="true"
-                         fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 8L4 3v3H0v4h4v3l6-5z"></path>
-                    </svg>
+                    <@customSvg />
                 </a>
             </button>
         </#if>
-        <#if isReportRunner>
-            <button class="ml-5 btn-link btn btn-lg"><a href="${appUrl}/run-report">Run a report
-                    <svg height="40" class="octicon octicon-arrow-right"
-                         viewBox="0 0 10 16"
-                         version="1.1"
-                         width="30"
-                         aria-hidden="true"
-                         fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 8L4 3v3H0v4h4v3l6-5z"></path>
-                    </svg>
+        <#if isRunner>
+            <button id="run-report" class="ml-5 btn-link btn btn-lg"><a href="${appUrl}/run-report">Run a report
+                    <@customSvg />
                 </a>
             </button>
         </#if>

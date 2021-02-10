@@ -21,7 +21,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val canSetPinnedReports: Boolean,
                           @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel,
-                          val isReportRunner: Boolean? = false) : AppViewModel by appViewModel
+                          val isRunner: Boolean? = false) : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
@@ -41,8 +41,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 showProjectDocs: Boolean,
                 canSetPinnedReports: Boolean,
                 reportDisplayNames: Map<String, String>?,
-                isReportRunner: Boolean?) : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-            canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isReportRunner)
+                isRunner: Boolean?) : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
+            canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner)
 
     companion object
     {
@@ -81,7 +81,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
-            val isReportRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
+            val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
 
             val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
             val reportDisplayNames = if (canSetPinnedReports)
@@ -98,7 +98,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
             }
 
             return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels,
-                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isReportRunner)
+                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isRunner)
         }
     }
 }
