@@ -111,4 +111,38 @@ class IndexPageTests : SeleniumTest()
         val component = driver.findElements(By.cssSelector("#setPinnedReportsVueApp"))
         assertThat(component.count()).isEqualTo(0)
     }
+
+    @Test
+    fun `can link to run report page with permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.run", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.cssSelector(".ml-5 > a:nth-child(1)"))
+        assertThat(component.count()).isEqualTo(1)
+        component[0].click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#git-branch")))
+    }
+
+    @Test
+    fun `can not link to run report page without permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.cssSelector(".ml-5 > a:nth-child(1)"))
+        assertThat(component.count()).isEqualTo(0)
+    }
 }
