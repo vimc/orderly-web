@@ -41,6 +41,10 @@ data class WebEndpoint(
         {
             spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
         }
+        if (this.contentType == ContentTypes.text)
+        {
+            spark.after(url, ContentTypes.text, DefaultHeadersFilter("${ContentTypes.text}; charset=utf-8"))
+        }
     }
 
     private fun addSecurityFilter(url: String)
