@@ -44,7 +44,7 @@ class ReportRunController(
                     "ref" to gitCommit,
                     // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
                     "instance" to instances.values.elementAtOrNull(0)
-                ).mapNotNull { p -> p.second?.let { p } }.toMap()
+                ).filter { it.second != null }.toMap()
             )
         val reportRun = response.data(ReportRun::class.java)
         reportRunRepository.addReportRun(
