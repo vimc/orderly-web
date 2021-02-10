@@ -41,15 +41,11 @@ class ReportRunController(
             orderlyServerAPI.post(
                 "/v1/reports/$name/run/",
                 Gson().toJson(params),
-                mapOf(
+                listOf(
                     "ref" to gitCommit,
                     // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                    "instance" to when (instances.isEmpty())
-                    {
-                        true -> ""
-                        false -> instances.values.iterator().next()
-                    }
-                )
+                    "instance" to instances.values.elementAtOrNull(0)
+                ).mapNotNull { p -> p.second?.let { p } }.toMap()
             )
         val reportRun = response.data(ReportRun::class.java)
         reportRunRepository.addReportRun(

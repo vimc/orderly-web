@@ -58,6 +58,41 @@ class ReportRunControllerTests : ControllerTest()
     }
 
     @Test
+    fun `runs a report without arguments`()
+    {
+        val actionContext: ActionContext = mock {
+            on { params(":name") } doReturn reportName
+            on { userProfile } doReturn CommonProfile().apply { id = "a@b.com" }
+        }
+
+        val mockAPIResponseText =
+            """{"data": {"name": "$reportName", "key": $reportKey, "path": "/status/$reportKey"}}"""
+
+        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+
+        val apiClient: OrderlyServerAPI = mock {
+            on { post("/v1/reports/$reportName/run/","{}", mapOf()) } doReturn mockAPIResponse
+        }
+
+        val mockReportRunRepo: ReportRunRepository = mock()
+
+        val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
+        val result = sut.run()
+
+        assertThat(result).isEqualTo(mockAPIResponseText)
+        verify(mockReportRunRepo).addReportRun(
+            eq(reportKey),
+            eq("a@b.com"),
+            any<Instant>(),
+            eq(reportName),
+            eq(mapOf()),
+            eq(mapOf()),
+            eq(null),
+            eq(null)
+        )
+    }
+
+    @Test
     fun `gets report status`()
     {
         val actionContext: ActionContext = mock {
