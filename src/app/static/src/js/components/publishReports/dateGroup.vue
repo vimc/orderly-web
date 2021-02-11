@@ -22,13 +22,13 @@
 </template>
 
 <script>
-    import ReportDraft from "./reportDraft";
+import ReportDraft from "./reportDraft";
 
-    export default {
-        name: "dateGroup",
-        components: {ReportDraft},
+export default {
+    name: "dateGroup",
+    components: {ReportDraft},
     props: ["date", "drafts", "selectedIds", "selectedDates", "expandClicked", "collapseClicked"],
-        computed: {
+    computed: {
         selected: {
             get() {
                 return this.selectedDates[this.date]
@@ -41,15 +41,15 @@
         draftIds() {
             return this.drafts.map(d => d.id);
         }
-        },
-        methods: {
-            handleDraftSelect(value) {
-                if (!value.value) {
-                    // don't want the parent checkbox selected if any child is not
-                    this.$emit("select-group", {date: this.date, value: false});
-                }
-                this.$emit("select-draft", value)
+    },
+    methods: {
+        handleDraftSelect(value) {
+            if (!value.value) {
+                // don't want the parent checkbox selected if any child is not
+                this.$emit("select-group", {date: this.date, value: false});
             }
+            this.$emit("select-draft", value)
         }
     }
+}
 </script>

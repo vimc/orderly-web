@@ -97,7 +97,7 @@ class VersionTests : IntegrationTest()
     {
         val version = JooqContext().use {
 
-            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID, ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+            it.dsl.select(ORDERLYWEB_REPORT_VERSION_FULL.ID,ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                     .from(ORDERLYWEB_REPORT_VERSION_FULL)
                     .where(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetchAny()

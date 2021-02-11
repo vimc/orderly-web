@@ -29,9 +29,9 @@
             }
         },
         computed: {
-            placeholder: function() {
-                return this.type === "user" ? "email" : "role name";
-            }
+          placeholder: function() {
+              return this.type === "user" ? "email" : "role name";
+          }
         },
         components: {
             ErrorInfo,

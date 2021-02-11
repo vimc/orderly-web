@@ -14,13 +14,17 @@ describe(`run report parameter list`, () => {
         }
     )
 
-    it(`can render parameter labels and params as expected`, () => {
+    it(`can render parameter labels, values and props as expected`, () => {
         const wrapper = store()
         const labels = wrapper.find("table").findAll("label")
 
         expect(labels.at(0).text()).toBe("global")
         expect(labels.at(1).text()).toBe("minimal")
         expect(wrapper.vm.$data.paramValues).toBe(params)
+
+        const inputs = wrapper.find("table").findAll("input")
+        inputs.at(0).setValue("initial value")
+        inputs.at(1).setValue("initial Value2")
     });
 
     it(`can render parameter values as expected`, () => {

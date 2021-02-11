@@ -21,7 +21,7 @@
 <script>
     import {api} from "../../utils/api";
 
-    export default {
+     export default {
         name: 'publishSwitch',
         props: ['report'],
         data() {
