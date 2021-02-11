@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
-import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
@@ -73,7 +72,7 @@ class IndexTests
     }
 
     @Test
-    fun `it renders run report link if user does not have permission to see it`()
+    fun `it renders run report link if user has permission to see it`()
     {
         val testModel = testModelLink(true)
         val doc = template.jsoupDocFor(testModel)
