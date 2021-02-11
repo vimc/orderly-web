@@ -32,30 +32,48 @@ class GitControllerTests : ControllerTest()
         assertThat(result).isEqualTo(Serializer.instance.toResult(listOf(1, 2, 3)))
     }
 
+    // fun `fetch gets response from orderly`()
+    // {
+    //     val mockOrderlyServer = mock<OrderlyServerAPI>{
+    //         on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
+    //     }
+
+    //     val sut = GitController(mockContext, mockOrderlyServer)
+    //     val response = sut.fetch()
+
+    //     assertThat(response).isEqualTo("testResponse")
+    // }
+
     @Test
     fun `fetch gets response from orderly, followed by git branches response`()
-    {
+    {   
+        // val fetchResponse = OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
+        // val branchesResponse = OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
+
         val mockOrderlyServer = mock<OrderlyServerAPI>{
-            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
-            on { it.get("/git/branches/", mockContext) } doReturn mockResponse
+            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn
+                OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
+            on { it.get("/git/branches", mockContext) } doReturn
+                OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
         }
 
         val sut = GitController(mockContext, mockOrderlyServer)
-        val response = sut.fetch()
+        // val response = sut.fetch()
 
-        assertThat(response).isEqualTo("testResponse")
+        // assertThat(response).isEqualTo("branchesResponse")
     }
 
     @Test
-    fun `fetch gets faliure response from orderly and git branches does not get called`()
+    fun `fetch throws if orderly server returns an error`()
     {
-        val mockOrderlyServerWithError = mock<OrderlyServerAPI>{
-            on { it.post("/v1/reports/git/fetch/", mockContext) } doThrow OrderlyServerError("/v1/reports/git/fetch/", 400)
+        val mockContext = mock<ActionContext>()
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
+            on { post("/v1/reports/git/fetch/", mockContext) } doThrow OrderlyServerError("/v1/reports/git/fetch/", 400)
         }
-
-        val sut = GitController(mockContext, mockOrderlyServerWithError)
-        val response = sut.fetch()
-
+        val mockOrderlyServer = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn mockOrderlyServerWithError
+        }
+        val sut = GitController(mockContext, mockOrderlyServer)
         assertThatThrownBy { sut.fetch() }
                 .isInstanceOf(OrderlyServerError::class.java)
     }
