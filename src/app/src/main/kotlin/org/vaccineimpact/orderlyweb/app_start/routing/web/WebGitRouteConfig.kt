@@ -1,10 +1,8 @@
 package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.*
-import org.vaccineimpact.orderlyweb.EndpointDefinition
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.web.GitController
-import org.vaccineimpact.orderlyweb.json
 
 object WebGitRouteConfig : RouteConfig
 {
