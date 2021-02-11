@@ -30,10 +30,23 @@ class LayoutTests
         val template = FreemarkerTestRule("index.ftl")
     }
 
+    fun testModel (): IndexViewModel {
+        val mockContext = mock<ActionContext> {
+            on { userProfile } doReturn CommonProfile().apply {
+                id = "test.user"
+            }
+            on {
+                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
+            } doReturn false
+        }
+
+        return IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
+    }
+
     @Test
     fun `renders correctly when not logged in`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -59,7 +72,8 @@ class LayoutTests
             } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        //val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = testModel()
 
         val doc = template.jsoupDocFor(testModel)
         val xml = template.xmlResponseFor(testModel)
@@ -88,7 +102,7 @@ class LayoutTests
             } doReturn true
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -109,7 +123,8 @@ class LayoutTests
             } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        //val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = testModel()
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -137,7 +152,7 @@ class LayoutTests
         }
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -156,7 +171,7 @@ class LayoutTests
             } doReturn true
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -185,7 +200,7 @@ class LayoutTests
         }
 
         val defaultModel = DefaultViewModel(mockContext, IndexViewModel.breadcrumb, appConfig = mockConfig)
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf(), true, false, null, defaultModel, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -205,7 +220,7 @@ class LayoutTests
             } doReturn false
         }
 
-        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 

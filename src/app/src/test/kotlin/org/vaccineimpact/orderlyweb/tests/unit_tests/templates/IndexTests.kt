@@ -22,7 +22,7 @@ class IndexTests
     @Test
     fun `renders correctly`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
         val breadcrumbs = doc.select(".crumb-item")
@@ -37,7 +37,7 @@ class IndexTests
     @Test
     fun `renders link to project docs if user has permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.selectFirst(".btn-link")
         assertThat(docsLink.selectFirst("a").text()).isEqualTo("View project documentation")
@@ -47,7 +47,7 @@ class IndexTests
     @Test
     fun `does not render link to project docs if user does not have permission to see them`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null, false)
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
@@ -61,7 +61,7 @@ class IndexTests
                         DownloadableFileViewModel("zip file 1", "zip file url 1", 1)),
                 PinnedReportViewModel("report2", "version2", "display2", "date2",
                         DownloadableFileViewModel("zip file 2", "zip file url 2", 1))
-        ), listOf(), true, false, null)
+        ), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -94,7 +94,7 @@ class IndexTests
     @Test
     fun `renders correctly when no pinned reports`()
     {
-        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null)
+        val testModel = IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), true, false, null, false)
 
         val doc = template.jsoupDocFor(testModel)
 
@@ -117,7 +117,7 @@ class IndexTests
                 breadcrumbs = listOf(IndexViewModel.breadcrumb)
         )
 
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
         assertThat(header.select("th").count()).isEqualTo(7)
@@ -135,7 +135,7 @@ class IndexTests
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
 
         val header = template.jsoupDocFor(testModel).selectFirst("thead tr")
 
@@ -155,7 +155,7 @@ class IndexTests
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
-                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
         val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[4].html()
         assertThat(scriptEl.indexOf("var reportDisplayNames = {\n" +
@@ -170,7 +170,7 @@ class IndexTests
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
-                false, null, defaultModel)
+                false, null, defaultModel, false)
 
         val scriptEl = template.jsoupDocFor(testModel).getElementsByTag("script")[2].html()
         assertThat(scriptEl.indexOf("var reportDisplayNames")).isEqualTo(-1);
@@ -182,7 +182,7 @@ class IndexTests
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
-                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+                true, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
         val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
         assertThat(component.count()).isEqualTo(1)
@@ -196,7 +196,7 @@ class IndexTests
         val defaultModel = DefaultViewModel(true, "username", isReviewer = false,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
         val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true,
-                false, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel)
+                false, mapOf("r1" to "r1 display", "r2" to "r2 display"), defaultModel, false)
 
         val component = template.jsoupDocFor(testModel).getElementsByTag("set-global-pinned-reports")
         assertThat(component.count()).isEqualTo(0)
@@ -207,7 +207,7 @@ class IndexTests
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf(), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
 
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
@@ -226,7 +226,7 @@ class IndexTests
     {
         val defaultModel = DefaultViewModel(true, "username", isReviewer = true,
                 isAdmin = false, isGuest = false, breadcrumbs = listOf(IndexViewModel.breadcrumb))
-        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, false, null, defaultModel)
+        val testModel = IndexViewModel(listOf(), listOf("a", "b"), listOf(), listOf("author", "requester"), true, false, null, defaultModel, false)
         val filters = template.jsoupDocFor(testModel).select("thead tr")[1]
 
         val filterSelect = filters.select("th")[3].selectFirst("select")
