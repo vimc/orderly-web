@@ -10,9 +10,10 @@ class MetricsTests : IntegrationTest()
     @Test
     fun `can get metrics`()
     {
-        val response = webRequestHelper.getWebPage("/metrics", ContentTypes.json)
+        val response = webRequestHelper.getWebPage("/metrics", ContentTypes.text)
         assertThat(response.statusCode).isEqualTo(200)
 
         assertThat(response.text).isEqualTo("running 1")
+        assertPlainTextContentType(response)
     }
 }
