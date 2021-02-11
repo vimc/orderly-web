@@ -1,8 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
@@ -32,49 +30,58 @@ class GitControllerTests : ControllerTest()
         assertThat(result).isEqualTo(Serializer.instance.toResult(listOf(1, 2, 3)))
     }
 
-    // fun `fetch gets response from orderly`()
-    // {
-    //     val mockOrderlyServer = mock<OrderlyServerAPI>{
-    //         on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn mockResponse
-    //     }
-
-    //     val sut = GitController(mockContext, mockOrderlyServer)
-    //     val response = sut.fetch()
-
-    //     assertThat(response).isEqualTo("testResponse")
-    // }
-
     @Test
-    fun `fetch gets response from orderly, followed by git branches response`()
+    fun `fetch receives successful fetch response from orderly, and returns git successful branches response`()
     {   
-        // val fetchResponse = OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
-        // val branchesResponse = OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
+        val fetchResponse = OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
+        val branchesResponse = OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
 
         val mockOrderlyServer = mock<OrderlyServerAPI>{
-            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn
-                OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
-            on { it.get("/git/branches", mockContext) } doReturn
-                OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
+            on { it.post("/v1/reports/git/fetch/", mockContext) } doReturn fetchResponse
+            on { it.get("/git/branches", mockContext) } doReturn branchesResponse
         }
 
         val sut = GitController(mockContext, mockOrderlyServer)
-        // val response = sut.fetch()
+        val response = sut.fetch()
 
-        // assertThat(response).isEqualTo("branchesResponse")
+        assertThat(response).isEqualTo(Serializer.instance.toResult("branchesResponse"))
     }
 
     @Test
-    fun `fetch throws if orderly server returns an error`()
-    {
-        val mockContext = mock<ActionContext>()
-        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { post("/v1/reports/git/fetch/", mockContext) } doThrow OrderlyServerError("/v1/reports/git/fetch/", 400)
+    fun `fetch receives and returns failed fetch response from orderly, and does not call git branches`()
+    {   
+        val mockContext2 = mock<ActionContext>()
+        val fetchResponse = OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 500)
+        val branchesResponse = OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 200)
+
+        val mockOrderlyServer = mock<OrderlyServerAPI>{
+            on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse
+            on { it.get("/git/branches", mockContext2) } doReturn branchesResponse
         }
-        val mockOrderlyServer = mock<OrderlyServerAPI> {
-            on { throwOnError() } doReturn mockOrderlyServerWithError
+
+        val sut = GitController(mockContext2, mockOrderlyServer)
+        val response = sut.fetch()
+
+        assertThat(response).isEqualTo(Serializer.instance.toResult("fetchResponse"))
+        verify(mockContext2).setStatusCode(500)
+    }
+
+    @Test
+    fun `fetch receives successful fetch response but failed git branches response from orderly, and returns failed git branches response`()
+    {   
+        val mockContext2 = mock<ActionContext>()
+        val fetchResponse = OrderlyServerResponse(Serializer.instance.toResult("fetchResponse"), 200)
+        val branchesResponse = OrderlyServerResponse(Serializer.instance.toResult("branchesResponse"), 500)
+
+        val mockOrderlyServer = mock<OrderlyServerAPI>{
+            on { it.post("/v1/reports/git/fetch/", mockContext2) } doReturn fetchResponse
+            on { it.get("/git/branches", mockContext2) } doReturn branchesResponse
         }
-        val sut = GitController(mockContext, mockOrderlyServer)
-        assertThatThrownBy { sut.fetch() }
-                .isInstanceOf(OrderlyServerError::class.java)
+
+        val sut = GitController(mockContext2, mockOrderlyServer)
+        val response = sut.fetch()
+        
+        assertThat(response).isEqualTo(Serializer.instance.toResult("branchesResponse"))
+        verify(mockContext2).setStatusCode(500)
     }
 }
