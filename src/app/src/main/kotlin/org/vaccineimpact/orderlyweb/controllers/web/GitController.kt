@@ -12,6 +12,8 @@ class GitController(context: ActionContext,
     constructor(context: ActionContext) :
             this(context, OrderlyServer(AppConfig()))
 
+    private val successCode = 200
+
     fun getCommits() : String
     {
         val branch = context.params(":branch")
@@ -21,7 +23,6 @@ class GitController(context: ActionContext,
 
     fun fetch(): String
     {
-        val successCode = 200
         val fetchResponse = orderlyServerAPI
             .post("/v1/reports/git/fetch/", context)
         if (fetchResponse.statusCode == successCode)
