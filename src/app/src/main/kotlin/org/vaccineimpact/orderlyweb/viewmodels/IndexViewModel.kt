@@ -21,7 +21,7 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val canSetPinnedReports: Boolean,
                           @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
                           val appViewModel: AppViewModel,
-                          val isRunner: Boolean? = false) : AppViewModel by appViewModel
+                          val isRunner: Boolean) : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
@@ -30,19 +30,9 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 customFieldKeys: List<String>,
                 showProjectDocs: Boolean,
                 canSetPinnedReports: Boolean,
-                reportDisplayNames: Map<String, String>?) : this(reports, tags, pinnedReports, customFieldKeys,
-            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
-
-    constructor(context: ActionContext,
-                reports: List<ReportRowViewModel>,
-                tags: List<String>,
-                pinnedReports: List<PinnedReportViewModel>,
-                customFieldKeys: List<String>,
-                showProjectDocs: Boolean,
-                canSetPinnedReports: Boolean,
                 reportDisplayNames: Map<String, String>?,
-                isRunner: Boolean?) : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-            canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner)
+                isRunner: Boolean) : this(reports, tags, pinnedReports, customFieldKeys,
+            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner)
 
     companion object
     {
