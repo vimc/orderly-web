@@ -63,18 +63,7 @@ class LayoutTests
     @Test
     fun `renders correctly when logged in`()
     {
-        val mockContext = mock<ActionContext> {
-            on { userProfile } doReturn CommonProfile().apply {
-                id = "test.user"
-            }
-            on {
-                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
-            } doReturn false
-        }
-
-        //val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
         val testModel = testModel()
-
         val doc = template.jsoupDocFor(testModel)
         val xml = template.xmlResponseFor(testModel)
 
@@ -114,18 +103,7 @@ class LayoutTests
     @Test
     fun `non admins cannot see admin link`()
     {
-        val mockContext = mock<ActionContext> {
-            on { userProfile } doReturn CommonProfile().apply {
-                id = "test.user"
-            }
-            on {
-                hasPermission(ReifiedPermission("users.manage", Scope.Global()))
-            } doReturn false
-        }
-
-        //val testModel = IndexViewModel(mockContext, listOf(), listOf(), listOf(), listOf(), true, false, null)
         val testModel = testModel()
-
         val doc = template.jsoupDocFor(testModel)
 
         assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
