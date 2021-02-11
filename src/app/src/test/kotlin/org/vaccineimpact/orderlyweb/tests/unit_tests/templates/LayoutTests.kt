@@ -30,7 +30,7 @@ class LayoutTests
         val template = FreemarkerTestRule("index.ftl")
     }
 
-    fun testModel(): IndexViewModel
+    private fun testModel(): IndexViewModel
     {
         val mockContext = mock<ActionContext> {
             on { userProfile } doReturn CommonProfile().apply {

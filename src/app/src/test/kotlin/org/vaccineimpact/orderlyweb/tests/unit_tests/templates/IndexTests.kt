@@ -1,9 +1,14 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates
 
+import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.ClassRule
 import org.junit.Test
+import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.models.Scope
+import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.unit_tests.templates.rules.FreemarkerTestRule
 import org.vaccineimpact.orderlyweb.viewmodels.DefaultViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
@@ -17,6 +22,11 @@ class IndexTests
         @ClassRule
         @JvmField
         val template = FreemarkerTestRule("index.ftl")
+    }
+
+    private fun testModelLink(isRunner: Boolean): IndexViewModel
+    {
+        return IndexViewModel(mock(), listOf(), listOf(), listOf(), listOf(), false, false, null, isRunner)
     }
 
     @Test
@@ -51,6 +61,25 @@ class IndexTests
         val doc = template.jsoupDocFor(testModel)
         val docsLink = doc.select(".btn-link")
         assertThat(docsLink.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `it does not render run report link if user does not have permission to see it`()
+    {
+        val testModel = testModelLink(false)
+        val doc = template.jsoupDocFor(testModel)
+        val docsLink = doc.select(".btn-link")
+        assertThat(docsLink.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `it renders run report link if user does not have permission to see it`()
+    {
+        val testModel = testModelLink(true)
+        val doc = template.jsoupDocFor(testModel)
+        val docsLink = doc.selectFirst(".btn-link")
+        assertThat(docsLink.selectFirst("a").text()).isEqualTo("Run a report")
+        assertThat(docsLink.selectFirst("a").attr("href")).isEqualTo("http://localhost:8888/run-report")
     }
 
     @Test
