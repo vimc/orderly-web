@@ -2369,6 +2369,7 @@
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val html = "text/html"</ID>
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val json = "application/json"</ID>
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val zip = "application/zip"</ID>
+    <ID>MayBeConst:ContentTypes.kt$ContentTypes$val text = "text/plain"</ID>
     <ID>MayBeConst:SkipMethodsMatcher.kt$SkipOptionsMatcher$val name = "SkipOptions"</ID>
     <ID>MayBeConst:TokenIssuer.kt$TokenIssuer.Companion$val oneTimeActionSubject = "onetime_link"</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.Helpers.kt:131</ID>
