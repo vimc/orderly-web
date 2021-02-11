@@ -21,10 +21,6 @@ describe(`run report parameter list`, () => {
         expect(labels.at(0).text()).toBe("global")
         expect(labels.at(1).text()).toBe("minimal")
         expect(wrapper.vm.$data.paramValues).toBe(params)
-
-        const inputs = wrapper.find("table").findAll("input")
-        inputs.at(0).setValue("initial value")
-        inputs.at(1).setValue("initial Value2")
     });
 
     it(`can render parameter values as expected`, () => {
