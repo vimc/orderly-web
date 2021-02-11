@@ -29,6 +29,10 @@ li {
 
   cursor: default;
 
+  &.childless {
+    margin-left: -14px;
+  }
+
   &.has-children {
     cursor: pointer;
 

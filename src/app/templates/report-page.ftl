@@ -6,6 +6,7 @@
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
+        <link rel="stylesheet" href="${appUrl}/css/documents.min.css"/>
     </#macro>
     <div class="row">
         <div class="col-12 col-md-4 col-xl-3">
@@ -19,6 +20,9 @@
                         <ul class="nav flex-column list-unstyled mb-0">
                             <li class="nav-item">
                                 <a class="nav-link active" data-toggle="tab" href="#report-tab" role="tab">Report</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#metadata-tab" role="tab">Metadata</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" data-toggle="tab" href="#downloads-tab" role="tab">Downloads</a>
@@ -65,6 +69,9 @@
         <div class="col-12 col-md-8 tab-content">
             <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="report-tab">
                 <#include "partials/report-tab.ftl">
+            </div>
+            <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="metadata-tab">
+                <#include "partials/metadata-tab.ftl">
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="downloads-tab">
                 <#include "partials/downloads.ftl">
