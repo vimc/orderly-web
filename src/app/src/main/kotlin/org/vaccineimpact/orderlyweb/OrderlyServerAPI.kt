@@ -25,6 +25,7 @@ interface OrderlyServerAPI
         transformResponse: Boolean = true
     ): OrderlyServerResponse
 
+    @Throws(OrderlyServerError::class)
     fun post(
         url: String,
         bodyJson: String,

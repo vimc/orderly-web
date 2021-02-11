@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -9,6 +10,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import java.time.Instant
 
 class ReportRunControllerTests : ControllerTest()
@@ -71,7 +73,7 @@ class ReportRunControllerTests : ControllerTest()
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
         val apiClient: OrderlyServerAPI = mock {
-            on { post("/v1/reports/$reportName/run/","{}", mapOf()) } doReturn mockAPIResponse
+            on { post("/v1/reports/$reportName/run/", "{}", mapOf()) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -90,6 +92,28 @@ class ReportRunControllerTests : ControllerTest()
             eq(null),
             eq(null)
         )
+    }
+
+    @Test
+    fun `runs a report does not insert record on failure`()
+    {
+        val actionContext: ActionContext = mock {
+            on { params(":name") } doReturn reportName
+        }
+
+        val url = "/v1/reports/$reportName/run/"
+        val apiClient: OrderlyServerAPI = mock {
+            on { post(url, "{}", mapOf()) } doThrow OrderlyServerError(url, 500)
+        }
+
+        val mockReportRunRepo: ReportRunRepository = mock()
+
+        val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
+
+        assertThatThrownBy { sut.run() }
+            .isInstanceOf(OrderlyServerError::class.java)
+            .matches { (it as OrderlyServerError).httpStatus == 500 }
+        verifyZeroInteractions(mockReportRunRepo)
     }
 
     @Test
