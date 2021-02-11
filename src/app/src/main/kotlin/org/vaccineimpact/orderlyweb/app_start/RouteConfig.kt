@@ -24,8 +24,8 @@ object APIRouteConfig : RouteConfig
 
 object WebRouteConfig : RouteConfig
 {
-    private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics")
-            .json()
+    private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics",
+    contentType = ContentTypes.text)
 
     private val adminEndpoint = WebEndpoint("/manage-access/", AdminController:: class, "admin")
             .secure(setOf("*/users.manage"))
@@ -41,4 +41,3 @@ object WebRouteConfig : RouteConfig
                     WebSettingsRouteConfig.endpoints +
                     WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint
 }
-

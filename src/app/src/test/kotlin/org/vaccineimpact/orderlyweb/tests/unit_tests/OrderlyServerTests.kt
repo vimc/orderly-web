@@ -9,7 +9,10 @@ import okio.Buffer
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.GitCommit
@@ -293,6 +296,54 @@ class OrderlyServerTests
         val deleteResult = sut3.delete("anyUrl", mock())
         assertThat(mapper.readTree(deleteResult.text)).isEqualTo(expectedJson)
         assertThat(deleteResult.statusCode).isEqualTo(400)
+    }
+
+
+    @Test
+    fun `makes direct POST request`()
+    {
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).post(
+            "/some/path",
+            """{"key1": "val1"}""",
+            mapOf(
+                "key2" to "val2"
+            )
+        )
+        verify(client).newCall(
+            check {
+                assertThat(it.url.toString()).isEqualTo("http://orderly/some/path?key2=val2")
+                assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                val buffer = Buffer()
+                it.body!!.writeTo(buffer)
+                assertThat(buffer.readUtf8()).isEqualTo("""{"key1": "val1"}""")
+            }
+        )
+    }
+
+    @Test
+    fun `direct POST request passes through error`()
+    {
+        val rawResponse = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
+        val translatedResponse = """{"status":"failure","errors":[{"error":"FOO","message":"bar"}],"data":null}"""
+        val response = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400)).post("anyUrl", mock())
+        assertThat(ObjectMapper().readTree(response.text)).isEqualTo(ObjectMapper().readTree(translatedResponse))
+        assertThat(response.statusCode).isEqualTo(400)
+    }
+
+    @Test
+    fun `direct POST request throws on error`()
+    {
+        val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
+        val client = getHttpClient(text, 500)
+        val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
+        assertThatThrownBy {
+            orderlyServerAPI.post(
+                "/some/path/",
+                "null",
+                emptyMap()
+            )
+        }.isInstanceOf(OrderlyServerError::class.java)
     }
 
     private fun getHttpClient(
