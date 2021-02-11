@@ -763,22 +763,6 @@
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:10</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:11</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:18</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:17</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:18</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:19</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:20</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:21</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:24</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:25</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:26</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:27</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:28</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:61</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:62</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:63</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:71</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:72</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:73</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:13</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:14</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:15</ID>
@@ -2482,7 +2466,6 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.web.WebDocumentRouteConfig.kt:28</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig.kt:45</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ArtefactController.kt:67</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:90</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:52</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:101</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:20</ID>
@@ -2524,7 +2507,6 @@
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.app_start.RouteConfig.kt:45</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.app_start.Router.kt:15</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.app_start.SparkApp.kt:18</ID>
-    <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:84</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.db.Extensions.kt:3</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.db.JoinPath.kt:97</ID>
     <ID>NoConsecutiveBlankLines:org.vaccineimpact.orderlyweb.db.MappingHelpers.kt:12</ID>
@@ -2735,11 +2717,6 @@
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.GitController.kt:9</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:10</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:11</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:17</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:18</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:19</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:20</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:21</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:13</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:14</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:15</ID>
@@ -3305,17 +3282,6 @@
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.HomeController.kt:12</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:12</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.OnetimeTokenController.kt:16</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:22</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:31</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:38</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:45</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:52</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:59</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:61</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:69</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:71</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:79</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ReportController.kt:86</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:17</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:25</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:30</ID>
