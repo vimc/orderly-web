@@ -34,7 +34,7 @@ class VersionPageTests
             published = true,
             date = Timestamp(System.currentTimeMillis()).toInstant(),
             latestVersion = "v1",
-            description = "description"),
+            description = "r1 description"),
             artefacts = listOf(),
             resources = listOf(),
             dataInfo = listOf(),
@@ -78,18 +78,23 @@ class VersionPageTests
             isGuest = false,
             breadcrumbs = listOf(Breadcrumb("name", "url")))
 
-    private val testModel = ReportVersionPageViewModel(
-            testReport.basicReportVersion,
-            "/testFocalArtefactUrl",
-            false,
-            testArtefactViewModels,
-            testDataLinks,
-            testResources,
-            DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
-            listOf(),
-            listOf(),
-            "p1=v1, p2=v2",
-            testDefaultModel)
+    private fun getTestModel(modelReport: ReportVersionWithArtefactsDataDescParamsResources): ReportVersionPageViewModel
+    {
+        return ReportVersionPageViewModel(
+                modelReport.basicReportVersion,
+                "/testFocalArtefactUrl",
+                false,
+                testArtefactViewModels,
+                testDataLinks,
+                testResources,
+                DownloadableFileViewModel("zipFileName", "http://zipFileUrl", null),
+                listOf(),
+                listOf(),
+                "p1=v1, p2=v2",
+                testDefaultModel)
+    }
+
+    private val testModel = getTestModel(testReport)
 
     @Test
     fun `renders outline correctly`()
@@ -160,6 +165,68 @@ class VersionPageTests
         tagsEl = tagsDiv.select("report-tags")
         Assertions.assertThat(tagsEl.attr(":can-edit")).isEqualTo("true")
         Assertions.assertThat(tagsEl.attr(":report")).isEqualTo("report")
+    }
+
+    @Test
+    fun `renders metadata tab title correctly`()
+    {
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val title = jsoupDoc.select("#metadata-tab h1")
+        Assertions.assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
+    }
+
+    @Test
+    fun `renders metadata name and description correctly`()
+    {
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val tab = jsoupDoc.select("#metadata-tab")
+
+        val name = tab.select("#metadata-name")
+        Assertions.assertThat(name.text()).isEqualToIgnoringWhitespace("r1")
+
+        val description = tab.select("#metadata-description")
+        Assertions.assertThat(description.text()).isEqualToIgnoringWhitespace("r1 description")
+    }
+
+
+    @Test
+    fun `does not render metadata name if identical to display name`()
+    {
+        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(name = "r1",
+                displayName = "r1",
+                id = "r1-v1",
+                published = true,
+                date = Timestamp(System.currentTimeMillis()).toInstant(),
+                latestVersion = "v1",
+                description = "r1 description"),
+                artefacts = listOf(),
+                resources = listOf(),
+                dataInfo = listOf(),
+                parameterValues = mapOf())
+
+        val jsoupDoc = template.jsoupDocFor(getTestModel(report))
+        val name = jsoupDoc.select("#metadata-tab #metadata-name")
+        Assertions.assertThat(name.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `does not render metadata description if null`()
+    {
+        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(name = "r1",
+                displayName = "r1 display",
+                id = "r1-v1",
+                published = true,
+                date = Timestamp(System.currentTimeMillis()).toInstant(),
+                latestVersion = "v1",
+                description = null),
+                artefacts = listOf(),
+                resources = listOf(),
+                dataInfo = listOf(),
+                parameterValues = mapOf())
+
+        val jsoupDoc = template.jsoupDocFor(getTestModel(report))
+        val desc = jsoupDoc.select("#metadata-tab #metadata-description")
+        Assertions.assertThat(desc.count()).isEqualTo(0)
     }
 
     @Test
