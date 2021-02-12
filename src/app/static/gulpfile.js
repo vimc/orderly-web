@@ -24,7 +24,7 @@ gulp.task('sass', function () {
 });
 
 gulp.task('webpack', () => {
-    return gulp.src('src/js/*.js')
+    return gulp.src(['src/js/*.js', 'src/js/*.ts'])
         .pipe(through(function (file) {
             file.named = path.basename(file.path, path.extname(file.path));
             this.queue(file);

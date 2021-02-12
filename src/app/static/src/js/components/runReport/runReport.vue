@@ -37,6 +37,10 @@
                     </div>
                 </div>
             </template>
+            <div v-if="showParameters" id="parameters" class="form-group row">
+                <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
+                <parameter-list id="params-component" @getParams="getParameterValues" :params="parameterValues"></parameter-list>
+            </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -44,23 +48,24 @@
                         Run report
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
-                        {{runningStatus}}
+                        {{ runningStatus }}
                         <a @click.prevent="checkStatus" href="#">Check status</a>
                     </div>
-                 </div>
+                </div>
             </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
-
 </template>
 
-<script>
+<script lang="ts">
     import {api} from "../../utils/api";
-    import ErrorInfo from "../errorInfo";
-    import ReportList from "./reportList";
+    import ParameterList from "./parameterList.vue"
+    import ErrorInfo from "../errorInfo.vue";
+    import Vue from "vue";
+    import ReportList from "./reportList.vue";
 
-    export default {
+    export default Vue.extend({
         name: "runReport",
         props: [
             "metadata",
@@ -68,7 +73,8 @@
         ],
         components: {
             ErrorInfo,
-            ReportList
+            ReportList,
+            ParameterList
         },
         data: () => {
             return {
@@ -82,7 +88,8 @@
                 defaultMessage: "",
                 runningStatus: "",
                 runningKey: "",
-                disableRun: false
+                disableRun: false,
+                parameterValues: []
             }
         },
         computed: {
@@ -97,6 +104,9 @@
             },
             showRunButton() {
                 return !!this.selectedReport;
+            },
+            showParameters() {
+                return this.selectedReport && this.parameterValues.length
             }
         },
         methods: {
@@ -116,6 +126,15 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
+            getParameterValues(values) {
+                if (values) {
+                    this.parameterValues.forEach((param, key) => {
+                        if (values[key].name == param.name) {
+                            param.value = values[key].value
+                        }
+                    })
+                }
+            },
             changedCommit() {
                 this.updateReports();
             },
@@ -132,6 +151,19 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching reports";
                     });
+            },
+            setParameters: function () {
+                const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
+                api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                    .then(({data}) => {
+                        this.parameterValues = data.data
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error
+                        this.defaultMessage = "An error occurred when getting parameters";
+                    })
             },
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
@@ -207,6 +239,10 @@
         watch: {
             selectedReport() {
                 this.clearRun();
+                if (this.selectedReport) {
+                    this.setParameters()
+                }
+                this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,
@@ -215,5 +251,5 @@
                 }
             }
         }
-    }
+    })
 </script>

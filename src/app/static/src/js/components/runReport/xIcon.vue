@@ -5,8 +5,10 @@
               fill-rule="evenodd"></path>
     </svg>
 </template>
-<script>
-export default {
-    name: 'XIcon'
-}
+<script lang="ts">
+    import Vue from "vue";
+
+    export default Vue.extend({
+        name: 'XIcon'
+    })
 </script>
