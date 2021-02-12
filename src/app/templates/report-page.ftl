@@ -70,7 +70,7 @@
             <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="report-tab">
                 <#include "partials/report-tab.ftl">
             </div>
-            <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="metadata-tab">
+            <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="metadata-tab">
                 <#include "partials/metadata-tab.ftl">
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="downloads-tab">
