@@ -41,11 +41,15 @@ data class WebEndpoint(
         {
             spark.after(url, ContentTypes.json, DefaultHeadersFilter("${ContentTypes.json}; charset=utf-8"))
         }
+        if (this.contentType == ContentTypes.text)
+        {
+            spark.after(url, ContentTypes.text, DefaultHeadersFilter("${ContentTypes.text}; charset=utf-8"))
+        }
     }
 
     private fun addSecurityFilter(url: String)
     {
-        //If Montagu Auth and if guest users are not allowed, OrderlyWeb auth should be fully synchronised
+        // If Montagu Auth and if guest users are not allowed, OrderlyWeb auth should be fully synchronised
         // with the external login provider, and login page should not be seen
         val synchronisedAuth = authenticationConfig.getConfiguredProvider() == AuthenticationProvider.Montagu
 

@@ -5,6 +5,7 @@ import org.junit.Before
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
@@ -89,5 +90,30 @@ class RunReportPageTests : SeleniumTest()
 
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Report logs")
         assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Report logs coming soon!")
+    }
+
+
+    //TODO: This test case should be revisited as soon as test data is updated.
+    @Test
+    @Ignore
+    fun `can fill parameter textField`()
+    {
+        val gitBranch = Select(driver.findElement(By.id("git-branch")))
+        gitBranch.selectByVisibleText("other")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("report")))
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("other")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("parameters")))
+        val parameters = driver.findElement(By.id("params-component"))
+        val paramInput = parameters.findElements(By.tagName("input"))
+
+        paramInput[0].clear()
+        paramInput[0].sendKeys("new value")
+        assertThat(paramInput[0].text).isEqualTo("new value")
     }
 }

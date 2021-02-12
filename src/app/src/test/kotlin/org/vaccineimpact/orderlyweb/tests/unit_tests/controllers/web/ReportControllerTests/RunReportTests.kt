@@ -3,13 +3,15 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportCont
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
-import org.vaccineimpact.orderlyweb.models.RunReportMetadata
+import org.vaccineimpact.orderlyweb.models.*
 
 class RunReportTests
 {
@@ -79,4 +81,51 @@ class RunReportTests
                 .isInstanceOf(OrderlyServerError::class.java)
     }
 
+    @Test
+    fun `gets parameters for report as expected with commitId`()
+    {
+        val mockContext: ActionContext = mock {
+            on { params(":name") } doReturn "minimal"
+            on { queryParams("commit") } doReturn "123"
+        }
+
+        val parameters = listOf(
+                Parameter("minimal", ""),
+                Parameter("global", "default")
+        )
+
+        val mockOrderlyServer: OrderlyServerAPI = mock {
+            on { get("/reports/minimal/parameters", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
+        }
+
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val result = sut.getReportParameters()
+        Assertions.assertThat(result.count()).isEqualTo(2)
+        Assertions.assertThat(result).isEqualTo(parameters)
+    }
+
+    @Test
+    fun `gets parameters for report as expected without commitId`()
+    {
+        val mockContext: ActionContext = mock {
+            on { params(":name") } doReturn "minimal"
+        }
+
+        val parameters = listOf(
+                Parameter("minimal", ""),
+                Parameter("global", "default")
+        )
+
+        val mockOrderlyServer: OrderlyServerAPI = mock {
+            on { get("/reports/minimal/parameters", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(parameters), 200)
+        }
+
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val result = sut.getReportParameters()
+
+        Assertions.assertThat(result.count()).isEqualTo(2)
+        Assertions.assertThat(result).isEqualTo(parameters)
+    }
 }

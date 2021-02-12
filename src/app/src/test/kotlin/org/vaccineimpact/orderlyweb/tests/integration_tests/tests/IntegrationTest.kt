@@ -90,6 +90,10 @@ abstract class IntegrationTest
     {
         Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/html")
     }
+    protected fun assertPlainTextContentType(response: Response)
+    {
+        Assertions.assertThat(response.headers["content-type"]).isEqualTo("text/plain;charset=utf-8")
+    }
 
     protected fun assertWebUrlSecured(url: String,
                                       requiredPermissions: Set<ReifiedPermission>,

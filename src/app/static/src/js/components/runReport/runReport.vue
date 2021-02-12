@@ -44,6 +44,10 @@
                     </div>
                 </div>
             </template>
+            <div v-if="showParameters" id="parameters" class="form-group row">
+                <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
+                <parameter-list id="params-component" @getParams="getParameterValues" :params="parameterValues"></parameter-list>
+            </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -51,23 +55,24 @@
                         Run report
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
-                        {{runningStatus}}
+                        {{ runningStatus }}
                         <a @click.prevent="checkStatus" href="#">Check status</a>
                     </div>
-                 </div>
+                </div>
             </div>
         </form>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
-
 </template>
 
-<script>
+<script lang="ts">
     import {api} from "../../utils/api";
-    import ErrorInfo from "../errorInfo";
-    import ReportList from "./reportList";
+    import ParameterList from "./parameterList.vue"
+    import ErrorInfo from "../errorInfo.vue";
+    import Vue from "vue";
+    import ReportList from "./reportList.vue";
 
-    export default {
+    export default Vue.extend({
         name: "runReport",
         props: [
             "metadata",
@@ -75,7 +80,8 @@
         ],
         components: {
             ErrorInfo,
-            ReportList
+            ReportList,
+            ParameterList
         },
         data: () => {
             return {
@@ -91,7 +97,8 @@
                 defaultMessage: "",
                 runningStatus: "",
                 runningKey: "",
-                disableRun: false
+                disableRun: false,
+                parameterValues: []
             }
         },
         computed: {
@@ -109,6 +116,9 @@
             },
             showRunButton() {
                 return !!this.selectedReport;
+            },
+            showParameters() {
+                return this.selectedReport && this.parameterValues.length
             }
         },
         methods: {
@@ -141,6 +151,15 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
+            getParameterValues(values) {
+                if (values) {
+                    this.parameterValues.forEach((param, key) => {
+                        if (values[key].name == param.name) {
+                            param.value = values[key].value
+                        }
+                    })
+                }
+            },
             changedCommit() {
                 this.updateReports();
             },
@@ -158,26 +177,40 @@
                         this.defaultMessage = "An error occurred fetching reports";
                     });
             },
+            setParameters: function () {
+                const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
+                api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                    .then(({data}) => {
+                        this.parameterValues = data.data
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error
+                        this.defaultMessage = "An error occurred when getting parameters";
+                    })
+            },
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
                 //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
                 //multiple instances - until multiple are accepted, send the selected instance value for instance with
-                //greatest number of options
-                let instance = "";
+                //greatest number of options. See VIMC-4561.
+                let instances = {};
                 if (this.metadata.instances_supported && this.metadata.instances &&
-                        Object.keys(this.metadata.instances).length > 0) {
-                    const instances = this.metadata.instances;
-                    const instanceName = Object.keys(instances).sort((a, b) => instances[a] < instances[b] ? 1 : -1)[0];
-                    instance = this.selectedInstances[instanceName]
+                    Object.keys(this.metadata.instances).length > 0) {
+                    const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
+                    const instance = this.selectedInstances[instanceName];
+                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
 
-                const params = {
-                    ref: this.selectedCommitId,
-                    instance
-                };
-                api.post(`/report/${this.selectedReport}/actions/run/`, {}, {params})
+                api.post(`/report/${this.selectedReport}/actions/run/`, {
+                    instances: instances,
+                    params: {}, //TODO mrc-2167
+                    gitBranch: this.selectedBranch,
+                    gitCommit: this.selectedCommitId,
+                })
                     .then(({data}) => {
                         this.disableRun = true;
                         this.runningKey = data.data.key;
@@ -240,6 +273,10 @@
             },
             selectedReport() {
                 this.clearRun();
+                if (this.selectedReport) {
+                    this.setParameters()
+                }
+                this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,
@@ -248,5 +285,5 @@
                 }
             }
         }
-    }
+    })
 </script>

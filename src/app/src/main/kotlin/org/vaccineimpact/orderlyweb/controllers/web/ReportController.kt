@@ -27,11 +27,11 @@ class ReportController(
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
-        context,
-        Orderly(context),
-        OrderlyServer(AppConfig()),
-        OrderlyReportRepository(context),
-        OrderlyWebTagRepository()
+            context,
+            Orderly(context),
+            OrderlyServer(AppConfig()),
+            OrderlyReportRepository(context),
+            OrderlyWebTagRepository()
     )
 
     @Template("report-page.ftl")
@@ -75,6 +75,14 @@ class ReportController(
         val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)
         val versionedReports = reportRepository.getLatestReportVersions(reports)
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
+    }
+
+    fun getReportParameters(): List<Parameter>
+    {
+        val name = context.params(":name")
+        return orderlyServerAPI
+                .get("/reports/$name/parameters", context)
+                .listData(Parameter::class.java)
     }
 
     fun tagVersion(): String
