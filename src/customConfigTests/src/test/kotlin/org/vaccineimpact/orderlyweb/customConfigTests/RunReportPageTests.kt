@@ -92,28 +92,27 @@ class RunReportPageTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Report logs coming soon!")
     }
 
-
     //TODO: This test case should be revisited as soon as test data is updated.
-    @Test
+
     @Ignore
+    @Test
     fun `can fill parameter textField`()
     {
-        val gitBranch = Select(driver.findElement(By.id("git-branch")))
-        gitBranch.selectByVisibleText("other")
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("report")))
         val typeahead = driver.findElement(By.id("report"))
+        assertThat(typeahead.findElements(By.tagName("a")).size).isEqualTo(2)
         val input = typeahead.findElement(By.tagName("input"))
-        input.sendKeys("other")
+        input.sendKeys("min")
         val matches = typeahead.findElements(By.tagName("a"))
         matches[0].click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("parameters")))
-        val parameters = driver.findElement(By.id("params-component"))
-        val paramInput = parameters.findElements(By.tagName("input"))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("changelog-message")))
+        val changeLog = driver.findElement(By.id("changelog-message"))
+        val textarea = changeLog.findElement(By.className("form-control"))
+        textarea.sendKeys("New text message")
+        assertThat(textarea.getAttribute("value")).isEqualTo("New text message")
 
-        paramInput[0].clear()
-        paramInput[0].sendKeys("new value")
-        assertThat(paramInput[0].text).isEqualTo("new value")
+        val changelogType = Select(driver.findElement(By.id("changelogType")))
+        changelogType.selectByValue("public")
+        assertThat(changelogType.firstSelectedOption.getAttribute("value")).isEqualTo("public")
     }
 }
