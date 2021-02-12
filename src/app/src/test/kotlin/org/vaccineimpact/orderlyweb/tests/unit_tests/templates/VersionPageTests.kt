@@ -102,10 +102,12 @@ class VersionPageTests
         val doc = template.jsoupDocFor(testModel)
 
         Assertions.assertThat(doc.select(".nav-item")[0].text()).isEqualTo("Report")
-        Assertions.assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Downloads")
-        Assertions.assertThat(doc.select(".nav-item")[2].text()).isEqualTo("Changelog")
+        Assertions.assertThat(doc.select(".nav-item")[1].text()).isEqualTo("Metadata")
+        Assertions.assertThat(doc.select(".nav-item")[2].text()).isEqualTo("Downloads")
+        Assertions.assertThat(doc.select(".nav-item")[3].text()).isEqualTo("Changelog")
 
         Assertions.assertThat(doc.selectFirst("#report-tab").hasClass("tab-pane active pt-4 pt-md-1")).isTrue()
+        Assertions.assertThat(doc.selectFirst("#metadata-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
         Assertions.assertThat(doc.selectFirst("#downloads-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
         Assertions.assertThat(doc.selectFirst("#changelog-tab").hasClass("tab-pane pt-4 pt-md-1")).isTrue()
     }
@@ -143,7 +145,11 @@ class VersionPageTests
 
         Assertions.assertThat(tab.select("h1").text()).isEqualToIgnoringWhitespace("r1 display")
         Assertions.assertThat(tab.select("p:first-of-type").text()).isEqualToIgnoringWhitespace("r1-v1")
-        Assertions.assertThat(tab.select("#param-values").text()).isEqualToIgnoringWhitespace("Parameter values: p1=v1, p2=v2")
+
+        Assertions.assertThat(tab.select("#report-name").text()).isEqualToIgnoringWhitespace("r1")
+        Assertions.assertThat(tab.select("#report-description").text()).isEqualToIgnoringWhitespace("r1 description")
+        Assertions.assertThat(tab.select("#report-parameters").text()).isEqualToIgnoringWhitespace("p1=v1, p2=v2")
+
         Assertions.assertThat(tab.select("iframe").attr("src")).isEqualTo("/testFocalArtefactUrl")
         Assertions.assertThat(tab.select("div.text-right a").text()).isEqualToIgnoringWhitespace("View fullscreen")
         Assertions.assertThat(tab.select("div.text-right a").attr("href")).isEqualToIgnoringWhitespace("/testFocalArtefactUrl")
@@ -168,29 +174,7 @@ class VersionPageTests
     }
 
     @Test
-    fun `renders metadata tab title correctly`()
-    {
-        val jsoupDoc = template.jsoupDocFor(testModel)
-        val title = jsoupDoc.select("#metadata-tab h1")
-        Assertions.assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
-    }
-
-    @Test
-    fun `renders metadata name and description correctly`()
-    {
-        val jsoupDoc = template.jsoupDocFor(testModel)
-        val tab = jsoupDoc.select("#metadata-tab")
-
-        val name = tab.select("#metadata-name")
-        Assertions.assertThat(name.text()).isEqualToIgnoringWhitespace("r1")
-
-        val description = tab.select("#metadata-description")
-        Assertions.assertThat(description.text()).isEqualToIgnoringWhitespace("r1 description")
-    }
-
-
-    @Test
-    fun `does not render metadata name if identical to display name`()
+    fun `does not render report name if identical to display name`()
     {
         val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(name = "r1",
                 displayName = "r1",
@@ -205,12 +189,12 @@ class VersionPageTests
                 parameterValues = mapOf())
 
         val jsoupDoc = template.jsoupDocFor(getTestModel(report))
-        val name = jsoupDoc.select("#metadata-tab #metadata-name")
+        val name = jsoupDoc.select("#report-tab #report-name")
         Assertions.assertThat(name.count()).isEqualTo(0)
     }
 
     @Test
-    fun `does not render metadata description if null`()
+    fun `does not render report description if null`()
     {
         val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(name = "r1",
                 displayName = "r1 display",
@@ -225,8 +209,24 @@ class VersionPageTests
                 parameterValues = mapOf())
 
         val jsoupDoc = template.jsoupDocFor(getTestModel(report))
-        val desc = jsoupDoc.select("#metadata-tab #metadata-description")
+        val desc = jsoupDoc.select("#report-tab #report-description")
         Assertions.assertThat(desc.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `renders metadata tab title correctly`()
+    {
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val title = jsoupDoc.select("#metadata-tab h1")
+        Assertions.assertThat(title.text()).isEqualToIgnoringWhitespace("r1 display")
+    }
+
+    @Test
+    fun `renders metadata tab content correctly`()
+    {
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val content = jsoupDoc.select("#metadata-tab .container")
+        Assertions.assertThat(content.text()).isEqualToIgnoringWhitespace("No relevant metadata")
     }
 
     @Test
