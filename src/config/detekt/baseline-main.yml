@@ -2257,7 +2257,6 @@
     <ID>MagicNumber:UnknownObjectError.kt$UnknownObjectError$404</ID>
     <ID>MagicNumber:Zip.kt$Zip$1024</ID>
     <ID>MagicNumber:Zip.kt$Zip$8000</ID>
-    <ID>MagicNumber:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:15</ID>
     <ID>MandatoryBracesIfStatements:AllowedOriginsFilter.kt$AllowedOriginsFilter$return</ID>
     <ID>MandatoryBracesIfStatements:ArtefactController.kt$ArtefactController$throw OrderlyFileNotFoundError(artefactname)</ID>
     <ID>MandatoryBracesIfStatements:DataController.kt$DataController$type = "csv"</ID>
