@@ -105,19 +105,19 @@
                 }
 
                 this.pollingTimer = setInterval(() => {
-                      api.get(`/report/${this.report.name}/actions/status/${this.runningKey}/`)
-                          .then(({data}) => {
-                            this.runningStatus = data.data.status;
-                            this.newVersionFromRun = data.data.version;
-                          })
-                          .catch(({response}) => {
-                            this.stopPolling();
-                            this.runningStatus = "Error when fetching report status";
-                            console.log(response.data)
-                          })
-                          .finally(() => {
-                            this.updateSessionStorage();
-                          });
+                        api.get(`/report/${this.report.name}/actions/status/${this.runningKey}/`)
+                            .then(({data}) => {
+                                this.runningStatus = data.data.status;
+                                this.newVersionFromRun = data.data.version;
+                            })
+                            .catch(({response}) => {
+                                this.stopPolling();
+                                this.runningStatus = "Error when fetching report status";
+                                console.log(response.data)
+                            })
+                            .finally(() => {
+                                this.updateSessionStorage();
+                            });
                     },
                     1500);
             },
