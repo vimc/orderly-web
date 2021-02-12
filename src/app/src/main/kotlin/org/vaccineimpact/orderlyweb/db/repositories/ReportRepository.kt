@@ -421,13 +421,13 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
             return it.dsl.select(
-                    ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
-                    ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("date")
+                ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`as`("name"),
+                ORDERLYWEB_REPORT_VERSION_FULL.DATE.max().`as`("date")
             )
-                    .from(ORDERLYWEB_REPORT_VERSION_FULL)
-                    .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
-                    .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
-                    .fetchInto(ReportWithDate::class.java)
+                .from(ORDERLYWEB_REPORT_VERSION_FULL)
+                .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
+                .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
+                .fetchInto(ReportWithDate::class.java)
         }
     }
 
