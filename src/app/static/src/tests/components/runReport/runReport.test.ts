@@ -383,8 +383,6 @@ describe("runReport", () => {
                     source: ["uat", "science", "prod"]
                 },
                 parameterValues: [{name: "test", value: "testValue"}],
-                changeLogMessageValue: "message-value",
-                changeLogTypeValue: "type-value"
             },
             gitBranches
         };
@@ -397,9 +395,7 @@ describe("runReport", () => {
                 selectedInstances: {source: "science", annexe: "a1"},
                 error: "test-error",
                 defaultMessage: "test-msg",
-                parameterValues: mockParams,
-                changeLogMessageValue: "message-value",
-                changeLogTypeValue: "type-value"
+                parameterValues: mockParams
             });
 
             await Vue.nextTick();
@@ -417,9 +413,7 @@ describe("runReport", () => {
                             "annexe": "science"
                         },
                         "params": {
-                            "parameterValues": mockParams,
-                            "changeLogMessageValue": "message-value",
-                            "changeLogTypeValue": "type-value"
+                            "parameterValues": mockParams
                         },
                         "gitBranch": "master",
                         "gitCommit": "test-commit"

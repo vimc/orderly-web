@@ -14,6 +14,7 @@
             </tr>
             </tbody>
         </table>
+        <div class="text-danger small">{{error}} </div>
     </div>
 </template>
 
@@ -22,7 +23,8 @@
     import {Parameter} from "../../utils/types";
 
     interface Props {
-        params: Parameter[]
+        params: Parameter[],
+        error: string
     }
 
     interface Data {
@@ -36,11 +38,13 @@
     interface Methods {
         parameters: () => void
     }
-
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
         props: {
-            params: []
+            params: [],
+            error: {
+                type: String
+            }
         },
         data(): Data {
             return {

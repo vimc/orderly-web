@@ -39,7 +39,7 @@
             </template>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @getParams="getParameterValues"
+                <parameter-list id="params-component" @getParams="getParameterValues" :error="paramError"
                                 :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showChangelog">
@@ -111,7 +111,9 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: ""
+                changeLogTypeValue: "",
+                paramError: "",
+                isValidParam: false
             }
         },
         computed: {
@@ -159,6 +161,19 @@
                         }
                     })
                 }
+                this.validateParams()
+            },
+            validateParams() {
+                const invalid = this.parameterValues.some(param => (param.value === "" || param.value === null))
+                this.disableRun = false
+                this.isValidParam = true
+                this.paramError = ""
+
+                if (invalid) {
+                    this.paramError = "Parameter value(s) required"
+                    this.disableRun = true
+                    this.isValidParam = false
+                }
             },
             changedCommit() {
                 this.updateReports();
@@ -194,6 +209,14 @@
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
+                if (!this.isValidParam && this.parameterValues.length) {
+                    // Checks if parameter has values before making a request
+                    this.validateParams()
+                    if (!this.isValidParam) {
+                        return
+                    }
+                }
+
                 //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
                 //multiple instances - until multiple are accepted, send the selected instance value for instance with
                 //greatest number of options. See VIMC-4561.
@@ -201,13 +224,10 @@
                 if (this.metadata.instances_supported && this.metadata.instances &&
                     Object.keys(this.metadata.instances).length > 0) {
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
-                    const instance = this.selectedInstances[instanceName];
-                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
                 const params = {
-                    parameterValues: this.parameterValues,
-                    changeLogMessageValue: this.changeLogMessageValue,
-                    changeLogTypeValue: this.changeLogTypeValue
+                    parameterValues: this.parameterValues
                 };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
@@ -246,6 +266,8 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
+                this.isValidParam = false;
+                this.paramError = "";
             }
         },
         mounted() {
