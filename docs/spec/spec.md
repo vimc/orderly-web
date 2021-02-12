@@ -198,9 +198,22 @@ Starts a new Orderly run of a report named `:name`.
 
 Required permissions: `reports.run`.
 
-Accepts as `POST` body json that will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
+Accepts optional arguments as the JSON encoded body of a `POST` request:
+```json
+{
+  "instances": {"source": "production"},
+  "params": {"name1": "value1", "name2": "value2"},
+  "gitBranch": "main",
+  "gitCommit": "abc1234"
+}
+```
+`params` will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
 
-Accepts the query parameter `ref`, to try running the report against a particular git reference (e.g., a branch or a commit).  This is not yet actually supported.
+Accepts the query parameter `ref`, to try running the report against a particular git reference (e.g., a branch or a commit).
+
+Accepts the query parameter `timeout`, which sets the the number of seconds to wait before the job is terminated.  The default is 3 hours (10800 seconds).
+
+Accepts the query parameter `instance`, to run the report against a particular source database.
 
 Returns information to query the status of the report via the next endpoint
 
@@ -222,43 +235,66 @@ Get the status of a report.
 
 Required permissions: `reports.run`.
 
+Accepts query parameter `output`, which if TRUE returns the log from the job run.
+
 This works only for reports that were queued by the runner itself.
 
 Schema: [`Status.schema.json`](Status.schema.json)
 
-### Example
+### Example queued status
+
+```json
+{
+    "key": "adjective_animal",
+    "status": "queued",
+    "version": null,
+    "output": null,
+    "queue": [
+        {
+            "key": "antiutopian_peregrinefalcon",
+            "status": "running",
+            "name": "minimal"
+        },
+        {
+            "key": "flavoured_bassethound",
+            "status": "queued",
+            "name": "other"
+        }
+    ]
+}
+```
+
+### Example completed status
 
 ```json
 {
     "key": "adjective_animal",
     "status": "success",
     "version": "20170912-091103-41c62920",
-    "output": {
-        "stderr": [
-            "[ name      ]  example",
-            "[ id        ]  20170912-091103-41c62920",
-            "[ id_file   ]  /var/folders/3z/86tv450j7kb4w5y4wpxj6d5r0000gn/T//RtmpozkWqn/fileaf521bb78e78",
-            "[ data      ]  dat: 20 x 2",
-            "[ start     ]  2017-09-12 09:11:03",
-            "[ end       ]  2017-09-12 09:11:03",
-            "[ artefact  ]  mygraph.png: b7de1d29f37d7913392832db6bc49c99",
-            "[ commit    ]  example/20170912-091103-41c62920",
-            "[ copy      ]",
-            "[ success   ]  :)",
-            "id:20170912-091103-41c62920"],
-        "stdout": [
-            "",
-            "> png(\"mygraph.png\")",
-            "",
-            "> par(mar = c(15, 4, 0.5, 0.5))",
-            "",
-            "> barplot(setNames(dat$number, dat$name), las = 2)",
-            "",
-            "> dev.off()",
-            "null device ",
-            "          1 "
-        ]
-    }
+    "output": [
+        "[ name      ]  example",
+        "[ id        ]  20170912-091103-41c62920",
+        "[ id_file   ]  /var/folders/3z/86tv450j7kb4w5y4wpxj6d5r0000gn/T//RtmpozkWqn/fileaf521bb78e78",
+        "[ data      ]  dat: 20 x 2",
+        "[ start     ]  2017-09-12 09:11:03",
+        "",
+        "> png(\"mygraph.png\")",
+        "",
+        "> par(mar = c(15, 4, 0.5, 0.5))",
+        "",
+        "> barplot(setNames(dat$number, dat$name), las = 2)",
+        "",
+        "> dev.off()",
+        "null device ",
+        "          1 "
+        "[ end       ]  2017-09-12 09:11:03",
+        "[ artefact  ]  mygraph.png: b7de1d29f37d7913392832db6bc49c99",
+        "[ commit    ]  example/20170912-091103-41c62920",
+        "[ copy      ]",
+        "[ success   ]  :)",
+        "id:20170912-091103-41c62920"
+    ],
+    "queue": []
 }
 ```
 

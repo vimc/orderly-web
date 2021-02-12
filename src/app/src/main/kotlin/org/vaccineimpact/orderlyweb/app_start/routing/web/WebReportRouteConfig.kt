@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.app_start.routing.web
 
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.app_start.RouteConfig
+import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import spark.route.HttpMethod
@@ -27,12 +28,12 @@ object WebReportRouteConfig : RouteConfig
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
             WebEndpoint("/report/:name/actions/run/",
-                    org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "run",
+                    ReportRunController::class, "run",
                     method = HttpMethod.post)
                     .json()
                     .secure(runReports),
             WebEndpoint("/report/:name/actions/status/:key/",
-                    org.vaccineimpact.orderlyweb.controllers.api.ReportController::class, "status")
+                    ReportRunController::class, "status")
                     .json()
                     .secure(runReports),
             WebEndpoint(
@@ -42,6 +43,12 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint(
                     "/reports/runnable/",
                     ReportController::class, "getRunnableReports")
+                    .json()
+                    .secure(runReports)
+                    .transform(),
+            WebEndpoint(
+                    "/report/:name/parameters/",
+                    ReportController::class, "getReportParameters")
                     .json()
                     .secure(runReports)
                     .transform(),

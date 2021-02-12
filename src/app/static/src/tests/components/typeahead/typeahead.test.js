@@ -72,11 +72,12 @@ describe('VueBootstrapTypeahead', () => {
         expect(child.isVisible()).toBe(false)
     })
 
-    it('Renders the list in different sizes', () => {
+    it('Renders the list in different sizes', async() => {
         expect(wrapper.vm.sizeClasses).toBe('input-group')
         wrapper.setProps({
             size: 'lg'
         })
+        await Vue.nextTick()
         expect(wrapper.vm.sizeClasses).toBe('input-group input-group-lg')
     })
 })
