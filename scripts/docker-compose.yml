@@ -11,11 +11,13 @@ services:
   orderly_server:
     image: vimc/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}
-    command: /orderly
+    command: --workers=1 /orderly
     ports:
       - "8321:8321"
     volumes:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
+    environment:
+      REDIS_URL: redis://redis
   api:
     image: vimc/montagu-api:master
     ports:
@@ -26,3 +28,5 @@ services:
     image: vimc/montagu-db:master
     ports:
     - "5432:5432"
+  redis:
+    image: redis
