@@ -640,4 +640,99 @@ describe("runReport", () => {
         wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
     });
+
+    it("it disables runButton or display error msg when parameters fail validation", async () => {
+        const localParam = [
+            {name: "global", value: "Set new value"},
+            {name: "max", value: null},
+        ]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: localParam,
+                    selectedReport: "reports",
+                    disableRun: false,
+                    paramError: ""
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
+
+        wrapper.find("#run-form-group button").trigger("click")
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.disableRun).toBe(true)
+        expect(wrapper.vm.$data.paramError).toBe("Parameter value(s) required")
+    });
+
+    it("it does not disable runButton or display error msg when parameters pass validation", async () => {
+        const localParam = [
+            {name: "global", value: "Set new value"},
+            {name: "max", value: "James bond"},
+        ]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: localParam,
+                    selectedReport: "reports",
+                    disableRun: false,
+                    paramError: ""
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
+
+        wrapper.find("#run-form-group button").trigger("click")
+        await Vue.nextTick()
+        expect(wrapper.vm.$data.disableRun).toBe(false)
+        expect(wrapper.vm.$data.paramError).toBe("")
+    });
+
+    it("can run validation when getParams is emmited and disables runButton when parameters fail validation", async () => {
+        const localParam = [
+            {name: "global", value: "Set new value"},
+            {name: "minimal", value: ""}
+        ]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: localParam,
+                    selectedReport: "reports",
+                    disableRun: false,
+                    paramError: ""
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
+        wrapper.find(ParameterList).vm.$emit("getParams", wrapper.vm.$data.parameterValues)
+
+        await Vue.nextTick()
+
+        expect(wrapper.find(ParameterList).emitted("getParams").length).toBe(1)
+        expect(wrapper.vm.$data.disableRun).toBe(true)
+        expect(wrapper.vm.$data.paramError).toBe("Parameter value(s) required")
+    });
 });

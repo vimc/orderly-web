@@ -164,12 +164,12 @@
                 this.validateParams()
             },
             validateParams() {
-                const invalid = this.parameterValues.some(param => (param.value === "" || param.value === null))
+                const validValues = this.parameterValues.filter(param => (param.value))
                 this.disableRun = false
                 this.isValidParam = true
                 this.paramError = ""
 
-                if (invalid) {
+                if (validValues.length < this.parameterValues.length) {
                     this.paramError = "Parameter value(s) required"
                     this.disableRun = true
                     this.isValidParam = false
@@ -209,8 +209,12 @@
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
+                /*
+                 * This ensures parameter values are filled before running a report
+                 * if parameter values already pass validation, it will not re-validate
+                 * Also checks if parameter has values before validating
+                 */
                 if (!this.isValidParam && this.parameterValues.length) {
-                    // Checks if parameter has values before making a request
                     this.validateParams()
                     if (!this.isValidParam) {
                         return
