@@ -47,6 +47,12 @@ object WebReportRouteConfig : RouteConfig
                     .secure(runReports)
                     .transform(),
             WebEndpoint(
+                    "/report/:name/parameters/",
+                    ReportController::class, "getReportParameters")
+                    .json()
+                    .secure(runReports)
+                    .transform(),
+            WebEndpoint(
                     "/publish-reports/",
                     ReportController::class, "getPublishReports")
                     .secure(reviewReports),

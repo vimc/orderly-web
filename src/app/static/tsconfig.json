@@ -1,0 +1,26 @@
+
+{
+  "compilerOptions": {
+    "target": "es5",
+    "sourceMap": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "allowJs": true,
+    "checkJs": false,
+    "outDir": "build",
+    "strict": false,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": [
+    "./src/js/**/*.ts",
+    "./src/js/**/*.js",
+    "./src/test/**/*.ts",
+    "./src/test/**/*.js",
+    "./src/js/**/*.vue"
+  ],
+  "files": [
+    "./vue-shims.d.ts"
+  ]
+}
