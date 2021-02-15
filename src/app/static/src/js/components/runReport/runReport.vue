@@ -152,18 +152,13 @@
                     });
             },
             getParameterValues(values) {
-                console.log('checking', values, this.parameterValues)
                 if (values) {
                     this.parameterValues.forEach((param, key) => {
                         if (values[key].name == param.name) {
                             param.value = values[key].value
                         }
                     })
-
-                console.log('checking2', values, this.parameterValues)
                 }
-
-                console.log('checking3', values, this.parameterValues)
             },
             changedCommit() {
                 this.updateReports();
@@ -183,12 +178,9 @@
                     });
             },
             setParameters: function () {
-                console.log('break')
-                console.log('set paramaters called 1', this.parameterValues)
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
                 api.get(`/report/${this.selectedReport}/parameters/${commit}`)
                     .then(({data}) => {
-                        console.log('set paramaters called', data.data)
                         this.parameterValues = data.data
                         this.error = "";
                         this.defaultMessage = "";
@@ -197,7 +189,6 @@
                         this.error = error
                         this.defaultMessage = "An error occurred when getting parameters";
                     })
-                    console.log('set paramaters is now', this.parameterValues)
             },
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
@@ -272,9 +263,6 @@
             }
         },
         watch: {
-            parameterValues(){
-                console.log('parameter values is now', this.parameterValues)
-            },
             gitBranches(){
                 this.gitCommits = [];
                 this.reports = [];
