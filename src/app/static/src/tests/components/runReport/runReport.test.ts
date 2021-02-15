@@ -668,7 +668,7 @@ describe("runReport", () => {
                     git_supported: true,
                     changelog_types: changelogTypes
                 },
-                gitBranches
+                initialGitBranches
             },
             data() {
                 return {
@@ -692,7 +692,7 @@ describe("runReport", () => {
                     git_supported: false,
                     changelog_types: changelogTypes,
                 },
-                gitBranches
+                initialGitBranches
             }
         });
         expect(wrapper.find("#changelog-message").exists()).toBe(false);
@@ -712,7 +712,7 @@ describe("runReport", () => {
                         selectedReport: "report"
                     }
                 },
-                gitBranches
+                initialGitBranches
             }
         });
         expect(wrapper.find("#changelog-message").exists()).toBe(false);
@@ -727,7 +727,7 @@ describe("runReport", () => {
                     git_supported: true,
                     changelog_types: changelogTypes,
                 },
-                gitBranches
+                initialGitBranches
             },
             data() {
             return {
