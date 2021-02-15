@@ -84,7 +84,8 @@ cd src
 This will ignore issues that pre-date the introduction of linting to the codebase: these are listed in
 `src/config/detekt/baseline-main.yml`. If you are editing files that include such exclusions then you can choose either
 to resolve the relevant issues (e.g. if there are a limited number) or regenerate the baseline for the legacy code
-(after ensuring that the new code _does_ conform to the rules) via `./gradle app:detektBaseline`.
+(after ensuring that the new code _does_ conform to the rules) via `./gradle app:detektBaseline`. Editing this file by
+hand is not recommended.
 
 Note that the linter is currently unable to detect some cases where code doesn't follow the style conventions. In these
 cases the conventions take precedence. In particular: **braces should always be explicit, and placed on new line**.
