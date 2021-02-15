@@ -245,6 +245,7 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
+                this.changeLogMessageValue = ""
             }
         },
         mounted() {
