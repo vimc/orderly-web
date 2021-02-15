@@ -8,6 +8,13 @@
                         <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
                     </select>
                 </div>
+                <button @click.prevent="refreshGit"
+                    id="git-refresh-btn"
+                    class="btn col-sm-1"
+                    :disabled="gitRefreshing"
+                    type="submit">
+                    {{refreshGitText}}
+                </button>
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -89,7 +96,7 @@
         name: "runReport",
         props: [
             "metadata",
-            "gitBranches",
+            "initialGitBranches",
         ],
         components: {
             ErrorInfo,
@@ -98,6 +105,8 @@
         },
         data: () => {
             return {
+                gitRefreshing: false,
+                gitBranches: [],
                 gitCommits: [],
                 reports: [],
                 selectedBranch: "",
@@ -115,6 +124,9 @@
             }
         },
         computed: {
+            refreshGitText(){
+                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
+            },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             },
@@ -138,6 +150,19 @@
             }
         },
         methods: {
+            refreshGit: function () {
+                this.gitRefreshing = true
+                api.get('/git/fetch/')
+                    .then(({data}) => {
+                        this.gitRefreshing = false
+                        this.gitBranches = data.data.map(branch => branch.name)
+                    })
+                    .catch((error) => {
+                        this.gitRefreshing = false
+                        this.error = error;
+                        this.defaultMessage = "An error occurred refreshing Git";
+                    });
+            },
             changedBranch() {
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -250,7 +275,8 @@
         },
         mounted() {
             if (this.metadata.git_supported) {
-                this.selectedBranch = this.gitBranches[0];
+                this.gitBranches = [...this.initialGitBranches]
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
             } else {
                 this.updateReports();
@@ -269,6 +295,14 @@
             }
         },
         watch: {
+            gitBranches(){
+                this.gitCommits = [];
+                this.reports = [];
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
+                this.selectedCommitId = "";
+                this.selectedReport = "";
+                this.changedBranch()
+            },
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
