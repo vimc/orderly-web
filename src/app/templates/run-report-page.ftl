@@ -33,8 +33,10 @@
                 </div>
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
-                <h2>Report logs</h2>
-                <p>Report logs coming soon!</p>
+                <h2>Running report logs</h2>
+                <div id="reportLogVueApp">
+                    <report-log></report-log>
+                </div>
             </div>
         </div>
     </div>
@@ -43,6 +45,7 @@
             var runReportMetadata = ${runReportMetadataJson};
             var gitBranches = ${gitBranchesJson};
         </script>
+        <script type="text/javascript" src="${appUrl}/js/reportLog.bundle.js"></script>
         <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
     </#macro>
 </@layoutwide>
