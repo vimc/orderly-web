@@ -73,24 +73,31 @@ Python tests of the release scripts are in `/scripts/release/tests` and can be r
 directory by running `./scripts/release/tests/test-release.sh`
 
 ### Code linting
+
 All new code should follow our [code style conventions]. We have [settings files] that configure IDEA to format code
 appropriately.
 
-To run the linter ([detekt](https://detekt.github.io/detekt/index.html)) against the main code (i.e. excluding tests):
+To run the linter ([detekt](https://detekt.github.io/detekt/index.html)) against the non-test code:
+
 ```sh
 cd src
 ./gradlew :app:detektMain
 ```
+
 This will ignore issues that pre-date the introduction of linting to the codebase: these are listed in
-`src/config/detekt/baseline-main.yml`. If you are editing files that include such exclusions then you can choose either
-to resolve the relevant issues (e.g. if there are a limited number) or regenerate the baseline for the legacy code
-(after ensuring that the new code _does_ conform to the rules) via `./gradle app:detektBaseline`. Editing this file by
-hand is not recommended.
+`src/config/detekt/baseline-main.yml`. If you are editing files that include such exemptions then you can choose either
+to resolve the relevant issues (e.g. if there are a very limited number) or regenerate the baseline for the legacy code
+via `./gradle app:detektBaseline` (the file should not be edited by hand).
+
+Note that generating the baseline should only be done after ensuring that any new code _does_ conform to the
+conventions. Any further exemptions should be made via `@Suppress` annotations (with a justification in the
+PR message) rather than additions to the baseline.
 
 Note that the linter is currently unable to detect some cases where code doesn't follow the style conventions. In these
 cases the conventions take precedence. In particular: **braces should always be explicit, and placed on new line**.
 
 [code style conventions]: https://mrc-ide.myjetbrains.com/youtrack/articles/RESIDE-A-8/Code-style-conventions
+
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
 
 ### Regenerate database interface
