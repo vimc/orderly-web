@@ -3955,6 +3955,7 @@
     <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.DirectActionContext.kt:96</ID>
     <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:15</ID>
     <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper.kt:99</ID>
+    <ID>StringTemplate:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:19</ID>
     <ID>StringTemplate:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:20</ID>
     <ID>StringTemplate:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:21</ID>
     <ID>StringTemplate:org.vaccineimpact.orderlyweb.viewmodels.ReportFileViewModelBuilder.kt:14</ID>
