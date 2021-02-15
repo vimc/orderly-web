@@ -252,5 +252,31 @@ class IndexControllerTests
         assertThat(result.reportDisplayNames).isNull()
     }
 
+    @Test
+    fun `can set permission to run a report`()
+    {
+        val noConfigureContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("reports.run", Scope.Global())) } doReturn true
+        }
+
+        val sut = IndexController(noConfigureContext, mockOrderly, mock(), mock())
+        val result = sut.index()
+
+        assertThat(result.isRunner).isTrue()
+    }
+
+    @Test
+    fun `does not have permission to run a report`()
+    {
+        val noConfigureContext = mock<ActionContext> {
+            on { hasPermission(ReifiedPermission("reports.read", Scope.Global())) } doReturn true
+        }
+
+        val sut = IndexController(noConfigureContext, mockOrderly, mock(), mock())
+        val result = sut.index()
+
+        assertThat(result.isRunner).isFalse()
+    }
+
 }
 
