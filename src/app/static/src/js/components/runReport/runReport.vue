@@ -285,10 +285,10 @@
             },
             selectedReport() {
                 this.clearRun();
-                if (this.selectedReport && !this.parameterValues.length) {
+                if (this.selectedReport) {
                     this.setParameters()
                 }
-                // this.parameterValues.length = 0
+                this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,
