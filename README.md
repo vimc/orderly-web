@@ -72,14 +72,25 @@ with `npm test`
 Python tests of the release scripts are in `/scripts/release/tests` and can be run from the top level `orderly-web`
 directory by running `./scripts/release/tests/test-release.sh`
 
-### Run linter
-To run [detekt](https://detekt.github.io/detekt/index.html) against the main code (i.e. excluding tests):
+### Code linting
+All new code should follow our [code style conventions]. We have [settings files] that configure IDEA to format code
+appropriately.
+
+To run the linter ([detekt](https://detekt.github.io/detekt/index.html)) against the main code (i.e. excluding tests):
 ```sh
 cd src
 ./gradlew :app:detektMain
 ```
-This will ignore "baseline" issues i.e. those present prior to the introduction of linting. If you are working to
-resolve all issues in an existing file then remove any references to it from `config/detekt/baseline-main.yml`.
+This will ignore issues that pre-date the introduction of linting to the codebase: these are listed in
+`src/config/detekt/baseline-main.yml`. If you are editing files that include such exclusions then you can choose either
+to resolve the relevant issues (e.g. if there are a limited number) or regenerate the baseline for the legacy code
+(after ensuring that the new code _does_ conform to the rules) via `./gradle app:detektBaseline`.
+
+Note that the linter is currently unable to detect some cases where code doesn't follow the style conventions. In these
+cases the conventions take precedence.
+
+[code style conventions]: https://mrc-ide.myjetbrains.com/youtrack/articles/RESIDE-A-8/Code-style-conventions
+[settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
 
 ### Regenerate database interface
 ```
