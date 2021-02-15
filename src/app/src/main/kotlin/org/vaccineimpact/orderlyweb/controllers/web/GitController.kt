@@ -1,19 +1,19 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
+import javax.net.ssl.HttpsURLConnection.HTTP_OK
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import java.text.SimpleDateFormat
 
-@Suppress("MagicNumber")
+
 class GitController(context: ActionContext,
                     private val orderlyServerAPI: OrderlyServerAPI): Controller(context)
 {
     constructor(context: ActionContext) :
             this(context, OrderlyServer(AppConfig()))
 
-    private val successCode = 200
 
     fun getCommits() : String
     {
@@ -26,7 +26,7 @@ class GitController(context: ActionContext,
     {
         val fetchResponse = orderlyServerAPI
             .post("/v1/reports/git/fetch/", context)
-        if (fetchResponse.statusCode == successCode)
+        if (fetchResponse.statusCode == HTTP_OK)
         {
             val branchResponse = orderlyServerAPI
                     .get("/git/branches", context)
