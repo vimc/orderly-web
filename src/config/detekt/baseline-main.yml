@@ -836,8 +836,8 @@
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:74</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:75</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:76</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:10</ID>
-    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:13</ID>
+    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:11</ID>
+    <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:14</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:9</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:15</ID>
     <ID>Indentation:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:16</ID>
@@ -3054,8 +3054,8 @@
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.api.ArtefactController.kt:19</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.api.HomeController.kt:10</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.api.UserController.kt:13</ID>
-    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:11</ID>
-    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:17</ID>
+    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:13</ID>
+    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:16</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:20</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.ReportController.kt:29</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.ReportController.kt:84</ID>
@@ -3353,8 +3353,8 @@
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:82</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:86</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:90</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:11</ID>
-    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:16</ID>
+    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:12</ID>
+    <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:17</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:19</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:25</ID>
     <ID>SpacingAroundCurly:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:36</ID>
