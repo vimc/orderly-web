@@ -6,7 +6,6 @@ import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.*
-import org.vaccineimpact.orderlyweb.db.fromJoinPath
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -110,6 +109,40 @@ class IndexPageTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl)
 
         val component = driver.findElements(By.cssSelector("#setPinnedReportsVueApp"))
+        assertThat(component.count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can link to run report page with permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.run", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.id("run-report"))
+        assertThat(component.count()).isEqualTo(1)
+        component[0].click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report")))
+    }
+
+    @Test
+    fun `can not link to run report page without permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(0)
     }
 }

@@ -43,7 +43,7 @@
                                 :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showChangelog">
-                <div id="changelog-message" class="form-group row">
+                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
                     <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
                     <div class="col-sm-6">
                         <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
@@ -134,6 +134,9 @@
             },
             showChangelog: function () {
                 return this.selectedReport
+            },
+            showChangeMessage: function () {
+                return this.metadata.changelog_types
             }
         },
         methods: {
@@ -272,6 +275,7 @@
                 this.disableRun = false;
                 this.isValidParam = false;
                 this.paramError = "";
+                this.changeLogMessageValue = ""
             }
         },
         mounted() {
@@ -280,6 +284,9 @@
                 this.changedBranch();
             } else {
                 this.updateReports();
+            }
+            if(this.metadata.changelog_types) {
+                this.changeLogTypeValue = this.metadata.changelog_types[0]
             }
 
             if (this.metadata.instances_supported) {
