@@ -13,7 +13,6 @@ class GitController(context: ActionContext,
     constructor(context: ActionContext) :
             this(context, OrderlyServer(AppConfig()))
 
-
     fun getCommits() : String
     {
         val branch = context.params(":branch")
