@@ -20,8 +20,8 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                           val showProjectDocs: Boolean,
                           val canSetPinnedReports: Boolean,
                           @Serialise("reportDisplayNamesJson") val reportDisplayNames: Map<String, String>?,
-                          val appViewModel: AppViewModel)
-    : AppViewModel by appViewModel
+                          val appViewModel: AppViewModel,
+                          val isRunner: Boolean) : AppViewModel by appViewModel
 {
     constructor(context: ActionContext,
                 reports: List<ReportRowViewModel>,
@@ -30,9 +30,9 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
                 customFieldKeys: List<String>,
                 showProjectDocs: Boolean,
                 canSetPinnedReports: Boolean,
-                reportDisplayNames: Map<String, String>?)
-            : this(reports, tags, pinnedReports, customFieldKeys, showProjectDocs,
-                    canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb))
+                reportDisplayNames: Map<String, String>?,
+                isRunner: Boolean) : this(reports, tags, pinnedReports, customFieldKeys,
+            showProjectDocs, canSetPinnedReports, reportDisplayNames, DefaultViewModel(context, breadcrumb), isRunner)
 
     companion object
     {
@@ -71,23 +71,24 @@ data class IndexViewModel(@Serialise("reportsJson") val reports: List<ReportRowV
 
             val pinnedReportsViewModels = PinnedReportViewModel.buildList(pinnedReports)
             val showDocs = context.hasPermission(ReifiedPermission("documents.read", Scope.Global()))
+            val isRunner = context.hasPermission(ReifiedPermission("reports.run", Scope.Global()))
 
             val canSetPinnedReports = context.hasPermission(ReifiedPermission("pinned-reports.manage", Scope.Global()))
             val reportDisplayNames = if (canSetPinnedReports)
             {
-                val reportsWithPublished = reportRows.filter{ it.ttParent != 0 && it.published == true }
-                        .map{ it.ttParent }.distinct()
+                val reportsWithPublished = reportRows.filter { it.ttParent != 0 && it.published == true }
+                        .map { it.ttParent }.distinct()
 
-                reportRows.filter{ it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
-                    .map{ it.name to it.displayName }.toMap()
+                reportRows.filter { it.ttParent == 0 && reportsWithPublished.contains(it.ttKey) }
+                        .map { it.name to it.displayName }.toMap()
             }
             else
             {
                 null
             }
 
-            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels, emptyCustomFields.keys.sorted(),
-                    showDocs, canSetPinnedReports, reportDisplayNames)
+            return IndexViewModel(context, reportRows, allTags, pinnedReportsViewModels,
+                    emptyCustomFields.keys.sorted(), showDocs, canSetPinnedReports, reportDisplayNames, isRunner)
         }
     }
 }
