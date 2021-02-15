@@ -46,7 +46,27 @@
             </template>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @getParams="getParameterValues" :params="parameterValues"></parameter-list>
+                <parameter-list id="params-component" @getParams="getParameterValues"
+                                :params="parameterValues"></parameter-list>
+            </div>
+            <div v-if="showChangelog">
+                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
+                    <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
+                    <div class="col-sm-6">
+                        <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
+                                  rows="2"></textarea>
+                    </div>
+                </div>
+                <div id="changelog-type" class="form-group row">
+                    <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
+                    <div class="col-sm-6">
+                        <select class="form-control" id="changelogType" v-model="changeLogTypeValue">
+                            <option v-for="option in metadata.changelog_types" :value="option">
+                                {{ option }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
             </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
@@ -98,7 +118,9 @@
                 runningStatus: "",
                 runningKey: "",
                 disableRun: false,
-                parameterValues: []
+                parameterValues: [],
+                changeLogMessageValue: "",
+                changeLogTypeValue: ""
             }
         },
         computed: {
@@ -119,6 +141,12 @@
             },
             showParameters() {
                 return this.selectedReport && this.parameterValues.length
+            },
+            showChangelog: function () {
+                return this.selectedReport
+            },
+            showChangeMessage: function () {
+                return this.metadata.changelog_types
             }
         },
         methods: {
@@ -242,6 +270,7 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
+                this.changeLogMessageValue = ""
             }
         },
         mounted() {
@@ -251,6 +280,9 @@
                 this.changedBranch();
             } else {
                 this.updateReports();
+            }
+            if(this.metadata.changelog_types) {
+                this.changeLogTypeValue = this.metadata.changelog_types[0]
             }
 
             if (this.metadata.instances_supported) {

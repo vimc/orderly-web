@@ -659,4 +659,91 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.runningStatus).toBe("");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
+
+    it("it does render changelog message and type correctly if a report is selected", () => {
+        const changelogTypes =  ["internal", "public"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    changelog_types: changelogTypes
+                },
+                gitBranches
+            },
+            data() {
+                return {
+                    selectedReport: "report"
+                }
+            }
+        });
+
+        expect(wrapper.find("#changelog-message").exists()).toBe(true);
+        const options = wrapper.find("#changelog-type").find("select")
+            .findAll("option")
+        expect(options.at(0).text()).toBe(changelogTypes[0]);
+        expect(options.at(1).text()).toBe(changelogTypes[1]);
+    });
+
+    it("it does not render changelog message and type if a report is not selected", () => {
+        const changelogTypes =  ["internal", "public"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: false,
+                    changelog_types: changelogTypes,
+                },
+                gitBranches
+            }
+        });
+        expect(wrapper.find("#changelog-message").exists()).toBe(false);
+        expect(wrapper.find("#changelog-type").exists()).toBe(false);
+    });
+
+    it("it does not render changelog message and type if changeLogType is empty", () => {
+        const changelogTypes =  []
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    changelog_types: changelogTypes,
+                },
+                data() {
+                    return {
+                        selectedReport: "report"
+                    }
+                },
+                gitBranches
+            }
+        });
+        expect(wrapper.find("#changelog-message").exists()).toBe(false);
+        expect(wrapper.find("#changelog-type").exists()).toBe(false);
+    });
+
+    it("it can accepts changelog  and type log message values", () => {
+        const changelogTypes =  ["internal", "public"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    changelog_types: changelogTypes,
+                },
+                gitBranches
+            },
+            data() {
+            return {
+                selectedReport: "report",
+                changeLogMessageValue: "Text area message",
+                changeLogTypeValue: "selectedType"
+            }
+        }
+        });
+
+        const options = wrapper.find("#changelogType")
+            .find("select").findAll("option")
+        options.at(1).setSelected()
+        expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
+
+        wrapper.find("#changelogMessage").setValue("New message")
+        expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
+    });
 });
