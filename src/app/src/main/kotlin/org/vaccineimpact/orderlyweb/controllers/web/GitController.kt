@@ -7,7 +7,6 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import java.text.SimpleDateFormat
 
-
 class GitController(context: ActionContext,
                     private val orderlyServerAPI: OrderlyServerAPI): Controller(context)
 {
