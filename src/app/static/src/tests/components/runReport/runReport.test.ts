@@ -307,11 +307,11 @@ describe("runReport", () => {
         expect(wrapper.find("#another").exists()).toBe(false);
     });
 
-    it("it does emit and render parameters correctly if report is selected and param has data", async() => {
-        const emittedParams = [
+    it("it sets parameters correctly when input change if report is selected and param has data", () => {
+        const expectedParams = [
             {name: "global", value: "Set new value"},
             {name: "minimal", value: "Set new value 2"}
-        ]
+        ];
 
         const wrapper = mount(RunReport, {
             propsData: {
@@ -337,11 +337,9 @@ describe("runReport", () => {
         const inputs = wrapper.find(ParameterList).findAll("input")
         inputs.at(0).setValue("Set new value");
         inputs.at(1).setValue("Set new value 2");
-        await Vue.nextTick()
 
-        wrapper.vm.$emit("getParams", emittedParams)
-        expect(wrapper.emitted("getParams").length).toBe(1)
-        expect(wrapper.vm.$data.parameterValues).toMatchObject(emittedParams)
+        const newValues = (wrapper.vm as any).parameterValues;
+        expect(newValues).toStrictEqual(expectedParams);
     });
 
     it("does not render parameters control if report is not selected", () => {
