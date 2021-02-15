@@ -1,11 +1,11 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
-import javax.net.ssl.HttpsURLConnection.HTTP_OK
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import java.text.SimpleDateFormat
+import javax.net.ssl.HttpsURLConnection.HTTP_OK
 
 class GitController(context: ActionContext,
                     private val orderlyServerAPI: OrderlyServerAPI): Controller(context)
