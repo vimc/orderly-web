@@ -183,9 +183,12 @@
                     });
             },
             setParameters: function () {
+                console.log('break')
+                console.log('set paramaters called 1', this.parameterValues)
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
                 api.get(`/report/${this.selectedReport}/parameters/${commit}`)
                     .then(({data}) => {
+                        console.log('set paramaters called', data.data)
                         this.parameterValues = data.data
                         this.error = "";
                         this.defaultMessage = "";
@@ -194,6 +197,7 @@
                         this.error = error
                         this.defaultMessage = "An error occurred when getting parameters";
                     })
+                    console.log('set paramaters is now', this.parameterValues)
             },
             runReport() {
                 //TODO: Include parameters and changelog message when implemented
@@ -268,6 +272,9 @@
             }
         },
         watch: {
+            parameterValues(){
+                console.log('parameter values is now', this.parameterValues)
+            },
             gitBranches(){
                 this.gitCommits = [];
                 this.reports = [];
@@ -278,10 +285,10 @@
             },
             selectedReport() {
                 this.clearRun();
-                if (this.selectedReport) {
+                if (this.selectedReport && !this.parameterValues.length) {
                     this.setParameters()
                 }
-                this.parameterValues.length = 0
+                // this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,
