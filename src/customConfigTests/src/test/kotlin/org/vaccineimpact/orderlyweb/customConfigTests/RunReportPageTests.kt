@@ -92,7 +92,6 @@ class RunReportPageTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Report logs coming soon!")
     }
 
-
     //TODO: This test case should be revisited as soon as test data is updated.
     @Test
     @Ignore
@@ -115,5 +114,26 @@ class RunReportPageTests : SeleniumTest()
         paramInput[0].clear()
         paramInput[0].sendKeys("new value")
         assertThat(paramInput[0].text).isEqualTo("new value")
+    }
+
+    @Test
+    fun `can add change message and type values`()
+    {
+        val typeahead = driver.findElement(By.id("report"))
+        assertThat(typeahead.findElements(By.tagName("a")).size).isEqualTo(2)
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("min")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("changelog-message")))
+        val changeLog = driver.findElement(By.id("changelog-message"))
+        val textarea = changeLog.findElement(By.className("form-control"))
+        textarea.sendKeys("New text message")
+        assertThat(textarea.getAttribute("value")).isEqualTo("New text message")
+
+        val changelogType = Select(driver.findElement(By.id("changelogType")))
+        changelogType.selectByValue("public")
+        assertThat(changelogType.firstSelectedOption.getAttribute("value")).isEqualTo("public")
     }
 }
