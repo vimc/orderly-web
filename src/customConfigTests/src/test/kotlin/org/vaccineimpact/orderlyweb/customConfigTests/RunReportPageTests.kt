@@ -93,6 +93,28 @@ class RunReportPageTests : SeleniumTest()
     }
 
     //TODO: This test case should be revisited as soon as test data is updated.
+    @Test
+    @Ignore
+    fun `can fill parameter textField`()
+    {
+        val gitBranch = Select(driver.findElement(By.id("git-branch")))
+        gitBranch.selectByVisibleText("other")
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("report")))
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.sendKeys("other")
+        val matches = typeahead.findElements(By.tagName("a"))
+        matches[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("parameters")))
+        val parameters = driver.findElement(By.id("params-component"))
+        val paramInput = parameters.findElements(By.tagName("input"))
+
+        paramInput[0].clear()
+        paramInput[0].sendKeys("new value")
+        assertThat(paramInput[0].text).isEqualTo("new value")
+    }
 
     @Test
     fun `can add change message and type values`()
