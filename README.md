@@ -87,7 +87,7 @@ to resolve the relevant issues (e.g. if there are a limited number) or regenerat
 (after ensuring that the new code _does_ conform to the rules) via `./gradle app:detektBaseline`.
 
 Note that the linter is currently unable to detect some cases where code doesn't follow the style conventions. In these
-cases the conventions take precedence.
+cases the conventions take precedence. In particular: **braces should always be explicit, and placed on new line**.
 
 [code style conventions]: https://mrc-ide.myjetbrains.com/youtrack/articles/RESIDE-A-8/Code-style-conventions
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
