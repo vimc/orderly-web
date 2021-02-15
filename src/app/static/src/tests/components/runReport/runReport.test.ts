@@ -335,8 +335,10 @@ describe("runReport", () => {
         expect(labels.at(1).text()).toBe("minimal");
 
         const inputs = wrapper.find(ParameterList).findAll("input")
+        // expect(inputs.at(0).text()).toBe("minimal");
         inputs.at(0).setValue("Set new value");
         inputs.at(1).setValue("Set new value 2");
+        expect(inputs.at(0).text()).toBe("minimal");
         await Vue.nextTick()
 
         wrapper.vm.$emit("getParams", emittedParams)

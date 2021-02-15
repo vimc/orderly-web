@@ -152,13 +152,18 @@
                     });
             },
             getParameterValues(values) {
+                console.log('checking', values, this.parameterValues)
                 if (values) {
                     this.parameterValues.forEach((param, key) => {
                         if (values[key].name == param.name) {
                             param.value = values[key].value
                         }
                     })
+
+                console.log('checking2', values, this.parameterValues)
                 }
+
+                console.log('checking3', values, this.parameterValues)
             },
             changedCommit() {
                 this.updateReports();
