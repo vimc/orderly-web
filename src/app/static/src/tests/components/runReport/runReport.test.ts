@@ -600,7 +600,26 @@ describe("runReport", () => {
                 metadata: {
                     git_supported: false,
                     changelog_types: changelogTypes,
-                    selectedReport: "report"
+                },
+                gitBranches
+            }
+        });
+        expect(wrapper.find("#changelog-message").exists()).toBe(false);
+        expect(wrapper.find("#changelog-type").exists()).toBe(false);
+    });
+
+    it("it does not render changelog message and type if changeLogType is empty", () => {
+        const changelogTypes =  []
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    changelog_types: changelogTypes,
+                },
+                data() {
+                    return {
+                        selectedReport: "report"
+                    }
                 },
                 gitBranches
             }

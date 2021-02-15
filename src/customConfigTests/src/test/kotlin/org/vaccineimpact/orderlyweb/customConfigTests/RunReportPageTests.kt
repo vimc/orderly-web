@@ -94,9 +94,8 @@ class RunReportPageTests : SeleniumTest()
 
     //TODO: This test case should be revisited as soon as test data is updated.
 
-    @Ignore
     @Test
-    fun `can fill parameter textField`()
+    fun `can add change message and type values`()
     {
         val typeahead = driver.findElement(By.id("report"))
         assertThat(typeahead.findElements(By.tagName("a")).size).isEqualTo(2)
