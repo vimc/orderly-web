@@ -32,6 +32,9 @@ object ReportRouteConfig : RouteConfig
             APIEndpoint("/reports/:key/status/", ReportRunController::class, "status")
                     .json()
                     .secure(runReports),
+            APIEndpoint("/reports/:key/logs/", ReportRunController::class, "log")
+                    .json()
+                    .secure(runReports),
             APIEndpoint("/reports/:key/kill/", ReportRunController::class, "kill",
                     method = HttpMethod.delete)
                     .json()

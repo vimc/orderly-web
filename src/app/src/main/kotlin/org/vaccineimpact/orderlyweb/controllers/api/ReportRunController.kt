@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRun
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.time.Instant
 
 class ReportRunController(
@@ -73,5 +74,11 @@ class ReportRunController(
         val key = context.params(":key")
         val response = orderlyServerAPI.delete("/v1/reports/$key/kill/", context)
         return passThroughResponse(response)
+    }
+
+    fun log(): List<ReportRunLog>
+    {
+        val key = context.params(":key")
+        return reportRunRepository.getReportRun(key)
     }
 }

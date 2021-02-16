@@ -3,14 +3,15 @@ export interface Parameter {
     value: string
 }
 
-export interface ReportLog extends Logs{
+export interface ReportLog{
+    email: string,
+    date: String,
+    report: string,
+    instances: string,
+    params: string,
     gitBranch: string,
     gitCommit: string,
-    gitInstance: string,
     status: string,
+    log: string,
     reportVersion: string
-}
-
-export interface Logs {
-    logs: Array<any>
 }
