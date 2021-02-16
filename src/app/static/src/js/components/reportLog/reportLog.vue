@@ -24,7 +24,6 @@
     }
 
     interface Data {
-        reports: []
         selectedReport: string,
         reportLog: ReportLog,
         error: string,
@@ -38,7 +37,7 @@
             gitInstance: "",
             status: "",
             reportVersion: "",
-            logs: []
+            logger: []
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -50,7 +49,6 @@
             return {
                 reportId: "",
                 selectedReport: "",
-                reports: [],
                 reportLog: initialReportLog,
                 error: "",
                 defaultMessage: ""
@@ -63,7 +61,7 @@
         },
         methods: {
             getMetadata: function() {
-                api.get(`/report/path/${this.reportId}/`)
+                api.get(`/report/${this.key}/logs`)
                     .then(({data}) => {
                         this.reportLog = data.data
                         this.error = "";
@@ -76,8 +74,11 @@
             }
         },
         watch: {
-            'reportLog.status' () {
-                this.getMetadata()
+            'reportLog.status': {
+                handler() {
+                    this.getMetadata()
+                },
+                deep: true
             }
         }
     })
