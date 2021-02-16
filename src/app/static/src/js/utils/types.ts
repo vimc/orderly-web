@@ -5,7 +5,7 @@ export interface Parameter {
 
 export interface ReportLog{
     email: string,
-    date: Date,
+    date: String,
     report: string,
     instances: string,
     params: string,

@@ -32,12 +32,16 @@
     }
 
     const initialReportLog = {
+        email: "",
+        date: "",
+        report: "",
+        instances: "",
+        params: "",
         gitBranch: "",
-            gitCommit: "",
-            gitInstance: "",
-            status: "",
-            reportVersion: "",
-            logger: []
+        gitCommit: "",
+        status: "",
+        log: "",
+        reportVersion: ""
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
