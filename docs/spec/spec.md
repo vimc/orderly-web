@@ -211,7 +211,7 @@ Accepts optional arguments as the JSON encoded body of a `POST` request:
 
 `gitBranch` and `gitCommit` indicate which git version of the report should be run
 
-`instances` indicate which database instance sould be used. Currently using only one instance is supported.
+`instances` indicate which database instance should be used. Currently using only one instance is supported.
 
 Accepts the query parameter `timeout`, which sets the the number of seconds to wait before the job is terminated.  The default is 3 hours (10800 seconds).
 
