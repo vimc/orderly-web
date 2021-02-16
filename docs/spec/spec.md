@@ -209,11 +209,11 @@ Accepts optional arguments as the JSON encoded body of a `POST` request:
 ```
 `params` will be passed directly through to the report.  This is required when the report requires parameters and is not allowed for reports that do not allow parameters.
 
-Accepts the query parameter `ref`, to try running the report against a particular git reference (e.g., a branch or a commit).
+`gitBranch` and `gitCommit` indicate which git version of the report should be run
+
+`instances` indicate which database instance sould be used. Currently using only one instance is supported.
 
 Accepts the query parameter `timeout`, which sets the the number of seconds to wait before the job is terminated.  The default is 3 hours (10800 seconds).
-
-Accepts the query parameter `instance`, to run the report against a particular source database.
 
 Returns information to query the status of the report via the next endpoint
 
