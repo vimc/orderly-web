@@ -70,6 +70,7 @@
                         this.reportLog = data.data
                         this.error = "";
                         this.defaultMessage = "";
+                        console.log('this is the key', this.key)
                     })
                     .catch((error) => {
                         this.error = error;
@@ -77,6 +78,9 @@
                     });
             }
         },
+        // mounted(){
+            // console.log('theres are the keys')
+        // },
         watch: {
             'reportLog.status': {
                 handler() {
