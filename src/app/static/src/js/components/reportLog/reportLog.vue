@@ -24,6 +24,7 @@
     }
 
     interface Data {
+        reports: [],
         selectedReport: string,
         reportLog: ReportLog,
         error: string,
@@ -51,6 +52,7 @@
         },
         data(): Data {
             return {
+                reports: [],
                 reportId: "",
                 selectedReport: "",
                 reportLog: initialReportLog,
