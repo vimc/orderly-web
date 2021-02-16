@@ -216,9 +216,10 @@
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
                     const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
+                const params = this.parameterValues.reduce((params, param) => ({[param.name]: param.value, ...params}), {})
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
-                    params: this.parameterValues,
+                    params: params,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })

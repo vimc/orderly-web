@@ -374,20 +374,25 @@ describe("runReport", () => {
         mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
-        const propsData = {
-            metadata: {
-                git_supported: true,
-                instances_supported: true,
-                instances: {
-                    annexe: ["a1", "a2"],
-                    source: ["uat", "science", "prod"]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: true,
+                    instances: {
+                        annexe: ["a1", "a2"],
+                        source: ["uat", "science", "prod"]
+                    }
                 },
-                parameterValues: [{name: "test", value: "testValue"}],
+                gitBranches
             },
-            gitBranches
-        };
-        const wrapper = getWrapper(reports, propsData);
-
+            data() {
+                return {
+                    selectedReport: "report",
+                    parameterValues: [{name: "old", value: "oldValue"}]
+                }
+            }
+        });
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
@@ -395,12 +400,10 @@ describe("runReport", () => {
                 selectedInstances: {source: "science", annexe: "a1"},
                 error: "test-error",
                 defaultMessage: "test-msg",
-                parameterValues: mockParams
+                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}]
             });
 
-            await Vue.nextTick();
             wrapper.find("#run-form-group button").trigger("click");
-
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.get.length).toBe(3);
@@ -412,7 +415,10 @@ describe("runReport", () => {
                             "source": "science",
                             "annexe": "science"
                         },
-                        "params": mockParams,
+                        "params": {
+                            "global": "random_39id",
+                            "minimal": "test"
+                        },
                         "gitBranch": "master",
                         "gitCommit": "test-commit"
                     }
