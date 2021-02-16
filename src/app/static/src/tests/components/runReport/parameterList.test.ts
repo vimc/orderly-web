@@ -28,6 +28,20 @@ describe(`run report parameter list`, () => {
         expect(minimalInput.value).toBe("initial value 2")
     });
 
+    it(`can emmit on mount and render parameter error as expected`, async() => {
+        const innerParams = [
+            {name: "global", value: ""},
+            {name: "minimal", value: "initial value 2"}
+        ]
+        const wrapper = shallowMount(ParameterList,
+            {
+                propsData: {params: innerParams}
+            }
+        )
+        expect(wrapper.emitted().getParams.length).toBe(1)
+        expect(wrapper.vm.$props.error).toBe("Parameter value(s) required")
+    });
+
     it(`can render parameter values as expected`, () => {
         const wrapper = store()
         const inputs = wrapper.find("table").findAll("input")

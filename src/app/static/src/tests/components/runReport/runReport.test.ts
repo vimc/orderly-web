@@ -412,9 +412,7 @@ describe("runReport", () => {
                             "source": "science",
                             "annexe": "science"
                         },
-                        "params": {
-                            "parameterValues": mockParams
-                        },
+                        "params": mockParams,
                         "gitBranch": "master",
                         "gitCommit": "test-commit"
                     }
@@ -660,7 +658,7 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
     });
 
-    it("it disables runButton or display error msg when parameters fail validation", async () => {
+    it("it disables runButton and display error msg when parameters fail validation", async () => {
         const localParam = [
             {name: "global", value: "Set new value"},
             {name: "max", value: null},
@@ -722,7 +720,7 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.paramError).toBe("")
     });
 
-    it("can run validation when getParams is emmited and disables runButton when parameters fail validation", async () => {
+    it("can run validation when getParams is emitted and disables runButton when parameters fail validation", async () => {
         const localParam = [
             {name: "global", value: "Set new value"},
             {name: "minimal", value: ""}
@@ -750,7 +748,7 @@ describe("runReport", () => {
 
         await Vue.nextTick()
 
-        expect(wrapper.find(ParameterList).emitted("getParams").length).toBe(1)
+        expect(wrapper.find(ParameterList).emitted("getParams").length).toBe(2)
         expect(wrapper.vm.$data.disableRun).toBe(true)
         expect(wrapper.vm.$data.paramError).toBe("Parameter value(s) required")
     });

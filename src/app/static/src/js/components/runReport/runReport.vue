@@ -112,8 +112,7 @@
                 parameterValues: [],
                 changeLogMessageValue: "",
                 changeLogTypeValue: "",
-                paramError: "",
-                isValidParam: false
+                paramError: ""
             }
         },
         computed: {
@@ -156,7 +155,7 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
-            getParameterValues(values) {
+            getParameterValues(values, isValid) {
                 if (values) {
                     this.parameterValues.forEach((param, key) => {
                         if (values[key].name == param.name) {
@@ -164,18 +163,14 @@
                         }
                     })
                 }
-                this.validateParams()
+                this.validateParams(isValid)
             },
-            validateParams() {
-                const validValues = this.parameterValues.filter(param => (param.value))
+            validateParams(isValid) {
                 this.disableRun = false
-                this.isValidParam = true
                 this.paramError = ""
-
-                if (validValues.length < this.parameterValues.length) {
-                    this.paramError = "Parameter value(s) required"
+                if (!isValid) {
                     this.disableRun = true
-                    this.isValidParam = false
+                    this.paramError = "Parameter value(s) required"
                 }
             },
             changedCommit() {
@@ -212,18 +207,6 @@
                 //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
-                /*
-                 * This ensures parameter values are filled before running a report
-                 * if parameter values already pass validation, it will not re-validate
-                 * Also checks if parameter has values before validating
-                 */
-                if (!this.isValidParam && this.parameterValues.length) {
-                    this.validateParams()
-                    if (!this.isValidParam) {
-                        return
-                    }
-                }
-
                 //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
                 //multiple instances - until multiple are accepted, send the selected instance value for instance with
                 //greatest number of options. See VIMC-4561.
@@ -233,12 +216,9 @@
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
                     const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
-                const params = {
-                    parameterValues: this.parameterValues
-                };
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
-                    params: params,
+                    params: this.parameterValues,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })
@@ -273,7 +253,6 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
-                this.isValidParam = false;
                 this.paramError = "";
                 this.changeLogMessageValue = ""
             }

@@ -9,7 +9,7 @@
                 </label></td>
                 <td><input type="text" class="form-control"
                            v-model="getValues[index].value"
-                           @change="parameters"
+                           @input="parameters"
                            :id="`param-control-${index}`"/></td>
             </tr>
             </tbody>
@@ -29,6 +29,7 @@
 
     interface Data {
         paramValues: Parameter[]
+        isValid: boolean
     }
 
     interface Computed {
@@ -37,6 +38,7 @@
 
     interface Methods {
         parameters: () => void
+        validate: () => void
     }
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
@@ -48,7 +50,8 @@
         },
         data(): Data {
             return {
-                paramValues: this.params
+                paramValues: this.params,
+                isValid: false
             }
         },
         computed: {
@@ -65,7 +68,23 @@
         },
         methods: {
             parameters: function () {
-                this.$emit("getParams", this.paramValues)
+                this.validate()
+                this.$emit("getParams", this.paramValues, this.isValid)
+            },
+            validate: function () {
+                const validValues = this.paramValues.filter(param => param.value)
+                this.error = ""
+                this.isValid = true
+                if (validValues.length < this.paramValues.length) {
+                    this.error = "Parameter value(s) required"
+                    this.isValid = false
+                }
+            },
+        },
+        mounted() {
+            // run validation and emit event on initial values
+            if(this.paramValues) {
+                this.parameters()
             }
         }
     })
