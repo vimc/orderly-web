@@ -43,6 +43,21 @@ describe(`run report parameter list`, () => {
         expect(wrapper.vm.$data.error).toBe("Parameter value(s) required")
     });
 
+    it(`can emit on input change`, async () => {
+        const innerParams = [
+            {name: "global", value: "value"},
+            {name: "minimal", value: "initial value 2"}
+        ]
+        const wrapper = shallowMount(ParameterList,
+            {
+                propsData: {params: innerParams}
+            }
+        )
+        wrapper.vm.$emit("input")
+        expect(wrapper.emitted().paramsChanged.length).toBe(1)
+        expect(wrapper.emitted().paramsChanged[0]).toMatchObject([innerParams, true])
+    });
+
     it(`can render parameter values as expected`, () => {
         const wrapper = store()
         const inputs = wrapper.find("table").findAll("input")
