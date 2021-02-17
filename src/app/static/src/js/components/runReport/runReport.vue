@@ -230,7 +230,6 @@
                 }
                 let params = {}
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {})
-                console.log(params)
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
                     params: params,
