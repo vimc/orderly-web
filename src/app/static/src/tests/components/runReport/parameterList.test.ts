@@ -28,7 +28,7 @@ describe(`run report parameter list`, () => {
         expect(minimalInput.value).toBe("initial value 2")
     });
 
-    it(`can emmit on mount and render parameter error as expected`, async() => {
+    it(`can emit on mount and render parameter error as expected`, async () => {
         const innerParams = [
             {name: "global", value: ""},
             {name: "minimal", value: "initial value 2"}
@@ -38,8 +38,9 @@ describe(`run report parameter list`, () => {
                 propsData: {params: innerParams}
             }
         )
-        expect(wrapper.emitted().getParams.length).toBe(1)
-        expect(wrapper.vm.$props.error).toBe("Parameter value(s) required")
+        expect(wrapper.emitted().paramsChanged.length).toBe(1)
+        expect(wrapper.emitted().paramsChanged[0]).toMatchObject([innerParams, false])
+        expect(wrapper.vm.$data.error).toBe("Parameter value(s) required")
     });
 
     it(`can render parameter values as expected`, () => {

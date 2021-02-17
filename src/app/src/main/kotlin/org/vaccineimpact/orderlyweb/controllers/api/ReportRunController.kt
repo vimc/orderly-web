@@ -35,6 +35,7 @@ class ReportRunController(
         val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
         val gitBranch = context.postData<String>()["gitBranch"]
         val gitCommit = context.postData<String>()["gitCommit"]
+        val timeout = context.queryParams("timeout")
 
         val response =
             orderlyServerAPI.post(
@@ -43,7 +44,8 @@ class ReportRunController(
                 listOf(
                     "ref" to gitCommit,
                     // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                    "instance" to instances.values.elementAtOrNull(0)
+                    "instance" to instances.values.elementAtOrNull(0),
+                    "timeout" to timeout
                 ).filter { it.second != null }.toMap()
             )
         val reportRun = response.data(ReportRun::class.java)

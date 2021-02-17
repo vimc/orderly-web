@@ -9,12 +9,12 @@
                 </label></td>
                 <td><input type="text" class="form-control"
                            v-model="getValues[index].value"
-                           @input="parameters"
+                           @input="onParameterChanged"
                            :id="`param-control-${index}`"/></td>
             </tr>
             </tbody>
         </table>
-        <div class="text-danger small">{{error}} </div>
+        <div class="text-danger small">{{ error }}</div>
     </div>
 </template>
 
@@ -23,13 +23,13 @@
     import {Parameter} from "../../utils/types";
 
     interface Props {
-        params: Parameter[],
-        error: string
+        params: Parameter[]
     }
 
     interface Data {
         paramValues: Parameter[]
-        isValid: boolean
+        valid: boolean,
+        error: string
     }
 
     interface Computed {
@@ -37,21 +37,19 @@
     }
 
     interface Methods {
-        parameters: () => void
+        onParameterChanged: () => void
         validate: () => void
     }
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
         props: {
-            params: [],
-            error: {
-                type: String
-            }
+            params: []
         },
         data(): Data {
             return {
                 paramValues: this.params,
-                isValid: false
+                valid: false,
+                error: ""
             }
         },
         computed: {
@@ -67,24 +65,24 @@
             }
         },
         methods: {
-            parameters: function () {
+            onParameterChanged: function () {
                 this.validate()
-                this.$emit("getParams", this.paramValues, this.isValid)
+                this.$emit("paramsChanged", this.paramValues, this.valid)
             },
             validate: function () {
                 const validValues = this.paramValues.filter(param => param.value)
                 this.error = ""
-                this.isValid = true
+                this.valid = true
                 if (validValues.length < this.paramValues.length) {
                     this.error = "Parameter value(s) required"
-                    this.isValid = false
+                    this.valid = false
                 }
             },
         },
         mounted() {
             // run validation and emit event on initial values
             if(this.paramValues) {
-                this.parameters()
+                this.onParameterChanged()
             }
         }
     })

@@ -8,6 +8,13 @@
                         <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
                     </select>
                 </div>
+                <button @click.prevent="refreshGit"
+                    id="git-refresh-btn"
+                    class="btn col-sm-1"
+                    :disabled="gitRefreshing"
+                    type="submit">
+                    {{refreshGitText}}
+                </button>
             </div>
             <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
                 <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
@@ -39,7 +46,7 @@
             </template>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @getParams="getParameterValues" :error="paramError"
+                <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showChangelog">
@@ -89,7 +96,7 @@
         name: "runReport",
         props: [
             "metadata",
-            "gitBranches",
+            "initialGitBranches",
         ],
         components: {
             ErrorInfo,
@@ -98,6 +105,8 @@
         },
         data: () => {
             return {
+                gitRefreshing: false,
+                gitBranches: [],
                 gitCommits: [],
                 reports: [],
                 selectedBranch: "",
@@ -111,11 +120,13 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: "",
-                paramError: ""
+                changeLogTypeValue: ""
             }
         },
         computed: {
+            refreshGitText(){
+                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
+            },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             },
@@ -139,6 +150,19 @@
             }
         },
         methods: {
+            refreshGit: function () {
+                this.gitRefreshing = true
+                api.get('/git/fetch/')
+                    .then(({data}) => {
+                        this.gitRefreshing = false
+                        this.gitBranches = data.data.map(branch => branch.name)
+                    })
+                    .catch((error) => {
+                        this.gitRefreshing = false
+                        this.error = error;
+                        this.defaultMessage = "An error occurred refreshing Git";
+                    });
+            },
             changedBranch() {
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -155,23 +179,11 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
-            getParameterValues(values, isValid) {
-                if (values) {
-                    this.parameterValues.forEach((param, key) => {
-                        if (values[key].name == param.name) {
-                            param.value = values[key].value
-                        }
-                    })
+            getParameterValues(values, valid) {
+                if (valid) {
+                    this.parameterValues = [...values]
                 }
-                this.validateParams(isValid)
-            },
-            validateParams(isValid) {
-                this.disableRun = false
-                this.paramError = ""
-                if (!isValid) {
-                    this.disableRun = true
-                    this.paramError = "Parameter value(s) required"
-                }
+                this.disableRun = !valid
             },
             changedCommit() {
                 this.updateReports();
@@ -216,7 +228,9 @@
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
                     const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
-                const params = this.parameterValues.reduce((params, param) => ({[param.name]: param.value, ...params}), {})
+                let params = {}
+                params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {})
+                console.log(params)
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
                     params: params,
@@ -254,13 +268,13 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
-                this.paramError = "";
                 this.changeLogMessageValue = ""
             }
         },
         mounted() {
             if (this.metadata.git_supported) {
-                this.selectedBranch = this.gitBranches[0];
+                this.gitBranches = [...this.initialGitBranches]
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
             } else {
                 this.updateReports();
@@ -279,6 +293,14 @@
             }
         },
         watch: {
+            gitBranches(){
+                this.gitCommits = [];
+                this.reports = [];
+                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
+                this.selectedCommitId = "";
+                this.selectedReport = "";
+                this.changedBranch()
+            },
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
