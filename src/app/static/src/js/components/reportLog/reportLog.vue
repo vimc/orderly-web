@@ -2,7 +2,7 @@
     <div>
         <div v-if="showReports" id="report-form-group" class="form-group row">
             <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
-            <div class="col-sm-8">
+            <div class="col-sm-6">
                 <report-list id="report" :reports="report" :report.sync="selectedReport"/>
             </div>
         </div>
