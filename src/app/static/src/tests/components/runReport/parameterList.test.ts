@@ -56,7 +56,10 @@ describe(`run report parameter list`, () => {
         const inputs = wrapper.find("table").findAll("input")
         await inputs.at(0).setValue("test Value1")
         expect(wrapper.emitted().paramsChanged.length).toBe(2)
-        expect(wrapper.emitted().paramsChanged[1]).toMatchObject([innerParams, true])
+        expect(wrapper.emitted().paramsChanged[1]).toMatchObject([[
+            {name: "global", value: "test Value1"},
+            {name: "minimal", value: "initial value 2"}
+        ], true])
     });
 
     it(`can render parameter values as expected`, () => {
