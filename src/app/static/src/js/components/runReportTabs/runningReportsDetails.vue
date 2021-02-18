@@ -1,79 +1,99 @@
 <template>
-    <div>
-        <div>
-            <div id="report-log">
-                <div class="row pt-2">
-                    <div v-if="reportLog.git_branch" class="col-sm-auto">
-                        <div class="text-right">
-                            Github branch:
-                            <b>{{ reportLog.git_branch }}</b>
-                        </div>
-                    </div>
-                    <div v-if="reportLog.git_commit" class="col-sm-auto">
-                        <div class="text-right">
-                            Github commit:
-                            <b>{{ reportLog.git_commit }}</b>
-                        </div>
-                    </div>
-                    <div v-if="reportLog.instances" class="col-sm-auto">
-                        <div class="text-right">
-                            Instance(s):
-                            <b>{{ reportLog.instances }}</b>
-                        </div>
+    <div class="container">
+        <div id="report-log">
+            <div class="row pt-2">
+                <div v-if="reportLog.git_branch" class="col-sm-auto">
+                    <div class="text-right">
+                        <span>Github branch:</span>
+                        <span class="font-weight-bold">
+                            {{ reportLog.git_branch }}
+                        </span>
                     </div>
                 </div>
-                <div class="row pt-2">
-                    <div v-if="showParams" class="col-sm-auto">
-                        <div class="text-right">
-                            Parameters:
-                            <b>{{ reportLog.params["0"].name }}: {{ reportLog.params["0"].value }}</b>
-                        </div>
-                    </div>
-                </div>
-                <div class="row pt-2">
-                    <div v-if="reportLog.status" class="col-sm-auto">
-                        <div class="text-right">
-                            Status:
-                            <b>{{ reportLog.status }}</b>
-                        </div>
-                    </div>
-                    <div v-if="reportLog.report_version" class="col-sm-auto">
-                        <div class="text-right">
-                            Report version:
-                            <b>{{ reportLog.report_version }}</b>
-                        </div>
-                    </div>
-                </div>
-                <div class="row pt-2">
-                    <div class="text-right col-sm-8">
-                        <textarea class="form-control bg-white" readonly rows="10">
-                            {{ reportLog.log }}
-                        </textarea>
+                <div v-if="reportLog.git_commit" class="col-sm-auto">
+                    <div class="text-right">
+                        <span>Github commit:</span>
+                        <span class="font-weight-bold">
+                            {{ reportLog.git_commit }}
+                        </span>
                     </div>
                 </div>
             </div>
+
+            <div class="row pt-2">
+                <div v-if="paramSize > 0" class="col-sm-auto">
+                    <span>Parameters:</span>
+                    <span>
+                        <tr class="table-bordered" v-for="(n, index) in paramSize">
+                            <td class="p-1">{{ reportLog.params[index].name }}:</td>
+                            <td class="p-1 font-weight-bold">
+                                {{ reportLog.params[index].value }}</td>
+                        </tr>
+                    </span>
+                </div>
+                <div v-if="instanceSize > 0" class="col-sm-auto">
+                    <span>Database(source):</span>
+                    <span>
+                        <tr v-for="(n, index) in instanceSize">
+                            <td class="p-1 font-weight-bold">{{ reportLog.instances[index].source }}</td>
+                        </tr>
+                    </span>
+                </div>
+                <div v-if="instanceSize > 0" class="col-sm-auto">
+                    <span>Database(annexe):</span>
+                    <span>
+                        <tr v-for="(n, index) in instanceSize">
+                            <td class="p-1 font-weight-bold">{{ reportLog.instances[index].annexe }}</td>
+                        </tr>
+                    </span>
+                </div>
+            </div>
+            <div class="row pt-2">
+                <div v-if="reportLog.status" class="col-sm-auto">
+                    <div class="text-right">
+                        <span>Status:</span>
+                        <span class="font-weight-bold">{{ reportLog.status }}</span>
+                    </div>
+                </div>
+                <div v-if="reportLog.report_version" class="col-sm-auto">
+                    <div class="text-right">
+                        <span>Report version:</span>
+                        <span class="font-weight-bold"><a :href="versionUrl">{{ reportLog.report_version }}</a></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row pt-2">
+                <div class="text-right col-sm-10">
+                        <textarea class="form-control bg-white text-sm-left"
+                                  readonly rows="10">{{ reportLog.logs }}
+                        </textarea>
+                </div>
+            </div>
         </div>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
-    import ReportList from "../runReport/reportList.vue";
-    import {Parameter, ReportLog} from "../../utils/types";
+    import {ReportLog} from "../../utils/types";
     import {api} from "../../utils/api";
+    import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
         getMetadata: () => void
     }
 
     interface Data {
-        reportLog: ReportLog,
+        reportLog: ReportLog
         error: string,
         defaultMessage: string
     }
 
     interface Computed {
-        showParams: boolean
+        paramSize: number
+        instanceSize: number
+        versionUrl: string
     }
 
     interface Props {
@@ -81,16 +101,16 @@
     }
 
     const initialReportLog = {
-        email: "test",
-        date: "test",
-        report: "test",
-        instances: "test",
-        params: {"0":{"name": "test name", "value": "test value"}},
-        git_branch: "test",
-        git_commit: "test",
-        status: "test",
-        log: "test",
-        report_version: "test"
+        email: "",
+        date: "",
+        report: "",
+        instances: {},
+        params: {},
+        git_branch: "",
+        git_commit: "",
+        status: "",
+        logs: "",
+        report_version: ""
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -102,7 +122,7 @@
             }
         },
         components: {
-            ReportList
+            ErrorInfo
         },
         data(): Data {
             return {
@@ -112,20 +132,27 @@
             }
         },
         computed: {
-            showParams: function () {
-                return this.reportLog.params && this.reportLog.params.length
+            paramSize: function () {
+                return Object.keys(this.reportLog.params).length
+            },
+            instanceSize: function () {
+                return Object.keys(this.reportLog.instances).length
+            },
+            versionUrl: function () {
+                return `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
             }
         },
         methods: {
             getMetadata: function () {
-                api.get(`/reports/${this.reportKey}/logs`)
+                api.get(`/reports/${this.reportKey}/logs/`)
                     .then(({data}) => {
                         this.reportLog = data.data
+                        this.reportLog.params = JSON.parse(this.reportLog.params)
+                        this.reportLog.instances = JSON.parse(this.reportLog.instances)
                         this.error = "";
                         this.defaultMessage = "";
                     })
                     .catch((error) => {
-                        console.log("Error occurred here")
                         this.error = error;
                         this.defaultMessage = "An error occurred when fetching metadata";
                     });
@@ -138,7 +165,9 @@
         },
         watch: {
             reportKey() {
-                this.getMetadata()
+                if(this.reportLog) {
+                    this.getMetadata()
+                }
             }
         }
     })

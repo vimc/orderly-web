@@ -3,18 +3,22 @@ export interface Parameter {
     value: string
 }
 
+export interface Instances {
+    source: string,
+    annexe: string
+}
+
 export type Dict<V> =  {[index: number]: V}
-export type Params = Dict<Parameter>
 
 export interface ReportLog{
     email: string,
     date: String,
     report: string,
-    instances: string,
+    instances: Dict<Instances>,
     params: Dict<Parameter>,
     git_branch: string,
     git_commit: string,
     status: string,
-    log: string,
+    logs: string,
     report_version: string
 }
