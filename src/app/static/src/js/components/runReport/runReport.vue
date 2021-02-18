@@ -275,6 +275,7 @@
                     this.setParameters()
                 }
                 this.parameterValues.length = 0
+                console.log(this.selectedReport)
             },
             selectedInstances: {
                 deep: true,

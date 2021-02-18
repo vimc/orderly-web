@@ -3,7 +3,10 @@
     <div v-if="showReports" id="report-form-group" class="form-group row">
         <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
         <div class="col-sm-6">
-            <report-list id="report" :reports="reports" :report.sync="selectedReport"/>
+            <report-list id="report" 
+            :reports="reports" 
+            :report.sync="selectedReport" 
+            :key.sync="selectedReportKey"/>
         </div>
     </div>
 </div>
@@ -26,6 +29,7 @@
 
     interface Data {
         reports: [],
+        selectedReportKey: string,
         selectedReport: string,
         reportLog: ReportLog,
         error: string,
@@ -57,6 +61,7 @@
         data(): Data {
             return {
                 reports: [],
+                selectedReportKey: "",
                 reportId: "",
                 selectedReport: "",
                 reportLog: initialReportLog,
@@ -102,11 +107,18 @@
         },
         mounted(){
             // console.log('this is the metadata 1', this.metadata)
-            // this.updateReports();
+            this.getAllReports();
             // console.log('theres are the keys')
-            this.getAllReports()
+            // setInterval(this.getAllReports(), 3000)
+            // setInterval(function(){console.log('selectedReport', this.selectedReport)}, 3000)
         },
         watch: {
+            // selectedReport() {
+            //     console.log(this.selectedReport)
+            // },
+            selectedReportKey() {
+                console.log(this.selectedReportKey)
+            },
             'reportLog.status': {
                 handler() {
                     this.getMetadata()

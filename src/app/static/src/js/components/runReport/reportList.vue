@@ -5,7 +5,7 @@
         v-model="query"
         showOnFocus
         placeholder="Choose a report"
-        @hit="$emit('update:report', $event.name)"
+        @hit="$emit('update:report', $event.name); $emit('update:key', $event.key)"
     >
         <template slot="append">
             <button class="btn btn-outline-secondary" v-on:click.prevent="clear" v-if="query">
@@ -60,6 +60,9 @@
             sortedReports() {
                 return this.reports.sort((a, b) => a.name.localeCompare(b.name));
             }
+        },
+        mounted(){
+            // setInterval(function(){console.log('report', this.report)}, 3000)
         },
         beforeDestroy() {
             this.$emit('update:report', "")

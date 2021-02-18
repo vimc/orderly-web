@@ -138,7 +138,12 @@ class ReportController(
 
     fun running(): List<Running>
     {
+        // val profile = context.userProfile
+
+        // val emailAddress = profile!!.id
         val user = context.userProfile!!.id
+        // val user = context.userProfile?.id
+        // val user = "test.user@example.com"
         return reportRunRepository.getAllRunningReports(user)
     }
 
