@@ -775,19 +775,13 @@ describe("runReport", () => {
                 return {
                     gitCommits: gitCommits,
                     parameterValues: localParam,
-                    selectedReport: "reports",
-                    disableRun: false,
-                    paramError: ""
+                    selectedReport: "reports"
                 }
             }
         });
         expect(wrapper.find("#parameters").exists()).toBe(true);
         expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
-
-        wrapper.find("#run-form-group button").trigger("click")
-        await Vue.nextTick()
         expect(wrapper.vm.$data.disableRun).toBe(false)
-        expect(wrapper.vm.$data.paramError).toBe("")
     });
 
     it("can run validation when component is loaded and disables runButton when parameters fail validation", async () => {

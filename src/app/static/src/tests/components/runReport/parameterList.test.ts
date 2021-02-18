@@ -53,8 +53,9 @@ describe(`run report parameter list`, () => {
                 propsData: {params: innerParams}
             }
         )
-        wrapper.vm.$emit("input")
-        expect(wrapper.emitted().paramsChanged.length).toBe(1)
+        const inputs = wrapper.find("table").findAll("input")
+        await inputs.at(0).setValue("test Value1")
+        expect(wrapper.emitted().paramsChanged.length).toBe(2)
         expect(wrapper.emitted().paramsChanged[0]).toMatchObject([innerParams, true])
     });
 
