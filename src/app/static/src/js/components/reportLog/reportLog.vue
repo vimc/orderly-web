@@ -9,13 +9,13 @@
             :key.sync="selectedReportKey"/>
         </div>
     </div>
+    <div v-if="!showReports">No reports have been ran yet</div>
 </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
     import ReportList from "../runReport/reportList.vue";
-    import {ReportLog} from "../../utils/types";
     import {api} from "../../utils/api";
 
     interface Computed {
@@ -24,37 +24,19 @@
 
     interface Methods {
         getAllReports: () => void
-        getMetadata: () => void
     }
 
     interface Data {
         reports: [],
         selectedReportKey: string,
         selectedReport: string,
-        reportLog: ReportLog,
         error: string,
         defaultMessage: string,
         reportId: string
     }
 
-    const initialReportLog = {
-        email: "",
-        date: "",
-        report: "",
-        instances: "",
-        params: "",
-        gitBranch: "",
-        gitCommit: "",
-        status: "",
-        log: "",
-        reportVersion: ""
-    }
-
     export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "reportLog",
-        // props: [
-        //     "metadata"
-        // ],
         components: {
             ReportList
         },
@@ -64,20 +46,18 @@
                 selectedReportKey: "",
                 reportId: "",
                 selectedReport: "",
-                reportLog: initialReportLog,
                 error: "",
                 defaultMessage: ""
             }
         },
         computed: {
             showReports: function () {
-                return true
+                return this.reports.length > 0
             }
         },
         methods: {
             getAllReports() {
                 this.reports = [];
-                // const user = `?user=${this.userEmail}`;
                 api.get('/running/')
                     .then(({data}) => {
                         this.reports = data.data;
@@ -87,43 +67,16 @@
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = "An error occurred fetching reports";
-                    });
-            },
-            getMetadata: function() {
-                api.get(`/report/${this.key}/logs`)
-                    .then(({data}) => {
-                        this.reportLog = data.data
-                        this.error = "";
-                        this.defaultMessage = "";
-                        console.log('this is the key', this.key)
-                        console.log('this is the metadata 2', this.reportLog)
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred when fetching metadata";
+                        this.defaultMessage = "An error occurred fetching the running reports";
                     });
             }
         },
         mounted(){
-            // console.log('this is the metadata 1', this.metadata)
             this.getAllReports();
-            // console.log('theres are the keys')
-            // setInterval(this.getAllReports(), 3000)
-            // setInterval(function(){console.log('selectedReport', this.selectedReport)}, 3000)
         },
         watch: {
-            // selectedReport() {
-            //     console.log(this.selectedReport)
-            // },
             selectedReportKey() {
                 console.log(this.selectedReportKey)
-            },
-            'reportLog.status': {
-                handler() {
-                    this.getMetadata()
-                },
-                deep: true
             }
         }
     })
