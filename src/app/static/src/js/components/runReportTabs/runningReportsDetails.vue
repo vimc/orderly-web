@@ -26,7 +26,7 @@
                     <div v-if="showParams" class="col-sm-auto">
                         <div class="text-right">
                             Parameters:
-                            <b>{{ reportLog.params.name }}: {{ reportLog.params.value }}</b>
+                            <b>{{ reportLog.params["0"].name }}: {{ reportLog.params["0"].value }}</b>
                         </div>
                     </div>
                 </div>
@@ -85,7 +85,7 @@
         date: "test",
         report: "test",
         instances: "test",
-        params: Object,
+        params: {"0":{"name": "test name", "value": "test value"}},
         git_branch: "test",
         git_commit: "test",
         status: "test",
@@ -113,7 +113,6 @@
         },
         computed: {
             showParams: function () {
-                console.log(this.reportLog.params)
                 return this.reportLog.params && this.reportLog.params.length
             }
         },

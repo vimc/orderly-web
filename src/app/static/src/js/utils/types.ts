@@ -3,12 +3,15 @@ export interface Parameter {
     value: string
 }
 
+export type Dict<V> =  {[index: number]: V}
+export type Params = Dict<Parameter>
+
 export interface ReportLog{
     email: string,
     date: String,
     report: string,
     instances: string,
-    params: Object,
+    params: Dict<Parameter>,
     git_branch: string,
     git_commit: string,
     status: string,
