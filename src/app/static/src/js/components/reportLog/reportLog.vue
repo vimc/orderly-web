@@ -20,6 +20,7 @@
     }
 
     interface Methods {
+        getAllReports: () => void
         getMetadata: () => void
     }
 
@@ -47,6 +48,9 @@
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "reportLog",
+        // props: [
+        //     "metadata"
+        // ],
         components: {
             ReportList
         },
@@ -66,6 +70,21 @@
             }
         },
         methods: {
+            getAllReports() {
+                this.reports = [];
+                // const user = `?user=${this.userEmail}`;
+                api.get('/running/')
+                    .then(({data}) => {
+                        this.reports = data.data;
+                        this.error = "";
+                        this.defaultMessage = "";
+                        console.log('these are the running reports', data.data)
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred fetching reports";
+                    });
+            },
             getMetadata: function() {
                 api.get(`/report/${this.key}/logs`)
                     .then(({data}) => {
@@ -73,6 +92,7 @@
                         this.error = "";
                         this.defaultMessage = "";
                         console.log('this is the key', this.key)
+                        console.log('this is the metadata 2', this.reportLog)
                     })
                     .catch((error) => {
                         this.error = error;
@@ -80,9 +100,12 @@
                     });
             }
         },
-        // mounted(){
+        mounted(){
+            // console.log('this is the metadata 1', this.metadata)
+            // this.updateReports();
             // console.log('theres are the keys')
-        // },
+            this.getAllReports()
+        },
         watch: {
             'reportLog.status': {
                 handler() {

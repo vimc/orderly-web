@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import org.vaccineimpact.orderlyweb.models.Running
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -20,6 +21,7 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
+    fun getAllRunningReports(user: String): List<Running>
     fun getReportRun(key: String): List<ReportRunLog>
 }
 
@@ -47,6 +49,28 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
                 .execute()
+        }
+    }
+
+    override fun getAllRunningReports(user: String): List<Running>
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_REPORT_RUN.DATE,
+                    ORDERLYWEB_REPORT_RUN.REPORT,
+                    ORDERLYWEB_REPORT_RUN.ID
+            )
+                    .from(ORDERLYWEB_REPORT_RUN)
+                    .where(ORDERLYWEB_REPORT_RUN.EMAIL.equals(user))
+
+            // if (result.count() == 0)
+            // {
+            //     throw UnknownObjectError(user, "getAllRunningReports")
+            // }
+            // else
+            // {
+                return result.fetchInto(Running::class.java)
+            // }
         }
     }
 

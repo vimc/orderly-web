@@ -16,3 +16,9 @@ data class ReportRunLog(
         val logs: String,
         val reportVersion: String
 )
+
+data class Running(
+        val date: Instant,
+        val report: String,
+        val id: String
+)
