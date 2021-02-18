@@ -76,9 +76,10 @@ class ReportRunController(
         return passThroughResponse(response)
     }
 
-    fun log(): List<ReportRunLog>
+    fun getRunningReportsDetails(): ReportRunLog
     {
         val key = context.params(":key")
+        println(reportRunRepository.getReportRun(key))
         return reportRunRepository.getReportRun(key)
     }
 }

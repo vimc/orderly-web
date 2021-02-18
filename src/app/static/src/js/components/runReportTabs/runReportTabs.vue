@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="reportKey">
         <running-reports-details :reportKey="reportKey"></running-reports-details>
     </div>
 </template>
@@ -13,9 +13,9 @@
         components: {
             runningReportsDetails
         },
-        data(){
+        data() {
             return {
-                reportKey: "something"
+                reportKey: "nonscholarly_roach"
             }
         }
     })

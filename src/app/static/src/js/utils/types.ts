@@ -8,10 +8,10 @@ export interface ReportLog{
     date: String,
     report: string,
     instances: string,
-    params: string,
-    gitBranch: string,
-    gitCommit: string,
+    params: Object,
+    git_branch: string,
+    git_commit: string,
     status: string,
     log: string,
-    reportVersion: string
+    report_version: string
 }

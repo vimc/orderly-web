@@ -20,7 +20,7 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
-    fun getReportRun(key: String): List<ReportRunLog>
+    fun getReportRun(key: String): ReportRunLog
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -50,7 +50,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         }
     }
 
-    override fun getReportRun(key: String): List<ReportRunLog>
+    override fun getReportRun(key: String): ReportRunLog
     {
         JooqContext().use {
             val result = it.dsl.select(
@@ -66,7 +66,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion")
             )
                     .from(ORDERLYWEB_REPORT_RUN)
-                    .where(ORDERLYWEB_REPORT_RUN.ID.equals(key))
+                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
 
             if (result.count() == 0)
             {
@@ -74,7 +74,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
             }
             else
             {
-                return result.fetchInto(ReportRunLog::class.java)
+                return result.fetchInto(ReportRunLog::class.java)[0]
             }
         }
     }

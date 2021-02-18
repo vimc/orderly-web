@@ -3,16 +3,16 @@
         <div>
             <div id="report-log">
                 <div class="row pt-2">
-                    <div v-if="reportLog.gitBranch" class="col-sm-auto">
+                    <div v-if="reportLog.git_branch" class="col-sm-auto">
                         <div class="text-right">
                             Github branch:
-                            <b>{{ reportLog.gitBranch }}</b>
+                            <b>{{ reportLog.git_branch }}</b>
                         </div>
                     </div>
-                    <div v-if="reportLog.gitCommit" class="col-sm-auto">
+                    <div v-if="reportLog.git_commit" class="col-sm-auto">
                         <div class="text-right">
                             Github commit:
-                            <b>{{ reportLog.gitCommit }}</b>
+                            <b>{{ reportLog.git_commit }}</b>
                         </div>
                     </div>
                     <div v-if="reportLog.instances" class="col-sm-auto">
@@ -23,27 +23,29 @@
                     </div>
                 </div>
                 <div class="row pt-2">
+                    <div v-if="showParams" class="col-sm-auto">
+                        <div class="text-right">
+                            Parameters:
+                            <b>{{ reportLog.params.name }}: {{ reportLog.params.value }}</b>
+                        </div>
+                    </div>
+                </div>
+                <div class="row pt-2">
                     <div v-if="reportLog.status" class="col-sm-auto">
                         <div class="text-right">
                             Status:
                             <b>{{ reportLog.status }}</b>
                         </div>
                     </div>
-                    <div v-if="reportLog.reportVersion" class="col-sm-auto">
+                    <div v-if="reportLog.report_version" class="col-sm-auto">
                         <div class="text-right">
                             Report version:
-                            <b>{{ reportLog.reportVersion }}</b>
-                        </div>
-                    </div>
-                    <div v-if="reportLog.params" class="col-sm-auto">
-                        <div class="text-right">
-                            Parameters:
-                            <b>{{ reportLog.params }}</b>
+                            <b>{{ reportLog.report_version }}</b>
                         </div>
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div v-if="reportLog.log" class="text-right col-sm-8">
+                    <div class="text-right col-sm-8">
                         <textarea class="form-control bg-white" readonly rows="10">
                             {{ reportLog.log }}
                         </textarea>
@@ -57,7 +59,7 @@
 <script lang="ts">
     import Vue from "vue"
     import ReportList from "../runReport/reportList.vue";
-    import {ReportLog} from "../../utils/types";
+    import {Parameter, ReportLog} from "../../utils/types";
     import {api} from "../../utils/api";
 
     interface Methods {
@@ -70,6 +72,10 @@
         defaultMessage: string
     }
 
+    interface Computed {
+        showParams: boolean
+    }
+
     interface Props {
         reportKey: string
     }
@@ -79,15 +85,15 @@
         date: "test",
         report: "test",
         instances: "test",
-        params: "test",
-        gitBranch: "test",
-        gitCommit: "test",
+        params: Object,
+        git_branch: "test",
+        git_commit: "test",
         status: "test",
         log: "test",
-        reportVersion: "test"
+        report_version: "test"
     }
 
-    export default Vue.extend<Data, Methods, unknown, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "reportLog",
         props: {
             reportKey: {
@@ -105,18 +111,30 @@
                 defaultMessage: ""
             }
         },
+        computed: {
+            showParams: function () {
+                console.log(this.reportLog.params)
+                return this.reportLog.params && this.reportLog.params.length
+            }
+        },
         methods: {
             getMetadata: function () {
-                api.get(`/report/${this.reportKey}/logs`)
+                api.get(`/reports/${this.reportKey}/logs`)
                     .then(({data}) => {
                         this.reportLog = data.data
                         this.error = "";
                         this.defaultMessage = "";
                     })
                     .catch((error) => {
+                        console.log("Error occurred here")
                         this.error = error;
                         this.defaultMessage = "An error occurred when fetching metadata";
                     });
+            }
+        },
+        mounted() {
+            if (this.reportKey) {
+                this.getMetadata()
             }
         },
         watch: {
