@@ -65,14 +65,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
 
-            // if (result.count() == 0)
-            // {
-            //     throw UnknownObjectError(user, "getAllRunningReports")
-            // }
-            // else
-            // {
-                return result.fetchInto(Running::class.java)
-            // }
+            return result.fetchInto(Running::class.java)
         }
     }
 
