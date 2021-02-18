@@ -62,11 +62,11 @@ object WebReportRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(reviewReports),
-            WebEndpoint("/running/",
-                    ReportController::class, "running")
-                    .json()
-                    .secure(runReports)
-                    .transform(),
+            // WebEndpoint("/running/",
+            //         ReportController::class, "running")
+            //         .json()
+            //         .secure(runReports)
+            //         .transform(),
             WebEndpoint(
                     "/bulk-publish/",
                     ReportController::class, "publishReports")
