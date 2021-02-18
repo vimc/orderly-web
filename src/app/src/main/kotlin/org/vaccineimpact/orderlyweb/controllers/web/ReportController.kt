@@ -9,8 +9,6 @@ import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
-// import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
-// import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
@@ -19,12 +17,10 @@ import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
-// import org.vaccineimpact.orderlyweb.models.Running
 
 class ReportController(
     context: ActionContext,
     val orderly: OrderlyClient,
-    // private val reportRunRepository: ReportRunRepository,
     private val orderlyServerAPI: OrderlyServerAPI,
     private val reportRepository: ReportRepository,
     private val tagRepository: TagRepository
@@ -33,7 +29,6 @@ class ReportController(
     constructor(context: ActionContext) : this(
             context,
             Orderly(context),
-            // OrderlyWebReportRunRepository(),
             OrderlyServer(AppConfig()),
             OrderlyReportRepository(context),
             OrderlyWebTagRepository()
@@ -135,17 +130,6 @@ class ReportController(
 
         return okayResponse()
     }
-
-    // fun running(): List<Running>
-    // {
-    //     // val profile = context.userProfile
-
-    //     // val emailAddress = profile!!.id
-    //     val user = context.userProfile!!.id
-    //     // val user = context.userProfile?.id
-    //     // val user = "test.user@example.com"
-    //     return reportRunRepository.getAllRunningReports(user)
-    // }
 
     fun publishReports(): String
     {
