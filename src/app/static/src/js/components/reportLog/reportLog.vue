@@ -8,9 +8,25 @@
             :report.sync="selectedReport" 
             :key.sync="selectedReportKey"/>
         </div>
-        <button @click="getAllReports()">Refresh</button>
+        <button @click.prevent="getAllReports"
+                id="logs-refresh-btn"
+                class="btn col-sm-1"
+                :disabled="logsRefreshing"
+                type="submit">
+                {{refreshLogsText}}
+        </button>
     </div>
-    <div v-else>No reports have been ran yet</div>
+    <div v-else>
+        <div>No reports have been ran yet</div>
+        <button @click.prevent="getAllReports"
+                id="logs-refresh-btn"
+                class="btn col-sm-1"
+                :disabled="logsRefreshing"
+                type="submit">
+                {{refreshLogsText}}
+        </button>
+    </div>
+    <error-info :default-message="defaultMessage" :api-error="error"></error-info>
 </div>
 </template>
 
@@ -19,8 +35,10 @@
     import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
     import EventBus from './../../eventBus';
+    import ErrorInfo from "../errorInfo.vue";
 
     interface Computed {
+        refreshLogsText: string
         showReports: boolean
     }
 
@@ -30,11 +48,11 @@
 
     interface Data {
         reports: [],
+        logsRefreshing: boolean,
         selectedReportKey: string,
         selectedReport: string,
         error: string,
-        defaultMessage: string,
-        reportId: string
+        defaultMessage: string
     }
 
     export default Vue.extend<Data, Methods, Computed, unknown>({
@@ -45,29 +63,35 @@
         data(): Data {
             return {
                 reports: [],
+                logsRefreshing: false,
                 selectedReportKey: "",
-                reportId: "",
                 selectedReport: "",
                 error: "",
                 defaultMessage: ""
             }
         },
         computed: {
+            refreshLogsText(){
+                return this.logsRefreshing ? 'Fetching...' : 'Refresh'
+            },
             showReports: function () {
                 return this.reports.length > 0
             }
         },
         methods: {
             getAllReports() {
+                this.logsRefreshing = true
                 this.reports = [];
                 api.get('/running/')
                     .then(({data}) => {
+                        this.logsRefreshing = false;
                         this.reports = data.data;
                         this.error = "";
                         this.defaultMessage = "";
                         console.log('get all reports fired', data.data)
                     })
                     .catch((error) => {
+                        this.logsRefreshing = false;
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });

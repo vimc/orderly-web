@@ -29,7 +29,7 @@
             <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-tab">
                 <h2>Run a report</h2>
                 <div id="runReportVueApp">
-                    <run-report :metadata="runReportMetadata" :git-branches="gitBranches"></run-report>
+                    <run-report :metadata="runReportMetadata" :initial-git-branches="gitBranches"></run-report>
                 </div>
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">

@@ -29,6 +29,7 @@ class ReportRunControllerTests : ControllerTest()
                 "gitBranch" to "branch1",
                 "gitCommit" to "abc123"
             )
+            on { queryParams("timeout") } doReturn "600"
             on { userProfile } doReturn CommonProfile().apply { id = "a@b.com" }
         }
 
@@ -37,8 +38,13 @@ class ReportRunControllerTests : ControllerTest()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
+        val expectedQs = mapOf(
+                "ref" to "abc123",
+                "instance" to "i1",
+                "timeout" to "600"
+        )
         val apiClient: OrderlyServerAPI = mock {
-            on { post(any<String>(), any<String>(), any<Map<String, String?>>()) } doReturn mockAPIResponse
+            on { post(any<String>(), any<String>(), eq(expectedQs)) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()

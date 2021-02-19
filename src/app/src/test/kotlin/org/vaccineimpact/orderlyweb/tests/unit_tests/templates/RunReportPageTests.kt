@@ -57,7 +57,7 @@ class RunReportPageTests
 
         val runReportComponent = tab.select("#runReportVueApp").select("run-report")
         assertThat(runReportComponent.attr(":metadata")).isEqualTo("runReportMetadata")
-        assertThat(runReportComponent.attr(":git-branches")).isEqualTo("gitBranches")
+        assertThat(runReportComponent.attr(":initial-git-branches")).isEqualTo("gitBranches")
 
     }
 

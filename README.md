@@ -109,6 +109,12 @@ rm -r app/demo && rm -r app/git && ./gradlew :app:generateTestData
 ./gradlew :generateDatabaseInterface
 ```
 
+### Automatic rebuilding of UI code
+
+Running `npm run watch --prefix src/app/static` starts a process that will rebuild the UI whenever a `.js`, `.ts` or
+`.vue` file changes. If you're just making front-end changes this avoids having to restart the whole application
+(recompiling the Kotlin code etc).
+
 ## Docker build
 The app is dockerised by running the `./buildkite/build-app.sh` script, which does the following:
 1. Calls `./buildkite/make-build-env.sh` which builds a docker image based on the `Dockerfile` which contains all the
