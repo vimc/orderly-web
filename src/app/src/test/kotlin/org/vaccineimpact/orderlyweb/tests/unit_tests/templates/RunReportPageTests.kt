@@ -66,8 +66,9 @@ class RunReportPageTests
     {
         val tab = doc.select("#logs-tab")
 
-        assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Report logs")
-        assertThat(tab.select("p").text()).isEqualToIgnoringWhitespace("Report logs coming soon!")
+        assertThat(tab.select("h2").text()).isEqualToIgnoringWhitespace("Running report logs")
+        val runReportTabsComponent = tab.select("#runReportTabsVueApp").select("run-report-tabs")
+        assertThat(runReportTabsComponent.size).isEqualTo(1)
     }
 
     @Test

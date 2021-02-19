@@ -2,9 +2,6 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
-import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
-import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -20,7 +17,6 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
-    fun getReportRun(key: String): ReportRunLog
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -47,35 +43,6 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
                 .execute()
-        }
-    }
-
-    override fun getReportRun(key: String): ReportRunLog
-    {
-        JooqContext().use {
-            val result = it.dsl.select(
-                    ORDERLYWEB_REPORT_RUN.EMAIL,
-                    ORDERLYWEB_REPORT_RUN.DATE,
-                    ORDERLYWEB_REPORT_RUN.REPORT,
-                    ORDERLYWEB_REPORT_RUN.INSTANCES,
-                    ORDERLYWEB_REPORT_RUN.PARAMS,
-                    ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
-                    ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
-                    ORDERLYWEB_REPORT_RUN.STATUS,
-                    ORDERLYWEB_REPORT_RUN.LOGS,
-                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion")
-            )
-                    .from(ORDERLYWEB_REPORT_RUN)
-                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-
-            if (result.count() == 0)
-            {
-                throw UnknownObjectError(key, "getReportRun")
-            }
-            else
-            {
-                return result.fetchInto(ReportRunLog::class.java)[0]
-            }
         }
     }
 }

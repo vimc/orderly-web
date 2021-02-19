@@ -47,6 +47,7 @@ interface ReportRepository
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
 
+    fun getReportRun(key: String): ReportRunLog
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -121,7 +122,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
     {
-        //raise exception if version does not belong to named report, or version does not exist
+        // raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
             return getReportVersion(name, version, it)
         }
@@ -283,7 +284,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
-
         }
     }
 
@@ -428,6 +428,35 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
                 .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                 .fetchInto(ReportWithDate::class.java)
+        }
+    }
+
+    override fun getReportRun(key: String): ReportRunLog
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_REPORT_RUN.EMAIL,
+                    ORDERLYWEB_REPORT_RUN.DATE,
+                    ORDERLYWEB_REPORT_RUN.REPORT,
+                    ORDERLYWEB_REPORT_RUN.INSTANCES,
+                    ORDERLYWEB_REPORT_RUN.PARAMS,
+                    ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
+                    ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
+                    ORDERLYWEB_REPORT_RUN.STATUS,
+                    ORDERLYWEB_REPORT_RUN.LOGS,
+                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion")
+            )
+                    .from(ORDERLYWEB_REPORT_RUN)
+                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+
+            if (result.count() == 0)
+            {
+                throw UnknownObjectError(key, "getReportRun")
+            }
+            else
+            {
+                return result.fetchInto(ReportRunLog::class.java)[0]
+            }
         }
     }
 

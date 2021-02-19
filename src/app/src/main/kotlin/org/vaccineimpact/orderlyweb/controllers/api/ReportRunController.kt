@@ -10,7 +10,6 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRun
-import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.time.Instant
 
 class ReportRunController(
@@ -36,6 +35,7 @@ class ReportRunController(
         val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
         val gitBranch = context.postData<String>()["gitBranch"]
         val gitCommit = context.postData<String>()["gitCommit"]
+        val timeout = context.queryParams("timeout")
 
         val response =
             orderlyServerAPI.post(
@@ -44,7 +44,8 @@ class ReportRunController(
                 listOf(
                     "ref" to gitCommit,
                     // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                    "instance" to instances.values.elementAtOrNull(0)
+                    "instance" to instances.values.elementAtOrNull(0),
+                    "timeout" to timeout
                 ).filter { it.second != null }.toMap()
             )
         val reportRun = response.data(ReportRun::class.java)
@@ -74,11 +75,5 @@ class ReportRunController(
         val key = context.params(":key")
         val response = orderlyServerAPI.delete("/v1/reports/$key/kill/", context)
         return passThroughResponse(response)
-    }
-
-    fun getRunningReportsDetails(): ReportRunLog
-    {
-        val key = context.params(":key")
-        return reportRunRepository.getReportRun(key)
     }
 }

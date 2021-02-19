@@ -137,4 +137,10 @@ class ReportController(
         reportRepository.publish(ids)
         return okayResponse()
     }
+
+    fun getRunningReportsDetails(): ReportRunLog
+    {
+        val key = context.params(":key")
+        return reportRepository.getReportRun(key)
+    }
 }

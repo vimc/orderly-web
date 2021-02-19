@@ -9,9 +9,10 @@ import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.*
+import java.time.Instant
 
 class RunReportTests
 {
@@ -127,5 +128,33 @@ class RunReportTests
 
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)
+    }
+
+    @Test
+    fun `can getRunningReportsDetails`()
+    {
+        val fakeReportRunLog = ReportRunLog(
+                "test@example.com",
+                Instant.now(),
+                "q123",
+                "{}",
+                "{}",
+                "branch",
+                "commit",
+                "complete",
+                "logs",
+                "1233")
+
+        val mockRepo = mock<ReportRepository> {
+            on { getReportRun("fakeKey") } doReturn fakeReportRunLog
+        }
+
+        val mockContext: ActionContext = mock {
+            on { params(":key") } doReturn "fakeKey"
+        }
+
+        val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
+        assertThat(sut.getRunningReportsDetails())
+                .isEqualTo(fakeReportRunLog)
     }
 }

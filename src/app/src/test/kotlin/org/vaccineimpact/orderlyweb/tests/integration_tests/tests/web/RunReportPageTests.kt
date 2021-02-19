@@ -102,4 +102,11 @@ class RunReportPageTests : IntegrationTest()
                 ReportWithDate("minimal", repo.getLatestVersion("minimal").date)
         )
     }
+
+    @Test
+    fun `gets running reports details`()
+    {
+        val url = "/reports/nonscholarly_roach/logs"
+        assertWebUrlSecured(url, runReportsPerm)
+    }
 }
