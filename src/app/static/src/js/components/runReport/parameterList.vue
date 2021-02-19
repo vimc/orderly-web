@@ -9,11 +9,12 @@
                 </label></td>
                 <td><input type="text" class="form-control"
                            v-model="getValues[index].value"
-                           @change="parameters"
+                           @input="onParameterChanged"
                            :id="`param-control-${index}`"/></td>
             </tr>
             </tbody>
         </table>
+        <div class="text-danger small">{{ error }}</div>
     </div>
 </template>
 
@@ -27,6 +28,8 @@
 
     interface Data {
         paramValues: Parameter[]
+        valid: boolean,
+        error: string
     }
 
     interface Computed {
@@ -34,9 +37,9 @@
     }
 
     interface Methods {
-        parameters: () => void
+        onParameterChanged: () => void
+        validate: () => void
     }
-
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
         props: {
@@ -44,7 +47,9 @@
         },
         data(): Data {
             return {
-                paramValues: this.params
+                paramValues: this.params,
+                valid: false,
+                error: ""
             }
         },
         computed: {
@@ -60,8 +65,24 @@
             }
         },
         methods: {
-            parameters: function () {
-                this.$emit("getParams", this.paramValues)
+            onParameterChanged: function () {
+                this.validate()
+                this.$emit("paramsChanged", this.paramValues, this.valid)
+            },
+            validate: function () {
+                const validValues = this.paramValues.filter(param => param.value)
+                this.error = ""
+                this.valid = true
+                if (validValues.length < this.paramValues.length) {
+                    this.error = "Parameter value(s) required"
+                    this.valid = false
+                }
+            },
+        },
+        mounted() {
+            // run validation and emit event on initial values
+            if(this.paramValues) {
+                this.onParameterChanged()
             }
         }
     })

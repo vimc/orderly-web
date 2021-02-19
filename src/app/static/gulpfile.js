@@ -40,3 +40,7 @@ gulp.task('js', function () {
 });
 
 gulp.task('build', gulp.parallel('sass', 'js', 'webpack'));
+
+gulp.task(function watch() {
+    gulp.watch(['src/js/**/*.@(js|ts|vue)'], gulp.series('webpack'));
+})
