@@ -232,12 +232,10 @@
 
                 let changelog = null;
                 if (this.changeLogMessageValue) {
-                    changelog = [
-                        {
-                            message: this.changeLogMessageValue,
-                            type: this.changeLogTypeValue
-                        }
-                    ]
+                    changelog = {
+                        message: this.changeLogMessageValue,
+                        type: this.changeLogTypeValue
+                    }
                 }
 
                 api.post(`/report/${this.selectedReport}/actions/run/`, {

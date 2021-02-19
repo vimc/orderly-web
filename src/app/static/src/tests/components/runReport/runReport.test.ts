@@ -570,7 +570,7 @@ describe("runReport", () => {
                     {
                         instances: {},
                         params: {},
-                        changelog: [{message: "test changelog", type: "internal"}],
+                        changelog: {message: "test changelog", type: "internal"},
                         gitBranch: "",
                         gitCommit: ""
                     }

@@ -35,7 +35,7 @@ class ReportRunController(
 
         val instances = context.postData<Map<String, String>>()["instances"] ?: emptyMap()
         val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
-        val changelog = context.postData<List<OrderlyServerChangelog>>()["changelog"]
+        val changelog = context.postData<OrderlyServerChangelog>()["changelog"]
         val gitBranch = context.postData<String>()["gitBranch"]
         val gitCommit = context.postData<String>()["gitCommit"]
         val timeout = context.queryParams("timeout")

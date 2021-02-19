@@ -25,7 +25,7 @@ class ReportRunControllerTests : ControllerTest()
     fun `runs a report`()
     {
         val params = mapOf("param" to "p1")
-        val changelog = listOf(OrderlyServerChangelog("test message", "test type"))
+        val changelog = OrderlyServerChangelog("test message", "test type")
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
@@ -88,8 +88,9 @@ class ReportRunControllerTests : ControllerTest()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
+        val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post("/v1/reports/$reportName/run/", "{}", mapOf()) } doReturn mockAPIResponse
+            on { post("/v1/reports/$reportName/run/", expectedBody, mapOf()) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -118,8 +119,9 @@ class ReportRunControllerTests : ControllerTest()
         }
 
         val url = "/v1/reports/$reportName/run/"
+        val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post(url, "{}", mapOf()) } doThrow OrderlyServerError(url, 500)
+            on { post(url, expectedBody, mapOf()) } doThrow OrderlyServerError(url, 500)
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
