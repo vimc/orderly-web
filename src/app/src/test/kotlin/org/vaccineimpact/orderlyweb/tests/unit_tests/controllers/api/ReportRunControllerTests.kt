@@ -92,7 +92,7 @@ class ReportRunControllerTests : ControllerTest()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
-        val expectedBody = "{\"params\":{}}"
+        val expectedBody = """{"params":{}}"""
         val apiClient: OrderlyServerAPI = mock {
             on { post("/v1/reports/$reportName/run/", expectedBody, mapOf()) } doReturn mockAPIResponse
         }
