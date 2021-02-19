@@ -2,7 +2,7 @@
     <div class="container">
         <div id="report-log">
             <div class="row pt-2">
-                <div v-if="reportLog.git_branch" class="col-sm-auto">
+                <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
                     <div class="text-right">
                         <span>Github branch:</span>
                         <span class="font-weight-bold">
@@ -10,7 +10,7 @@
                         </span>
                     </div>
                 </div>
-                <div v-if="reportLog.git_commit" class="col-sm-auto">
+                <div id="report-git-commit" v-if="reportLog.git_commit" class="col-sm-auto">
                     <div class="text-right">
                         <span>Github commit:</span>
                         <span class="font-weight-bold">
@@ -19,52 +19,52 @@
                     </div>
                 </div>
             </div>
-
             <div class="row pt-2">
-                <div v-if="paramSize > 0" class="col-sm-auto">
+                <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
                     <span>Parameters:</span>
                     <span>
-                        <tr class="table-bordered" v-for="(n, index) in paramSize">
-                            <td class="p-1">{{ reportLog.params[index].name }}:</td>
-                            <td class="p-1 font-weight-bold">
-                                {{ reportLog.params[index].value }}</td>
-                        </tr>
+                        <div class="d-md-table-row row" v-for="(n, index) in paramSize">
+                            <span class="border border-secondary p-1">{{ reportLog.params[index].name }}:</span>
+                            <span class="border border-secondary p-1">
+                                {{ reportLog.params[index].value }}
+                            </span>
+                        </div>
                     </span>
                 </div>
-                <div v-if="instanceSize > 0" class="col-sm-auto">
+                <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
                     <span>Database(source):</span>
                     <span>
-                        <tr v-for="(n, index) in instanceSize">
-                            <td class="p-1 font-weight-bold">{{ reportLog.instances[index].source }}</td>
-                        </tr>
+                        <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
+                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].source }}</li>
+                        </ul>
                     </span>
                 </div>
-                <div v-if="instanceSize > 0" class="col-sm-auto">
+                <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
                     <span>Database(annexe):</span>
                     <span>
-                        <tr v-for="(n, index) in instanceSize">
-                            <td class="p-1 font-weight-bold">{{ reportLog.instances[index].annexe }}</td>
-                        </tr>
+                        <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
+                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].annexe }}</li>
+                        </ul>
                     </span>
                 </div>
             </div>
             <div class="row pt-2">
-                <div v-if="reportLog.status" class="col-sm-auto">
+                <div id="report-status" v-if="reportLog.status" class="col-sm-auto">
                     <div class="text-right">
                         <span>Status:</span>
                         <span class="font-weight-bold">{{ reportLog.status }}</span>
                     </div>
                 </div>
-                <div v-if="reportLog.report_version" class="col-sm-auto">
+                <div id="report-version" v-if="reportLog.report_version" class="col-sm-auto">
                     <div class="text-right">
                         <span>Report version:</span>
                         <span class="font-weight-bold"><a :href="versionUrl">{{ reportLog.report_version }}</a></span>
                     </div>
                 </div>
             </div>
-            <div class="row pt-2">
+            <div id="report-logs" v-if="reportLog.logs" class="row pt-2">
                 <div class="text-right col-sm-10">
-                        <textarea class="form-control bg-white text-sm-left"
+                        <textarea class="form-control bg-white"
                                   readonly rows="10">{{ reportLog.logs }}
                         </textarea>
                 </div>
@@ -114,7 +114,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "reportLog",
+        name: "runningReportsDetails",
         props: {
             reportKey: {
                 type: String,
