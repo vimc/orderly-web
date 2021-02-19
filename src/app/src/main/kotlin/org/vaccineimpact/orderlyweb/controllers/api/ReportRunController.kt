@@ -10,8 +10,6 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRun
-import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerChangelog
-import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerReportRun
 import java.time.Instant
 
 class ReportRunController(
@@ -35,12 +33,15 @@ class ReportRunController(
 
         val instances = context.postData<Map<String, String>>()["instances"] ?: emptyMap()
         val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
-        val changelog = context.postData<OrderlyServerChangelog>()["changelog"]
+        val changelog = context.postData<Map<String, String>>()["changelog"]
         val gitBranch = context.postData<String>()["gitBranch"]
         val gitCommit = context.postData<String>()["gitCommit"]
         val timeout = context.queryParams("timeout")
 
-        val body = Gson().toJson(OrderlyServerReportRun(params, changelog))
+        val body = Gson().toJson(mapOf(
+                "params" to params,
+                "changelog" to changelog
+        ))
         val response =
             orderlyServerAPI.post(
                 "/v1/reports/$name/run/",

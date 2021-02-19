@@ -12,8 +12,6 @@ import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
-import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerChangelog
-import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerReportRun
 import java.time.Instant
 
 class ReportRunControllerTests : ControllerTest()
@@ -25,7 +23,10 @@ class ReportRunControllerTests : ControllerTest()
     fun `runs a report`()
     {
         val params = mapOf("param" to "p1")
-        val changelog = OrderlyServerChangelog("test message", "test type")
+        val changelog = mapOf(
+                "message" to "test message",
+                "type" to "test type")
+
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
@@ -52,7 +53,10 @@ class ReportRunControllerTests : ControllerTest()
         val apiClient: OrderlyServerAPI = mock {
             on { post(
                     eq("/v1/reports/$reportName/run/"),
-                    eq(Gson().toJson(OrderlyServerReportRun(params, changelog))),
+                    eq(Gson().toJson(mapOf(
+                            "params" to params,
+                            "changelog" to changelog
+                    ))),
                     eq(expectedQs)) } doReturn mockAPIResponse
         }
 
