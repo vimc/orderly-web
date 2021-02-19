@@ -5,7 +5,7 @@ import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
-import org.vaccineimpact.orderlyweb.db.Tables.*
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_VERSION_FULL
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
@@ -118,16 +118,20 @@ class IndexPageTests : SeleniumTest()
         setUpDb()
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(
-                ReifiedPermission("reports.run", Scope.Global())))
+        addUserWithPermissions(
+            listOf(
+                ReifiedPermission("reports.run", Scope.Global())
+            )
+        )
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl)
 
         val component = driver.findElements(By.id("run-report"))
         assertThat(component.count()).isEqualTo(1)
-        component[0].click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report")))
+        component[0].click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("runReportVueApp")))
     }
 
     @Test
@@ -136,13 +140,16 @@ class IndexPageTests : SeleniumTest()
         setUpDb()
         startApp("auth.provider=montagu")
 
-        addUserWithPermissions(listOf(
-                ReifiedPermission("reports.read", Scope.Global())))
+        addUserWithPermissions(
+            listOf(
+                ReifiedPermission("reports.read", Scope.Global())
+            )
+        )
 
         loginWithMontagu()
         driver.get(RequestHelper.webBaseUrl)
 
-        val component = driver.findElements(By.id("run-report"))
+        val component = driver.findElements(By.id("runReportVueApp"))
         assertThat(component.count()).isEqualTo(0)
     }
 }
