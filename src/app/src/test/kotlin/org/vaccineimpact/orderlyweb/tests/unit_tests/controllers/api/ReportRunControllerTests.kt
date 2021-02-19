@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
+import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -11,6 +12,8 @@ import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerChangelog
+import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerReportRun
 import java.time.Instant
 
 class ReportRunControllerTests : ControllerTest()
@@ -21,11 +24,14 @@ class ReportRunControllerTests : ControllerTest()
     @Test
     fun `runs a report`()
     {
+        val params = mapOf("param" to "p1")
+        val changelog = listOf(OrderlyServerChangelog("test message", "test type"))
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
                 "instances" to mapOf("instance" to "i1"),
-                "params" to mapOf("param" to "p1"),
+                "params" to params,
+                "changelog" to changelog,
                 "gitBranch" to "branch1",
                 "gitCommit" to "abc123"
             )
@@ -44,22 +50,26 @@ class ReportRunControllerTests : ControllerTest()
                 "timeout" to "600"
         )
         val apiClient: OrderlyServerAPI = mock {
-            on { post(any<String>(), any<String>(), eq(expectedQs)) } doReturn mockAPIResponse
+            on { post(
+                    eq("/v1/reports/$reportName/run/"),
+                    eq(Gson().toJson(OrderlyServerReportRun(params, changelog))),
+                    eq(expectedQs)) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
 
         val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
-        val result = sut.run()
 
+        val result = sut.run()
         assertThat(result).isEqualTo(mockAPIResponseText)
+
         verify(mockReportRunRepo).addReportRun(
             eq(reportKey),
             eq("a@b.com"),
             any<Instant>(),
             eq(reportName),
             eq(mapOf("instance" to "i1")),
-            eq(mapOf("param" to "p1")),
+            eq(params),
             eq("branch1"),
             eq("abc123")
         )

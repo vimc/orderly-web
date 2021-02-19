@@ -216,7 +216,6 @@
                     })
             },
             runReport() {
-                //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
                 //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
@@ -232,7 +231,7 @@
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
 
                 let changelog = null;
-                if (this.changelogMessageValue) {
+                if (this.changeLogMessageValue) {
                     changelog = [
                         {
                             message: this.changeLogMessageValue,

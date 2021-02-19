@@ -10,6 +10,8 @@ import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRun
+import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerChangelog
+import org.vaccineimpact.orderlyweb.models.orderly_server.OrderlyServerReportRun
 import java.time.Instant
 
 class ReportRunController(
@@ -27,8 +29,6 @@ class ReportRunController(
                 AppConfig()
             )
 
-    data class OrderlyServerChangelog(val message: String, val type: String)
-    data class OrderlyServerReportRun(val params: Map<String, String>, val changelog: List<OrderlyServerChangelog>?)
     fun run(): String
     {
         val name = context.params(":name")
