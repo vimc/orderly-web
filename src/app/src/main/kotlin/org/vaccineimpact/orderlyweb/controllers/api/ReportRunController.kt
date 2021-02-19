@@ -27,20 +27,24 @@ class ReportRunController(
                 AppConfig()
             )
 
+    data class OrderlyServerChangelog(val message: String, val type: String)
+    data class OrderlyServerReportRun(val params: Map<String, String>, val changelog: List<OrderlyServerChangelog>?)
     fun run(): String
     {
         val name = context.params(":name")
 
         val instances = context.postData<Map<String, String>>()["instances"] ?: emptyMap()
         val params = context.postData<Map<String, String>>()["params"] ?: emptyMap()
+        val changelog = context.postData<List<OrderlyServerChangelog>>()["changelog"]
         val gitBranch = context.postData<String>()["gitBranch"]
         val gitCommit = context.postData<String>()["gitCommit"]
         val timeout = context.queryParams("timeout")
 
+        val body = Gson().toJson(OrderlyServerReportRun(params, changelog))
         val response =
             orderlyServerAPI.post(
                 "/v1/reports/$name/run/",
-                Gson().toJson(params),
+                body,
                 listOf(
                     "ref" to gitCommit,
                     // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
