@@ -4,6 +4,7 @@
         :serializer="e => e.name"
         v-model="query"
         showOnFocus
+        maxMatches="50"
         placeholder="Choose a report"
         @hit="$emit('update:report', $event.name); $emit('update:key', $event.key)"
     >
@@ -46,26 +47,43 @@
             XIcon
         },
         methods: {
+            // sortedReports() {
+            //     return this.reports.sort((a, b) => a.name.localeCompare(b.name));
+            // },
             clear() {
                 this.query = "";
                 this.$emit("update:report", "");
+                this.$emit('update:key', "");
             }
         },
         data() {
             return {
+                // sortedReports: [],
                 query: ""
             }
         },
         computed: {
             sortedReports() {
-                return this.reports.sort((a, b) => a.name.localeCompare(b.name));
+                return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
         mounted(){
-            // setInterval(function(){console.log('report', this.report)}, 3000)
+            // this.sortedReports()
+            // setInterval(function(){console.log('report in reportList', this.report)}, 3000)
+        },
+        watch: {
+            // sortedReports() {
+            //     return this.reports.sort((a, b) => a.name.localeCompare(b.name));
+            // },
+            reports() {
+                // this.sortedReports()
+                // this.sortedReports = this.reports.sort((a, b) => a.name.localeCompare(b.name));
+                console.log('report list reports', this.reports)
+            }
         },
         beforeDestroy() {
-            this.$emit('update:report', "")
+            this.$emit('update:report', "");
+            this.$emit('update:key', "");
         }
     })
 

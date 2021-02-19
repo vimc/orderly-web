@@ -84,6 +84,7 @@
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
     import ReportList from "./reportList.vue";
+    import EventBus from './../../eventBus';
 
     export default Vue.extend({
         name: "runReport",
@@ -138,6 +139,10 @@
             }
         },
         methods: {
+            emitMethod() {
+                EventBus.$emit('ranReport', 'go');
+                console.log('reportRan emitted')
+            },
             changedBranch() {
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -220,6 +225,7 @@
                         this.runningStatus = "Run started";
                         this.error = "";
                         this.defaultMessage = "";
+                        this.emitMethod()
                     })
                     .catch((error) => {
                         this.error = error;

@@ -8,8 +8,9 @@
             :report.sync="selectedReport" 
             :key.sync="selectedReportKey"/>
         </div>
+        <button @click="getAllReports()">Refresh</button>
     </div>
-    <div v-if="!showReports">No reports have been ran yet</div>
+    <div v-else>No reports have been ran yet</div>
 </div>
 </template>
 
@@ -17,6 +18,7 @@
     import Vue from "vue"
     import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
+    import EventBus from './../../eventBus';
 
     interface Computed {
         showReports: boolean
@@ -63,7 +65,7 @@
                         this.reports = data.data;
                         this.error = "";
                         this.defaultMessage = "";
-                        console.log('these are the running reports', data.data)
+                        console.log('get all reports fired', data.data)
                     })
                     .catch((error) => {
                         this.error = error;
@@ -72,7 +74,12 @@
             }
         },
         mounted(){
+            // setInterval(this.getAllReports(), 3000);
             this.getAllReports();
+            EventBus.$on("ranReport", function (payload) {
+                console.log('emitted received in reportLog')
+                this.getAllReports()
+            });
         },
         watch: {
             selectedReportKey() {
