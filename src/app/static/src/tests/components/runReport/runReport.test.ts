@@ -463,19 +463,25 @@ describe("runReport", () => {
         mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
-        const propsData = {
-            metadata: {
-                git_supported: true,
-                instances_supported: true,
-                instances: {
-                    annexe: ["a1", "a2"],
-                    source: ["uat", "science", "prod"]
-                }
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: true,
+                    instances: {
+                        annexe: ["a1", "a2"],
+                        source: ["uat", "science", "prod"]
+                    }
+                },
+                initialGitBranches
             },
-            initialGitBranches
-        };
-        const wrapper = getWrapper(reports, propsData);
-
+            data() {
+                return {
+                    selectedReport: "report",
+                    parameterValues: [{name: "minimal", value: "oldValue"}, {name: "global", value: "oldValue"}]
+                }
+            }
+        });
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
@@ -484,10 +490,12 @@ describe("runReport", () => {
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
-
-            await Vue.nextTick();
+            await Vue.nextTick()
+            wrapper.setData({
+                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
+            })
+            await Vue.nextTick()
             wrapper.find("#run-form-group button").trigger("click");
-
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.get.length).toBe(5);
@@ -499,7 +507,11 @@ describe("runReport", () => {
                             "source": "science",
                             "annexe": "science"
                         },
-                        "params": {},
+                        "params": {
+                            "minimal": "test",
+                            "global": "random_39id"
+
+                        },
                         "gitBranch": "master",
                         "gitCommit": "test-commit"
                     }
@@ -745,5 +757,55 @@ describe("runReport", () => {
 
         wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
+    });
+
+    it("it does not disable runButton or display error msg when parameters pass validation", async () => {
+        const localParam = [
+            {name: "global", value: "Set new value"},
+            {name: "max", value: "James bond"},
+        ]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true
+                },
+                initialGitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    parameterValues: localParam,
+                    selectedReport: "reports"
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
+        expect(wrapper.vm.$data.disableRun).toBe(false)
+    });
+
+    it("can run validation when component is loaded and disables runButton when parameters fail validation", async () => {
+        const localParam = [
+            {name: "global", value: "Set new value"},
+            {name: "minimal", value: ""}
+        ]
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                },
+                initialGitBranches
+            },
+            data() {
+                return {
+                    gitCommits: gitCommits,
+                    selectedReport: "reports",
+                    parameterValues: localParam
+                }
+            }
+        });
+        expect(wrapper.find("#parameters").exists()).toBe(true);
+        expect(wrapper.vm.$data.parameterValues.length).toBeGreaterThan(0)
+        expect(wrapper.vm.$data.disableRun).toBe(true)
     });
 });

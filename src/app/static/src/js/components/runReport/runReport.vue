@@ -46,7 +46,7 @@
             </template>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @getParams="getParameterValues"
+                <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showChangelog">
@@ -179,14 +179,11 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
-            getParameterValues(values) {
-                if (values) {
-                    this.parameterValues.forEach((param, key) => {
-                        if (values[key].name == param.name) {
-                            param.value = values[key].value
-                        }
-                    })
+            getParameterValues(values, valid) {
+                if (valid) {
+                    this.parameterValues = [...values]
                 }
+                this.disableRun = !valid
             },
             changedCommit() {
                 this.updateReports();
@@ -229,13 +226,13 @@
                 if (this.metadata.instances_supported && this.metadata.instances &&
                     Object.keys(this.metadata.instances).length > 0) {
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
-                    const instance = this.selectedInstances[instanceName];
-                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
-
+                let params = {}
+                params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {})
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances: instances,
-                    params: {}, //TODO mrc-2167
+                    params: params,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })
