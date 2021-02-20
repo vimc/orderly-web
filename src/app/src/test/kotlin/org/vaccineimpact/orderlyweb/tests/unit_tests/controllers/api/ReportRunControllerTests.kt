@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.api
 
+import com.google.gson.Gson
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -21,11 +22,17 @@ class ReportRunControllerTests : ControllerTest()
     @Test
     fun `runs a report`()
     {
+        val params = mapOf("param" to "p1")
+        val changelog = mapOf(
+                "message" to "test message",
+                "type" to "test type")
+
         val actionContext: ActionContext = mock {
             on { params(":name") } doReturn reportName
             on { postData<Any>() } doReturn mapOf(
                 "instances" to mapOf("instance" to "i1"),
-                "params" to mapOf("param" to "p1"),
+                "params" to params,
+                "changelog" to changelog,
                 "gitBranch" to "branch1",
                 "gitCommit" to "abc123"
             )
@@ -44,22 +51,29 @@ class ReportRunControllerTests : ControllerTest()
                 "timeout" to "600"
         )
         val apiClient: OrderlyServerAPI = mock {
-            on { post(any<String>(), any<String>(), eq(expectedQs)) } doReturn mockAPIResponse
+            on { post(
+                    eq("/v1/reports/$reportName/run/"),
+                    eq(Gson().toJson(mapOf(
+                            "params" to params,
+                            "changelog" to changelog
+                    ))),
+                    eq(expectedQs)) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
 
         val sut = ReportRunController(actionContext, mockReportRunRepo, apiClient, mock())
-        val result = sut.run()
 
+        val result = sut.run()
         assertThat(result).isEqualTo(mockAPIResponseText)
+
         verify(mockReportRunRepo).addReportRun(
             eq(reportKey),
             eq("a@b.com"),
             any<Instant>(),
             eq(reportName),
             eq(mapOf("instance" to "i1")),
-            eq(mapOf("param" to "p1")),
+            eq(params),
             eq("branch1"),
             eq("abc123")
         )
@@ -78,8 +92,9 @@ class ReportRunControllerTests : ControllerTest()
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
+        val expectedBody = """{"params":{}}"""
         val apiClient: OrderlyServerAPI = mock {
-            on { post("/v1/reports/$reportName/run/", "{}", mapOf()) } doReturn mockAPIResponse
+            on { post("/v1/reports/$reportName/run/", expectedBody, mapOf()) } doReturn mockAPIResponse
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()
@@ -108,8 +123,9 @@ class ReportRunControllerTests : ControllerTest()
         }
 
         val url = "/v1/reports/$reportName/run/"
+        val expectedBody = "{\"params\":{}}"
         val apiClient: OrderlyServerAPI = mock {
-            on { post(url, "{}", mapOf()) } doThrow OrderlyServerError(url, 500)
+            on { post(url, expectedBody, mapOf()) } doThrow OrderlyServerError(url, 500)
         }
 
         val mockReportRunRepo: ReportRunRepository = mock()

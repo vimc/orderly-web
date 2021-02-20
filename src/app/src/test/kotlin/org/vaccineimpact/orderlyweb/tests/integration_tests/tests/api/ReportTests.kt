@@ -29,7 +29,8 @@ class ReportTests : IntegrationTest()
     @Test
     fun `runs report`()
     {
-        val response = apiRequestHelper.post("/reports/minimal/run/", mapOf(),
+        val response = apiRequestHelper.post("/reports/minimal/run/",
+                mapOf("params" to mapOf<String, String>()),
                 userEmail = fakeGlobalReportReviewer())
 
         assertSuccessfulWithResponseText(response)
