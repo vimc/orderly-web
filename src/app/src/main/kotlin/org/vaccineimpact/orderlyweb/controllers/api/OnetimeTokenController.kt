@@ -6,7 +6,7 @@ import org.vaccineimpact.orderlyweb.db.TokenStore
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.db.OnetimeTokenStore
 import org.vaccineimpact.orderlyweb.security.WebTokenHelper
-
+@Suppress("UnsafeCallOnNullableType")
 class OnetimeTokenController(context: ActionContext,
                              private val tokenStore: OnetimeTokenStore) : Controller(context)
 {
@@ -18,7 +18,7 @@ class OnetimeTokenController(context: ActionContext,
                 ?: throw MissingParameterError("url")
 
         val profile = context.userProfile
-
+        @Suppress("UnsafeCallOnNullableType")
         val emailAddress = profile!!.id
 
         val issuer = WebTokenHelper.instance.issuer

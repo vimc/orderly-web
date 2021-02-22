@@ -1,5 +1,5 @@
 package org.vaccineimpact.orderlyweb.errors
-
+@Suppress("UnnecessaryAbstractClass")
 abstract class OrderlyWebError(
         open val httpStatus: Int,
         val problems: Iterable<org.vaccineimpact.orderlyweb.models.ErrorInfo>

@@ -46,6 +46,7 @@ class ErrorHandler(templateEngine: TemplateEngine,
     // all controller errors appear as InvocationTargetExceptions
     fun handleInvocationError(error: InvocationTargetException, req: Request, res: Response)
     {
+        @Suppress("UnsafeCallOnNullableType")
         val cause = error.cause!!
 
         when (cause)

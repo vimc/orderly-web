@@ -104,9 +104,18 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `gets running reports details`()
+    fun `can only view running reports details with required permission`()
     {
         val url = "/reports/nonscholarly_roach/logs"
         assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `can successfully make a request to running report logs endpoint`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie("/reports/nonscholarly_roach/logs", sessionCookie)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
+        assertJsonContentType(response)
     }
 }

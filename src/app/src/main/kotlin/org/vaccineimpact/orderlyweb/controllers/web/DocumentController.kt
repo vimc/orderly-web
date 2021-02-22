@@ -42,6 +42,7 @@ class DocumentController(context: ActionContext,
         val path = context.splat()?.joinToString("/")
                 ?: throw MissingParameterError("Path to document not provided")
 
+        @Suppress("UnsafeCallOnNullableType")
         val fileName = context.splat()!!.last()
 
         val inline = context.queryParams("inline")?.toBoolean() ?: false
@@ -116,6 +117,7 @@ class DocumentController(context: ActionContext,
             }
             else
             {
+                @Suppress("UnsafeCallOnNullableType")
                 docsRepo.add(child.pathFragment!!, child.name, child.displayName, child.isFile, child.external, dir.pathFragment)
             }
 

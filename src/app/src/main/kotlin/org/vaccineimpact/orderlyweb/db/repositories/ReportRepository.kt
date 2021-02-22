@@ -113,6 +113,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetch()
 
+            @Suppress("UnsafeCallOnNullableType")
             return versions.groupBy { r -> r["name"] }.map {
                 it.value.maxBy { r -> r["latestVersion"] as String }
             }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }

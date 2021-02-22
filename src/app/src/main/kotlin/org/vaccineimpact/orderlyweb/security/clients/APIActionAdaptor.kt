@@ -46,6 +46,7 @@ class APIActionAdaptor(private val clients: List<OrderlyWebTokenCredentialClient
         {
             addDefaultResponseHeaders(context.response)
 
+            @Suppress("UnsafeCallOnNullableType")
             val profile = DirectActionContext(context).userProfile!!
 
             val mismatchedURL = profile.mismatchedURL
