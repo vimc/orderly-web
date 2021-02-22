@@ -31,6 +31,8 @@ function cleanup() {
   zip -qr reports.zip reports
   bash <(curl -s https://codecov.io/bash) -s coverage/
   sudo chown -R $UID reports coverage
+  # Tear down dependencies
+  docker-compose -f $COMPOSE_FILE  --project-name montagu down
 }
 trap cleanup EXIT
 docker run --rm \
