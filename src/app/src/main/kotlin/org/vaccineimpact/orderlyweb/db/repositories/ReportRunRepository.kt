@@ -58,9 +58,9 @@ class OrderlyWebReportRunRepository : ReportRunRepository
             val result = it.dsl.select(
                     ORDERLYWEB_REPORT_RUN.DATE,
                     ORDERLYWEB_REPORT_RUN.REPORT.`as`("name"),
-                    ORDERLYWEB_REPORT_RUN.EMAIL,
-                    ORDERLYWEB_REPORT_RUN.KEY,
-                    ORDERLYWEB_REPORT_RUN.ID
+                    // ORDERLYWEB_REPORT_RUN.EMAIL,
+                    ORDERLYWEB_REPORT_RUN.KEY
+                    // ORDERLYWEB_REPORT_RUN.ID
             )
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))

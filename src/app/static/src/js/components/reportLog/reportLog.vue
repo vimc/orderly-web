@@ -37,7 +37,7 @@
     import Vue from "vue"
     import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
-    import EventBus from './../../eventBus';
+    // import EventBus from './../../eventBus';
     import ErrorInfo from "../errorInfo.vue";
     // import {switches} from "./../../featureSwitches";
 
@@ -105,17 +105,16 @@
             }
         },
         mounted(){
-            // setInterval(this.getAllReports(), 3000);
             this.getAllReports();
             // EventBus.$on("ranReport", function (payload) {
             //     console.log('emitted received in reportLog')
             //     this.getAllReports()
             // });
-        },
-        watch: {
-            selectedReportKey() {
-                console.log(this.selectedReportKey)
-            }
         }
+        // watch: {
+        //     selectedReportKey() {
+        //         console.log(this.selectedReportKey)
+        //     }
+        // }
     })
 </script>

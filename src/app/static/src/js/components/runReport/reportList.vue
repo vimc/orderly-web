@@ -47,9 +47,6 @@
             XIcon
         },
         methods: {
-            // sortedReports() {
-            //     return this.reports.sort((a, b) => a.name.localeCompare(b.name));
-            // },
             clear() {
                 this.query = "";
                 this.$emit("update:report", "");
@@ -58,7 +55,6 @@
         },
         data() {
             return {
-                // sortedReports: [],
                 query: ""
             }
         },
@@ -67,20 +63,11 @@
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
-        mounted(){
-            // this.sortedReports()
-            // setInterval(function(){console.log('report in reportList', this.report)}, 3000)
-        },
-        watch: {
-            // sortedReports() {
-            //     return this.reports.sort((a, b) => a.name.localeCompare(b.name));
-            // },
-            reports() {
-                // this.sortedReports()
-                // this.sortedReports = this.reports.sort((a, b) => a.name.localeCompare(b.name));
-                console.log('report list reports', this.reports)
-            }
-        },
+        // watch: {
+        //     reports() {
+        //         console.log('report list reports', this.reports)
+        //     }
+        // },
         beforeDestroy() {
             this.$emit('update:report', "");
             this.$emit('update:key', "");

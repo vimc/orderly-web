@@ -18,9 +18,9 @@ data class ReportRunLog(
 )
 
 data class Running(
+        // val email: String,
+        // val id: String,
         val date: Instant,
         val name: String,
-        val key: String,
-        val email: String,
-        val id: String
+        val key: String
 )

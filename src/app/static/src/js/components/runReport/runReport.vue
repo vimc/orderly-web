@@ -249,7 +249,7 @@
                         this.runningStatus = "Run started";
                         this.error = "";
                         this.defaultMessage = "";
-                        this.emitMethod()
+                        // this.emitMethod()
                     })
                     .catch((error) => {
                         this.error = error;
@@ -314,7 +314,6 @@
                     this.setParameters()
                 }
                 this.parameterValues.length = 0
-                console.log(this.selectedReport)
             },
             selectedInstances: {
                 deep: true,
