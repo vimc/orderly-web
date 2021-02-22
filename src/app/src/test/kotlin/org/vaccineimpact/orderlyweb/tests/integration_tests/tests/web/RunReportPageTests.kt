@@ -110,12 +110,4 @@ class RunReportPageTests : IntegrationTest()
         assertWebUrlSecured(url, runReportsPerm)
     }
 
-    @Test
-    fun `can successfully make a request to running report logs endpoint`()
-    {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-        val response = webRequestHelper.requestWithSessionCookie("/reports/nonscholarly_roach/logs", sessionCookie)
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
-        assertJsonContentType(response)
-    }
 }
