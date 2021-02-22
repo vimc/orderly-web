@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
@@ -109,5 +110,4 @@ class RunReportPageTests : IntegrationTest()
         val url = "/reports/nonscholarly_roach/logs"
         assertWebUrlSecured(url, runReportsPerm)
     }
-
 }
