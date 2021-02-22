@@ -1,32 +1,35 @@
 <template>
 <div>
-    <div v-if="showReports" id="report-form-group" class="form-group row">
-        <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
-        <div class="col-sm-6">
-            <report-list id="report" 
-            :reports="reports" 
-            :report.sync="selectedReport" 
-            :key.sync="selectedReportKey"/>
+    <div v-if="reportLogsEnabled">
+        <div v-if="showReports" id="report-form-group" class="form-group row">
+            <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
+            <div class="col-sm-6">
+                <report-list id="report" 
+                :reports="reports" 
+                :report.sync="selectedReport" 
+                :key.sync="selectedReportKey"/>
+            </div>
+            <button @click.prevent="getAllReports"
+                    id="logs-refresh-btn"
+                    class="btn col-sm-1"
+                    :disabled="logsRefreshing"
+                    type="submit">
+                    {{refreshLogsText}}
+            </button>
         </div>
-        <button @click.prevent="getAllReports"
-                id="logs-refresh-btn"
-                class="btn col-sm-1"
-                :disabled="logsRefreshing"
-                type="submit">
-                {{refreshLogsText}}
-        </button>
+        <div v-else>
+            <div>No reports have been ran yet</div>
+            <button @click.prevent="getAllReports"
+                    id="logs-refresh-btn"
+                    class="btn col-sm-1"
+                    :disabled="logsRefreshing"
+                    type="submit">
+                    {{refreshLogsText}}
+            </button>
+        </div>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
-    <div v-else>
-        <div>No reports have been ran yet</div>
-        <button @click.prevent="getAllReports"
-                id="logs-refresh-btn"
-                class="btn col-sm-1"
-                :disabled="logsRefreshing"
-                type="submit">
-                {{refreshLogsText}}
-        </button>
-    </div>
-    <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+    <div v-else>Report logs coming soon</div>
 </div>
 </template>
 
@@ -36,6 +39,7 @@
     import {api} from "../../utils/api";
     import EventBus from './../../eventBus';
     import ErrorInfo from "../errorInfo.vue";
+    // import {switches} from "./../../featureSwitches";
 
     interface Computed {
         refreshLogsText: string
@@ -48,6 +52,7 @@
 
     interface Data {
         reports: [],
+        reportLogsEnabled: boolean,
         logsRefreshing: boolean,
         selectedReportKey: string,
         selectedReport: string,
@@ -63,6 +68,8 @@
         data(): Data {
             return {
                 reports: [],
+                // reportLogsEnabled: switches.reportLog,
+                reportLogsEnabled: true,
                 logsRefreshing: false,
                 selectedReportKey: "",
                 selectedReport: "",
@@ -100,10 +107,10 @@
         mounted(){
             // setInterval(this.getAllReports(), 3000);
             this.getAllReports();
-            EventBus.$on("ranReport", function (payload) {
-                console.log('emitted received in reportLog')
-                this.getAllReports()
-            });
+            // EventBus.$on("ranReport", function (payload) {
+            //     console.log('emitted received in reportLog')
+            //     this.getAllReports()
+            // });
         },
         watch: {
             selectedReportKey() {

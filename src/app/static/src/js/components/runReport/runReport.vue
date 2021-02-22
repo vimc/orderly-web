@@ -71,7 +71,9 @@
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
+                    <!-- <button @click.prevent="runReport; $emit('update:reportRan', $event);" class="btn" type="submit" :disabled="disableRun"> -->
                     <button @click.prevent="runReport" class="btn" type="submit" :disabled="disableRun">
+
                         Run report
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
@@ -91,7 +93,7 @@
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
     import ReportList from "./reportList.vue";
-    import EventBus from './../../eventBus';
+    // import EventBus from './../../eventBus';
 
     export default Vue.extend({
         name: "runReport",
@@ -151,10 +153,10 @@
             }
         },
         methods: {
-            emitMethod() {
-                EventBus.$emit('ranReport', 'go');
-                console.log('reportRan emitted')
-            },
+            // emitMethod() {
+            //     EventBus.$emit('ranReport', 'go');
+            //     console.log('reportRan emitted')
+            // },
             refreshGit: function () {
                 this.gitRefreshing = true
                 api.get('/git/fetch/')
