@@ -19,7 +19,7 @@
         },
         data() {
             return {
-                reportKey: "nonscholarly_roach"
+                reportKey: ""
             }
         }
     })

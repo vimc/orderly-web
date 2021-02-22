@@ -144,7 +144,7 @@
         },
         methods: {
             getMetadata: function () {
-                api.get(`/reports/${this.reportKey}/logs/`)
+                api.get(`/running/${this.reportKey}/logs/`)
                     .then(({data}) => {
                         this.reportLog = data.data
                         this.reportLog.params = JSON.parse(this.reportLog.params)

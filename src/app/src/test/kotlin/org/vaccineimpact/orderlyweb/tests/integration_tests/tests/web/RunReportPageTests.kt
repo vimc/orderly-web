@@ -2,7 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
@@ -109,7 +108,7 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `only report runner can view running reports details`()
     {
-        val url = "/reports/frightened_rabbit/logs"
+        val url = "/running/frightened_rabbit/logs"
         assertWebUrlSecured(url, runReportsPerm)
     }
 
@@ -133,7 +132,7 @@ class RunReportPageTests : IntegrationTest()
         }
 
         val mockServer: OrderlyServerAPI = mock {
-            on { get("/reports/fakeKey/logs", mockContext) } doReturn
+            on { get("/running/fakeKey/logs", mockContext) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeReportRunLog), 200)
         }
 
