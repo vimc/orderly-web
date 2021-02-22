@@ -2,22 +2,24 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.ContentTypes
-import org.vaccineimpact.orderlyweb.OrderlyServer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.models.GitCommit
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import java.time.Instant
 
 class RunReportPageTests : IntegrationTest()
 {
@@ -105,9 +107,43 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `can only view running reports details with required permission`()
+    fun `only report runner can view running reports details`()
     {
-        val url = "/reports/nonscholarly_roach/logs"
+        val url = "/reports/frightened_rabbit/logs"
         assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `can get running reports details`()
+    {
+        val fakeReportRunLog = ReportRunLog(
+                "test@example.com",
+                Instant.now(),
+                "q123",
+                "{}",
+                "{}",
+                "branch",
+                "commit",
+                "complete",
+                "logs",
+                "1233")
+
+        val mockContext: ActionContext = mock {
+            on { params(":key") } doReturn "fakeKey"
+        }
+
+        val mockServer: OrderlyServerAPI = mock {
+            on { get("/reports/fakeKey/logs", mockContext) } doReturn
+                    OrderlyServerResponse(Serializer.instance.toResult(fakeReportRunLog), 200)
+        }
+
+        val mockRepo = mock<ReportRepository> {
+            on { getReportRun("fakeKey") } doReturn fakeReportRunLog
+        }
+
+        val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
+        val result = sut.getRunningReportsDetails()
+
+        assertThat(result).isEqualTo(fakeReportRunLog)
     }
 }
