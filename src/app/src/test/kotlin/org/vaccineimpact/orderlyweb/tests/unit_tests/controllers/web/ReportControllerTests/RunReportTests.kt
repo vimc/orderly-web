@@ -137,8 +137,8 @@ class RunReportTests
                 "test@example.com",
                 Instant.now(),
                 "q123",
-                "{}",
-                "{}",
+                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}}",
+                "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
                 "branch",
                 "commit",
                 "complete",
@@ -155,6 +155,6 @@ class RunReportTests
 
         val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
         assertThat(sut.getRunningReportsDetails())
-                .isEqualTo(fakeReportRunLog)
+                .isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
     }
 }

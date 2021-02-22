@@ -112,8 +112,8 @@ class RunReportPageTests : IntegrationTest()
                 "test@example.com",
                 Instant.now(),
                 "q123",
-                "{}",
-                "{}",
+                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}}",
+                "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
                 "branch",
                 "commit",
                 "complete",
@@ -136,6 +136,6 @@ class RunReportPageTests : IntegrationTest()
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportsDetails()
 
-        assertThat(result).isEqualTo(fakeReportRunLog)
+        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
     }
 }
