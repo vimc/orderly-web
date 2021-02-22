@@ -87,9 +87,7 @@ class RunReportPageTests : SeleniumTest()
 
         val tab = driver.findElement(By.id("logs-tab"))
         wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
-
-        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Report logs")
-        assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Report logs coming soon!")
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
     }
 
     //TODO: This test case should be revisited as soon as test data is updated.
