@@ -106,13 +106,6 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `only report runner can view running reports details`()
-    {
-        val url = "/running/frightened_rabbit/logs"
-        assertWebUrlSecured(url, runReportsPerm)
-    }
-
-    @Test
     fun `can get running reports details`()
     {
         val fakeReportRunLog = ReportRunLog(
