@@ -49,7 +49,6 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         {
             throw CredentialsException("User is not a member of GitHub org $githubOrg")
         }
-        @Suppress("UnsafeCallOnNullableType")
         if (!teamName.isEmpty() && !userBelongsToTeam(githubOrg, teamName, user!!))
         {
             throw CredentialsException("User is not a member of GitHub team $teamName")
@@ -61,14 +60,12 @@ class GithubApiClientAuthHelper(private val appConfig: Config,
         checkAuthenticated()
 
         // If the GitHub user has no public email set, we need to make an extra call to get it
-        @Suppress("UnsafeCallOnNullableType")
         return user!!.email ?: getEmailForUser()
     }
 
     override fun getUser(): User
     {
         checkAuthenticated()
-        @Suppress("UnsafeCallOnNullableType")
         return user!!
     }
 

@@ -49,7 +49,6 @@ class APISecurityClientsConfigFactory(
 
             if (AppConfig().authorizationEnabled)
             {
-                @Suppress("UnsafeCallOnNullableType")
                 setAuthorizer(OrderlyWebAPIAuthorizer(requiredPermissions!!))
             }
             else
