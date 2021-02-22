@@ -135,7 +135,7 @@ describe(`runningReportsDetails`, () => {
         }
         const wrapper = getWrapper({reportKey: key}, mockInitialReportLog)
 
-        mockAxios.onGet(`http://app/reports/${key}/logs/`)
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
         setTimeout(() => {
             expect(wrapper.find("#report-logs").exists()).toBe(false)
@@ -143,7 +143,7 @@ describe(`runningReportsDetails`, () => {
         })
     })
 
-    it(`does render error message when report key in not valid`, async(done) => {
+    it(`it displays error message when report key in not valid`, async(done) => {
         const key = "fakeKey"
         const mockInitialReportLog = {
             email: "",
@@ -164,7 +164,7 @@ describe(`runningReportsDetails`, () => {
             report_version: ""
         }
         const wrapper = getWrapper({reportKey: key}, mockInitialReportLog)
-        mockAxios.onGet(`http://app/reports/${key}/logs/`)
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(500, "Error");
 
         setTimeout(() => {
