@@ -137,7 +137,7 @@ class RunReportTests
                 "test@example.com",
                 Instant.now(),
                 "q123",
-                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}}",
+                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}",
                 "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
                 "branch",
                 "commit",
