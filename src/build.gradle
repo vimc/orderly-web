@@ -3,7 +3,7 @@ version '1.0-SNAPSHOT'
 
 buildscript {
     ext.kotlin_version = '1.3.72'
-    ext.detekt_version = '1.14.2'
+    ext.detekt_version = '1.15.0'
 
     repositories {
         mavenCentral()
@@ -78,7 +78,7 @@ subprojects {
     detekt {
         config = files("$rootDir/config/detekt/detekt.yml")
         buildUponDefaultConfig = true
-        baseline = file("$rootDir/config/detekt/baseline-main.yml")
+        baseline = file("$rootDir/config/detekt/baseline.yml")
     }
 
     tasks.detekt.jvmTarget = "1.8"

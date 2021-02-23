@@ -1,8 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
@@ -11,6 +9,7 @@ import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import java.time.Instant
 

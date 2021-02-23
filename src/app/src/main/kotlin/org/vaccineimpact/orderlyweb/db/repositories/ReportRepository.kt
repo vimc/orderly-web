@@ -448,9 +448,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-                    .singleOrNull()
-                    ?.into(ReportRunLog::class.java)
-                    ?: throw UnknownObjectError("key", "getReportRun")
+                    .fetchOne(0, ReportRunLog::class.java)
         }
     }
 
