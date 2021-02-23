@@ -2366,6 +2366,10 @@
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:42</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:17</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:19</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:464</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:466</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:470</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:472</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:471</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:473</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:477</ID>
