@@ -435,7 +435,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     override fun getReportRun(key: String): ReportRunLog
     {
         JooqContext().use {
-            val result = it.dsl.select(
+            return it.dsl.select(
                     ORDERLYWEB_REPORT_RUN.EMAIL,
                     ORDERLYWEB_REPORT_RUN.DATE,
                     ORDERLYWEB_REPORT_RUN.REPORT,
@@ -445,19 +445,12 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
                     ORDERLYWEB_REPORT_RUN.STATUS,
                     ORDERLYWEB_REPORT_RUN.LOGS,
-                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion")
-            )
+                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-
-            if (result.count() == 0)
-            {
-                throw UnknownObjectError(key, "getReportRun")
-            }
-            else
-            {
-                 return result.fetchOne(0, ReportRunLog::class.java)
-            }
+                    .singleOrNull()
+                    ?.into(ReportRunLog::class.java)
+                    ?: throw UnknownObjectError("key", "getReportRun")
         }
     }
 
