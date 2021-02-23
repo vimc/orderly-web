@@ -113,7 +113,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED.eq(true))
                     .fetch()
 
-            @Suppress("UnsafeCallOnNullableType")
             return versions.groupBy { r -> r["name"] }.map {
                 it.value.maxBy { r -> r["latestVersion"] as String }
             }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
@@ -123,7 +122,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
     {
-        // raise exception if version does not belong to named report, or version does not exist
+        //raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
             return getReportVersion(name, version, it)
         }
@@ -285,6 +284,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
+
         }
     }
 

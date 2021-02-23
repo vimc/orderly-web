@@ -66,7 +66,7 @@ class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
         return element.asJsonObject["data"]
     }
 }
-@Suppress("UnsafeCallOnNullableType")
+
 class OrderlyServer(
     config: Config,
     private val client: OkHttpClient = OkHttpClient()

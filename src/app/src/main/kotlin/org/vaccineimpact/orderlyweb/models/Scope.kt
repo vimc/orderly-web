@@ -65,7 +65,6 @@ sealed class Scope(val value: String)
             else
             {
 
-                @Suppress("UnsafeCallOnNullableType")
                 Scope.Specific(permissionVM.scopePrefix, permissionVM.scopeId!!)
             }
         }
@@ -78,7 +77,6 @@ sealed class Scope(val value: String)
             }
             else
             {
-                @Suppress("UnsafeCallOnNullableType")
                 Specific(scopePrefix, scopeId!!)
             }
         }

@@ -56,7 +56,6 @@ abstract class OkHttpMontaguAPIClient(appConfig: Config) : MontaguAPIClient
     {
         getHttpResponse("$urlBase/user/", mapOf("Authorization" to "Bearer $token"))
                 .use { response ->
-                    @Suppress("UnsafeCallOnNullableType")
                     val result = parseResult(response.body!!.string())
 
                     if (response.code != 200)

@@ -17,7 +17,6 @@ class UserController(context: ActionContext,
 
     fun auth(): AuthenticationResponse
     {
-        @Suppress("UnsafeCallOnNullableType")
         return AuthenticationResponse(
                 accessToken = tokenHelper.issuer.generateBearerToken(context.userProfile!!.id),
                 expiresIn = tokenHelper.issuer.tokenLifeSpan.seconds)
