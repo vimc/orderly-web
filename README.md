@@ -94,6 +94,11 @@ cd src
 Note that the linter is currently unable to detect some cases where code doesn't follow the style conventions. In these
 cases the conventions take precedence. In particular: **braces should always be explicit, and placed on new line**.
 
+The `detektMain` task is preferred to `detekt` as it uses
+[type resolution](https://detekt.github.io/detekt/type-resolution.html) to perform more advanced code analysis.
+`detektMain` uses the `baseline-main.yml` file. This is symlinked to `baseline.yml` so that the `detekt` task also
+works, which is necessary because it is called implicitly during the Docker image build stage.
+
 [code style conventions]: https://mrc-ide.myjetbrains.com/youtrack/articles/RESIDE-A-8/Code-style-conventions
 
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
