@@ -1,10 +1,10 @@
 <template>
 <div>
     <div v-if="reportLogsEnabled">
-        <div v-if="showReports" id="report-form-group" class="form-group row">
+        <div v-if="showReports" id="logs-form-group" class="form-group row">
             <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
-                <report-list id="report" 
+                <report-list id="logs" 
                 :reports="reports" 
                 :report.sync="selectedReport" 
                 :key.sync="selectedReportKey"/>
@@ -20,7 +20,7 @@
         <div v-else>
             <div>No reports have been ran yet</div>
             <button @click.prevent="getAllReports"
-                    id="logs-refresh-btn"
+                    id="logs-refresh-btn2"
                     class="btn col-sm-1"
                     :disabled="logsRefreshing"
                     type="submit">

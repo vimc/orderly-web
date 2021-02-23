@@ -21,7 +21,8 @@ describe("runReport", () => {
     const initialData = {
         data() {
             return {
-                reports: reports
+                reports: reports,
+                logsRefreshing: false
             }
         }
     }
@@ -32,14 +33,22 @@ describe("runReport", () => {
         return mount(ReportLog, data);
     }
 
-    it("renders reportLog", async (done) => {
-
+    it("renders reportLog", async () => {
+        // mockAxios.onGet('http://app/running/')
+        //     .reply(200, {"data": reports});
         const wrapper = shallowMount(ReportLog);
 
         await Vue.nextTick()
+        await Vue.nextTick()
+        await Vue.nextTick()
+        
+        // const button = wrapper.find("button")
+        // button.trigger('click')
 
-        expect(wrapper.text()).toBe('true');
-        expect(wrapper.find("#report-form-group").exists()).toBe(true);
+        // await Vue.nextTick()
+
+        // expect(wrapper.text()).toBe('true');
+        expect(wrapper.find("#logs-form-group").exists()).toBe(true);
         // const options = wrapper.findAll("#git-branch-form-group select option");
         // expect(options.length).toBe(2);
         // expect(options.at(0).text()).toBe("master");
@@ -55,7 +64,7 @@ describe("runReport", () => {
         //     expect(commitOptions.at(1).text()).toBe("abc123 (Tue Jun 09, 13:11)");
 
         //     expect(wrapper.vm.$data.selectedCommitId).toBe("abcdef");
-        //     done();
+            // done();
         // })
     });
 });
