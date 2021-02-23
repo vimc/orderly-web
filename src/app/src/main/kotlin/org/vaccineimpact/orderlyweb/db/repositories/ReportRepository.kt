@@ -456,7 +456,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
             }
             else
             {
-                return result.fetchInto(ReportRunLog::class.java)[0]
+                return result.fetchOne(0, ReportRunLog::class.java)
             }
         }
     }
