@@ -154,7 +154,24 @@ class RunReportTests
         }
 
         val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
-        assertThat(sut.getRunningReportsDetails())
-                .isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
+        val result = sut.getRunningReportsDetails()
+        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
+    }
+
+    @Test
+    fun `getRunningReportsDetails throws if orderly server returns an error`()
+    {
+        val mockContext = mock<ActionContext>()
+        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
+            on { get("/running/fakeKey/logs", mockContext) } doThrow OrderlyServerError(
+                    "/running/fakeKey/logs",
+                    400)
+        }
+        val mockOrderlyServer = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn mockOrderlyServerWithError
+        }
+        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        assertThatThrownBy { sut.getRunningReportsDetails() }
+                .isInstanceOf(OrderlyServerError::class.java)
     }
 }

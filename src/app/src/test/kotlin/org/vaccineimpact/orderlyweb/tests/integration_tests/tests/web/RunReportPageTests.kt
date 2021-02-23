@@ -135,7 +135,6 @@ class RunReportPageTests : IntegrationTest()
 
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportsDetails()
-
         assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
     }
 }
