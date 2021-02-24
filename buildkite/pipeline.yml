@@ -1,6 +1,8 @@
 steps:
     - label: ":construction_worker: Make migrate image"
       command: buildkite/make-migrate-image.sh
+      agents:
+        host: reside-bk7
 
     - wait
 
@@ -11,20 +13,32 @@ steps:
         - reports.zip
         - reports/tests/test/index.html
         - reports/detekt/main.html
+      agents:
+        host: reside-bk7
 
     - label: ":mag: Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh
+      agents:
+        host: reside-bk7
 
     - label: ":mag: Test release script"
       command: scripts/release/tests/test-release.sh
+      agents:
+        host: reside-bk7
 
     - wait
 
     - label: ":construction_worker: Make user CLI"
       command: buildkite/build-cli.sh
+      agents:
+        host: reside-bk7
 
     - label: ":mag: Run smoke test"
       command: buildkite/run-smoke-test.sh
+      agents:
+        host: reside-bk7
 
     - label: ":sparkle: Build css generator"
       command: buildkite/build-css-generator.sh
+      agents:
+        host: reside-bk7
