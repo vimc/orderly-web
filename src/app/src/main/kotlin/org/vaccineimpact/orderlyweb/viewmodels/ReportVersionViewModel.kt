@@ -8,27 +8,30 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import kotlin.math.roundToLong
 
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatestElapsed,
-                                      val focalArtefactUrl: String?,
-                                      val isRunner: Boolean,
-                                      val artefacts: List<ArtefactViewModel>,
-                                      val dataLinks: List<InputDataViewModel>,
-                                      val resources: List<DownloadableFileViewModel>,
-                                      val zipFile: DownloadableFileViewModel,
-                                      val versions: List<VersionPickerViewModel>,
-                                      val changelog: List<ChangelogViewModel>,
-                                      val parameterValues: String?,
-                                      val startTimeString: String,
-                                      val elapsedString: String,
-                                      val appViewModel: AppViewModel) :
-        AppViewModel by appViewModel
+data class ReportVersionPageViewModel(
+    @Serialise("reportJson") val report: ReportVersionWithDescLatestElapsed,
+    val focalArtefactUrl: String?,
+    val isRunner: Boolean,
+    val artefacts: List<ArtefactViewModel>,
+    val dataLinks: List<InputDataViewModel>,
+    val resources: List<DownloadableFileViewModel>,
+    val zipFile: DownloadableFileViewModel,
+    val versions: List<VersionPickerViewModel>,
+    val changelog: List<ChangelogViewModel>,
+    val parameterValues: String?,
+    val startTimeString: String,
+    val elapsedString: String,
+    val appViewModel: AppViewModel
+) : AppViewModel by appViewModel
 {
     companion object
     {
-        fun build(report: ReportVersionWithArtefactsDataDescParamsResources,
-                  versions: List<String>,
-                  changelog: List<Changelog>,
-                  context: ActionContext): ReportVersionPageViewModel
+        fun build(
+            report: ReportVersionWithArtefactsDataDescParamsResources,
+            versions: List<String>,
+            changelog: List<Changelog>,
+            context: ActionContext
+        ): ReportVersionPageViewModel
         {
             val fileViewModelBuilder = ReportFileViewModelBuilder(report.name, report.id)
 
@@ -76,6 +79,7 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
             val date = getDateStringFromVersionId(report.id)
             val startTimeString = getFriendlyDateTime(date)
 
+            @Suppress("MagicNumber")
             val elapsedMillis = (report.basicReportVersion.elapsed * 1000).roundToLong()
             val elapsedString = DurationFormatUtils.formatDurationWords(elapsedMillis, true, true)
 
@@ -166,13 +170,17 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
 
 data class VersionPickerViewModel(val url: String, val date: String, val selected: Boolean)
 
-data class ArtefactViewModel(val artefact: Artefact,
-                             val files: List<DownloadableFileViewModel>,
-                             val inlineArtefactFigure: String?)
+data class ArtefactViewModel(
+    val artefact: Artefact,
+    val files: List<DownloadableFileViewModel>,
+    val inlineArtefactFigure: String?
+)
 
-data class InputDataViewModel(val key: String,
-                              val csv: DownloadableFileViewModel,
-                              val rds: DownloadableFileViewModel)
+data class InputDataViewModel(
+    val key: String,
+    val csv: DownloadableFileViewModel,
+    val rds: DownloadableFileViewModel
+)
 
 data class DownloadableFileViewModel(val name: String, val url: String, val size: Long?)
 {
