@@ -105,8 +105,9 @@ class VersionControllerTests : ControllerTest()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(displayName = "displayName", id = "id", date = Instant.now(),
-                name = "name", published = true, description = "description", latestVersion = "v1"),
+        val report = ReportVersionWithArtefactsDataDescParamsResources(
+                ReportVersionWithDescLatestElapsed(displayName = "displayName", id = "id", date = Instant.now(),
+                name = "name", published = true, description = "description", latestVersion = "v1", elapsed = 1.5),
                 artefacts = listOf(),
                 resources = listOf(), dataInfo = listOf(), parameterValues = mapOf())
 

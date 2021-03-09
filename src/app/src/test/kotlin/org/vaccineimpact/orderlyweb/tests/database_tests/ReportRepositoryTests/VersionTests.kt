@@ -90,7 +90,7 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get version details for report with no publish record`()
     {
-        insertReport("test", "version1", addOrderlyWebReportVersion = false)
+        insertReport("test", "version1", elapsed=4.3, addOrderlyWebReportVersion = false)
 
         val sut = createSut(isReviewer = true)
 
@@ -99,12 +99,13 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.name).isEqualTo("test")
         assertThat(result.id).isEqualTo("version1")
         assertThat(result.published).isFalse()
+        assertThat(result.elapsed).isEqualTo(4.3)
     }
 
     @Test
     fun `reviewer can get unpublished version details`()
     {
-        insertReport("test", "version1", published = false)
+        insertReport("test", "version1", published = false, elapsed=4.3)
 
         val sut = createSut(isReviewer = true)
 
@@ -113,6 +114,7 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.name).isEqualTo("test")
         assertThat(result.id).isEqualTo("version1")
         assertThat(result.published).isFalse()
+        assertThat(result.elapsed).isEqualTo(4.3)
     }
 
     @Test
