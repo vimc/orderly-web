@@ -2,7 +2,7 @@ package org.vaccineimpact.orderlyweb.models
 
 import java.time.Instant
 
-data class ReportVersionWithArtefactsDataDescParamsResources(@Transient val basicReportVersion: ReportVersionWithDescLatest,
+data class ReportVersionWithArtefactsDataDescParamsResources(@Transient val basicReportVersion: ReportVersionWithDescLatestElapsed,
                                                              val artefacts: List<Artefact>,
                                                              val resources: List<FileInfo>,
                                                              val dataInfo: List<DataInfo>,

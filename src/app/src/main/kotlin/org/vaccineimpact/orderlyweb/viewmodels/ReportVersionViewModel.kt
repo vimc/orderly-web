@@ -1,13 +1,14 @@
 package org.vaccineimpact.orderlyweb.viewmodels
 
+import org.apache.commons.lang3.time.DurationFormatUtils
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.Serialise
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import java.time.format.DateTimeFormatter
+import kotlin.math.roundToLong
 
-data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatest,
+data class ReportVersionPageViewModel(@Serialise("reportJson") val report: ReportVersionWithDescLatestElapsed,
                                       val focalArtefactUrl: String?,
                                       val isRunner: Boolean,
                                       val artefacts: List<ArtefactViewModel>,
@@ -17,6 +18,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                                       val versions: List<VersionPickerViewModel>,
                                       val changelog: List<ChangelogViewModel>,
                                       val parameterValues: String?,
+                                      val startTimeString: String,
+                                      val elapsedString: String,
                                       val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
@@ -70,6 +73,12 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                 null
             }
 
+            val date = getDateStringFromVersionId(report.id)
+            val startTimeString = getFriendlyDateTime(date)
+
+            val elapsedMillis = (report.basicReportVersion.elapsed * 1000).roundToLong()
+            val elapsedString = DurationFormatUtils.formatDurationWords(elapsedMillis, true, true)
+
             return ReportVersionPageViewModel(
                     report.basicReportVersion.copy(displayName = displayName),
                     focalArtefactUrl,
@@ -81,6 +90,8 @@ data class ReportVersionPageViewModel(@Serialise("reportJson") val report: Repor
                     versions.sortedByDescending { it }.map { buildVersionPickerViewModel(report.name, report.id, it) },
                     changelogViewModel,
                     parameterValues,
+                    startTimeString,
+                    elapsedString,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
         }
 
