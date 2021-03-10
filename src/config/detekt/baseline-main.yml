@@ -18,7 +18,7 @@
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:23</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.TokenStore.kt:5</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:244</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:125</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:126</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator.kt:25</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator.kt:31</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthProfileCreator.kt:34</ID>
@@ -233,10 +233,10 @@
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:238</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:298</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:33</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:208</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:286</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:372</ID>
-    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:58</ID>
+    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:209</ID>
+    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:287</ID>
+    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:373</ID>
+    <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:59</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.db.repositories.RoleRepository.kt:22</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError.kt:6</ID>
     <ID>MaximumLineLength:org.vaccineimpact.orderlyweb.errors.OrderlyWebError.kt:8</ID>
@@ -273,10 +273,10 @@
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:42</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:17</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:19</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:462</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:464</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:468</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:470</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:465</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:467</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:471</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:473</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter.kt:18</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper.kt:75</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient.kt:45</ID>
@@ -385,7 +385,7 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:256</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:311</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository.kt:17</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:287</ID>
+    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:288</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.RoleRepository.kt:106</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.SettingsRespository.kt:31</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.UserRepository.kt:140</ID>
@@ -642,9 +642,9 @@
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository.kt:58</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository.kt:59</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.DocumentRepository.kt:60</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:53</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:54</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:55</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:56</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.RoleRepository.kt:21</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.db.repositories.RoleRepository.kt:22</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.errors.OrderlyWebError.kt:4</ID>

@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
+import org.assertj.core.api.AssertionsForInterfaceTypes
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
@@ -12,6 +13,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate

@@ -1,28 +1,29 @@
 <template>
-    <div class="container">
-        <div id="report-log">
-            <div class="row pt-2">
-                <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
-                    <div class="text-right">
-                        <span>Github branch:</span>
-                        <span class="font-weight-bold">
+    <div>
+        <div class="container">
+            <div id="report-log">
+                <div class="row pt-2">
+                    <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
+                        <div class="text-right">
+                            <span>Github branch:</span>
+                            <span class="font-weight-bold">
                             {{ reportLog.git_branch }}
                         </span>
+                        </div>
                     </div>
-                </div>
-                <div id="report-git-commit" v-if="reportLog.git_commit" class="col-sm-auto">
-                    <div class="text-right">
-                        <span>Github commit:</span>
-                        <span class="font-weight-bold">
+                    <div id="report-git-commit" v-if="reportLog.git_commit" class="col-sm-auto">
+                        <div class="text-right">
+                            <span>Github commit:</span>
+                            <span class="font-weight-bold">
                             {{ reportLog.git_commit }}
                         </span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="row pt-2">
-                <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
-                    <span>Parameters:</span>
-                    <span>
+                <div class="row pt-2">
+                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
+                        <span>Parameters:</span>
+                        <span>
                         <div class="d-md-table-row row" v-for="(n, index) in paramSize">
                             <span class="border border-secondary p-1">{{ reportLog.params[index].name }}:</span>
                             <span class="border border-secondary p-1">
@@ -30,47 +31,51 @@
                             </span>
                         </div>
                     </span>
-                </div>
-                <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
-                    <span>Database(source):</span>
-                    <span>
+                    </div>
+                    <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
+                        <span>Database(source):</span>
+                        <span>
                         <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
                             <li class="p-1 font-weight-bold">{{ reportLog.instances[index].source }}</li>
                         </ul>
                     </span>
-                </div>
-                <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
-                    <span>Database(annexe):</span>
-                    <span>
+                    </div>
+                    <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
+                        <span>Database(annexe):</span>
+                        <span>
                         <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
                             <li class="p-1 font-weight-bold">{{ reportLog.instances[index].annexe }}</li>
                         </ul>
                     </span>
-                </div>
-            </div>
-            <div class="row pt-2">
-                <div id="report-status" v-if="reportLog.status" class="col-sm-auto">
-                    <div class="text-right">
-                        <span>Status:</span>
-                        <span class="font-weight-bold">{{ reportLog.status }}</span>
                     </div>
                 </div>
-                <div id="report-version" v-if="reportLog.report_version" class="col-sm-auto">
-                    <div class="text-right">
-                        <span>Report version:</span>
-                        <span class="font-weight-bold"><a :href="versionUrl">{{ reportLog.report_version }}</a></span>
+                <div class="row pt-2">
+                    <div id="report-status" v-if="reportLog.status" class="col-sm-auto">
+                        <div class="text-right">
+                            <span>Status:</span>
+                            <span class="font-weight-bold">{{ reportLog.status }}</span>
+                        </div>
+                    </div>
+                    <div id="report-version" v-if="reportLog.report_version" class="col-sm-auto">
+                        <div class="text-right">
+                            <span>Report version:</span>
+                            <span class="font-weight-bold"><a :href="versionUrl">{{
+                                    reportLog.report_version
+                                }}</a></span>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div id="report-logs" v-if="reportLog.logs" class="row pt-2">
-                <div class="text-right col-sm-10">
+                <div id="report-logs" v-if="reportLog.logs" class="row pt-2">
+                    <div class="text-right col-sm-10">
                         <textarea class="form-control bg-white"
                                   readonly rows="10">{{ reportLog.logs }}
                         </textarea>
+                    </div>
                 </div>
             </div>
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
-        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        <div v-if="!reportLogSize">There are no logs to display</div>
     </div>
 </template>
 
@@ -94,6 +99,7 @@
         paramSize: number
         instanceSize: number
         versionUrl: string
+        reportLogSize: boolean
     }
 
     interface Props {
@@ -140,6 +146,11 @@
             },
             versionUrl: function () {
                 return `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
+            },
+            reportLogSize: function () {
+                const reportValues = Object.values(this.reportLog)
+                    .filter(value => (value && typeof (value) !== "object"))
+                return reportValues.length > 0
             }
         },
         methods: {
