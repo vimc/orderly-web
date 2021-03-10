@@ -40,6 +40,11 @@ object ReportRouteConfig : RouteConfig
             APIEndpoint("/reports/:name/latest/changelog/", ReportController::class, "getLatestChangelogByName")
                     .json()
                     .transform()
+                    .secure(readReports),
+            APIEndpoint("/report/:name/dependencies/",
+                   ReportController::class, "getDependencies")
+                    .json()
+                    .transform()
                     .secure(readReports)
     )
 }

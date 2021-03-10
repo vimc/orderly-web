@@ -40,7 +40,6 @@ object  WebVersionRouteConfig : RouteConfig
                     .json()
                     .transform()
                     .secure(readReports)
-
     )
 
 }

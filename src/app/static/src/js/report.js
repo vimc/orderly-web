@@ -9,6 +9,7 @@ import globalReaderRolesList from './components/reports/globalReportReaderRolesL
 import scopedReaderRolesList from './components/reports/scopedReportReaderRolesList.vue'
 import editIcon from './components/reports/editIcon.vue'
 import reportTags from './components/reports/reportTags'
+import reportDependencies from './components/reports/reportDependencies'
 
 let data = {report: null};
 
@@ -63,6 +64,13 @@ $(document).ready(() => {
         }
     });
 
+    new Vue({
+        el: '#reportDependenciesVueApp',
+        data: data,
+        components: {
+            reportDependencies: reportDependencies
+        }
+    });
 
     $('[data-toggle="tooltip"]').tooltip();
 
