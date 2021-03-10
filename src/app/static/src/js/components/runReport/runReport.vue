@@ -223,7 +223,6 @@
                     })
             },
             runReport() {
-                //TODO: Include parameters and changelog message when implemented
                 //TODO: Add link to running report log on response, when implemented
 
                 //Orderly server currently only accepts a single instance value, although the metadata endpoint supports
@@ -235,11 +234,21 @@
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
                     const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
-                let params = {}
-                params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {})
+                let params = {};
+                params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
+
+                let changelog = null;
+                if (this.changeLogMessageValue) {
+                    changelog = {
+                        message: this.changeLogMessageValue,
+                        type: this.changeLogTypeValue
+                    }
+                }
+
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
-                    instances: instances,
-                    params: params,
+                    instances,
+                    params,
+                    changelog,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })

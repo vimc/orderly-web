@@ -176,6 +176,15 @@ class ReportPageTests : SeleniumTest()
         confirmTabActive("downloads-tab", true)
         assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
 
+        //Change to Metadata tab
+        val metadataLink = driver.findElement(By.cssSelector("a[href='#metadata-tab']"))
+        metadataLink.click()
+        Thread.sleep(500)
+        confirmTabActive("downloads-tab", false)
+        confirmTabActive("metadata-tab", true)
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#metadata")
+
+
         //And back to Report
         val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
         reportLink.click()

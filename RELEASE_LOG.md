@@ -281,3 +281,32 @@
 
 ## Other branches merged in this release
 
+# v1.6.0
+
+## Tickets
+* mrc-1599: Endpoint to get all reports user can run
+* mrc-1603: Run report page: user can select report to run
+* mrc-1605: Run report page: user can populate parameters
+* mrc-1605-docker: Run report page: user can populate parameters
+* mrc-1606: Run report page: Run report
+* mrc-1607: Run report page: user can set changelog message and type
+* mrc-1608: Run reports: link from home page
+* mrc-2024: Remove final usages of khttp
+* mrc-2057: Metrics endpoint has incorrect content type
+* mrc-2079: Resolve npm package vulnerabilities
+* mrc-2145: Add running report table/columns to orderly web db schema
+* mrc-2152: Run report page: 'git fetch' button
+* mrc-2154: Make readme setup instructions clearer
+* mrc-2155: Ensure compatibility with current version of Node (14/LTS)
+* mrc-2161: Pass changelog message to orderly server endpoint
+* mrc-2163: Replace Unicode 'x' character in report selector with SVG icon
+* mrc-2165: Update orderly web to use new interface
+* mrc-2167: Add parameters to run report request
+* mrc-2187: Improve documentation about linting
+* mrc-2189: Support timeout in run report API endpoint, update docs
+* mrc-2190: Implement basic live-reload for front-end code
+
+## Other branches merged in this release
+* dependabot/npm_and_yarn/src/app/static/axios-0.21.1
+* dependabot/npm_and_yarn/src/app/static/ini-1.3.7
+

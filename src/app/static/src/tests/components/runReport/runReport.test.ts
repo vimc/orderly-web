@@ -512,6 +512,7 @@ describe("runReport", () => {
                             "global": "random_39id"
 
                         },
+                        changelog: null,
                         "gitBranch": "master",
                         "gitCommit": "test-commit"
                     }
@@ -522,6 +523,60 @@ describe("runReport", () => {
                 expect(wrapper.vm.$data.runningKey).toBe("test-key");
                 expect(wrapper.vm.$data.error).toBe("");
                 expect(wrapper.vm.$data.defaultMessage).toBe("");
+                done();
+            });
+        });
+    });
+
+    it("clicking run button sends changelog with request if set", async (done) => {
+        const param_url = "http://app/report/test-report/parameters/?commit=test-commit"
+        mockAxios.onGet(param_url)
+            .reply(200, {"data": []});
+
+        const url = 'http://app/report/test-report/actions/run/';
+        mockAxios.onPost(url)
+            .reply(200, {data: {key: "test-key"}});
+
+        const wrapper = mount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: false,
+                    instances_supported: false,
+                    changelog_types: ["internal", "public"]
+                },
+                initialGitBranches: []
+            },
+            data() {
+                return {
+                    selectedReport: "report",
+                    parameterValues: []
+                }
+            }
+        });
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report"
+            });
+            await Vue.nextTick();
+
+            wrapper.setData({
+                changeLogMessageValue: "test changelog"
+            });
+
+            wrapper.find("#run-form-group button").trigger("click");
+            setTimeout(() => {
+                expect(mockAxios.history.post[0].url).toBe(url);
+                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+                    {
+                        instances: {},
+                        params: {},
+                        changelog: {message: "test changelog", type: "internal"},
+                        gitBranch: "",
+                        gitCommit: ""
+                    }
+                ));
+                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+                expect(wrapper.vm.$data.runningKey).toBe("test-key");
                 done();
             });
         });
