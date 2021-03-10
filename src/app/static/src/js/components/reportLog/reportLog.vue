@@ -65,6 +65,9 @@
         components: {
             ReportList
         },
+        props: [
+            "logsSelected"
+        ],
         data(): Data {
             return {
                 reports: [],
@@ -110,11 +113,13 @@
             //     console.log('emitted received in reportLog')
             //     this.getAllReports()
             // });
+
+                console.log('logsSelected mounted', this.logsSelected)
+        },
+        watch: {
+            logsSelected() {
+                console.log('logsSelected watch', this.logsSelected)
+            }
         }
-        // watch: {
-        //     selectedReportKey() {
-        //         console.log(this.selectedReportKey)
-        //     }
-        // }
     })
 </script>

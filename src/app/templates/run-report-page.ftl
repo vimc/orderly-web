@@ -35,7 +35,7 @@
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                 <h2>Running report logs</h2>
                 <div id="reportLogVueApp">
-                    <report-log></report-log>
+                    <report-log :logs-selected="logsSelected"></report-log>
                 </div>
             </div>
         </div>
@@ -44,6 +44,12 @@
         <script type="text/javascript">
             var runReportMetadata = ${runReportMetadataJson};
             var gitBranches = ${gitBranchesJson};
+            var logsSelected = false
+            function toggleLogs(){
+                logsSelected = !logsSelected;
+                console.log('logs toggled', logsSelected)
+            }
+            document.querySelector("#logs-link").addEventListener("click", toggleLogs);
         </script>
         <script type="text/javascript" src="${appUrl}/js/reportLog.bundle.js"></script>
         <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
