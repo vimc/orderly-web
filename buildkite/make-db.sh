@@ -10,6 +10,7 @@ docker run --rm \
     -u $UID \
     -v $PWD:/orderly \
     -w "/orderly" \
+    --env "HOME=/tmp"
     $ORDERLY_IMAGE \
     "."
 
