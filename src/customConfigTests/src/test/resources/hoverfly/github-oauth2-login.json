@@ -49,10 +49,6 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
-          "Accept-Language" : [ {
-            "matcher" : "exact",
-            "value" : "en-US"
-          } ],
           "Connection" : [ {
             "matcher" : "exact",
             "value" : "keep-alive"
