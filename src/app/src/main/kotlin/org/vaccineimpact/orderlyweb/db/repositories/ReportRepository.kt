@@ -437,15 +437,15 @@ class OrderlyReportRepository(val isReviewer: Boolean,
     {
         JooqContext().use {
             return it.dsl.select(
-                    ORDERLYWEB_REPORT_RUN.EMAIL,
-                    ORDERLYWEB_REPORT_RUN.DATE,
-                    ORDERLYWEB_REPORT_RUN.REPORT,
-                    ORDERLYWEB_REPORT_RUN.INSTANCES,
-                    ORDERLYWEB_REPORT_RUN.PARAMS,
+                    ORDERLYWEB_REPORT_RUN.EMAIL.`as`("email"),
+                    ORDERLYWEB_REPORT_RUN.DATE.`as`("date"),
+                    ORDERLYWEB_REPORT_RUN.REPORT.`as`("report"),
+                    ORDERLYWEB_REPORT_RUN.INSTANCES.`as`("instances"),
+                    ORDERLYWEB_REPORT_RUN.PARAMS.`as`("params"),
                     ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
                     ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
-                    ORDERLYWEB_REPORT_RUN.STATUS,
-                    ORDERLYWEB_REPORT_RUN.LOGS,
+                    ORDERLYWEB_REPORT_RUN.STATUS.`as`("status"),
+                    ORDERLYWEB_REPORT_RUN.LOGS.`as`("logs"),
                     ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))

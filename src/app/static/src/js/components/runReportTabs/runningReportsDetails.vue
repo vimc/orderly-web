@@ -75,7 +75,7 @@
             </div>
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
-        <div v-if="!reportLogSize">There are no logs to display</div>
+        <div id="no-logs" v-if="!reportLogSize">There are no logs to display</div>
     </div>
 </template>
 

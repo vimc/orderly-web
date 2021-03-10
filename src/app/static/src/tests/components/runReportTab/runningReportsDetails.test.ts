@@ -139,6 +139,8 @@ describe(`runningReportsDetails`, () => {
             .reply(200, {"data": initialReportLog});
         setTimeout(() => {
             expect(wrapper.find("#report-logs").exists()).toBe(false)
+            expect(wrapper.find("#no-logs").exists()).toBe(true)
+            expect(wrapper.find("#no-logs").text()).toBe("There are no logs to display")
             done()
         })
     })
