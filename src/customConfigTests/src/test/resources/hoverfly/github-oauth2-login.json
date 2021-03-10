@@ -49,13 +49,17 @@
             "matcher" : "exact",
             "value" : "gzip, deflate, br"
           } ],
+          "Accept-Language" : [ {
+            "matcher" : "exact",
+            "value" : "en-US"
+          } ],
           "Connection" : [ {
             "matcher" : "exact",
             "value" : "keep-alive"
           } ],
           "Referer" : [ {
             "matcher" : "glob",
-            "value" : "http://localhost:8888/weblogin*"
+            "value" : "http://localhost:8888/*"
           } ],
           "Upgrade-Insecure-Requests" : [ {
             "matcher" : "exact",
@@ -69,7 +73,7 @@
       },
       "response" : {
         "status" : 302,
-        "body" : "<html><body>You are being <a href=\"https://github.com/login?client_id=b9e2c4a9c3995ea43cd7&amp;return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Db9e2c4a9c3995ea43cd7%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail\">redirected</a>.</body></html>",
+        "body" : "<html><body>You are being <a href=\"https://github.com/login?client_id=6f32ad91d57a254341cb&amp;return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3D6f32ad91d57a254341cb%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail\">redirected</a>.</body></html>",
         "encodedBody" : false,
         "templated" : false,
         "headers" : {
@@ -79,7 +83,7 @@
           "Date" : [ "Wed, 29 May 2019 15:52:37 GMT" ],
           "Expect-Ct" : [ "max-age=2592000, report-uri=\"https://api.github.com/_private/browser/errors\"" ],
           "Hoverfly" : [ "Was-Here" ],
-          "Location" : [ "https://github.com/login?client_id=b9e2c4a9c3995ea43cd7&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Db9e2c4a9c3995ea43cd7%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail" ],
+          "Location" : [ "https://github.com/login?client_id=6f32ad91d57a254341cb&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3D6f32ad91d57a254341cb%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail" ],
           "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
           "Server" : [ "GitHub.com" ],
           "Set-Cookie" : [ "has_recent_activity=1; path=/; expires=Wed, 29 May 2019 16:52:37 -0000", "ignored_unsupported_browser_notice=false; path=/", "_gh_sess=bGx0cmtZbHI0OGprQi9PbXZBTDhhS3pGb09vZ2dWWitydmFBRnprODBwVzZDbE41TWdSU2psdEIreER5MlE1K2JRUEpyRmU2NlNVYjFNN0RJQ1VOblBBOXBZSVdETlczK3dnNG44YkhKYUx5YzBMTnl0WE1UNGRrK0NpajVNWUVKYmw1dDNHb2pLeStpMW0ydHFrL29PS0d4N2wyeUt1cUVoWHpBYXNMN0M3Uk1nZElFMlVqaDJXWHJtQlAxYkxmc0tpbXdCbHdXcUpFWjBjM081VllqWGpDYURNeVhRNEdBbVpUOWl0S2VtdnROTnNXTEpxRmJFT05Bbmx2OWllNi0tcW5pdjZJWnlMR0Y4QXVYZ2NrbVcrUT09--31f056df0af59a3c7dff51455826cd1beec8dff6; path=/; secure; HttpOnly" ],
@@ -115,11 +119,11 @@
         "query" : {
           "client_id" : [ {
             "matcher" : "exact",
-            "value" : "b9e2c4a9c3995ea43cd7"
+            "value" : "6f32ad91d57a254341cb"
           } ],
           "return_to" : [ {
             "matcher" : "exact",
-            "value" : "/login/oauth/authorize?client_id=b9e2c4a9c3995ea43cd7&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&response_type=code&scope=read:user read:org user:email"
+            "value" : "/login/oauth/authorize?client_id=6f32ad91d57a254341cb&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&response_type=code&scope=read:user read:org user:email"
           } ]
         },
         "body" : [ {
@@ -844,7 +848,7 @@
           } ],
           "dimensions[page]" : [ {
             "matcher" : "exact",
-            "value" : "https://github.com/login?client_id=b9e2c4a9c3995ea43cd7&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3Db9e2c4a9c3995ea43cd726redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail"
+            "value" : "https://github.com/login?client_id=6f32ad91d57a254341cb&return_to=%2Flogin%2Foauth%2Fauthorize%3Fclient_id%3D6f32ad91d57a254341cb%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A8888%252Flogin%253Fclient_name%253DGithubIndirectClient%26response_type%3Dcode%26scope%3Dread%3Auser%20read%3Aorg%20user%3Aemail"
           } ],
           "dimensions[pixel_ratio]" : [ {
             "matcher" : "exact",
@@ -1103,7 +1107,7 @@
       },
       "response" : {
         "status" : 302,
-        "body" : "<html><body>You are being <a href=\"https://github.com/login/oauth/authorize?client_id=b9e2c4a9c3995ea43cd7&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&amp;response_type=code&amp;scope=read%3Auser%20read%3Aorg%20user%3Aemail\">redirected</a>.</body></html>",
+        "body" : "<html><body>You are being <a href=\"https://github.com/login/oauth/authorize?client_id=6f32ad91d57a254341cb&amp;redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&amp;response_type=code&amp;scope=read%3Auser%20read%3Aorg%20user%3Aemail\">redirected</a>.</body></html>",
         "encodedBody" : false,
         "templated" : false,
         "headers" : {
@@ -1113,7 +1117,7 @@
           "Date" : [ "Wed, 29 May 2019 15:52:39 GMT" ],
           "Expect-Ct" : [ "max-age=2592000, report-uri=\"https://api.github.com/_private/browser/errors\"" ],
           "Hoverfly" : [ "Was-Here" ],
-          "Location" : [ "https://github.com/login/oauth/authorize?client_id=b9e2c4a9c3995ea43cd7&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&response_type=code&scope=read%3Auser%20read%3Aorg%20user%3Aemail" ],
+          "Location" : [ "https://github.com/login/oauth/authorize?client_id=6f32ad91d57a254341cb&redirect_uri=http%3A%2F%2Flocalhost%3A8888%2Flogin%3Fclient_name%3DGithubIndirectClient&response_type=code&scope=read%3Auser%20read%3Aorg%20user%3Aemail" ],
           "Referrer-Policy" : [ "origin-when-cross-origin, strict-origin-when-cross-origin" ],
           "Server" : [ "GitHub.com" ],
           "Set-Cookie" : [ "has_recent_activity=1; path=/; expires=Wed, 29 May 2019 16:52:39 -0000", "user_session=uLOGkpK2P3L8N_SPYYjaUjcaf8qR2UlTUjvKcGQCc6AqMnYl; path=/; expires=Wed, 12 Jun 2019 15:52:39 -0000; secure; HttpOnly", "__Host-user_session_same_site=uLOGkpK2P3L8N_SPYYjaUjcaf8qR2UlTUjvKcGQCc6AqMnYl; path=/; expires=Wed, 12 Jun 2019 15:52:39 -0000; secure; HttpOnly; SameSite=Strict", "logged_in=yes; domain=.github.com; path=/; expires=Sun, 29 May 2039 16:52:39 -0000; secure; HttpOnly", "dotcom_user=notarealuse; domain=.github.com; path=/; expires=Sun, 29 May 2039 16:52:39 -0000; secure; HttpOnly", "_gh_sess=N3JGang4V2lNclhpaEpvQ0JPQXgwaHJ0Ui9BaEFabnZLVmRSbWhmbVA0TkIyYy9zTElhSk80UHFNMXM3emUxK093Q3E1K29lbkxiUWpxclR3SFlNS1c4TFhtUEFWR3YrcThTem9JMXNnc3BEbkVBZmZvZ1dvRUsxUlRKVnpFc1pQVjEyWkpnZnI4UytzRXM4MzkzZ2FEREh0TzlnTjZ1bUxtK0FPM1hSMTFseXRkaHZGaFVldkxocWFWOUhTNlN6N3ZDS0VMeHgwU255WG80NzJaOTIxVmVTM3VnaXhIbG03YTN5OXA4VTNXdWpBMzNVcWhWaDNicFVvQjQ1RXBtWVU1YW9aSDNuNDk2UDVvVnFNcEo0cWJ3SWFnYnpOYXVRMGRqSjcrUkNCYmF5dUVzMkx6dFAzbXFHZ2hnU0E0ZWROZTYvdzdISlJQcVlTZHpOWXMxZmZYbXIvbys0dXd6Q0pTdnJyWWRFZ2JrPS0tL25CdURoMlVqZkxaTDNLalFMeFF5Zz09--61da5f0942d99841d2eba03ecaba6e0b1eecbcea; path=/; secure; HttpOnly" ],
@@ -1149,7 +1153,7 @@
         "query" : {
           "client_id" : [ {
             "matcher" : "exact",
-            "value" : "b9e2c4a9c3995ea43cd7"
+            "value" : "6f32ad91d57a254341cb"
           } ],
           "redirect_uri" : [ {
             "matcher" : "exact",
@@ -1455,7 +1459,7 @@
           "X-Frame-Options" : [ "deny" ],
           "X-Github-Media-Type" : [ "github.beta; format=json" ],
           "X-Github-Request-Id" : [ "C1CE:7278:5707:AC15:5CEEAAC7" ],
-          "X-Oauth-Client-Id" : [ "b9e2c4a9c3995ea43cd7" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
           "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
           "X-Ratelimit-Limit" : [ "5000" ],
           "X-Ratelimit-Remaining" : [ "4995" ],
@@ -1539,7 +1543,7 @@
           "X-Frame-Options" : [ "deny" ],
           "X-Github-Media-Type" : [ "github.beta; format=json" ],
           "X-Github-Request-Id" : [ "C1CE:7278:572D:AD7C:5CEEAAC9" ],
-          "X-Oauth-Client-Id" : [ "b9e2c4a9c3995ea43cd7" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
           "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
           "X-Ratelimit-Limit" : [ "5000" ],
           "X-Ratelimit-Remaining" : [ "4994" ],
@@ -1615,7 +1619,7 @@
           "X-Frame-Options" : [ "deny" ],
           "X-Github-Media-Type" : [ "unknown, github.v3" ],
           "X-Github-Request-Id" : [ "C1CE:7278:5744:ADAB:5CEEAAC9" ],
-          "X-Oauth-Client-Id" : [ "b9e2c4a9c3995ea43cd7" ],
+          "X-Oauth-Client-Id" : [ "6f32ad91d57a254341cb" ],
           "X-Oauth-Scopes" : [ "read:user, read:org, user:email" ],
           "X-Ratelimit-Limit" : [ "5000" ],
           "X-Ratelimit-Remaining" : [ "4993" ],
