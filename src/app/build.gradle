@@ -86,17 +86,20 @@ distDocker {
 // creates folder at app/demo with up to date orderly test data
 task generateTestData() {
     doLast {
-        String image = "vimc/orderly:master"
+        String image = "vimc/orderly:create_demo_script_git"
         def username = System.properties['user.name']
         def uid = ["id", "-u", username].execute().text.trim()
+        //def gid = ["id", "-g", username].execute().text.trim()
+        //def user_str = "{}:{}".format(uid, gid)
 
         println("Pulling " + image)
+        println("USER STRING: " + uid)
 
         exec {
             commandLine 'docker', 'pull', image
         }
         exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '--user', uid, '--env', 'HOME=/tmp', '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
         
         String owMigrateImage = "vimc/orderlyweb-migrate:master"
