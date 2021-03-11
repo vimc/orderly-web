@@ -131,9 +131,10 @@ class RunReportTests
     @Test
     fun `can getRunningReportsDetails`()
     {
+        val instant = Instant.now()
         val fakeReportRunLog = ReportRunLog(
                 "test@example.com",
-                Instant.now(),
+                instant,
                 "q123",
                 "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}",
                 "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
@@ -153,7 +154,9 @@ class RunReportTests
 
         val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
         val result = sut.getRunningReportsDetails()
+        Assertions.assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
         Assertions.assertThat(result.email).isEqualTo("test@example.com")
+        Assertions.assertThat(result.date).isEqualTo(instant)
         Assertions.assertThat(result.report).isEqualTo("q123")
         Assertions.assertThat(result.instances).isEqualTo("{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}")
         Assertions.assertThat(result.params).isEqualTo("{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}")

@@ -110,9 +110,10 @@ class RunReportPageTests : IntegrationTest()
     @Test
     fun `can get running reports details`()
     {
+        val instant = Instant.now()
         val fakeReportRunLog = ReportRunLog(
                 "test@example.com",
-                Instant.now(),
+                instant,
                 "q123",
                 "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}",
                 "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
@@ -137,7 +138,9 @@ class RunReportPageTests : IntegrationTest()
 
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportsDetails()
+        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
         assertThat(result.email).isEqualTo("test@example.com")
+        assertThat(result.date).isEqualTo(instant)
         assertThat(result.report).isEqualTo("q123")
         assertThat(result.instances).isEqualTo("{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}")
         assertThat(result.params).isEqualTo("{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}")
