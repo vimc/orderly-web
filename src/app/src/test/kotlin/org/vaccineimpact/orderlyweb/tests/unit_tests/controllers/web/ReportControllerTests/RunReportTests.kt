@@ -154,7 +154,6 @@ class RunReportTests
 
         val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
         val result = sut.getRunningReportsDetails()
-        Assertions.assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
         Assertions.assertThat(result.email).isEqualTo("test@example.com")
         Assertions.assertThat(result.date).isEqualTo(instant)
         Assertions.assertThat(result.report).isEqualTo("q123")
