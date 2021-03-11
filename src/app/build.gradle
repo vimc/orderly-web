@@ -35,6 +35,7 @@ dependencies {
     compile "com.github.salomonbrys.kotson:kotson:2.5.0"
     compile "com.opencsv:opencsv:3.9"
 
+    compile "org.apache.commons:commons-lang3:3.12.0"
     compile "org.postgresql:postgresql:9.4.1212.jre7"
     compile "org.jooq:jooq:3.9.1"
     compile "org.jooq:jooq-meta:3.9.1"
@@ -95,7 +96,7 @@ task generateTestData() {
             commandLine 'docker', 'pull', image
         }
         exec {
-            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '-u', uid, '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
+            commandLine 'docker', 'run', '--rm', '--entrypoint', 'create_orderly_demo.sh', '--user', uid, '--env', 'HOME=/tmp', '-v', "$projectDir:/orderly", '-w', "/orderly", image, "."
         }
         
         String owMigrateImage = "vimc/orderlyweb-migrate:master"
