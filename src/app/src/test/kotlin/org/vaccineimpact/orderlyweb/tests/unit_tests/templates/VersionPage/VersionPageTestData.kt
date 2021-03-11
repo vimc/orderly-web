@@ -1,21 +1,19 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.templates.VersionPage
 
-import org.vaccineimpact.orderlyweb.models.Artefact
-import org.vaccineimpact.orderlyweb.models.ArtefactFormat
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
-import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.*
 import java.sql.Timestamp
 
 object VersionPageTestData
 {
-    val testBasicReportVersion = ReportVersionWithDescLatest(name = "r1",
+    val testBasicReportVersion = ReportVersionWithDescLatestElapsed(name = "r1",
             displayName = "r1 display",
             id = "r1-v1",
             published = true,
             date = Timestamp(System.currentTimeMillis()).toInstant(),
             latestVersion = "v1",
-            description = "r1 description")
+            description = "r1 description",
+            elapsed = 1.5)
 
     val testReport = ReportVersionWithArtefactsDataDescParamsResources(testBasicReportVersion,
             artefacts = listOf(),
@@ -72,5 +70,7 @@ object VersionPageTestData
                 listOf(),
                 listOf(),
                 "p1=v1, p2=v2",
+                "Mon 12 Jun 2020 14:23",
+                "3 hours 2 minutes",
                 testDefaultModel)
 }
