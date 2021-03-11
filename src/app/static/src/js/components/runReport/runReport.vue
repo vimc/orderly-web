@@ -1,8 +1,8 @@
 <template>
     <div>
+        <h2>Run a report</h2>
         <form class="mt-3">
             <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
-                <h2>Test header 3</h2>
                 <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
                     <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
