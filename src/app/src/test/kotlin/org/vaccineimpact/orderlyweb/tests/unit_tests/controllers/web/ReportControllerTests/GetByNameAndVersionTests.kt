@@ -17,13 +17,15 @@ import java.time.Instant
 class GetByNameAndVersionTests
 {
     private val versionId = "20170103-143015-1234abcd"
-    private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest("r1",
-            "a fake report",
-            versionId,
-            true,
-            Instant.now(),
-            "latest v",
-            "a fake report"),
+    private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(
+            ReportVersionWithDescLatestElapsed("r1",
+                "a fake report",
+                versionId,
+                true,
+                Instant.now(),
+                "latest v",
+                "a fake report",
+                3754.3),
             listOf(),
             listOf(),
             listOf(),
@@ -73,6 +75,16 @@ class GetByNameAndVersionTests
         val result = sut.getByNameAndVersion()
 
         assertThat(result.report.displayName).isEqualTo("r1")
+    }
+
+    @Test
+    fun `builds start time and elapsed time strings`()
+    {
+        val sut = ReportController(mockActionContext, mockOrderly, mock(), mockReportRepo, mock())
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.startTimeString).isEqualTo("Tue Jan 03 2017, 14:30")
+        assertThat(result.elapsedString).isEqualTo("1 hour 2 minutes 34 seconds")
     }
 
     @Test
