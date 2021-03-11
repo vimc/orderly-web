@@ -138,7 +138,6 @@ class RunReportPageTests : IntegrationTest()
 
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportsDetails()
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
         assertThat(result.email).isEqualTo("test@example.com")
         assertThat(result.date).isEqualTo(instant)
         assertThat(result.report).isEqualTo("q123")
