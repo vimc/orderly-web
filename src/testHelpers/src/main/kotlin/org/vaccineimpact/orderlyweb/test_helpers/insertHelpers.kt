@@ -122,9 +122,10 @@ fun insertReport(name: String,
                  author: String = "author authorson",
                  requester: String = "requester mcfunder",
                  display: String? = null,
-                 addOrderlyWebReportVersion: Boolean = true)
+                 addOrderlyWebReportVersion: Boolean = true,
+                 elapsed: Double = 0.0)
 {
-    insertReportAndVersion(name, version, published, date, display, addOrderlyWebReportVersion)
+    insertReportAndVersion(name, version, published, date, display, elapsed, addOrderlyWebReportVersion)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -251,6 +252,7 @@ private fun insertReportAndVersion(name: String,
                                    published: Boolean,
                                    date: Timestamp,
                                    display: String? = null,
+                                   elapsed: Double = 0.0,
                                    addOrderlyWebReportVersion: Boolean = true)
 {
     JooqContext().use {
@@ -282,7 +284,7 @@ private fun insertReportAndVersion(name: String,
                     this.author = ""
                     this.published = false
                     this.connection = false
-                    this.elapsed = 100.0
+                    this.elapsed = elapsed
                 }
         reportVersionRecord.store()
 
