@@ -1,8 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServer
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
@@ -20,16 +18,14 @@ class ReportController(
     context: ActionContext,
     private val orderly: OrderlyClient,
     private val reportRepository: ReportRepository,
-    config: Config,
-    private val orderlyServerAPI: OrderlyServerAPI
+    config: Config
 ) : Controller(context, config)
 {
     constructor(context: ActionContext) :
             this(context,
                     Orderly(context),
                     OrderlyReportRepository(context),
-                    AppConfig(),
-                    OrderlyServer(AppConfig()))
+                    AppConfig())
 
     fun publish(): Boolean
     {
@@ -68,12 +64,5 @@ class ReportController(
     {
         val name = context.params(":name")
         return orderly.getLatestChangelogByName(name)
-    }
-
-    fun getDependencies(): String
-    {
-        val name = context.params(":name")
-        val response = orderlyServerAPI.get("/v1/reports/$name/dependencies/", context)
-        return passThroughResponse(response)
     }
 }

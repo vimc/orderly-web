@@ -67,6 +67,11 @@ object WebReportRouteConfig : RouteConfig
                     ReportController::class, "publishReports")
                     .post()
                     .json()
-                    .secure(reviewReports)
+                    .secure(reviewReports),
+            WebEndpoint("/report/:name/dependencies/",
+                    ReportController::class, "getDependencies")
+                    .json()
+                    .transform()
+                    .secure(readReports)
     )
 }

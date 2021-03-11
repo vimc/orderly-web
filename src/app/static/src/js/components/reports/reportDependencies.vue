@@ -18,7 +18,7 @@
         },
         mounted() {
             const params = {id: this.report.id, direction: "upstream"};
-            api.get(`/api/v1/report/${this.report.name}/dependencies/`, {params})
+            api.get(`/report/${this.report.name}/dependencies/`, {params})
                 .then(({data}) => {
                     this.dependencies = data
                 })
