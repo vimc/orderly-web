@@ -2,6 +2,7 @@
     <div>
         <form class="mt-3">
             <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
+                <h2>Test header 3</h2>
                 <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
                 <div class="col-sm-6">
                     <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
@@ -280,6 +281,7 @@
             }
         },
         mounted() {
+            console.log('run report mounted', this.metadata, this.initialGitBranches)
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
