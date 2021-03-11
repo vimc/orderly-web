@@ -137,6 +137,14 @@ class RunReportPageTests : IntegrationTest()
 
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportsDetails()
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
+        assertThat(result.email).isEqualTo("test@example.com")
+        assertThat(result.report).isEqualTo("q123")
+        assertThat(result.instances).isEqualTo("{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}")
+        assertThat(result.params).isEqualTo("{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}")
+        assertThat(result.gitBranch).isEqualTo("branch")
+        assertThat(result.gitCommit).isEqualTo("commit")
+        assertThat(result.status).isEqualTo("complete")
+        assertThat(result.logs).isEqualTo("logs")
+        assertThat(result.reportVersion).isEqualTo("1233")
     }
 }
