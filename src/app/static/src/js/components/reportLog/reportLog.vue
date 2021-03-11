@@ -41,6 +41,10 @@
     import ErrorInfo from "../errorInfo.vue";
     // import {switches} from "./../../featureSwitches";
 
+    // interface Props {
+    //     logsSelected: boolean
+    // }
+
     interface Computed {
         refreshLogsText: string
         showReports: boolean
