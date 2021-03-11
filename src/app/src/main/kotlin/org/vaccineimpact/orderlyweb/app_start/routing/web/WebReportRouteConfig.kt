@@ -71,7 +71,6 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/dependencies/",
                     ReportController::class, "getDependencies")
                     .json()
-                    .transform()
                     .secure(readReports)
     )
 }
