@@ -273,14 +273,10 @@
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:42</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:17</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:19</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:465</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:467</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:471</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:473</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:442</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:444</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:448</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:450</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:466</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:468</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:472</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:474</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter.kt:18</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper.kt:75</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient.kt:45</ID>
