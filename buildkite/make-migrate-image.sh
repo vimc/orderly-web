@@ -6,6 +6,11 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
+function cleanup() {
+  $here/remove-db.sh
+}
+trap cleanup EXIT
+
 NAME=orderlyweb-migrate
 COMMIT_TAG=$ORG/$NAME:$GIT_ID
 BRANCH_TAG=$ORG/$NAME:$GIT_BRANCH

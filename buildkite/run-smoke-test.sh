@@ -4,6 +4,11 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
+function cleanup() {
+  $here/remove-db.sh
+}
+trap cleanup EXIT
+
 # create the db
 $here/make-db.sh
 

@@ -3,6 +3,11 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
+function cleanup() {
+  $here/remove-db.sh
+}
+trap cleanup EXIT
+
 # Make the build environment image that is shared between multiple build targets
 $here/make-build-env.sh
 

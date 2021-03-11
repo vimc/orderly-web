@@ -4,6 +4,11 @@ set -ex
 here=$(dirname $0)
 . $here/common
 
+function cleanup() {
+  $here/remove-db.sh
+}
+trap cleanup EXIT
+
 # This is the path for teamcity agents. If running locally, pass in your own docker config location
 # i.e. /home/{user}/.docker/config.json
 #docker_auth_path=${1:-/opt/teamcity-agent/.docker/config.json}

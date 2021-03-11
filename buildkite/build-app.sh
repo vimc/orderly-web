@@ -7,6 +7,14 @@ here=$(dirname $0)
 # Set up environment
 . $here/common
 
+function cleanup() {
+  zip -qr reports.zip reports
+  bash <(curl -s https://codecov.io/bash) -s coverage/
+  sudo chown -R $UID reports coverage
+  $here/remove-db.sh
+}
+trap cleanup EXIT
+
 # Make the build environment image that is shared between build targets
 $here/make-build-env.sh
 
@@ -27,12 +35,6 @@ export ORDERLY_SERVER_USER_ID=$UID
 $here/../scripts/run-dependencies.sh
 
 # Compile, test and package the app
-function cleanup() {
-  zip -qr reports.zip reports
-  bash <(curl -s https://codecov.io/bash) -s coverage/
-  sudo chown -R $UID reports coverage
-}
-trap cleanup EXIT
 docker run --rm \
     -v $PWD/demo:/api/src/app/demo \
     -v $PWD/git:/api/src/app/git \
