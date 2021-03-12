@@ -41,8 +41,8 @@
             const params = {id: this.report.id, direction: "upstream"};
             api.get(`/report/${this.report.name}/dependencies/`, {params})
                 .then(({data}) => {
-                    //this.dependencies = data.data as ReportDependencies
-                    this.dependencies = {
+                    this.dependencies = data.data as ReportDependencies
+                    /*this.dependencies = {
                         direction: "upstream",
                         dependency_tree: {
                             name: "this report",
@@ -60,7 +60,7 @@
                                 ]}
                             ]
                         }
-                    };//end fake data
+                    };//end fake data */
                 });
         },
         components: {
