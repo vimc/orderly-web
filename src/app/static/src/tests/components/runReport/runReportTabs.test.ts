@@ -51,7 +51,7 @@ describe("runReportTabs", () => {
         await Vue.nextTick();
 
         expect(wrapper.find("#run-tab").exists()).toBe(false);
-        const logsPane = wrapper.find("#log-tab")
+        const logsPane = wrapper.find("#logs-tab")
         expect(logsPane.classes()).toEqual(["tab-pane", "active", "pt-4", "pt-md-1"]);
         expect(logsPane.find("h2").text()).toBe("Report logs");
         expect(logsPane.find("p").text()).toBe("Report logs coming soon!");

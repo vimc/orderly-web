@@ -27,7 +27,7 @@
                         <run-report :metadata="metadata" :initial-git-branches="initialGitBranches"></run-report>
                     </div>
                 </div>
-                <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="log-tab">
+                <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                     <div>
                         <h2>Report logs</h2>
                         <p>Report logs coming soon!</p>
