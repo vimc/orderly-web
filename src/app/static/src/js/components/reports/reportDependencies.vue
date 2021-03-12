@@ -1,8 +1,11 @@
 <template>
     <div v-if="childDependencies.length">
-        <h4>Dependencies</h4>
-        <div class="col-12">
-            <report-dependency-list :dependency-list="childDependencies"></report-dependency-list>
+        <hr/>
+        <div class="row">
+            <h4>Dependencies</h4>
+            <div class="col-12">
+                <report-dependency-list :dependency-list="childDependencies"></report-dependency-list>
+            </div>
         </div>
     </div>
 </template>

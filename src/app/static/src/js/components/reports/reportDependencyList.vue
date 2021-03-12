@@ -1,8 +1,17 @@
 <template>
-    <ul v-if="dependencyList.length">
-        <li v-for="dependency in dependencyList">
-            <div>{{dependency.name}} (<a :href="dependencyLink(dependency)">{{dependency.id}}</a>)</div>
-            <report-dependency-list :dependency-list="dependency.dependencies"></report-dependency-list>
+    <ul class="report-dependency-list" v-if="dependencyList.length">
+        <li v-for="dependency in dependencyList"
+            v-bind:class="[{'has-children': hasChildren(dependency)}, {'open':expanded[dependency.id]}]">
+            <div class="expander"
+                 v-if="hasChildren(dependency)"
+                 v-on:click="toggle(dependency.id)"></div>
+            <span class="report-dependency-item"
+                  v-on:click="toggle(dependency.id)">
+                {{dependency.name}} (<a :href="dependencyLink(dependency)">{{dependency.id}}</a>)
+            </span>
+            <report-dependency-list
+                    v-show="expanded[dependency.id]"
+                    :dependency-list="dependency.dependencies"></report-dependency-list>
         </li>
     </ul>
 </template>
@@ -15,8 +24,14 @@
         dependencyList: ReportDependency[]
     }
 
+    interface Data {
+        expanded: Record<string, boolean>
+    }
+
     interface Methods {
-        dependencyLink: (dep: ReportDependency) => string
+        dependencyLink: (dep: ReportDependency) => string,
+        hasChildren: (dep: ReportDependency) => boolean,
+        toggle: (id: string) => void
     }
 
     export default Vue.extend<{}, Methods, {}, Props>({
@@ -24,9 +39,20 @@
         props: {
             dependencyList: []
         },
+        data() {
+            return {
+                expanded: {}
+            }
+        },
         methods: {
             dependencyLink: function (dep: ReportDependency) {
                 return `/report/${dep.name}/${dep.id}`
+            },
+            hasChildren: function(dep: ReportDependency) {
+                return dep.dependencies.length > 0;
+            },
+            toggle(id: string) {
+                Vue.set(this.expanded, id, !this.expanded[id]);
             }
         }
     })

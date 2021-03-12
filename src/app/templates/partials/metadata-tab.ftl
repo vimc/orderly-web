@@ -18,7 +18,7 @@
             ${elapsedString}
         </div>
     </div>
-    <div id="reportDependenciesVueApp" class="row">
+    <div id="reportDependenciesVueApp">
         <report-dependencies :report=report></report-dependencies>
     </div>
 </div>
