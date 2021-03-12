@@ -281,7 +281,6 @@
             }
         },
         mounted() {
-            console.log('run report mounted', this.metadata, this.initialGitBranches)
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
