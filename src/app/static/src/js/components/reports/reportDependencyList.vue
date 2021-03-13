@@ -1,5 +1,5 @@
 <template>
-    <ul class="report-dependency-list" v-if="dependencyList.length">
+    <ul class="report-dependency-list">
         <li v-for="dependency in dependencyList"
             v-bind:class="[{'has-children': hasChildren(dependency)}, {'open':expanded[dependency.id]}]">
             <div class="expander"
@@ -9,7 +9,7 @@
                   v-on:click="toggle(dependency.id)">
                 {{dependency.name}} (<a :href="dependencyLink(dependency)">{{dependency.id}}</a>)
             </span>
-            <report-dependency-list
+            <report-dependency-list v-if="hasChildren(dependency)"
                     v-show="expanded[dependency.id]"
                     :dependency-list="dependency.dependencies"></report-dependency-list>
         </li>
@@ -37,7 +37,7 @@
     export default Vue.extend<{}, Methods, {}, Props>({
         name: "report-dependency-list",
         props: {
-            dependencyList: []
+            dependencyList: Array
         },
         data() {
             return {
