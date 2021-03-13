@@ -49,26 +49,7 @@
             const params = {id: this.report.id, direction: "upstream"};
             api.get(`/report/${this.report.name}/dependencies/`, {params})
                 .then(({data}) => {
-                    this.dependencies = data.data as ReportDependencies
-                    /*this.dependencies = {
-                        direction: "upstream",
-                        dependency_tree: {
-                            name: "this report",
-                            id: "1",
-                            dependencies: [
-                                {name: "a report with no deps", id: "2", dependencies: []},
-                                {name: "a report with two deps", id: "3",
-                                 dependencies: [
-                                     {name: "a report with one dep", id: "4",
-                                       dependencies: [
-                                           {name: "most nested dep", id: "5", dependencies: []}
-                                       ]
-                                     },
-                                     {name: "another report with no depz", id: "6", dependencies: []}
-                                ]}
-                            ]
-                        }
-                    };//end fake data */
+                    this.dependencies = data.data as ReportDependencies;
                 })
                 .catch((error) => {
                     this.defaultMessage = `Could not load report dependencies`;

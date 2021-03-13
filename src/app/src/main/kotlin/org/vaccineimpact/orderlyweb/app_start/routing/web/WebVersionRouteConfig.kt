@@ -41,5 +41,4 @@ object  WebVersionRouteConfig : RouteConfig
                     .transform()
                     .secure(readReports)
     )
-
 }
