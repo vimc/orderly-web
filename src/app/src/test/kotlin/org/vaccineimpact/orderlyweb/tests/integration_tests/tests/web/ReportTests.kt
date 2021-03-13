@@ -110,17 +110,17 @@ class ReportTests : IntegrationTest()
     }
 
     @Test
-    fun `only report runners can get report dependencies`()
+    fun `only report readers can get report dependencies`()
     {
         val url = "/report/minimal/dependencies/"
         assertWebUrlSecured(url,
-                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                setOf(ReifiedPermission("reports.read", Scope.Global())),
                 method = HttpMethod.get,
                 contentType = ContentTypes.json)
     }
 
     @Test
-    fun `report reviewers can get dependencies`()
+    fun `report readers can get dependencies`()
     {
         val version = JooqContext().use {
             it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
@@ -133,7 +133,7 @@ class ReportTests : IntegrationTest()
 
         val url = "/report/$reportName/dependencies/?id=$versionId&direction=upstream"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                setOf(ReifiedPermission("reports.read", Scope.Global())),
                 method = HttpMethod.get,
                 contentType = ContentTypes.json)
 
