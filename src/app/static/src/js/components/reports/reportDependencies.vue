@@ -8,7 +8,7 @@
                     <report-dependency-list :dependency-list="childDependencies"></report-dependency-list>
                 </div>
             </div>
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+            <error-info v-if="error" :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
     </div>
 </template>
