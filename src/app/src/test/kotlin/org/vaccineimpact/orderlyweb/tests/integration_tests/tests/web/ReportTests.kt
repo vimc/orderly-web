@@ -4,6 +4,8 @@ import com.github.fge.jsonschema.main.JsonValidator
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -105,5 +107,42 @@ class ReportTests : IntegrationTest()
 
         assertThat(repo.getReportVersion("report", "v1").published).isTrue()
         assertThat(repo.getReportVersion("report", "v2").published).isTrue()
+    }
+
+    @Test
+    fun `only report runners can get report dependencies`()
+    {
+        val url = "/report/minimal/dependencies/"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `report reviewers can get dependencies`()
+    {
+        val version = JooqContext().use {
+            it.dsl.select(Tables.REPORT_VERSION.ID, Tables.REPORT_VERSION.REPORT)
+                    .from(Tables.REPORT_VERSION)
+                    .fetchAny()
+        }
+
+        val versionId = version[Tables.REPORT_VERSION.ID]
+        val reportName = version[Tables.REPORT_VERSION.REPORT]
+
+        val url = "/report/$reportName/dependencies/?id=$versionId&direction=upstream"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+
+        assertSuccessfulWithResponseText(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstSchema(response.text, "Dependencies")
+        val responseData = JSONValidator.getData(response.text)
+        assertThat(responseData["direction"]).isEqualTo("upstream")
+        assertThat(responseData["dependency_tree"]["name"]).isEqualTo(reportName)
+        assertThat(responseData["dependency_tree"]["id"]).isEqualTo(versionId)
     }
 }

@@ -1,3 +1,11 @@
+export interface Error {
+    response?: {
+        data?: {
+            errors?: any[]
+        }
+    }
+}
+
 export interface ReportDependency {
     id: string,
     name: string,

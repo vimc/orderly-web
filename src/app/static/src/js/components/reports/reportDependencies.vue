@@ -1,23 +1,29 @@
 <template>
-    <div v-if="childDependencies.length">
+    <div v-if="childDependencies.length || error">
         <hr/>
         <div class="row">
-            <h4>Dependencies</h4>
-            <div class="col-12">
-                <report-dependency-list :dependency-list="childDependencies"></report-dependency-list>
+            <div v-if="childDependencies.length">
+                <h4>Dependencies</h4>
+                <div class="col-12">
+                    <report-dependency-list :dependency-list="childDependencies"></report-dependency-list>
+                </div>
             </div>
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {ReportDependencies, ReportDependency} from "../../types";
+    import {ReportDependencies, ReportDependency, Error} from "../../types";
     import Vue from "vue";
     import ReportDependencyList from "./reportDependencyList.vue";
+    import ErrorInfo from "../errorInfo.vue";
 
     interface Data {
-        dependencies: ReportDependencies | null
+        dependencies: ReportDependencies | null,
+        error: Error | null,
+        defaultMessage: string | null
     }
 
     interface Computed {
@@ -29,7 +35,9 @@
         props: ['report'],
         data: () => {
             return {
-                dependencies: null
+                dependencies: null,
+                error: null,
+                defaultMessage: null
             }
         },
         computed: {
@@ -61,10 +69,15 @@
                             ]
                         }
                     };//end fake data */
+                })
+                .catch((error) => {
+                    this.defaultMessage = `Could not load report dependencies`;
+                    this.error = error;
                 });
         },
         components: {
-            ReportDependencyList
+            ReportDependencyList,
+            ErrorInfo
         }
     })
 </script>
