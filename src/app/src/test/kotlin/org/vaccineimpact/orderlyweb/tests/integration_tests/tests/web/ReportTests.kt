@@ -137,7 +137,7 @@ class ReportTests : IntegrationTest()
                 method = HttpMethod.get,
                 contentType = ContentTypes.json)
 
-        assertSuccessfulWithResponseText(response)
+        assertSuccessful(response)
         assertJsonContentType(response)
         JSONValidator.validateAgainstSchema(response.text, "Dependencies")
         val responseData = JSONValidator.getData(response.text)
