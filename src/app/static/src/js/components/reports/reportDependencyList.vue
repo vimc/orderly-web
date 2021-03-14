@@ -19,6 +19,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {ReportDependency} from "../../types";
+    import {buildFullUrl} from "../../utils/api";
 
     interface Props {
         dependencyList: ReportDependency[]
@@ -46,7 +47,7 @@
         },
         methods: {
             dependencyLink: function (dep: ReportDependency) {
-                return `/report/${dep.name}/${dep.id}`
+                return buildFullUrl(`/report/${dep.name}/${dep.id}`);
             },
             hasChildren: function(dep: ReportDependency) {
                 return dep.dependencies.length > 0;

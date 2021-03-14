@@ -41,13 +41,15 @@ describe("reportDependencyList", () => {
         expect(li1.classes()).toStrictEqual([]);
         expect(li1.find("div.expander").exists()).toBe(false);
         expect(li1.find("span.report-dependency-item").text()).toBe("report-name-1 (report-id-1)");
-        expect(li1.find("span.report-dependency-item a").attributes("href")).toBe("/report/report-name-1/report-id-1");
+        expect(li1.find("span.report-dependency-item a").attributes("href"))
+            .toBe("http://app/report/report-name-1/report-id-1");
         expect(li1.find("report-dependency-list-stub").exists()).toBe(false);
         const li2 = listItems.at(1);
         expect(li2.classes()).toStrictEqual(["has-children"]);
         expect(li2.find("div.expander").exists()).toBe(true);
         expect(li2.find("span.report-dependency-item").text()).toBe("report-name-2 (report-id-2)");
-        expect(li2.find("span.report-dependency-item a").attributes("href")).toBe("/report/report-name-2/report-id-2");
+        expect(li2.find("span.report-dependency-item a").attributes("href"))
+            .toBe("http://app/report/report-name-2/report-id-2");
         expect(li2.find("report-dependency-list-stub").props("dependencyList")).toBe(testDependencyList[1].dependencies);
         expect(li2.find("report-dependency-list-stub").element.style.display).toBe("none");
     });

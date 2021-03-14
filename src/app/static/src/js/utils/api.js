@@ -3,7 +3,7 @@ import axios from "axios";
 // appUrl var should be set externally in the browser
 const baseUrl = typeof appUrl !== "undefined" ? appUrl: "";
 
-const buildFullUrl = (url) => {
+export const buildFullUrl = (url) => {
     return baseUrl + url
 };
 
