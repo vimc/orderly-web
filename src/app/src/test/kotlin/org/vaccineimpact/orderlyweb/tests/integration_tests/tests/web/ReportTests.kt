@@ -130,7 +130,6 @@ class ReportTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        //JSONValidator.validateAgainstSchema(response.text, "Dependencies")
         val responseData = JSONValidator.getData(response.text)
         assertThat(responseData["direction"].textValue()).isEqualTo("upstream")
         assertThat(responseData["dependency_tree"]["name"].textValue()).isEqualTo("minimal")
