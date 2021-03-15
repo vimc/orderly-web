@@ -565,3 +565,27 @@ Required permissions: `reports.run`.
 Imports a completed bundle in zip format.
 
 Required permissions: `reports.run`.
+
+## GET /queue/status/
+
+Gets information on the current state of the orderly queue.
+
+Required permissions: none, available to all authenticated users
+
+Schema: [`QueueStatus.schema.json`](QueueStatus.schema.json)
+
+### Example
+```json
+[
+    {
+        "key": "antiutopian_peregrinefalcon",
+        "status": "running",
+        "name": "minimal"
+    },
+    {
+        "key": "flavoured_bassethound",
+        "status": "queued",
+        "name": "other"
+    }
+]
+```
