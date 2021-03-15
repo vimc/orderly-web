@@ -3,19 +3,8 @@
         <label class="font-weight-bold">Run</label>
         <div>
             <div>Run this report to create a new version.</div>
-            <div id="run-report-confirm"
-                 v-bind:class="['modal-background', {'modal-hide':!showModal}, {'modal-show':showModal}]">
-                <div class="modal-main px-3 py-3">
-                    <div class="mb-2 font-weight-bold">Confirm run report</div>
-                    <div class="mb-2">Are you sure you want to run this report?</div>
-                    <div class="modal-buttons">
-                        <button @click="run" id="confirm-run-btn" class="btn submit mr-3">Yes</button>
-                        <button @click="cancelRun" id="cancel-run-btn" class="btn btn-default">No</button>
-                    </div>
-                </div>
-            </div>
         </div>
-        <button @click="confirmRun" class="btn mt-2" type="submit">Run report</button>
+        <a @click="emitReportName" :href="runReportHref">Run report</a>
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
             <div v-if="runHasCompleted && newVersionFromRun" id="run-report-new-version">
@@ -65,7 +54,10 @@
             },
             newVersionHref: function() {
                 return `${api.baseUrl}/report/${this.report.name}/${this.newVersionFromRun}`
-            }
+            },
+            runReportHref: function () {
+                return `/run-report?name=${this.report.name}`
+            },
         },
         watch: {
             runningStatus: function() {
@@ -75,19 +67,14 @@
             }
         },
         methods: {
-            confirmRun: function () {
-                this.showModal = true;
-            },
-            cancelRun: function () {
-                this.showModal = false;
+            emitReportName: function () {
+                //eventHub.$emit("emitted-report-name", this.report.name)
             },
             run: function () {
-                this.showModal = false;
                 api.post(`/report/${this.report.name}/actions/run/`)
                     .then(({data}) => {
                         this.runningKey = data.data.key;
                         this.runningStatus = "Run started";
-
                         this.startPolling();
                     })
                     .catch(({response}) => {

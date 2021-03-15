@@ -8,11 +8,12 @@ import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 data class RunReportViewModel(
         @Serialise("runReportMetadataJson") val runReportMetadata: RunReportMetadata,
         @Serialise("gitBranchesJson") val gitBranches: List<String>,
+        @Serialise("reportName") val reportName: String?,
         val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {
-    constructor(context: ActionContext, runReportMetadata: RunReportMetadata, gitBranches: List<String>)
-            : this(runReportMetadata, gitBranches, DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+    constructor(context: ActionContext, runReportMetadata: RunReportMetadata, gitBranches: List<String>, reportName: String?)
+            : this(runReportMetadata, gitBranches, reportName, DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
 
     companion object
     {

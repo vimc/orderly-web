@@ -1,5 +1,6 @@
 <#-- @ftlvariable name="runReportMetadataJson" type="String" -->
 <#-- @ftlvariable name="gitBranchesJson" type="String" -->
+<#-- @ftlvariable name="reportName" type="String" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
@@ -29,12 +30,13 @@
             <div class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-tab">
                 <h2>Run a report</h2>
                 <div id="runReportVueApp">
-                    <run-report :metadata="runReportMetadata" :initial-git-branches="gitBranches"></run-report>
+                    <run-report :metadata="runReportMetadata" :initial-git-branches="gitBranches"
+                                :report-name="reportName"></run-report>
                 </div>
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                 <h2>Report logs</h2>
-                <p>Report logs coming soon!</p>
+                <p>Report logs coming soon! ${reportName}</p>
             </div>
         </div>
     </div>
@@ -42,6 +44,7 @@
         <script type="text/javascript">
             var runReportMetadata = ${runReportMetadataJson};
             var gitBranches = ${gitBranchesJson};
+            var reportName = ${reportName};
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
     </#macro>

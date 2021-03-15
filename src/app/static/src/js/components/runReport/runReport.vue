@@ -97,6 +97,7 @@
         props: [
             "metadata",
             "initialGitBranches",
+            "reportName"
         ],
         components: {
             ErrorInfo,
@@ -277,6 +278,10 @@
                 this.runningKey = "";
                 this.disableRun = false;
                 this.changeLogMessageValue = ""
+            },
+            presetSelectedReport: function (reportName) {
+                console.log("Nothing to preset" + reportName)
+                this.selectedReport = reportName
             }
         },
         mounted() {
@@ -284,6 +289,8 @@
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
+
+                this.selectedReport = this.reportName
             } else {
                 this.updateReports();
             }
