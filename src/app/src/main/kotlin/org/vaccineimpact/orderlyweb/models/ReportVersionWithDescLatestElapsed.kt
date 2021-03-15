@@ -15,6 +15,6 @@ constructor(
     val latestVersion: String,
     val description: String?,
     val elapsed: Double,
-    val gitBranch: String,
-    val gitCommit: String
+    val gitBranch: String?,
+    val gitCommit: String?
 ) : ReportVersion

@@ -18,21 +18,27 @@
             ${elapsedString}
         </div>
     </div>
-    <hr/>
-    <div class="row">
-        <div id="git-branch-label" class="col-2 text-right">
-            Git branch:
+    <#if report.gitBranch?? || report.gitCommit??>
+        <hr id="git-hr"/>
+    </#if>
+    <#if report.gitBranch??>
+        <div id="git-branch-row" class="row">
+            <div id="git-branch-label" class="col-2 text-right">
+                Git branch:
+            </div>
+            <div id="git-branch-value" class="col-4">
+                ${report.gitBranch}
+            </div>
         </div>
-        <div id="git-branch-value" class="col-4">
-            ${report.gitBranch}
+    </#if>
+    <#if report.gitCommit??>
+        <div id="git-commit-row" class="row">
+            <div id="git-commit-label" class="col-2 text-right">
+                Git commit:
+            </div>
+            <div id="git-commit-value" class="col-4">
+                ${report.gitCommit}
+            </div>
         </div>
-    </div>
-    <div class="row">
-        <div id="git-commit-label" class="col-2 text-right">
-            Git commit:
-        </div>
-        <div id="git-commit-value" class="col-4">
-            ${report.gitCommit}
-        </div>
-    </div>
+    </#if>
 </div>
