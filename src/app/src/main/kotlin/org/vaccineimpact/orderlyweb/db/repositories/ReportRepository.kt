@@ -393,7 +393,9 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                         ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                         latestVersionForEachReport.field<String>("latestVersion"),
                         ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION,
-                        ORDERLYWEB_REPORT_VERSION_FULL.ELAPSED)
+                        ORDERLYWEB_REPORT_VERSION_FULL.ELAPSED,
+                        ORDERLYWEB_REPORT_VERSION_FULL.GIT_BRANCH,
+                        ORDERLYWEB_REPORT_VERSION_FULL.GIT_SHA)
                 .from(ORDERLYWEB_REPORT_VERSION_FULL)
                 .join(latestVersionForEachReport.tableName)
                 .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))

@@ -1,4 +1,4 @@
-<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionDetail" -->
+<#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatestElapsed" -->
 <#-- @ftlvariable name="startTimeString" type="String" -->
 <#-- @ftlvariable name="elapsedString" type="String" -->
 
@@ -16,6 +16,23 @@
         </div>
         <div id="elapsed-value" class="col-4">
             ${elapsedString}
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div id="started-label" class="col-2 text-right">
+            Git branch:
+        </div>
+        <div id="elapsed-value" class="col-4">
+            ${report.gitBranch}
+        </div>
+    </div>
+    <div class="row">
+        <div id="started-label" class="col-2 text-right">
+            Git commit:
+        </div>
+        <div id="elapsed-value" class="col-4">
+            ${report.gitCommit}
         </div>
     </div>
 </div>

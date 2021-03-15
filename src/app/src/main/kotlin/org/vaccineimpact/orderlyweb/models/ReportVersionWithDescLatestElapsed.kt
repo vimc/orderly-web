@@ -5,7 +5,7 @@ import java.time.Instant
 
 data class ReportVersionWithDescLatestElapsed
 @ConstructorProperties("name", "displayname", "id", "published", "date", "latestVersion", "description", "elapsed",
-        "git")
+        "git_branch", "git_sha")
 constructor(
     override val name: String,
     override val displayName: String?,
