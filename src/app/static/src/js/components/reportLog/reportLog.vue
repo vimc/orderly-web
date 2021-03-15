@@ -7,8 +7,9 @@
             <div class="col-sm-6">
                 <report-list id="logs" 
                 :reports="reports" 
-                :report.sync="selectedReport" 
-                :key.sync="selectedReportKey"/>
+                :report.sync="selectedReport"
+                v-on="$listeners"
+                :key.sync="selectedLogReportKey"/>
             </div>
             <button @click.prevent="getAllReports"
                     id="logs-refresh-btn"
@@ -59,7 +60,7 @@
         reports: [],
         reportLogsEnabled: boolean,
         logsRefreshing: boolean,
-        selectedReportKey: string,
+        selectedLogReportKey: string,
         selectedReport: string,
         error: string,
         defaultMessage: string
@@ -79,7 +80,7 @@
                 // reportLogsEnabled: switches.reportLog,
                 reportLogsEnabled: true,
                 logsRefreshing: false,
-                selectedReportKey: "",
+                selectedLogReportKey: "",
                 selectedReport: "",
                 error: "",
                 defaultMessage: ""
@@ -122,6 +123,9 @@
                 console.log('logsSelected mounted', this.logsSelected)
         },
         watch: {
+            selectedLogReportKey(){
+                console.log('selectedLogReportKey in reportLog', this.selectedLogReportKey)
+            },
             logsSelected() {
                 console.log('logsSelected watch', this.logsSelected)
             }
