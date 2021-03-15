@@ -102,15 +102,17 @@ class OrderlyServer(
         return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun get(url: String, context: ActionContext, queryString: Boolean): OrderlyServerResponse
+    override fun get(url: String,
+                     context: ActionContext,
+                     queryString: Boolean): OrderlyServerResponse
     {
-        val request: Any
+        val request: Request
         when
         {
             queryString ->
             {
                 request = Request.Builder()
-                        .url(buildFullUrl(url, context.queryString() ))
+                        .url(buildFullUrl(url, context.queryString()))
                         .headers(standardHeaders.toHeaders())
                         .build()
             }

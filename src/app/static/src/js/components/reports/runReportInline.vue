@@ -4,7 +4,7 @@
         <div>
             <div>Run this report to create a new version.</div>
         </div>
-        <a @click="emitReportName" :href="runReportHref">Run report</a>
+        <a :href="runReportHref">Run report</a>
         <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
             Running status: {{runningStatus}}
             <div v-if="runHasCompleted && newVersionFromRun" id="run-report-new-version">
@@ -67,9 +67,6 @@
             }
         },
         methods: {
-            emitReportName: function () {
-                //eventHub.$emit("emitted-report-name", this.report.name)
-            },
             run: function () {
                 api.post(`/report/${this.report.name}/actions/run/`)
                     .then(({data}) => {

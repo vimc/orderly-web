@@ -48,7 +48,7 @@ class ReportController(
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        val reportName = context.queryParams(":name")
+        val reportName = context.queryParams("name")
         val metadata = orderlyServerAPI
                 .throwOnError()
                 .get("/run-metadata", context, false)

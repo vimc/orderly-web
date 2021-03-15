@@ -8,7 +8,7 @@ import org.vaccineimpact.orderlyweb.models.RunReportMetadata
 data class RunReportViewModel(
         @Serialise("runReportMetadataJson") val runReportMetadata: RunReportMetadata,
         @Serialise("gitBranchesJson") val gitBranches: List<String>,
-        @Serialise("reportName") val reportName: String?,
+        @Serialise("reportNameJson") val reportName: String?,
         val appViewModel: AppViewModel)
     : AppViewModel by appViewModel
 {

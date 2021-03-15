@@ -1,6 +1,6 @@
 <#-- @ftlvariable name="runReportMetadataJson" type="String" -->
 <#-- @ftlvariable name="gitBranchesJson" type="String" -->
-<#-- @ftlvariable name="reportName" type="String" -->
+<#-- @ftlvariable name="reportNameJson" type="String" -->
 <@layoutwide>
     <#macro styles>
         <link rel="stylesheet" href="${appUrl}/css/report-page.min.css"/>
@@ -36,7 +36,7 @@
             </div>
             <div class="tab-pane pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                 <h2>Report logs</h2>
-                <p>Report logs coming soon! ${reportName}</p>
+                <p>Report logs coming soon!</p>
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
         <script type="text/javascript">
             var runReportMetadata = ${runReportMetadataJson};
             var gitBranches = ${gitBranchesJson};
-            var reportName = ${reportName};
+            var reportName = ${reportNameJson};
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReport.bundle.js"></script>
     </#macro>

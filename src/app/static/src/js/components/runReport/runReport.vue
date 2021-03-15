@@ -29,7 +29,9 @@
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
-                    <report-list id="report" :reports="reports" :report.sync="selectedReport"/>
+                    <report-list id="report" :reports="reports"
+                                 :report.sync="selectedReport"
+                                 :initial-selected-report="reportName"/>
                 </div>
             </div>
             <template v-if="showInstances">
@@ -278,10 +280,6 @@
                 this.runningKey = "";
                 this.disableRun = false;
                 this.changeLogMessageValue = ""
-            },
-            presetSelectedReport: function (reportName) {
-                console.log("Nothing to preset" + reportName)
-                this.selectedReport = reportName
             }
         },
         mounted() {
@@ -289,8 +287,6 @@
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                 this.changedBranch();
-
-                this.selectedReport = this.reportName
             } else {
                 this.updateReports();
             }
