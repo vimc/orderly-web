@@ -2,13 +2,14 @@ import Vue from "vue";
 import {mount} from "@vue/test-utils";
 import ReportList from "../../../js/components/runReport/reportList.vue";
 
-function getWrapper() {
+function getWrapper(selectedReport = "") {
     return mount(ReportList, {
         propsData: {
             reports: [
                 {name: "report2", date: null},
                 {name: "report1", date: new Date().toISOString()}
-            ]
+            ],
+            initialSelectedReport: selectedReport
         }
     });
 }
@@ -27,6 +28,12 @@ describe("reportList", () => {
         expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
 
         done();
+    });
+
+    it("renders correctly and fires event on mount", () => {
+        const wrapper = getWrapper("report2");
+        expect(wrapper.emitted()["update:report"].length).toBe(1);
+        expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
     });
 
     it("typeahead filters list correctly", async (done) => {

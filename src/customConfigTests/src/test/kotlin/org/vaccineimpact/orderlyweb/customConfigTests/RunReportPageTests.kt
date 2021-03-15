@@ -40,6 +40,20 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can view run tab with querystring`()
+    {
+        val url = RequestHelper.webBaseUrl + "/run-report?name=minimal"
+        driver.get(url)
+
+        val tab = driver.findElement(By.id("run-tab"))
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
+
+        val typeahead = driver.findElement(By.id("report"))
+        val matches = typeahead.findElements(By.tagName("a"))
+        assertThat(matches.size).isEqualTo(1)
+    }
+
+    @Test
     fun `can view git commits`()
     {
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))

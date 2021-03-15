@@ -234,6 +234,26 @@ class ReportPageTests : SeleniumTest()
         assertThat(sidebar.isDisplayed).isTrue()
     }
 
+    @Test
+    fun `can link to run report page with querystring`()
+    {
+        JooqContext().use {
+            insertUserAndGroup(it, "test.user@example.com")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
+        }
+
+        startApp("auth.provider=montagu")
+
+        insertReport("testreport", "20170104-091500-1234dcba")
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170104-091500-1234dcba")
+
+        val runReportLink = driver.findElement(By.cssSelector("#run-report-link"))
+        runReportLink.click()
+        wait.until(ExpectedConditions.urlToBe(RequestHelper.webBaseUrl + "/run-report?name=testreport"))
+    }
 
     @Test
     fun `can switch version`()
