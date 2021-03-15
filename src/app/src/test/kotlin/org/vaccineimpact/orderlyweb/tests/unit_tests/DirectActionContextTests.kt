@@ -263,4 +263,23 @@ class DirectActionContextTests
 
         assertThat(sut.reportReadingScopes).hasSameElementsAs(listOf("testname"))
     }
+
+    @Test
+    fun `queryParams constructs map from set of parameters`()
+    {
+        val request = mock<Request> {
+            on { queryParams() } doReturn setOf("a", "c")
+            on { queryParams("a") } doReturn "b"
+        }
+        val context = mock<SparkWebContext> {
+            on { sparkRequest } doReturn request
+        }
+
+        val sut = DirectActionContext(context)
+
+        assertThat(sut.queryParams()).isEqualTo(mapOf<String, String?>(
+            "a" to "b",
+            "c" to null
+        ))
+    }
 }
