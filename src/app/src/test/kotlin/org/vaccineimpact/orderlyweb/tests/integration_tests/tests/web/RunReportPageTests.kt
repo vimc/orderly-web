@@ -59,7 +59,7 @@ class RunReportPageTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)
-        assertThat(page.selectFirst("#runReportVueApp")).isNotNull()
+        assertThat(page.selectFirst("#runReportTabsVueApp")).isNotNull()
     }
 
     @Test

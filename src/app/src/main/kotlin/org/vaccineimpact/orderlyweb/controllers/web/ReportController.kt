@@ -68,6 +68,8 @@ class ReportController(
             listOf()
         }
 
+        println(reportName)
+
         return RunReportViewModel(context, metadata, gitBranches, reportName)
     }
 

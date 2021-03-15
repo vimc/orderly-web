@@ -15,10 +15,11 @@ interface ActionContext
     fun contentType(): String
 
     fun queryString(): String?
+    fun queryParams(): Map<String, String?>
     fun queryParams(key: String): String?
     fun params(): Map<String, String?>
     fun params(key: String): String
-    fun splat() : Array<String>?
+    fun splat(): Array<String>?
     fun addResponseHeader(key: String, value: String)
     fun addDefaultResponseHeaders(contentType: String)
 
@@ -30,10 +31,10 @@ interface ActionContext
 
     fun getSparkResponse(): Response
     fun setStatusCode(statusCode: Int)
-    fun<T> postData(): Map<String, T>
+    fun <T> postData(): Map<String, T>
     fun getRequestBody(): String
     fun getRequestBodyAsBytes(): ByteArray
 
     @Throws(MissingParameterError::class)
-    fun<T> postData(key: String): T
+    fun <T> postData(key: String): T
 }
