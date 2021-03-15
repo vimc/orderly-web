@@ -23,5 +23,9 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#started-value").text()).isEqualTo("Mon 12 Jun 2020 14:23")
         assertThat(content.select("#elapsed-label").text()).isEqualTo("Elapsed:")
         assertThat(content.select("#elapsed-value").text()).isEqualTo("3 hours 2 minutes")
+        assertThat(content.select("#git-branch-label").text()).isEqualTo("Git branch:")
+        assertThat(content.select("#git-branch-value").text()).isEqualTo("master")
+        assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
+        assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
     }
 }

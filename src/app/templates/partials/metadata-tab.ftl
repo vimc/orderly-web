@@ -20,18 +20,18 @@
     </div>
     <hr/>
     <div class="row">
-        <div id="started-label" class="col-2 text-right">
+        <div id="git-branch-label" class="col-2 text-right">
             Git branch:
         </div>
-        <div id="elapsed-value" class="col-4">
+        <div id="git-branch-value" class="col-4">
             ${report.gitBranch}
         </div>
     </div>
     <div class="row">
-        <div id="started-label" class="col-2 text-right">
+        <div id="git-commit-label" class="col-2 text-right">
             Git commit:
         </div>
-        <div id="elapsed-value" class="col-4">
+        <div id="git-commit-value" class="col-4">
             ${report.gitCommit}
         </div>
     </div>

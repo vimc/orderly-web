@@ -123,9 +123,11 @@ fun insertReport(name: String,
                  requester: String = "requester mcfunder",
                  display: String? = null,
                  addOrderlyWebReportVersion: Boolean = true,
-                 elapsed: Double = 0.0)
+                 elapsed: Double = 0.0,
+                 gitBranch: String? = null,
+                 gitCommit: String? = null)
 {
-    insertReportAndVersion(name, version, published, date, display, elapsed, addOrderlyWebReportVersion)
+    insertReportAndVersion(name, version, published, date, display, elapsed, gitBranch, gitCommit, addOrderlyWebReportVersion)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -253,6 +255,8 @@ private fun insertReportAndVersion(name: String,
                                    date: Timestamp,
                                    display: String? = null,
                                    elapsed: Double = 0.0,
+                                   gitBranch: String? = null,
+                                   gitCommit: String? = null,
                                    addOrderlyWebReportVersion: Boolean = true)
 {
     JooqContext().use {
@@ -285,6 +289,8 @@ private fun insertReportAndVersion(name: String,
                     this.published = false
                     this.connection = false
                     this.elapsed = elapsed
+                    this.gitBranch = gitBranch
+                    this.gitSha = gitCommit
                 }
         reportVersionRecord.store()
 
