@@ -8,18 +8,15 @@ describe("reportDependencyList", () => {
         {
             id: "report-id-1",
             name: "report-name-1",
-            out_of_date: true,
             dependencies: []
         },
         {
             id: "report-id-2",
             name: "report-name-2",
-            out_of_date: false,
             dependencies: [
                 {
                     id: "report-id-1",
                     name: "report-name-2",
-                    out_of_date: true,
                     dependencies: []
                 }
             ]

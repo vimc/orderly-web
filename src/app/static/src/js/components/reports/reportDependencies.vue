@@ -15,7 +15,7 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {ReportDependencies, ReportDependency, Error} from "../../types";
+    import {ReportDependencies, ReportDependency, Error} from "../../utils/types";
     import Vue from "vue";
     import ReportDependencyList from "./reportDependencyList.vue";
     import ErrorInfo from "../errorInfo.vue";
@@ -42,6 +42,8 @@
         },
         computed: {
           childDependencies(){
+              //The top level 'dependency_tree' value always has the report in question as the root item, but we don't
+              // want to display this report as its own dependency so we start from the next level down
               return this.dependencies ? this.dependencies.dependency_tree.dependencies : [];
           }
         },

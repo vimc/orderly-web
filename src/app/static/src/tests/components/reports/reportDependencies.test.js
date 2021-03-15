@@ -28,18 +28,15 @@ describe("reportDependencies", () => {
           dependency_tree: {
               name: "test-name",
               version: "test-version",
-              out_of_date: false,
               dependencies: [
                   {
                       name: "dep-name-1",
                       version: "dep-version-1",
-                      out_of_date: false,
                       dependencies: []
                   },
                   {
                       name: "dep-name-2",
                       version: "dep-version-2",
-                      out_of_date: false,
                       dependencies: []
                    }
               ]

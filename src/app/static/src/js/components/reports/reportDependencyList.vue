@@ -18,7 +18,7 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ReportDependency} from "../../types";
+    import {ReportDependency} from "../../utils/types";
     import {buildFullUrl} from "../../utils/api";
 
     interface Props {
