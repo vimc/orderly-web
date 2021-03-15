@@ -39,13 +39,9 @@
     import Vue from "vue"
     import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
-    // import EventBus from './../../eventBus';
     import ErrorInfo from "../errorInfo.vue";
     // import {switches} from "./../../featureSwitches";
 
-    // interface Props {
-    //     logsSelected: boolean
-    // }
 
     interface Computed {
         refreshLogsText: string
@@ -71,9 +67,6 @@
         components: {
             ReportList
         },
-        props: [
-            "logsSelected"
-        ],
         data(): Data {
             return {
                 reports: [],
@@ -115,19 +108,10 @@
         },
         mounted(){
             this.getAllReports();
-            // EventBus.$on("ranReport", function (payload) {
-            //     console.log('emitted received in reportLog')
-            //     this.getAllReports()
-            // });
-
-                console.log('logsSelected mounted', this.logsSelected)
         },
         watch: {
             selectedLogReportKey(){
                 console.log('selectedLogReportKey in reportLog', this.selectedLogReportKey)
-            },
-            logsSelected() {
-                console.log('logsSelected watch', this.logsSelected)
             }
         }
     })

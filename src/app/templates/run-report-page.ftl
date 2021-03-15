@@ -11,12 +11,6 @@
         <script type="text/javascript">
             var runReportMetadata = ${runReportMetadataJson};
             var gitBranches = ${gitBranchesJson};
-            var logsSelected = false
-            function toggleLogs(){
-                logsSelected = !logsSelected;
-                console.log('logs toggled', logsSelected)
-            }
-            document.querySelector("#logs-link").addEventListener("click", toggleLogs);
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReportTabs.bundle.js"></script>
     </#macro>

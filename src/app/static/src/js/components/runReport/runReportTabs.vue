@@ -58,11 +58,6 @@
                 reportKey: ""
             }
         },
-        // watch: {
-        //     selectedLogReportKey(){
-        //         console.log('selectedLogReportKey', this.selectedLogReportKey)
-        //     }
-        // },
         methods: {
             setLogReportKey(e){
                 this.selectedLogReportKey = e,

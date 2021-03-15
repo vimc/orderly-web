@@ -63,11 +63,6 @@
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
-        // watch: {
-        //     reports() {
-        //         console.log('report list reports', this.reports)
-        //     }
-        // },
         beforeDestroy() {
             this.$emit('update:report', "");
             this.$emit('update:key', "");
