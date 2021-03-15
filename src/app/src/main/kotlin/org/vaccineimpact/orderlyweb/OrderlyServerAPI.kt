@@ -36,7 +36,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
-    fun get(url: String, context: ActionContext, queryString: Boolean): OrderlyServerResponse
+    fun get(url: String, context: ActionContext, hasQueryString: Boolean): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
@@ -104,12 +104,12 @@ class OrderlyServer(
 
     override fun get(url: String,
                      context: ActionContext,
-                     queryString: Boolean): OrderlyServerResponse
+                     hasQueryString: Boolean): OrderlyServerResponse
     {
         val request: Request
         when
         {
-            queryString ->
+            hasQueryString ->
             {
                 request = Request.Builder()
                         .url(buildFullUrl(url, context.queryString()))
