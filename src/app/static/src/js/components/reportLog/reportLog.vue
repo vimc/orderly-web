@@ -1,38 +1,39 @@
 <template>
-<div>
-    <div v-if="reportLogsEnabled">
-        <h2>Running report logs</h2>
-        <div v-if="showReports" id="logs-form-group" class="form-group row">
-            <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
-            <div class="col-sm-6">
-                <report-list id="logs" 
-                :reports="reports" 
-                :report.sync="selectedReport"
-                v-on="$listeners"
-                :key.sync="selectedLogReportKey"/>
+    <div>
+        <div v-if="reportLogsEnabled">
+            <h2>Running report logs</h2>
+            <div v-if="showReports" id="logs-form-group" class="form-group row">
+                <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
+                <div class="col-sm-6">
+                    <report-list id="logs" 
+                    :reports="reports" 
+                    :report.sync="selectedReport"
+                    v-on="$listeners"
+                    :key.sync="selectedLogReportKey"/>
+                </div>
+                <!-- <button @click.prevent="getAllReports"
+                        id="logs-refresh-btn"
+                        class="btn col-sm-1"
+                        :disabled="logsRefreshing"
+                        type="submit">
+                        {{refreshLogsText}}
+                </button> -->
             </div>
-            <button @click.prevent="getAllReports"
-                    id="logs-refresh-btn"
-                    class="btn col-sm-1"
-                    :disabled="logsRefreshing"
-                    type="submit">
-                    {{refreshLogsText}}
-            </button>
+            <div v-else>
+                <div>No reports have been ran yet</div>
+                <!-- <button @click.prevent="getAllReports"
+                        id="logs-refresh-btn2"
+                        class="btn col-sm-1"
+                        :disabled="logsRefreshing"
+                        type="submit">
+                        {{refreshLogsText}}
+                </button> -->
+            </div>
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
-        <div v-else>
-            <div>No reports have been ran yet</div>
-            <button @click.prevent="getAllReports"
-                    id="logs-refresh-btn2"
-                    class="btn col-sm-1"
-                    :disabled="logsRefreshing"
-                    type="submit">
-                    {{refreshLogsText}}
-            </button>
-        </div>
+        <div v-else>Report logs coming soon</div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
-    <div v-else>Report logs coming soon</div>
-</div>
 </template>
 
 <script lang="ts">
@@ -65,6 +66,7 @@
     export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "reportLog",
         components: {
+            ErrorInfo,
             ReportList
         },
         data(): Data {
@@ -97,7 +99,7 @@
                         this.reports = data.data;
                         this.error = "";
                         this.defaultMessage = "";
-                        console.log('get all reports fired', data.data)
+                        // console.log('get all reports fired', data.data)
                     })
                     .catch((error) => {
                         this.logsRefreshing = false;
