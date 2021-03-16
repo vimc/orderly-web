@@ -1,0 +1,54 @@
+ul {
+  padding-left: 10px;
+  list-style: none;
+  padding-bottom: 10px;
+}
+
+li {
+
+  padding-left: 8px;
+
+  .expander {
+
+    &::after {
+      color: $gray-200;
+      content: '-';
+      position: absolute;
+    }
+  }
+
+  span.folder-name {
+    padding-left: 17px;
+  }
+
+  cursor: default;
+
+  &.has-children {
+    cursor: pointer;
+
+    .expander {
+      cursor: pointer;
+
+      &::after {
+        margin-top: 8px;
+        content: '';
+        color: inherit;
+        position: absolute;
+        -webkit-transform: rotate(-90deg);
+        transform: rotate(-90deg);
+        border-left: 5.04px solid transparent;
+        border-right: 5.04px solid transparent;
+        border-top: 7px solid #000;
+        transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+        cursor: pointer;
+      }
+    }
+
+    &.open {
+      >.expander::after {
+        -webkit-transform: rotate(0);
+        transform: rotate(0);
+      }
+    }
+  }
+}

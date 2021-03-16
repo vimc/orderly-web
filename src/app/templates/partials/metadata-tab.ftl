@@ -41,4 +41,7 @@
             </div>
         </div>
     </#if>
+    <div id="reportDependenciesVueApp">
+        <report-dependencies :report=report></report-dependencies>
+    </div>
 </div>

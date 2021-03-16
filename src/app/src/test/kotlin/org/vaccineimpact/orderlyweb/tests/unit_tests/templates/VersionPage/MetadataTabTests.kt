@@ -71,4 +71,13 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
         assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
     }
+
+    @Test
+    fun `renders dependencies component`()
+    {
+        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val app = jsoupDoc.select("#reportDependenciesVueApp")
+        assertThat(app.select("report-dependencies").count()).isEqualTo(1)
+        assertThat(app.select("report-dependencies").attr(":report")).isEqualTo("report")
+    }
 }
