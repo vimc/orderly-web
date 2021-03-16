@@ -5,8 +5,8 @@ here=$(dirname $0)
 (
 	cd $here/../src
 	# get fresh tests data
-	rm app/demo -rf
-	rm app/git -rf
+	rm -rf app/demo
+	rm -rf app/git
 	./gradlew :generateTestData
 	./gradlew :customConfigTests:copyGitDemo
 )
