@@ -235,7 +235,7 @@ class ReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can link to run report page with querystring`()
+    fun `can navigate to run report page with querystring`()
     {
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
@@ -252,7 +252,7 @@ class ReportPageTests : SeleniumTest()
 
         val runReportLink = driver.findElement(By.cssSelector("#run-report-link"))
         runReportLink.click()
-        wait.until(ExpectedConditions.urlToBe(RequestHelper.webBaseUrl + "/run-report?name=testreport"))
+        wait.until(ExpectedConditions.urlToBe(RequestHelper.webBaseUrl + "/run-report?report-name=testreport"))
     }
 
     @Test

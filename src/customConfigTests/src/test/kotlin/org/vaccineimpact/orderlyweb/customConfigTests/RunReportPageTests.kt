@@ -42,7 +42,7 @@ class RunReportPageTests : SeleniumTest()
     @Test
     fun `can view run tab with querystring`()
     {
-        val url = RequestHelper.webBaseUrl + "/run-report?name=minimal"
+        val url = RequestHelper.webBaseUrl + "/run-report?report-name=minimal"
         driver.get(url)
 
         val tab = driver.findElement(By.id("run-tab"))
