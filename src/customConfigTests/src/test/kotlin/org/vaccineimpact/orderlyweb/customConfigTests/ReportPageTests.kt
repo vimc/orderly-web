@@ -52,56 +52,6 @@ class ReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `report running status errors are persisted`()
-    {
-        startApp("auth.provider=montagu\norderly.server=http://nonsense")
-
-        val versionRecord = JooqContext().use {
-
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .fetchAny()
-        }
-
-        val versionId = versionRecord[REPORT_VERSION.ID]
-        val reportName = versionRecord[REPORT_VERSION.REPORT]
-
-        JooqContext().use {
-            insertUserAndGroup(it, "test.user@example.com")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
-        }
-
-        loginWithMontagu()
-        val versionUrl = RequestHelper.webBaseUrl + "/report/$reportName/$versionId/"
-        driver.get(versionUrl)
-
-        val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
-        runButton.click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
-        driver.findElement(By.cssSelector("#confirm-run-btn")).click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
-
-        Thread.sleep(200)
-
-        val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
-        val savedNewVersionText = driver.findElements(By.cssSelector("#run-report-new-version"))
-
-        assertThat(savedStatusText).contains("Running status: Error when running report")
-        assertThat(savedNewVersionText.count()).isEqualTo(0)
-
-        //Check state is saved to session - navigate away from page and back again
-        driver.get(RequestHelper.webBaseUrl)
-        driver.get(versionUrl)
-
-        assertThat(driver.findElement(By.cssSelector("#run-report-status")).text).isEqualTo(savedStatusText)
-        assertThat(driver.findElements(By.cssSelector("#run-report-new-version")).count()).isEqualTo(0)
-    }
-
-    @Test
     fun `can change tabs`()
     {
         startApp("auth.provider=montagu")
