@@ -25,7 +25,7 @@ describe("runReportInline", () => {
 
     it(`it renders href link as expected`, () => {
         const wrapper = getWrapper()
-        expect(wrapper.find("div a").attributes("href")).toBe("/run-report?name=report-data")
+        expect(wrapper.find("div a").attributes("href")).toBe("/run-report?report-name=report-data")
     })
 });
 
