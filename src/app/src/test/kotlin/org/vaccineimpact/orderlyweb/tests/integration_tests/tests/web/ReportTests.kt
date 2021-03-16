@@ -4,6 +4,8 @@ import com.github.fge.jsonschema.main.JsonValidator
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -105,5 +107,32 @@ class ReportTests : IntegrationTest()
 
         assertThat(repo.getReportVersion("report", "v1").published).isTrue()
         assertThat(repo.getReportVersion("report", "v2").published).isTrue()
+    }
+
+    @Test
+    fun `only report readers can get report dependencies`()
+    {
+        val url = "/report/minimal/dependencies/"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+    }
+
+    @Test
+    fun `report readers can get dependencies`()
+    {
+        val url = "/report/minimal/dependencies/?direction=upstream"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.read", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val responseData = JSONValidator.getData(response.text)
+        assertThat(responseData["direction"].textValue()).isEqualTo("upstream")
+        assertThat(responseData["dependency_tree"]["name"].textValue()).isEqualTo("minimal")
+        assertThat(responseData["dependency_tree"]["id"].textValue().count()).isGreaterThan(0)
     }
 }

@@ -138,9 +138,18 @@ class ReportController(
         return okayResponse()
     }
 
+
     fun getRunningReportsDetails(): ReportRunLog
     {
         val key = context.params(":key")
         return reportRepository.getReportRun(key)
     }
+
+    fun getDependencies(): String
+    {
+        val name = context.params(":name")
+        val response = orderlyServerAPI.get("/v1/reports/$name/dependencies/", context)
+        return passThroughResponse(response)
+    }
 }
+
