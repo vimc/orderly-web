@@ -76,4 +76,41 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
+
+    @Test
+    fun `can get all running reports for current user only`()
+    {
+         insertUser("user@email.com", "user.name")
+         insertUser("user2@email.com", "user2.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebReportRunRepository()
+        sut.addReportRun(
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            "report1",
+            mapOf("instance1" to "pre-staging"),
+            mapOf("parameter1" to "value1"),
+            "branch1",
+            "commit1"
+        )
+        sut.addReportRun(
+            "benevolent_badger",
+            "user2@email.com",
+            now,
+            "report2",
+            mapOf("instance2" to "post-staging"),
+            mapOf("parameter2" to "value2"),
+            "branch1",
+            "commit2"
+        )
+
+        val result = sut.getAllRunningReports("user@email.com")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].date).isEqualTo(now)
+        assertThat(result[0].name).isEqualTo("report1")
+        assertThat(result[0].key).isEqualTo("adventurous_aardvark")
+    }
 }

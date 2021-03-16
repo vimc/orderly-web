@@ -20,7 +20,7 @@
                 </button> -->
             </div>
             <div v-else>
-                <div>No reports have been ran yet</div>
+                <div id="noReportsRan">No reports have been ran yet</div>
                 <!-- <button @click.prevent="getAllReports"
                         id="logs-refresh-btn2"
                         class="btn col-sm-1"

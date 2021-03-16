@@ -6,8 +6,8 @@ function getWrapper() {
     return mount(ReportList, {
         propsData: {
             reports: [
-                {name: "report2", date: null},
-                {name: "report1", date: new Date().toISOString()}
+                {name: "report2", date: null, key: "report2Key"},
+                {name: "report1", date: new Date().toISOString(), key: "report1Key"}
             ]
         }
     });
@@ -25,6 +25,8 @@ describe("reportList", () => {
         reportSuggestions.at(1).trigger("click");
         expect(wrapper.emitted()["update:report"].length).toBe(1);
         expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
+        expect(wrapper.emitted()["update:key"].length).toBe(1);
+        expect(wrapper.emitted()["update:key"][0]).toEqual(["report2Key"]);
 
         done();
     });

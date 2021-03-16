@@ -2,9 +2,8 @@ import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import ReportLog from "../../../js/components/reportLog/reportLog.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
-import ErrorInfo from "../../../js/components/errorInfo.vue";
+// import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
-import ParameterList from "../../../js/components/runReport/parameterList.vue";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -21,8 +20,13 @@ describe("runReport", () => {
     const initialData = {
         data() {
             return {
-                reports: reports,
-                logsRefreshing: false
+                reports: [],
+                reportLogsEnabled: true,
+                logsRefreshing: false,
+                selectedLogReportKey: "",
+                selectedReport: "",
+                error: "",
+                defaultMessage: ""
             }
         }
     }
@@ -33,38 +37,43 @@ describe("runReport", () => {
         return mount(ReportLog, data);
     }
 
-    it("renders reportLog", async () => {
-        // mockAxios.onGet('http://app/running/')
-        //     .reply(200, {"data": reports});
+    it("renders reportLog", async (done) => {
         const wrapper = shallowMount(ReportLog);
 
-        await Vue.nextTick()
-        await Vue.nextTick()
-        await Vue.nextTick()
-        
-        // const button = wrapper.find("button")
-        // button.trigger('click')
+        expect(wrapper.find("h2").text()).toBe("Running report logs");
+        expect(wrapper.find("#noReportsRan").text()).toBe("No reports have been ran yet");
+        expect(wrapper.find("#logs-form-group").exists()).toBe(false);
 
-        // await Vue.nextTick()
+        setTimeout(() => {
+            expect(wrapper.find("#logs-form-group").exists()).toBe(true);
+            expect(wrapper.find("#noReportsRan").exists()).toBe(false);
+            expect(wrapper.find("label").text()).toBe("Show logs for");
+            expect(wrapper.find("report-list-stub").props("reports")).toEqual(reports);
+            expect(wrapper.find("error-info-stub").props("apiError")).toEqual("");
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toEqual("");
+            done();
+        })
+    });
 
-        // expect(wrapper.text()).toBe('true');
-        expect(wrapper.find("#logs-form-group").exists()).toBe(true);
-        // const options = wrapper.findAll("#git-branch-form-group select option");
-        // expect(options.length).toBe(2);
-        // expect(options.at(0).text()).toBe("master");
-        // expect(options.at(0).attributes().value).toBe("master");
-        // expect(options.at(1).text()).toBe("dev");
-        // expect(options.at(1).attributes().value).toBe("dev");
+    it("show error message if error getting git commits", (done) => {
+        mockAxios.onGet('http://app/running/')
+            .reply(500, "TEST ERROR");
+        const wrapper = shallowMount(ReportLog);
 
-        // setTimeout(() => {
-        //     expect(wrapper.find("#git-commit-form-group").exists()).toBe(true);
-        //     const commitOptions = wrapper.findAll("#git-commit option");
-        //     expect(commitOptions.length).toBe(2);
-        //     expect(commitOptions.at(0).text()).toBe("abcdef (Mon Jun 08, 12:01)");
-        //     expect(commitOptions.at(1).text()).toBe("abc123 (Tue Jun 09, 13:11)");
+        setTimeout(() => {
+            expect(wrapper.find("error-info-stub").props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the running reports");
+            done();
+        })
+    });
 
-        //     expect(wrapper.vm.$data.selectedCommitId).toBe("abcdef");
-            // done();
-        // })
+    it("displays report list in order and allows selection", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            wrapper.find(ReportList).find("a:last-of-type").trigger("click");
+            expect(wrapper.vm.$data["selectedReport"]).toBe("report2");
+            done();
+        });
     });
 });
