@@ -4,8 +4,7 @@ import java.time.Instant
 
 data class ReportRun(val name: String, val key: String, val path: String)
 
-data class ReportRunLog
-constructor(
+data class ReportRunLog(
     val email: String,
     val date: Instant,
     val report: String,

@@ -28,9 +28,8 @@
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
-                    <div>
-                        <h2>Report logs</h2>
-                        <p>Report logs coming soon!</p>
+                    <div id="running-report-details">
+                        <running-report-details :report-key="reportKey"></running-report-details>
                     </div>
                 </div>
             </div>
@@ -41,10 +40,12 @@
 <script lang="ts">
     import Vue from "vue"
     import runReport from "./runReport.vue"
+    import runningReportDetails from "./runningReportDetails.vue";
     export default Vue.extend({
         name: "runReportTabs",
         components: {
-            runReport
+            runReport,
+            runningReportDetails
         },
         props: [
             "metadata",
@@ -53,7 +54,7 @@
         data() {
             return {
                 selectedTab: "runReport",
-                reportKey: ""
+                reportKey: "1"
             }
         },
         methods: {

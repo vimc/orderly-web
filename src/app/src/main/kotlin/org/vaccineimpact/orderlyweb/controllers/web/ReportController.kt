@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
+import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
@@ -17,6 +18,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
+import spark.Response
 
 class ReportController(
     context: ActionContext,
@@ -139,10 +141,12 @@ class ReportController(
     }
 
 
-    fun getRunningReportsDetails(): ReportRunLog
+    fun getRunningReportLogs(): String?
     {
         val key = context.params(":key")
-        return reportRepository.getReportRun(key)
+        var gson = Gson()
+        val reportDetails = reportRepository.getReportRun(key)
+        return gson.toJson(reportDetails)
     }
 
     fun getDependencies(): String

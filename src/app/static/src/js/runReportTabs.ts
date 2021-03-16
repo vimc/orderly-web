@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import $ from 'jquery';
 
+
 import runReportTabs from './components/runReport/runReportTabs.vue'
 
 $(document).ready(() => {

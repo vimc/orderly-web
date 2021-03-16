@@ -4,15 +4,15 @@ export interface Parameter {
 }
 
 export interface Instances {
-    source: string,
-    annexe: string
+    database: string,
+    instance: string
 }
 
 export type Dict<V> =  {[index: number]: V}
 
 export interface ReportLog{
     email: string,
-    date: String,
+    date: string,
     report: string,
     instances: Dict<Instances>,
     params: Dict<Parameter>,

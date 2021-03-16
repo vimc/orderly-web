@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.*
-import org.assertj.core.api.AssertionsForInterfaceTypes
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
@@ -13,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
-import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
@@ -115,7 +113,7 @@ class RunReportPageTests : IntegrationTest()
                 "test@example.com",
                 instant,
                 "q123",
-                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}",
+                "{‘0’: {‘database’: ‘support’, ‘instance’: ‘annexe val’}}",
                 "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
                 "branch",
                 "commit",
@@ -137,17 +135,7 @@ class RunReportPageTests : IntegrationTest()
         }
 
         val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
-        val result = sut.getRunningReportsDetails()
-        assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
-        assertThat(result.email).isEqualTo("test@example.com")
-        assertThat(result.date).isEqualTo(instant)
-        assertThat(result.report).isEqualTo("q123")
-        assertThat(result.instances).isEqualTo("{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}")
-        assertThat(result.params).isEqualTo("{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}")
-        assertThat(result.gitBranch).isEqualTo("branch")
-        assertThat(result.gitCommit).isEqualTo("commit")
-        assertThat(result.status).isEqualTo("complete")
-        assertThat(result.logs).isEqualTo("logs")
-        assertThat(result.reportVersion).isEqualTo("1233")
+        val result = sut.getRunningReportLogs()
+        assertThat(result).isEqualTo(fakeReportRunLog)
     }
 }

@@ -1,10 +1,10 @@
 import {shallowMount} from "@vue/test-utils"
-import runningReportsDetails from "../../../js/components/runReportTabs/runningReportsDetails.vue"
+import runningReportsDetails from "../../../js/components/runReport/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 
 
-describe(`runningReportsDetails`, () => {
+describe(`runningReportDetails`, () => {
 
     const props = {
         reportKey: "half_aardwolf"
@@ -14,8 +14,8 @@ describe(`runningReportsDetails`, () => {
         date: "",
         report: "minimal",
         instances: {
-            "0": {"source": "support", "annexe": "annexe val"},
-            "1": {"source": "assist", "annexe": "annexe 2"}
+            "0": {"database": "support", "instance": "annexe val"},
+            "1": {"database": "assist", "instance": "annexe 2"}
         },
         params: {
             "0": {"name": "nmin", "value": "ey6"},
@@ -45,7 +45,7 @@ describe(`runningReportsDetails`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("#report-log").find("#report-git-branch").exists()).toBeTruthy()
         const spans = wrapper.find("#report-git-branch").findAll("span")
-        expect(spans.at(0).text()).toBe("Github branch:")
+        expect(spans.at(0).text()).toBe("Git branch:")
         expect(spans.at(1).text()).toBe("branch value")
     })
 
@@ -53,7 +53,7 @@ describe(`runningReportsDetails`, () => {
             const wrapper = getWrapper()
             expect(wrapper.find("#report-log").find("#report-git-commit").exists()).toBeTruthy()
             const spans = wrapper.find("#report-git-commit").findAll("span")
-            expect(spans.at(0).text()).toBe("Github commit:")
+            expect(spans.at(0).text()).toBe("Git commit:")
             expect(spans.at(1).text()).toBe("commit value")
     })
 
@@ -75,7 +75,7 @@ describe(`runningReportsDetails`, () => {
     it(`displays Database(source) data as expected`,  () => {
             const wrapper = getWrapper()
             const spans = wrapper.find("#report-database-source").findAll("span")
-            expect(spans.at(0).text()).toBe("Database(source):")
+            expect(spans.at(0).text()).toBe("Database:")
 
             const liValues = spans.at(1).findAll("ul li")
             expect(liValues.at(0).text()).toBe("support")
@@ -86,7 +86,7 @@ describe(`runningReportsDetails`, () => {
 
             const wrapper = getWrapper()
             const spans = wrapper.find("#report-database-instance").findAll("span")
-            expect(spans.at(0).text()).toBe("Database(annexe):")
+            expect(spans.at(0).text()).toBe("Instance:")
 
             const liValues = spans.at(1).findAll("ul li")
             expect(liValues.at(0).text()).toBe("annexe val")
@@ -120,8 +120,8 @@ describe(`runningReportsDetails`, () => {
             date: "",
             report: "",
             instances: {
-                "0": {"source": "", "annexe": ""},
-                "1": {"source": "", "annexe": ""}
+                "0": {"database": "", "instance": ""},
+                "1": {"database": "", "instance": ""}
             },
             params: {
                 "0": {"name": "", "value": ""},
@@ -152,8 +152,8 @@ describe(`runningReportsDetails`, () => {
             date: "",
             report: "",
             instances: {
-                "0": {"source": "", "annexe": ""},
-                "1": {"source": "", "annexe": ""}
+                "0": {"database": "", "instance": ""},
+                "1": {"database": "", "instance": ""}
             },
             params: {
                 "0": {"name": "", "value": ""},
@@ -173,7 +173,7 @@ describe(`runningReportsDetails`, () => {
             expect(wrapper.find("#report-logs").exists()).toBe(false)
             expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("Error")
             expect(wrapper.find(ErrorInfo).props("defaultMessage"))
-                .toBe("An error occurred when fetching metadata")
+                .toBe("An error occurred when fetching logs")
             done()
         })
     })

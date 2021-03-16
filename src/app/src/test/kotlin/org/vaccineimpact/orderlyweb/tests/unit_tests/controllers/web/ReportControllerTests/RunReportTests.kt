@@ -136,7 +136,7 @@ class RunReportTests
                 "test@example.com",
                 instant,
                 "q123",
-                "{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}",
+                "{‘0’: {‘database’: ‘support’, ‘instance’: ‘annexe val’}}",
                 "{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}",
                 "branch",
                 "commit",
@@ -153,17 +153,7 @@ class RunReportTests
         }
 
         val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
-        val result = sut.getRunningReportsDetails()
-        Assertions.assertThat(result).isEqualToComparingFieldByFieldRecursively(fakeReportRunLog)
-        Assertions.assertThat(result.email).isEqualTo("test@example.com")
-        Assertions.assertThat(result.date).isEqualTo(instant)
-        Assertions.assertThat(result.report).isEqualTo("q123")
-        Assertions.assertThat(result.instances).isEqualTo("{‘0’: {‘source’: ‘support’, ‘annexe’: ‘annexe val’}}")
-        Assertions.assertThat(result.params).isEqualTo("{‘0’: {‘name’: ‘cologne’, ‘value’: ‘memo’}}")
-        Assertions.assertThat(result.gitBranch).isEqualTo("branch")
-        Assertions.assertThat(result.gitCommit).isEqualTo("commit")
-        Assertions.assertThat(result.status).isEqualTo("complete")
-        Assertions.assertThat(result.logs).isEqualTo("logs")
-        Assertions.assertThat(result.reportVersion).isEqualTo("1233")
+        val result = sut.getRunningReportLogs()
+        Assertions.assertThat(result).isEqualTo(fakeReportRunLog)
     }
 }

@@ -1,11 +1,12 @@
 <template>
     <div>
-        <div class="container">
+        <h2>Report logs</h2>
+        <div class="mt-3">
             <div id="report-log">
                 <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
                         <div class="text-right">
-                            <span>Github branch:</span>
+                            <span>Git branch:</span>
                             <span class="font-weight-bold">
                             {{ reportLog.git_branch }}
                         </span>
@@ -13,7 +14,7 @@
                     </div>
                     <div id="report-git-commit" v-if="reportLog.git_commit" class="col-sm-auto">
                         <div class="text-right">
-                            <span>Github commit:</span>
+                            <span>Git commit:</span>
                             <span class="font-weight-bold">
                             {{ reportLog.git_commit }}
                         </span>
@@ -33,18 +34,18 @@
                     </span>
                     </div>
                     <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
-                        <span>Database(source):</span>
+                        <span>Database:</span>
                         <span>
                         <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
-                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].source }}</li>
+                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].database }}</li>
                         </ul>
                     </span>
                     </div>
                     <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
-                        <span>Database(annexe):</span>
+                        <span>Instance:</span>
                         <span>
                         <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
-                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].annexe }}</li>
+                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].instance }}</li>
                         </ul>
                     </span>
                     </div>
@@ -86,7 +87,7 @@
     import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
-        getMetadata: () => void
+        getLogs: () => void
     }
 
     interface Data {
@@ -120,7 +121,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runningReportsDetails",
+        name: "runningReportDetails",
         props: {
             reportKey: {
                 type: String,
@@ -154,30 +155,28 @@
             }
         },
         methods: {
-            getMetadata: function () {
+            getLogs: function () {
                 api.get(`/running/${this.reportKey}/logs/`)
                     .then(({data}) => {
-                        this.reportLog = data.data
-                        this.reportLog.params = JSON.parse(this.reportLog.params)
-                        this.reportLog.instances = JSON.parse(this.reportLog.instances)
+                        this.reportLog = JSON.parse(data.data)
                         this.error = "";
                         this.defaultMessage = "";
                     })
                     .catch((error) => {
                         this.error = error;
-                        this.defaultMessage = "An error occurred when fetching metadata";
+                        this.defaultMessage = "An error occurred when fetching logs";
                     });
             }
         },
         mounted() {
             if (this.reportKey) {
-                this.getMetadata()
+                this.getLogs()
             }
         },
         watch: {
             reportKey() {
                 if(this.reportLog) {
-                    this.getMetadata()
+                    this.getLogs()
                 }
             }
         }

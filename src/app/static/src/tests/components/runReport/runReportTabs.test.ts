@@ -1,6 +1,7 @@
 import Vue from "vue";
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import RunReportTabs from "../../../js/components/runReport/runReportTabs.vue";
+import runningReportDetails from "../../../js/components/runReport/runningReportDetails.vue";
 
 describe("runReportTabs", () => {
 
@@ -14,9 +15,14 @@ describe("runReportTabs", () => {
         initialGitBranches
     };
 
-    const getWrapper = (propsData = props) => {
+    const getWrapper = (reportKey = "", propsData = props) => {
         return shallowMount(RunReportTabs, {
-            propsData
+            propsData,
+            data() {
+                return {
+                    reportKey: reportKey
+                }
+            }
         });
     }
 
@@ -53,9 +59,18 @@ describe("runReportTabs", () => {
         expect(wrapper.find("#run-tab").exists()).toBe(false);
         const logsPane = wrapper.find("#logs-tab")
         expect(logsPane.classes()).toEqual(["tab-pane", "active", "pt-4", "pt-md-1"]);
-        expect(logsPane.find("h2").text()).toBe("Report logs");
-        expect(logsPane.find("p").text()).toBe("Report logs coming soon!");
     });
 
+    it(`renders running report tab component correctly`,  async() => {
+        const key = "fakeKey"
+        const wrapper = getWrapper(key)
+
+        const logsTab = wrapper.findAll(".nav-item").at(1).find("a");
+        logsTab.trigger("click");
+        await Vue.nextTick();
+
+        expect(wrapper.findComponent(runningReportDetails).exists()).toBe(true)
+        expect(wrapper.findComponent(runningReportDetails).props("reportKey")).toBe("fakeKey")
+    })
     
 });
