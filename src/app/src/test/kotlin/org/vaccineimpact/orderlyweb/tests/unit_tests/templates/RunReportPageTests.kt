@@ -22,7 +22,8 @@ class RunReportPageTests
             RunReportMetadata(true, true,
                     mapOf("source" to listOf("support", "annex")),
                     listOf("internal", "published")),
-            listOf("master", "dev"))
+            listOf("master", "dev"),
+    "minimal")
 
     private val doc = template.jsoupDocFor(testModel)
 
@@ -51,7 +52,9 @@ class RunReportPageTests
     {
         val script = doc.select("script")[4]
         val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
+        val reportNameJson = Serializer.instance.gson.toJson(testModel.reportName)
         assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
-                + " var gitBranches = [ \"master\", \"dev\" ];")
+                + " var gitBranches = [ \"master\", \"dev\" ];"
+                + " var reportName = ${reportNameJson};")
     }
 }

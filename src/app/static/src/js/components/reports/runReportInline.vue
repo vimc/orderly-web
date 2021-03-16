@@ -14,7 +14,7 @@
         props: ['report'],
         computed: {
             runReportHref: function () {
-                return `/run-report?name=${this.report.name}`
+                return `/run-report?report-name=${this.report.name}`
             }
         }
     }

@@ -6,6 +6,7 @@ import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
@@ -26,6 +27,13 @@ class RunReportPageTests : IntegrationTest()
     fun `only report runners can see the page`()
     {
         val url = "/run-report"
+        assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `only report runners can render run report page with query string`()
+    {
+        val url = "/run-report?report-name=minimal"
         assertWebUrlSecured(url, runReportsPerm)
     }
 
@@ -56,6 +64,17 @@ class RunReportPageTests : IntegrationTest()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie("/run-report", sessionCookie)
+        assertThat(response.statusCode).isEqualTo(200)
+
+        val page = Jsoup.parse(response.text)
+        assertThat(page.selectFirst("#runReportTabsVueApp")).isNotNull()
+    }
+
+    @Test
+    fun `correct query string page is served`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie("/run-report?report-name=minimal", sessionCookie)
         assertThat(response.statusCode).isEqualTo(200)
 
         val page = Jsoup.parse(response.text)

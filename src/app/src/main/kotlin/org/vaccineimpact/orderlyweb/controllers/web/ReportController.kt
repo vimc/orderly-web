@@ -48,17 +48,17 @@ class ReportController(
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
-        val reportName = context.queryParams("name")
+        val reportName = context.queryParams("report-name")
         val metadata = orderlyServerAPI
                 .throwOnError()
-                .get("/run-metadata", context, false)
+                .get("/run-metadata", context)
                 .data(RunReportMetadata::class.java)
 
         val gitBranches = if (metadata.gitSupported)
         {
             val branchResponse = orderlyServerAPI
                     .throwOnError()
-                    .get("/git/branches", context, false)
+                    .get("/git/branches", context)
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }
@@ -67,8 +67,6 @@ class ReportController(
         {
             listOf()
         }
-
-        println(reportName)
 
         return RunReportViewModel(context, metadata, gitBranches, reportName)
     }
