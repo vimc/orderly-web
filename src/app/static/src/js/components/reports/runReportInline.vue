@@ -9,6 +9,8 @@
 </template>
 
 <script>
+    import {buildFullUrl} from "../../utils/api";
+
     export default {
         name: 'runReport',
         props: ['report'],

@@ -55,6 +55,6 @@ class RunReportPageTests
         val initialReportName = Serializer.instance.gson.toJson(testModel.reportName)
         assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
                 + " var gitBranches = [ \"master\", \"dev\" ];"
-                + " var reportName = ${initialReportName};")
+                + " var initialReportName = ${initialReportName};")
     }
 }

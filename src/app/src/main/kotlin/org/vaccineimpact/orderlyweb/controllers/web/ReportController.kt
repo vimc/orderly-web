@@ -138,4 +138,11 @@ class ReportController(
         reportRepository.publish(ids)
         return okayResponse()
     }
+
+    fun getDependencies(): String
+    {
+        val name = context.params(":name")
+        val response = orderlyServerAPI.get("/v1/reports/$name/dependencies/", context)
+        return passThroughResponse(response)
+    }
 }
