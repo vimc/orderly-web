@@ -105,7 +105,6 @@ class OrderlyServer(
         return transformResponse(response.code, response.body!!.string())
     }
 
-
     override fun get(url: String, context: ActionContext, hasUnwantedQueryParams: Boolean): OrderlyServerResponse
     {
         lateinit var request: Request
