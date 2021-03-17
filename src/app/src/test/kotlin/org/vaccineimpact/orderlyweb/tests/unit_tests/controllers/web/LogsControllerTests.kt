@@ -16,20 +16,32 @@ import org.vaccineimpact.orderlyweb.models.User
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.models.permissions.Role
+import org.pac4j.core.profile.CommonProfile
+import org.vaccineimpact.orderlyweb.models.Running
+import java.time.Instant
 
-class LogsController
+
+class LogsControllerTests
 {
     @Test
     fun `gets all running reports`()
     {
-        val testUser = User("test.user", "Test user", "test@test.com")
+        // val testUser = User("test.user", "Test user", "test@test.com")
+        val profile = mock<CommonProfile> {
+            on { this.id } doReturn "test@test.com"
+        } 
+        val context = mock<ActionContext>{
+            on { this.userProfile } doReturn profile
+        }
+        val runningObject = Running(Instant.now(), "name", "key")
+        
         val repo = mock<ReportRunRepository> {
-            on { this.getAllRunningReports(testUser) } doReturn (listOf("one", "two"))
+            on { this.getAllRunningReports("test@test.com") } doReturn (listOf(runningObject))
         }
 
-        val sut = LogsController(mock(), repo, mock(), mock())
+        val sut = LogsController(context, repo)
 
-        assertThat(sut.getAllRunningReports(testUser)).containsExactlyElementsOf(listOf("one", "two"))
+        assertThat(sut.running()).containsExactlyElementsOf(listOf(runningObject))
     }
 
 }
