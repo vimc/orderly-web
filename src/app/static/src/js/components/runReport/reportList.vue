@@ -50,6 +50,9 @@
             clear() {
                 this.query = "";
                 this.$emit("update:report", "");
+            },
+            isValidReport() {
+                return this.reports.some(value => value.name === this.initialSelectedReport)
             }
         },
         data() {
@@ -63,9 +66,11 @@
             }
         },
         mounted () {
-            if(this.initialSelectedReport) {
-                this.query = this.initialSelectedReport
-                this.$emit("update:report", this.initialSelectedReport)
+            if (this.initialSelectedReport) {
+                if (this.isValidReport()) {
+                    this.query = this.initialSelectedReport
+                    this.$emit("update:report", this.initialSelectedReport)
+                }
             }
         },
         beforeDestroy() {
