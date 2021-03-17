@@ -160,7 +160,7 @@
                     .then(({data}) => {
                         this.reportLog = data.data
                         this.reportLog.instances = JSON.parse(data.data.instances)
-                        //this.reportLog.params = JSON.parse(data.data.params)
+                        this.reportLog.params = JSON.parse(data.data.params)
                         this.error = "";
                         this.defaultMessage = "";
                     })
