@@ -24,4 +24,13 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#elapsed-label").text()).isEqualTo("Elapsed:")
         assertThat(content.select("#elapsed-value").text()).isEqualTo("3 hours 2 minutes")
     }
+
+    @Test
+    fun `renders dependencies component`()
+    {
+        val jsoupDoc = template.jsoupDocFor(VersionPageTestData.testModel)
+        val app = jsoupDoc.select("#reportDependenciesVueApp")
+        assertThat(app.select("report-dependencies").count()).isEqualTo(1)
+        assertThat(app.select("report-dependencies").attr(":report")).isEqualTo("report")
+    }
 }
