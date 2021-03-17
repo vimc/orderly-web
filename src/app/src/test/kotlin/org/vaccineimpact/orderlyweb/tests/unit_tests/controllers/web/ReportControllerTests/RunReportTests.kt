@@ -7,8 +7,10 @@ import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import java.time.Instant
 
@@ -129,7 +131,7 @@ class RunReportTests
     }
 
     @Test
-    fun `can getRunningReportsDetails`()
+    fun `can getRunningReportDetails`()
     {
         val instant = Instant.now()
         val fakeReportRunLog = ReportRunLog(
@@ -152,8 +154,24 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val sut = ReportController(mockContext, mock(), mock(), mockRepo, mock())
+        val sut = ReportRunController(mockContext, mock(), mock(), mockRepo, mock())
         val result = sut.getRunningReportLogs()
         Assertions.assertThat(result).isEqualTo(fakeReportRunLog)
+    }
+
+    @Test
+    fun `running report logs can throw unknown exception`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.params(":key") } doReturn "fakeKey"
+        }
+
+        val mockRepo = mock<ReportRepository> {
+            on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "")
+        }
+
+        val sut = ReportRunController(mockContext, mock(), mock(), mockRepo, mock())
+        Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 }

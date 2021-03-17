@@ -8,6 +8,7 @@ import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
@@ -134,7 +135,7 @@ class RunReportPageTests : IntegrationTest()
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
 
-        val sut = ReportController(mockContext, mock(), mockServer, mockRepo, mock())
+        val sut = ReportRunController(mockContext, mock(), mockServer, mockRepo, mock())
         val result = sut.getRunningReportLogs()
         assertThat(result).isEqualTo(fakeReportRunLog)
     }

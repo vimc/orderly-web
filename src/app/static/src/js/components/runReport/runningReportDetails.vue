@@ -158,7 +158,9 @@
             getLogs: function () {
                 api.get(`/running/${this.reportKey}/logs/`)
                     .then(({data}) => {
-                        this.reportLog = JSON.parse(data.data)
+                        this.reportLog = data.data
+                        this.reportLog.instances = JSON.parse(data.data.instances)
+                        this.reportLog.params = JSON.parse(data.data.params)
                         this.error = "";
                         this.defaultMessage = "";
                     })
