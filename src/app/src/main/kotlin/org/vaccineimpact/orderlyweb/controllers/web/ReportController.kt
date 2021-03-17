@@ -51,14 +51,14 @@ class ReportController(
         val reportName = context.queryParams("report-name")
         val metadata = orderlyServerAPI
                 .throwOnError()
-                .get("/run-metadata", context)
+                .get("/run-metadata", context, true)
                 .data(RunReportMetadata::class.java)
 
         val gitBranches = if (metadata.gitSupported)
         {
             val branchResponse = orderlyServerAPI
                     .throwOnError()
-                    .get("/git/branches", context)
+                    .get("/git/branches", context, true)
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }

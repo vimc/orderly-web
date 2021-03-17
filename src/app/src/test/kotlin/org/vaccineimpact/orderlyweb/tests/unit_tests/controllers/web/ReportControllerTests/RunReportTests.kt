@@ -26,9 +26,9 @@ class RunReportTests
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mockContext) } doReturn
+            on { get("/git/branches", mockContext, true) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
-            on { get("/run-metadata", mockContext) } doReturn
+            on { get("/run-metadata", mockContext, true) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
@@ -52,9 +52,9 @@ class RunReportTests
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext) } doReturn
+            on { get("/run-metadata", mockContext, true) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
-            on { get("/git/branches", mockContext) } doReturn
+            on { get("/git/branches", mockContext, true) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
@@ -71,7 +71,7 @@ class RunReportTests
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext) } doThrow OrderlyServerError("/run-metadata", 400)
+            on { get("/run-metadata", mockContext, true) } doThrow OrderlyServerError("/run-metadata", 400)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
