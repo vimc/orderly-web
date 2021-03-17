@@ -25,10 +25,10 @@
                     <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
                         <span>Parameters:</span>
                         <span>
-                        <div class="d-md-table-row row" v-for="(n, index) in paramSize">
-                            <span class="border border-secondary p-1">{{ reportLog.params[index].name }}:</span>
+                        <div class="d-md-table-row row" v-for="(key, index) in reportLog.params">
+                            <span class="border border-secondary p-1">{{ key }}:</span>
                             <span class="border border-secondary p-1">
-                                {{ reportLog.params[index].value }}
+                                {{ value }}
                             </span>
                         </div>
                     </span>
@@ -36,16 +36,16 @@
                     <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
                         <span>Database:</span>
                         <span>
-                        <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
-                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].database }}</li>
+                        <ul class="d-md-table-row list-unstyled" v-for="(key, value) in reportLog.instances">
+                            <li class="p-1 font-weight-bold">{{ key }}</li>
                         </ul>
                     </span>
                     </div>
                     <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
                         <span>Instance:</span>
                         <span>
-                        <ul class="d-md-table-row list-unstyled" v-for="(n, index) in instanceSize">
-                            <li class="p-1 font-weight-bold">{{ reportLog.instances[index].instance }}</li>
+                        <ul class="d-md-table-row list-unstyled" v-for="(key, value) in reportLog.instances">
+                            <li class="p-1 font-weight-bold">{{ value }}</li>
                         </ul>
                     </span>
                     </div>
@@ -111,8 +111,8 @@
         email: "",
         date: "",
         report: "",
-        instances: {},
-        params: {},
+        instances: new Map,
+        params: new Map,
         git_branch: "",
         git_commit: "",
         status: "",
@@ -140,6 +140,7 @@
         },
         computed: {
             paramSize: function () {
+                console.log(Object.keys(this.reportLog.params).length)
                 return Object.keys(this.reportLog.params).length
             },
             instanceSize: function () {
@@ -159,8 +160,8 @@
                 api.get(`/running/${this.reportKey}/logs/`)
                     .then(({data}) => {
                         this.reportLog = data.data
-                        this.reportLog.instances = JSON.parse(data.data.instances)
-                        //this.reportLog.params = JSON.parse(data.data.params)
+                        console.log(data.data)
+                        console.log(this.reportLog)
                         this.error = "";
                         this.defaultMessage = "";
                     })
