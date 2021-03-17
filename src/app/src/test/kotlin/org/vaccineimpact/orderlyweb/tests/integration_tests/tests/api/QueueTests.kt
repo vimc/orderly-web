@@ -34,6 +34,6 @@ class QueueTests : IntegrationTest()
     {
         val headers = mapOf("Accept" to ContentTypes.json)
         val response = HttpClient.get(apiRequestHelper.baseUrl + "/reports/minimal/run/", headers)
-        assertThat(response.statusCode).isEqualTo(401)
+        assertThat(response.statusCode).isEqualTo(404)
     }
 }
