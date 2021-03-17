@@ -1,5 +1,7 @@
 package org.vaccineimpact.orderlyweb
 
+import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
 import spark.Filter
@@ -159,4 +161,11 @@ private val prettyTime = PrettyTime()
 fun getFriendlyRelativeDateTime(date: Date) : String
 {
     return prettyTime.format(date)
+}
+
+fun jsonToStringMap(json : String): Map<String, String>
+{
+    val element = JsonParser().parse(json)
+    val type = TypeToken.getParameterized(Map::class.java, String::class.java, String::class.java).type
+    return Serializer.instance.gson.fromJson<Map<String, String>>(element, type)
 }

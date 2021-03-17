@@ -1,11 +1,16 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
+import com.google.gson.JsonParser
+import com.google.gson.reflect.TypeToken
+import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.sql.Timestamp
 import java.time.Instant
+import org.vaccineimpact.orderlyweb.jsonToStringMap
 
 interface ReportRunRepository
 {
@@ -53,22 +58,32 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     override fun getReportRun(key: String): ReportRunLog
     {
         JooqContext().use {
-            return it.dsl.select(
-                    Tables.ORDERLYWEB_REPORT_RUN.EMAIL.`as`("email"),
-                    Tables.ORDERLYWEB_REPORT_RUN.DATE.`as`("date"),
-                    Tables.ORDERLYWEB_REPORT_RUN.REPORT.`as`("report"),
-                    Tables.ORDERLYWEB_REPORT_RUN.INSTANCES.`as`("instances"),
-                    Tables.ORDERLYWEB_REPORT_RUN.PARAMS.`as`("params"),
-                    Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
-                    Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
-                    Tables.ORDERLYWEB_REPORT_RUN.STATUS.`as`("status"),
-                    Tables.ORDERLYWEB_REPORT_RUN.LOGS.`as`("logs"),
-                    Tables.ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
-                    .from(Tables.ORDERLYWEB_REPORT_RUN)
-                    .where(Tables.ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+            val result = it.dsl.select(
+                    ORDERLYWEB_REPORT_RUN.EMAIL,
+                    ORDERLYWEB_REPORT_RUN.DATE,
+                    ORDERLYWEB_REPORT_RUN.REPORT,
+                    ORDERLYWEB_REPORT_RUN.INSTANCES,
+                    ORDERLYWEB_REPORT_RUN.PARAMS,
+                    ORDERLYWEB_REPORT_RUN.GIT_BRANCH,
+                    ORDERLYWEB_REPORT_RUN.GIT_COMMIT,
+                    ORDERLYWEB_REPORT_RUN.STATUS,
+                    ORDERLYWEB_REPORT_RUN.LOGS,
+                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION)
+                    .from(ORDERLYWEB_REPORT_RUN)
+                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
                     .singleOrNull()
-                    ?.into(ReportRunLog::class.java)
                     ?: throw UnknownObjectError("key", "getReportRun")
+
+            return ReportRunLog(result[ORDERLYWEB_REPORT_RUN.EMAIL],
+                    result[ORDERLYWEB_REPORT_RUN.DATE].toInstant(),
+                    result[ORDERLYWEB_REPORT_RUN.REPORT],
+                    jsonToStringMap(result[ORDERLYWEB_REPORT_RUN.INSTANCES]),
+                    jsonToStringMap(result[ORDERLYWEB_REPORT_RUN.PARAMS]),
+                    result[ORDERLYWEB_REPORT_RUN.GIT_BRANCH],
+                    result[ORDERLYWEB_REPORT_RUN.GIT_COMMIT],
+                    result[ORDERLYWEB_REPORT_RUN.STATUS],
+                    result[ORDERLYWEB_REPORT_RUN.LOGS],
+                    result[ORDERLYWEB_REPORT_RUN.REPORT_VERSION])
         }
     }
 }
