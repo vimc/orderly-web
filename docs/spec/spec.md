@@ -576,7 +576,8 @@ Schema: [`QueueStatus.schema.json`](QueueStatus.schema.json)
 
 ### Example
 ```json
-[
+{
+  "tasks": [
     {
         "key": "antiutopian_peregrinefalcon",
         "status": "running",
@@ -587,5 +588,6 @@ Schema: [`QueueStatus.schema.json`](QueueStatus.schema.json)
         "status": "queued",
         "name": "other"
     }
-]
+  ]
+}
 ```

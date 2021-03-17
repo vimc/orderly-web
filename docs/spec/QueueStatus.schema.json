@@ -17,7 +17,7 @@
             "type": [ "string", "null" ]
           }
         },
-        "required": ["key", "status", "name", "version"],
+        "required": ["key", "status", "name"],
         "additionalProperties": false
       }
     }
