@@ -57,7 +57,7 @@ class ReportController(
         {
             val branchResponse = orderlyServerAPI
                     .throwOnError()
-                    .get("/git/branches", context)
+                    .get("/git/branches", context, true)
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }
