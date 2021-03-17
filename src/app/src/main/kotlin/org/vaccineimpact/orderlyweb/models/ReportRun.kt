@@ -16,16 +16,3 @@ data class ReportRunLog(
     val logs: String?,
     val reportVersion: String?
 )
-
-data class ReportRunLogCompanion(
-        val email: String,
-        val date: Instant,
-        val report: String,
-        val instances: Map<String, String>?,
-        val params: Map<String, String>?,
-        val gitBranch: String?,
-        val gitCommit: String?,
-        val status: String?,
-        val logs: String?,
-        val reportVersion: String?
-)

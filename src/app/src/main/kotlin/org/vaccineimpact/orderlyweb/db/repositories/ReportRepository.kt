@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
-import org.jooq.Field
 import org.jooq.JoinType
 import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.ActionContext

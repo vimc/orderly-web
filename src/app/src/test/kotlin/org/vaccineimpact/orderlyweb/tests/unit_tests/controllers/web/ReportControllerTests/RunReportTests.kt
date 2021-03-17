@@ -154,7 +154,7 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val sut = ReportRunController(mockContext, mock(), mock(), mockRepo, mock())
+        val sut = ReportRunController(mockContext, mock(), mockRepo)
         val result = sut.getRunningReportLogs()
         Assertions.assertThat(result).isEqualTo(fakeReportRunLog)
     }
@@ -170,7 +170,7 @@ class RunReportTests
             on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "")
         }
 
-        val sut = ReportRunController(mockContext, mock(), mock(), mockRepo, mock())
+        val sut = ReportRunController(mockContext, mock(), mockRepo)
         Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }
