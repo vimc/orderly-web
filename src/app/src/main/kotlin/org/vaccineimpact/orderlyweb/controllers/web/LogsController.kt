@@ -16,11 +16,9 @@ class LogsController(
             OrderlyWebReportRunRepository()
     )
 
-
     fun running(): List<Running>
     {
         val user = context.userProfile!!.id
         return reportRunRepository.getAllRunningReports(user)
     }
-
 }
