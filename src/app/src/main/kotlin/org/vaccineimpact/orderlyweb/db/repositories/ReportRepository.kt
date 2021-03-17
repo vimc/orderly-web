@@ -46,9 +46,6 @@ interface ReportRepository
     fun publish(ids: List<String>)
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
-
-    @Throws(UnknownObjectError::class)
-    fun getReportRun(key: String): ReportRunLog
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -431,28 +428,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.`in`(reports))
                 .groupBy(ORDERLYWEB_REPORT_VERSION_FULL.REPORT)
                 .fetchInto(ReportWithDate::class.java)
-        }
-    }
-
-    override fun getReportRun(key: String): ReportRunLog
-    {
-        JooqContext().use {
-            return it.dsl.select(
-                    ORDERLYWEB_REPORT_RUN.EMAIL.`as`("email"),
-                    ORDERLYWEB_REPORT_RUN.DATE.`as`("date"),
-                    ORDERLYWEB_REPORT_RUN.REPORT.`as`("report"),
-                    ORDERLYWEB_REPORT_RUN.INSTANCES.`as`("instances"),
-                    ORDERLYWEB_REPORT_RUN.PARAMS.`as`("params"),
-                    ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
-                    ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
-                    ORDERLYWEB_REPORT_RUN.STATUS.`as`("status"),
-                    ORDERLYWEB_REPORT_RUN.LOGS.`as`("logs"),
-                    ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
-                    .from(ORDERLYWEB_REPORT_RUN)
-                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
-                    .singleOrNull()
-                    ?.into(ReportRunLog::class.java)
-                    ?: throw UnknownObjectError("key", "getReportRun")
         }
     }
 

@@ -54,7 +54,7 @@
         data() {
             return {
                 selectedTab: "runReport",
-                reportKey: "1234"
+                reportKey: ""
             }
         },
         methods: {

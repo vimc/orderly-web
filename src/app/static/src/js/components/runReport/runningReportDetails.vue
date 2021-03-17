@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h2>Report logs</h2>
+        <h2>Running report logs</h2>
         <div class="mt-3">
             <div id="report-log">
                 <div class="row pt-2">

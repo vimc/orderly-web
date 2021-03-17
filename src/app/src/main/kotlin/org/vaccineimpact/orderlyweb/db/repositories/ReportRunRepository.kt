@@ -2,6 +2,8 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -17,6 +19,8 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
+    @Throws(UnknownObjectError::class)
+    fun getReportRun(key: String): ReportRunLog
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -43,6 +47,28 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
                 .execute()
+        }
+    }
+
+    override fun getReportRun(key: String): ReportRunLog
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                    Tables.ORDERLYWEB_REPORT_RUN.EMAIL.`as`("email"),
+                    Tables.ORDERLYWEB_REPORT_RUN.DATE.`as`("date"),
+                    Tables.ORDERLYWEB_REPORT_RUN.REPORT.`as`("report"),
+                    Tables.ORDERLYWEB_REPORT_RUN.INSTANCES.`as`("instances"),
+                    Tables.ORDERLYWEB_REPORT_RUN.PARAMS.`as`("params"),
+                    Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH.`as`("gitBranch"),
+                    Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT.`as`("gitCommit"),
+                    Tables.ORDERLYWEB_REPORT_RUN.STATUS.`as`("status"),
+                    Tables.ORDERLYWEB_REPORT_RUN.LOGS.`as`("logs"),
+                    Tables.ORDERLYWEB_REPORT_RUN.REPORT_VERSION.`as`("reportVersion"))
+                    .from(Tables.ORDERLYWEB_REPORT_RUN)
+                    .where(Tables.ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+                    .singleOrNull()
+                    ?.into(ReportRunLog::class.java)
+                    ?: throw UnknownObjectError("key", "getReportRun")
         }
     }
 }

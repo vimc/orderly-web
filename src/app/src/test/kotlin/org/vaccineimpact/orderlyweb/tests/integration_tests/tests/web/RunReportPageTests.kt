@@ -12,7 +12,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
@@ -131,7 +131,7 @@ class RunReportPageTests : IntegrationTest()
                     OrderlyServerResponse(Serializer.instance.toResult(fakeReportRunLog), 200)
         }
 
-        val mockRepo = mock<ReportRepository> {
+        val mockRepo = mock<ReportRunRepository> {
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
 

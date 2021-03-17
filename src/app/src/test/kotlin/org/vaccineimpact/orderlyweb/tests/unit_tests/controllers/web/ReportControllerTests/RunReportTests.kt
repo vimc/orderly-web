@@ -8,7 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
@@ -146,7 +146,7 @@ class RunReportTests
                 "logs",
                 "1233")
 
-        val mockRepo = mock<ReportRepository> {
+        val mockRepo = mock<ReportRunRepository> {
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
 
@@ -166,7 +166,7 @@ class RunReportTests
             on { this.params(":key") } doReturn "fakeKey"
         }
 
-        val mockRepo = mock<ReportRepository> {
+        val mockRepo = mock<ReportRunRepository> {
             on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "")
         }
 

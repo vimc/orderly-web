@@ -4,25 +4,25 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.OrderlyClient
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
 class ReportRunController(
     context: ActionContext,
     val orderly: OrderlyClient,
-    private val reportRepository: ReportRepository
+    private val reportRunRepository: ReportRunRepository
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
             context,
             Orderly(context),
-            OrderlyReportRepository(context)
+            OrderlyWebReportRunRepository()
     )
 
     fun getRunningReportLogs(): ReportRunLog
     {
         val key = context.params(":key")
-        return reportRepository.getReportRun(key)
+        return reportRunRepository.getReportRun(key)
     }
 }
