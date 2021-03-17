@@ -8,26 +8,55 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
+import org.vaccineimpact.orderlyweb.tests.insertReportRun
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
+import java.time.Instant
+import org.assertj.core.api.Assertions.assertThat
+import com.fasterxml.jackson.databind.node.ArrayNode
 
 class ReportLogsTests : IntegrationTest()
 {
     @Test
     fun `can get all running reports`()
     {
-        insertUser("a.user", "A user")
-        insertUser("b.user", "B user")
-
         val url = "/running/"
+        val permissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
 
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("reports.run", Scope.Global())),
-                method = HttpMethod.get,
-                contentType = ContentTypes.json)
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(permissions)
+        val contentType = ContentTypes.json
+
+        val now = Instant.now()
+
+        insertReportRun(
+            "key",
+            "test.user@example.com",
+            now,
+            "report",
+            mapOf("instance1" to "pre-staging"),
+            mapOf("parameter1" to "value1"),
+            "branch1",
+            "commit1"
+        )
+         
+        val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie, contentType)
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstOrderlySchema(response.text, "GitCommits")
+
+        val tasks = JSONValidator.getData(response.text) as ArrayNode
+        assertThat(tasks.count()).isEqualTo(1)
+        assertThat(tasks[0]["date"].textValue()).isEqualTo(now.toString())
+        assertThat(tasks[0]["name"].textValue()).isEqualTo("report")
+        assertThat(tasks[0]["key"].textValue()).isEqualTo("key")
+    }
+
+    @Test
+    fun `only users with permissions can get running reports`()
+    {
+        val url = "/running/"
+
+        assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
+                contentType = ContentTypes.json)
     }
 }

@@ -12,6 +12,8 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.time.Instant
 import kotlin.streams.asSequence
+import java.sql.Timestamp
+import com.google.gson.Gson
 
 data class InsertableChangelog
 constructor(val id: String,
@@ -130,6 +132,31 @@ fun insertUser(email: String,
     insertUserGroup(email)
 
     giveUserGroupMember(email, email)
+}
+
+fun insertReportRun(
+        key: String,
+        user: String,
+        date: Instant,
+        report: String,
+        instances: Map<String, String>,
+        params: Map<String, String>,
+        gitBranch: String?,
+        gitCommit: String?)
+{
+    JooqContext().use {
+
+        it.dsl.insertInto(ORDERLYWEB_REPORT_RUN)
+                .set(ORDERLYWEB_REPORT_RUN.KEY, key)
+                .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
+                .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
+                .set(ORDERLYWEB_REPORT_RUN.REPORT, report)
+                .set(ORDERLYWEB_REPORT_RUN.INSTANCES, Gson().toJson(instances))
+                .set(ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
+                .set(ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
+                .set(ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
+                .execute()
+    }
 }
 
 fun insertUserGroup(id: String)

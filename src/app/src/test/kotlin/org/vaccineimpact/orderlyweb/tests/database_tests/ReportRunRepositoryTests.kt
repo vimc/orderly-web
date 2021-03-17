@@ -8,7 +8,9 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
+import org.vaccineimpact.orderlyweb.tests.insertReportRun
 import java.time.Instant
+
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
@@ -85,8 +87,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 
         val now = Instant.now()
 
-        val sut = OrderlyWebReportRunRepository()
-        sut.addReportRun(
+        insertReportRun(
             "adventurous_aardvark",
             "user@email.com",
             now,
@@ -96,7 +97,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "branch1",
             "commit1"
         )
-        sut.addReportRun(
+
+        insertReportRun(
             "benevolent_badger",
             "user2@email.com",
             now,
@@ -106,6 +108,8 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "branch1",
             "commit2"
         )
+
+        val sut = OrderlyWebReportRunRepository()
 
         val result = sut.getAllRunningReports("user@email.com")
         assertThat(result.count()).isEqualTo(1)
