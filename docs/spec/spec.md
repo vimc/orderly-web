@@ -581,12 +581,14 @@ Schema: [`QueueStatus.schema.json`](QueueStatus.schema.json)
     {
         "key": "antiutopian_peregrinefalcon",
         "status": "running",
-        "name": "minimal"
+        "name": "minimal",
+        "version": "20210317140322-ag3481"
     },
     {
         "key": "flavoured_bassethound",
         "status": "queued",
-        "name": "other"
+        "name": "other",
+        "version": null
     }
   ]
 }
