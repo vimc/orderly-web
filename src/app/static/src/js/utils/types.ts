@@ -18,9 +18,9 @@ export interface ReportLog{
     params: Dict<Parameter> | {},
     git_branch: string | null,
     git_commit: string | null,
-    status: string,
-    logs: string,
-    report_version: string
+    status: string | null,
+    logs: string | null,
+    report_version: string | null
 }
 export interface Error {
     response?: {
