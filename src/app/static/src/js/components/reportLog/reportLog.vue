@@ -12,7 +12,7 @@
             </div>
         </div>
         <div v-else>
-            <div id="noReportsRan">No reports have been ran yet</div>
+            <p id="noReportsRan">No reports have been ran yet</p>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
