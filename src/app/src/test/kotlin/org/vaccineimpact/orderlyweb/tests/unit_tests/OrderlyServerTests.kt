@@ -44,6 +44,22 @@ class OrderlyServerTests
     }
 
     @Test
+    fun `passes through query string to GET for overloaded`()
+    {
+        val client = getHttpClient()
+        OrderlyServer(mockConfig, client).get("/some/path/", mock(), true)
+
+
+
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.encodedPath).isEqualTo("/some/path/")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
+    }
+
+    @Test
     fun `passes query parameters from URL`()
     {
         val client = getHttpClient()
