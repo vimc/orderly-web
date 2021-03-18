@@ -136,17 +136,16 @@ class RunReportPageTests : IntegrationTest()
 
         val sut = ReportRunController(mockContext, mockRepo)
         val result = sut.getRunningReportLogs()
-        assertThat(result).isEqualTo(ReportRunLog(
-                "test@example.com",
-                instant,
-                "q123",
-                mapOf("annex" to "production", "source" to "production"),
-                mapOf("name" to "cologne", "value" to "memo"),
-                "branch",
-                "commit",
-                "complete",
-                "logs",
-                "1233"))
+        assertThat(result.email).isEqualTo("test@example.com")
+        assertThat(result.date).isEqualTo(instant)
+        assertThat(result.report).isEqualTo("q123")
+        assertThat(result.instances).isEqualTo(mapOf("annex" to "production", "source" to "production"))
+        assertThat(result.params).isEqualTo(mapOf("name" to "cologne", "value" to "memo"))
+        assertThat(result.gitBranch).isEqualTo("branch")
+        assertThat(result.gitCommit).isEqualTo("commit")
+        assertThat(result.status).isEqualTo("complete")
+        assertThat(result.logs).isEqualTo("logs")
+        assertThat(result.reportVersion).isEqualTo("1233")
     }
 
     @Test
