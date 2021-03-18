@@ -474,6 +474,7 @@
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.DataRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.GitRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.HomeRouteConfig.kt:1</ID>
+    <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.QueueRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.ReportRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.UserRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.VersionRouteConfig.kt:1</ID>
@@ -495,6 +496,7 @@
     <ID>PackageNaming:GitRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:GoSignal.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:HomeRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
+    <ID>PackageNaming:QueueRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:ReportRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:ResponseErrorHandler.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:RouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
