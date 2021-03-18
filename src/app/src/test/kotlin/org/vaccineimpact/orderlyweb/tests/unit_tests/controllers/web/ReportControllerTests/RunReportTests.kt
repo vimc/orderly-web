@@ -156,7 +156,16 @@ class RunReportTests
 
         val sut = ReportRunController(mockContext, mock(), mockRepo)
         val result = sut.getRunningReportLogs()
-        Assertions.assertThat(result).isEqualTo(fakeReportRunLog)
+        Assertions.assertThat(result.email).isEqualTo("test@example.com")
+        Assertions.assertThat(result.date).isEqualTo(instant)
+        Assertions.assertThat(result.report).isEqualTo("q123")
+        Assertions.assertThat(result.instances).isEqualTo(mapOf("annex" to "production", "source" to "production"))
+        Assertions.assertThat(result.params).isEqualTo(mapOf("name" to "cologne", "value" to "memo"))
+        Assertions.assertThat(result.gitBranch).isEqualTo("branch")
+        Assertions.assertThat(result.gitCommit).isEqualTo("commit")
+        Assertions.assertThat(result.status).isEqualTo("complete")
+        Assertions.assertThat(result.logs).isEqualTo("logs")
+        Assertions.assertThat(result.reportVersion).isEqualTo("1233")
     }
 
     @Test
