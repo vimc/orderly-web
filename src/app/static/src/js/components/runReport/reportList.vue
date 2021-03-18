@@ -61,7 +61,6 @@
         computed: {
             sortedReports() {
                 return this.reports.sort((a, b) => a.name.localeCompare(b.name));
-                // return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
         beforeDestroy() {

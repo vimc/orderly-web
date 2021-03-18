@@ -1,37 +1,19 @@
 <template>
     <div>
-        <div v-if="reportLogsEnabled">
-            <h2>Running report logs</h2>
-            <div v-if="showReports" id="logs-form-group" class="form-group row">
-                <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
-                <div class="col-sm-6">
-                    <report-list id="logs" 
-                    :reports="reports" 
-                    :report.sync="selectedReport"
-                    v-on="$listeners"
-                    :key.sync="selectedLogReportKey"/>
-                </div>
-                <!-- <button @click.prevent="getAllReports"
-                        id="logs-refresh-btn"
-                        class="btn col-sm-1"
-                        :disabled="logsRefreshing"
-                        type="submit">
-                        {{refreshLogsText}}
-                </button> -->
+        <h2>Running report logs</h2>
+        <div v-if="showReports" id="logs-form-group" class="form-group row">
+            <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
+            <div class="col-sm-6">
+                <report-list id="logs" 
+                :reports="reports" 
+                :report.sync="selectedReport"
+                v-on="$listeners"
+                :key.sync="selectedLogReportKey"/>
             </div>
-            <div v-else>
-                <div id="noReportsRan">No reports have been ran yet</div>
-                <!-- <button @click.prevent="getAllReports"
-                        id="logs-refresh-btn2"
-                        class="btn col-sm-1"
-                        :disabled="logsRefreshing"
-                        type="submit">
-                        {{refreshLogsText}}
-                </button> -->
-            </div>
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
-        <div v-else>Report logs coming soon</div>
+        <div v-else>
+            <div id="noReportsRan">No reports have been ran yet</div>
+        </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
@@ -41,7 +23,6 @@
     import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    // import {switches} from "./../../featureSwitches";
 
 
     interface Computed {
@@ -55,7 +36,6 @@
 
     interface Data {
         reports: [],
-        reportLogsEnabled: boolean,
         logsRefreshing: boolean,
         selectedLogReportKey: string,
         selectedReport: string,
@@ -72,8 +52,6 @@
         data(): Data {
             return {
                 reports: [],
-                // reportLogsEnabled: switches.reportLog,
-                reportLogsEnabled: true,
                 logsRefreshing: false,
                 selectedLogReportKey: "",
                 selectedReport: "",
@@ -99,7 +77,6 @@
                         this.reports = data.data;
                         this.error = "";
                         this.defaultMessage = "";
-                        // console.log('get all reports fired', data.data)
                     })
                     .catch((error) => {
                         this.logsRefreshing = false;
@@ -110,11 +87,6 @@
         },
         mounted(){
             this.getAllReports();
-        },
-        watch: {
-            selectedLogReportKey(){
-                console.log('selectedLogReportKey in reportLog', this.selectedLogReportKey)
-            }
         }
     })
 </script>

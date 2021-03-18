@@ -2,7 +2,6 @@ import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import ReportLog from "../../../js/components/reportLog/reportLog.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
-// import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("runReport", () => {

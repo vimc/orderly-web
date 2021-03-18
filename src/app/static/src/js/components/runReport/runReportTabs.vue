@@ -60,8 +60,7 @@
         },
         methods: {
             setLogReportKey(e){
-                this.selectedLogReportKey = e,
-                console.log('selectedLogReportKey in runReportTabs', this.selectedLogReportKey)
+                this.selectedLogReportKey = e
             },
             switchTab(tab){
                 this.selectedTab = tab
