@@ -38,7 +38,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
-    fun get(url: String, context: ActionContext, hasUnwantedQueryParams: Boolean = false): OrderlyServerResponse
+    fun get(url: String, context: ActionContext, hasUnwantedQueryParams: Boolean): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
@@ -107,14 +107,10 @@ class OrderlyServer(
 
     override fun get(url: String, context: ActionContext, hasUnwantedQueryParams: Boolean): OrderlyServerResponse
     {
-        lateinit var request: Request
-        if (hasUnwantedQueryParams)
-        {
-            request = Request.Builder()
-                    .url(buildFullUrl(url, ""))
-                    .headers(standardHeaders.toHeaders())
-                    .build()
-        }
+        val request = Request.Builder()
+                .url(buildFullUrl(url, ""))
+                .headers(standardHeaders.toHeaders())
+                .build()
 
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)

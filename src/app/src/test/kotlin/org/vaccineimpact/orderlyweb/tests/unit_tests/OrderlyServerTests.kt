@@ -49,8 +49,6 @@ class OrderlyServerTests
         val client = getHttpClient()
         OrderlyServer(mockConfig, client).get("/some/path/", mock(), true)
 
-
-
         verify(client).newCall(
                 check {
                     assertThat(it.url.encodedPath).isEqualTo("/some/path/")
