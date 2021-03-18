@@ -154,18 +154,19 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val sut = ReportRunController(mockContext, mock(), mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo)
         val result = sut.getRunningReportLogs()
-        Assertions.assertThat(result.email).isEqualTo("test@example.com")
-        Assertions.assertThat(result.date).isEqualTo(instant)
-        Assertions.assertThat(result.report).isEqualTo("q123")
-        Assertions.assertThat(result.instances).isEqualTo(mapOf("annex" to "production", "source" to "production"))
-        Assertions.assertThat(result.params).isEqualTo(mapOf("name" to "cologne", "value" to "memo"))
-        Assertions.assertThat(result.gitBranch).isEqualTo("branch")
-        Assertions.assertThat(result.gitCommit).isEqualTo("commit")
-        Assertions.assertThat(result.status).isEqualTo("complete")
-        Assertions.assertThat(result.logs).isEqualTo("logs")
-        Assertions.assertThat(result.reportVersion).isEqualTo("1233")
+        Assertions.assertThat(result).isEqualTo(ReportRunLog(
+                "test@example.com",
+                instant,
+                "q123",
+                mapOf("annex" to "production", "source" to "production"),
+                mapOf("name" to "cologne", "value" to "memo"),
+                "branch",
+                "commit",
+                "complete",
+                "logs",
+                "1233"))
     }
 
     @Test
@@ -176,10 +177,10 @@ class RunReportTests
         }
 
         val mockRepo = mock<ReportRunRepository> {
-            on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "")
+            on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "getReportRun")
         }
 
-        val sut = ReportRunController(mockContext, mock(), mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo)
         Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }

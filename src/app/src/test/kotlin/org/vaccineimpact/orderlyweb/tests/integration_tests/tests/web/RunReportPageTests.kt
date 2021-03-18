@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
@@ -11,6 +12,7 @@ import org.vaccineimpact.orderlyweb.controllers.web.ReportController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.models.GitCommit
@@ -18,7 +20,9 @@ import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import spark.route.HttpMethod
 import java.time.Instant
 
 class RunReportPageTests : IntegrationTest()
@@ -126,26 +130,49 @@ class RunReportPageTests : IntegrationTest()
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val mockServer: OrderlyServerAPI = mock {
-            on { get("/running/fakeKey/logs", mockContext) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeReportRunLog), 200)
-        }
-
         val mockRepo = mock<ReportRunRepository> {
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
 
-        val sut = ReportRunController(mockContext, mock(), mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo)
         val result = sut.getRunningReportLogs()
-        assertThat(result.email).isEqualTo("test@example.com")
-        assertThat(result.date).isEqualTo(instant)
-        assertThat(result.report).isEqualTo("q123")
-        assertThat(result.instances).isEqualTo(mapOf("annex" to "production", "source" to "production"))
-        assertThat(result.params).isEqualTo(mapOf("name" to "cologne", "value" to "memo"))
-        assertThat(result.gitBranch).isEqualTo("branch")
-        assertThat(result.gitCommit).isEqualTo("commit")
-        assertThat(result.status).isEqualTo("complete")
-        assertThat(result.logs).isEqualTo("logs")
-        assertThat(result.reportVersion).isEqualTo("1233")
+        assertThat(result).isEqualTo(ReportRunLog(
+                "test@example.com",
+                instant,
+                "q123",
+                mapOf("annex" to "production", "source" to "production"),
+                mapOf("name" to "cologne", "value" to "memo"),
+                "branch",
+                "commit",
+                "complete",
+                "logs",
+                "1233"))
+    }
+
+    @Test
+    fun `only report runners can get running report logs`()
+    {
+        insertUser("user@email.com", "user.name")
+        val now = Instant.now()
+        val sut = OrderlyWebReportRunRepository()
+        sut.addReportRun(
+                "frightened_rabbit",
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
+        )
+
+        val url = "/running/frightened_rabbit/logs"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
     }
 }

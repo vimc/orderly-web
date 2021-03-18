@@ -6,6 +6,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
@@ -75,5 +76,46 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 "commit2"
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
+    }
+
+    @Test
+    fun `can get running report logs for key`()
+    {
+        insertUser("user@email.com", "user.name")
+        val now = Instant.now()
+
+        val sut = OrderlyWebReportRunRepository()
+        sut.addReportRun(
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
+        )
+
+        assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1",
+                null,
+                null,
+                null))
+    }
+
+    @Test
+    fun `can throw UnknownObjectError when retrieving unknown running report logs`()
+    {
+        val sut = OrderlyWebReportRunRepository()
+        assertThatThrownBy {
+            sut.getReportRun("fakeKey")
+        }.hasMessageContaining("the following problems occurred:\n" +
+                "Unknown get-report-run : 'key'")
     }
 }
