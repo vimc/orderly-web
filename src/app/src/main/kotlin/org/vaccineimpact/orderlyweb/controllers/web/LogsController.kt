@@ -4,7 +4,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.models.Running
+import org.vaccineimpact.orderlyweb.models.RunningReports
 
 class LogsController(
     context: ActionContext,
@@ -16,7 +16,7 @@ class LogsController(
             OrderlyWebReportRunRepository()
     )
 
-    fun running(): List<Running>
+    fun runningReports(): List<RunningReports>
     {
         val user = context.userProfile!!.id
         return reportRunRepository.getAllRunningReports(user)

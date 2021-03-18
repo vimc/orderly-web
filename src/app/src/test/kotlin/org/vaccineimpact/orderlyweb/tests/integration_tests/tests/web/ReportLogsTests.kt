@@ -20,7 +20,7 @@ class ReportLogsTests : IntegrationTest()
     @Test
     fun `can get all running reports`()
     {
-        val url = "/running/"
+        val url = "/running-reports/"
         val permissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
 
         val sessionCookie = webRequestHelper.webLoginWithMontagu(permissions)
@@ -54,7 +54,7 @@ class ReportLogsTests : IntegrationTest()
     @Test
     fun `only users with permissions can get running reports`()
     {
-        val url = "/running/"
+        val url = "/running-reports/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)

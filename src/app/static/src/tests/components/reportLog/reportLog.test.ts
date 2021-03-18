@@ -7,7 +7,7 @@ import {mockAxios} from "../../mockAxios";
 describe("runReport", () => {
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onGet('http://app/running/')
+        mockAxios.onGet('http://app/running-reports/')
             .reply(200, {"data": reports});
     });
 
@@ -31,7 +31,7 @@ describe("runReport", () => {
     }
 
     const getWrapper = (report = reports, data = initialData) => {
-        mockAxios.onGet('http://app/running/')
+        mockAxios.onGet('http://app/running-reports/')
             .reply(200, {"data": report});
         return mount(ReportLog, data);
     }
@@ -55,7 +55,7 @@ describe("runReport", () => {
     });
 
     it("show error message if error getting git commits", (done) => {
-        mockAxios.onGet('http://app/running/')
+        mockAxios.onGet('http://app/running-reports/')
             .reply(500, "TEST ERROR");
         const wrapper = shallowMount(ReportLog);
 

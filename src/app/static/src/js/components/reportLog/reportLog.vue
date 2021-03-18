@@ -71,7 +71,7 @@
             getAllReports() {
                 this.logsRefreshing = true
                 this.reports = [];
-                api.get('/running/')
+                api.get('/running-reports/')
                     .then(({data}) => {
                         this.logsRefreshing = false;
                         this.reports = data.data;

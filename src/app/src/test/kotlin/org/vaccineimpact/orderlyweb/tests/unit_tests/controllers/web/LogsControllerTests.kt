@@ -7,7 +7,7 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.LogsController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.models.Running
+import org.vaccineimpact.orderlyweb.models.RunningReports
 import java.time.Instant
 
 
@@ -22,7 +22,7 @@ class LogsControllerTests
         val context = mock<ActionContext>{
             on { this.userProfile } doReturn profile
         }
-        val runningObject = Running(Instant.now(), "name", "key")
+        val runningObject = RunningReports(Instant.now(), "name", "key")
         
         val repo = mock<ReportRunRepository> {
             on { this.getAllRunningReports("test@test.com") } doReturn (listOf(runningObject))
@@ -30,7 +30,7 @@ class LogsControllerTests
 
         val sut = LogsController(context, repo)
 
-        assertThat(sut.running()).containsExactlyElementsOf(listOf(runningObject))
+        assertThat(sut.runningReports()).containsExactlyElementsOf(listOf(runningObject))
     }
 
 }

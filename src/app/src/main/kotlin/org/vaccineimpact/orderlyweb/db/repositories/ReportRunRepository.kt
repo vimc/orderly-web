@@ -3,7 +3,7 @@ package org.vaccineimpact.orderlyweb.db.repositories
 import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
-import org.vaccineimpact.orderlyweb.models.Running
+import org.vaccineimpact.orderlyweb.models.RunningReports
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -19,7 +19,7 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
-    fun getAllRunningReports(user: String): List<Running>
+    fun getAllRunningReports(user: String): List<RunningReports>
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -49,7 +49,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         }
     }
 
-    override fun getAllRunningReports(user: String): List<Running>
+    override fun getAllRunningReports(user: String): List<RunningReports>
     {
         JooqContext().use {
             val result = it.dsl.select(
@@ -60,7 +60,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     .from(ORDERLYWEB_REPORT_RUN)
                     .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
 
-            return result.fetchInto(Running::class.java)
+            return result.fetchInto(RunningReports::class.java)
         }
     }
 }
