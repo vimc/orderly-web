@@ -245,6 +245,21 @@ class OrderlyServerTests
     }
 
     @Test
+    fun `throws on failure if specified for overloaded`()
+    {
+        val text = """{"status": "failure", "data": null, "errors": []}"""
+        val client = getHttpClient(text, 400)
+
+        val sut = OrderlyServer(mockConfig, client)
+                .throwOnError()
+
+        assertThatThrownBy { sut.get("/whatever", mock(), true) }
+                .isInstanceOf(OrderlyServerError::class.java)
+                .hasMessageContaining("Orderly server request failed for url /whatever")
+                .matches { (it as OrderlyServerError).httpStatus == 400 }
+    }
+
+    @Test
     fun `can parse primitive data`()
     {
         val text = """{"status": "success", "data": 10, "errors": []}"""
