@@ -1,9 +1,6 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
-import com.google.gson.JsonParser
-import com.google.gson.reflect.TypeToken
-import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -43,14 +40,14 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     {
         JooqContext().use {
             it.dsl.insertInto(Tables.ORDERLYWEB_REPORT_RUN)
-                .set(Tables.ORDERLYWEB_REPORT_RUN.KEY, key)
-                .set(Tables.ORDERLYWEB_REPORT_RUN.EMAIL, user)
-                .set(Tables.ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
-                .set(Tables.ORDERLYWEB_REPORT_RUN.REPORT, report)
-                .set(Tables.ORDERLYWEB_REPORT_RUN.INSTANCES, Gson().toJson(instances))
-                .set(Tables.ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
-                .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
-                .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
+                .set(ORDERLYWEB_REPORT_RUN.KEY, key)
+                .set(ORDERLYWEB_REPORT_RUN.EMAIL, user)
+                .set(ORDERLYWEB_REPORT_RUN.DATE, Timestamp.from(date))
+                .set(ORDERLYWEB_REPORT_RUN.REPORT, report)
+                .set(ORDERLYWEB_REPORT_RUN.INSTANCES, Gson().toJson(instances))
+                .set(ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
+                .set(ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
+                .set(ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
                 .execute()
         }
     }

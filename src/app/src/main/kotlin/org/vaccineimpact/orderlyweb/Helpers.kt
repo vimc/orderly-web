@@ -163,7 +163,7 @@ fun getFriendlyRelativeDateTime(date: Date) : String
     return prettyTime.format(date)
 }
 
-fun jsonToStringMap(json : String): Map<String, String>
+fun jsonToStringMap(json: String): Map<String, String>
 {
     val element = JsonParser().parse(json)
     val type = TypeToken.getParameterized(Map::class.java, String::class.java, String::class.java).type

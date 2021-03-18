@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Running report logs</h2>
-        <div class="mt-3">
+        <div class="mt-3 px-5">
             <div id="report-log">
                 <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
@@ -25,11 +25,9 @@
                     <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
                         <span>Parameters:</span>
                         <span>
-                        <div class="d-md-table-row row" v-for="(key, index) in reportLog.params">
-                            <span class="border border-secondary p-1">{{ key }}:</span>
-                            <span class="border border-secondary p-1">
-                                {{ value }}
-                            </span>
+                        <div class="d-md-table-row row" v-for="(key, value) in reportLog.params">
+                            <span class="border border-secondary col-md">{{ key }}:</span>
+                            <span class="border border-secondary col-md">{{ value }}</span>
                         </div>
                     </span>
                     </div>
@@ -60,13 +58,11 @@
                     <div id="report-version" v-if="reportLog.report_version" class="col-sm-auto">
                         <div class="text-right">
                             <span>Report version:</span>
-                            <span class="font-weight-bold"><a :href="versionUrl">{{
-                                    reportLog.report_version
-                                }}</a></span>
+                            <span class="font-weight-bold"><a :href="versionUrl">{{reportLog.report_version}}</a></span>
                         </div>
                     </div>
                 </div>
-                <div id="report-logs" v-if="reportLog.logs" class="row pt-2">
+                <div id="report-logs" class="row pt-2">
                     <div class="text-right col-sm-10">
                         <textarea class="form-control bg-white"
                                   readonly rows="10">{{ reportLog.logs }}
@@ -140,7 +136,6 @@
         },
         computed: {
             paramSize: function () {
-                console.log(Object.keys(this.reportLog.params).length)
                 return Object.keys(this.reportLog.params).length
             },
             instanceSize: function () {
@@ -160,8 +155,6 @@
                 api.get(`/running/${this.reportKey}/logs/`)
                     .then(({data}) => {
                         this.reportLog = data.data
-                        console.log(data.data)
-                        console.log(this.reportLog)
                         this.error = "";
                         this.defaultMessage = "";
                     })

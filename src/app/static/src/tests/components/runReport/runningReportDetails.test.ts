@@ -9,18 +9,26 @@ describe(`runningReportDetails`, () => {
     const props = {
         reportKey: "half_aardwolf"
     }
+
+    const mockEmptyReportLog = {
+        email: "",
+        date: "",
+        report: "",
+        instances: new Map([]),
+        params: new Map([]),
+        git_branch: "",
+        git_commit: "",
+        status: "",
+        logs: "",
+        report_version: ""
+    }
+
     const initialReportLog = {
         email: "test@example.com",
         date: "",
         report: "minimal",
-        instances: {
-            "0": {"database": "support", "instance": "annexe val"},
-            "1": {"database": "assist", "instance": "annexe 2"}
-        },
-        params: {
-            "0": {"name": "nmin", "value": "ey6"},
-            "1": {"name": "cologne", "value": "mfk"}
-        },
+        instances: { "database": "support", "instance" : "annexe"},
+        params: {"name" : "nmin", "cologne" : "ey6"},
         git_branch: "branch value",
         git_commit: "commit value",
         status: "complete",
@@ -63,34 +71,33 @@ describe(`runningReportDetails`, () => {
             expect(spans.at(0).text()).toBe("Parameters:")
 
             const divs = spans.at(1).findAll("div")
-            const valueSpan1 = divs.at(0).findAll("span")
-            expect(valueSpan1.at(0).text()).toBe("nmin:")
-            expect(valueSpan1.at(1).text()).toBe("ey6")
+            const keyValSpan1 = divs.at(0).findAll("span")
+            expect(keyValSpan1.at(0).text()).toBe("nmin:")
+            expect(keyValSpan1.at(1).text()).toBe("name")
 
-            const valueSpan2 = divs.at(1).findAll("span")
-            expect(valueSpan2.at(0).text()).toBe("cologne:")
-            expect(valueSpan2.at(1).text()).toBe("mfk")
+            const keyValSpan2 = divs.at(1).findAll("span")
+            expect(keyValSpan2.at(0).text()).toBe("ey6:")
+            expect(keyValSpan2.at(1).text()).toBe("cologne")
     })
 
-    it(`displays Database(source) data as expected`,  () => {
+    it(`displays instance data values as expected`,  () => {
             const wrapper = getWrapper()
             const spans = wrapper.find("#report-database-source").findAll("span")
             expect(spans.at(0).text()).toBe("Database:")
 
             const liValues = spans.at(1).findAll("ul li")
             expect(liValues.at(0).text()).toBe("support")
-            expect(liValues.at(1).text()).toBe("assist")
+            expect(liValues.at(1).text()).toBe("annexe")
     })
 
-    it(`displays Database(annexe) data as expected`, () => {
-
+    it(`displays instance data keys as expected`, () => {
             const wrapper = getWrapper()
             const spans = wrapper.find("#report-database-instance").findAll("span")
             expect(spans.at(0).text()).toBe("Instance:")
 
-            const liValues = spans.at(1).findAll("ul li")
-            expect(liValues.at(0).text()).toBe("annexe val")
-            expect(liValues.at(1).text()).toBe("annexe 2")
+            const liKeys = spans.at(1).findAll("ul li")
+            expect(liKeys.at(0).text()).toBe("database")
+            expect(liKeys.at(1).text()).toBe("instance")
     })
 
     it(`displays status data as expected`,  () => {
@@ -115,30 +122,24 @@ describe(`runningReportDetails`, () => {
 
     it(`does not displays data when report key in not given`, async (done) => {
         const key = ""
-        const mockInitialReportLog = {
-            email: "",
-            date: "",
-            report: "",
-            instances: {
-                "0": {"database": "", "instance": ""},
-                "1": {"database": "", "instance": ""}
-            },
-            params: {
-                "0": {"name": "", "value": ""},
-                "1": {"name": "", "value": ""}
-            },
-            git_branch: "",
-            git_commit: "",
-            status: "",
-            logs: "",
-            report_version: ""
+        const getWrapper = () => {
+            return shallowMount(runningReportsDetails,
+                {
+                    propsData: {
+                        reportKey: key
+                    },
+                    data() {
+                        return {
+                            reportLog: mockEmptyReportLog
+                        }
+                    }
+                })
         }
-        const wrapper = getWrapper({reportKey: key}, mockInitialReportLog)
+        const wrapper = getWrapper()
 
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
         setTimeout(() => {
-            expect(wrapper.find("#report-logs").exists()).toBe(false)
             expect(wrapper.find("#no-logs").exists()).toBe(true)
             expect(wrapper.find("#no-logs").text()).toBe("There are no logs to display")
             done()
@@ -147,30 +148,24 @@ describe(`runningReportDetails`, () => {
 
     it(`it displays error message when report key in not valid`, async(done) => {
         const key = "fakeKey"
-        const mockInitialReportLog = {
-            email: "",
-            date: "",
-            report: "",
-            instances: {
-                "0": {"database": "", "instance": ""},
-                "1": {"database": "", "instance": ""}
-            },
-            params: {
-                "0": {"name": "", "value": ""},
-                "1": {"name": "", "value": ""}
-            },
-            git_branch: "",
-            git_commit: "",
-            status: "",
-            logs: "",
-            report_version: ""
+        const getWrapper = () => {
+            return shallowMount(runningReportsDetails,
+                {
+                    propsData: {
+                        reportKey: key
+                    },
+                    data() {
+                        return {
+                            reportLog: mockEmptyReportLog
+                        }
+                    }
+                })
         }
-        const wrapper = getWrapper({reportKey: key}, mockInitialReportLog)
+        const wrapper = getWrapper()
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(500, "Error");
 
         setTimeout(() => {
-            expect(wrapper.find("#report-logs").exists()).toBe(false)
             expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("Error")
             expect(wrapper.find(ErrorInfo).props("defaultMessage"))
                 .toBe("An error occurred when fetching logs")

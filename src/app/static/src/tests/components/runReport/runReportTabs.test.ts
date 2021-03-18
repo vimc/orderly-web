@@ -1,5 +1,5 @@
 import Vue from "vue";
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import RunReportTabs from "../../../js/components/runReport/runReportTabs.vue";
 import runningReportDetails from "../../../js/components/runReport/runningReportDetails.vue";
 
