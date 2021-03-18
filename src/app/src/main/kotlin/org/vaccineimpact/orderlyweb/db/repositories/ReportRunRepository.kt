@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.db.repositories
 import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
-import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.Running
 import java.sql.Timestamp
 import java.time.Instant
