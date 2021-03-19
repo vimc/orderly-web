@@ -15,12 +15,12 @@ describe("runReportTabs", () => {
         initialGitBranches
     };
 
-    const getWrapper = (reportKey = "", propsData = props) => {
+    const getWrapper = (selectedLogReportKey = "", propsData = props) => {
         return shallowMount(RunReportTabs, {
             propsData,
             data() {
                 return {
-                    reportKey: reportKey
+                    selectedLogReportKey: selectedLogReportKey
                 }
             }
         });
