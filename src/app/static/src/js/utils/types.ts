@@ -3,11 +3,6 @@ export interface Parameter {
     value: string
 }
 
-export interface Instances {
-    database: string,
-    instance: string
-}
-
 export interface ReportLog{
     email: string,
     date: string,
