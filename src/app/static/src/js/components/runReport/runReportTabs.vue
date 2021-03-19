@@ -29,7 +29,7 @@
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                     <div id="running-report-details">
-                        <running-report-details :report-key="reportKey"></running-report-details>
+                        <running-report-details :report-key="selectedLogReportKey"></running-report-details>
                     </div>
                 </div>
             </div>
