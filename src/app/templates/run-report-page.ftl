@@ -8,7 +8,7 @@
         <div id="runReportTabsVueApp">
             <run-report-tabs :metadata="runReportMetadata"
                              :initial-git-branches="gitBranches"
-                             :report-name="initialReportName"></run-report-tabs>
+                             :initial-report-name="initialReportName"></run-report-tabs>
         </div>
     <#macro scripts>
         <script type="text/javascript">

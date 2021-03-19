@@ -24,11 +24,13 @@ class RunReportTests
     @Test
     fun `getRunReport creates viewmodel`()
     {
+        val key = "report-key"
         val mockContext = mock<ActionContext>()
+        val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mockContext, true) } doReturn
+            on { get("/git/branches", mockContext, queryParams) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
-            on { get("/run-metadata", mockContext, true) } doReturn
+            on { get("/run-metadata", mockContext, queryParams) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
@@ -52,9 +54,9 @@ class RunReportTests
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext, true) } doReturn
+            on { get("/run-metadata", mockContext, mapOf()) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
-            on { get("/git/branches", mockContext, true) } doReturn
+            on { get("/git/branches", mockContext, mapOf()) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
@@ -71,7 +73,7 @@ class RunReportTests
     {
         val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext, true) } doThrow OrderlyServerError("/run-metadata", 400)
+            on { get("/run-metadata", mockContext, mapOf()) } doThrow OrderlyServerError("/run-metadata", 400)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError

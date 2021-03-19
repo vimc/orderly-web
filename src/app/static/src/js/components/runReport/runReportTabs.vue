@@ -26,7 +26,7 @@
                     <div id="runReportVueApp">
                         <run-report :metadata="metadata"
                                     :initial-git-branches="initialGitBranches"
-                                    :report-name="reportName"></run-report>
+                                    :initial-report-name="initialReportName"></run-report>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
@@ -51,7 +51,7 @@
         props: [
             "metadata",
             "initialGitBranches",
-            "reportName"
+            "initialReportName"
         ],
         data() {
             return {

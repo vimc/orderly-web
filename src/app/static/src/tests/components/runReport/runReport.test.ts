@@ -275,7 +275,7 @@ describe("runReport", () => {
                     instances_supported: true,
                 },
                 initialGitBranches,
-                reportName: "minimal"
+                initialReportName: "minimal"
             }
         });
 

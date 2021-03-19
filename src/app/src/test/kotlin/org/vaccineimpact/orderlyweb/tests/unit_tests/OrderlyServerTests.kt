@@ -47,7 +47,9 @@ class OrderlyServerTests
     fun `passes through query string to GET for overloaded`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path/", mock(), true)
+        val key = "report-name"
+        val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
+        OrderlyServer(mockConfig, client).get("/some/path/", mock(), queryParams )
 
         verify(client).newCall(
                 check {
@@ -267,7 +269,9 @@ class OrderlyServerTests
         val sut = OrderlyServer(mockConfig, client)
                 .throwOnError()
 
-        assertThatThrownBy { sut.get("/whatever", mock(), true) }
+        val key = "report-name"
+        val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
+        assertThatThrownBy { sut.get("/whatever", mock(), queryParams) }
                 .isInstanceOf(OrderlyServerError::class.java)
                 .hasMessageContaining("Orderly server request failed for url /whatever")
                 .matches { (it as OrderlyServerError).httpStatus == 400 }
