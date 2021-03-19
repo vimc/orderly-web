@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2>Running report logs</h2>
-        <div class="mt-3 px-5">
+        <div v-if="reportLog" class="mt-3 px-5">
             <div id="report-log">
                 <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
@@ -70,16 +70,16 @@
                     </div>
                 </div>
             </div>
-            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
-        <div id="no-logs" v-if="!reportLogSize">There are no logs to display</div>
+        <div id="no-logs" v-if="!reportLog">There are no logs to display</div>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
     import {ReportLog} from "../../utils/types";
-    import {api} from "../../utils/api";
+    import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
@@ -87,7 +87,7 @@
     }
 
     interface Data {
-        reportLog: ReportLog
+        reportLog: ReportLog | null
         error: string,
         defaultMessage: string
     }
@@ -96,24 +96,10 @@
         paramSize: number
         instanceSize: number
         versionUrl: string
-        reportLogSize: boolean
     }
 
     interface Props {
         reportKey: string
-    }
-
-    const initialReportLog = {
-        email: "",
-        date: "",
-        report: "",
-        instances: new Map,
-        params: new Map,
-        git_branch: "",
-        git_commit: "",
-        status: "",
-        logs: "",
-        report_version: ""
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -129,7 +115,7 @@
         },
         data(): Data {
             return {
-                reportLog: initialReportLog,
+                reportLog: null,
                 error: "",
                 defaultMessage: ""
             }
@@ -142,12 +128,8 @@
                 return Object.keys(this.reportLog.instances).length
             },
             versionUrl: function () {
-                return `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
-            },
-            reportLogSize: function () {
-                const reportValues = Object.values(this.reportLog)
-                    .filter(value => (value && typeof (value) !== "object"))
-                return reportValues.length > 0
+                const url = `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
+                return buildFullUrl(url)
             }
         },
         methods: {

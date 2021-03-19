@@ -10,19 +10,6 @@ describe(`runningReportDetails`, () => {
         reportKey: "half_aardwolf"
     }
 
-    const mockEmptyReportLog = {
-        email: "",
-        date: "",
-        report: "",
-        instances: new Map([]),
-        params: new Map([]),
-        git_branch: "",
-        git_commit: "",
-        status: "",
-        logs: "",
-        report_version: ""
-    }
-
     const initialReportLog = {
         email: "test@example.com",
         date: "",
@@ -127,11 +114,6 @@ describe(`runningReportDetails`, () => {
                 {
                     propsData: {
                         reportKey: key
-                    },
-                    data() {
-                        return {
-                            reportLog: mockEmptyReportLog
-                        }
                     }
                 })
         }
@@ -153,11 +135,6 @@ describe(`runningReportDetails`, () => {
                 {
                     propsData: {
                         reportKey: key
-                    },
-                    data() {
-                        return {
-                            reportLog: mockEmptyReportLog
-                        }
                     }
                 })
         }
