@@ -83,13 +83,16 @@
     import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
-        getLogs: () => void
+        getLogs: () => void,
+        startPolling: () => void,
+        stopPolling: () => void
     }
 
     interface Data {
         reportLog: ReportLog | null
         error: string,
-        defaultMessage: string
+        defaultMessage: string,
+        pollingTimer: number | null
     }
 
     interface Computed {
@@ -117,7 +120,8 @@
             return {
                 reportLog: null,
                 error: "",
-                defaultMessage: ""
+                defaultMessage: "",
+                pollingTimer: null
             }
         },
         computed: {
@@ -134,28 +138,43 @@
         },
         methods: {
             getLogs: function () {
-                api.get(`/running/${this.reportKey}/logs/`)
-                    .then(({data}) => {
-                        this.reportLog = data.data
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred when fetching logs";
-                    });
+                if (this.reportKey) {
+                    api.get(`/running/${this.reportKey}/logs/`)
+                        .then(({data}) => {
+                            this.reportLog = data.data;
+                            this.error = "";
+                            this.defaultMessage = "";
+
+                            if (this.reportLog.status in ["running", "queued"]) {
+                                if (!this.pollingTimer) {
+                                    this.startPolling();
+                                }
+                            }
+                            else if (this.pollingTimer) {
+                                this.stopPolling(); //the run has completed
+                            }
+                        })
+                        .catch((error) => {
+                            this.error = error;
+                            this.defaultMessage = "An error occurred when fetching logs";
+                        });
+                }
+            },
+            startPolling: function () {
+                this.pollingTimer = setInterval(() => this.getLogs, 1500);
+            },
+            stopPolling: function () {
+                clearInterval(this.pollingTimer);
+                this.pollingTimer = null;
             }
         },
         mounted() {
-            if (this.reportKey) {
-                this.getLogs()
-            }
+            this.getLogs();
         },
         watch: {
             reportKey() {
-                if(this.reportLog) {
-                    this.getLogs()
-                }
+                this.stopPolling();
+                this.getLogs();
             }
         }
     })

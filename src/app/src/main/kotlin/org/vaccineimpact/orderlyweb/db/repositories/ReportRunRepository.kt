@@ -23,6 +23,13 @@ interface ReportRunRepository
     )
     @Throws(UnknownObjectError::class)
     fun getReportRun(key: String): ReportRunLog
+
+    fun updateReportRun(
+        key: String,
+        status: String,
+        version: String?,
+        logs: List<String>?
+    )
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -81,6 +88,24 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     result[ORDERLYWEB_REPORT_RUN.STATUS],
                     result[ORDERLYWEB_REPORT_RUN.LOGS],
                     result[ORDERLYWEB_REPORT_RUN.REPORT_VERSION])
+        }
+    }
+
+    override fun updateReportRun(
+            key: String,
+            status: String,
+            version: String?,
+            logs: List<String>?
+    )
+    {
+        val logsString = logs?.joinToString(separator = "\n")
+        JooqContext().use {
+            it.dsl.update(ORDERLYWEB_REPORT_RUN)
+               .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
+               .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, version)
+               .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
+               .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+               .execute()
         }
     }
 }
