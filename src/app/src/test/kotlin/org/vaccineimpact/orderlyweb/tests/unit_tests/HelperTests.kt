@@ -109,7 +109,7 @@ class HelperTests
     }
 
     @Test
-    fun `jsonToStringMap returns expected Data class`()
+    fun `returns expected string map`()
     {
         val jsonString = "{'name': 'value'}"
         var result: Map<String, String> = jsonToStringMap(jsonString)
