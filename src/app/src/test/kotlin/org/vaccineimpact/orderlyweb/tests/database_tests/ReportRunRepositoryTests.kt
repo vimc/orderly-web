@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.insertReportRun
 import java.time.Instant
+import org.vaccineimpact.orderlyweb.models.RunningReports
 
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
@@ -113,8 +114,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 
         val result = sut.getAllRunningReports("user@email.com")
         assertThat(result.count()).isEqualTo(1)
-        assertThat(result[0].date).isEqualTo(now)
-        assertThat(result[0].name).isEqualTo("report1")
-        assertThat(result[0].key).isEqualTo("adventurous_aardvark")
+        assertThat(result)
+                .isEqualTo(listOf(RunningReports(now, "report1", "adventurous_aardvark")))
     }
 }

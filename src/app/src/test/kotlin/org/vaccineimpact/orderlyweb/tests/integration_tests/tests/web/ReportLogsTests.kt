@@ -14,6 +14,8 @@ import spark.route.HttpMethod
 import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.sun.mail.handlers.text_plain
+import org.vaccineimpact.orderlyweb.models.RunningReports
 
 class ReportLogsTests : IntegrationTest()
 {
@@ -44,11 +46,13 @@ class ReportLogsTests : IntegrationTest()
         assertSuccessful(response)
         assertJsonContentType(response)
 
-        val tasks = JSONValidator.getData(response.text) as ArrayNode
-        assertThat(tasks.count()).isEqualTo(1)
-        assertThat(tasks[0]["date"].textValue()).isEqualTo(now.toString())
-        assertThat(tasks[0]["name"].textValue()).isEqualTo("report")
-        assertThat(tasks[0]["key"].textValue()).isEqualTo("key")
+        val result = JSONValidator.getData(response.text) as ArrayNode
+        assertThat(result.count()).isEqualTo(1)
+        // assertThat(result)
+        //         .isEqualTo(listOf(RunningReports(now, "report", "key")))
+        assertThat(result[0]["date"].textValue()).isEqualTo(now.toString())
+        assertThat(result[0]["name"].textValue()).isEqualTo("report")
+        assertThat(result[0]["key"].textValue()).isEqualTo("key")
     }
 
     @Test
