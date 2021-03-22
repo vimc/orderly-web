@@ -4,9 +4,9 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.models.RunningReports
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
-class LogsController(
+class ReportRunController(
     context: ActionContext,
     private val reportRunRepository: ReportRunRepository
 ) : Controller(context)
@@ -16,9 +16,9 @@ class LogsController(
             OrderlyWebReportRunRepository()
     )
 
-    fun runningReports(): List<RunningReports>
+    fun runningReports(): List<ReportRunWithDate>
     {
         val user = context.userProfile!!.id
-        return reportRunRepository.getAllRunningReports(user)
+        return reportRunRepository.getAllReportRunsForUser(user)
     }
 }

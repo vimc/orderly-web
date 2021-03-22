@@ -8,9 +8,8 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.tests.insertReportRun
 import java.time.Instant
-import org.vaccineimpact.orderlyweb.models.RunningReports
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
@@ -88,18 +87,20 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 
         val now = Instant.now()
 
-        insertReportRun(
+        val sut = OrderlyWebReportRunRepository()
+
+        sut.addReportRun(
             "adventurous_aardvark",
             "user@email.com",
             now,
             "report1",
-            mapOf("instance1" to "pre-staging"),
+            mapOf("instance1" to "post-staging"),
             mapOf("parameter1" to "value1"),
             "branch1",
             "commit1"
         )
 
-        insertReportRun(
+        sut.addReportRun(
             "benevolent_badger",
             "user2@email.com",
             now,
@@ -110,11 +111,9 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "commit2"
         )
 
-        val sut = OrderlyWebReportRunRepository()
-
-        val result = sut.getAllRunningReports("user@email.com")
+        val result = sut.getAllReportRunsForUser("user@email.com")
         assertThat(result.count()).isEqualTo(1)
         assertThat(result)
-                .isEqualTo(listOf(RunningReports(now, "report1", "adventurous_aardvark")))
+                .isEqualTo(listOf(ReportRunWithDate("report1", "adventurous_aardvark", now)))
     }
 }

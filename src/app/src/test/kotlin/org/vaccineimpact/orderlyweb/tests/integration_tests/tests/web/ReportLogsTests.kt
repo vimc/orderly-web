@@ -8,22 +8,22 @@ import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.giveUserGroupPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.tests.insertReportRun
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
 import spark.route.HttpMethod
 import java.time.Instant
 import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.sun.mail.handlers.text_plain
-import org.vaccineimpact.orderlyweb.models.RunningReports
-import org.json.JSONArray
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+// import org.json.JSONArray
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 
 class ReportLogsTests : IntegrationTest()
 {
     @Test
     fun `can get all running reports`()
     {
-        val url = "/running-reports/"
+        val url = "/reports/running/"
         val permissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
 
         val sessionCookie = webRequestHelper.webLoginWithMontagu(permissions)
@@ -31,7 +31,7 @@ class ReportLogsTests : IntegrationTest()
 
         val now = Instant.now()
 
-        insertReportRun(
+        OrderlyWebReportRunRepository().addReportRun(
             "key",
             "test.user@example.com",
             now,
@@ -50,7 +50,7 @@ class ReportLogsTests : IntegrationTest()
         val result = JSONValidator.getData(response.text) as ArrayNode
         assertThat(result.count()).isEqualTo(1)
         // assertThat(result)
-        //         .isEqualTo(listOf(RunningReports(now, "report", "key"))
+        //         .isEqualTo(listOf(ReportRunWithDate("report", "key", now))
         assertThat(result[0]["date"].textValue()).isEqualTo(now.toString())
         assertThat(result[0]["name"].textValue()).isEqualTo("report")
         assertThat(result[0]["key"].textValue()).isEqualTo("key")
@@ -59,7 +59,7 @@ class ReportLogsTests : IntegrationTest()
     @Test
     fun `only users with permissions can get running reports`()
     {
-        val url = "/running-reports/"
+        val url = "/reports/running/"
 
         assertWebUrlSecured(url, setOf(ReifiedPermission("reports.run", Scope.Global())),
                 contentType = ContentTypes.json)

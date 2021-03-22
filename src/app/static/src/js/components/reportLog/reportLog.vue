@@ -12,7 +12,7 @@
             </div>
         </div>
         <div v-else>
-            <p id="noReportsRan">No reports have been ran yet</p>
+            <p id="noReportsRan">No reports have been run yet</p>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
@@ -64,7 +64,7 @@
         methods: {
             getAllReports() {
                 this.reports = [];
-                api.get('/running-reports/')
+                api.get('/reports/running/')
                     .then(({data}) => {
                         this.reports = data.data;
                         this.error = "";

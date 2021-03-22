@@ -4,14 +4,14 @@ import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.controllers.web.LogsController
+import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.models.RunningReports
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 import java.time.Instant
 
 
-class LogsControllerTests
+class ReportRunControllerTests
 {
     @Test
     fun `gets all running reports`()
@@ -22,13 +22,13 @@ class LogsControllerTests
         val context = mock<ActionContext>{
             on { this.userProfile } doReturn profile
         }
-        val runningObject = RunningReports(Instant.now(), "name", "key")
+        val runningObject = ReportRunWithDate("name", "key", Instant.now())
         
         val repo = mock<ReportRunRepository> {
-            on { this.getAllRunningReports("test@test.com") } doReturn (listOf(runningObject))
+            on { this.getAllReportRunsForUser("test@test.com") } doReturn (listOf(runningObject))
         }
 
-        val sut = LogsController(context, repo)
+        val sut = ReportRunController(context, repo)
 
         assertThat(sut.runningReports()).containsExactlyElementsOf(listOf(runningObject))
     }

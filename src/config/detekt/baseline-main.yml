@@ -935,7 +935,7 @@
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$permissionVM.scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:UserController.kt$UserController$context.userProfile!!</ID>
-    <ID>UnsafeCallOnNullableType:LogsController.kt$LogsController$context.userProfile!!</ID>
+    <ID>UnsafeCallOnNullableType:ReportRunController.kt$ReportRunController$context.userProfile!!</ID>
     <ID>VariableNaming:DocumentController.kt$DocumentController$val URL = try { URL(url) } catch (e: MalformedURLException) { throw BadRequest("$url is not a valid url") }</ID>
     <ID>VariableNaming:Helpers.kt$val KILO_DIVISOR = BigDecimal(1024L)</ID>
     <ID>VariableNaming:SQLiteTokenStore.kt$SQLiteTokenStore$val ONETIME_TOKEN = table(name(tableName))</ID>
