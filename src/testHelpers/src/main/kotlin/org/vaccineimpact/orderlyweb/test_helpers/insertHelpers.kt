@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.test_helpers
 
+import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_USER_GROUP_PERMISSION_ALL
@@ -123,9 +124,11 @@ fun insertReport(name: String,
                  requester: String = "requester mcfunder",
                  display: String? = null,
                  addOrderlyWebReportVersion: Boolean = true,
-                 elapsed: Double = 0.0)
+                 elapsed: Double = 0.0,
+                 gitBranch: String? = null,
+                 gitCommit: String? = null)
 {
-    insertReportAndVersion(name, version, published, date, display, elapsed, addOrderlyWebReportVersion)
+    insertReportAndVersion(name, version, published, date, display, elapsed, gitBranch, gitCommit, addOrderlyWebReportVersion)
 
     JooqContext().use {
         val authorFieldRecord = it.dsl.newRecord(Tables.REPORT_VERSION_CUSTOM_FIELDS)
@@ -253,6 +256,8 @@ private fun insertReportAndVersion(name: String,
                                    date: Timestamp,
                                    display: String? = null,
                                    elapsed: Double = 0.0,
+                                   gitBranch: String? = null,
+                                   gitCommit: String? = null,
                                    addOrderlyWebReportVersion: Boolean = true)
 {
     JooqContext().use {
@@ -285,6 +290,8 @@ private fun insertReportAndVersion(name: String,
                     this.published = false
                     this.connection = false
                     this.elapsed = elapsed
+                    this.gitBranch = gitBranch
+                    this.gitSha = gitCommit
                 }
         reportVersionRecord.store()
 
@@ -388,4 +395,36 @@ fun insertDocument(db: JooqContext, path: String, isFile: Int, parent: String? =
             .set(Tables.ORDERLYWEB_DOCUMENT.SHOW, 1)
             .set(Tables.ORDERLYWEB_DOCUMENT.PARENT, parent)
             .execute()
+}
+
+fun insertReportRun(
+        key: String,
+        email: String,
+        report: String,
+        date: Timestamp = Timestamp(System.currentTimeMillis()),
+        instances: Map<String, String> = mapOf(),
+        params: Map<String, String> = mapOf(),
+        gitBranch: String? = null,
+        gitCommit: String? = null,
+        status: String? = null,
+        logs: String? = null,
+        reportVersion: String? = null)
+{
+    JooqContext().use {
+        it.dsl.newRecord(Tables.ORDERLYWEB_REPORT_RUN)
+                .apply {
+                    this.key = key
+                    this.email = email
+                    this.report = report
+                    this.date = date
+                    this.instances = Gson().toJson(instances)
+                    this.params = Gson().toJson(params)
+                    this.gitBranch = gitBranch
+                    this.gitCommit = gitCommit
+                    this.status = status
+                    this.logs = logs
+                    this.reportVersion = reportVersion
+
+                }.insert()
+    }
 }
