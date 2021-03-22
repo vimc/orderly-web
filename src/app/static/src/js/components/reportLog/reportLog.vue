@@ -26,7 +26,6 @@
 
 
     interface Computed {
-        refreshLogsText: string
         showReports: boolean
     }
 
@@ -36,7 +35,6 @@
 
     interface Data {
         reports: [],
-        logsRefreshing: boolean,
         selectedLogReportKey: string,
         selectedReport: string,
         error: string,
@@ -52,7 +50,6 @@
         data(): Data {
             return {
                 reports: [],
-                logsRefreshing: false,
                 selectedLogReportKey: "",
                 selectedReport: "",
                 error: "",
@@ -60,26 +57,20 @@
             }
         },
         computed: {
-            refreshLogsText(){
-                return this.logsRefreshing ? 'Fetching...' : 'Refresh'
-            },
             showReports: function () {
                 return this.reports.length > 0
             }
         },
         methods: {
             getAllReports() {
-                this.logsRefreshing = true
                 this.reports = [];
                 api.get('/running-reports/')
                     .then(({data}) => {
-                        this.logsRefreshing = false;
                         this.reports = data.data;
                         this.error = "";
                         this.defaultMessage = "";
                     })
                     .catch((error) => {
-                        this.logsRefreshing = false;
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });

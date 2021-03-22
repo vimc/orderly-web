@@ -16,6 +16,7 @@ import org.assertj.core.api.Assertions.assertThat
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.sun.mail.handlers.text_plain
 import org.vaccineimpact.orderlyweb.models.RunningReports
+import org.json.JSONArray
 
 class ReportLogsTests : IntegrationTest()
 {
@@ -49,7 +50,7 @@ class ReportLogsTests : IntegrationTest()
         val result = JSONValidator.getData(response.text) as ArrayNode
         assertThat(result.count()).isEqualTo(1)
         // assertThat(result)
-        //         .isEqualTo(listOf(RunningReports(now, "report", "key")))
+        //         .isEqualTo(listOf(RunningReports(now, "report", "key"))
         assertThat(result[0]["date"].textValue()).isEqualTo(now.toString())
         assertThat(result[0]["name"].textValue()).isEqualTo("report")
         assertThat(result[0]["key"].textValue()).isEqualTo("key")
