@@ -3,13 +3,6 @@ export interface Parameter {
     value: string
 }
 
-export interface Instances {
-    database: string,
-    instance: string
-}
-
-export type Dict<V> =  {[index: number]: V}
-
 export interface ReportLog{
     email: string,
     date: string,
