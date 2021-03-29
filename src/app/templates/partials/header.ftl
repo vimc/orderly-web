@@ -27,7 +27,7 @@
         </a>
     </div>
 
-    <div class="logout dropdown float-right">
+    <div class="nav-right dropdown float-right">
         <a href="/accessibility">Accessibility</a>
         <#if loggedIn && !isGuest>
             |
@@ -44,13 +44,10 @@
                 <a id="logout-link" class="dropdown-item" <#if authProvider?lower_case == "montagu">href="#" onclick="logoutViaMontagu()"<#else>href="${appUrl}/logout"</#if>>Logout</a>
             </div>
         </#if>
-    </div>
-    <#if isGuest>
-    <div class="login float-right">
-        <span>
+        <#if isGuest>
+            |
             <a href="${appUrl}/weblogin">Login</a>
-        </span>
+        </#if>
     </div>
-    </#if>
 </header>
 <#include "breadcrumbs.ftl">

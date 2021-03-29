@@ -17,7 +17,6 @@
     <h2>How accessible the website is</h2>
     <p>Parts of this website may not be fully accessible. For example:</p>
     <ul>
-        <li></li>
         <li>Some form elements may lack descriptive names or labels</li>
         <li>Some elements may lack sufficient colour contrast with their background</li>
     </ul>
