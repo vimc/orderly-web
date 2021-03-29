@@ -28,10 +28,10 @@
     </div>
 
     <div class="nav-right dropdown float-right">
-        <a href="/accessibility">Accessibility</a>
+        <a id="accessibility-link" href="${appUrl}/accessibility">Accessibility</a>
         <#if loggedIn && !isGuest>
             |
-            <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+            <a id="logged-in" class="dropdown-toggle" href="#" data-toggle="dropdown">
                 Logged in as ${user}
             </a>
             <div class="dropdown-menu dropdown-menu-right">
@@ -46,7 +46,7 @@
         </#if>
         <#if isGuest>
             |
-            <a href="${appUrl}/weblogin">Login</a>
+            <a id="login" href="${appUrl}/weblogin">Login</a>
         </#if>
     </div>
 </header>
