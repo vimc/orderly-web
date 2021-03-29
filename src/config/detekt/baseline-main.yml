@@ -605,10 +605,7 @@
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:23</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:10</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:11</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:15</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:16</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:17</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:18</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:23</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt:8</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt:9</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.controllers.web.RoleController.kt:17</ID>

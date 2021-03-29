@@ -15,14 +15,15 @@ import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthentica
 import org.vaccineimpact.orderlyweb.viewmodels.AccessibilityViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
-class IndexController(actionContext: ActionContext,
-                      private val orderly: OrderlyClient,
-                      private val reportRepository: ReportRepository,
-                      private val tagRepository: TagRepository,
-                      private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()) : Controller(actionContext)
+class IndexController(
+    actionContext: ActionContext,
+    private val orderly: OrderlyClient,
+    private val reportRepository: ReportRepository,
+    private val tagRepository: TagRepository,
+    private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()) : Controller(actionContext)
 {
-    constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
+    constructor(context: ActionContext) :
+            this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
 
     @Template("index.ftl")
     fun index(): IndexViewModel
