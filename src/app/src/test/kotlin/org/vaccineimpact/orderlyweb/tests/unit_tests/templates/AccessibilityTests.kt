@@ -19,35 +19,16 @@ class AccessibilityTests
     }
 
     @Test
-    fun `renders correctly when guest user allowed`()
+    fun `renders correctly`()
     {
-        val testViewModel = AccessibilityViewModel(mock<ActionContext>(), true)
+        val testViewModel = AccessibilityViewModel(mock<ActionContext>())
         val doc = AccessibilityTests.template.jsoupDocFor(testViewModel)
         assertThat(doc.select("h1").text()).isEqualTo("Accessibility on Reporting portal")
         assertThat(doc.select("#access-loc").text())
                 .isEqualTo("This statement applies to content published on http://localhost:8888")
-        assertThat(doc.select("#access-regs").text())
-                .startsWith("Technical information about this website’s accessibility")
         assertThat(doc.select("#access-email a").text())
                 .isEqualTo("montagu-help@imperial.ac.uk")
         assertThat(doc.select("#access-email a").attr("href"))
                 .isEqualTo("mailto:montagu-help@imperial.ac.uk")
-        assertThat(doc.select("#access-enforce").text()).startsWith("Enforcement procedure")
-    }
-
-    @Test
-    fun `renders correctly when guest user not allowed`()
-    {
-        val testViewModel = AccessibilityViewModel(mock<ActionContext>(), false)
-        val doc = AccessibilityTests.template.jsoupDocFor(testViewModel)
-        assertThat(doc.select("h1").text()).isEqualTo("Accessibility on Reporting portal")
-        assertThat(doc.select("#access-loc").text())
-                .isEqualTo("This statement applies to content published on http://localhost:8888")
-        assertThat(doc.select("#access-regs")).isEmpty()
-        assertThat(doc.select("#access-email a").text())
-                .isEqualTo("montagu-help@imperial.ac.uk")
-        assertThat(doc.select("#access-email a").attr("href"))
-                .isEqualTo("mailto:montagu-help@imperial.ac.uk")
-        assertThat(doc.select("#access-enforce")).isEmpty()
     }
 }

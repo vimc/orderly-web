@@ -8,10 +8,6 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
-import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
-import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig
 import org.vaccineimpact.orderlyweb.viewmodels.AccessibilityViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
@@ -19,8 +15,7 @@ class IndexController(
     actionContext: ActionContext,
     private val orderly: OrderlyClient,
     private val reportRepository: ReportRepository,
-    private val tagRepository: TagRepository,
-    private val authConfig: AuthenticationConfig = OrderlyWebAuthenticationConfig()) : Controller(actionContext)
+    private val tagRepository: TagRepository) : Controller(actionContext)
 {
     constructor(context: ActionContext) :
             this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
@@ -40,7 +35,7 @@ class IndexController(
     @Template("accessibility.ftl")
     fun accessibility(): AccessibilityViewModel
     {
-        return AccessibilityViewModel(context, authConfig.allowGuestUser)
+        return AccessibilityViewModel(context)
     }
 
     fun metrics(): String

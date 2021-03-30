@@ -3,15 +3,14 @@ package org.vaccineimpact.orderlyweb.viewmodels
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 
-data class AccessibilityViewModel(val appViewModel: AppViewModel, val allowGuestUser: Boolean) :
+data class AccessibilityViewModel(val appViewModel: AppViewModel) :
         AppViewModel by appViewModel
 {
-    constructor(context: ActionContext, allowGuestUser: Boolean) :
+    constructor(context: ActionContext) :
             this(DefaultViewModel(
                     context,
                     IndexViewModel.breadcrumb,
-                    AccessibilityViewModel.breadcrumb),
-                 allowGuestUser)
+                    AccessibilityViewModel.breadcrumb))
 
     companion object
     {

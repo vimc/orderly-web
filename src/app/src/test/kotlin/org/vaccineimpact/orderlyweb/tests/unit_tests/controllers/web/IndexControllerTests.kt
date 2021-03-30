@@ -283,13 +283,9 @@ class IndexControllerTests
     @Test
     fun `can get accessibility`()
     {
-        val mockAuthConfig = mock<AuthenticationConfig>{
-            on { allowGuestUser } doReturn true
-        }
-        val sut = IndexController(globalReaderContext, mock(), mock(), mock(), mockAuthConfig)
+        val sut = IndexController(globalReaderContext, mock(), mock(), mock())
         val result = sut.accessibility()
 
-        assertThat(result.allowGuestUser).isEqualTo(true)
         assertThat(result.breadcrumbs.count()).isEqualTo(2)
         assertThat(result.breadcrumbs.first()).isEqualTo(IndexViewModel.breadcrumb)
         assertThat(result.breadcrumbs.last().url).isEqualTo("http://localhost:8888/accessibility")
