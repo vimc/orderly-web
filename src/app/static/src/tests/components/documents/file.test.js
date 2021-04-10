@@ -24,6 +24,7 @@ describe("file", () => {
         expect(rendered.findAll("span").at(1).text()).toBe("/");
         expect(rendered.findAll("a").at(1).text()).toBe("download");
         expect(rendered.findAll("a").at(1).attributes("href")).toBe("toplevelfileurl");
+        expect(rendered.findAll("a").at(1).attributes("target")).toBe("_blank");
     });
 
     it("renders file icon", () => {

@@ -22,6 +22,7 @@ describe("webLink", () => {
         expect(rendered.findAll("a").length).toBe(1);
         expect(rendered.findAll("a").at(0).text()).toBe("toplevelfile");
         expect(rendered.findAll("a").at(0).attributes("href")).toBe("toplevelfileurl");
+        expect(rendered.findAll("a").at(0).attributes("target")).toBe("_blank");
         expect(rendered.findAll("span").length).toBe(0);
     });
 
