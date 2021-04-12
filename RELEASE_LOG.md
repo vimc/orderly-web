@@ -327,3 +327,9 @@
 
 ## Other branches merged in this release
 
+# v1.7.1
+
+## Tickets
+
+## Other branches merged in this release
+
