@@ -310,3 +310,20 @@
 * dependabot/npm_and_yarn/src/app/static/axios-0.21.1
 * dependabot/npm_and_yarn/src/app/static/ini-1.3.7
 
+# v1.7.0
+
+## Tickets
+* mrc-2171: Mockups for adding metadata to report version page
+* mrc-2172: Add metadata tab to report version page
+* mrc-2174: Add start and elapsed time to report version page
+* mrc-2175: Add git commit and branch information to report version page
+* mrc-2176: Add upstream dependencies to report version page
+* mrc-2182: Rationalise OrderlyServerAPI.post() methods
+* mrc-2188: Create a pull request checklist
+* mrc-2205: Correct linting setup
+* mrc-2243: Create runReportTab to house runReport and reportLog components
+* mrc-2247: Add orderly-web support for queue status endpoint
+* mrc-2298: Links in project documentation file tree should open in new tab
+
+## Other branches merged in this release
+
