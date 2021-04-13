@@ -22,6 +22,19 @@ class RunReportTests
             instances = mapOf("source" to listOf("uat", "science")),
             changelogTypes = listOf("internal", "published"))
 
+    private val instant = Instant.now()
+    private val fakeReportRunLog = ReportRunLog(
+            "test@example.com",
+            instant,
+            "q123",
+            mapOf("annex" to "production", "source" to "production"),
+            mapOf("name" to "cologne", "value" to "memo"),
+            "branch",
+            "commit",
+            "complete",
+            "logs",
+            "1233")
+
     @Test
     fun `getRunReport creates viewmodel`()
     {
@@ -131,21 +144,8 @@ class RunReportTests
     }
 
     @Test
-    fun `can getRunningReportDetails`()
+    fun `can getRunningReportLogs`()
     {
-        val instant = Instant.now()
-        val fakeReportRunLog = ReportRunLog(
-                "test@example.com",
-                instant,
-                "q123",
-                mapOf("annex" to "production", "source" to "production"),
-                mapOf("name" to "cologne", "value" to "memo"),
-                "branch",
-                "commit",
-                "complete",
-                "logs",
-                "1233")
-
         val mockRepo = mock<ReportRunRepository> {
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
@@ -154,8 +154,9 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val sut = ReportRunController(mockContext, mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo, mock())
         val result = sut.getRunningReportLogs()
+        verify(mockRepo, times(1)).getReportRun("fakeKey")
         assertThat(result.email).isEqualTo("test@example.com")
         Assertions.assertThat(result.date).isEqualTo(instant)
         Assertions.assertThat(result.report).isEqualTo("q123")
@@ -166,6 +167,52 @@ class RunReportTests
         Assertions.assertThat(result.status).isEqualTo("complete")
         Assertions.assertThat(result.logs).isEqualTo("logs")
         Assertions.assertThat(result.reportVersion).isEqualTo("1233")
+    }
+
+
+    private fun testRunningLogRefresh(incompleteStatus: String?)
+    {
+        val incompleteLog = fakeReportRunLog.copy(status = incompleteStatus)
+
+        val mockRepo = mock<ReportRunRepository> {
+            on { getReportRun("fakeKey") } doReturn incompleteLog
+        }
+
+        val mockContext = mock<ActionContext> {
+            on { params(":key") } doReturn "fakeKey"
+        }
+
+        val mockOrderlyResponse = OrderlyServerResponse(
+                """{"data": {"key": "fakeKey", "status": "updatedStatus", "name": "test", "version": "1233", "output": ["output item"], "queue": []}}""",
+                200)
+
+        val mockAPI = mock<OrderlyServerAPI> {
+            on { get("/v1/reports/fakeKey/status/", mockContext) } doReturn  mockOrderlyResponse
+        }
+
+        val sut = ReportRunController(mockContext, mockRepo, mockAPI)
+        val result = sut.getRunningReportLogs()
+        verify(mockRepo, times(2)).getReportRun("fakeKey")
+        assertThat(result).isSameAs(incompleteLog)
+        verify(mockRepo).updateReportRun(eq("fakeKey"), eq("updatedStatus"), eq("1233"), eq(listOf("output item")))
+    }
+
+    @Test
+    fun `getRunningReportLogs refreshes from orderly server when report status is null`()
+    {
+        testRunningLogRefresh(null)
+    }
+
+    @Test
+    fun `getRunningReportLogs refreshes from orderly server when report status is queued`()
+    {
+        testRunningLogRefresh("queued")
+    }
+
+    @Test
+    fun `getRunningReportLogs refreshes from orderly server when report status is running`()
+    {
+        testRunningLogRefresh("running")
     }
 
     @Test
@@ -179,7 +226,7 @@ class RunReportTests
             on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "getReportRun")
         }
 
-        val sut = ReportRunController(mockContext, mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo, mock())
         Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }

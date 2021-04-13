@@ -134,7 +134,7 @@ class RunReportPageTests : IntegrationTest()
             on { getReportRun("fakeKey") } doReturn fakeReportRunLog
         }
 
-        val sut = ReportRunController(mockContext, mockRepo)
+        val sut = ReportRunController(mockContext, mockRepo, mock())
         val result = sut.getRunningReportLogs()
         assertThat(result).isEqualTo(fakeReportRunLog)
     }
