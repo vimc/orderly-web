@@ -138,7 +138,7 @@ describe(`runningReportDetails`, () => {
         })
     })
 
-    it(`it displays error message when report key in not valid`, async(done) => {
+    it(`it displays error message when report key in not valid`, (done) => {
         const key = "fakeKey"
         const getWrapper = () => {
             return shallowMount(runningReportsDetails,
@@ -160,9 +160,10 @@ describe(`runningReportDetails`, () => {
         })
     })
 
-    const testStartsPollingOnMountWhenIncomplete = async (incompleteStatus: string, done) => {
-        const key = "fakeKey";
-        mockAxios.onGet(`http://app/running/${key}/logs/`)
+    const testStartsPollingOnMountWhenIncomplete = (incompleteStatus: string, done) => {
+        const key = `fakeKey-${incompleteStatus}`;
+        const url = `http://app/running/${key}/logs/`;
+        mockAxios.onGet(url)
             .reply(200, {"data": {...initialReportLog, status: incompleteStatus}});
 
         const wrapper = shallowMount(runningReportsDetails,
@@ -182,18 +183,18 @@ describe(`runningReportDetails`, () => {
             //second time
             jest.runOnlyPendingTimers();
             realSetTimeout(() => {
-                expect(mockAxios.history.get.length).toBe(2);
+                expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(2);
                 done();
-            });
-        });
+            }, 500);
+        }, 500);
     };
-
-    it(`starts polling on mount when report is queued`, (done) => {
-        testStartsPollingOnMountWhenIncomplete("queued", done);
-    });
 
     it(`starts polling on mount when report is running`,  (done) => {
         testStartsPollingOnMountWhenIncomplete("running", done);
+    });
+
+    it(`starts polling on mount when report is queued`, (done) => {
+        testStartsPollingOnMountWhenIncomplete("queued", done);
     });
 
     it("does not start or stop polling on mount when report is complete", (done) => {
