@@ -6,7 +6,8 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportWithParams
+import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
+import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
@@ -22,30 +23,34 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            "Interim report",
+            WorkflowRun(
+                "Interim report",
+                listOf(
+                    WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                    WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+            ),
             "adventurous_aardvark",
             "user@email.com",
-            Instant.now(),
-            listOf(
-                ReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                ReportWithParams("reportB", mapOf("param3" to "three"))
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
+            now
         )
         sut.addWorkflowRun(
-            "Final report",
+            WorkflowRun(
+                "Final report",
+                listOf(
+                    WorkflowReportWithParams("reportC", mapOf("param4" to "four", "param5" to "five")),
+                    WorkflowReportWithParams("reportD", mapOf("param6" to "six"))
+                ),
+                mapOf("instanceA" to "post-staging"),
+                "branch1",
+                "commit1"
+            ),
             "benevolent_badger",
             "user@email.com",
-            Instant.now(),
-            listOf(
-                ReportWithParams("reportC", mapOf("param4" to "four", "param5" to "five")),
-                ReportWithParams("reportD", mapOf("param6" to "six"))
-            ),
-            mapOf("instanceA" to "post-staging"),
-            "branch2",
-            "commit2"
+            Instant.now()
         )
         JooqContext().use {
             val result = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN).fetch()
@@ -72,14 +77,14 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
         assertThatThrownBy {
             sut.addWorkflowRun(
-                "Interim report",
+                WorkflowRun(
+                    "Interim report",
+                    emptyList(),
+                    emptyMap()
+                ),
                 "adventurous_aardvark",
                 "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap(),
-                null,
-                null
+                Instant.now()
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
@@ -91,25 +96,25 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            "Interim report",
+            WorkflowRun(
+                "Interim report",
+                emptyList(),
+                emptyMap()
+            ),
             "adventurous_aardvark",
             "user@email.com",
-            Instant.now(),
-            emptyList(),
-            emptyMap(),
-            null,
-            null
+            Instant.now()
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
-                "Interim report",
+                WorkflowRun(
+                    "Interim report",
+                    emptyList(),
+                    emptyMap()
+                ),
                 "adventurous_aardvark",
                 "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap(),
-                null,
-                null
+                Instant.now()
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.key")
     }
@@ -123,25 +128,25 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(
-            "Interim report",
+            WorkflowRun(
+                "Interim report",
+                emptyList(),
+                emptyMap()
+            ),
             "adventurous_aardvark",
             "user@email.com",
-            now,
-            emptyList(),
-            emptyMap(),
-            null,
-            null
+            now
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
-                "Interim report",
+                WorkflowRun(
+                    "Interim report",
+                    emptyList(),
+                    emptyMap()
+                ),
                 "benevolent_badger",
                 "user@email.com",
-                now,
-                emptyList(),
-                emptyMap(),
-                null,
-                null
+                now
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
     }
