@@ -37,7 +37,7 @@
     import XIcon from "../runReport/xIcon.vue"
 
     export default Vue.extend({
-        name: "reportList",
+        name: "runningReportsList",
         props: {
             "reports": Array,
             "report": String
