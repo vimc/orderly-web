@@ -88,33 +88,52 @@ class DocumentTests : IntegrationTest()
                     .orderBy(Tables.ORDERLYWEB_DOCUMENT.PATH)
                     .fetch()
 
-            Assertions.assertThat(result.count()).isEqualTo(4)
+            Assertions.assertThat(result.count()).isEqualTo(7)
 
-            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata")
-            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("testdata")
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test")
+            Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test")
             Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
             Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo(null)
             Assertions.assertThat(result[0][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
 
-            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/subdir")
-            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("subdir")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("testdata")
             Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
-            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata")
+            Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test")
             Assertions.assertThat(result[1][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
 
-            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/subdir/test.csv")
-            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.csv")
-            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
-            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata/subdir")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata/subdir")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("subdir")
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(0)
+            Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test/testdata")
             Assertions.assertThat(result[2][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
 
-            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/testdata/test.doc")
-            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.doc")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata/subdir/test.csv")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.csv")
             Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
-            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/testdata")
+            Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test/testdata/subdir")
             Assertions.assertThat(result[3][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[4][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata/test.doc")
+            Assertions.assertThat(result[4][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test.doc")
+            Assertions.assertThat(result[4][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            Assertions.assertThat(result[4][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test/testdata")
+            Assertions.assertThat(result[4][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[5][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata/testUrl.web.url")
+            Assertions.assertThat(result[5][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("https://github.com")
+            Assertions.assertThat(result[5][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            Assertions.assertThat(result[5][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test/testdata")
+            Assertions.assertThat(result[5][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
+
+            Assertions.assertThat(result[6][Tables.ORDERLYWEB_DOCUMENT.PATH]).isEqualTo("/test/testdata/test_pdf.pdf")
+            Assertions.assertThat(result[6][Tables.ORDERLYWEB_DOCUMENT.NAME]).isEqualTo("test_pdf.pdf")
+            Assertions.assertThat(result[6][Tables.ORDERLYWEB_DOCUMENT.IS_FILE]).isEqualTo(1)
+            Assertions.assertThat(result[6][Tables.ORDERLYWEB_DOCUMENT.PARENT]).isEqualTo("/test/testdata")
+            Assertions.assertThat(result[6][Tables.ORDERLYWEB_DOCUMENT.SHOW]).isEqualTo(1)
         }
     }
+
 
     @Test
     fun `only document readers can get all documents`()
