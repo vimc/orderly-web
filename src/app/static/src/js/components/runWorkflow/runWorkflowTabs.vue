@@ -10,7 +10,7 @@
                         </button>
                         <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                             <ul class="nav flex-column list-unstyled mb-0">
-                                <div>Workflows</div>
+                                <div id="workflow-title">Workflows</div>
                                 <li class="nav-item">
                                     <a id="run-workflow-link" class="nav-link active" data-toggle="tab" role="tab" href="#"
                                        @click="switchTab('runWorkflow')">Run</a>

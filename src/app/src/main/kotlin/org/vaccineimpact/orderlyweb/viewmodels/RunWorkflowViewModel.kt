@@ -8,6 +8,7 @@ class RunWorkflowViewModel(val appViewModel: AppViewModel) : AppViewModel by app
 {
     constructor(context: ActionContext)
             : this(DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))
+
     companion object
     {
         val breadcrumb = Breadcrumb("Run a workflow", "${AppConfig()["app.url"]}/run-workflow")
