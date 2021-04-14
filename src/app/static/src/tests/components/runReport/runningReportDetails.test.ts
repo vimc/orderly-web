@@ -174,7 +174,7 @@ describe(`runningReportDetails`, () => {
             });
 
         realSetTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(1);
             expect(wrapper.vm.$data.pollingTimer).not.toBeNull();
             expect(setInterval).toHaveBeenCalledTimes(1);
             expect(setInterval).toHaveBeenCalledWith((wrapper.vm as any).getLogs, 1500);

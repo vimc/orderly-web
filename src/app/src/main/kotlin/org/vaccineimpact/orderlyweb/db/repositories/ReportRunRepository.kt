@@ -92,10 +92,10 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     }
 
     override fun updateReportRun(
-            key: String,
-            status: String,
-            version: String?,
-            logs: List<String>?
+        key: String,
+        status: String,
+        version: String?,
+        logs: List<String>?
     )
     {
         val logsString = logs?.joinToString(separator = "\n")

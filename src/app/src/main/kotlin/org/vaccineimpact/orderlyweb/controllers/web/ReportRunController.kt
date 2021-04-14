@@ -11,9 +11,9 @@ import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportStatus
 
 class ReportRunController(
-        context: ActionContext,
-        private val reportRunRepository: ReportRunRepository,
-        private val orderlyServerAPI: OrderlyServerAPI
+    context: ActionContext,
+    private val reportRunRepository: ReportRunRepository,
+    private val orderlyServerAPI: OrderlyServerAPI
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
@@ -25,13 +25,13 @@ class ReportRunController(
     fun getRunningReportLogs(): ReportRunLog
     {
         val key = context.params(":key")
-        var log =  reportRunRepository.getReportRun(key)
+        var log = reportRunRepository.getReportRun(key)
         if (log.status in listOf(null, "queued", "running"))
         {
             val statusResponse = orderlyServerAPI.get("/v1/reports/$key/status/", context)
             val latestStatus = statusResponse.data(ReportStatus::class.java)
             reportRunRepository.updateReportRun(key, latestStatus.status, latestStatus.version, latestStatus.output)
-            log =  reportRunRepository.getReportRun(key)
+            log = reportRunRepository.getReportRun(key)
         }
         return log
     }
