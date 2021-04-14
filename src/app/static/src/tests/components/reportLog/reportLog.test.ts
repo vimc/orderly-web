@@ -1,7 +1,7 @@
 import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import ReportLog from "../../../js/components/reportLog/reportLog.vue";
-import ReportList from "../../../js/components/runReport/reportList.vue";
+import RunningReportsList from "../../../js/components/reportLog/runningReportsList.vue";
 import {mockAxios} from "../../mockAxios";
 
 describe("runReport", () => {
@@ -13,7 +13,7 @@ describe("runReport", () => {
 
     const reports = [
         {name: "report1", date: new Date().toISOString(), key: 'key1'},
-        {name: "report2", date: null, key: 'key2'}
+        {name: "report2", date: new Date().toISOString(), key: 'key2'}
     ];
 
     const initialData = {
@@ -40,14 +40,14 @@ describe("runReport", () => {
         const wrapper = shallowMount(ReportLog);
 
         expect(wrapper.find("h2").text()).toBe("Running report logs");
-        expect(wrapper.find("#noReportsRan").text()).toBe("No reports have been ran yet");
+        expect(wrapper.find("#noReportsRun").text()).toBe("No reports have been run yet");
         expect(wrapper.find("#logs-form-group").exists()).toBe(false);
 
         setTimeout(() => {
             expect(wrapper.find("#logs-form-group").exists()).toBe(true);
-            expect(wrapper.find("#noReportsRan").exists()).toBe(false);
+            expect(wrapper.find("#noReportsRun").exists()).toBe(false);
             expect(wrapper.find("label").text()).toBe("Show logs for");
-            expect(wrapper.find("report-list-stub").props("reports")).toEqual(reports);
+            expect(wrapper.find("running-reports-list-stub").props("reports")).toEqual(reports);
             expect(wrapper.find("error-info-stub").props("apiError")).toEqual("");
             expect(wrapper.find("error-info-stub").props("defaultMessage")).toEqual("");
             done();
@@ -70,8 +70,8 @@ describe("runReport", () => {
         const wrapper = getWrapper();
 
         setTimeout(async () => {
-            wrapper.find(ReportList).find("a:last-of-type").trigger("click");
-            expect(wrapper.vm.$data["selectedReport"]).toBe("report2");
+            wrapper.find(RunningReportsList).find("a:last-of-type").trigger("click");
+            expect(wrapper.vm.$data["selectedRunningReportKey"]).toBe("key1");
             done();
         });
     });

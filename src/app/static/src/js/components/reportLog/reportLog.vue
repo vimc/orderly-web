@@ -9,10 +9,10 @@
                 v-on="$listeners"
                 :key.sync="selectedRunningReportKey"/>
             </div>
-            <!-- runningReportDetails to go here -->
+            <!-- runningReportDetails to go here and given selectedRunningReportKey as prop -->
         </div>
         <div v-else>
-            <p id="noReportsRan">No reports have been run yet</p>
+            <p id="noReportsRun">No reports have been run yet</p>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>

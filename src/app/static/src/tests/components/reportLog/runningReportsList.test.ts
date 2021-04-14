@@ -1,19 +1,19 @@
 import Vue from "vue";
 import {mount} from "@vue/test-utils";
-import ReportList from "../../../js/components/runReport/reportList.vue";
+import RunningReportsList from "../../../js/components/reportLog/runningReportsList.vue";
 
 function getWrapper() {
-    return mount(ReportList, {
+    return mount(RunningReportsList, {
         propsData: {
             reports: [
-                {name: "report2", date: null},
-                {name: "report1", date: new Date().toISOString()}
+                {name: "report2", date: new Date().toISOString(), key: "report2Key"},
+                {name: "report1", date: new Date().toISOString(), key: "report1Key"}
             ]
         }
     });
 }
 
-describe("reportList", () => {
+describe("runningReportsList", () => {
 
     it("renders typeahead correctly and fires event on selection", (done) => {
         const wrapper = getWrapper();
@@ -23,8 +23,8 @@ describe("reportList", () => {
         expect(reportSuggestions.at(0).text()).toBe("report1");
         expect(reportSuggestions.at(1).text()).toBe("report2");
         reportSuggestions.at(1).trigger("click");
-        expect(wrapper.emitted()["update:report"].length).toBe(1);
-        expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
+        expect(wrapper.emitted()["update:key"].length).toBe(1);
+        expect(wrapper.emitted()["update:key"][0]).toEqual(["report2Key"]);
 
         done();
     });
