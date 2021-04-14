@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -42,14 +43,11 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 "Final report",
                 "benevolent_badger",
                 "user@email.com",
-                Instant.now(),
+                now,
                 listOf(
-                    WorkflowReportWithParams("reportC", mapOf("param4" to "four", "param5" to "five")),
-                    WorkflowReportWithParams("reportD", mapOf("param6" to "six"))
+                    WorkflowReportWithParams("reportC", mapOf("param4" to "four"))
                 ),
-                mapOf("instanceA" to "post-staging"),
-                "branch1",
-                "commit1"
+                emptyMap()
             )
         )
         JooqContext().use {
@@ -68,6 +66,18 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]).isEqualTo("commit1")
 
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.ID]).isEqualTo(2)
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.NAME]).isEqualTo("Final report")
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.KEY]).isEqualTo("benevolent_badger")
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL]).isEqualTo("user@email.com")
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.DATE].toInstant()).isEqualTo(now)
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS]).isEqualTo(
+                Gson().toJson(
+                    listOf(WorkflowReportWithParams("reportC", mapOf("param4" to "four")))
+                )
+            )
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.INSTANCES]).isEqualTo(Gson().toJson(emptyMap<String, String>()))
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH]).isNull()
+            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]).isNull()
         }
     }
 
