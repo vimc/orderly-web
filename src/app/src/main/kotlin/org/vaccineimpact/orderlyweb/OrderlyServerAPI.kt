@@ -114,7 +114,6 @@ class OrderlyServer(
                         addQueryParameter(key, value)
                     }
                 }
-        println(buildUrl)
         val request = Request.Builder()
                 .url(buildUrl.toString())
                 .headers(standardHeaders.toHeaders())
