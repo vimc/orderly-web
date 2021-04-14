@@ -6,6 +6,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
+import org.vaccineimpact.orderlyweb.db.repositories.ReportWithParams
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
@@ -26,8 +27,8 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             "user@email.com",
             Instant.now(),
             listOf(
-                mapOf("name" to "reportA", "params" to mapOf("param1" to "one", "param2" to "two")),
-                mapOf("name" to "reportB", "params" to mapOf("param3" to "three"))
+                ReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                ReportWithParams("reportB", mapOf("param3" to "three"))
             ),
             mapOf("instanceA" to "pre-staging"),
             "branch1",
@@ -39,8 +40,8 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             "user@email.com",
             Instant.now(),
             listOf(
-                mapOf("name" to "reportC", "params" to mapOf("param4" to "four", "param5" to "five")),
-                mapOf("name" to "reportD", "params" to mapOf("param6" to "six"))
+                ReportWithParams("reportC", mapOf("param4" to "four", "param5" to "five")),
+                ReportWithParams("reportD", mapOf("param6" to "six"))
             ),
             mapOf("instanceA" to "post-staging"),
             "branch2",
@@ -75,13 +76,10 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 "adventurous_aardvark",
                 "user@email.com",
                 Instant.now(),
-                listOf(
-                    mapOf("name" to "reportA", "params" to mapOf("param1" to "one", "param2" to "two")),
-                    mapOf("name" to "reportB", "params" to mapOf("param3" to "three"))
-                ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
+                emptyList(),
+                emptyMap(),
+                null,
+                null
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }

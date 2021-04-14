@@ -1,9 +1,12 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
-import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables
 import java.sql.Timestamp
 import java.time.Instant
+
+data class ReportWithParams(val name: String, val params: Map<String, String>)
 
 interface WorkflowRunRepository
 {
@@ -12,7 +15,7 @@ interface WorkflowRunRepository
         key: String,
         user: String,
         date: Instant,
-        reports: List<Map<String, Any>>,
+        reports: List<ReportWithParams>,
         instances: Map<String, String>,
         gitBranch: String?,
         gitCommit: String?
@@ -26,7 +29,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
         key: String,
         user: String,
         date: Instant,
-        reports: List<Map<String, Any>>,
+        reports: List<ReportWithParams>,
         instances: Map<String, String>,
         gitBranch: String?,
         gitCommit: String?
