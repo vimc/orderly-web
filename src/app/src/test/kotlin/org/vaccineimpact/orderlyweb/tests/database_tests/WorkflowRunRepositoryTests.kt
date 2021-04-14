@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -70,11 +71,12 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.KEY]).isEqualTo("benevolent_badger")
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL]).isEqualTo("user@email.com")
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.DATE].toInstant()).isEqualTo(now)
-            assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS]).isEqualTo(
-                Gson().toJson(
-                    listOf(WorkflowReportWithParams("reportC", mapOf("param4" to "four")))
-                )
+            val reports = Gson().fromJson<List<WorkflowReportWithParams>>(
+                result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS],
+                TypeToken.getParameterized(List::class.java, WorkflowReportWithParams::class.java).type
             )
+            assertThat(reports[0].name).isEqualTo("reportC")
+            assertThat(reports[0].params).isEqualTo(mapOf("param4" to "four"))
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.INSTANCES]).isEqualTo(Gson().toJson(emptyMap<String, String>()))
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH]).isNull()
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]).isNull()
