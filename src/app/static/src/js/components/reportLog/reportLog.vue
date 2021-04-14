@@ -21,7 +21,6 @@
 <script lang="ts">
     import Vue from "vue"
     import RunningReportsList from "./runningReportsList.vue"
-    // import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
 
@@ -37,7 +36,6 @@
     interface Data {
         reports: [],
         selectedRunningReportKey: string,
-        // selectedReport: string,
         error: string,
         defaultMessage: string
     }
@@ -52,7 +50,6 @@
             return {
                 reports: [],
                 selectedRunningReportKey: "",
-                // selectedReport: "",
                 error: "",
                 defaultMessage: ""
             }
