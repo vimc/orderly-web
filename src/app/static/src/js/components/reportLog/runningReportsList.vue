@@ -49,7 +49,6 @@
         methods: {
             clear() {
                 this.query = "";
-                // this.$emit("update:report", "");
                 this.$emit('update:key', "");
             }
         },
@@ -64,7 +63,6 @@
             }
         },
         beforeDestroy() {
-            // this.$emit('update:report', "");
             this.$emit('update:key', "");
         }
     })
