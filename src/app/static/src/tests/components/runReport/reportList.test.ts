@@ -36,6 +36,11 @@ describe("reportList", () => {
         expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
     });
 
+    it("does not fire event on mount if report name is not valid", () => {
+        const wrapper = getWrapper("report");
+        expect(wrapper.emitted()["update:report"]).toBeFalsy();
+    });
+
     it("typeahead filters list correctly", async (done) => {
         const wrapper = getWrapper();
 

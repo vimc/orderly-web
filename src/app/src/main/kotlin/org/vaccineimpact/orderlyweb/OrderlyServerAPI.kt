@@ -38,7 +38,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
-    fun get(url: String, context: ActionContext, queryParams: Map<String, String>): OrderlyServerResponse
+    fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
@@ -105,7 +105,7 @@ class OrderlyServer(
         return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun get(url: String, context: ActionContext, queryParams: Map<String, String>): OrderlyServerResponse
+    override fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
     {
         val buildUrl = urlBase.toHttpUrl().newBuilder()
                 .addPathSegments(url.trimStart('/'))
@@ -114,6 +114,7 @@ class OrderlyServer(
                         addQueryParameter(key, value)
                     }
                 }
+        println(buildUrl)
         val request = Request.Builder()
                 .url(buildUrl.toString())
                 .headers(standardHeaders.toHeaders())

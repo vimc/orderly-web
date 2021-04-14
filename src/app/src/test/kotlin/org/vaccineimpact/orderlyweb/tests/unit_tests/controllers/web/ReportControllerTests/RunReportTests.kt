@@ -25,18 +25,17 @@ class RunReportTests
     fun `getRunReport creates viewmodel`()
     {
         val key = "report-key"
-        val mockContext = mock<ActionContext>()
         val queryParams: Map<String, String> = mapOf(key to "minimal").filter { it.key != key }
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mockContext, queryParams) } doReturn
+            on { get("/git/branches", queryParams) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
-            on { get("/run-metadata", mockContext, queryParams) } doReturn
+            on { get("/run-metadata", queryParams) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val sut = ReportController(mock(), mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getRunReport()
 
         assertThat(result.breadcrumbs.count()).isEqualTo(2)
@@ -52,17 +51,16 @@ class RunReportTests
     @Test
     fun `getRunReport returns no branches if git is not supported`()
     {
-        val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext, mapOf()) } doReturn
+            on { get("/run-metadata", mapOf()) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata.copy(gitSupported = false)), 200)
-            on { get("/git/branches", mockContext, mapOf()) } doReturn
+            on { get("/git/branches", mapOf()) } doReturn
                     OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val sut = ReportController(mock(), mock(), mockOrderlyServer, mock(), mock())
         val result = sut.getRunReport()
 
         assertThat(result.gitBranches).isEmpty()
@@ -71,14 +69,13 @@ class RunReportTests
     @Test
     fun `getRunReport throws if orderly server returns an error`()
     {
-        val mockContext = mock<ActionContext>()
         val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/run-metadata", mockContext, mapOf()) } doThrow OrderlyServerError("/run-metadata", 400)
+            on { get("/run-metadata", mapOf()) } doThrow OrderlyServerError("/run-metadata", 400)
         }
         val mockOrderlyServer = mock<OrderlyServerAPI> {
             on { throwOnError() } doReturn mockOrderlyServerWithError
         }
-        val sut = ReportController(mockContext, mock(), mockOrderlyServer, mock(), mock())
+        val sut = ReportController(mock(), mock(), mockOrderlyServer, mock(), mock())
         assertThatThrownBy { sut.getRunReport() }
                 .isInstanceOf(OrderlyServerError::class.java)
     }

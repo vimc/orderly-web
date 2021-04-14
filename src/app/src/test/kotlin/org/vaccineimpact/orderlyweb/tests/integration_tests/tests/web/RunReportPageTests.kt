@@ -6,7 +6,6 @@ import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.ContentTypes
 import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
@@ -43,7 +42,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )
@@ -100,7 +99,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )

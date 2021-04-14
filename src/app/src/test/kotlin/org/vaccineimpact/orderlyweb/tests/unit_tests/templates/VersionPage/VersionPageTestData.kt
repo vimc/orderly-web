@@ -13,7 +13,9 @@ object VersionPageTestData
             date = Timestamp(System.currentTimeMillis()).toInstant(),
             latestVersion = "v1",
             description = "r1 description",
-            elapsed = 1.5)
+            elapsed = 1.5,
+            gitBranch="master",
+            gitCommit="abc123")
 
     val testReport = ReportVersionWithArtefactsDataDescParamsResources(testBasicReportVersion,
             artefacts = listOf(),

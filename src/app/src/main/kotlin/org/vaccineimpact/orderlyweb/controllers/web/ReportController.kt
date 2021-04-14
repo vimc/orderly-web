@@ -51,17 +51,16 @@ class ReportController(
         val reportKey = "report-name"
         val reportName = context.queryParams(reportKey).toString()
 
-        val queryParams: Map<String, String> = mapOf(reportKey to reportName)
         val metadata = orderlyServerAPI
                 .throwOnError()
-                .get("/run-metadata", context, queryParams.filter { it.key != reportKey })
+                .get("/run-metadata", emptyMap())
                 .data(RunReportMetadata::class.java)
 
         val gitBranches = if (metadata.gitSupported)
         {
             val branchResponse = orderlyServerAPI
                     .throwOnError()
-                    .get("/git/branches", context, queryParams.filter { it.key != reportKey })
+                    .get("/git/branches", emptyMap())
 
             branchResponse.listData(GitBranch::class.java)
                     .map { it.name }
