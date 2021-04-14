@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
-import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
