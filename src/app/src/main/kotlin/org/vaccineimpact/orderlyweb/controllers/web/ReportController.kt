@@ -13,10 +13,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
-import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.*
 
 class ReportController(
     context: ActionContext,
@@ -68,6 +65,12 @@ class ReportController(
         }
 
         return RunReportViewModel(context, metadata, gitBranches)
+    }
+
+    @Template("run-workflow-page.ftl")
+    fun getRunWorkflow(): RunWorkflowViewModel
+    {
+        return RunWorkflowViewModel(context)
     }
 
     fun getRunnableReports(): List<ReportWithDate>
