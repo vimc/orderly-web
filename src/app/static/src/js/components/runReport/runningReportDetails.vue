@@ -145,7 +145,8 @@
                             this.error = "";
                             this.defaultMessage = "";
 
-                            if (this.reportLog.status in ["running", "queued"]) {
+                            const status = this.reportLog.status;
+                            if (status === "running" || status === "queued") {
                                 if (!this.pollingTimer) {
                                     this.startPolling();
                                 }
@@ -161,7 +162,7 @@
                 }
             },
             startPolling: function () {
-                this.pollingTimer = setInterval(() => this.getLogs, 1500);
+                this.pollingTimer = setInterval(this.getLogs, 1500);
             },
             stopPolling: function () {
                 clearInterval(this.pollingTimer);

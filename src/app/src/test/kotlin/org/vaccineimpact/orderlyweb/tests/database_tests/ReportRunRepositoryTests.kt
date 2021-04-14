@@ -8,11 +8,14 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
+    private val now = Instant.now()
+
     @Test
     fun `can add report run`()
     {
@@ -82,7 +85,6 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
     fun `can get running report logs for key`()
     {
         insertUser("user@email.com", "user.name")
-        val now = Instant.now()
 
         val sut = OrderlyWebReportRunRepository()
         sut.addReportRun(
@@ -117,5 +119,43 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             sut.getReportRun("fakeKey")
         }.hasMessageContaining("the following problems occurred:\n" +
                 "Unknown get-report-run : 'key'")
+    }
+
+    @Test
+    fun `can update report run`()
+    {
+        insertUser("user@email.com", "user.name")
+        insertReport("testReport", "version123")
+
+        val sut = OrderlyWebReportRunRepository()
+        sut.addReportRun(
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
+        )
+
+        sut.updateReportRun(
+                "adventurous_aardvark",
+                "completed",
+                "version123",
+                listOf("log1","log2")
+        )
+
+        assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1",
+                "completed",
+                "log1\nlog2",
+                "version123"))
     }
 }
