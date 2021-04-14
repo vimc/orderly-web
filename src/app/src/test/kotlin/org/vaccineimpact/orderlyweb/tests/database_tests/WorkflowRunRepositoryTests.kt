@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.database_tests
 
+import com.google.gson.Gson
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -25,6 +26,9 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         sut.addWorkflowRun(
             WorkflowRun(
                 "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
                 listOf(
                     WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
                     WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
@@ -32,14 +36,14 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 mapOf("instanceA" to "pre-staging"),
                 "branch1",
                 "commit1"
-            ),
-            "adventurous_aardvark",
-            "user@email.com",
-            now
+            )
         )
         sut.addWorkflowRun(
             WorkflowRun(
                 "Final report",
+                "benevolent_badger",
+                "user@email.com",
+                Instant.now(),
                 listOf(
                     WorkflowReportWithParams("reportC", mapOf("param4" to "four", "param5" to "five")),
                     WorkflowReportWithParams("reportD", mapOf("param6" to "six"))
@@ -47,10 +51,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 mapOf("instanceA" to "post-staging"),
                 "branch1",
                 "commit1"
-            ),
-            "benevolent_badger",
-            "user@email.com",
-            Instant.now()
+            )
         )
         JooqContext().use {
             val result = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN).fetch()
@@ -79,12 +80,12 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             sut.addWorkflowRun(
                 WorkflowRun(
                     "Interim report",
+                    "adventurous_aardvark",
+                    "user@email.com",
+                    Instant.now(),
                     emptyList(),
                     emptyMap()
-                ),
-                "adventurous_aardvark",
-                "user@email.com",
-                Instant.now()
+                )
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
@@ -98,23 +99,23 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         sut.addWorkflowRun(
             WorkflowRun(
                 "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now(),
                 emptyList(),
                 emptyMap()
-            ),
-            "adventurous_aardvark",
-            "user@email.com",
-            Instant.now()
+            )
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
                 WorkflowRun(
                     "Interim report",
+                    "adventurous_aardvark",
+                    "user@email.com",
+                    Instant.now(),
                     emptyList(),
                     emptyMap()
-                ),
-                "adventurous_aardvark",
-                "user@email.com",
-                Instant.now()
+                )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.key")
     }
@@ -130,23 +131,23 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         sut.addWorkflowRun(
             WorkflowRun(
                 "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
                 emptyList(),
                 emptyMap()
-            ),
-            "adventurous_aardvark",
-            "user@email.com",
-            now
+            )
         )
         assertThatThrownBy {
             sut.addWorkflowRun(
                 WorkflowRun(
                     "Interim report",
+                    "benevolent_badger",
+                    "user@email.com",
+                    now,
                     emptyList(),
                     emptyMap()
-                ),
-                "benevolent_badger",
-                "user@email.com",
-                now
+                )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
     }
