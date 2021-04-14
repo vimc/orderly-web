@@ -4,12 +4,12 @@
         <div v-if="showReports" id="logs-form-group" class="form-group row">
             <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
-                <report-list id="logs" 
+                <running-reports-list id="logs" 
                 :reports="reports" 
-                :report.sync="selectedReport"
                 v-on="$listeners"
-                :key.sync="selectedLogReportKey"/>
+                :key.sync="selectedRunningReportKey"/>
             </div>
+            <!-- runningReportDetails to go here -->
         </div>
         <div v-else>
             <p id="noReportsRan">No reports have been run yet</p>
@@ -20,7 +20,8 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import ReportList from "../runReport/reportList.vue";
+    import RunningReportsList from "./runningReportsList.vue"
+    // import ReportList from "../runReport/reportList.vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
 
@@ -35,8 +36,8 @@
 
     interface Data {
         reports: [],
-        selectedLogReportKey: string,
-        selectedReport: string,
+        selectedRunningReportKey: string,
+        // selectedReport: string,
         error: string,
         defaultMessage: string
     }
@@ -45,13 +46,13 @@
         name: "reportLog",
         components: {
             ErrorInfo,
-            ReportList
+            RunningReportsList
         },
         data(): Data {
             return {
                 reports: [],
-                selectedLogReportKey: "",
-                selectedReport: "",
+                selectedRunningReportKey: "",
+                // selectedReport: "",
                 error: "",
                 defaultMessage: ""
             }
@@ -74,6 +75,11 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });
+            }
+        },
+        watch: {
+            selectedRunningReportKey(){
+                console.log(this.selectedRunningReportKey)
             }
         },
         mounted(){

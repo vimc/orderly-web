@@ -28,7 +28,8 @@
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
-                    <div id="reportLogVueApp">
+                    <!-- <div id="reportLogVueApp"> -->
+                    <div>
                         <report-log @update:key="setLogReportKey"></report-log>
                     </div>
                 </div>
