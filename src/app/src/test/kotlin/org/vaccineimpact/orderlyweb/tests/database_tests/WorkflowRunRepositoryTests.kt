@@ -85,4 +85,66 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             )
         }.hasMessageContaining("FOREIGN KEY constraint failed")
     }
+
+    @Test
+    fun `cannot add workflow with duplicate key`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            Instant.now(),
+            emptyList(),
+            emptyMap(),
+            null,
+            null
+        )
+        assertThatThrownBy {
+            sut.addWorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap(),
+                null,
+                null
+            )
+        }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.key")
+    }
+
+    @Test
+    fun `cannot add workflow with duplicate name and timestamp`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            emptyList(),
+            emptyMap(),
+            null,
+            null
+        )
+        assertThatThrownBy {
+            sut.addWorkflowRun(
+                "Interim report",
+                "benevolent_badger",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap(),
+                null,
+                null
+            )
+        }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
+    }
 }
