@@ -44,7 +44,9 @@ class OrderlyTests : CleanDatabaseTests()
                     now,
                     "vz",
                     "descripion",
-                    1.5)
+                    1.5,
+                    "master",
+                    "abc123")
 
     private val mockReportRepo = mock<ReportRepository> {
         on { getReportVersion("test", "v1") } doReturn basicReportVersionElapsed
