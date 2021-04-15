@@ -34,6 +34,10 @@ interface ReportRunRepository
 
 class OrderlyWebReportRunRepository : ReportRunRepository
 {
+    companion object {
+        const val SUCCESS_STATUS = "success"
+    }
+
     override fun addReportRun(
         key: String,
         user: String,
@@ -99,10 +103,18 @@ class OrderlyWebReportRunRepository : ReportRunRepository
     )
     {
         val logsString = logs?.joinToString(separator = "\n")
+        val reportVersion = if (status == SUCCESS_STATUS)
+        {
+            version
+        }
+        else
+        {
+            null
+        }
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_REPORT_RUN)
                .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
-               .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, version)
+               .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
                .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
                .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
                .execute()
