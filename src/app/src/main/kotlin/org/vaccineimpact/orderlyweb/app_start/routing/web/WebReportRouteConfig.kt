@@ -46,6 +46,12 @@ object WebReportRouteConfig : RouteConfig
                     WorkflowRunController::class, "getRunWorkflow")
                     .secure(runReports),
             WebEndpoint(
+                    "/view-workflow/",
+                    WorkflowRunController::class, "getRunWorkflowDetails")
+                    .json()
+                    .transform()
+                    .secure(runReports),
+            WebEndpoint(
                     "/reports/runnable/",
                     ReportController::class, "getRunnableReports")
                     .json()

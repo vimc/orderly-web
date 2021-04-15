@@ -15,4 +15,9 @@ class WorkflowRunController(context: ActionContext, val orderly: OrderlyClient) 
     {
         return WorkflowRunViewModel(context)
     }
+
+    fun getRunWorkflowDetails() : List<WorkflowRun>
+    {
+        return WorkflowRunRepository.getWorkflowDetails()
+    }
 }
