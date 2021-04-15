@@ -286,7 +286,7 @@ Schema: [`Status.schema.json`](Status.schema.json)
         "",
         "> dev.off()",
         "null device ",
-        "          1 "
+        "          1 ",
         "[ end       ]  2017-09-12 09:11:03",
         "[ artefact  ]  mygraph.png: b7de1d29f37d7913392832db6bc49c99",
         "[ commit    ]  example/20170912-091103-41c62920",

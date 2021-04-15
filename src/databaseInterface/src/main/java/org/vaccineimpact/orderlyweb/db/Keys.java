@@ -35,6 +35,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
+import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRun;
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
@@ -77,6 +78,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupReportP
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupUserRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserGroupVersionPermissionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebUserRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ParametersRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ParametersTypeRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportBatchRecord;
@@ -134,6 +136,9 @@ public class Keys {
     public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = UniqueKeys0.PK_ORDERLYWEB_USER;
     public static final UniqueKey<OrderlywebUserGroupRecord> PK_ORDERLYWEB_USER_GROUP = UniqueKeys0.PK_ORDERLYWEB_USER_GROUP;
     public static final UniqueKey<OrderlywebUserGroupPermissionRecord> PK_ORDERLYWEB_USER_GROUP_PERMISSION = UniqueKeys0.PK_ORDERLYWEB_USER_GROUP_PERMISSION;
+    public static final UniqueKey<OrderlywebWorkflowRunRecord> PK_ORDERLYWEB_WORKFLOW_RUN = UniqueKeys0.PK_ORDERLYWEB_WORKFLOW_RUN;
+    public static final UniqueKey<OrderlywebWorkflowRunRecord> SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_2 = UniqueKeys0.SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_2;
+    public static final UniqueKey<OrderlywebWorkflowRunRecord> SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_1 = UniqueKeys0.SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_1;
     public static final UniqueKey<ParametersRecord> PK_PARAMETERS = UniqueKeys0.PK_PARAMETERS;
     public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = UniqueKeys0.PK_PARAMETERS_TYPE;
     public static final UniqueKey<ReportRecord> PK_REPORT = UniqueKeys0.PK_REPORT;
@@ -181,6 +186,7 @@ public class Keys {
     public static final ForeignKey<OrderlywebUserGroupUserRecord, OrderlywebUserGroupRecord> FK_ORDERLYWEB_USER_GROUP_USER_ORDERLYWEB_USER_GROUP_1 = ForeignKeys0.FK_ORDERLYWEB_USER_GROUP_USER_ORDERLYWEB_USER_GROUP_1;
     public static final ForeignKey<OrderlywebUserGroupVersionPermissionRecord, OrderlywebUserGroupPermissionRecord> FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1 = ForeignKeys0.FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1;
     public static final ForeignKey<OrderlywebUserGroupVersionPermissionRecord, ReportVersionRecord> FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_REPORT_VERSION_1 = ForeignKeys0.FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_REPORT_VERSION_1;
+    public static final ForeignKey<OrderlywebWorkflowRunRecord, OrderlywebUserRecord> FK_ORDERLYWEB_WORKFLOW_RUN_ORDERLYWEB_USER_1 = ForeignKeys0.FK_ORDERLYWEB_WORKFLOW_RUN_ORDERLYWEB_USER_1;
     public static final ForeignKey<ParametersRecord, ReportVersionRecord> FK_PARAMETERS_REPORT_VERSION_1 = ForeignKeys0.FK_PARAMETERS_REPORT_VERSION_1;
     public static final ForeignKey<ParametersRecord, ParametersTypeRecord> FK_PARAMETERS_PARAMETERS_TYPE_1 = ForeignKeys0.FK_PARAMETERS_PARAMETERS_TYPE_1;
     public static final ForeignKey<ReportRecord, ReportVersionRecord> FK_REPORT_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_REPORT_VERSION_1;
@@ -227,6 +233,9 @@ public class Keys {
         public static final UniqueKey<OrderlywebUserRecord> PK_ORDERLYWEB_USER = Internal.createUniqueKey(OrderlywebUser.ORDERLYWEB_USER, "pk_orderlyweb_user", new TableField[] { OrderlywebUser.ORDERLYWEB_USER.EMAIL }, true);
         public static final UniqueKey<OrderlywebUserGroupRecord> PK_ORDERLYWEB_USER_GROUP = Internal.createUniqueKey(OrderlywebUserGroup.ORDERLYWEB_USER_GROUP, "pk_orderlyweb_user_group", new TableField[] { OrderlywebUserGroup.ORDERLYWEB_USER_GROUP.ID }, true);
         public static final UniqueKey<OrderlywebUserGroupPermissionRecord> PK_ORDERLYWEB_USER_GROUP_PERMISSION = Internal.createUniqueKey(OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION, "pk_orderlyweb_user_group_permission", new TableField[] { OrderlywebUserGroupPermission.ORDERLYWEB_USER_GROUP_PERMISSION.ID }, true);
+        public static final UniqueKey<OrderlywebWorkflowRunRecord> PK_ORDERLYWEB_WORKFLOW_RUN = Internal.createUniqueKey(OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN, "pk_orderlyweb_workflow_run", new TableField[] { OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN.ID }, true);
+        public static final UniqueKey<OrderlywebWorkflowRunRecord> SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_2 = Internal.createUniqueKey(OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN, "sqlite_autoindex_orderlyweb_workflow_run_2", new TableField[] { OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN.NAME, OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN.DATE }, true);
+        public static final UniqueKey<OrderlywebWorkflowRunRecord> SQLITE_AUTOINDEX_ORDERLYWEB_WORKFLOW_RUN_1 = Internal.createUniqueKey(OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN, "sqlite_autoindex_orderlyweb_workflow_run_1", new TableField[] { OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN.KEY }, true);
         public static final UniqueKey<ParametersRecord> PK_PARAMETERS = Internal.createUniqueKey(Parameters.PARAMETERS, "pk_parameters", new TableField[] { Parameters.PARAMETERS.ID }, true);
         public static final UniqueKey<ParametersTypeRecord> PK_PARAMETERS_TYPE = Internal.createUniqueKey(ParametersType.PARAMETERS_TYPE, "pk_parameters_type", new TableField[] { ParametersType.PARAMETERS_TYPE.NAME }, true);
         public static final UniqueKey<ReportRecord> PK_REPORT = Internal.createUniqueKey(Report.REPORT, "pk_report", new TableField[] { Report.REPORT.NAME }, true);
@@ -272,6 +281,7 @@ public class Keys {
         public static final ForeignKey<OrderlywebUserGroupUserRecord, OrderlywebUserGroupRecord> FK_ORDERLYWEB_USER_GROUP_USER_ORDERLYWEB_USER_GROUP_1 = Internal.createForeignKey(Keys.PK_ORDERLYWEB_USER_GROUP, OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER, "fk_orderlyweb_user_group_user_orderlyweb_user_group_1", new TableField[] { OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER.USER_GROUP }, true);
         public static final ForeignKey<OrderlywebUserGroupVersionPermissionRecord, OrderlywebUserGroupPermissionRecord> FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_ORDERLYWEB_USER_GROUP_PERMISSION_1 = Internal.createForeignKey(Keys.PK_ORDERLYWEB_USER_GROUP_PERMISSION, OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION, "fk_orderlyweb_user_group_version_permission_orderlyweb_user_group_permission_1", new TableField[] { OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.ID }, true);
         public static final ForeignKey<OrderlywebUserGroupVersionPermissionRecord, ReportVersionRecord> FK_ORDERLYWEB_USER_GROUP_VERSION_PERMISSION_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION, "fk_orderlyweb_user_group_version_permission_report_version_1", new TableField[] { OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION.VERSION }, true);
+        public static final ForeignKey<OrderlywebWorkflowRunRecord, OrderlywebUserRecord> FK_ORDERLYWEB_WORKFLOW_RUN_ORDERLYWEB_USER_1 = Internal.createForeignKey(Keys.PK_ORDERLYWEB_USER, OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN, "fk_orderlyweb_workflow_run_orderlyweb_user_1", new TableField[] { OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN.EMAIL }, true);
         public static final ForeignKey<ParametersRecord, ReportVersionRecord> FK_PARAMETERS_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, Parameters.PARAMETERS, "fk_parameters_report_version_1", new TableField[] { Parameters.PARAMETERS.REPORT_VERSION }, true);
         public static final ForeignKey<ParametersRecord, ParametersTypeRecord> FK_PARAMETERS_PARAMETERS_TYPE_1 = Internal.createForeignKey(Keys.PK_PARAMETERS_TYPE, Parameters.PARAMETERS, "fk_parameters_parameters_type_1", new TableField[] { Parameters.PARAMETERS.TYPE }, true);
         public static final ForeignKey<ReportRecord, ReportVersionRecord> FK_REPORT_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, Report.REPORT, "fk_report_report_version_1", new TableField[] { Report.REPORT.LATEST }, true);
