@@ -29,12 +29,24 @@ class ReportLogsTests : IntegrationTest()
         val contentType = ContentTypes.json
 
         val now = Instant.now()
+        val now2 = Instant.now()
 
         OrderlyWebReportRunRepository().addReportRun(
-            "key",
+            "key1",
             "test.user@example.com",
             now,
-            "report",
+            "report1",
+            mapOf("instance1" to "pre-staging"),
+            mapOf("parameter1" to "value1"),
+            "branch1",
+            "commit1"
+        )
+
+        OrderlyWebReportRunRepository().addReportRun(
+            "key2",
+            "test.user@example.com",
+            now2,
+            "report2",
             mapOf("instance1" to "pre-staging"),
             mapOf("parameter1" to "value1"),
             "branch1",
@@ -47,10 +59,13 @@ class ReportLogsTests : IntegrationTest()
         assertJsonContentType(response)
 
         val result = JSONValidator.getData(response.text) as ArrayNode
-        assertThat(result.count()).isEqualTo(1)
+        assertThat(result.count()).isEqualTo(2)
         assertThat(result[0]["date"].textValue()).isEqualTo(now.toString())
-        assertThat(result[0]["name"].textValue()).isEqualTo("report")
-        assertThat(result[0]["key"].textValue()).isEqualTo("key")
+        assertThat(result[0]["name"].textValue()).isEqualTo("report1")
+        assertThat(result[0]["key"].textValue()).isEqualTo("key1")
+        assertThat(result[1]["date"].textValue()).isEqualTo(now2.toString())
+        assertThat(result[1]["name"].textValue()).isEqualTo("report2")
+        assertThat(result[1]["key"].textValue()).isEqualTo("key2")
     }
 
     @Test
