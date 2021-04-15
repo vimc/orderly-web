@@ -40,7 +40,6 @@
         name: "runningReportsList",
         props: {
             "reports": Array
-            // "report": String
         },
         components: {
             VueTypeaheadBootstrap,
@@ -62,11 +61,6 @@
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
-        // watch: {
-        //     query(){
-        //         console.log("runningReportLists", this.query)
-        //     }
-        // },
         beforeDestroy() {
             this.$emit('update:key', "");
         }
