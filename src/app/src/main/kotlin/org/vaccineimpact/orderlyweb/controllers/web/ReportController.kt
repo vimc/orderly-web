@@ -13,7 +13,10 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.*
-import org.vaccineimpact.orderlyweb.viewmodels.*
+import org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportVersionPageViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.ReportWithDraftsViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 
 class ReportController(
     context: ActionContext,
