@@ -162,4 +162,60 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
     }
+
+    @Test
+    fun `can get workflow details`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val workflowRun = WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        )
+        sut.addWorkflowRun(workflowRun)
+
+        val results = sut.getWorkflowDetails("adventurous_aardvark")
+        assertThat(results).isEqualTo(workflowRun)
+    }
+
+    @Test
+    fun `does not get workflow details if key is invalid`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val workflowRun = WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        )
+        sut.addWorkflowRun(workflowRun)
+        assertThatThrownBy {
+            sut.getWorkflowDetails("fake_key")
+        }.hasMessageContaining("key: workflowdetials")
+    }
 }
