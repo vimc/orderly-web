@@ -22,19 +22,11 @@ describe("runReport", () => {
                 reports: [],
                 reportLogsEnabled: true,
                 logsRefreshing: false,
-                // selectedRunningReportKey: "",
                 selectedReport: "",
                 error: "",
                 defaultMessage: ""
             }
         }
-        // props: {
-        //     selectedRunningReportKey: ''
-        // }
-    }
-
-    const initialProps = {
-        selectedRunningReportKey: ''
     }
 
     const getWrapper = (report = reports, data = initialData) => {
@@ -83,18 +75,4 @@ describe("runReport", () => {
             done();
         });
     });
-
-    // it("setting key prop selects appropriated element in list", (done) => {
-    //     const wrapper = getWrapper();
-    //     wrapper.setProps({selectedRunningReportKey: 'key2'})
-
-    //     setTimeout(async () => {
-    //         // const 
-    //         expect(wrapper.find(RunningReportsList).html()).toBe("key1");
-    //         expect(wrapper.find(RunningReportsList).findAll(".listOption").length).toBe("key1");
-    //         // wrapper.find(RunningReportsList).find("a:last-of-type").trigger("click");
-    //         // expect(wrapper.vm.$props["selectedRunningReportKey"]).toBe("key1");
-    //         done();
-    //     });
-    // });
 });

@@ -35,7 +35,6 @@
 
     interface Data {
         reports: [],
-        // selectedRunningReportKey: string,
         error: string,
         defaultMessage: string
     }
@@ -58,7 +57,6 @@
         data(): Data {
             return {
                 reports: [],
-                // selectedRunningReportKey: "",
                 error: "",
                 defaultMessage: ""
             }
@@ -81,11 +79,6 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });
-            }
-        },
-        watch: {
-            selectedRunningReportKey(){
-                console.log("reportLog", this.selectedRunningReportKey)
             }
         },
         mounted(){
