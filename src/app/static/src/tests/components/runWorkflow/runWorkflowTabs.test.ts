@@ -8,7 +8,7 @@ describe(`runWorkflowTabs`, () => {
         return shallowMount(runWorkflowTabs)
     }
 
-    it(`it can render workflow tabs`, ()=> {
+    it(`it can render workflow tabs`, () => {
         const wrapper = getWrapper()
         const sidebar = wrapper.find("#sidebar")
         expect(sidebar.find("#workflow-title").text()).toBe("Workflows")
@@ -16,7 +16,7 @@ describe(`runWorkflowTabs`, () => {
         expect(sidebar.findAll("ul li a").at(1).text()).toBe("Progress")
     })
 
-    it(`it can render run tab-content`, async()=> {
+    it(`it can render run tab-content`, async () => {
         const wrapper = getWrapper()
         const sidebar = wrapper.find("#sidebar")
         await sidebar.findAll("ul li a").at(0).trigger("click")
@@ -26,7 +26,7 @@ describe(`runWorkflowTabs`, () => {
         expect(wrapper.find("#run-workflow-tab").find("h2").text()).toBe("Create workflow")
     })
 
-    it(`it can render progress tab-content`, async()=> {
+    it(`it can render progress tab-content`, async () => {
         const wrapper = getWrapper()
         const sidebar = wrapper.find("#sidebar")
         sidebar.findAll("ul li a").at(1).trigger("click")

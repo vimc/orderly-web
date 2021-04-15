@@ -67,12 +67,6 @@ class ReportController(
         return RunReportViewModel(context, metadata, gitBranches)
     }
 
-    @Template("run-workflow-page.ftl")
-    fun getRunWorkflow(): RunWorkflowViewModel
-    {
-        return RunWorkflowViewModel(context)
-    }
-
     fun getRunnableReports(): List<ReportWithDate>
     {
         val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)

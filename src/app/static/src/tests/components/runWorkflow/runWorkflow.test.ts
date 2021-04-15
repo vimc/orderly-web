@@ -7,7 +7,7 @@ describe(`runWorkflow`, () => {
         return shallowMount(runWorkflow)
     }
 
-    it(`it can render workflow page`, ()=> {
+    it(`it can render workflow page`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("p").text()).toBe("Run workflow is coming soon")
     })

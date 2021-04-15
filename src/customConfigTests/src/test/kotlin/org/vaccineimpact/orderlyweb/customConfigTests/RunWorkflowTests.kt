@@ -4,7 +4,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.Select
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -38,7 +38,9 @@ class RunWorkflowTests : SeleniumTest()
     @Test
     fun `can view run workflow progress tab`()
     {
+        driver.findElement(By.id("workflow-progress-link")).click()
         val tab = driver.findElement(By.id("workflow-progress-tab"))
+        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
         Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Workflow progress")
         Assertions.assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Run workflow progress is coming soon")
     }
