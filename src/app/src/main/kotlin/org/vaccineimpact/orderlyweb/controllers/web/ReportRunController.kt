@@ -28,7 +28,9 @@ class ReportRunController(
         var log = reportRunRepository.getReportRun(key)
         if (log.status in listOf(null, "queued", "running"))
         {
-            val statusResponse = orderlyServerAPI.get("/v1/reports/$key/status/", context)
+            val statusResponse = orderlyServerAPI.get(
+                    "/v1/reports/$key/status/",
+                    mapOf("output" to "true"))
             val latestStatus = statusResponse.data(ReportStatus::class.java)
             reportRunRepository.updateReportRun(key, latestStatus.status, latestStatus.version, latestStatus.output)
             log = reportRunRepository.getReportRun(key)
