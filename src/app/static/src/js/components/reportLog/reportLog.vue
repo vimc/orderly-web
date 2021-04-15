@@ -81,6 +81,11 @@
                     });
             }
         },
+        watch: {
+            selectedRunningReportKey(){
+                console.log("reportLog", this.selectedRunningReportKey)
+            }
+        },
         mounted(){
             this.getAllReports();
         }

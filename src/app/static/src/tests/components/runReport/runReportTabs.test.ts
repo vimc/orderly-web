@@ -1,6 +1,8 @@
 import Vue from "vue";
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount, mount} from "@vue/test-utils";
 import RunReportTabs from "../../../js/components/runReport/runReportTabs.vue";
+import ReportLog from "../../../js/components/reportLog/reportLog.vue";
+import RunningReportsList from "../../../js/components/reportLog/runningReportsList.vue";
 
 describe("runReportTabs", () => {
 
@@ -18,6 +20,22 @@ describe("runReportTabs", () => {
         return shallowMount(RunReportTabs, {
             propsData
         });
+    }
+
+    const data = {
+        ...props,
+        data() {
+            return {
+        selectedRunningReportKey: "key1", selectedTab: "reportLogs"
+            }}
+    }
+
+    const getWrapper2 = (propsData = props) => {
+        return shallowMount(RunReportTabs, data);
+    }
+
+    const getWrapper3 = (propsData = props) => {
+        return mount(RunReportTabs, data);
     }
 
     it("renders outline correctly", () => {
@@ -56,5 +74,36 @@ describe("runReportTabs", () => {
         expect(wrapper.find("report-log-stub").exists()).toBe(true);
     });
 
+    it("reportLogs receives run key prop", async () => {
+
+        const wrapper = getWrapper2()
+        const reportLog = wrapper.find("report-log-stub")
+        expect(reportLog.props("selectedRunningReportKey")).toBe("key1");
+        wrapper.setData({selectedRunningReportKey: "key2", selectedTab: "reportLogs"})
+        await Vue.nextTick();
+        expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key2");
+        // reportLog.vm.$emit("selectedRunningReportKey", "key3")
+        // // await Vue.nextTick();
+        // await wrapper.vm.$nextTick()
+        // expect(wrapper.vm.$data).toBe("key1");
+    });
+
+    it("reportLogs receives run key prop", async () => {
+
+        const wrapper = getWrapper3()
+        // await Vue.nextTick();
+        const reportLog = wrapper.findComponent(ReportLog)
+        const runningReportsList = wrapper.findComponent(RunningReportsList)
+        expect(reportLog.html()).toBe("key1");
+        // expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key1");
+        // expect(reportLog.attributes()).toBe("key1");
+        // wrapper.setData({selectedRunningReportKey: "key2", selectedTab: "reportLogs"})
+        // await Vue.nextTick();
+        // expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key2");
+        reportLog.vm.$emit("key", "key2");
+        await Vue.nextTick();
+        // expect(reportLog.emitted()).toBe("key2");
+        expect(wrapper.vm.$data).toBe("key2");
+    });
     
 });

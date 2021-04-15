@@ -29,7 +29,7 @@
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
                     <div>
-                        <report-log @update:key="setSelectedReportKey"></report-log>
+                        <report-log @update:key="setSelectedReportKey" :selectedRunningReportKey.sync="selectedRunningReportKey"></report-log>
                     </div>
                 </div>
             </div>
@@ -55,6 +55,11 @@
             return {
                 selectedTab: "runReport",
                 selectedRunningReportKey: ""
+            }
+        },
+        watch: {
+            selectedRunningReportKey(){
+                console.log("runReportTab", this.selectedRunningReportKey)
             }
         },
         methods: {
