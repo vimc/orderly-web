@@ -10,7 +10,7 @@ data class WorkflowReportWithParams(
 data class WorkflowRun(
     val name: String,
     val key: String,
-    val user: String,
+    val email: String,
     val date: Instant,
     val reports: List<WorkflowReportWithParams>,
     val instances: Map<String, String>,

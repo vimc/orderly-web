@@ -19,7 +19,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
             it.dsl.insertInto(Tables.ORDERLYWEB_WORKFLOW_RUN)
                 .set(Tables.ORDERLYWEB_WORKFLOW_RUN.NAME, workflowRun.name)
                 .set(Tables.ORDERLYWEB_WORKFLOW_RUN.KEY, workflowRun.key)
-                .set(Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL, workflowRun.user)
+                .set(Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL, workflowRun.email)
                 .set(Tables.ORDERLYWEB_WORKFLOW_RUN.DATE, Timestamp.from(workflowRun.date))
                 .set(Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS, Gson().toJson(workflowRun.reports))
                 .set(Tables.ORDERLYWEB_WORKFLOW_RUN.INSTANCES, Gson().toJson(workflowRun.instances))
