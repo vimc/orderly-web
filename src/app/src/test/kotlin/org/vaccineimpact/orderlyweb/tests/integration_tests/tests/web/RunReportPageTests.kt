@@ -42,7 +42,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                mock<ActionContext> {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )
@@ -88,7 +88,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                mock<ActionContext> {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )

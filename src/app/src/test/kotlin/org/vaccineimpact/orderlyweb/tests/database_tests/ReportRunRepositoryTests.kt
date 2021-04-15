@@ -16,24 +16,28 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
 {
     private val now = Instant.now()
 
+    private fun addTestReportRun(sut: OrderlyWebReportRunRepository)
+    {
+        sut.addReportRun(
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1"
+        )
+    }
+
     @Test
     fun `can add report run`()
     {
         insertUser("user@email.com", "user.name")
 
-        val now = Instant.now()
-
         val sut = OrderlyWebReportRunRepository()
-        sut.addReportRun(
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            "report1",
-            mapOf("instance1" to "pre-staging"),
-            mapOf("parameter1" to "value1"),
-            "branch1",
-            "commit1"
-        )
+
+        addTestReportRun(sut)
         sut.addReportRun(
             "benevolent_badger",
             "user@email.com",
@@ -87,16 +91,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
         insertUser("user@email.com", "user.name")
 
         val sut = OrderlyWebReportRunRepository()
-        sut.addReportRun(
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                "report1",
-                mapOf("instance1" to "pre-staging"),
-                mapOf("parameter1" to "value1"),
-                "branch1",
-                "commit1"
-        )
+        addTestReportRun(sut)
 
         assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
                 "user@email.com",
@@ -128,20 +123,11 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
         insertReport("testReport", "version123")
 
         val sut = OrderlyWebReportRunRepository()
-        sut.addReportRun(
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                "report1",
-                mapOf("instance1" to "pre-staging"),
-                mapOf("parameter1" to "value1"),
-                "branch1",
-                "commit1"
-        )
+        addTestReportRun(sut)
 
         sut.updateReportRun(
                 "adventurous_aardvark",
-                "completed",
+                "success",
                 "version123",
                 listOf("log1","log2")
         )
@@ -154,8 +140,36 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 mapOf("parameter1" to "value1"),
                 "branch1",
                 "commit1",
-                "completed",
+                "success",
                 "log1\nlog2",
                 "version123"))
+    }
+
+    @Test
+    fun `update report run does not update version if status is not 'success'`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebReportRunRepository()
+        addTestReportRun(sut)
+
+        sut.updateReportRun(
+                "adventurous_aardvark",
+                "running",
+                "version123",
+                listOf("log1","log2")
+        )
+
+        assertThat(sut.getReportRun("adventurous_aardvark")).isEqualTo(ReportRunLog(
+                "user@email.com",
+                now,
+                "report1",
+                mapOf("instance1" to "pre-staging"),
+                mapOf("parameter1" to "value1"),
+                "branch1",
+                "commit1",
+                "running",
+                "log1\nlog2",
+                null))
     }
 }

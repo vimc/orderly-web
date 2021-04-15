@@ -187,7 +187,7 @@ class RunReportTests
                 200)
 
         val mockAPI = mock<OrderlyServerAPI> {
-            on { get("/v1/reports/fakeKey/status/", mockContext) } doReturn  mockOrderlyResponse
+            on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse
         }
 
         val sut = ReportRunController(mockContext, mockRepo, mockAPI)

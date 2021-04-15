@@ -47,7 +47,7 @@ class OrderlyServerTests
     fun `passes query parameters from URL`()
     {
         val client = getHttpClient()
-        OrderlyServer(mockConfig, client).get("/some/path?key1=val1", mock())
+        OrderlyServer(mockConfig, client).get("/some/path?key1=val1", mock<ActionContext>())
 
         verify(client).newCall(
             check {
@@ -153,7 +153,7 @@ class OrderlyServerTests
         val text = """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}"""
         val client = getHttpClient(text, 500)
         val orderlyServerAPI = OrderlyServer(mockConfig, client).throwOnError()
-        assertThatThrownBy { orderlyServerAPI.get("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
+        assertThatThrownBy { orderlyServerAPI.get("/some/path/", mock<ActionContext>()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.post("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
         assertThatThrownBy { orderlyServerAPI.delete("/some/path/", mock()) }.isInstanceOf(OrderlyServerError::class.java)
     }
@@ -165,7 +165,7 @@ class OrderlyServerTests
                 """{"status":"failure","errors":[{"error":"FOO","detail":"bar"}],"data":null}""",
                 500
         )
-        val response = OrderlyServer(mockConfig, client).get("/some/path/", mock())
+        val response = OrderlyServer(mockConfig, client).get("/some/path/", mock<ActionContext>())
         assertThat(response.statusCode).isEqualTo(500)
         assertThat(response.text).isEqualTo(
                 """{"data":null,"errors":[{"error":"FOO","message":"bar"}],"status":"failure"}"""
@@ -238,7 +238,7 @@ class OrderlyServerTests
         val sut = OrderlyServer(mockConfig, client)
                 .throwOnError()
 
-        assertThatThrownBy { sut.get("/whatever", mock()) }
+        assertThatThrownBy { sut.get("/whatever", mock<ActionContext>()) }
                 .isInstanceOf(OrderlyServerError::class.java)
                 .hasMessageContaining("Orderly server request failed for url /whatever")
                 .matches { (it as OrderlyServerError).httpStatus == 400 }
@@ -283,7 +283,7 @@ class OrderlyServerTests
         val expectedJson = mapper.readTree(expectedTranslatedResponse)
 
         val sut1 = OrderlyServer(mockConfig, getHttpClient(rawResponse, 400))
-        val getResult = sut1.get("anyUrl", mock())
+        val getResult = sut1.get("anyUrl", mock<ActionContext>())
         assertThat(mapper.readTree(getResult.text)).isEqualTo(expectedJson)
         assertThat(getResult.statusCode).isEqualTo(400)
 
