@@ -2,7 +2,7 @@
     <div>
         <h2>Running report logs</h2>
         <div v-if="showReports" id="logs-form-group" class="form-group row">
-            <label for="report" class="col-sm-2 col-form-label text-right">Show logs for</label>
+            <label class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
                 <running-reports-list id="logs" 
                 :reports="reports" 
@@ -35,13 +35,22 @@
 
     interface Data {
         reports: [],
-        selectedRunningReportKey: string,
+        // selectedRunningReportKey: string,
         error: string,
         defaultMessage: string
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    interface Props {
+        selectedRunningReportKey: string
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "reportLog",
+        props: {
+            selectedRunningReportKey: {
+                type: String
+            }
+        },
         components: {
             ErrorInfo,
             RunningReportsList
@@ -49,7 +58,7 @@
         data(): Data {
             return {
                 reports: [],
-                selectedRunningReportKey: "",
+                // selectedRunningReportKey: "",
                 error: "",
                 defaultMessage: ""
             }
@@ -72,6 +81,11 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred fetching the running reports";
                     });
+            }
+        },
+        watch: {
+            selectedRunningReportKey(){
+                console.log("reportLog", this.selectedRunningReportKey)
             }
         },
         mounted(){

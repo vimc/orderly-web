@@ -15,17 +15,17 @@
         </template>
         <template slot="suggestion" slot-scope="{ data, htmlText }">
             <div>
-                <span v-html="htmlText"></span>
-                <span class="text-muted pl-3">Run started: {{
-                        data.date ? new Intl.DateTimeFormat(undefined, {
+                <span class="listOption" v-html="htmlText"></span>
+                <span class="text-muted pl-3">Run started: {{ 
+                    new Intl.DateTimeFormat(undefined, {
                             weekday: "short",
                             month: "short",
                             day: "numeric",
                             year: "numeric",
                             hour: "numeric",
                             minute: "numeric"
-                        }).format(new Date(data.date)) : 'never'
-                    }}</span>
+                        }).format(new Date(data.date)) 
+                }}</span>
             </div>
         </template>
     </vue-typeahead-bootstrap>
@@ -39,8 +39,8 @@
     export default Vue.extend({
         name: "runningReportsList",
         props: {
-            "reports": Array,
-            "report": String
+            "reports": Array
+            // "report": String
         },
         components: {
             VueTypeaheadBootstrap,

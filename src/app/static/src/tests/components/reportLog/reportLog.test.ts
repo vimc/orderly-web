@@ -22,12 +22,19 @@ describe("runReport", () => {
                 reports: [],
                 reportLogsEnabled: true,
                 logsRefreshing: false,
-                selectedLogReportKey: "",
+                // selectedRunningReportKey: "",
                 selectedReport: "",
                 error: "",
                 defaultMessage: ""
             }
         }
+        // props: {
+        //     selectedRunningReportKey: ''
+        // }
+    }
+
+    const initialProps = {
+        selectedRunningReportKey: ''
     }
 
     const getWrapper = (report = reports, data = initialData) => {
@@ -54,7 +61,7 @@ describe("runReport", () => {
         })
     });
 
-    it("show error message if error getting git commits", (done) => {
+    it("show error message if error getting reports running", (done) => {
         mockAxios.onGet('http://app/reports/running/')
             .reply(500, "TEST ERROR");
         const wrapper = shallowMount(ReportLog);
@@ -68,11 +75,26 @@ describe("runReport", () => {
 
     it("displays report list in order and allows selection", (done) => {
         const wrapper = getWrapper();
+        wrapper.setProps({selectedRunningReportKey: ''})
 
         setTimeout(async () => {
             wrapper.find(RunningReportsList).find("a:last-of-type").trigger("click");
-            expect(wrapper.vm.$data["selectedRunningReportKey"]).toBe("key1");
+            expect(wrapper.vm.$props["selectedRunningReportKey"]).toBe("key1");
             done();
         });
     });
+
+    // it("setting key prop selects appropriated element in list", (done) => {
+    //     const wrapper = getWrapper();
+    //     wrapper.setProps({selectedRunningReportKey: 'key2'})
+
+    //     setTimeout(async () => {
+    //         // const 
+    //         expect(wrapper.find(RunningReportsList).html()).toBe("key1");
+    //         expect(wrapper.find(RunningReportsList).findAll(".listOption").length).toBe("key1");
+    //         // wrapper.find(RunningReportsList).find("a:last-of-type").trigger("click");
+    //         // expect(wrapper.vm.$props["selectedRunningReportKey"]).toBe("key1");
+    //         done();
+    //     });
+    // });
 });

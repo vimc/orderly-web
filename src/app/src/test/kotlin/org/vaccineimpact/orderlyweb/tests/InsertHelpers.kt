@@ -12,8 +12,6 @@ import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import java.io.File
 import java.time.Instant
 import kotlin.streams.asSequence
-import java.sql.Timestamp
-import com.google.gson.Gson
 
 data class InsertableChangelog
 constructor(val id: String,
