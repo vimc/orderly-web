@@ -57,11 +57,6 @@
                 selectedRunningReportKey: ""
             }
         },
-        watch: {
-            selectedRunningReportKey(){
-                console.log("runReportTab", this.selectedRunningReportKey)
-            }
-        },
         methods: {
             setSelectedReportKey(e){
                 this.selectedRunningReportKey = e
