@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils"
-import runningReportsDetails from "../../../js/components/runReport/runningReportDetails.vue"
+import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 

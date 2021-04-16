@@ -28,8 +28,8 @@
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
-                    <div id="running-report-details">
-                        <running-report-details :report-key="selectedLogReportKey"></running-report-details>
+                    <div>
+                        <report-log @update:key="setSelectedReportKey" :selectedRunningReportKey="selectedRunningReportKey"></report-log>
                     </div>
                 </div>
             </div>
@@ -40,12 +40,12 @@
 <script lang="ts">
     import Vue from "vue"
     import runReport from "./runReport.vue"
-    import runningReportDetails from "./runningReportDetails.vue";
+    import reportLog from "./../reportLog/reportLog.vue"
     export default Vue.extend({
         name: "runReportTabs",
         components: {
-            runReport,
-            runningReportDetails
+            reportLog,
+            runReport
         },
         props: [
             "metadata",
@@ -54,10 +54,13 @@
         data() {
             return {
                 selectedTab: "runReport",
-                selectedLogReportKey: ""
+                selectedRunningReportKey: ""
             }
         },
         methods: {
+            setSelectedReportKey(e){
+                this.selectedRunningReportKey = e
+            },
             switchTab(tab){
                 this.selectedTab = tab
             }

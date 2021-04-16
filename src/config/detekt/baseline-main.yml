@@ -271,10 +271,10 @@
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:42</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:17</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.PermissionMapper.kt:19</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:441</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:443</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:447</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:449</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:446</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:448</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:452</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:454</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.AllowedOriginsFilter.kt:18</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper.kt:75</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.security.providers.OkHttpMontaguAPIClient.kt:45</ID>
@@ -447,6 +447,7 @@
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:7</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:11</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:12</ID>
+    <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.ReportRunController.kt:9</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.db.UserMapper.kt:4</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.db.UserMapper.kt:6</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags.kt:3</ID>
@@ -468,12 +469,14 @@
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.DataRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.GitRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.HomeRouteConfig.kt:1</ID>
+    <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.QueueRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.ReportRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.UserRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.api.VersionRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebAuthRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebDocumentRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebGitRouteConfig.kt:1</ID>
+    <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebLogsRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebPermissionRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebReportRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebRoleRouteConfig.kt:1</ID>
@@ -489,6 +492,7 @@
     <ID>PackageNaming:GitRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:GoSignal.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:HomeRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
+    <ID>PackageNaming:QueueRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:ReportRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.api</ID>
     <ID>PackageNaming:ResponseErrorHandler.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:RouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
@@ -500,6 +504,7 @@
     <ID>PackageNaming:WebAuthRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebDocumentRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebGitRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
+    <ID>PackageNaming:WebLogsRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebPermissionRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebReportRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebResponseErrorHandler.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
@@ -924,9 +929,31 @@
     <ID>UnsafeCallOnNullableType:OnetimeTokenController.kt$OnetimeTokenController$profile!!</ID>
     <ID>UnsafeCallOnNullableType:OrderlyServerAPI.kt$OrderlyServer$response.body!!</ID>
     <ID>UnsafeCallOnNullableType:ReportRepository.kt$OrderlyReportRepository$r!!</ID>
+    <ID>UnsafeCallOnNullableType:ReportRunController.kt$ReportRunController$context.userProfile!!</ID>
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$permissionVM.scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:UserController.kt$UserController$context.userProfile!!</ID>
+    <ID>UnusedImports:ArtefactController.kt$import org.vaccineimpact.orderlyweb.db.Orderly</ID>
+    <ID>UnusedImports:ArtefactController.kt$import org.vaccineimpact.orderlyweb.db.OrderlyClient</ID>
+    <ID>UnusedImports:AuthenticationRouteBuilder.kt$import org.vaccineimpact.orderlyweb.security.authentication.OrderlyWebAuthenticationConfig</ID>
+    <ID>UnusedImports:DataController.kt$import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError</ID>
+    <ID>UnusedImports:DataController.kt$import org.vaccineimpact.orderlyweb.models.Scope</ID>
+    <ID>UnusedImports:DataController.kt$import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission</ID>
+    <ID>UnusedImports:GitController.kt$import java.text.SimpleDateFormat</ID>
+    <ID>UnusedImports:GitController.kt$import org.vaccineimpact.orderlyweb.models.GitCommit</ID>
+    <ID>UnusedImports:HomeController.kt$import org.vaccineimpact.orderlyweb.app_start.Router</ID>
+    <ID>UnusedImports:IndexController.kt$import org.vaccineimpact.orderlyweb.models.Scope</ID>
+    <ID>UnusedImports:IndexController.kt$import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission</ID>
+    <ID>UnusedImports:JWTHeaderClient.kt$import org.pac4j.core.exception.CredentialsException</ID>
+    <ID>UnusedImports:OkHttpMontaguAPIClient.kt$import org.slf4j.LoggerFactory</ID>
+    <ID>UnusedImports:OrderlyWebAuthenticationConfig.kt$import org.slf4j.LoggerFactory</ID>
+    <ID>UnusedImports:ReportRunController.kt$import org.vaccineimpact.orderlyweb.models.ArtefactFormat</ID>
+    <ID>UnusedImports:ReportVersionWithDescCustomFieldsLatestParamsTags.kt$import java.beans.ConstructorProperties</ID>
+    <ID>UnusedImports:ResourceController.kt$import org.vaccineimpact.orderlyweb.models.Scope</ID>
+    <ID>UnusedImports:ResourceController.kt$import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission</ID>
+    <ID>UnusedImports:UserMapper.kt$import org.vaccineimpact.orderlyweb.models.Scope</ID>
+    <ID>UnusedImports:UserMapper.kt$import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission</ID>
+    <ID>UnusedImports:UserRouteConfig.kt$import spark.route.HttpMethod</ID>
     <ID>VariableNaming:DocumentController.kt$DocumentController$val URL = try { URL(url) } catch (e: MalformedURLException) { throw BadRequest("$url is not a valid url") }</ID>
     <ID>VariableNaming:Helpers.kt$val KILO_DIVISOR = BigDecimal(1024L)</ID>
     <ID>VariableNaming:SQLiteTokenStore.kt$SQLiteTokenStore$val ONETIME_TOKEN = table(name(tableName))</ID>

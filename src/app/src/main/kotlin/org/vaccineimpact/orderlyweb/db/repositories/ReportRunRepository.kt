@@ -4,10 +4,11 @@ import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.models.ReportRunLog
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 import java.sql.Timestamp
 import java.time.Instant
 import org.vaccineimpact.orderlyweb.jsonToStringMap
+import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
 interface ReportRunRepository
 {
@@ -21,8 +22,10 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
+
     @Throws(UnknownObjectError::class)
     fun getReportRun(key: String): ReportRunLog
+    fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -81,6 +84,21 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     result[ORDERLYWEB_REPORT_RUN.STATUS],
                     result[ORDERLYWEB_REPORT_RUN.LOGS],
                     result[ORDERLYWEB_REPORT_RUN.REPORT_VERSION])
+        }
+    }
+
+    override fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_REPORT_RUN.REPORT.`as`("name"),
+                    ORDERLYWEB_REPORT_RUN.KEY,
+                    ORDERLYWEB_REPORT_RUN.DATE
+            )
+                    .from(ORDERLYWEB_REPORT_RUN)
+                    .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
+
+            return result.fetchInto(ReportRunWithDate::class.java)
         }
     }
 }

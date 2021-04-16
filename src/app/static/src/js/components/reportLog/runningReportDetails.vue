@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h2>Running report logs</h2>
-        <div v-if="reportLog" class="mt-3 px-5">
+        <div v-if="reportLog">
             <div id="report-log">
                 <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
@@ -153,7 +152,7 @@
         },
         watch: {
             reportKey() {
-                if(this.reportLog) {
+                if (this.reportKey) {
                     this.getLogs()
                 }
             }

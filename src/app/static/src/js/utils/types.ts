@@ -15,6 +15,7 @@ export interface ReportLog{
     logs: string | null,
     report_version: string | null
 }
+
 export interface Error {
     response?: {
         data?: {

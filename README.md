@@ -225,3 +225,9 @@ the joining rows.
 Defines report version level permissions. If one or more rows in this table joins against a user_group_permission then the 
 group has that permission in the context of the report version(s) specified by the 'version' column values in the 
 joining rows. 
+
+### orderlyweb_workflow_run
+Information about a workflow run i.e. a job sent to orderly.server that is expected to result in one or more new report
+versions. Includes a list of parameterised reports and metadata about the workflow itself (name, owner, invocation
+timestamp etc). Workflows are unique by any of name+timestamp (presented in UI), key (orderly.server's reference) or ID
+(OrderlyWeb's primary identifier).

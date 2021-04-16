@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
@@ -117,5 +118,42 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             sut.getReportRun("fakeKey")
         }.hasMessageContaining("the following problems occurred:\n" +
                 "Unknown get-report-run : 'key'")
+    }
+
+    fun `can get all running reports for current user only`()
+    {
+         insertUser("user@email.com", "user.name")
+         insertUser("user2@email.com", "user2.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebReportRunRepository()
+
+        sut.addReportRun(
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            "report1",
+            mapOf("instance1" to "post-staging"),
+            mapOf("parameter1" to "value1"),
+            "branch1",
+            "commit1"
+        )
+
+        sut.addReportRun(
+            "benevolent_badger",
+            "user2@email.com",
+            now,
+            "report2",
+            mapOf("instance2" to "post-staging"),
+            mapOf("parameter2" to "value2"),
+            "branch1",
+            "commit2"
+        )
+
+        val result = sut.getAllReportRunsForUser("user@email.com")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result)
+                .isEqualTo(listOf(ReportRunWithDate("report1", "adventurous_aardvark", now)))
     }
 }
