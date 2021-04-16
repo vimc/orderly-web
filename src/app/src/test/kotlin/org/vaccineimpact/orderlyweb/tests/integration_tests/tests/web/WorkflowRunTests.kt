@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
+import org.jsoup.Jsoup
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
@@ -17,6 +18,8 @@ import java.time.Instant
 
 class WorkflowRunTests : IntegrationTest()
 {
+    private val runReportsPerm = setOf(ReifiedPermission("reports.run", Scope.Global()))
+
     @Before
     fun setup()
     {
@@ -62,6 +65,25 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isNotEqualTo(HttpStatus.OK_200)
     }
 
+    @Test
+    fun `does get empty workflow details if key is not supplied`()
+    {
+        val url = "/view-workflow/"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+
+        assertJsonContentType(response)
+        assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
+
+        val responseData = JSONValidator.getData(response.text)
+        assertThat(responseData["name"].textValue()).isEqualTo("")
+        assertThat(responseData["email"].textValue()).isEqualTo("")
+        assertThat(responseData["key"].textValue()).isEqualTo("")
+        assertThat(responseData["git_branch"].textValue()).isEqualTo("")
+    }
+
     private fun addDataToWorkflowTable()
     {
         insertUser("user@email.com", "user.name")
@@ -84,5 +106,23 @@ class WorkflowRunTests : IntegrationTest()
 
         val sut = OrderlyWebWorkflowRunRepository()
         sut.addWorkflowRun(workflowRun)
+    }
+
+    @Test
+    fun `only report runners can see run workflow page`()
+    {
+        val url = "/run-workflow"
+        assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `correct workflow page is served`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie("/run-workflow", sessionCookie)
+        assertThat(response.statusCode).isEqualTo(200)
+
+        val page = Jsoup.parse(response.text)
+        assertThat(page.selectFirst("#runWorkflowTabsVueApp")).isNotNull()
     }
 }

@@ -13,6 +13,8 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import java.time.Instant
+import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
 class WorkflowRunControllerTests
 {
@@ -46,7 +48,6 @@ class WorkflowRunControllerTests
 
         val results = sut.getRunWorkflowDetails()
         assertThat(results).isEqualTo(workflowRun)
-
     }
 
     @Test
@@ -65,5 +66,15 @@ class WorkflowRunControllerTests
         assertThatThrownBy { sut.getRunWorkflowDetails() }
                 .isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown get-workflow-details : 'key'")
+    }
+
+    @Test
+    fun `can get getRunWorkflow breadcrumbs`()
+    {
+        val sut = WorkflowRunController(mock())
+        val model = sut.getRunWorkflow()
+
+        assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
+                Breadcrumb("Run a workflow", "http://localhost:8888/run-workflow"))
     }
 }
