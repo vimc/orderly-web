@@ -11,13 +11,26 @@ describe("runReportTabs", () => {
             git_supported: true,
             instances_supported: false
         },
-        initialGitBranches
+        initialGitBranches,
+        initialReportName: "minimal"
     };
 
     const getWrapper = (propsData = props) => {
         return shallowMount(RunReportTabs, {
             propsData
         });
+    }
+
+    const data = {
+        ...props,
+        data() {
+            return {
+        selectedRunningReportKey: "key1", selectedTab: "reportLogs"
+            }}
+    }
+
+    const getWrapper2 = (propsData = props) => {
+        return shallowMount(RunReportTabs, data);
     }
 
     it("renders outline correctly", () => {
@@ -33,12 +46,12 @@ describe("runReportTabs", () => {
     });
 
     it("renders run report component correctly", () => {
-
         const wrapper = getWrapper()
 
-        const runReportComponent = wrapper.find("run-report-stub")
+        const runReportComponent = wrapper.find("run-report-stub");
         expect(runReportComponent.attributes("initialgitbranches")).toEqual("master,dev");
         expect(runReportComponent.props("metadata")).toEqual(props.metadata);
+        expect(runReportComponent.props("initialReportName")).toEqual(props.initialReportName);
 
     });
 
@@ -53,9 +66,17 @@ describe("runReportTabs", () => {
         expect(wrapper.find("#run-tab").exists()).toBe(false);
         const logsPane = wrapper.find("#logs-tab")
         expect(logsPane.classes()).toEqual(["tab-pane", "active", "pt-4", "pt-md-1"]);
-        expect(logsPane.find("h2").text()).toBe("Report logs");
-        expect(logsPane.find("p").text()).toBe("Report logs coming soon!");
+        expect(wrapper.find("report-log-stub").exists()).toBe(true);
     });
 
+    it("reportLogs receives run key prop", async () => {
+
+        const wrapper = getWrapper2()
+        const reportLog = wrapper.find("report-log-stub")
+        expect(reportLog.props("selectedRunningReportKey")).toBe("key1");
+        wrapper.setData({selectedRunningReportKey: "key2", selectedTab: "reportLogs"})
+        await Vue.nextTick();
+        expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key2");
+    });
     
 });

@@ -34,14 +34,4 @@ class RunWorkflowTests : SeleniumTest()
         Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Create workflow")
         Assertions.assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Run workflow is coming soon")
     }
-
-    @Test
-    fun `can view run workflow progress tab`()
-    {
-        driver.findElement(By.id("workflow-progress-link")).click()
-        val tab = driver.findElement(By.id("workflow-progress-tab"))
-        wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
-        Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Workflow progress")
-        Assertions.assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Run workflow progress is coming soon")
-    }
 }
