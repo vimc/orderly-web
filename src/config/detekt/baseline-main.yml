@@ -4,10 +4,10 @@
   <CurrentIssues>
     <ID>ChainWrapping:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:96</ID>
     <ID>ChainWrapping:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:97</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:45</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:89</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:90</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:47</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:91</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:92</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:93</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.SparkWrapper.kt:7</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:98</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:12</ID>
@@ -53,9 +53,7 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebGitRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebSettingsRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.api.UserController.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.RoleController.kt:1</ID>
@@ -267,7 +265,7 @@
     <ID>MayBeConst:ContentTypes.kt$ContentTypes$val zip = "application/zip"</ID>
     <ID>MayBeConst:SkipMethodsMatcher.kt$SkipOptionsMatcher$val name = "SkipOptions"</ID>
     <ID>MayBeConst:TokenIssuer.kt$TokenIssuer.Companion$val oneTimeActionSubject = "onetime_link"</ID>
-    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.Helpers.kt:131</ID>
+    <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.Helpers.kt:133</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ArtefactController.kt:53</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.DataController.kt:53</ID>
     <ID>MultiLineIfElse:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:42</ID>
@@ -355,7 +353,6 @@
     <ID>NewLineAtEndOfFile:UserRepository.kt$org.vaccineimpact.orderlyweb.db.repositories.UserRepository.kt</ID>
     <ID>NewLineAtEndOfFile:UserRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.api.UserRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:UserViewModel.kt$org.vaccineimpact.orderlyweb.viewmodels.UserViewModel.kt</ID>
-    <ID>NewLineAtEndOfFile:VersionController.kt$org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt</ID>
     <ID>NewLineAtEndOfFile:VersionRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.api.VersionRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebAuthRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebAuthRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebDocumentRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebDocumentRouteConfig.kt</ID>
@@ -363,17 +360,15 @@
     <ID>NewLineAtEndOfFile:WebSettingsRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebSettingsRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebTokenHelper.kt$org.vaccineimpact.orderlyweb.security.WebTokenHelper.kt</ID>
     <ID>NewLineAtEndOfFile:WebUserRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig.kt</ID>
-    <ID>NewLineAtEndOfFile:WebVersionRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebloginViewModel.kt$org.vaccineimpact.orderlyweb.viewmodels.WebloginViewModel.kt</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.APIEndpoint.kt:64</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.Helpers.kt:32</ID>
+    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.Helpers.kt:34</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.Serializer.kt:59</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.Zip.kt:91</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.TemplateObjectWrapper.kt:28</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.api.GitRouteConfig.kt:40</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.api.HomeRouteConfig.kt:21</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.web.WebDocumentRouteConfig.kt:28</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig.kt:45</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ArtefactController.kt:67</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:52</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:101</ID>
@@ -533,12 +528,12 @@
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Files.kt:136</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Files.kt:137</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Files.kt:138</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:125</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:126</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:127</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:128</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:22</ID>
-    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:23</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:129</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:130</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:24</ID>
+    <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.Helpers.kt:25</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.SparkWrapper.kt:12</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.SparkWrapper.kt:13</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.SparkWrapper.kt:35</ID>
@@ -845,8 +840,9 @@
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.viewmodels.UserViewModel.kt:7</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.viewmodels.UserViewModel.kt:8</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.viewmodels.UserViewModel.kt:9</ID>
-    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.Helpers.kt:153</ID>
-    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.Helpers.kt:159</ID>
+    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.Helpers.kt:155</ID>
+    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.Helpers.kt:161</ID>
+    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.Helpers.kt:177</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.SparkWrapper.kt:63</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.app_start.APIResponseErrorHandler.kt:10</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.app_start.AuthenticationRouteBuilder.kt:16</ID>
