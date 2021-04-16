@@ -39,7 +39,8 @@
     export default Vue.extend({
         name: "runningReportsList",
         props: {
-            "reports": Array
+            "reports": Array,
+            "initialSelectedKey": String
         },
         components: {
             VueTypeaheadBootstrap,

@@ -64,15 +64,4 @@ describe("runReport", () => {
             done();
         })
     });
-
-    it("displays report list in order and allows selection", (done) => {
-        const wrapper = getWrapper();
-        wrapper.setProps({selectedRunningReportKey: ''})
-
-        setTimeout(async () => {
-            wrapper.find(RunningReportsList).find("a:last-of-type").trigger("click");
-            expect(wrapper.vm.$props["selectedRunningReportKey"]).toBe("key1");
-            done();
-        });
-    });
 });

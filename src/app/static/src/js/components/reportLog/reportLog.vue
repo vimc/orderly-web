@@ -2,12 +2,12 @@
     <div>
         <h2>Running report logs</h2>
         <div v-if="showReports" id="logs-form-group" class="form-group row">
-            <label class="col-sm-2 col-form-label text-right">Show logs for</label>
+            <label for="logs" class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
                 <running-reports-list id="logs" 
                 :reports="reports" 
                 v-on="$listeners"
-                :key.sync="selectedRunningReportKey"/>
+                :initial-selected-key="selectedRunningReportKey"/>
             </div>
             <!-- runningReportDetails to go here and given selectedRunningReportKey as prop -->
         </div>
