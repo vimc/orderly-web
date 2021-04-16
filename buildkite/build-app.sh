@@ -29,7 +29,7 @@ $here/../scripts/run-dependencies.sh
 # Compile, test and package the app
 function cleanup() {
   zip -qr reports.zip reports
-  bash <(curl -s https://codecov.io/bash) -s coverage/
+  $here/codecov.sh -s coverage/
   sudo chown -R $UID reports coverage
 }
 trap cleanup EXIT
