@@ -11,7 +11,8 @@ describe("runReportTabs", () => {
             git_supported: true,
             instances_supported: false
         },
-        initialGitBranches
+        initialGitBranches,
+        initialReportName: "minimal"
     };
 
     const getWrapper = (selectedLogReportKey = "", propsData = props) => {
@@ -38,6 +39,7 @@ describe("runReportTabs", () => {
         const runReportComponent = wrapper.find("run-report-stub");
         expect(runReportComponent.attributes("initialgitbranches")).toEqual("master,dev");
         expect(runReportComponent.props("metadata")).toEqual(props.metadata);
+        expect(runReportComponent.props("initialReportName")).toEqual(props.initialReportName);
     });
 
     it("tab panes switches to logs on click and renders logs", async () => {

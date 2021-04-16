@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.app_start.RouteConfig
 import org.vaccineimpact.orderlyweb.controllers.api.ReportRunController
 import org.vaccineimpact.orderlyweb.controllers.web.IndexController
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
+import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import spark.route.HttpMethod
 
 object WebReportRouteConfig : RouteConfig
@@ -39,6 +40,10 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint(
                     "/run-report/",
                     ReportController::class, "getRunReport")
+                    .secure(runReports),
+            WebEndpoint(
+                    "/run-workflow/",
+                    WorkflowRunController::class, "getRunWorkflow")
                     .secure(runReports),
             WebEndpoint(
                     "/reports/runnable/",

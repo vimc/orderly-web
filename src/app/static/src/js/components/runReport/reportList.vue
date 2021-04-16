@@ -39,7 +39,8 @@
         name: "reportList",
         props: {
             "reports": Array,
-            "report": String
+            "report": String,
+            "initialSelectedReport": String
         },
         components: {
             VueTypeaheadBootstrap,
@@ -49,6 +50,9 @@
             clear() {
                 this.query = "";
                 this.$emit("update:report", "");
+            },
+            isValidReport() {
+                return this.reports.some(value => value.name === this.initialSelectedReport)
             }
         },
         data() {
@@ -59,6 +63,14 @@
         computed: {
             sortedReports() {
                 return this.reports.sort((a, b) => a.name.localeCompare(b.name));
+            }
+        },
+        mounted () {
+            if (this.initialSelectedReport) {
+                if (this.isValidReport()) {
+                    this.query = this.initialSelectedReport
+                    this.$emit("update:report", this.initialSelectedReport)
+                }
             }
         },
         beforeDestroy() {

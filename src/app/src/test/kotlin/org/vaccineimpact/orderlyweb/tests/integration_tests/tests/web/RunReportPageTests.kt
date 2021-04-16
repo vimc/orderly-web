@@ -37,12 +37,19 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
+    fun `only report runners can render run report page with query string`()
+    {
+        val url = "/run-report?report-name=minimal"
+        assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
     fun `can return parameter data`()
     {
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )
@@ -70,6 +77,17 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
+    fun `correct query string page is served`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie("/run-report?report-name=minimal", sessionCookie)
+        assertThat(response.statusCode).isEqualTo(200)
+
+        val page = Jsoup.parse(response.text)
+        assertThat(page.selectFirst("#runReportTabsVueApp")).isNotNull()
+    }
+
+    @Test
     fun `fetches git branches`()
     {
         val controller = ReportController(mock(),
@@ -88,7 +106,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )

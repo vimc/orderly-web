@@ -38,6 +38,9 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
+    fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
+
+    @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
 
     fun throwOnError(): OrderlyServerAPI
@@ -90,9 +93,32 @@ class OrderlyServer(
     override fun get(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
-            .url(buildFullUrl(url, context.queryString()))
-            .headers(standardHeaders.toHeaders())
-            .build()
+                .url(buildFullUrl(url, context.queryString()))
+                .headers(standardHeaders.toHeaders())
+                .build()
+
+        val response = client.newCall(request).execute()
+        if (!response.isSuccessful && throwOnError)
+        {
+            throw OrderlyServerError(url, response.code)
+        }
+        return transformResponse(response.code, response.body!!.string())
+    }
+
+    override fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
+    {
+        val buildUrl = urlBase.toHttpUrl().newBuilder()
+                .addPathSegments(url.trimStart('/'))
+                .apply {
+                    queryParams.forEach { (key, value) ->
+                        addQueryParameter(key, value)
+                    }
+                }
+        val request = Request.Builder()
+                .url(buildUrl.toString())
+                .headers(standardHeaders.toHeaders())
+                .build()
+
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {
