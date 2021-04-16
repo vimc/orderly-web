@@ -11,9 +11,8 @@ describe(`runWorkflowTabs`, () => {
     it(`it can render workflow tabs`, () => {
         const wrapper = getWrapper()
         const sidebar = wrapper.find("#sidebar")
-        expect(sidebar.find("#workflow-title").text()).toBe("Workflows")
-        expect(sidebar.findAll("ul li a").at(0).text()).toBe("Run")
-        expect(sidebar.findAll("ul li a").at(1).text()).toBe("Progress")
+        expect(sidebar.findAll("ul li a").at(0).text()).toBe("Run workflow")
+        expect(sidebar.findAll("ul li a").at(1).text()).toBe("Workflow progress")
     })
 
     it(`it can render run tab-content`, async () => {
