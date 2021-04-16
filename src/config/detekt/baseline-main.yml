@@ -487,6 +487,7 @@
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebSettingsRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig.kt:1</ID>
     <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebVersionRouteConfig.kt:1</ID>
+    <ID>PackageName:org.vaccineimpact.orderlyweb.app_start.routing.web.WebLogsRouteConfig.kt:1</ID>
     <ID>PackageNaming:APIResponseErrorHandler.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:ActionResolver.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
     <ID>PackageNaming:AuthenticationRouteBuilder.kt$package org.vaccineimpact.orderlyweb.app_start</ID>
@@ -515,6 +516,7 @@
     <ID>PackageNaming:WebSettingsRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebUserRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>PackageNaming:WebVersionRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
+    <ID>PackageNaming:WebLogsRouteConfig.kt$package org.vaccineimpact.orderlyweb.app_start.routing.web</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.APIEndpoint.kt:12</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.APIEndpoint.kt:13</ID>
     <ID>ParameterListWrapping:org.vaccineimpact.orderlyweb.APIEndpoint.kt:14</ID>
@@ -935,6 +937,7 @@
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$permissionVM.scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$scopeId!!</ID>
     <ID>UnsafeCallOnNullableType:UserController.kt$UserController$context.userProfile!!</ID>
+    <ID>UnsafeCallOnNullableType:ReportRunController.kt$ReportRunController$context.userProfile!!</ID>
     <ID>VariableNaming:DocumentController.kt$DocumentController$val URL = try { URL(url) } catch (e: MalformedURLException) { throw BadRequest("$url is not a valid url") }</ID>
     <ID>VariableNaming:Helpers.kt$val KILO_DIVISOR = BigDecimal(1024L)</ID>
     <ID>VariableNaming:SQLiteTokenStore.kt$SQLiteTokenStore$val ONETIME_TOKEN = table(name(tableName))</ID>

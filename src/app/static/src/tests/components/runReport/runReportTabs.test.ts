@@ -20,6 +20,18 @@ describe("runReportTabs", () => {
         });
     }
 
+    const data = {
+        ...props,
+        data() {
+            return {
+        selectedRunningReportKey: "key1", selectedTab: "reportLogs"
+            }}
+    }
+
+    const getWrapper2 = (propsData = props) => {
+        return shallowMount(RunReportTabs, data);
+    }
+
     it("renders outline correctly", () => {
 
         const wrapper = getWrapper()
@@ -36,7 +48,7 @@ describe("runReportTabs", () => {
 
         const wrapper = getWrapper()
 
-        const runReportComponent = wrapper.find("run-report-stub")
+        const runReportComponent = wrapper.find("run-report-stub");
         expect(runReportComponent.attributes("initialgitbranches")).toEqual("master,dev");
         expect(runReportComponent.props("metadata")).toEqual(props.metadata);
 
@@ -53,9 +65,17 @@ describe("runReportTabs", () => {
         expect(wrapper.find("#run-tab").exists()).toBe(false);
         const logsPane = wrapper.find("#logs-tab")
         expect(logsPane.classes()).toEqual(["tab-pane", "active", "pt-4", "pt-md-1"]);
-        expect(logsPane.find("h2").text()).toBe("Report logs");
-        expect(logsPane.find("p").text()).toBe("Report logs coming soon!");
+        expect(wrapper.find("report-log-stub").exists()).toBe(true);
     });
 
+    it("reportLogs receives run key prop", async () => {
+
+        const wrapper = getWrapper2()
+        const reportLog = wrapper.find("report-log-stub")
+        expect(reportLog.props("selectedRunningReportKey")).toBe("key1");
+        wrapper.setData({selectedRunningReportKey: "key2", selectedTab: "reportLogs"})
+        await Vue.nextTick();
+        expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key2");
+    });
     
 });

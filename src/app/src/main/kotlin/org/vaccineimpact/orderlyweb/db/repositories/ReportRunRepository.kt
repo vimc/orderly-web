@@ -2,6 +2,8 @@ package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
 import org.vaccineimpact.orderlyweb.db.*
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_REPORT_RUN
+import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 import java.sql.Timestamp
 import java.time.Instant
 
@@ -17,6 +19,7 @@ interface ReportRunRepository
         gitBranch: String?,
         gitCommit: String?
     )
+    fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
@@ -43,6 +46,21 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
                 .set(Tables.ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
                 .execute()
+        }
+    }
+
+    override fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_REPORT_RUN.REPORT.`as`("name"),
+                    ORDERLYWEB_REPORT_RUN.KEY,
+                    ORDERLYWEB_REPORT_RUN.DATE
+            )
+                    .from(ORDERLYWEB_REPORT_RUN)
+                    .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
+
+            return result.fetchInto(ReportRunWithDate::class.java)
         }
     }
 }
