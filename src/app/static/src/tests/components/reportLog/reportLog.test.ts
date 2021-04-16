@@ -3,7 +3,7 @@ import ReportLog from "../../../js/components/reportLog/reportLog.vue";
 import {mockAxios} from "../../mockAxios";
 import runningReportDetails from "../../../js/components/reportLog/runningReportDetails.vue";
 
-describe("runReport", () => {
+describe("reportLog", () => {
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onGet('http://app/reports/running/')
@@ -24,7 +24,7 @@ describe("runReport", () => {
                 selectedReport: "",
                 error: "",
                 defaultMessage: "",
-                selectedRunningReportKey: "fakeKey"
+                selectedRunningReportKey: "key1"
             }
         }
     }

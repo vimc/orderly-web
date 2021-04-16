@@ -1,8 +1,8 @@
 <template>
     <div>
         <h2>Running report logs</h2>
-        <div>
-            <div v-if="showReports" id="logs-form-group" class="form-group row">
+        <div v-if="showReports">
+            <div id="logs-form-group" class="form-group row">
             <label for="logs" class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
                 <running-reports-list id="logs"
@@ -31,7 +31,6 @@
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
     import runningReportDetails from "./runningReportDetails.vue";
-
 
     interface Computed {
         showReports: boolean
