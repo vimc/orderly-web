@@ -11,7 +11,8 @@ describe("runReportTabs", () => {
             git_supported: true,
             instances_supported: false
         },
-        initialGitBranches
+        initialGitBranches,
+        initialReportName: "minimal"
     };
 
     const getWrapper = (propsData = props) => {
@@ -45,12 +46,12 @@ describe("runReportTabs", () => {
     });
 
     it("renders run report component correctly", () => {
-
         const wrapper = getWrapper()
 
         const runReportComponent = wrapper.find("run-report-stub");
         expect(runReportComponent.attributes("initialgitbranches")).toEqual("master,dev");
         expect(runReportComponent.props("metadata")).toEqual(props.metadata);
+        expect(runReportComponent.props("initialReportName")).toEqual(props.initialReportName);
 
     });
 
