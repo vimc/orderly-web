@@ -21,26 +21,42 @@
     <#if report.gitBranch?? || report.gitCommit??>
         <hr id="git-hr"/>
     </#if>
-    <#if report.gitBranch??>
-        <div id="git-branch-row" class="row">
-            <div id="git-branch-label" class="col-2 text-right">
-                Git branch:
-            </div>
-            <div id="git-branch-value" class="col-4">
-                ${report.gitBranch}
-            </div>
+    <div class="row">
+        <div class="col">
+            <#if report.gitBranch??>
+                <div id="git-branch-row" class="row">
+                    <div id="git-branch-label" class="col-3 text-right">
+                        Git branch:
+                    </div>
+                    <div id="git-branch-value" class="col-9">
+                        ${report.gitBranch}
+                    </div>
+                </div>
+            </#if>
+            <#if report.gitCommit??>
+                <div id="git-commit-row" class="row">
+                    <div id="git-commit-label" class="col-3 text-right">
+                        Git commit:
+                    </div>
+                    <div id="git-commit-value" class="col-9">
+                        ${report.gitCommit}
+                    </div>
+                </div>
+            </#if>
         </div>
-    </#if>
-    <#if report.gitCommit??>
-        <div id="git-commit-row" class="row">
-            <div id="git-commit-label" class="col-2 text-right">
-                Git commit:
-            </div>
-            <div id="git-commit-value" class="col-4">
-                ${report.gitCommit}
-            </div>
+        <div class="col">
+            <#if report.gitCommit??>
+                <div id="db-instance-row" class="row">
+                    <div id="db-instance-label" class="col-3 text-right">
+                        Database "source":
+                    </div>
+                    <div id="db-instance-value" class="col-9">
+                        ${report.gitCommit}
+                    </div>
+                </div>
+            </#if>
         </div>
-    </#if>
+    </div>
     <div id="reportDependenciesVueApp">
         <report-dependencies :report=report></report-dependencies>
     </div>
