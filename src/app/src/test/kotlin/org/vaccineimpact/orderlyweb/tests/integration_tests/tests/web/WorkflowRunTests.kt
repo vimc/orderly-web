@@ -47,7 +47,11 @@ class WorkflowRunTests : IntegrationTest()
         val repo = OrderlyWebWorkflowRunRepository()
         repo.addWorkflowRun(WorkflowRun(name, key, email, date, emptyList(), emptyMap()))
 
-        val response = webRequestHelper.requestWithSessionCookie("/workflows", sessionCookie, ContentTypes.json)
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
+            sessionCookie,
+            ContentTypes.json
+        )
         assertSuccessful(response)
         assertJsonContentType(response)
 
