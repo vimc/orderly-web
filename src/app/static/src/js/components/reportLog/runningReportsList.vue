@@ -35,7 +35,6 @@
     import Vue from "vue";
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
     import XIcon from "../runReport/xIcon.vue"
-    import runningReportDetails from "./runningReportDetails.vue";
 
     export default Vue.extend({
         name: "runningReportsList",
@@ -45,8 +44,7 @@
         },
         components: {
             VueTypeaheadBootstrap,
-            XIcon,
-            runningReportDetails
+            XIcon
         },
         methods: {
             clear() {

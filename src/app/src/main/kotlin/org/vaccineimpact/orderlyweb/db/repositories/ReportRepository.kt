@@ -46,6 +46,7 @@ interface ReportRepository
     fun publish(ids: List<String>)
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
