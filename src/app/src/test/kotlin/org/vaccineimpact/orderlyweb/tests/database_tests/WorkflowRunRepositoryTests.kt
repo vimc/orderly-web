@@ -192,6 +192,50 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `workflow runs are ordered reverse-chronologically`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report two",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now().minusMillis(1000),
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report one",
+                "benevolent_badger",
+                "user@email.com",
+                Instant.now().minusMillis(2000),
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report three",
+                "charming_chipmunk",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries()
+        assertThat(result.count()).isEqualTo(3)
+        assertThat(result[0].name).isEqualTo("Report three")
+        assertThat(result[1].name).isEqualTo("Report two")
+        assertThat(result[2].name).isEqualTo("Report one")
+    }
+
+    @Test
     fun `can get all workflow runs for user`()
     {
         insertUser("user@email.com", "user.name")

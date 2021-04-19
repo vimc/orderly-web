@@ -63,6 +63,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                         noCondition()
                     }
                 )
+                .orderBy(Tables.ORDERLYWEB_WORKFLOW_RUN.DATE.desc())
 
             return result.fetchInto(WorkflowRunSummary::class.java)
         }
