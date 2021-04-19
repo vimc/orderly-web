@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb
 
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.errors.OrderlyFileNotFoundError
@@ -165,18 +164,12 @@ fun getFriendlyRelativeDateTime(date: Date) : String
 
 fun jsonToStringMap(json: String): Map<String, String>
 {
-    val element = JsonParser().parse(json)
     val type = TypeToken.getParameterized(Map::class.java, String::class.java, String::class.java).type
-    return Serializer.instance.gson.fromJson<Map<String, String>>(element, type)
+    return Serializer.instance.gson.fromJson<Map<String, String>>(json, type)
 }
 
-/**
- * This implementation is to support re-usability
- * hence, the reason for generics.
- */
-fun <T: Any> jsonStringToGenericList(json: String, clazz: Class<T>): List<T>
+fun <T : Any> jsonToGenericList(json: String, clazz: Class<T>): List<T>
 {
-    val element = JsonParser().parse(json)
     val type = TypeToken.getParameterized(List::class.java, clazz).type
-    return Serializer.instance.gson.fromJson<List<T>>(element, type)
+    return Serializer.instance.gson.fromJson<List<T>>(json, type)
 }

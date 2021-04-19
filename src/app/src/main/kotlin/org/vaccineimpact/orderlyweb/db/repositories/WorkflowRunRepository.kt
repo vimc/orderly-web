@@ -5,7 +5,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.jsonStringToGenericList
+import org.vaccineimpact.orderlyweb.jsonToGenericList
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
@@ -57,7 +57,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     result[ORDERLYWEB_WORKFLOW_RUN.KEY],
                     result[ORDERLYWEB_WORKFLOW_RUN.EMAIL],
                     result[ORDERLYWEB_WORKFLOW_RUN.DATE].toInstant(),
-                    jsonStringToGenericList(result[ORDERLYWEB_WORKFLOW_RUN.REPORTS],
+                    jsonToGenericList(result[ORDERLYWEB_WORKFLOW_RUN.REPORTS],
                             WorkflowReportWithParams::class.java),
                     jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN.INSTANCES]),
                     result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],

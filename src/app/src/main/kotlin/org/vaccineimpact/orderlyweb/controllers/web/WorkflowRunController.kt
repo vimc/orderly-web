@@ -6,7 +6,6 @@ import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
-import java.time.Instant
 
 class WorkflowRunController(
     context: ActionContext,

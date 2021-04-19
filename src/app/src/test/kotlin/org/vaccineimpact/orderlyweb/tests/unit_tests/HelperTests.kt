@@ -7,7 +7,6 @@ import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import java.util.*
 
 
@@ -121,7 +120,7 @@ class HelperTests
     fun `can transform json string to Generic List`()
     {
         val jsonString = """[{"name":"reportA","params":{"param1":"one","param2":"two"}}, {"name":"reportB","params":{"param3":"three"}}]"""
-        val result: List<WorkflowReportWithParams> = jsonStringToGenericList(jsonString, WorkflowReportWithParams::class.java)
+        val result: List<WorkflowReportWithParams> = jsonToGenericList(jsonString, WorkflowReportWithParams::class.java)
         Assertions.assertThat(result).isEqualTo(listOf(
                 WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
                 WorkflowReportWithParams("reportB", mapOf("param3" to "three"))

@@ -37,7 +37,7 @@ class WorkflowRunControllerTests
         )
 
         val mockContext: ActionContext = mock {
-            on { queryParams("key") } doReturn "adventurous_aardvark"
+            on { params(":key") } doReturn "adventurous_aardvark"
         }
 
         val mockRepo = mock<WorkflowRunRepository> {
@@ -54,7 +54,7 @@ class WorkflowRunControllerTests
     fun `can throw UnknownObjectError if key is invalid`()
     {
         val mockContext: ActionContext = mock {
-            on { queryParams("key") } doReturn "fakeKey"
+            on { params(":key") } doReturn "fakeKey"
         }
 
         val mockRepo = mock<WorkflowRunRepository> {

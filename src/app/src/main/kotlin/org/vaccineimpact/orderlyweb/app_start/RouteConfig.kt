@@ -36,6 +36,7 @@ object WebRouteConfig : RouteConfig
                     WebDocumentRouteConfig.endpoints +
                     WebReportRouteConfig.endpoints +
                     WebVersionRouteConfig.endpoints +
+                    WebWorkflowRouteConfig.endpoints +
                     WebUserRouteConfig.endpoints +
                     WebPermissionRouteConfig.endpoints +
                     WebRoleRouteConfig.endpoints +
