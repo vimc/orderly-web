@@ -18,11 +18,7 @@ class WorkflowRunController(
     fun getRunWorkflowDetails(): WorkflowRun
     {
         val key = context.params(":key")
-        return when
-        {
-            key.isNullOrEmpty() ->  WorkflowRun("", "", "", Instant.now(), emptyList(), emptyMap(), "", "")
-            else -> workflowRunRepository.getWorkflowDetails(key)
-        }
+        return workflowRunRepository.getWorkflowDetails(key)
     }
 
     @Template("run-workflow-page.ftl")
