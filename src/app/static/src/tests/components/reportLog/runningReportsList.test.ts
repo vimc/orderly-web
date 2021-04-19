@@ -1,20 +1,19 @@
 import Vue from "vue";
 import {mount} from "@vue/test-utils";
-import ReportList from "../../../js/components/runReport/reportList.vue";
+import RunningReportsList from "../../../js/components/reportLog/runningReportsList.vue";
 
-function getWrapper(selectedReport = "") {
-    return mount(ReportList, {
+function getWrapper() {
+    return mount(RunningReportsList, {
         propsData: {
             reports: [
-                {name: "report2", date: null},
-                {name: "report1", date: new Date().toISOString()}
-            ],
-            initialSelectedReport: selectedReport
+                {name: "report2", date: new Date().toISOString(), key: "report2Key"},
+                {name: "report1", date: new Date().toISOString(), key: "report1Key"}
+            ]
         }
     });
 }
 
-describe("reportList", () => {
+describe("runningReportsList", () => {
 
     it("renders typeahead correctly and fires event on selection", (done) => {
         const wrapper = getWrapper();
@@ -24,21 +23,10 @@ describe("reportList", () => {
         expect(reportSuggestions.at(0).text()).toBe("report1");
         expect(reportSuggestions.at(1).text()).toBe("report2");
         reportSuggestions.at(1).trigger("click");
-        expect(wrapper.emitted()["update:report"].length).toBe(1);
-        expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
+        expect(wrapper.emitted()["update:key"].length).toBe(1);
+        expect(wrapper.emitted()["update:key"][0]).toEqual(["report2Key"]);
 
         done();
-    });
-
-    it("renders correctly and fires event on mount", () => {
-        const wrapper = getWrapper("report2");
-        expect(wrapper.emitted()["update:report"].length).toBe(1);
-        expect(wrapper.emitted()["update:report"][0]).toEqual(["report2"]);
-    });
-
-    it("does not fire event on mount if report name is not valid", () => {
-        const wrapper = getWrapper("report");
-        expect(wrapper.emitted()["update:report"]).toBeFalsy();
     });
 
     it("typeahead filters list correctly", async (done) => {

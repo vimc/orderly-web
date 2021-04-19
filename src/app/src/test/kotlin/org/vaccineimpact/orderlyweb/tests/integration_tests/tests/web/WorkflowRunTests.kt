@@ -1,7 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
-import org.jsoup.Jsoup
 import org.assertj.core.api.Assertions.assertThat
+import org.jsoup.Jsoup
 import org.eclipse.jetty.http.HttpStatus
 import org.junit.Before
 import org.junit.Test
@@ -105,5 +105,33 @@ class WorkflowRunTests : IntegrationTest()
 
         val page = Jsoup.parse(response.text)
         assertThat(page.selectFirst("#runWorkflowTabsVueApp")).isNotNull()
+    }
+
+    @Test
+    fun `lists workflows`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+
+        val name = "Interim report"
+        val key = "adventurous_aardvark"
+        val email = "test.user@example.com"
+        val date = Instant.now()
+
+        val repo = OrderlyWebWorkflowRunRepository()
+        repo.addWorkflowRun(WorkflowRun(name, key, email, date, emptyList(), emptyMap()))
+
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
+            sessionCookie,
+            ContentTypes.json
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+
+        val workflowRun = JSONValidator.getData(response.text)[0]
+        assertThat(workflowRun["name"].textValue()).isEqualTo(name)
+        assertThat(workflowRun["key"].textValue()).isEqualTo(key)
+        assertThat(workflowRun["email"].textValue()).isEqualTo(email)
+        assertThat(Instant.parse(workflowRun["date"].textValue())).isEqualTo(date)
     }
 }

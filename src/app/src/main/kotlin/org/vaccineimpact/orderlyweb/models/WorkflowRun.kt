@@ -17,3 +17,10 @@ data class WorkflowRun(
     val gitBranch: String? = null,
     val gitCommit: String? = null
 )
+
+data class WorkflowRunSummary(
+    val name: String,
+    val key: String,
+    val email: String,
+    val date: Instant
+)
