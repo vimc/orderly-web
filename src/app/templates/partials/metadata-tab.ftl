@@ -53,7 +53,10 @@
             </#if>
         </div>
         <div class="col">
-            <#list instances as instanceKey, value>
+        <#--  <#if instances??>  -->
+            <div>THIS SHOULD APPEAR ${report}</div>
+        <#--  </#if>  -->
+            <#--  <#list instances as instanceKey, value>
                 <div id="db-instance-row" class="row">
                     <div id="db-instance-label" class="col-3 text-right">
                         Database "${instanceKey}":
@@ -62,7 +65,7 @@
                         ${value}
                     </div>
                 </div>
-            </#list>
+            </#list>  -->
         </div>
     </div>
     <div id="reportDependenciesVueApp">
