@@ -1,10 +1,10 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.doThrow
 import com.nhaarman.mockito_kotlin.mock
+import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
@@ -12,12 +12,48 @@ import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
-import java.time.Instant
+import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
+import java.time.Instant
 
 class WorkflowRunControllerTests
 {
+    @Test
+    fun `can getRunWorkflow breadcrumbs`()
+    {
+
+        val sut = WorkflowRunController(mock(), mock())
+        val model = sut.getRunWorkflow()
+
+        assertThat(model.breadcrumbs).containsExactly(
+            IndexViewModel.breadcrumb,
+            Breadcrumb("Run a workflow", "http://localhost:8888/run-workflow")
+        )
+    }
+
+    @Test
+    fun `can get workflow summaries`()
+    {
+        val context = mock<ActionContext> {
+            on { queryParams("email") } doReturn "user@email.com"
+            on { queryParams("namePrefix") } doReturn "Interim"
+        }
+        val workflowRunSummaries = listOf(
+            WorkflowRunSummary(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now()
+            )
+        )
+        val repo = mock<WorkflowRunRepository> {
+            on { this.getWorkflowRunSummaries("user@email.com", "Interim") } doReturn workflowRunSummaries
+        }
+        val sut = WorkflowRunController(context, repo)
+        assertThat(sut.getWorkflowRunSummaries()).isEqualTo(workflowRunSummaries)
+    }
+
     @Test
     fun `can get get workflow details`()
     {
@@ -41,7 +77,7 @@ class WorkflowRunControllerTests
         }
 
         val mockRepo = mock<WorkflowRunRepository> {
-            on { getWorkflowDetails("adventurous_aardvark") } doReturn workflowRun
+            on { getWorkflowRunDetails("adventurous_aardvark") } doReturn workflowRun
         }
 
         val sut = WorkflowRunController(mockContext, mockRepo)
@@ -58,23 +94,13 @@ class WorkflowRunControllerTests
         }
 
         val mockRepo = mock<WorkflowRunRepository> {
-            on { getWorkflowDetails("fakeKey") } doThrow UnknownObjectError("key", "getWorkflowDetails")
+            on { getWorkflowRunDetails("fakeKey") } doThrow UnknownObjectError("key", "workflow")
         }
 
         val sut = WorkflowRunController(mockContext, mockRepo)
 
-        assertThatThrownBy { sut.getRunWorkflowDetails() }
+        Assertions.assertThatThrownBy { sut.getRunWorkflowDetails() }
                 .isInstanceOf(UnknownObjectError::class.java)
-                .hasMessageContaining("Unknown get-workflow-details : 'key'")
-    }
-
-    @Test
-    fun `can get getRunWorkflow breadcrumbs`()
-    {
-        val sut = WorkflowRunController(mock())
-        val model = sut.getRunWorkflow()
-
-        assertThat(model.breadcrumbs).containsExactly(IndexViewModel.breadcrumb,
-                Breadcrumb("Run a workflow", "http://localhost:8888/run-workflow"))
+                .hasMessageContaining("Unknown workflow : 'key'")
     }
 }

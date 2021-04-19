@@ -1,6 +1,8 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
+import org.jooq.impl.DSL.lower
+import org.jooq.impl.DSL.noCondition
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
@@ -9,13 +11,15 @@ import org.vaccineimpact.orderlyweb.jsonToGenericList
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
+import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import java.sql.Timestamp
 
 interface WorkflowRunRepository
 {
     fun addWorkflowRun(workflowRun: WorkflowRun)
     @Throws(UnknownObjectError::class)
-    fun getWorkflowDetails(key: String): WorkflowRun
+    fun getWorkflowRunDetails(key: String): WorkflowRun
+    fun getWorkflowRunSummaries(email: String? = null, namePrefix: String? = null): List<WorkflowRunSummary>
 }
 
 class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
@@ -36,7 +40,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
         }
     }
 
-    override fun getWorkflowDetails(key: String): WorkflowRun
+    override fun getWorkflowRunDetails(key: String): WorkflowRun
     {
         JooqContext().use {
             val result = it.dsl.select(
@@ -51,7 +55,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     .from(ORDERLYWEB_WORKFLOW_RUN)
                     .where(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(key))
                     .singleOrNull()
-                    ?: throw UnknownObjectError("key", "workflowDetails")
+                    ?: throw UnknownObjectError("key", "workflow")
 
             return WorkflowRun(result[ORDERLYWEB_WORKFLOW_RUN.NAME],
                     result[ORDERLYWEB_WORKFLOW_RUN.KEY],
@@ -63,6 +67,42 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],
                     result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]
             )
+        }
+    }
+
+    override fun getWorkflowRunSummaries(email: String?, namePrefix: String?): List<WorkflowRunSummary>
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                Tables.ORDERLYWEB_WORKFLOW_RUN.NAME,
+                Tables.ORDERLYWEB_WORKFLOW_RUN.KEY,
+                Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL,
+                Tables.ORDERLYWEB_WORKFLOW_RUN.DATE
+            )
+                .from(Tables.ORDERLYWEB_WORKFLOW_RUN)
+                .where(
+                    if (email != null)
+                    {
+                        Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL.eq(email)
+                    }
+                    else
+                    {
+                        noCondition()
+                    }
+                )
+                .and(
+                    if (namePrefix != null)
+                    {
+                        lower(Tables.ORDERLYWEB_WORKFLOW_RUN.NAME).startsWith(namePrefix.toLowerCase())
+                    }
+                    else
+                    {
+                        noCondition()
+                    }
+                )
+                .orderBy(Tables.ORDERLYWEB_WORKFLOW_RUN.DATE.desc())
+
+            return result.fetchInto(WorkflowRunSummary::class.java)
         }
     }
 }
