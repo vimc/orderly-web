@@ -76,12 +76,6 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/dependencies/",
                     ReportController::class, "getDependencies")
                     .json()
-                    .secure(readReports),
-            WebEndpoint(
-                    "/view-workflow/",
-                    WorkflowRunController::class, "getRunWorkflowDetails")
-                    .json()
-                    .transform()
-                    .secure(runReports)
+                    .secure(readReports)
     )
 }

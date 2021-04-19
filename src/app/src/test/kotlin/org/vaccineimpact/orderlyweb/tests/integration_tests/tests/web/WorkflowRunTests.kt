@@ -29,7 +29,7 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `only report runners can view workflow details`()
     {
-        val url = "/view-workflow?key=adventurous_aardvark"
+        val url = "/workflows/adventurous_aardvark/"
         val requiredPermissions = setOf(ReifiedPermission("reports.run", Scope.Global()))
         assertWebUrlSecured(url, requiredPermissions, contentType = ContentTypes.json)
     }
@@ -37,7 +37,7 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `can get workflow details`()
     {
-        val url = "/view-workflow/?key=adventurous_aardvark"
+        val url = "/workflows/adventurous_aardvark/"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,
@@ -55,7 +55,7 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `does not get workflow details if key is invalid`()
     {
-        val url = "/view-workflow/?key=fakeKey"
+        val url = "/workflows/fakeKey/"
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
                 setOf(ReifiedPermission("reports.run", Scope.Global())),
                 method = HttpMethod.get,
@@ -63,25 +63,6 @@ class WorkflowRunTests : IntegrationTest()
 
         assertJsonContentType(response)
         assertThat(response.statusCode).isNotEqualTo(HttpStatus.OK_200)
-    }
-
-    @Test
-    fun `does get empty workflow details if key is not supplied`()
-    {
-        val url = "/view-workflow/"
-        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
-                setOf(ReifiedPermission("reports.run", Scope.Global())),
-                method = HttpMethod.get,
-                contentType = ContentTypes.json)
-
-        assertJsonContentType(response)
-        assertThat(response.statusCode).isEqualTo(HttpStatus.OK_200)
-
-        val responseData = JSONValidator.getData(response.text)
-        assertThat(responseData["name"].textValue()).isEqualTo("")
-        assertThat(responseData["email"].textValue()).isEqualTo("")
-        assertThat(responseData["key"].textValue()).isEqualTo("")
-        assertThat(responseData["git_branch"].textValue()).isEqualTo("")
     }
 
     private fun addDataToWorkflowTable()

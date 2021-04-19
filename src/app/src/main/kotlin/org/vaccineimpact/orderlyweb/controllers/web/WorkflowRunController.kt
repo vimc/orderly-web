@@ -6,7 +6,6 @@ import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
-import java.time.Instant
 
 class WorkflowRunController(
     context: ActionContext,
@@ -17,12 +16,8 @@ class WorkflowRunController(
 
     fun getRunWorkflowDetails(): WorkflowRun
     {
-        val key = context.queryParams("key")
-        return when
-        {
-            key.isNullOrEmpty() -> WorkflowRun("", "", "", Instant.now(), emptyList(), emptyMap(), "", "")
-            else -> workflowRunRepository.getWorkflowDetails(key)
-        }
+        val key = context.params(":key")
+        return workflowRunRepository.getWorkflowDetails(key)
     }
 
     @Template("run-workflow-page.ftl")
