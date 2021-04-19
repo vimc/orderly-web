@@ -365,4 +365,47 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             )
         )
     }
+
+    @Test
+    fun `can get all workflow runs for user and non-empty name prefix`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Final report",
+                "benevolent_badger",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries("user@email.com", "interim")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result).isEqualTo(
+            listOf(
+                WorkflowRunSummary(
+                    "Interim report",
+                    "adventurous_aardvark",
+                    "user@email.com",
+                    now
+                )
+            )
+        )
+    }
 }
