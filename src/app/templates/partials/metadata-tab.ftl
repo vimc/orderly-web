@@ -1,6 +1,7 @@
 <#-- @ftlvariable name="report" type="org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatestElapsed" -->
 <#-- @ftlvariable name="startTimeString" type="String" -->
 <#-- @ftlvariable name="elapsedString" type="String" -->
+<#-- @ftlvariable name="instances" type="kotlin.collections.Map<String,String>" -->
 
 <#include "report-title.ftl">
 <div class="container ml-0">
@@ -53,8 +54,9 @@
             </#if>
         </div>
         <div class="col">
-        <#--  <#if instances??>  -->
-            <div>THIS SHOULD APPEAR ${report}</div>
+            <#list instances as instanceKey, instanceValue>
+               Database "${instanceKey}": ${instanceValue}
+            </#list>
         <#--  </#if>  -->
             <#--  <#list instances as instanceKey, value>
                 <div id="db-instance-row" class="row">

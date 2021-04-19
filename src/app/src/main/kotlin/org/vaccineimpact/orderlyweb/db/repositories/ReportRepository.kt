@@ -135,6 +135,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
                     .fetch()
                     .map {r -> r[REPORT_VERSION_INSTANCE.TYPE] to r[REPORT_VERSION_INSTANCE.INSTANCE]}
+                    .toMap()
                     // .map { r -> DataInfo(r[REPORT_VERSION_DATA.NAME], r[DATA.SIZE_CSV], r[DATA.SIZE_RDS]) }
         }
     }
