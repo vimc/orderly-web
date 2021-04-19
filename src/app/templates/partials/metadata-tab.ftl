@@ -5,17 +5,25 @@
 <#include "report-title.ftl">
 <div class="container ml-0">
     <div class="row">
-        <div id="started-label" class="col-2 text-right">
-            Started:
+        <div class="col">
+            <div class="row">
+                <div id="started-label" class="col-3 text-right">
+                    Started:
+                </div>
+                <div id="started-value" class="col-9">
+                    ${startTimeString}
+                </div>
+            </div>
         </div>
-        <div id="started-value" class="col-4">
-            ${startTimeString}
-        </div>
-        <div id="elapsed-label" class="col-2 text-right">
-            Elapsed:
-        </div>
-        <div id="elapsed-value" class="col-4">
-            ${elapsedString}
+        <div class="col">
+            <div class="row">
+                <div id="elapsed-label" class="col-3 text-right">
+                    Elapsed:
+                </div>
+                <div id="elapsed-value" class="col-9">
+                    ${elapsedString}
+                </div>
+            </div>
         </div>
     </div>
     <#if report.gitBranch?? || report.gitCommit??>
@@ -45,16 +53,16 @@
             </#if>
         </div>
         <div class="col">
-            <#if report.gitCommit??>
+            <#list instances as instanceKey, value>
                 <div id="db-instance-row" class="row">
                     <div id="db-instance-label" class="col-3 text-right">
-                        Database "source":
+                        Database "${instanceKey}":
                     </div>
                     <div id="db-instance-value" class="col-9">
-                        ${report.gitCommit}
+                        ${value}
                     </div>
                 </div>
-            </#if>
+            </#list>
         </div>
     </div>
     <div id="reportDependenciesVueApp">

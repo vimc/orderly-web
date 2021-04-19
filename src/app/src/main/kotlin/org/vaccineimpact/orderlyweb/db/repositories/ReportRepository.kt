@@ -21,6 +21,9 @@ interface ReportRepository
     fun togglePublishStatus(name: String, version: String): Boolean
 
     @Throws(UnknownObjectError::class)
+
+    // fun getReportVersionInstance(name: String, version: String): ReportVersionWithDescLatestElapsed
+
     fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
 
     fun getAllReportVersions(): List<ReportVersionWithDescLatest>
@@ -46,6 +49,8 @@ interface ReportRepository
     fun publish(ids: List<String>)
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
+
+    fun getReportVersionInstance(version: String): Map<String, String>
 
 }
 
@@ -118,6 +123,36 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .map { r -> r!!.into(Report::class.java) }
         }
     }
+
+    override fun getReportVersionInstance(version: String): Map<String, String>
+    {
+        // reportRepository.getReportVersion(name, version)
+        JooqContext().use {
+            return it.dsl.select(
+                REPORT_VERSION_INSTANCE.INSTANCE,
+                REPORT_VERSION_INSTANCE.TYPE)
+                    .from(REPORT_VERSION_INSTANCE)
+                    // .innerJoin(DATA)
+                    // .on(REPORT_VERSION_DATA.HASH.eq(DATA.HASH))
+                    .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .map {r -> r[REPORT_VERSION_INSTANCE.TYPE] to r[REPORT_VERSION_INSTANCE.INSTANCE]}
+                    // .map { r -> DataInfo(r[REPORT_VERSION_DATA.NAME], r[DATA.SIZE_CSV], r[DATA.SIZE_RDS]) }
+        }
+    }
+
+    // override fun getReportVersionInstance(name: String, version: String): ReportVersionWithDescLatestElapsed
+    // {
+    //     JooqContext().use { ctx ->
+    //         return ctx.dsl.select(
+    //                 ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
+    //                 ORDERLYWEB_REPORT_VERSION_TAG.TAG)
+    //                 .from(ORDERLYWEB_REPORT_VERSION_TAG)
+    //                 .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
+    //                 .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
+    //                 .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
+    //     }
+    // }
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
     {
