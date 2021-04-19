@@ -36,17 +36,6 @@ class Orderly(val isReviewer: Boolean,
                 instances = instances)
     }
 
-    // override fun getReportVersionInstance(name: String, version: String): ReportVersionTags
-    // {
-    //     reportRepository.getReportVersion(name, version)
-
-    //     val versionTags = tagRepository.getVersionTags(listOf(version))[version] ?: listOf()
-    //     val reportTags = tagRepository.getReportTagsForVersions(listOf(version))[version] ?: listOf()
-    //     val orderlyTags = tagRepository.getOrderlyTagsForVersions(listOf(version))[version] ?: listOf()
-
-    //     return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
-    // }
-
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
     {
         reportRepository.getReportVersion(name, version)
@@ -57,22 +46,6 @@ class Orderly(val isReviewer: Boolean,
 
         return ReportVersionTags(versionTags.sorted(), reportTags.sorted(), orderlyTags.sorted())
     }
-
-    // override fun getReportVersionInstance(name: String, version: String): Map<String, String>
-    // {
-    //     reportRepository.getReportVersion(name, version)
-
-    //     JooqContext().use {
-    //         return it.dsl.select(
-                    // REPORT_VERSION_INSTANCE.REPORT_VERSION,
-                    // REPORT_VERSION_INSTANCE.INSTANCE,
-                    // REPORT_VERSION_DATA.TYPE)
-    //                 .from(REPORT_VERSION_INSTANCE)
-    //                 .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
-    //                 .fetch()
-    //                 // .associate { it[REPORT_VERSION_DATA.NAME] to it[REPORT_VERSION_DATA.HASH] }
-    //     }
-    // }
 
     override fun getData(name: String, version: String): Map<String, String>
     {
@@ -206,21 +179,4 @@ class Orderly(val isReviewer: Boolean,
 
         }
     }
-
-    // private fun getReportVersionInstance(name: String, version: String): List<DataInfo>
-    // {
-    //     reportRepository.getReportVersion(name, version)
-    //     JooqContext().use {
-    //         return it.dsl.select(
-    //             REPORT_VERSION_INSTANCE.REPORT_VERSION,
-    //             REPORT_VERSION_INSTANCE.INSTANCE,
-    //             REPORT_VERSION_INSTANCE.TYPE)
-    //                 .from(REPORT_VERSION_INSTANCE)
-    //                 // .innerJoin(DATA)
-    //                 // .on(REPORT_VERSION_DATA.HASH.eq(DATA.HASH))
-    //                 .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
-    //                 .fetch()
-    //                 // .map { r -> DataInfo(r[REPORT_VERSION_DATA.NAME], r[DATA.SIZE_CSV], r[DATA.SIZE_RDS]) }
-    //     }
-    // }
 }

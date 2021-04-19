@@ -22,8 +22,6 @@ interface ReportRepository
 
     @Throws(UnknownObjectError::class)
 
-    // fun getReportVersionInstance(name: String, version: String): ReportVersionWithDescLatestElapsed
-
     fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
 
     fun getAllReportVersions(): List<ReportVersionWithDescLatest>
@@ -140,19 +138,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     // .map { r -> DataInfo(r[REPORT_VERSION_DATA.NAME], r[DATA.SIZE_CSV], r[DATA.SIZE_RDS]) }
         }
     }
-
-    // override fun getReportVersionInstance(name: String, version: String): ReportVersionWithDescLatestElapsed
-    // {
-    //     JooqContext().use { ctx ->
-    //         return ctx.dsl.select(
-    //                 ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION,
-    //                 ORDERLYWEB_REPORT_VERSION_TAG.TAG)
-    //                 .from(ORDERLYWEB_REPORT_VERSION_TAG)
-    //                 .where(ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION.`in`(versionIds))
-    //                 .groupBy { it[ORDERLYWEB_REPORT_VERSION_TAG.REPORT_VERSION] }
-    //                 .mapValues { it.value.map { r -> r[ORDERLYWEB_REPORT_VERSION_TAG.TAG] } }
-    //     }
-    // }
 
     override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
     {
