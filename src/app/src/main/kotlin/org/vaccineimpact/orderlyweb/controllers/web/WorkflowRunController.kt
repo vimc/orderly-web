@@ -17,10 +17,10 @@ class WorkflowRunController(
 
     fun getRunWorkflowDetails(): WorkflowRun
     {
-        val key = context.queryParams("key")
+        val key = context.params(":key")
         return when
         {
-            key.isNullOrEmpty() -> WorkflowRun("", "", "", Instant.now(), emptyList(), emptyMap(), "", "")
+            key.isNullOrEmpty() ->  WorkflowRun("", "", "", Instant.now(), emptyList(), emptyMap(), "", "")
             else -> workflowRunRepository.getWorkflowDetails(key)
         }
     }
