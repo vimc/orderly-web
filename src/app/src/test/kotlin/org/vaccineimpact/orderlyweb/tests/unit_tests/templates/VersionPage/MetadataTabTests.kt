@@ -29,6 +29,9 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-branch-value").text()).isEqualTo("master")
         assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
         assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
+        // assertThat(content.select(".db-instance-label").text()).isEqualTo("Database \"v1\":")
+        assertThat(content.select(".db-instance-label").text()).isEqualTo("")
+        assertThat(content.select(".db-instance-value").text()).isEqualTo("")
     }
 
     @Test
@@ -42,6 +45,7 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-hr").count()).isEqualTo(0)
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
         assertThat(content.select("#git-commit-row").count()).isEqualTo(0)
+        assertThat(content.select("#db-instance-row").count()).isEqualTo(0)
     }
 
     @Test
@@ -70,6 +74,19 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
         assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
         assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
+    }
+
+    @Test
+    fun `renders database instances`()
+    {
+        val testModel = VersionPageTestData.testModel.copy(instances = mapOf("p1" to "v1", "p2" to "v2"))
+        val jsoupDoc = template.jsoupDocFor(testModel)
+        val content = jsoupDoc.select(".db-instance-row")
+        assertThat(content.select(".db-instance-row").count()).isEqualTo(2)
+        assertThat(content.select(".db-instance-label")[0].text()).isEqualTo("Database \"p1\":")
+        assertThat(content.select(".db-instance-value")[0].text()).isEqualTo("v1")
+        assertThat(content.select(".db-instance-label")[1].text()).isEqualTo("Database \"p2\":")
+        assertThat(content.select(".db-instance-value")[1].text()).isEqualTo("v2")
     }
 
     @Test

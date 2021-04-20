@@ -109,11 +109,11 @@
         </#if>
             <div class="col">
                 <#list instances as instanceKey, instanceValue>
-                    <div id="db-instance-row" class="row">
-                        <div id="db-instance-label" class="col-4 text-right">
+                    <div class="row db-instance-row">
+                        <div class="col-4 text-right db-instance-label">
                             Database "${instanceKey}":
                         </div>
-                        <div id="db-instance-value" class="col-8">
+                        <div class="col-8 db-instance-value">
                             ${instanceValue}
                         </div>
                     </div>
