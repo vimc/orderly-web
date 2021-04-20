@@ -29,9 +29,6 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-branch-value").text()).isEqualTo("master")
         assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
         assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
-        // assertThat(content.select(".db-instance-label").text()).isEqualTo("Database \"v1\":")
-        assertThat(content.select(".db-instance-label").text()).isEqualTo("")
-        assertThat(content.select(".db-instance-value").text()).isEqualTo("")
     }
 
     @Test
