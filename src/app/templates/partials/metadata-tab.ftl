@@ -5,7 +5,7 @@
 
 <#include "report-title.ftl">
 <div class="container ml-0">
-    <div class="row">
+    <#--  <div class="row">
         <div class="col">
             <div class="row">
                 <div id="started-label" class="col-3 text-right">
@@ -55,21 +55,75 @@
         </div>
         <div class="col">
             <#list instances as instanceKey, instanceValue>
-               Database "${instanceKey}": ${instanceValue}
-            </#list>
-        <#--  </#if>  -->
-            <#--  <#list instances as instanceKey, value>
                 <div id="db-instance-row" class="row">
                     <div id="db-instance-label" class="col-3 text-right">
                         Database "${instanceKey}":
                     </div>
                     <div id="db-instance-value" class="col-9">
-                        ${value}
+                        ${instanceValue}
                     </div>
                 </div>
-            </#list>  -->
+            </#list>
+        </div>
+    </div>  -->
+    <div class="row">
+        <div id="started-label" class="col-2 text-right">
+            Started:
+        </div>
+        <div id="started-value" class="col-4">
+            ${startTimeString}
+        </div>
+        <div id="elapsed-label" class="col-2 text-right">
+            Elapsed:
+        </div>
+        <div id="elapsed-value" class="col-4">
+            ${elapsedString}
         </div>
     </div>
+    <#if report.gitBranch?? || report.gitCommit?? || instances?has_content>
+        <hr id="git-hr"/>
+        <div class="row">
+        <#if report.gitBranch?? || report.gitCommit??>
+            <div class="col">
+                <#if report.gitBranch??>
+                    <div id="git-branch-row" class="row">
+                        <div id="git-branch-label" class="col-4 text-right">
+                            Git branch:
+                        </div>
+                        <div id="git-branch-value" class="col-8">
+                            ${report.gitBranch}
+                        </div>
+                    </div>
+                </#if>
+                <#if report.gitCommit??>
+                    <div id="git-commit-row" class="row">
+                        <div id="git-commit-label" class="col-4 text-right">
+                            Git commit:
+                        </div>
+                        <div id="git-commit-value" class="col-8">
+                            ${report.gitCommit}
+                        </div>
+                    </div>
+                </#if>
+            </div>
+        </#if>
+            <div class="col">
+                <#list instances as instanceKey, instanceValue>
+                    <div id="db-instance-row" class="row">
+                        <div id="db-instance-label" class="col-4 text-right">
+                            Database "${instanceKey}":
+                        </div>
+                        <div id="db-instance-value" class="col-8">
+                            ${instanceValue}
+                        </div>
+                    </div>
+                </#list>
+            </div>
+            <#if !report.gitBranch?? && !report.gitCommit??>
+                <div class="col"></div>
+            </#if>
+        </div>
+    </#if>
     <div id="reportDependenciesVueApp">
         <report-dependencies :report=report></report-dependencies>
     </div>
