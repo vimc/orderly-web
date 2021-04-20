@@ -93,9 +93,10 @@ class OrderlyServer(
     override fun get(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
-            .url(buildFullUrl(url, context.queryString()))
-            .headers(standardHeaders.toHeaders())
-            .build()
+                .url(buildFullUrl(url, context.queryString()))
+                .headers(standardHeaders.toHeaders())
+                .build()
+
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {

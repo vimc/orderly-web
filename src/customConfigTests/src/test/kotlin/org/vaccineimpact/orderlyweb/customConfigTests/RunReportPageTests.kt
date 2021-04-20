@@ -40,6 +40,20 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can view run tab with querystring`()
+    {
+        val url = RequestHelper.webBaseUrl + "/run-report?report-name=minimal"
+        driver.get(url)
+
+        val tab = driver.findElement(By.id("run-tab"))
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run a report")
+
+        val typeahead = driver.findElement(By.id("report"))
+        val matches = typeahead.findElements(By.tagName("a"))
+        assertThat(matches.size).isEqualTo(1)
+    }
+
+    @Test
     fun `can view git commits`()
     {
         val commitsSelect = Select(driver.findElement(By.id("git-commit")))
@@ -88,6 +102,7 @@ class RunReportPageTests : SeleniumTest()
         val tab = driver.findElement(By.id("logs-tab"))
         wait.until(ExpectedConditions.attributeToBe(tab,"display", "block"))
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Running report logs")
+        assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("No reports have been run yet")
     }
 
     //TODO: This test case should be revisited as soon as test data is updated.

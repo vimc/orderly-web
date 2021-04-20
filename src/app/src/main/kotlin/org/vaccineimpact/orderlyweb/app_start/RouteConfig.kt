@@ -20,6 +20,7 @@ object APIRouteConfig : RouteConfig
                     .plus(DataRouteConfig.endpoints)
                     .plus(UserRouteConfig.endpoints)
                     .plus(BundleRouteConfig.endpoints)
+                    .plus(QueueRouteConfig.endpoints)
 }
 
 object WebRouteConfig : RouteConfig
@@ -34,6 +35,8 @@ object WebRouteConfig : RouteConfig
             WebAuthRouteConfig.endpoints +
                     WebDocumentRouteConfig.endpoints +
                     WebReportRouteConfig.endpoints +
+                    WebWorkflowRouteConfig.endpoints +
+                    WebLogsRouteConfig.endpoints +
                     WebVersionRouteConfig.endpoints +
                     WebUserRouteConfig.endpoints +
                     WebPermissionRouteConfig.endpoints +

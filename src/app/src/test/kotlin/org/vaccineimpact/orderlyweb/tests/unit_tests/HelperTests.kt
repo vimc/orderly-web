@@ -109,10 +109,10 @@ class HelperTests
     }
 
     @Test
-    fun `returns expected string map`()
+    fun `can transform json string to map`()
     {
         val jsonString = "{'name': 'value'}"
-        var result: Map<String, String> = jsonToStringMap(jsonString)
+        val result: Map<String, String> = jsonToStringMap(jsonString)
         Assertions.assertThat(result).isEqualTo(mapOf("name" to "value"))
     }
 }

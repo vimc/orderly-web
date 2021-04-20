@@ -30,7 +30,9 @@
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
-                    <report-list id="report" :reports="reports" :report.sync="selectedReport"/>
+                    <report-list id="report" :reports="reports"
+                                 :report.sync="selectedReport"
+                                 :initial-selected-report="initialReportName"/>
                 </div>
             </div>
             <template v-if="showInstances">
@@ -98,6 +100,7 @@
         props: [
             "metadata",
             "initialGitBranches",
+            "initialReportName"
         ],
         components: {
             ErrorInfo,

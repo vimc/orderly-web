@@ -1,7 +1,6 @@
 <template>
     <div>
-        <h2>Running report logs</h2>
-        <div v-if="reportLog" class="mt-3 px-5">
+        <div v-if="reportLog">
             <div id="report-log">
                 <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
@@ -25,8 +24,8 @@
                     <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
                         <span>Parameters:</span>
                         <span>
-                        <div class="d-md-table-row row" v-for="(key, value) in reportLog.params">
-                            <span class="border border-secondary col-md">{{ key }}:</span>
+                        <div class="d-md-table-row row" v-for="(value, key) in reportLog.params">
+                            <span class="border border-secondary col-md">{{ key }}</span>
                             <span class="border border-secondary col-md">{{ value }}</span>
                         </div>
                     </span>

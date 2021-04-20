@@ -3,13 +3,6 @@ export interface Parameter {
     value: string
 }
 
-export interface Instances {
-    database: string,
-    instance: string
-}
-
-export type Dict<V> =  {[index: number]: V}
-
 export interface ReportLog{
     email: string,
     date: string,
@@ -22,6 +15,7 @@ export interface ReportLog{
     logs: string | null,
     report_version: string | null
 }
+
 export interface Error {
     response?: {
         data?: {

@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils"
-import runningReportsDetails from "../../../js/components/runReport/runningReportDetails.vue"
+import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 
@@ -69,12 +69,12 @@ describe(`runningReportDetails`, () => {
 
             const divs = spans.at(1).findAll("div")
             const keyValSpan1 = divs.at(0).findAll("span")
-            expect(keyValSpan1.at(0).text()).toBe("nmin:")
-            expect(keyValSpan1.at(1).text()).toBe("name")
+            expect(keyValSpan1.at(0).text()).toBe("name")
+            expect(keyValSpan1.at(1).text()).toBe("nmin")
 
             const keyValSpan2 = divs.at(1).findAll("span")
-            expect(keyValSpan2.at(0).text()).toBe("ey6:")
-            expect(keyValSpan2.at(1).text()).toBe("cologne")
+            expect(keyValSpan2.at(0).text()).toBe("cologne")
+            expect(keyValSpan2.at(1).text()).toBe("ey6")
     })
 
     it(`displays instance data values as expected`,  () => {

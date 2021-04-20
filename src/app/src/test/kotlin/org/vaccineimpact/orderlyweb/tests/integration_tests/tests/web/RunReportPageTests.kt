@@ -37,12 +37,29 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
+    fun `only report runners can render run report page with query string`()
+    {
+        val url = "/run-report?report-name=minimal"
+        assertWebUrlSecured(url, runReportsPerm)
+    }
+
+    @Test
+    fun `does not get running report details if user is not a report runner`()
+    {
+        val url = "/running/frightened_rabbit/logs"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.read", Scope.Global())))
+
+        assertThat(response.statusCode).isEqualTo(HttpStatus.NOT_FOUND_404)
+    }
+
+    @Test
     fun `can return parameter data`()
     {
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock<ActionContext> {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )
@@ -70,6 +87,17 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
+    fun `correct query string page is served`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie("/run-report?report-name=minimal", sessionCookie)
+        assertThat(response.statusCode).isEqualTo(200)
+
+        val page = Jsoup.parse(response.text)
+        assertThat(page.selectFirst("#runReportTabsVueApp")).isNotNull()
+    }
+
+    @Test
     fun `fetches git branches`()
     {
         val controller = ReportController(mock(),
@@ -88,7 +116,7 @@ class RunReportPageTests : IntegrationTest()
         val branch = "master"
         val commits = OrderlyServer(AppConfig()).get(
                 "/git/commits",
-                mock<ActionContext> {
+                context = mock {
                     on { queryString() } doReturn "branch=$branch"
                 }
         )
@@ -111,36 +139,7 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `can get running reports details`()
-    {
-        val instant = Instant.now()
-        val fakeReportRunLog = ReportRunLog(
-                "test@example.com",
-                instant,
-                "q123",
-                mapOf("annex" to "production", "source" to "production"),
-                mapOf("name" to "cologne", "value" to "memo"),
-                "branch",
-                "commit",
-                "complete",
-                "logs",
-                "1233")
-
-        val mockContext: ActionContext = mock {
-            on { params(":key") } doReturn "fakeKey"
-        }
-
-        val mockRepo = mock<ReportRunRepository> {
-            on { getReportRun("fakeKey") } doReturn fakeReportRunLog
-        }
-
-        val sut = ReportRunController(mockContext, mockRepo, mock())
-        val result = sut.getRunningReportLogs()
-        assertThat(result).isEqualTo(fakeReportRunLog)
-    }
-
-    @Test
-    fun `only report runners can get running report logs`()
+    fun `report runner can get running report logs`()
     {
         insertUser("user@email.com", "user.name")
         val now = Instant.now()
@@ -164,5 +163,14 @@ class RunReportPageTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
+
+        val responseData = JSONValidator.getData(response.text)
+        assertThat(responseData["report"].textValue()).isEqualTo("report1")
+        assertThat(responseData["email"].textValue()).isEqualTo("user@email.com")
+        assertThat(responseData["git_branch"].textValue()).isEqualTo("branch1")
+        assertThat(responseData["git_commit"].textValue()).isEqualTo("commit1")
     }
+
+    //TODO: Add test that can get logs with log message - but this will require running a report for real so
+    //Orderly server can return real log messages. This test and above test should be in ReportLogsTests??
 }
