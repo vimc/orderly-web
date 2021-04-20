@@ -134,7 +134,6 @@ class DocumentTests : IntegrationTest()
         }
     }
 
-
     @Test
     fun `only document readers can get all documents`()
     {
