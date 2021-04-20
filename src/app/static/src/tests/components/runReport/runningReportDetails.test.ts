@@ -59,11 +59,11 @@ describe(`runningReportDetails`, () => {
 
             const divs = spans.at(1).findAll("div")
             const keyValSpan1 = divs.at(0).findAll("span")
-            expect(keyValSpan1.at(0).text()).toBe("name:")
+            expect(keyValSpan1.at(0).text()).toBe("name")
             expect(keyValSpan1.at(1).text()).toBe("nmin")
 
             const keyValSpan2 = divs.at(1).findAll("span")
-            expect(keyValSpan2.at(0).text()).toBe("cologne:")
+            expect(keyValSpan2.at(0).text()).toBe("cologne")
             expect(keyValSpan2.at(1).text()).toBe("ey6")
     })
 

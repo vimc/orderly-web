@@ -25,7 +25,7 @@
                         <span>Parameters:</span>
                         <span>
                         <div class="d-md-table-row row" v-for="(value, key) in reportLog.params">
-                            <span class="border border-secondary col-md">{{ key }}:</span>
+                            <span class="border border-secondary col-md">{{ key }}</span>
                             <span class="border border-secondary col-md">{{ value }}</span>
                         </div>
                     </span>
