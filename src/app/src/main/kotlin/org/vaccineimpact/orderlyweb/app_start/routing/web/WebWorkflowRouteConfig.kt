@@ -9,9 +9,13 @@ object WebWorkflowRouteConfig : RouteConfig
     private val runReports = setOf("*/reports.run")
 
     override val endpoints: List<EndpointDefinition> = listOf(
-        WebEndpoint("/workflows", WorkflowRunController::class, "getWorkflowRunSummaries")
-            .json()
-            .secure(runReports)
-            .transform()
+            WebEndpoint("/workflows/:key", WorkflowRunController::class, "getWorkflowRunDetails")
+                    .json()
+                    .secure(runReports)
+                    .transform(),
+            WebEndpoint("/workflows", WorkflowRunController::class, "getWorkflowRunSummaries")
+                    .json()
+                    .secure(runReports)
+                    .transform()
     )
 }

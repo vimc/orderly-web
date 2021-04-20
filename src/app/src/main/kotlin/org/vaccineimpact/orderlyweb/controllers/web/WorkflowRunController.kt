@@ -6,16 +6,20 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunReposit
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
+import org.vaccineimpact.orderlyweb.models.WorkflowRun
 
 class WorkflowRunController(
     context: ActionContext,
     private val workflowRunRepository: WorkflowRunRepository
 ) : Controller(context)
 {
-    constructor(context: ActionContext) : this(
-        context,
-        OrderlyWebWorkflowRunRepository()
-    )
+    constructor(context: ActionContext) : this(context, OrderlyWebWorkflowRunRepository())
+
+    fun getWorkflowRunDetails(): WorkflowRun
+    {
+        val key = context.params(":key")
+        return workflowRunRepository.getWorkflowRunDetails(key)
+    }
 
     @Template("run-workflow-page.ftl")
     fun getRunWorkflow(): WorkflowRunViewModel
