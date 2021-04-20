@@ -168,6 +168,25 @@ class RunReportTests
         Assertions.assertThat(result.reportVersion).isEqualTo("1233")
     }
 
+    private val testStatusJson = """{
+      "key": "fakeKey", 
+      "status": "updatedStatus",
+      "name": "test", 
+      "version": "1233", 
+      "output": ["output item"], 
+      "queue": []
+     }"""
+
+    @Test
+    fun `can deserialise ReportStatus`() {
+        val status = Serializer.instance.gson.fromJson(testStatusJson, ReportStatus::class.java)
+        assertThat(status.key).isEqualTo("fakeKey")
+        assertThat(status.status).isEqualTo("updatedStatus")
+        assertThat(status.name).isEqualTo("test")
+        assertThat(status.version).isEqualTo("1233")
+        assertThat(status.output).isEqualTo(listOf("output item"))
+        assertThat(status.queue).isEqualTo(listOf<Any>())
+    }
 
     private fun testRunningLogRefresh(incompleteStatus: String?)
     {
@@ -181,9 +200,7 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val mockOrderlyResponse = OrderlyServerResponse(
-                """{"data": {"key": "fakeKey", "status": "updatedStatus", "name": "test", "version": "1233", "output": ["output item"], "queue": []}}""",
-                200)
+        val mockOrderlyResponse = OrderlyServerResponse("""{"data": $testStatusJson}""",200)
 
         val mockAPI = mock<OrderlyServerAPI> {
             on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse
