@@ -10,6 +10,7 @@ import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
+import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
@@ -161,5 +162,317 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.name, orderlyweb_workflow_run.date")
+    }
+
+    @Test
+    fun `can get all workflow runs`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries()
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result.first().name).isEqualTo("Interim report")
+        assertThat(result.first().key).isEqualTo("adventurous_aardvark")
+        assertThat(result.first().email).isEqualTo("user@email.com")
+        assertThat(result.first().date).isEqualTo(now)
+    }
+
+    @Test
+    fun `workflow runs are ordered reverse-chronologically`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report two",
+                "adventurous_aardvark",
+                "user@email.com",
+                Instant.now().minusMillis(1000),
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report one",
+                "benevolent_badger",
+                "user@email.com",
+                Instant.now().minusMillis(2000),
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Report three",
+                "charming_chipmunk",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries()
+        assertThat(result.count()).isEqualTo(3)
+        assertThat(result[0].name).isEqualTo("Report three")
+        assertThat(result[1].name).isEqualTo("Report two")
+        assertThat(result[2].name).isEqualTo("Report one")
+    }
+
+    @Test
+    fun `can get all workflow runs for user`()
+    {
+        insertUser("user@email.com", "user.name")
+        insertUser("user2@email.com", "user2.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Final report",
+                "benevolent_badger",
+                "user2@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries("user@email.com")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result).isEqualTo(
+            listOf(
+                WorkflowRunSummary(
+                    "Interim report",
+                    "adventurous_aardvark",
+                    "user@email.com",
+                    now
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `can get all workflow runs for user using empty name prefix`()
+    {
+        insertUser("user@email.com", "user.name")
+        insertUser("user2@email.com", "user2.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Final report",
+                "benevolent_badger",
+                "user2@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries("user2@email.com", "")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result).isEqualTo(
+            listOf(
+                WorkflowRunSummary(
+                    "Final report",
+                    "benevolent_badger",
+                    "user2@email.com",
+                    now
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `can get all workflow runs using non-empty name prefix`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Final report",
+                "benevolent_badger",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries(namePrefix = "final")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result).isEqualTo(
+            listOf(
+                WorkflowRunSummary(
+                    "Final report",
+                    "benevolent_badger",
+                    "user@email.com",
+                    now
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `can get all workflow runs for user and non-empty name prefix`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+        sut.addWorkflowRun(
+            WorkflowRun(
+                "Final report",
+                "benevolent_badger",
+                "user@email.com",
+                now,
+                emptyList(),
+                emptyMap()
+            )
+        )
+
+        val result = sut.getWorkflowRunSummaries("user@email.com", "interim")
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result).isEqualTo(
+            listOf(
+                WorkflowRunSummary(
+                    "Interim report",
+                    "adventurous_aardvark",
+                    "user@email.com",
+                    now
+                )
+            )
+        )
+    }
+
+    @Test
+    fun `can get workflow details`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        sut.addWorkflowRun(WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        ))
+
+        val results = sut.getWorkflowRunDetails("adventurous_aardvark")
+        assertThat(results).isEqualTo(WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        ))
+    }
+
+    @Test
+    fun `does not get workflow details if key is invalid`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val workflowRun = WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        )
+        sut.addWorkflowRun(workflowRun)
+        assertThatThrownBy {
+            sut.getWorkflowRunDetails("fake_key")
+        }.hasMessageContaining("Unknown workflow : 'fake_key'")
     }
 }

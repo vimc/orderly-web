@@ -266,6 +266,25 @@ describe("runReport", () => {
         });
     });
 
+    it("report list shows initialReportName prop", async (done) => {
+
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: true,
+                },
+                initialGitBranches,
+                initialReportName: "minimal"
+            }
+        });
+
+        setTimeout(() => {
+            expect(wrapper.find("report-list-stub").attributes("initialselectedreport")).toBe("minimal")
+            done()
+        })
+    })
+
     it("shows instances if instances supported", () => {
         const wrapper = shallowMount(RunReport, {
             propsData: {

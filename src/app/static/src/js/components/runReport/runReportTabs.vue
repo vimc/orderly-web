@@ -24,7 +24,9 @@
             <div class="col-12 col-md-8 tab-content">
                 <div v-if="selectedTab === 'runReport'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-tab">
                     <div id="runReportVueApp">
-                        <run-report :metadata="metadata" :initial-git-branches="initialGitBranches"></run-report>
+                        <run-report :metadata="metadata"
+                                    :initial-git-branches="initialGitBranches"
+                                    :initial-report-name="initialReportName"></run-report>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
@@ -50,6 +52,7 @@
         props: [
             "metadata",
             "initialGitBranches",
+            "initialReportName"
         ],
         data() {
             return {
