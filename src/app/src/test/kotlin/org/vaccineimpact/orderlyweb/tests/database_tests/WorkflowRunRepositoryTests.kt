@@ -472,7 +472,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         )
         sut.addWorkflowRun(workflowRun)
         assertThatThrownBy {
-            sut.getWorkflowRunDetails("fake_key")
+            sut.getWorkflowRunDetails("adventurous_aardvark")
         }.hasMessageContaining("Unknown workflow : 'key'")
     }
 }

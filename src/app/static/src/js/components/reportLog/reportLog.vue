@@ -1,15 +1,22 @@
 <template>
     <div>
         <h2>Running report logs</h2>
-        <div v-if="showReports" id="logs-form-group" class="form-group row">
+        <div v-if="showReports">
+            <div id="logs-form-group" class="form-group row">
             <label for="logs" class="col-sm-2 col-form-label text-right">Show logs for</label>
             <div class="col-sm-6">
-                <running-reports-list id="logs" 
-                :reports="reports" 
+                <running-reports-list id="logs"
+                :reports="reports"
                 v-on="$listeners"
                 :initial-selected-key="selectedRunningReportKey"/>
             </div>
-            <!-- runningReportDetails to go here and given selectedRunningReportKey as prop -->
+            </div>
+            <div v-if="selectedRunningReportKey" class="form-group row text-right" id="running-report-details">
+                <label for="details" class="col-sm-2 col-form-label text-right">Log details</label>
+                <div class="col-sm-7">
+                    <running-report-details id="details" :report-key="selectedRunningReportKey"></running-report-details>
+                </div>
+            </div>
         </div>
         <div v-else>
             <p id="noReportsRun">No reports have been run yet</p>
@@ -23,7 +30,7 @@
     import RunningReportsList from "./runningReportsList.vue"
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-
+    import runningReportDetails from "./runningReportDetails.vue";
 
     interface Computed {
         showReports: boolean
@@ -52,7 +59,8 @@
         },
         components: {
             ErrorInfo,
-            RunningReportsList
+            RunningReportsList,
+            runningReportDetails
         },
         data(): Data {
             return {

@@ -55,7 +55,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     .from(ORDERLYWEB_WORKFLOW_RUN)
                     .where(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(key))
                     .singleOrNull()
-                    ?: throw UnknownObjectError("key", "workflow")
+                    ?: throw UnknownObjectError(key, "workflow")
 
             return WorkflowRun(result[ORDERLYWEB_WORKFLOW_RUN.NAME],
                     result[ORDERLYWEB_WORKFLOW_RUN.KEY],
