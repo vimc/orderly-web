@@ -3,6 +3,20 @@
         <div v-if="reportLog">
             <div id="report-log">
                 <div class="row pt-2">
+                    <div id="report-name" class="col-sm-auto ">
+                        <span>Report:</span>
+                        <span class="font-weight-bold">
+                            {{ reportLog.report }}
+                        </span>
+                    </div>
+                    <div id="report-start" class="col-sm-auto ">
+                        <span>Started on:</span>
+                        <span class="font-weight-bold">
+                            {{ reportLog.date }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
                         <div class="text-right">
                             <span>Git branch:</span>
