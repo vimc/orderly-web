@@ -49,7 +49,6 @@ interface ReportRepository
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
 
     fun getReportVersionInstance(version: String): Map<String, String>
-
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -300,7 +299,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
-
         }
     }
 
