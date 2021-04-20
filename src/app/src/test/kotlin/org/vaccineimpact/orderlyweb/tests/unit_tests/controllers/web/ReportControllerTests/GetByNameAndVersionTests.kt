@@ -31,6 +31,7 @@ class GetByNameAndVersionTests
             listOf(),
             listOf(),
             listOf(),
+            mapOf("p1" to "v1", "p2" to "v2"),
             mapOf("p1" to "v1", "p2" to "v2"))
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
