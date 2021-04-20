@@ -65,30 +65,6 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isNotEqualTo(HttpStatus.OK_200)
     }
 
-    private fun addDataToWorkflowTable()
-    {
-        insertUser("user@email.com", "user.name")
-
-        val now = Instant.now()
-
-        val workflowRun = WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
-                ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
-        )
-
-        val sut = OrderlyWebWorkflowRunRepository()
-        sut.addWorkflowRun(workflowRun)
-    }
-
     @Test
     fun `only report runners can see run workflow page`()
     {
@@ -114,7 +90,7 @@ class WorkflowRunTests : IntegrationTest()
 
         val name = "Interim report"
         val key = "adventurous_aardvark2"
-        val email = "test.user2@example.com"
+        val email = "test.user@example.com"
         val date = Instant.now()
 
         val repo = OrderlyWebWorkflowRunRepository()
@@ -133,5 +109,29 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(workflowRun["key"].textValue()).isEqualTo(key)
         assertThat(workflowRun["email"].textValue()).isEqualTo(email)
         assertThat(Instant.parse(workflowRun["date"].textValue())).isEqualTo(date)
+    }
+
+    private fun addDataToWorkflowTable()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val workflowRun = WorkflowRun(
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                ),
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
+        )
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(workflowRun)
     }
 }
