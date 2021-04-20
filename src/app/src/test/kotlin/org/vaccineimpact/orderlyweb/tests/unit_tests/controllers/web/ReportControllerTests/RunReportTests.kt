@@ -1,17 +1,18 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
 
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.doThrow
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThatThrownBy
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
+import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
+import java.time.Instant
 
 class RunReportTests
 {
@@ -126,5 +127,59 @@ class RunReportTests
 
         Assertions.assertThat(result.count()).isEqualTo(2)
         Assertions.assertThat(result).isEqualTo(parameters)
+    }
+
+    @Test
+    fun `can getRunningReportDetails`()
+    {
+        val instant = Instant.now()
+        val fakeReportRunLog = ReportRunLog(
+                "test@example.com",
+                instant,
+                "q123",
+                mapOf("annex" to "production", "source" to "production"),
+                mapOf("name" to "cologne", "value" to "memo"),
+                "branch",
+                "commit",
+                "complete",
+                "logs",
+                "1233")
+
+        val mockRepo = mock<ReportRunRepository> {
+            on { getReportRun("fakeKey") } doReturn fakeReportRunLog
+        }
+
+        val mockContext: ActionContext = mock {
+            on { params(":key") } doReturn "fakeKey"
+        }
+
+        val sut = ReportRunController(mockContext, mockRepo)
+        val result = sut.getRunningReportLogs()
+        assertThat(result.email).isEqualTo("test@example.com")
+        Assertions.assertThat(result.date).isEqualTo(instant)
+        Assertions.assertThat(result.report).isEqualTo("q123")
+        Assertions.assertThat(result.instances).isEqualTo(mapOf("annex" to "production", "source" to "production"))
+        Assertions.assertThat(result.params).isEqualTo(mapOf("name" to "cologne", "value" to "memo"))
+        Assertions.assertThat(result.gitBranch).isEqualTo("branch")
+        Assertions.assertThat(result.gitCommit).isEqualTo("commit")
+        Assertions.assertThat(result.status).isEqualTo("complete")
+        Assertions.assertThat(result.logs).isEqualTo("logs")
+        Assertions.assertThat(result.reportVersion).isEqualTo("1233")
+    }
+
+    @Test
+    fun `running report logs can throw unknown exception`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.params(":key") } doReturn "fakeKey"
+        }
+
+        val mockRepo = mock<ReportRunRepository> {
+            on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "getReportRun")
+        }
+
+        val sut = ReportRunController(mockContext, mockRepo)
+        Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
+                .isInstanceOf(UnknownObjectError::class.java)
     }
 }

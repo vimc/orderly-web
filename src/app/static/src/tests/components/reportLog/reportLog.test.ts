@@ -1,10 +1,9 @@
-import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import ReportLog from "../../../js/components/reportLog/reportLog.vue";
-import RunningReportsList from "../../../js/components/reportLog/runningReportsList.vue";
 import {mockAxios} from "../../mockAxios";
+import runningReportDetails from "../../../js/components/reportLog/runningReportDetails.vue";
 
-describe("runReport", () => {
+describe("reportLog", () => {
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onGet('http://app/reports/running/')
@@ -24,7 +23,8 @@ describe("runReport", () => {
                 logsRefreshing: false,
                 selectedReport: "",
                 error: "",
-                defaultMessage: ""
+                defaultMessage: "",
+                selectedRunningReportKey: "key1"
             }
         }
     }
@@ -41,6 +41,7 @@ describe("runReport", () => {
         expect(wrapper.find("h2").text()).toBe("Running report logs");
         expect(wrapper.find("#noReportsRun").text()).toBe("No reports have been run yet");
         expect(wrapper.find("#logs-form-group").exists()).toBe(false);
+        expect(wrapper.findComponent(runningReportDetails).exists()).toBe(false)
 
         setTimeout(() => {
             expect(wrapper.find("#logs-form-group").exists()).toBe(true);
@@ -64,4 +65,19 @@ describe("runReport", () => {
             done();
         })
     });
+
+    it(`renders report details component correctly`, async () => {
+        const wrapper = shallowMount(ReportLog, {
+            propsData: {
+                selectedRunningReportKey: "key1"
+            },
+            data() {
+                return {
+                    reports: reports
+                }
+            }
+        });
+        expect(wrapper.findComponent(runningReportDetails).exists()).toBe(true)
+        expect(wrapper.findComponent(runningReportDetails).props("reportKey")).toBe("key1")
+    })
 });

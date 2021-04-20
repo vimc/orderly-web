@@ -107,4 +107,12 @@ class HelperTests
         result = getFriendlyRelativeDateTime(Date.from(date))
         Assertions.assertThat(result).isEqualTo("1 hour ago")
     }
+
+    @Test
+    fun `can transform json string to map`()
+    {
+        val jsonString = "{'name': 'value'}"
+        val result: Map<String, String> = jsonToStringMap(jsonString)
+        Assertions.assertThat(result).isEqualTo(mapOf("name" to "value"))
+    }
 }
