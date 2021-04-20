@@ -15,7 +15,7 @@ class WorkflowRunController(
 {
     constructor(context: ActionContext) : this(context, OrderlyWebWorkflowRunRepository())
 
-    fun getRunWorkflowDetails(): WorkflowRun
+    fun getWorkflowRunDetails(): WorkflowRun
     {
         val key = context.params(":key")
         return workflowRunRepository.getWorkflowRunDetails(key)

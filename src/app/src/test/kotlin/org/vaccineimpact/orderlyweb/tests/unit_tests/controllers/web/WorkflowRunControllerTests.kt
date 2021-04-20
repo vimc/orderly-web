@@ -82,7 +82,7 @@ class WorkflowRunControllerTests
 
         val sut = WorkflowRunController(mockContext, mockRepo)
 
-        val results = sut.getRunWorkflowDetails()
+        val results = sut.getWorkflowRunDetails()
         assertThat(results).isEqualTo(workflowRun)
     }
 
@@ -99,7 +99,7 @@ class WorkflowRunControllerTests
 
         val sut = WorkflowRunController(mockContext, mockRepo)
 
-        Assertions.assertThatThrownBy { sut.getRunWorkflowDetails() }
+        Assertions.assertThatThrownBy { sut.getWorkflowRunDetails() }
                 .isInstanceOf(UnknownObjectError::class.java)
                 .hasMessageContaining("Unknown workflow : 'key'")
     }
