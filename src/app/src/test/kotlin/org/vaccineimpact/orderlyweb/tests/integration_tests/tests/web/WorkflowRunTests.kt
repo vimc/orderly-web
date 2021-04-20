@@ -113,8 +113,8 @@ class WorkflowRunTests : IntegrationTest()
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
 
         val name = "Interim report"
-        val key = "adventurous_aardvark"
-        val email = "test.user@example.com"
+        val key = "adventurous_aardvark2"
+        val email = "test.user2@example.com"
         val date = Instant.now()
 
         val repo = OrderlyWebWorkflowRunRepository()
