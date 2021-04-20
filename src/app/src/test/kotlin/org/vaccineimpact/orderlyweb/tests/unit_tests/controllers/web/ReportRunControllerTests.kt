@@ -28,7 +28,7 @@ class ReportRunControllerTests
             on { this.getAllReportRunsForUser("test@test.com") } doReturn (listOf(runningObject))
         }
 
-        val sut = ReportRunController(context, repo)
+        val sut = ReportRunController(context, repo, mock())
 
         assertThat(sut.runningReports()).containsExactlyElementsOf(listOf(runningObject))
     }
