@@ -256,11 +256,8 @@
                         this.error = "";
                         this.defaultMessage = "";
 
-                        //TODO: this is just  a cheap way to manually test that the polling works in the details component
-                        // before the running log list is fully integrated, by setting the selected log key to the most
-                        // recently run key. To be removed and replaced by direct link (mrc-2150), which will do
-                        // a similar emit.
-                        this.$emit('update:selectedLogReportKey', this.runningKey)
+                        // select the latest run report by default in logs view
+                        this.$emit('update:key', this.runningKey)
                     })
                     .catch((error) => {
                         this.error = error;

@@ -27,7 +27,7 @@
                         <run-report :metadata="metadata"
                                     :initial-git-branches="initialGitBranches"
                                     :initial-report-name="initialReportName"
-                                    @update:selectedLogReportKey="setSelectedReportKey"></run-report>
+                                    @update:key="setSelectedReportKey"></run-report>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'reportLogs'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="logs-tab">
