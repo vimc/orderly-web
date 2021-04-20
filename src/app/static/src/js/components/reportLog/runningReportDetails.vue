@@ -62,8 +62,8 @@
                     </div>
                 </div>
                 <div id="report-logs" class="row pt-2">
-                    <div class="text-right col-sm-10">
-                        <textarea class="form-control bg-white"
+                    <div class="text-right col-12">
+                        <textarea class="form-control bg-white text-monospace"
                                   readonly rows="10">{{ reportLog.logs }}
                         </textarea>
                     </div>
