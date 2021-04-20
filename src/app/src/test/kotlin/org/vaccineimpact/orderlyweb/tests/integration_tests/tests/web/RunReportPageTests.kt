@@ -170,7 +170,4 @@ class RunReportPageTests : IntegrationTest()
         assertThat(responseData["git_branch"].textValue()).isEqualTo("branch1")
         assertThat(responseData["git_commit"].textValue()).isEqualTo("commit1")
     }
-
-    //TODO: Add test that can get logs with log message - but this will require running a report for real so
-    //Orderly server can return real log messages. This test and above test should be in ReportLogsTests??
 }
