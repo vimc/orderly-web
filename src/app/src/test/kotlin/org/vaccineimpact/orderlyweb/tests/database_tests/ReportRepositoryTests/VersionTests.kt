@@ -353,24 +353,22 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test2", "version2")
 
         JooqContext().use {
-        val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+            val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
                     .apply {
                         this.reportVersion = "version1"
                         this.instance = "instance1"
                         this.type = "type1"
                     }
             instanceRecord.store()
+            
+            val instanceRecord2 = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+                    .apply {
+                        this.reportVersion = "version1"
+                        this.instance = "instance2"
+                        this.type = "type2"
+                    }
+            instanceRecord2.store()
         }
-
-        JooqContext().use {
-            val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
-                        .apply {
-                            this.reportVersion = "version1"
-                            this.instance = "instance2"
-                            this.type = "type2"
-                        }
-                instanceRecord.store()
-            }
 
         val sut = createSut()
 
