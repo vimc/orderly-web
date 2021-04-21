@@ -91,11 +91,12 @@ class GetByNameAndVersionTests
     }
 
     @Test
-    fun `builds parameter values`()
+    fun `builds parameter values and instances`()
     {
         val sut = ReportController(mockActionContext, mockOrderly, mock(), mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.parameterValues).isEqualTo("p1=v1, p2=v2")
+        assertThat(result.instances).isEqualTo(mapOf("p1" to "v1", "p2" to "v2"))
     }
 
     @Test
@@ -109,6 +110,19 @@ class GetByNameAndVersionTests
         val sut = ReportController(mockActionContext, orderly, mock(), mockReportRepo, mock())
         val result = sut.getByNameAndVersion()
         assertThat(result.parameterValues).isEqualTo(null)
+    }
+
+    @Test
+    fun `builds empty instances`()
+    {
+        val orderly = mock<OrderlyClient> {
+            on { this.getDetailsByNameAndVersion("r1", versionId) } doReturn
+                    mockReportDetails.copy(instances = mapOf())
+        }
+
+        val sut = ReportController(mockActionContext, orderly, mock(), mockReportRepo, mock())
+        val result = sut.getByNameAndVersion()
+        assertThat(result.instances).isEqualTo(emptyMap<String, String>())
     }
 
     @Test

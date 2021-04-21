@@ -141,6 +141,7 @@ class VersionControllerTests : ControllerTest()
         assertThat(result.resources.count()).isEqualTo(0)
         assertThat(result.dataInfo.count()).isEqualTo(0)
         assertThat(result.parameterValues.keys.count()).isEqualTo(0)
+        assertThat(result.instances.keys.count()).isEqualTo(0)
     }
 
     @Test
