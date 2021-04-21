@@ -11,6 +11,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertUser
+import org.vaccineimpact.orderlyweb.db.Tables
+import org.vaccineimpact.orderlyweb.db.JooqContext
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -342,6 +344,50 @@ class VersionTests : CleanDatabaseTests()
         assertThat(sut.getReportVersion("test", "v1").published).isTrue()
         assertThat(sut.getReportVersion("test", "v2").published).isFalse()
         assertThat(sut.getReportVersion("anotherreport", "b1").published).isTrue()
+    }
+
+    @Test
+    fun `can get instances for report version`()
+    {
+        insertReport("test1", "version1")
+        insertReport("test2", "version2")
+
+        JooqContext().use {
+        val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+                    .apply {
+                        this.reportVersion = "version1"
+                        this.instance = "instance1"
+                        this.type = "type1"
+                    }
+            instanceRecord.store()
+        }
+
+        JooqContext().use {
+            val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+                        .apply {
+                            this.reportVersion = "version1"
+                            this.instance = "instance2"
+                            this.type = "type2"
+                        }
+                instanceRecord.store()
+            }
+
+        val sut = createSut()
+
+        val results = sut.getReportVersionInstances("version1")
+        assertThat(results).isEqualTo(mapOf("type1" to "instance1", "type2" to "instance2"))
+    }
+
+    @Test
+    fun `get instances returns empty map if none exist`()
+    {
+        insertReport("test1", "version1")
+
+        val sut = createSut(true)
+        val map = emptyMap<String, String>()
+
+        val results = sut.getReportVersionInstances("version1")
+        assertThat(results).isEqualTo(map)
     }
 
 }

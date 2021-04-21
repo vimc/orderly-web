@@ -48,7 +48,7 @@ interface ReportRepository
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
 
-    fun getReportVersionInstance(version: String): Map<String, String>
+    fun getReportVersionInstances(version: String): Map<String, String>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -121,7 +121,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getReportVersionInstance(version: String): Map<String, String>
+    override fun getReportVersionInstances(version: String): Map<String, String>
     {
         JooqContext().use {
             return it.dsl.select(

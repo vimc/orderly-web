@@ -92,6 +92,7 @@ class OrderlyTests : CleanDatabaseTests()
         assertThat(result.parameterValues.keys.count()).isEqualTo(2)
         assertThat(result.parameterValues["p1"]).isEqualTo("param1")
         assertThat(result.parameterValues["p2"]).isEqualTo("param2")
+        assertThat(result.instances).isEqualTo(emptyMap<String, String>())
 
         // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))

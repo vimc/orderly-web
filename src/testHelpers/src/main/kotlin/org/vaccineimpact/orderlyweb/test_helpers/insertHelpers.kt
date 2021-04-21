@@ -185,6 +185,38 @@ fun insertVersionParameterValues(version: String,
     }
 }
 
+// fun insertVersionInstances(version: String,
+//                                  instances: Map<String, String>)
+// {
+//     JooqContext().use {
+
+//         // val typeExists = it.dsl.selectFrom(Tables.REPORT_VERSION_INSTANCE)
+//         //         .where(Tables.REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
+//         //         .fetch()
+//         //         .count() > 0
+
+//         // if (!typeExists)
+//         // {
+//         //     val typeRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+//         //             .apply {
+//         //                 this.reportVersion = "text"
+//         //             }
+//         //     typeRecord.store()
+//         // }
+
+//         // for ((k, v) in parameterValues)
+//         // {
+//             val parameterRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
+//                     .apply {
+//                         this.reportVersion = "version"
+//                         this.instance = "instance"
+//                         this.type = "type"
+//                     }
+//             parameterRecord.store()
+//         // }
+//     // }
+// }
+
 fun insertVersionTags(version: String, vararg tags: String)
 {
     JooqContext().use {

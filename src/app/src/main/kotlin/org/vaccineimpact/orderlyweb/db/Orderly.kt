@@ -26,7 +26,7 @@ class Orderly(val isReviewer: Boolean,
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val artefacts = artefactRepository.getArtefacts(name, version)
         val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
-        val instances = reportRepository.getReportVersionInstance(version)
+        val instances = reportRepository.getReportVersionInstances(version)
 
         return ReportVersionWithArtefactsDataDescParamsResources(basicReportVersion,
                 artefacts = artefacts,

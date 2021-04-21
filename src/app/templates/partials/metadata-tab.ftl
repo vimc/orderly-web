@@ -22,7 +22,6 @@
     <#if report.gitBranch?? || report.gitCommit?? || instances?has_content>
         <hr id="git-hr"/>
         <div class="row">
-        <#if report.gitBranch?? || report.gitCommit??>
             <div class="col">
                 <#if report.gitBranch??>
                     <div id="git-branch-row" class="row">
@@ -45,7 +44,6 @@
                     </div>
                 </#if>
             </div>
-        </#if>
             <div class="col">
                 <#list instances as instanceKey, instanceValue>
                     <div class="row db-instance-row">
@@ -58,9 +56,6 @@
                     </div>
                 </#list>
             </div>
-            <#if !report.gitBranch?? && !report.gitCommit??>
-                <div class="col"></div>
-            </#if>
         </div>
     </#if>
     <div id="reportDependenciesVueApp">
