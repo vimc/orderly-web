@@ -125,12 +125,5 @@ class HelperTests
                 WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
         ))
     }
-
-    @Test
-    fun `cannot get date string from invalid version ID`()
-    {
-        Assertions.assertThatThrownBy { getDateStringFromVersionId("") }
-            .hasMessageStartingWith("Badly formatted report id")
-    }
 }
 

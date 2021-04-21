@@ -87,7 +87,7 @@ class WorkflowRunControllerTests
     }
 
     @Test
-    fun `can throw UnknownObjectError if key is invalid`()
+    fun `throws UnknownObjectError if key is invalid`()
     {
         val mockContext: ActionContext = mock {
             on { params(":key") } doReturn "fakeKey"
@@ -105,16 +105,45 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `can deserialize a workflow description`()
+    {
+        val json = """
+            {
+              "name": "workflow1",
+              "instances": {
+                "database1": "instance1"
+              },
+              "changelog": {
+                "message": "message1",
+                "type": "type1"
+              },
+              "git_branch": "branch1",
+              "git_commit": "commit1",
+              "reports": [
+                {
+                  "name": "report1",
+                  "params": {
+                    "param1": "value1"
+                  }
+                },
+                {
+                  "name": "report2",
+                  "params": {
+                    "param2": "value2"
+                  }
+                }
+              ]
+            }
+        """.trimIndent()
+
+        var workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
+        assertThat(workflowRunRequest).isEqualTo(getWorkflowRunRequestExample())
+    }
+
+    @Test
     fun `can run a workflow`()
     {
-        val workflowRunRequest = WorkflowRunRequest(
-            "workflow1",
-            listOf(WorkflowReportWithParams("report1", mapOf("param1" to "value1"))),
-            mapOf("database1" to "instance1"),
-            WorkflowChangelog("message1", "type1"),
-            "branch1",
-            "commit1"
-        )
+        val workflowRunRequest = getWorkflowRunRequestExample()
 
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn Serializer.instance.gson.toJson(workflowRunRequest)
@@ -144,6 +173,11 @@ class WorkflowRunControllerTests
                             "name" to workflowRunRequest.reports[0].name,
                             "params" to workflowRunRequest.reports[0].params,
                             "instance" to workflowRunRequest.instances
+                        ),
+                        mapOf(
+                            "name" to workflowRunRequest.reports[1].name,
+                            "params" to workflowRunRequest.reports[1].params,
+                            "instance" to workflowRunRequest.instances
                         )
                     )
                 )
@@ -161,13 +195,26 @@ class WorkflowRunControllerTests
         )
 
         verify(repo).addWorkflowRun(check {
-            assertThat(it.name).isEqualTo("workflow1")
+            assertThat(it.name).isEqualTo(workflowRunRequest.name)
             assertThat(it.key).isEqualTo("workflow_key1")
             assertThat(it.email).isEqualTo("test@user.com")
-            assertThat(it.reports).isEqualTo(listOf(WorkflowReportWithParams("report1", mapOf("param1" to "value1"))))
-            assertThat(it.instances).isEqualTo(mapOf("database1" to "instance1"))
-            assertThat(it.gitBranch).isEqualTo("branch1")
-            assertThat(it.gitCommit).isEqualTo("commit1")
+            assertThat(it.reports).isEqualTo(workflowRunRequest.reports)
+            assertThat(it.instances).isEqualTo(workflowRunRequest.instances)
+            assertThat(it.gitBranch).isEqualTo(workflowRunRequest.gitBranch)
+            assertThat(it.gitCommit).isEqualTo(workflowRunRequest.gitCommit)
         })
     }
+
+    private fun getWorkflowRunRequestExample() =
+        WorkflowRunRequest(
+            "workflow1",
+            listOf(
+                WorkflowReportWithParams("report1", mapOf("param1" to "value1")),
+                WorkflowReportWithParams("report2", mapOf("param2" to "value2"))
+            ),
+            mapOf("database1" to "instance1"),
+            WorkflowChangelog("message1", "type1"),
+            "branch1",
+            "commit1"
+        )
 }
