@@ -2,6 +2,7 @@ import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
+import {longDateTime} from "../../../js/utils/helpers";
 
 
 describe(`runningReportDetails`, () => {
@@ -12,7 +13,7 @@ describe(`runningReportDetails`, () => {
 
     const initialReportLog = {
         email: "test@example.com",
-        date: "",
+        date: "2021-04-21T09:26:54.545Z",
         report: "minimal",
         instances: { "database": "support", "instance" : "annexe"},
         params: {"name" : "nmin", "cologne" : "ey6"},
@@ -34,6 +35,18 @@ describe(`runningReportDetails`, () => {
                 }
             })
     }
+
+    it("displays report name and date as expected", () => {
+        const wrapper = getWrapper();
+
+        const name = wrapper.find("#report-name");
+        expect(name.findAll("span").at(0).text()).toBe("Report:");
+        expect(name.findAll("span").at(1).text()).toBe("minimal");
+
+        const start = wrapper.find("#report-start");
+        expect(start.findAll("span").at(0).text()).toBe("Run started:");
+        expect(start.findAll("span").at(1).text()).toBe(longDateTime(initialReportLog.date));
+    });
 
 
     it(`displays git branch data as expected`, () => {

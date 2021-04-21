@@ -1,4 +1,4 @@
-import {reportVersionToLongTimestamp, longDate} from "../js/utils/helpers";
+import {reportVersionToLongTimestamp, longDate, longDateTime} from "../js/utils/helpers";
 
 describe('helpers', () => {
     describe('reportVersionToLongTimestamp', () => {
@@ -20,4 +20,10 @@ describe('helpers', () => {
         });
     });
 
+    describe("longDateTime", () => {
+        it('returns expected long date time string', () => {
+            const result = longDateTime(new Date(2019, 4, 15, 9, 10, 20));
+            expect(result).toBe("Wed, 15 May 2019, 09:10");
+        });
+    });
 });

@@ -10,7 +10,7 @@
                         </span>
                     </div>
                     <div id="report-start" class="col-sm-auto ">
-                        <span>Started on:</span>
+                        <span>Run started:</span>
                         <span class="font-weight-bold">
                             {{ formattedReportDate }}
                         </span>
