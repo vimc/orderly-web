@@ -63,8 +63,9 @@
                 </div>
                 <div id="report-logs" class="row pt-2">
                     <div class="text-right col-12">
-                        <textarea class="form-control bg-white text-monospace" style="font-size: 80%;"
-                                  readonly rows="10">{{ reportLog.logs }}
+                        <textarea ref="logs"
+                                  class="form-control bg-white text-monospace" style="font-size: 80%;"
+                                  readonly rows="20">{{ reportLog.logs }}
                         </textarea>
                     </div>
                 </div>
@@ -145,12 +146,15 @@
                             this.defaultMessage = "";
 
                             const status = this.reportLog.status;
+
+                            this.$nextTick(() => {
+                                this.$refs.logs.scrollTop = this.$refs.logs.scrollHeight;
+                            });
+
                             if (status === "running" || status === "queued") {
-                                if (!this.pollingTimer) {
-                                    this.startPolling();
-                                }
+                                this.startPolling();
                             }
-                            else if (this.pollingTimer) {
+                            else  {
                                 this.stopPolling(); //the run has completed
                             }
                         })
@@ -161,11 +165,15 @@
                 }
             },
             startPolling: function () {
-                this.pollingTimer = setInterval(this.getLogs, 1500);
+                if (!this.pollingTimer) {
+                    this.pollingTimer = setInterval(this.getLogs, 1500);
+                }
             },
             stopPolling: function () {
-                clearInterval(this.pollingTimer);
-                this.pollingTimer = null;
+                if (this.pollingTimer) {
+                    clearInterval(this.pollingTimer);
+                    this.pollingTimer = null;
+                }
             }
         },
         mounted() {

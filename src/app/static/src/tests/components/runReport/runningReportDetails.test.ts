@@ -1,3 +1,4 @@
+import Vue from "vue";
 import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
@@ -116,6 +117,21 @@ describe(`runningReportDetails`, () => {
             const textArea = wrapper.find("#report-logs").find("textarea")
             expect(textArea.text()).toBe("some logs")
     })
+
+    it("sets logs textarea scrollTop to scrollHeight on getLogs", async () => {
+        const key = "another aardwolf";
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
+            .reply(200, {"data": initialReportLog});
+
+        const wrapper = getWrapper();
+        const mockLogsRef = { scrollTop: 0, scrollHeight: 100 };
+        (wrapper.vm as any).$refs.logs = mockLogsRef;
+
+        await wrapper.setProps({reportKey: key});
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(mockLogsRef.scrollTop).toBe(100);
+    });
 
     it(`does not displays data when report key in not given`, async (done) => {
         const key = ""
