@@ -53,7 +53,6 @@ class WorkflowRunController(
         val reports: List<String>
     )
 
-    @Suppress("UnsafeCallOnNullableType")
     fun createWorkflowRun(): String
     {
         val workflowRunRequest =
@@ -83,6 +82,7 @@ class WorkflowRunController(
             WorkflowRun(
                 workflowRunRequest.name,
                 workflowRun.key,
+                @Suppress("UnsafeCallOnNullableType")
                 context.userProfile!!.id,
                 Instant.now(),
                 workflowRunRequest.reports,
