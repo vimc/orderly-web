@@ -1,8 +1,8 @@
+import Vue from "vue";
 import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
-
 
 describe(`runningReportDetails`, () => {
 
@@ -23,6 +23,8 @@ describe(`runningReportDetails`, () => {
         report_version: "version"
     }
 
+    const realSetTimeout = setTimeout;
+
     const getWrapper = (propsData = props, reportLog = initialReportLog) => {
         return shallowMount(runningReportsDetails,
             {
@@ -35,6 +37,15 @@ describe(`runningReportDetails`, () => {
             })
     }
 
+    beforeEach(() => {
+        mockAxios.reset();
+        jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
+    });
 
     it(`displays git branch data as expected`, () => {
         const wrapper = getWrapper()
@@ -107,6 +118,21 @@ describe(`runningReportDetails`, () => {
             expect(textArea.text()).toBe("some logs")
     })
 
+    it("sets logs textarea scrollTop to scrollHeight on getLogs", async () => {
+        const key = "another aardwolf";
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
+            .reply(200, {"data": initialReportLog});
+
+        const wrapper = getWrapper();
+        const mockLogsRef = { scrollTop: 0, scrollHeight: 100 };
+        (wrapper.vm as any).$refs.logs = mockLogsRef;
+
+        await wrapper.setProps({reportKey: key});
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(mockLogsRef.scrollTop).toBe(100);
+    });
+
     it(`does not displays data when report key in not given`, async (done) => {
         const key = ""
         const getWrapper = () => {
@@ -121,14 +147,14 @@ describe(`runningReportDetails`, () => {
 
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(200, {"data": initialReportLog});
-        setTimeout(() => {
+        realSetTimeout(() => {
             expect(wrapper.find("#no-logs").exists()).toBe(true)
             expect(wrapper.find("#no-logs").text()).toBe("There are no logs to display")
             done()
         })
     })
 
-    it(`it displays error message when report key in not valid`, async(done) => {
+    it(`it displays error message when report key in not valid`, (done) => {
         const key = "fakeKey"
         const getWrapper = () => {
             return shallowMount(runningReportsDetails,
@@ -142,11 +168,151 @@ describe(`runningReportDetails`, () => {
         mockAxios.onGet(`http://app/running/${key}/logs/`)
             .reply(500, "Error");
 
-        setTimeout(() => {
+        realSetTimeout(() => {
             expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("Error")
             expect(wrapper.find(ErrorInfo).props("defaultMessage"))
                 .toBe("An error occurred when fetching logs")
             done()
         })
     })
-})
+
+    const testStartsPollingOnMountWhenIncomplete = (incompleteStatus: string, done) => {
+        const key = `fakeKey-${incompleteStatus}`;
+        const url = `http://app/running/${key}/logs/`;
+        mockAxios.onGet(url)
+            .reply(200, {"data": {...initialReportLog, status: incompleteStatus}});
+
+        const wrapper = shallowMount(runningReportsDetails,
+            {
+                propsData: {
+                    reportKey: key
+                }
+            });
+
+        realSetTimeout(() => {
+            expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(1);
+            expect(wrapper.vm.$data.pollingTimer).not.toBeNull();
+            expect(setInterval).toHaveBeenCalledTimes(1);
+            expect(setInterval).toHaveBeenCalledWith((wrapper.vm as any).getLogs, 1500);
+
+            //invoke the pending timer and expect getLogs to be invoked again - mockAxios should have been called a
+            //second time
+            jest.runOnlyPendingTimers();
+            realSetTimeout(() => {
+                expect(mockAxios.history.get.filter(g => g.url === url).length).toBe(2);
+                done();
+            }, 500);
+        }, 500);
+    };
+
+    it(`starts polling on mount when report is running`,  (done) => {
+        testStartsPollingOnMountWhenIncomplete("running", done);
+    });
+
+    it(`starts polling on mount when report is queued`, (done) => {
+        testStartsPollingOnMountWhenIncomplete("queued", done);
+    });
+
+    it("does not start or stop polling on mount when report is complete", (done) => {
+        const key = "fakeKey";
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
+            .reply(200, {"data": initialReportLog});
+
+        const wrapper = shallowMount(runningReportsDetails,
+            {
+                propsData: {
+                    reportKey: key
+                }
+            });
+
+        realSetTimeout(() => {
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+            done();
+        });
+    });
+
+    it("getLogs does not start polling on incomplete report if pollingTimer is already set", (done) => {
+        const key = "fakeKey";
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
+            .reply(200, {"data": {...initialReportLog, status: "queued"}});
+
+        const wrapper = shallowMount(runningReportsDetails,
+            {
+                propsData: {
+                    reportKey: key
+                },
+                data() {
+                    return {pollingTimer: 123}
+                }
+            });
+
+        realSetTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(wrapper.vm.$data.pollingTimer).toBe(123);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            done();
+        });
+    });
+
+    it("getLogs stops polling on complete report", (done) => {
+        const key = "fakeKey";
+        mockAxios.onGet(`http://app/running/${key}/logs/`)
+            .reply(200, {"data": initialReportLog});
+
+        const wrapper = shallowMount(runningReportsDetails,
+            {
+                propsData: {
+                    reportKey: key
+                },
+                data() {
+                    return {pollingTimer: 123}
+                }
+            });
+
+        realSetTimeout(() => {
+            expect(clearInterval).toHaveBeenCalledTimes(1);
+            expect(clearInterval).toHaveBeenCalledWith(123);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            expect(wrapper.vm.$data.pollingTimer).toBe(null);
+            done();
+        });
+
+    });
+
+    it("stops polling and gets logs, starts polling for new key when reportKey changes", () => {
+        const oldKey = "fakeKey";
+        const newKey = "newKakeKey";
+        mockAxios.onGet(`http://app/running/${oldKey}/logs/`)
+            .reply(200, {"data": {...initialReportLog, status: "queued"}});
+        mockAxios.onGet(`http://app/running/${newKey}/logs/`)
+            .reply(200, {"data": {...initialReportLog, status: "running"}});
+
+        const wrapper = shallowMount(runningReportsDetails,
+            {
+                propsData: {
+                    reportKey: oldKey
+                },
+                data() {
+                    return {pollingTimer: 123}
+                }
+            });
+
+        realSetTimeout(() => {
+            expect(mockAxios.history.get[0].url).toBe(`http://app/running/${oldKey}/logs/`);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+
+            wrapper.setProps({reportKey: newKey});
+
+            realSetTimeout(() => {
+                expect(clearInterval).toHaveBeenCalledTimes(1);
+                expect(clearInterval).toHaveBeenCalledWith(123);
+                expect(mockAxios.history.get[1].url).toBe(`http://app/running/${newKey}/logs/`)
+                expect(setInterval).toHaveBeenCalledTimes(1);
+                expect(wrapper.vm.$data.pollingTimer).not.toBe(123);
+                expect(wrapper.vm.$data.pollingTimer).not.toBe(null);
+            });
+        });
+    });
+});

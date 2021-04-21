@@ -139,7 +139,7 @@ class RunReportPageTests : IntegrationTest()
     }
 
     @Test
-    fun `only report runners can get running report logs`()
+    fun `report runner can get running report logs`()
     {
         insertUser("user@email.com", "user.name")
         val now = Instant.now()
