@@ -166,7 +166,10 @@ class WorkflowRunControllerTests
             "/v1/workflow/run/",
             Serializer.instance.gson.toJson(
                 mapOf(
-                    "changelog" to workflowRunRequest.changelog,
+                    "changelog" to mapOf(
+                        "message" to workflowRunRequest.changelog!!.message,
+                        "type" to workflowRunRequest.changelog!!.type
+                    ),
                     "ref" to workflowRunRequest.gitCommit,
                     "reports" to listOf(
                         mapOf(
