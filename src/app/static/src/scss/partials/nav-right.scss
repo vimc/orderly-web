@@ -1,0 +1,9 @@
+.nav-right a, .nav-right a:visited, .nav-right a:hover {
+    color: inherit;
+}
+.nav-right .dropdown-item:focus, .nav-right .dropdown-item:hover {
+    text-decoration: underline;
+}
+.nav-right .dropdown-item:active {
+    background-color: inherit;
+}

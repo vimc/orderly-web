@@ -28,6 +28,8 @@ object WebRouteConfig : RouteConfig
     private val metricsEndpoint = WebEndpoint("/metrics/", IndexController::class, "metrics",
     contentType = ContentTypes.text)
 
+    private val accessibilityEndpoint = WebEndpoint("/accessibility/", IndexController:: class, "accessibility")
+
     private val adminEndpoint = WebEndpoint("/manage-access/", AdminController:: class, "admin")
             .secure(setOf("*/users.manage"))
 
@@ -42,5 +44,5 @@ object WebRouteConfig : RouteConfig
                     WebPermissionRouteConfig.endpoints +
                     WebRoleRouteConfig.endpoints +
                     WebSettingsRouteConfig.endpoints +
-                    WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint
+                    WebGitRouteConfig.endpoints + metricsEndpoint + adminEndpoint + accessibilityEndpoint
 }
