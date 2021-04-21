@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
-import {longDateTime} from "../../../js/utils/helpers";
+import {longTimestamp} from "../../../js/utils/helpers";
 
 
 describe(`runningReportDetails`, () => {
@@ -45,7 +45,7 @@ describe(`runningReportDetails`, () => {
 
         const start = wrapper.find("#report-start");
         expect(start.findAll("span").at(0).text()).toBe("Run started:");
-        expect(start.findAll("span").at(1).text()).toBe(longDateTime(initialReportLog.date));
+        expect(start.findAll("span").at(1).text()).toBe(longTimestamp(new Date(initialReportLog.date)));
     });
 
 

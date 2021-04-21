@@ -94,7 +94,7 @@
     import {ReportLog} from "../../utils/types";
     import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {longDateTime} from "../../utils/helpers";
+    import {longTimestamp} from "../../utils/helpers";
 
     interface Methods {
         getLogs: () => void
@@ -147,7 +147,7 @@
                 return buildFullUrl(url)
             },
             formattedReportDate: function () {
-                return longDateTime(new Date(this.reportLog.date));
+                return longTimestamp(new Date(this.reportLog.date));
             }
         },
         methods: {

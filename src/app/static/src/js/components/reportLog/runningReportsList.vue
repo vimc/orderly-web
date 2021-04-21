@@ -26,7 +26,7 @@
     import Vue from "vue";
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
     import XIcon from "../runReport/xIcon.vue"
-    import {longDateTime} from "../../utils/helpers";
+    import {longTimestamp} from "../../utils/helpers";
 
     export default Vue.extend({
         name: "runningReportsList",
@@ -44,7 +44,7 @@
                 this.$emit('update:key', "");
             },
             formatDate(date) {
-                return longDateTime(date);
+                return longTimestamp(new Date(date));
             }
         },
         data() {

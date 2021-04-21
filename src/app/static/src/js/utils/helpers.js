@@ -23,17 +23,6 @@ export function longDate(date) {
     return date.toDateString();
 }
 
-export function longDateTime(date) {
-    return new Intl.DateTimeFormat(undefined, {
-        weekday: "short",
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-        hour: "numeric",
-        minute: "numeric"
-    }).format(new Date(date))
-}
-
 function padZero(number) {
     // This always sticks a zero on the front and then takes the last two digits
     return ('0' + number).slice(-2);
