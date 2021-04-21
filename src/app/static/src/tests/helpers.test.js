@@ -1,4 +1,4 @@
-import {reportVersionToLongTimestamp, longDate, longDateTime} from "../js/utils/helpers";
+import {reportVersionToLongTimestamp, longDate} from "../js/utils/helpers";
 
 describe('helpers', () => {
     describe('reportVersionToLongTimestamp', () => {

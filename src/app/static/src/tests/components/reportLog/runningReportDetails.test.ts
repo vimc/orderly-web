@@ -13,7 +13,7 @@ describe(`runningReportDetails`, () => {
 
     const initialReportLog = {
         email: "test@example.com",
-        date: "2021-04-21T09:26:54.545Z",
+        date: new Date(2021, 3, 21, 9, 26, 54).toISOString(),
         report: "minimal",
         instances: { "database": "support", "instance" : "annexe"},
         params: {"name" : "nmin", "cologne" : "ey6"},
@@ -45,7 +45,7 @@ describe(`runningReportDetails`, () => {
 
         const start = wrapper.find("#report-start");
         expect(start.findAll("span").at(0).text()).toBe("Run started:");
-        expect(start.findAll("span").at(1).text()).toBe(longTimestamp(new Date(initialReportLog.date)));
+        expect(start.findAll("span").at(1).text()).toBe("Wed Apr 21 2021, 09:26");
     });
 
 
