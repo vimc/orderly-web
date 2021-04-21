@@ -3,12 +3,11 @@ package org.vaccineimpact.orderlyweb.tests.unit_tests
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
+import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
-import java.time.temporal.TemporalUnit
 import java.util.*
-
 
 class HelperTests
 {
@@ -107,4 +106,24 @@ class HelperTests
         result = getFriendlyRelativeDateTime(Date.from(date))
         Assertions.assertThat(result).isEqualTo("1 hour ago")
     }
+
+    @Test
+    fun `can transform json string to map`()
+    {
+        val jsonString = "{'name': 'value'}"
+        val result: Map<String, String> = jsonToStringMap(jsonString)
+        Assertions.assertThat(result).isEqualTo(mapOf("name" to "value"))
+    }
+
+    @Test
+    fun `can transform json string to Generic List`()
+    {
+        val jsonString = """[{"name":"reportA","params":{"param1":"one","param2":"two"}}, {"name":"reportB","params":{"param3":"three"}}]"""
+        val result: List<WorkflowReportWithParams> = jsonToGenericList(jsonString, WorkflowReportWithParams::class.java)
+        Assertions.assertThat(result).isEqualTo(listOf(
+                WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+        ))
+    }
 }
+

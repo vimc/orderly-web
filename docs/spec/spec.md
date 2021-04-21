@@ -286,7 +286,7 @@ Schema: [`Status.schema.json`](Status.schema.json)
         "",
         "> dev.off()",
         "null device ",
-        "          1 "
+        "          1 ",
         "[ end       ]  2017-09-12 09:11:03",
         "[ artefact  ]  mygraph.png: b7de1d29f37d7913392832db6bc49c99",
         "[ commit    ]  example/20170912-091103-41c62920",
@@ -565,3 +565,31 @@ Required permissions: `reports.run`.
 Imports a completed bundle in zip format.
 
 Required permissions: `reports.run`.
+
+## GET /queue/status/
+
+Gets information on the current state of the orderly queue.
+
+Required permissions: none, available to all authenticated users
+
+Schema: [`QueueStatus.schema.json`](QueueStatus.schema.json)
+
+### Example
+```json
+{
+  "tasks": [
+    {
+        "key": "antiutopian_peregrinefalcon",
+        "status": "running",
+        "name": "minimal",
+        "version": "20210317140322-ag3481"
+    },
+    {
+        "key": "flavoured_bassethound",
+        "status": "queued",
+        "name": "other",
+        "version": null
+    }
+  ]
+}
+```

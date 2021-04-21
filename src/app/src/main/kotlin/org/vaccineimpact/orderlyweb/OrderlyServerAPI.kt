@@ -5,10 +5,12 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
 import org.json.JSONObject
@@ -28,12 +30,15 @@ interface OrderlyServerAPI
     @Throws(OrderlyServerError::class)
     fun post(
         url: String,
-        bodyJson: String,
+        json: String,
         queryParams: Map<String, String?>
     ): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun get(url: String, context: ActionContext): OrderlyServerResponse
+
+    @Throws(OrderlyServerError::class)
+    fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
@@ -88,9 +93,32 @@ class OrderlyServer(
     override fun get(url: String, context: ActionContext): OrderlyServerResponse
     {
         val request = Request.Builder()
-            .url(buildFullUrl(url, context.queryString()))
-            .headers(standardHeaders.toHeaders())
-            .build()
+                .url(buildFullUrl(url, context.queryString()))
+                .headers(standardHeaders.toHeaders())
+                .build()
+
+        val response = client.newCall(request).execute()
+        if (!response.isSuccessful && throwOnError)
+        {
+            throw OrderlyServerError(url, response.code)
+        }
+        return transformResponse(response.code, response.body!!.string())
+    }
+
+    override fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
+    {
+        val buildUrl = urlBase.toHttpUrl().newBuilder()
+                .addPathSegments(url.trimStart('/'))
+                .apply {
+                    queryParams.forEach { (key, value) ->
+                        addQueryParameter(key, value)
+                    }
+                }
+        val request = Request.Builder()
+                .url(buildUrl.toString())
+                .headers(standardHeaders.toHeaders())
+                .build()
+
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {
@@ -122,23 +150,35 @@ class OrderlyServer(
                 "".toRequestBody()
             }
         }
-        val headers = if (transformResponse)
-        {
-            standardHeaders
-        }
-        else
-        {
-            emptyMap()
-        }
+        return post(buildFullUrl(url, context.queryString()).toHttpUrl(), body, transformResponse)
+    }
+
+    override fun post(url: String, json: String, queryParams: Map<String, String?>): OrderlyServerResponse =
+        post(
+            urlBase.toHttpUrl().newBuilder()
+                .addPathSegments(url.trimStart('/'))
+                .apply {
+                    queryParams.forEach { (key, value) ->
+                        addQueryParameter(key, value)
+                    }
+                }.build(), json.toRequestBody(ContentTypes.json.toMediaType())
+        )
+
+    private fun post(
+        url: HttpUrl,
+        body: RequestBody,
+        transformResponse: Boolean = true
+    ): OrderlyServerResponse
+    {
         val request = Request.Builder()
-            .url(buildFullUrl(url, context.queryString()))
-            .headers(headers.toHeaders())
+            .url(url)
+            .headers((if (transformResponse) standardHeaders else emptyMap()).toHeaders())
             .post(body)
             .build()
         val response = client.newCall(request).execute()
         if (!response.isSuccessful && throwOnError)
         {
-            throw OrderlyServerError(url, response.code)
+            throw OrderlyServerError(url.toString(), response.code)
         }
         return if (transformResponse)
         {
@@ -148,28 +188,6 @@ class OrderlyServer(
         {
             OrderlyServerResponse(response.body!!.bytes(), response.code)
         }
-    }
-
-    override fun post(url: String, bodyJson: String, queryParams: Map<String, String?>): OrderlyServerResponse
-    {
-        val httpUrl = urlBase.toHttpUrl().newBuilder()
-            .addPathSegments(url.trimStart('/'))
-            .apply {
-                queryParams.forEach { (key, value) ->
-                    addQueryParameter(key, value)
-                }
-            }.build()
-        val request = Request.Builder()
-            .url(httpUrl)
-            .headers(standardHeaders.toHeaders())
-            .post(bodyJson.toRequestBody(ContentTypes.json.toMediaType()))
-            .build()
-        val response = client.newCall(request).execute()
-        if (!response.isSuccessful && throwOnError)
-        {
-            throw OrderlyServerError(url, response.code)
-        }
-        return transformResponse(response.code, response.body!!.string())
     }
 
     override fun delete(url: String, context: ActionContext): OrderlyServerResponse

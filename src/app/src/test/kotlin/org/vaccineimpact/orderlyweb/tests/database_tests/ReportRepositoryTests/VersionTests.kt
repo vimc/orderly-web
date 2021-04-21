@@ -9,10 +9,8 @@ import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
-import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
-import org.vaccineimpact.orderlyweb.test_helpers.insertReportWithCustomFields
-import org.vaccineimpact.orderlyweb.test_helpers.insertVersionParameterValues
+import org.vaccineimpact.orderlyweb.test_helpers.*
+import org.vaccineimpact.orderlyweb.tests.insertUser
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -90,7 +88,8 @@ class VersionTests : CleanDatabaseTests()
     @Test
     fun `reviewer can get version details for report with no publish record`()
     {
-        insertReport("test", "version1", addOrderlyWebReportVersion = false)
+        insertReport("test", "version1", elapsed=4.3, gitBranch="master", gitCommit="abc123",
+                addOrderlyWebReportVersion = false)
 
         val sut = createSut(isReviewer = true)
 
@@ -99,12 +98,15 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.name).isEqualTo("test")
         assertThat(result.id).isEqualTo("version1")
         assertThat(result.published).isFalse()
+        assertThat(result.elapsed).isEqualTo(4.3)
+        assertThat(result.gitBranch).isEqualTo("master")
+        assertThat(result.gitCommit).isEqualTo("abc123")
     }
 
     @Test
     fun `reviewer can get unpublished version details`()
     {
-        insertReport("test", "version1", published = false)
+        insertReport("test", "version1", published = false, elapsed=4.3,  gitBranch="master", gitCommit="abc123")
 
         val sut = createSut(isReviewer = true)
 
@@ -113,6 +115,24 @@ class VersionTests : CleanDatabaseTests()
         assertThat(result.name).isEqualTo("test")
         assertThat(result.id).isEqualTo("version1")
         assertThat(result.published).isFalse()
+        assertThat(result.elapsed).isEqualTo(4.3)
+        assertThat(result.gitBranch).isEqualTo("master")
+        assertThat(result.gitCommit).isEqualTo("abc123")
+    }
+
+    @Test
+    fun `version details can include git branch from report run table`()
+    {
+        insertReport("test", "version1", published = false, gitBranch=null, gitCommit="abc123")
+        insertUser("test.user@example.com", "user.name")
+        insertReportRun("weird_gazelle", "test.user@example.com", "test", gitBranch="master", reportVersion="version1")
+        val sut = createSut(isReviewer = true)
+        val result = sut.getReportVersion("test", "version1")
+        assertThat(result.name).isEqualTo("test")
+        assertThat(result.id).isEqualTo("version1")
+        assertThat(result.published).isFalse()
+        assertThat(result.gitBranch).isEqualTo("master")
+        assertThat(result.gitCommit).isEqualTo("abc123")
     }
 
     @Test

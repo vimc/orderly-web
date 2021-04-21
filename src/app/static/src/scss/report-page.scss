@@ -4,6 +4,7 @@
 @import "partials/permissions";
 @import "partials/modal";
 @import "partials/changelogs";
+@import "partials/expander";
 
 .specific-read-access-label {
   margin-top: 40px;
@@ -47,4 +48,16 @@ td, th {
 
 .remove-tag {
   cursor: pointer;
+}
+
+ul.report-dependency-list {
+  padding-bottom: 0px;
+
+  li {
+
+    span.report-dependency-item {
+      padding-left: 17px;
+    }
+
+  }
 }

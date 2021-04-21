@@ -105,8 +105,10 @@ class VersionControllerTests : ControllerTest()
         val reportName = "reportName"
         val reportVersion = "reportVersion"
 
-        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest(displayName = "displayName", id = "id", date = Instant.now(),
-                name = "name", published = true, description = "description", latestVersion = "v1"),
+        val report = ReportVersionWithArtefactsDataDescParamsResources(
+                ReportVersionWithDescLatestElapsed(displayName = "displayName", id = "id", date = Instant.now(),
+                name = "name", published = true, description = "description", latestVersion = "v1", elapsed = 1.5,
+                gitBranch="master", gitCommit="abc123"),
                 artefacts = listOf(),
                 resources = listOf(), dataInfo = listOf(), parameterValues = mapOf())
 
@@ -124,7 +126,21 @@ class VersionControllerTests : ControllerTest()
                 mock(),
                 mockConfig)
 
-        assertThat(sut.getByNameAndVersion()).isEqualTo(report)
+        val result = sut.getByNameAndVersion()
+        assertThat(result.basicReportVersion.date).isEqualTo(report.basicReportVersion.date)
+        assertThat(result.basicReportVersion.description).isEqualTo("description")
+        assertThat(result.basicReportVersion.displayName).isEqualTo("displayName")
+        assertThat(result.basicReportVersion.elapsed).isEqualTo(1.5)
+        assertThat(result.basicReportVersion.gitBranch).isEqualTo("master")
+        assertThat(result.basicReportVersion.gitCommit).isEqualTo("abc123")
+        assertThat(result.basicReportVersion.id).isEqualTo("id")
+        assertThat(result.basicReportVersion.latestVersion).isEqualTo("v1")
+        assertThat(result.basicReportVersion.name).isEqualTo("name")
+        assertThat(result.basicReportVersion.published).isEqualTo(true)
+        assertThat(result.artefacts.count()).isEqualTo(0)
+        assertThat(result.resources.count()).isEqualTo(0)
+        assertThat(result.dataInfo.count()).isEqualTo(0)
+        assertThat(result.parameterValues.keys.count()).isEqualTo(0)
     }
 
     @Test

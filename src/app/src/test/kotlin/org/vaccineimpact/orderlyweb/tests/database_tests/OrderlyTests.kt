@@ -35,8 +35,21 @@ class OrderlyTests : CleanDatabaseTests()
                     "vz",
                     "descripion")
 
+    private val basicReportVersionElapsed =
+            ReportVersionWithDescLatestElapsed(
+                    "test",
+                    "display name",
+                    "v1",
+                    true,
+                    now,
+                    "vz",
+                    "descripion",
+                    1.5,
+                    "master",
+                    "abc123")
+
     private val mockReportRepo = mock<ReportRepository> {
-        on { getReportVersion("test", "v1") } doReturn basicReportVersion
+        on { getReportVersion("test", "v1") } doReturn basicReportVersionElapsed
         on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
         on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
         on { getLatestVersion("test") } doReturn basicReportVersion.copy(id = "latest", date = now.minusSeconds(100))

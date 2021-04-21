@@ -49,6 +49,18 @@ describe("runReport", () => {
         });
     }
 
+    it("renders header", () => {
+
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {git_supported: true, instances_supported: false},
+                initialGitBranches
+            }
+        });
+
+        expect(wrapper.find("h2").text()).toBe("Run a report");
+    });
+
     it("renders git branch drop down and fetches commits if git supported", async (done) => {
 
         const wrapper = shallowMount(RunReport, {
@@ -253,6 +265,25 @@ describe("runReport", () => {
             done();
         });
     });
+
+    it("report list shows initialReportName prop", async (done) => {
+
+        const wrapper = shallowMount(RunReport, {
+            propsData: {
+                metadata: {
+                    git_supported: true,
+                    instances_supported: true,
+                },
+                initialGitBranches,
+                initialReportName: "minimal"
+            }
+        });
+
+        setTimeout(() => {
+            expect(wrapper.find("report-list-stub").attributes("initialselectedreport")).toBe("minimal")
+            done()
+        })
+    })
 
     it("shows instances if instances supported", () => {
         const wrapper = shallowMount(RunReport, {

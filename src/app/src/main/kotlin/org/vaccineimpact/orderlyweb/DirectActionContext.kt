@@ -17,19 +17,21 @@ import org.vaccineimpact.orderlyweb.viewmodels.PermissionViewModel
 import spark.Request
 import spark.Response
 
-open class DirectActionContext(private val context: SparkWebContext,
-                               private val appConfig: Config = AppConfig(),
-                               private val profileManager: ProfileManager<CommonProfile>? = null) : ActionContext
+open class DirectActionContext(
+    private val context: SparkWebContext,
+    private val appConfig: Config = AppConfig(),
+    private val profileManager: ProfileManager<CommonProfile>? = null
+) : ActionContext
 {
     private val request
         get() = context.sparkRequest
     private val response
         get() = context.sparkResponse
 
-    constructor(request: Request, response: Response)
-            : this(SparkWebContext(request, response))
+    constructor(request: Request, response: Response) : this(SparkWebContext(request, response))
 
     override fun contentType(): String = request.contentType()
+    override fun queryParams(): Map<String, String?> = request.queryParams().associateWith { request.queryParams(it) }
     override fun queryParams(key: String): String? = request.queryParams(key)
     override fun queryString(): String? = request.queryString()
     override fun params(): Map<String, String?> = request.params()
@@ -93,7 +95,7 @@ open class DirectActionContext(private val context: SparkWebContext,
         response.status(statusCode)
     }
 
-    override fun<T> postData(): Map<String, T>
+    override fun <T> postData(): Map<String, T>
     {
         val body = request.body()
 
@@ -107,9 +109,9 @@ open class DirectActionContext(private val context: SparkWebContext,
         }
     }
 
-    override fun<T> postData(key: String): T
+    override fun <T> postData(key: String): T
     {
-        return postData<T>()[key] ?: throw MissingParameterError(key);
+        return postData<T>()[key] ?: throw MissingParameterError(key)
     }
 
     override fun getRequestBody(): String

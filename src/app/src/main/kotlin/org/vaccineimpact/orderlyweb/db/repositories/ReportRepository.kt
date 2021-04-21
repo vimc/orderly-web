@@ -21,7 +21,7 @@ interface ReportRepository
     fun togglePublishStatus(name: String, version: String): Boolean
 
     @Throws(UnknownObjectError::class)
-    fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
+    fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
 
     fun getAllReportVersions(): List<ReportVersionWithDescLatest>
 
@@ -119,7 +119,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
         }
     }
 
-    override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatest
+    override fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
     {
         //raise exception if version does not belong to named report, or version does not exist
         JooqContext().use {
@@ -381,7 +381,7 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 .mapValues { it.value.associate { r -> r[PARAMETERS.NAME] to r[PARAMETERS.VALUE] } }
     }
 
-    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionWithDescLatest
+    private fun getReportVersion(name: String, version: String, ctx: JooqContext): ReportVersionWithDescLatestElapsed
     {
         val latestVersionForEachReport = getLatestVersionsForReports(ctx)
 
@@ -392,15 +392,21 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                         ORDERLYWEB_REPORT_VERSION_FULL.PUBLISHED,
                         ORDERLYWEB_REPORT_VERSION_FULL.DATE,
                         latestVersionForEachReport.field<String>("latestVersion"),
-                        ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION)
+                        ORDERLYWEB_REPORT_VERSION_FULL.DESCRIPTION,
+                        ORDERLYWEB_REPORT_VERSION_FULL.ELAPSED,
+                        coalesce(ORDERLYWEB_REPORT_VERSION_FULL.GIT_BRANCH,
+                                ORDERLYWEB_REPORT_RUN.GIT_BRANCH).`as`("git_branch"),
+                        ORDERLYWEB_REPORT_VERSION_FULL.GIT_SHA)
                 .from(ORDERLYWEB_REPORT_VERSION_FULL)
                 .join(latestVersionForEachReport.tableName)
                 .on(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(latestVersionForEachReport.field("report")))
+                .leftJoin(ORDERLYWEB_REPORT_RUN)
+                .on(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(ORDERLYWEB_REPORT_RUN.REPORT_VERSION))
                 .where(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(name))
                 .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(version))
                 .and(shouldIncludeReportVersion)
                 .singleOrNull()
-                ?.into(ReportVersionWithDescLatest::class.java)
+                ?.into(ReportVersionWithDescLatestElapsed::class.java)
                 ?: throw UnknownObjectError("$name-$version", "reportVersion")
     }
 

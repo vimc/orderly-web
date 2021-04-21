@@ -52,106 +52,6 @@ class ReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can run report`()
-    {
-        startApp("auth.provider=montagu")
-
-        val versionRecord = JooqContext().use {
-
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .where(REPORT_VERSION.REPORT.eq("minimal"))
-                    .fetchAny()
-        }
-
-        val versionId = versionRecord[REPORT_VERSION.ID]
-        val reportName = versionRecord[REPORT_VERSION.REPORT]
-
-        JooqContext().use {
-            insertUserAndGroup(it, "test.user@example.com")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
-        }
-
-        loginWithMontagu()
-        val versionUrl = RequestHelper.webBaseUrl + "/report/$reportName/$versionId/"
-        driver.get(versionUrl)
-
-        val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
-        runButton.click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
-        driver.findElement(By.cssSelector("#confirm-run-btn")).click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-new-version")))
-
-        wait.until(ExpectedConditions.textMatches(By.cssSelector("#run-report-status"), Pattern.compile(".*success.*")))
-
-        val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
-        val savedNewVersionText = driver.findElement(By.cssSelector("#run-report-new-version")).text
-
-        assertThat(savedStatusText).contains("Running status: success")
-
-        //Check state is saved to session - navigate away from page and back again
-        driver.get(RequestHelper.webBaseUrl)
-        driver.get(versionUrl)
-
-        assertThat(driver.findElement(By.cssSelector("#run-report-status")).text).isEqualTo(savedStatusText)
-        assertThat(driver.findElement(By.cssSelector("#run-report-new-version")).text).isEqualTo(savedNewVersionText)
-    }
-
-    @Test
-    fun `report running status errors are persisted`()
-    {
-        startApp("auth.provider=montagu\norderly.server=http://nonsense")
-
-        val versionRecord = JooqContext().use {
-
-            it.dsl.select(REPORT_VERSION.ID, REPORT_VERSION.REPORT)
-                    .from(REPORT_VERSION)
-                    .fetchAny()
-        }
-
-        val versionId = versionRecord[REPORT_VERSION.ID]
-        val reportName = versionRecord[REPORT_VERSION.REPORT]
-
-        JooqContext().use {
-            insertUserAndGroup(it, "test.user@example.com")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
-            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
-        }
-
-        loginWithMontagu()
-        val versionUrl = RequestHelper.webBaseUrl + "/report/$reportName/$versionId/"
-        driver.get(versionUrl)
-
-        val runButton = driver.findElement(By.cssSelector("#run-report button[type=submit]"))
-        runButton.click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#confirm-run-btn")))
-        driver.findElement(By.cssSelector("#confirm-run-btn")).click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#run-report-status")))
-
-        Thread.sleep(200)
-
-        val savedStatusText = driver.findElement(By.cssSelector("#run-report-status")).text
-        val savedNewVersionText = driver.findElements(By.cssSelector("#run-report-new-version"))
-
-        assertThat(savedStatusText).contains("Running status: Error when running report")
-        assertThat(savedNewVersionText.count()).isEqualTo(0)
-
-        //Check state is saved to session - navigate away from page and back again
-        driver.get(RequestHelper.webBaseUrl)
-        driver.get(versionUrl)
-
-        assertThat(driver.findElement(By.cssSelector("#run-report-status")).text).isEqualTo(savedStatusText)
-        assertThat(driver.findElements(By.cssSelector("#run-report-new-version")).count()).isEqualTo(0)
-    }
-
-    @Test
     fun `can change tabs`()
     {
         startApp("auth.provider=montagu")
@@ -175,6 +75,15 @@ class ReportPageTests : SeleniumTest()
         confirmTabActive("report-tab", false)
         confirmTabActive("downloads-tab", true)
         assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#downloads")
+
+        //Change to Metadata tab
+        val metadataLink = driver.findElement(By.cssSelector("a[href='#metadata-tab']"))
+        metadataLink.click()
+        Thread.sleep(500)
+        confirmTabActive("downloads-tab", false)
+        confirmTabActive("metadata-tab", true)
+        assertThat(driver.currentUrl).isEqualTo(RequestHelper.webBaseUrl + "/report/testreport/20170103-143015-1234abcd/#metadata")
+
 
         //And back to Report
         val reportLink = driver.findElement(By.cssSelector("a[href='#report-tab']"))
@@ -225,6 +134,26 @@ class ReportPageTests : SeleniumTest()
         assertThat(sidebar.isDisplayed).isTrue()
     }
 
+    @Test
+    fun `can navigate to run report page with querystring`()
+    {
+        JooqContext().use {
+            insertUserAndGroup(it, "test.user@example.com")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.read")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.review")
+            giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
+        }
+
+        startApp("auth.provider=montagu")
+
+        insertReport("testreport", "20170104-091500-1234dcba")
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl + "/report/testreport/20170104-091500-1234dcba")
+
+        val runReportLink = driver.findElement(By.cssSelector("#run-report-link"))
+        runReportLink.click()
+        wait.until(ExpectedConditions.urlToBe(RequestHelper.webBaseUrl + "/run-report?report-name=testreport"))
+    }
 
     @Test
     fun `can switch version`()

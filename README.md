@@ -38,8 +38,7 @@ The app will now be available on your local machine at http://127.0.0.1:8888 and
    To achieve this, make the following changes before running `/dev/run-dependencies.sh` and the app:
    - In `/dev/cli.sh'` replace `docker run -v $PWD/src/app/demo:/orderly $image "$@"` with `docker run -v $PWD/src/app/git:/orderly $image "$@"`
    - In `/config/default.properties` replace `orderly_root=demo/` with `orderly_root=git/`
-   - In `/dev/run-dependencies.sh` replace `export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/customConfigTests/git` with `export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)`    
-
+   
 See [auth.md](/docs/auth.md) for further details about web authentication.
 
 ### Generate test data.  
@@ -226,3 +225,9 @@ the joining rows.
 Defines report version level permissions. If one or more rows in this table joins against a user_group_permission then the 
 group has that permission in the context of the report version(s) specified by the 'version' column values in the 
 joining rows. 
+
+### orderlyweb_workflow_run
+Information about a workflow run i.e. a job sent to orderly.server that is expected to result in one or more new report
+versions. Includes a list of parameterised reports and metadata about the workflow itself (name, owner, invocation
+timestamp etc). Workflows are unique by any of name+timestamp (presented in UI), key (orderly.server's reference) or ID
+(OrderlyWeb's primary identifier).

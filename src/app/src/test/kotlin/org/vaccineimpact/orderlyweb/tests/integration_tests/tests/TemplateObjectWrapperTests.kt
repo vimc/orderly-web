@@ -28,13 +28,16 @@ class TemplateObjectWrapperTests
     {
         val now = Instant.now()
         val artFiles = listOf(FileInfo("graph.png", 1234))
-        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatest("r1",
+        val report = ReportVersionWithArtefactsDataDescParamsResources(ReportVersionWithDescLatestElapsed("r1",
                 "first report",
                 "v1",
                 true,
                 now,
                 "v1",
-                "a fake report"),
+                "a fake report",
+                1.5,
+                "gitBranch",
+                "abc123"),
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
                 listOf(DataInfo("hash", 1234, 2345)),
