@@ -57,6 +57,11 @@ object WebReportRouteConfig : RouteConfig
                     .json()
                     .secure(runReports)
                     .transform(),
+            WebEndpoint("/running/:key/logs/",
+                    org.vaccineimpact.orderlyweb.controllers.web.ReportRunController::class, "getRunningReportLogs")
+                    .json()
+                    .secure(runReports)
+                    .transform(),
             WebEndpoint(
                     "/publish-reports/",
                     ReportController::class, "getPublishReports")

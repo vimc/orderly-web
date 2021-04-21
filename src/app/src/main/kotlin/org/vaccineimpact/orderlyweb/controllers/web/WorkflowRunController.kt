@@ -33,6 +33,12 @@ class WorkflowRunController(
         return WorkflowRunViewModel(context)
     }
 
+    fun getWorkflowRunDetails(): WorkflowRun
+    {
+        val key = context.params(":key")
+        return workflowRunRepository.getWorkflowRunDetails(key)
+    }
+
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
     {
         return workflowRunRepository.getWorkflowRunSummaries(
@@ -61,7 +67,7 @@ class WorkflowRunController(
                     mapOf(
                         "name" to it.name,
                         "params" to it.params,
-                        "instance" to workflowRunRequest.instances // TODO
+                        "instance" to workflowRunRequest.instances
                     )
                 }
             ).toMap()
