@@ -12,7 +12,7 @@
                     <div id="report-start" class="col-sm-auto ">
                         <span>Started on:</span>
                         <span class="font-weight-bold">
-                            {{ reportLog.date }}
+                            {{ formattedReportDate }}
                         </span>
                     </div>
                 </div>
@@ -94,6 +94,7 @@
     import {ReportLog} from "../../utils/types";
     import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
+    import {longDateTime} from "../../utils/helpers";
 
     interface Methods {
         getLogs: () => void
@@ -109,6 +110,7 @@
         paramSize: number
         instanceSize: number
         versionUrl: string
+        formattedReportDate: string
     }
 
     interface Props {
@@ -143,6 +145,9 @@
             versionUrl: function () {
                 const url = `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
                 return buildFullUrl(url)
+            },
+            formattedReportDate: function () {
+                return longDateTime(new Date(this.reportLog.date));
             }
         },
         methods: {
