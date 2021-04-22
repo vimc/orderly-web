@@ -1,12 +1,13 @@
 <template>
     <vue-typeahead-bootstrap
         :data="sortedReports"
+        ref="typeahead"
         :serializer="e => e.name"
         v-model="query"
         showOnFocus
         maxMatches="50"
         placeholder="Choose a report"
-        @hit="$emit('update:key', $event.key)"
+        @hit="$emit('update:key', $event.key); readOut()"
     >
         <template slot="append">
             <button class="btn btn-outline-secondary" v-on:click.prevent="clear" v-if="query">
@@ -47,6 +48,10 @@
             XIcon
         },
         methods: {
+            readOut(){
+            console.log(this.$refs.typeahead)
+            console.log(this.sortedReports)
+            },
             clear() {
                 this.query = "";
                 this.$emit('update:key', "");
@@ -58,9 +63,26 @@
             }
         },
         computed: {
+            initialInputValue(){
+                if (this.initialSelectedKey){
+                return this.reports.map(report => {
+                    if (report.key === this.initialSelectedKey){
+                        return report.name
+                    }})[0]
+                } else return ''
+            },
             sortedReports() {
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
+        },
+        mounted(){
+            if (this.initialInputValue){
+                // this.$refs.typeahead.inputValue = this.initialInputValue;
+                this.query = this.initialInputValue
+            }
+            // console.log(this.$refs.typeahead)
+            // console.log(this.sortedReports)
+            console.log(this.initialInputValue)
         },
         beforeDestroy() {
             this.$emit('update:key', "");

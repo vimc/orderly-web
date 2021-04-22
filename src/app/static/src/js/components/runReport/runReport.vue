@@ -80,6 +80,7 @@
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{ runningStatus }}
                         <a @click.prevent="checkStatus" href="#">Check status</a>
+                        <a @click.prevent="$emit('changeTab')" href="#">View log</a>
                     </div>
                 </div>
             </div>
