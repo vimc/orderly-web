@@ -138,8 +138,6 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `runs full workflow`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-
         val branch = "other"
         val commits = OrderlyServer(AppConfig()).get(
             "/git/commits",

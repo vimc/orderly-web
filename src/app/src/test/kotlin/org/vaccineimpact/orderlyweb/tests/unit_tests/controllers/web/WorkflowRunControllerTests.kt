@@ -175,12 +175,12 @@ class WorkflowRunControllerTests
                         mapOf(
                             "name" to workflowRunRequest.reports[0].name,
                             "params" to workflowRunRequest.reports[0].params,
-                            "instance" to workflowRunRequest.instances
+                            "instance" to workflowRunRequest.instances!!.values.first()
                         ),
                         mapOf(
                             "name" to workflowRunRequest.reports[1].name,
                             "params" to workflowRunRequest.reports[1].params,
-                            "instance" to workflowRunRequest.instances
+                            "instance" to workflowRunRequest.instances!!.values.first()
                         )
                     )
                 )
@@ -206,6 +206,54 @@ class WorkflowRunControllerTests
             assertThat(it.gitBranch).isEqualTo(workflowRunRequest.gitBranch)
             assertThat(it.gitCommit).isEqualTo(workflowRunRequest.gitCommit)
         })
+    }
+
+    @Test
+    fun `empty changelog and ref are omitted from orderly server workflow run request`()
+    {
+        val json = """
+            {
+              "name": "workflow1",
+              "reports": [{"name": "report1"}]
+            }
+        """.trimIndent()
+
+        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
+        with(workflowRunRequest) {
+            assertThat(changelog).isNull()
+            assertThat(gitCommit).isNull()
+        }
+
+        val context = mock<ActionContext> {
+            on { getRequestBody() } doReturn Serializer.instance.gson.toJson(workflowRunRequest)
+            on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
+        }
+
+        val apiClient = mock<OrderlyServerAPI>() {
+            on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
+                """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
+                200
+            )
+        }
+
+        val sut = WorkflowRunController(context, mock(), apiClient)
+        sut.createWorkflowRun()
+
+        verify(apiClient).post(
+            "/v1/workflow/run/",
+            Serializer.instance.gson.toJson(
+                mapOf(
+                    "reports" to listOf(
+                        mapOf(
+                            "name" to workflowRunRequest.reports[0].name,
+                            "params" to null,
+                            "instance" to null
+                        )
+                    )
+                )
+            ),
+            emptyMap()
+        )
     }
 
     private fun getWorkflowRunRequestExample() =

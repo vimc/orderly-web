@@ -15,7 +15,7 @@ data class WorkflowChangelog(
 data class WorkflowRunRequest(
     val name: String,
     val reports: List<WorkflowReportWithParams>,
-    val instances: Map<String, String>,
+    val instances: Map<String, String>? = null,
     val changelog: WorkflowChangelog? = null,
     val gitBranch: String? = null,
     val gitCommit: String? = null

@@ -13,6 +13,7 @@ import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunRequest
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
+import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
 
 class WorkflowRunController(
@@ -62,35 +63,38 @@ class WorkflowRunController(
             listOfNotNull(
                 ("changelog" to workflowRunRequest.changelog).takeIf { it.second != null },
                 ("ref" to workflowRunRequest.gitCommit).takeIf { it.second != null },
-                "reports" to workflowRunRequest.reports.map {
-                    mapOf(
-                        "name" to it.name,
-                        "params" to it.params,
-                        "instance" to workflowRunRequest.instances
-                    )
+                "reports" to workflowRunRequest.reports.map { report ->
+                    listOfNotNull(
+                        "name" to report.name,
+                        "params" to report.params,
+                        // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
+                        ("instance" to workflowRunRequest.instances?.values?.elementAtOrNull(0)).takeIf { it.second != null }
+                    ).toMap()
                 }
             ).toMap()
         )
-        val response =
-            orderlyServerAPI.post(
-                "/v1/workflow/run/",
-                body,
-                emptyMap()
-            )
-        val workflowRun = response.data(WorkflowRunResponse::class.java)
-        workflowRunRepository.addWorkflowRun(
-            WorkflowRun(
-                workflowRunRequest.name,
-                workflowRun.key,
-                @Suppress("UnsafeCallOnNullableType")
-                context.userProfile!!.id,
-                Instant.now(),
-                workflowRunRequest.reports,
-                workflowRunRequest.instances,
-                workflowRunRequest.gitBranch,
-                workflowRunRequest.gitCommit
-            )
+        val response = orderlyServerAPI.post(
+            "/v1/workflow/run/",
+            body,
+            emptyMap()
         )
+        if (response.statusCode == HTTP_OK)
+        {
+            val workflowRun = response.data(WorkflowRunResponse::class.java)
+            workflowRunRepository.addWorkflowRun(
+                WorkflowRun(
+                    workflowRunRequest.name,
+                    workflowRun.key,
+                    @Suppress("UnsafeCallOnNullableType")
+                    context.userProfile!!.id,
+                    Instant.now(),
+                    workflowRunRequest.reports,
+                    workflowRunRequest.instances ?: emptyMap(),
+                    workflowRunRequest.gitBranch,
+                    workflowRunRequest.gitCommit
+                )
+            )
+        }
         return passThroughResponse(response)
     }
 }
