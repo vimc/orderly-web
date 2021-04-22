@@ -65,10 +65,10 @@
         computed: {
             initialInputValue(){
                 if (this.initialSelectedKey){
-                return this.reports.map(report => {
-                    if (report.key === this.initialSelectedKey){
-                        return report.name
-                    }})[0]
+                    return this.reports.map(report => {
+                        if (report.key === this.initialSelectedKey){
+                            return report.name
+                        }})[0]
                 } else return ''
             },
             sortedReports() {
