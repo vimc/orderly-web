@@ -1,10 +1,9 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.github.fge.jackson.JsonLoader
-import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.nhaarman.mockito_kotlin.*
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
 import org.vaccineimpact.orderlyweb.ActionContext
@@ -13,11 +12,11 @@ import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
-import java.io.File
 import java.time.Instant
 
 class WorkflowRunControllerTests
@@ -74,7 +73,7 @@ class WorkflowRunControllerTests
             "commit1"
         )
 
-        val mockContext: ActionContext = mock {
+        val mockContext = mock<ActionContext> {
             on { params(":key") } doReturn "adventurous_aardvark"
         }
 
@@ -91,7 +90,7 @@ class WorkflowRunControllerTests
     @Test
     fun `throws UnknownObjectError if key is invalid`()
     {
-        val mockContext: ActionContext = mock {
+        val mockContext = mock<ActionContext> {
             on { params(":key") } doReturn "fakeKey"
         }
 
@@ -101,7 +100,7 @@ class WorkflowRunControllerTests
 
         val sut = WorkflowRunController(mockContext, mockRepo, mock())
 
-        Assertions.assertThatThrownBy { sut.getWorkflowRunDetails() }
+        assertThatThrownBy { sut.getWorkflowRunDetails() }
             .isInstanceOf(UnknownObjectError::class.java)
             .hasMessageContaining("Unknown workflow : 'key'")
     }
@@ -138,8 +137,6 @@ class WorkflowRunControllerTests
             }
         """.trimIndent()
 
-        assertThat(validateAgainstSchema(json)).isTrue()
-
         var workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
         assertThat(workflowRunRequest).isEqualTo(getWorkflowRunRequestExample())
     }
@@ -158,7 +155,7 @@ class WorkflowRunControllerTests
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
-        val apiClient: OrderlyServerAPI = mock {
+        val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
         }
 
@@ -213,6 +210,26 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `rejects an invalid workflow`()
+    {
+        val json = """
+            {
+              "name": "workflow1",
+              "reports": []
+            }
+        """.trimIndent()
+
+        val context = mock<ActionContext> {
+            on { getRequestBody() } doReturn json
+            on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
+        }
+
+        val sut = WorkflowRunController(context, mock(), mock())
+        assertThatThrownBy { sut.createWorkflowRun() }
+            .isInstanceOf(BadRequest::class.java)
+    }
+
+    @Test
     fun `empty changelog and ref are omitted from orderly server workflow run request`()
     {
         val json = """
@@ -222,20 +239,12 @@ class WorkflowRunControllerTests
             }
         """.trimIndent()
 
-        assertThat(validateAgainstSchema(json)).isTrue()
-
-        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
-        with(workflowRunRequest) {
-            assertThat(changelog).isNull()
-            assertThat(gitCommit).isNull()
-        }
-
         val context = mock<ActionContext> {
-            on { getRequestBody() } doReturn Serializer.instance.gson.toJson(workflowRunRequest)
+            on { getRequestBody() } doReturn json
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
 
-        val apiClient = mock<OrderlyServerAPI>() {
+        val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
                 """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
                 200
@@ -251,7 +260,7 @@ class WorkflowRunControllerTests
                 mapOf(
                     "reports" to listOf(
                         mapOf(
-                            "name" to workflowRunRequest.reports[0].name,
+                            "name" to "report1",
                             "params" to null
                         )
                     )
@@ -273,10 +282,4 @@ class WorkflowRunControllerTests
             "branch1",
             "commit1"
         )
-
-    private fun validateAgainstSchema(json: String) =
-        JsonSchemaFactory.byDefault()
-            .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
-            .validate(JsonLoader.fromString(json))
-            .isSuccess
 }

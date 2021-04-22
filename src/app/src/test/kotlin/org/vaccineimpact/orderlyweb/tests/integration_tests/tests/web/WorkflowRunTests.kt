@@ -123,14 +123,19 @@ class WorkflowRunTests : IntegrationTest()
     {
         assertThat(
             runWorkflow(
-                WorkflowRunRequest(
-                    "basic workflow",
-                    listOf(
-                        WorkflowReportWithParams("minimal", emptyMap()),
-                        WorkflowReportWithParams("global", emptyMap())
-                    ),
-                    emptyMap()
-                )
+                """
+                {
+                  "name": "basic workflow",
+                  "reports": [
+                    {
+                      "name": "minimal"
+                    },
+                    {
+                      "name": "global"
+                    }
+                  ]
+                }
+            """.trimIndent()
             )
         ).isTrue()
     }
@@ -149,19 +154,37 @@ class WorkflowRunTests : IntegrationTest()
 
         assertThat(
             runWorkflow(
-                WorkflowRunRequest(
-                    "full workflow",
-                    listOf(
-                        WorkflowReportWithParams("other", mapOf("nmin" to "0.25")),
-                        WorkflowReportWithParams("other", mapOf("nmin" to "0.75")),
-                        WorkflowReportWithParams("minimal", emptyMap()),
-                        WorkflowReportWithParams("global", emptyMap())
-                    ),
-                    emptyMap(),
-                    WorkflowChangelog("message1", "internal"),
-                    branch,
-                    commit
-                )
+                """
+                {
+                  "name": "full workflow",
+                  "reports": [
+                    {
+                      "name": "other",
+                      "params": {
+                        "nmin": "0.25"
+                      }
+                    },
+                    {
+                      "name": "other",
+                      "params": {
+                        "nmin": "0.75"
+                      }
+                    },
+                    {
+                      "name": "minimal"
+                    },
+                    {
+                      "name": "global"
+                    }
+                  ],
+                  "changelog": {
+                    "message": "message1",
+                    "type": "internal"
+                  },
+                  "git_branch": "$branch",
+                  "git_commit": "$commit"
+                }
+            """.trimIndent()
             )
         ).isTrue()
     }
@@ -190,7 +213,7 @@ class WorkflowRunTests : IntegrationTest()
         sut.addWorkflowRun(workflowRun)
     }
 
-    private fun runWorkflow(workflowRunRequest: WorkflowRunRequest): Boolean
+    private fun runWorkflow(json: String): Boolean
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
 
@@ -199,7 +222,7 @@ class WorkflowRunTests : IntegrationTest()
             sessionCookie,
             ContentTypes.json,
             HttpMethod.post,
-            Serializer.instance.gson.toJson(workflowRunRequest)
+            json
         )
         assertSuccessful(response)
         assertJsonContentType(response)
@@ -210,6 +233,8 @@ class WorkflowRunTests : IntegrationTest()
             JSONValidator.getData(response.text).toString(),
             WorkflowRunController.WorkflowRunResponse::class.java
         )
+
+        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
 
         assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
 
