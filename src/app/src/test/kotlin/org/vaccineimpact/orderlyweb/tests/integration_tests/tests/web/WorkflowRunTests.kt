@@ -226,8 +226,7 @@ class WorkflowRunTests : IntegrationTest()
         )
         assertSuccessful(response)
         assertJsonContentType(response)
-        // TODO when mrc-2282 has been merged
-//        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
 
         val workflowRunResponse = Serializer.instance.gson.fromJson(
             JSONValidator.getData(response.text).toString(),
