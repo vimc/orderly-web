@@ -76,9 +76,10 @@
                     </div>
                 </div>
                 <div id="report-logs" class="row pt-2">
-                    <div class="text-right col-sm-10">
-                        <textarea class="form-control bg-white"
-                                  readonly rows="10">{{ reportLog.logs }}
+                    <div class="text-right col-12">
+                        <textarea ref="logs"
+                                  class="form-control bg-white text-monospace" style="font-size: 80%;"
+                                  readonly rows="20">{{ reportLog.logs }}
                         </textarea>
                     </div>
                 </div>
@@ -97,13 +98,16 @@
     import {longTimestamp} from "../../utils/helpers";
 
     interface Methods {
-        getLogs: () => void
+        getLogs: () => void,
+        startPolling: () => void,
+        stopPolling: () => void
     }
 
     interface Data {
         reportLog: ReportLog | null
         error: string,
-        defaultMessage: string
+        defaultMessage: string,
+        pollingTimer: number | null
     }
 
     interface Computed {
@@ -132,7 +136,8 @@
             return {
                 reportLog: null,
                 error: "",
-                defaultMessage: ""
+                defaultMessage: "",
+                pollingTimer: null
             }
         },
         computed: {
@@ -152,28 +157,51 @@
         },
         methods: {
             getLogs: function () {
-                api.get(`/running/${this.reportKey}/logs/`)
-                    .then(({data}) => {
-                        this.reportLog = data.data
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred when fetching logs";
-                    });
+                if (this.reportKey) {
+                    api.get(`/running/${this.reportKey}/logs/`)
+                        .then(({data}) => {
+                            this.reportLog = data.data;
+                            this.error = "";
+                            this.defaultMessage = "";
+
+                            const status = this.reportLog.status;
+
+                            this.$nextTick(() => {
+                                this.$refs.logs.scrollTop = this.$refs.logs.scrollHeight;
+                            });
+
+                            if (status === "running" || status === "queued") {
+                                this.startPolling();
+                            }
+                            else  {
+                                this.stopPolling(); //the run has completed
+                            }
+                        })
+                        .catch((error) => {
+                            this.error = error;
+                            this.defaultMessage = "An error occurred when fetching logs";
+                        });
+                }
+            },
+            startPolling: function () {
+                if (!this.pollingTimer) {
+                    this.pollingTimer = setInterval(this.getLogs, 1500);
+                }
+            },
+            stopPolling: function () {
+                if (this.pollingTimer) {
+                    clearInterval(this.pollingTimer);
+                    this.pollingTimer = null;
+                }
             }
         },
         mounted() {
-            if (this.reportKey) {
-                this.getLogs()
-            }
+            this.getLogs();
         },
         watch: {
             reportKey() {
-                if (this.reportKey) {
-                    this.getLogs()
-                }
+                this.stopPolling();
+                this.getLogs();
             }
         }
     })
