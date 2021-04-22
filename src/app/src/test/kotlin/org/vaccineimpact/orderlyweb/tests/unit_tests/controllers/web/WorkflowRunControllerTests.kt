@@ -230,6 +230,36 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `server workflow error is passed through`()
+    {
+        val json = """
+            {
+              "name": "workflow1",
+              "reports": [{"name": "report1"}]
+            }
+        """.trimIndent()
+
+        val context = mock<ActionContext> {
+            on { getRequestBody() } doReturn """{"name": "workflow1", "reports": [{"name": "report1"}]}"""
+            on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
+        }
+
+        val mockResponse = """{"status": "failure", "data": null, "errors": []}"""
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
+                mockResponse,
+                400
+            )
+        }
+
+        val sut = WorkflowRunController(context, mock(), apiClient)
+        val response = sut.createWorkflowRun()
+        verify(context).setStatusCode(400)
+        assertThat(response).isEqualTo(mockResponse)
+    }
+
+    @Test
     fun `empty changelog and ref are omitted from orderly server workflow run request`()
     {
         val json = """
