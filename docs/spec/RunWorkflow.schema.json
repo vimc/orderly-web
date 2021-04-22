@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "reports": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "params": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          },
+          "required": [
+            "name"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "changelog": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "message",
+        "type"
+      ],
+      "additionalProperties": false
+    },
+    "instances": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "git_branch": {
+      "type": "string"
+    },
+    "git_commit": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name",
+    "reports"
+  ],
+  "additionalProperties": false,
+  "dependencies": {
+    "git_commit": [
+      "git_branch"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
@@ -16,6 +17,7 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
+import java.io.File
 import java.time.Instant
 
 class WorkflowRunControllerTests
@@ -111,7 +113,7 @@ class WorkflowRunControllerTests
             {
               "name": "workflow1",
               "instances": {
-                "database1": "instance1"
+                "source": "instance1"
               },
               "changelog": {
                 "message": "message1",
@@ -135,6 +137,8 @@ class WorkflowRunControllerTests
               ]
             }
         """.trimIndent()
+
+        assertThat(validateAgainstSchema(json)).isTrue()
 
         var workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
         assertThat(workflowRunRequest).isEqualTo(getWorkflowRunRequestExample())
@@ -218,6 +222,8 @@ class WorkflowRunControllerTests
             }
         """.trimIndent()
 
+        assertThat(validateAgainstSchema(json)).isTrue()
+
         val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
         with(workflowRunRequest) {
             assertThat(changelog).isNull()
@@ -246,8 +252,7 @@ class WorkflowRunControllerTests
                     "reports" to listOf(
                         mapOf(
                             "name" to workflowRunRequest.reports[0].name,
-                            "params" to null,
-                            "instance" to null
+                            "params" to null
                         )
                     )
                 )
@@ -263,9 +268,15 @@ class WorkflowRunControllerTests
                 WorkflowReportWithParams("report1", mapOf("param1" to "value1")),
                 WorkflowReportWithParams("report2", mapOf("param2" to "value2"))
             ),
-            mapOf("database1" to "instance1"),
+            mapOf("source" to "instance1"),
             WorkflowChangelog("message1", "type1"),
             "branch1",
             "commit1"
         )
+
+    private fun validateAgainstSchema(json: String) =
+        JsonSchemaFactory.byDefault()
+            .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
+            .validate(JsonLoader.fromString(json))
+            .isSuccess
 }
