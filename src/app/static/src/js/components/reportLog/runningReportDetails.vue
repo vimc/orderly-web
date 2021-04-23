@@ -152,7 +152,6 @@
                     api.get(`/running/${this.reportKey}/logs/`)
                         .then(({data}) => {
                             this.reportLog = data.data;
-
                             this.error = "";
                             this.defaultMessage = "";
 
