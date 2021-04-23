@@ -15,16 +15,7 @@
         <template slot="suggestion" slot-scope="{ data, htmlText }">
             <div>
                 <span v-html="htmlText"></span>
-                <span class="text-muted pl-3">Last run: {{
-                        data.date ? new Intl.DateTimeFormat(undefined, {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                            hour: "numeric",
-                            minute: "numeric"
-                        }).format(new Date(data.date)) : 'never'
-                    }}</span>
+                <span class="text-muted pl-3">Last run: {{ formatDate(data.date) }}</span>
             </div>
         </template>
     </vue-typeahead-bootstrap>
@@ -34,6 +25,7 @@
     import Vue from "vue";
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
     import XIcon from "./xIcon.vue"
+    import {longTimestamp} from "../../utils/helpers";
 
     export default Vue.extend({
         name: "reportList",
@@ -53,6 +45,9 @@
             },
             isValidReport() {
                 return this.reports.some(value => value.name === this.initialSelectedReport)
+            },
+            formatDate(date) {
+                return date ? longTimestamp(new Date(date)) : 'never'
             }
         },
         data() {

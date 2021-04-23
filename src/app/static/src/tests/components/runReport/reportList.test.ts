@@ -6,8 +6,8 @@ function getWrapper(selectedReport = "") {
     return mount(ReportList, {
         propsData: {
             reports: [
-                {name: "report2", date: null},
-                {name: "report1", date: new Date().toISOString()}
+                {name: "report2", date: new Date(2021, 3, 21, 9, 10).toISOString()},
+                {name: "report1", date: null}
             ],
             initialSelectedReport: selectedReport
         }
@@ -48,9 +48,25 @@ describe("reportList", () => {
 
         await Vue.nextTick();
 
-        const reportSuggestions = wrapper.findAll("a div.sr-only");
+        let reportSuggestions = wrapper.findAll("a div.sr-only");
         expect(reportSuggestions.length).toBe(1);
         expect(reportSuggestions.at(0).text()).toBe("report2");
+
+        let reportDates = wrapper.findAll("a span.text-muted");
+        expect(reportDates.length).toBe(1);
+        expect(reportDates.at(0).text()).toBe("Last run: Wed Apr 21 2021, 09:10");
+
+        wrapper.find("input").setValue("rt1");
+
+        await Vue.nextTick();
+
+        reportSuggestions = wrapper.findAll("a div.sr-only");
+        expect(reportSuggestions.length).toBe(1);
+        expect(reportSuggestions.at(0).text()).toBe("report1");
+
+        reportDates = wrapper.findAll("a span.text-muted");
+        expect(reportDates.length).toBe(1);
+        expect(reportDates.at(0).text()).toBe("Last run: never");
 
         done();
     });

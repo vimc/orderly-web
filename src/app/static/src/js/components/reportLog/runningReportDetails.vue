@@ -3,6 +3,20 @@
         <div v-if="reportLog">
             <div id="report-log">
                 <div class="row pt-2">
+                    <div id="report-name" class="col-sm-auto ">
+                        <span>Report:</span>
+                        <span class="font-weight-bold">
+                            {{ reportLog.report }}
+                        </span>
+                    </div>
+                    <div id="report-start" class="col-sm-auto ">
+                        <span>Run started:</span>
+                        <span class="font-weight-bold">
+                            {{ formattedReportDate }}
+                        </span>
+                    </div>
+                </div>
+                <div class="row pt-2">
                     <div id="report-git-branch" v-if="reportLog.git_branch" class="col-sm-auto">
                         <div class="text-right">
                             <span>Git branch:</span>
@@ -81,6 +95,7 @@
     import {ReportLog} from "../../utils/types";
     import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
+    import {longTimestamp} from "../../utils/helpers";
 
     interface Methods {
         getLogs: () => void,
@@ -99,6 +114,7 @@
         paramSize: number
         instanceSize: number
         versionUrl: string
+        formattedReportDate: string
     }
 
     interface Props {
@@ -134,6 +150,9 @@
             versionUrl: function () {
                 const url = `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
                 return buildFullUrl(url)
+            },
+            formattedReportDate: function () {
+                return longTimestamp(new Date(this.reportLog.date));
             }
         },
         methods: {

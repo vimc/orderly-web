@@ -16,16 +16,7 @@
         <template slot="suggestion" slot-scope="{ data, htmlText }">
             <div>
                 <span class="listOption" v-html="htmlText"></span>
-                <span class="text-muted pl-3">Run started: {{ 
-                    new Intl.DateTimeFormat(undefined, {
-                            weekday: "short",
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                            hour: "numeric",
-                            minute: "numeric"
-                        }).format(new Date(data.date)) 
-                }}</span>
+                <span class="text-muted pl-3">Run started: {{ formatDate(data.date) }}</span>
             </div>
         </template>
     </vue-typeahead-bootstrap>
@@ -35,6 +26,7 @@
     import Vue from "vue";
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
     import XIcon from "../runReport/xIcon.vue"
+    import {longTimestamp} from "../../utils/helpers";
 
     export default Vue.extend({
         name: "runningReportsList",
@@ -50,6 +42,9 @@
             clear() {
                 this.query = "";
                 this.$emit('update:key', "");
+            },
+            formatDate(date) {
+                return longTimestamp(new Date(date));
             }
         },
         data() {
