@@ -3,19 +3,18 @@
         <div>
             <slot></slot>
         </div>
-        <div v-if="number !== 1" class="pt-4">
-            <button type="button"
-                    class="btn btn-sm btn-secondary disabled"
-                    name="cancel" @click="jump('cancel')">Cancel
+        <div v-if="hasVisibility.cancel" class="pt-4">
+            <button type="button" class="btn btn-sm btn-secondary disabled"
+                    @click="jump('cancel')">Cancel
             </button>
-            <button v-if="number > 2" type="button" class="btn btn-sm btn-primary"
-                    name="back" @click="jump('back')">Back
+            <button v-if="hasVisibility.back & !hasVisibility.rerun" type="button" class="btn btn-sm btn-primary"
+                    @click="jump('back')">Back
             </button>
-            <button v-if="number !== 4" type="button" class="btn btn-sm btn-success"
-                    name="next" @click="jump('next')">Next
+            <button v-if="hasVisibility.next" type="button" class="btn btn-sm btn-success"
+                    @click="jump('next')">Next
             </button>
-            <button v-if="number === 4" type="button" class="btn btn-sm btn-success"
-                    name="run" @click="jump('run')">Run workflow
+            <button v-if="hasVisibility.run" type="button" class="btn btn-sm btn-success"
+                    @click="jump('run')">Run workflow
             </button>
         </div>
     </div>
@@ -25,9 +24,8 @@
 import Vue from "vue"
 
 interface Props {
-    name: string | null
+    hasVisibility: {}
     active: boolean
-    number: number
 }
 
 interface Methods {
@@ -37,11 +35,7 @@ interface Methods {
 export default Vue.extend<unknown, Methods, unknown, Props>({
     name: "step",
     props: {
-        name: null,
-        number: {
-            type: Number,
-            required: true
-        },
+        hasVisibility: {},
         active: {
             type: Boolean,
             required: true
