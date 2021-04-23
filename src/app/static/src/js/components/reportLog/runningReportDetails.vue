@@ -44,21 +44,12 @@
                         </div>
                     </span>
                     </div>
-                    <div id="report-database-source" v-if="instanceSize > 0" class="col-sm-auto">
-                        <span>Database:</span>
-                        <span>
-                        <ul class="d-md-table-row list-unstyled" v-for="(key, value) in reportLog.instances">
-                            <li class="p-1 font-weight-bold">{{ key }}</li>
-                        </ul>
-                    </span>
-                    </div>
-                    <div id="report-database-instance" v-if="instanceSize > 0" class="col-sm-auto">
-                        <span>Instance:</span>
-                        <span>
-                        <ul class="d-md-table-row list-unstyled" v-for="(key, value) in reportLog.instances">
-                            <li class="p-1 font-weight-bold">{{ value }}</li>
-                        </ul>
-                    </span>
+                </div>
+                <div id="report-database-instances"  v-if="instanceSize > 0" class="row pt-2">
+                    <div v-for="(value, key) in reportLog.instances"
+                         class="report-database-instance col-sm-auto">
+                        <span>Database "{{ key }}":</span>
+                        <span class="font-weight-bold">{{ value }}</span>
                     </div>
                 </div>
                 <div class="row pt-2">
@@ -145,7 +136,7 @@
                 return Object.keys(this.reportLog.params).length
             },
             instanceSize: function () {
-                return Object.keys(this.reportLog.instances).length
+                return this.reportLog.instances && Object.keys(this.reportLog.instances).length
             },
             versionUrl: function () {
                 const url = `/report/${this.reportLog.report}/${this.reportLog.report_version}/`
@@ -161,6 +152,7 @@
                     api.get(`/running/${this.reportKey}/logs/`)
                         .then(({data}) => {
                             this.reportLog = data.data;
+
                             this.error = "";
                             this.defaultMessage = "";
 
