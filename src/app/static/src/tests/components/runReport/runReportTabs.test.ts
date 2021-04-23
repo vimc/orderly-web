@@ -21,6 +21,7 @@ describe("runReportTabs", () => {
             propsData,
             data() {
                 return {
+                    selectedTab: "runReport",
                     selectedRunningReportKey: selectedLogReportKey
                 }
             }

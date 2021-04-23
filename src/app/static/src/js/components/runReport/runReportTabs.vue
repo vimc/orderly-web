@@ -58,14 +58,8 @@
         ],
         data() {
             return {
-                // selectedTab: "runReport",
                 selectedTab: session.getSelectedTab(),
                 selectedRunningReportKey: session.getSelectedRunningReportKey()
-            }
-        },
-        watch: {
-            selectedRunningReportKey(){
-                console.log(this.selectedRunningReportKey, session.getSelectedRunningReportKey())
             }
         },
         methods: {
