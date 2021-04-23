@@ -255,6 +255,9 @@
                         this.runningStatus = "Run started";
                         this.error = "";
                         this.defaultMessage = "";
+
+                        // select the latest run report by default in logs view
+                        this.$emit('update:key', this.runningKey)
                     })
                     .catch((error) => {
                         this.error = error;

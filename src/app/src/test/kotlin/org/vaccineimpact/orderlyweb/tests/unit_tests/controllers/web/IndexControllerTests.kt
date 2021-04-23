@@ -15,7 +15,9 @@ import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.security.authentication.AuthenticationConfig
 import org.vaccineimpact.orderlyweb.viewmodels.DownloadableFileViewModel
+import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.PinnedReportViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.ReportRowViewModel
 import java.time.Duration
@@ -278,5 +280,16 @@ class IndexControllerTests
         assertThat(result.isRunner).isFalse()
     }
 
+    @Test
+    fun `can get accessibility`()
+    {
+        val sut = IndexController(globalReaderContext, mock(), mock(), mock())
+        val result = sut.accessibility()
+
+        assertThat(result.breadcrumbs.count()).isEqualTo(2)
+        assertThat(result.breadcrumbs.first()).isEqualTo(IndexViewModel.breadcrumb)
+        assertThat(result.breadcrumbs.last().url).isEqualTo("http://localhost:8888/accessibility")
+        assertThat(result.breadcrumbs.last().name).isEqualTo("Accessibility")
+    }
 }
 

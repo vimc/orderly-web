@@ -40,8 +40,8 @@ class GuestUserTests: SeleniumTest() {
         assertThat(header.text).isEqualTo("Find a report")
 
         // guest user should not see logout link, but should see login link
-        assertThat(driver.findElements(By.className("logout")).count()).isEqualTo(0)
-        assertThat(driver.findElements(By.className("login")).count()).isEqualTo(1)
+        assertThat(driver.findElements(By.id("logout-link")).count()).isEqualTo(0)
+        assertThat(driver.findElements(By.id("login")).count()).isEqualTo(1)
     }
 
     @Test
@@ -54,8 +54,8 @@ class GuestUserTests: SeleniumTest() {
         assertThat(header.text).isEqualTo("Find a report")
 
         // guest user should not see logout link, but should see login link
-        assertThat(driver.findElements(By.className("logout")).count()).isEqualTo(0)
-        assertThat(driver.findElements(By.className("login")).count()).isEqualTo(1)
+        assertThat(driver.findElements(By.id("logout-link")).count()).isEqualTo(0)
+        assertThat(driver.findElements(By.id("login")).count()).isEqualTo(1)
 
         // guest user should not see any reports in report table
         var rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
@@ -89,7 +89,7 @@ class GuestUserTests: SeleniumTest() {
         var rows = driver.findElements(By.cssSelector("table.dataTable tbody tr"))
         assertThat(rows.count()).isEqualTo(1) // there's always 1 empty row
 
-        driver.findElement(By.className("login")).findElement(By.cssSelector("a")).click()
+        driver.findElement(By.id("login")).click()
 
         // should be redirected to login page with link
         wait.until(ExpectedConditions.presenceOfElementLocated(By.className("login-link")))
@@ -102,8 +102,8 @@ class GuestUserTests: SeleniumTest() {
 
         // user should see logout link and should no longer see login link
         assertThat(driver.findElements(By.className("login")).count()).isEqualTo(0)
-        assertThat(driver.findElements(By.className("logout")).count()).isEqualTo(1)
-        assertThat(driver.findElement(By.cssSelector(".logout > a")).text).isEqualTo("Logged in as notarealemail")
+        assertThat(driver.findElements(By.id("logged-in")).count()).isEqualTo(1)
+        assertThat(driver.findElement(By.id("logged-in")).text).isEqualTo("Logged in as notarealemail")
         println("Saw expected response for logged in user")
 
         // user should see reports in report table

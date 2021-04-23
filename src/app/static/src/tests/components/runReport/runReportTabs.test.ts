@@ -1,5 +1,6 @@
 import Vue from "vue";
 import {shallowMount} from "@vue/test-utils";
+import RunReport from "../../../js/components/runReport/runReport.vue";
 import RunReportTabs from "../../../js/components/runReport/runReportTabs.vue";
 
 describe("runReportTabs", () => {
@@ -61,5 +62,12 @@ describe("runReportTabs", () => {
         await Vue.nextTick();
         expect(wrapper.find("report-log-stub").props("selectedRunningReportKey")).toBe("key2");
         expect(wrapper.find("report-log-stub").exists()).toBe(true);
+    });
+
+    it("selects report key when reportRun emits update key event", () => {
+        const wrapper = getWrapper();
+        const runReport = wrapper.find(RunReport);
+        runReport.vm.$emit("update:key", "emittedKey");
+        expect(wrapper.vm.$data.selectedRunningReportKey).toBe("emittedKey");
     });
 });

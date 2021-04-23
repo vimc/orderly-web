@@ -8,17 +8,17 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
 import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.TagRepository
-import org.vaccineimpact.orderlyweb.models.Scope
-import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
+import org.vaccineimpact.orderlyweb.viewmodels.AccessibilityViewModel
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 
-class IndexController(actionContext: ActionContext,
-                      private val orderly: OrderlyClient,
-                      private val reportRepository: ReportRepository,
-                      private val tagRepository: TagRepository) : Controller(actionContext)
+class IndexController(
+    actionContext: ActionContext,
+    private val orderly: OrderlyClient,
+    private val reportRepository: ReportRepository,
+    private val tagRepository: TagRepository) : Controller(actionContext)
 {
-    constructor(context: ActionContext)
-            : this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
+    constructor(context: ActionContext) :
+            this(context, Orderly(context), OrderlyReportRepository(context), OrderlyWebTagRepository())
 
     @Template("index.ftl")
     fun index(): IndexViewModel
@@ -30,6 +30,12 @@ class IndexController(actionContext: ActionContext,
         val pinnedReports = reportRepository.getGlobalPinnedReports()
 
         return IndexViewModel.build(reports, reportTags, allTags, pinnedReports, context)
+    }
+
+    @Template("accessibility.ftl")
+    fun accessibility(): AccessibilityViewModel
+    {
+        return AccessibilityViewModel(context)
     }
 
     fun metrics(): String

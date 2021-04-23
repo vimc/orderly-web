@@ -26,28 +26,28 @@
             ${appName}
         </a>
     </div>
-    <#if loggedIn && !isGuest>
-    <div class="logout dropdown float-right">
-        <a class="dropdown-toggle" href="#" data-toggle="dropdown">
-            Logged in as ${user}
-        </a>
-        <div class="dropdown-menu dropdown-menu-right">
-            <#if isAdmin && fineGrainedAuth>
-            <a class="dropdown-item" href="${appUrl}/manage-access">Manage access</a>
-            </#if>
-            <#if isReviewer || !fineGrainedAuth>
-            <a class="dropdown-item" href="${appUrl}/publish-reports">Publish reports</a>
-            </#if>
-            <a id="logout-link" class="dropdown-item" <#if authProvider?lower_case == "montagu">href="#" onclick="logoutViaMontagu()"<#else>href="${appUrl}/logout"</#if>>Logout</a>
-        </div>
+
+    <div class="nav-right dropdown float-right">
+        <a id="accessibility-link" href="${appUrl}/accessibility">Accessibility</a>
+        <#if loggedIn && !isGuest>
+            |
+            <a id="logged-in" class="dropdown-toggle" href="#" data-toggle="dropdown">
+                Logged in as ${user}
+            </a>
+            <div class="dropdown-menu dropdown-menu-right">
+                <#if isAdmin && fineGrainedAuth>
+                <a class="dropdown-item" href="${appUrl}/manage-access">Manage access</a>
+                </#if>
+                <#if isReviewer || !fineGrainedAuth>
+                <a class="dropdown-item" href="${appUrl}/publish-reports">Publish reports</a>
+                </#if>
+                <a id="logout-link" class="dropdown-item" <#if authProvider?lower_case == "montagu">href="#" onclick="logoutViaMontagu()"<#else>href="${appUrl}/logout"</#if>>Logout</a>
+            </div>
+        </#if>
+        <#if isGuest>
+            |
+            <a id="login" href="${appUrl}/weblogin">Login</a>
+        </#if>
     </div>
-    </#if>
-    <#if isGuest>
-    <div class="login float-right">
-        <span>
-            <a href="${appUrl}/weblogin">Login</a>
-        </span>
-    </div>
-    </#if>
 </header>
 <#include "breadcrumbs.ftl">
