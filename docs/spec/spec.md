@@ -186,6 +186,8 @@ Schema: [`VersionDetails.schema.json`](VersionDetails.schema.json)
     "data_hashes": {
       "dat": "386f507375907a60176b717016f0a648"
     },
+    "parameter_values": {"param1": "paramValue1", "param2": "paramValue2"},
+    "instances": {"source": "science"},
     "published": false,
     "requester": "Funder McFunderface",
     "author": "Researcher McResearcherface"

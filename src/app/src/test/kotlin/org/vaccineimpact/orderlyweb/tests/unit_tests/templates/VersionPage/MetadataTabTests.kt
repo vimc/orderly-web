@@ -32,7 +32,7 @@ class MetadataTabTests: BaseVersionPageTests()
     }
 
     @Test
-    fun `renders no git elements if git properties not set`()
+    fun `renders no git or db instance elements if properties not set`()
     {
         val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = null, gitCommit = null)
         val testModel = VersionPageTestData.testModel.copy(basicReportVersion)
@@ -42,6 +42,7 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-hr").count()).isEqualTo(0)
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
         assertThat(content.select("#git-commit-row").count()).isEqualTo(0)
+        assertThat(content.select(".db-instance-row").count()).isEqualTo(0)
     }
 
     @Test
@@ -70,6 +71,46 @@ class MetadataTabTests: BaseVersionPageTests()
         assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
         assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
         assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
+    }
+
+    @Test
+    fun `renders database instances alongside git elements`()
+    {
+        val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = "master", gitCommit = "abc123")
+        val testModel = VersionPageTestData.testModel.copy(basicReportVersion, instances = mapOf("p1" to "v1", "p2" to "v2"))
+        val jsoupDoc = template.jsoupDocFor(testModel)
+
+        val content = jsoupDoc.select("#metadata-tab .container")
+        assertThat(content.select("#git-hr").count()).isEqualTo(1)
+        assertThat(content.select("#git-branch-label").text()).isEqualTo("Git branch:")
+        assertThat(content.select("#git-branch-value").text()).isEqualTo("master")
+        assertThat(content.select("#git-commit-label").text()).isEqualTo("Git commit:")
+        assertThat(content.select("#git-commit-value").text()).isEqualTo("abc123")
+        val content2 = jsoupDoc.select(".db-instance-row")
+        assertThat(content2.select(".db-instance-row").count()).isEqualTo(2)
+        assertThat(content2.select(".db-instance-label")[0].text()).isEqualTo("Database \"p1\":")
+        assertThat(content2.select(".db-instance-value")[0].text()).isEqualTo("v1")
+        assertThat(content2.select(".db-instance-label")[1].text()).isEqualTo("Database \"p2\":")
+        assertThat(content2.select(".db-instance-value")[1].text()).isEqualTo("v2")
+    }
+
+    @Test
+    fun `renders database instances but not git elements if branch and commit are not set`()
+    {
+        val basicReportVersion = VersionPageTestData.testBasicReportVersion.copy(gitBranch = null, gitCommit = null)
+        val testModel = VersionPageTestData.testModel.copy(basicReportVersion, instances = mapOf("p1" to "v1", "p2" to "v2"))
+        val jsoupDoc = template.jsoupDocFor(testModel)
+
+        val content = jsoupDoc.select("#metadata-tab .container")
+        assertThat(content.select("#git-hr").count()).isEqualTo(1)
+        assertThat(content.select("#git-branch-row").count()).isEqualTo(0)
+        assertThat(content.select("#git-commit-row").count()).isEqualTo(0)
+        val content2 = jsoupDoc.select(".db-instance-row")
+        assertThat(content2.select(".db-instance-row").count()).isEqualTo(2)
+        assertThat(content2.select(".db-instance-label")[0].text()).isEqualTo("Database \"p1\":")
+        assertThat(content2.select(".db-instance-value")[0].text()).isEqualTo("v1")
+        assertThat(content2.select(".db-instance-label")[1].text()).isEqualTo("Database \"p2\":")
+        assertThat(content2.select(".db-instance-value")[1].text()).isEqualTo("v2")
     }
 
     @Test

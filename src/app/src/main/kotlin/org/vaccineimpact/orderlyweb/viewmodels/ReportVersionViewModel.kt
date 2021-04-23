@@ -19,6 +19,7 @@ data class ReportVersionPageViewModel(
     val versions: List<VersionPickerViewModel>,
     val changelog: List<ChangelogViewModel>,
     val parameterValues: String?,
+    val instances: Map<String, String>,
     val startTimeString: String,
     val elapsedString: String,
     val appViewModel: AppViewModel
@@ -94,6 +95,7 @@ data class ReportVersionPageViewModel(
                     versions.sortedByDescending { it }.map { buildVersionPickerViewModel(report.name, report.id, it) },
                     changelogViewModel,
                     parameterValues,
+                    report.instances,
                     startTimeString,
                     elapsedString,
                     DefaultViewModel(context, IndexViewModel.breadcrumb, breadcrumb))

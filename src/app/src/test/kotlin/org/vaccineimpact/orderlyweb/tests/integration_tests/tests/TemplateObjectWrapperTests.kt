@@ -41,7 +41,8 @@ class TemplateObjectWrapperTests
                 listOf(Artefact(ArtefactFormat.DATA, "a graph", artFiles)),
                 listOf(),
                 listOf(DataInfo("hash", 1234, 2345)),
-                mapOf("param" to "value"))
+                mapOf("param" to "value"),
+                mapOf("p1" to "v1", "p2" to "v2"))
 
         val sut = TemplateObjectWrapper()
         val result = sut.wrap(report) as SimpleHash

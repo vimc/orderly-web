@@ -50,6 +50,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionInstance;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
@@ -64,7 +65,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = 189171294;
+    private static final long serialVersionUID = -508547040;
 
     /**
      * The reference instance of <code>DEFAULT_SCHEMA</code>
@@ -272,6 +273,11 @@ public class DefaultSchema extends SchemaImpl {
     public final ReportVersionData REPORT_VERSION_DATA = ReportVersionData.REPORT_VERSION_DATA;
 
     /**
+     * The table <code>report_version_instance</code>.
+     */
+    public final ReportVersionInstance REPORT_VERSION_INSTANCE = ReportVersionInstance.REPORT_VERSION_INSTANCE;
+
+    /**
      * The table <code>report_version_package</code>.
      */
     public final ReportVersionPackage REPORT_VERSION_PACKAGE = ReportVersionPackage.REPORT_VERSION_PACKAGE;
@@ -357,6 +363,7 @@ public class DefaultSchema extends SchemaImpl {
             ReportVersionBatch.REPORT_VERSION_BATCH,
             ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS,
             ReportVersionData.REPORT_VERSION_DATA,
+            ReportVersionInstance.REPORT_VERSION_INSTANCE,
             ReportVersionPackage.REPORT_VERSION_PACKAGE,
             ReportVersionTag.REPORT_VERSION_TAG,
             ReportVersionView.REPORT_VERSION_VIEW,
