@@ -95,6 +95,7 @@ describe(`runningReportDetails`, () => {
     it(`displays database instances as expected`,  () => {
             const wrapper = getWrapper();
             const instances = wrapper.findAll("#report-database-instances .report-database-instance");
+
             expect(instances.length).toBe(2);
             expect(instances.at(0).findAll("span").at(0).text()).toBe("Database \"source\":");
             expect(instances.at(0).findAll("span").at(1).text()).toBe("support");
