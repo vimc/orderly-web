@@ -47,10 +47,6 @@
             XIcon
         },
         methods: {
-            // readOut(){
-            // console.log(this.$refs.typeahead)
-            // console.log(this.sortedReports)
-            // },
             clear() {
                 this.query = "";
                 this.$emit('update:key', "");
@@ -76,12 +72,8 @@
         },
         mounted(){
             if (this.initialInputValue){
-                // this.$refs.typeahead.inputValue = this.initialInputValue;
                 this.query = this.initialInputValue
             }
-            // console.log(this.$refs.typeahead)
-            // console.log(this.sortedReports)
-            // console.log(this.initialInputValue)
         },
         beforeDestroy() {
             this.$emit('update:key', "");
