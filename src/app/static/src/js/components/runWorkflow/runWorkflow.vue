@@ -9,6 +9,7 @@
                   :name="step.name"
                   @jump="jump">
                 <component :is="step.component"
+                           :workflow-metadata="RunWorkflowMetadata"
                            @jump="jump">
                 </component>
             </step>
@@ -24,11 +25,12 @@ import runWorkflowSummary from "./runWorkflowSummary.vue";
 import runWorkflowRun from "./runWorkflowRun.vue";
 import workflowWizard from "../workflowWizard/workflowWizard.vue";
 import step from "../workflowWizard/step.vue";
+import {RunWorkflowMetadata} from "../../utils/types"
 
 interface Data {
     activeStep: number
     steps: {}
-    RunWorkflowMetadata: {} | null
+    RunWorkflowMetadata: RunWorkflowMetadata | null
 }
 
 interface Methods {
@@ -58,7 +60,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         return {
             activeStep: 1,
             steps: steppers,
-            RunWorkflowMetadata: null
+            RunWorkflowMetadata: {placeholder: "Shared state works"}
         }
     },
     methods: {

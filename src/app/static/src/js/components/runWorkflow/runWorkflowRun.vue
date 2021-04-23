@@ -41,13 +41,22 @@
                 <p>ticked</p>
             </div>
         </div>
+        <p>{{ "Run Page:" + workflowMetadata.placeholder}}</p>
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue"
+import {RunWorkflowMetadata} from "../../utils/types";
 
-export default Vue.extend({
-    name: "runWorkflowRun"
+interface Props {
+    workflowMetadata: RunWorkflowMetadata
+}
+
+export default Vue.extend<unknown, unknown, unknown, Props>({
+    name: "runWorkflowRun",
+    props: {
+        workflowMetadata: null
+    }
 })
 </script>

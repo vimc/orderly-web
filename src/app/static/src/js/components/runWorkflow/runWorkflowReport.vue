@@ -56,13 +56,22 @@
                 </div>
             </div>
         </div>
+        <p>{{ "Report Page:" + workflowMetadata.placeholder}}</p>
     </div>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue"
+import {RunWorkflowMetadata} from "../../utils/types";
 
-export default Vue.extend({
-    name: "runWorkflowReport"
+interface Props {
+    workflowMetadata: RunWorkflowMetadata
+}
+
+export default Vue.extend<unknown, unknown, unknown, Props>({
+    name: "runWorkflowReport",
+    props: {
+        workflowMetadata: null
+    }
 })
 </script>

@@ -16,6 +16,10 @@ export interface ReportLog{
     report_version: string | null
 }
 
+export interface RunWorkflowMetadata {
+    placeholder: string
+}
+
 export interface Error {
     response?: {
         data?: {
