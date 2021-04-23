@@ -550,6 +550,7 @@ describe("runReport", () => {
                 ));
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
                 expect(wrapper.find("#run-report-status a").text()).toBe("Check status");
+                expect(wrapper.findAll("#run-report-status a").at(1).text()).toBe("View log");
                 expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
                 expect(wrapper.vm.$data.runningKey).toBe("test-key");
                 expect(wrapper.vm.$data.error).toBe("");
@@ -709,6 +710,37 @@ describe("runReport", () => {
             setTimeout(() => {
                 expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
                 expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when fetching report status");
+                done();
+            });
+        });
+    });
+
+    it("clicking 'View log' emits 'changeTab'", async (done) => {
+        const url = 'http://app/report/test-report/actions/status/test-key/';
+        mockAxios.onGet(url)
+            .reply(200, {data: {status: "test-status"}});
+        const wrapper = getWrapper();
+
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                error: "test-error",
+                defaultMessage: "test-msg"
+            });
+            await Vue.nextTick();
+
+            //Set data in two stages because status and key get reset by watch on selectedReport change
+            wrapper.setData({
+                runningStatus: "Run started",
+                runningKey: "test-key",
+                disableRun: true
+            });
+            await Vue.nextTick();
+
+            wrapper.findAll("#run-form-group a").at(1).trigger("click");
+
+            setTimeout(() => {
+                expect(wrapper.emitted("changeTab")).toBeTruthy();
                 done();
             });
         });

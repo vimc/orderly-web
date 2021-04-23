@@ -62,11 +62,11 @@
                 selectedRunningReportKey: ""
             }
         },
-        watch: {
-            selectedRunningReportKey(){
-                console.log(this.selectedRunningReportKey)
-            }
-        },
+        // watch: {
+        //     selectedRunningReportKey(){
+        //         console.log(this.selectedRunningReportKey)
+        //     }
+        // },
         methods: {
             setSelectedReportKey(e){
                 this.selectedRunningReportKey = e
