@@ -17,7 +17,6 @@
 
 <script lang="ts">
 import Vue from "vue"
-
 import step from "../workflowWizard/step.vue";
 import {RunWorkflowMetadata} from "../../utils/types"
 import runWorkflowCreate from "../runWorkflow/runWorkflowCreate.vue";
@@ -28,7 +27,7 @@ import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue";
 interface Data {
     activeStep: number
     steps: {}
-    rerun: boolean
+    initiatedRerun: boolean
 }
 
 interface Methods {
@@ -66,7 +65,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         return {
             activeStep: 1,
             steps: steps,
-            rerun: false
+            initiatedRerun: false
         }
     },
     methods: {
@@ -76,7 +75,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             const next = number !== 4
             const back = number > 2
 
-            return {run, cancel, next, back, rerun: this.rerun}
+            return {run, cancel, next, back, rerun: this.initiatedRerun}
         },
         isActive: function (num: number) {
             return num === this.activeStep
@@ -113,17 +112,17 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         },
         handleRerun: function () {
             this.hideReportStep()
-            this.rerun = true
+            this.initiatedRerun = true
             this.activeStep = 4
         },
         handleClone: function () {
             this.unHideReportStep()
-            this.rerun = false
+            this.initiatedRerun = false
             this.activeStep = 2
         },
         handleCreate: function () {
             this.unHideReportStep()
-            this.rerun = false
+            this.initiatedRerun = false
             this.activeStep = 2
         },
         jump: function (value) {

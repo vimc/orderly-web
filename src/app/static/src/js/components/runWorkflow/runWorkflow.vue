@@ -13,9 +13,6 @@ interface Data {
     runWorkflowMetadata: RunWorkflowMetadata | null
 }
 
-interface Methods {
-}
-
 export default Vue.extend<Data, unknown, unknown, unknown>({
     name: "runWorkflow",
     data(): Data {
