@@ -1,15 +1,20 @@
-import {shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
+import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
 
 describe(`runWorkflow`, () => {
 
-    const getWrapper = () => {
-        return shallowMount(runWorkflow)
+    const workflowMetadata = {
+        placeholder: "Placeholder works"
     }
-
-    it(`it can render workflow page`, () => {
+    const getWrapper = () => {
+        return mount(runWorkflow)
+    }
+    it(`it can render workflow wizard`, async () => {
         const wrapper = getWrapper()
-        expect(wrapper.find("p").text()).toBe("Run workflow is coming soon")
+        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+        expect(wrapper.find(workflowWizard).exists()).toBe(true)
+        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
+        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
     })
-
 })

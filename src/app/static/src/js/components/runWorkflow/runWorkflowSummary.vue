@@ -1,14 +1,6 @@
 <template>
 <div>
-    <h2>Summary</h2>
-    <div>
-        <ul>
-            <li>Preprocess</li>
-            <li>Process</li>
-            <li>Postprocess</li>
-        </ul>
-    </div>
-    <p>{{ "Summary Page:" + workflowMetadata.placeholder}}</p>
+    <h2 id="summary-header">Summary</h2>
 </div>
 </template>
 
@@ -17,7 +9,7 @@ import Vue from "vue"
 import {RunWorkflowMetadata} from "../../utils/types";
 
 interface Props {
-    workflowMetadata: RunWorkflowMetadata
+    workflowMetadata: RunWorkflowMetadata | null
 }
 
 export default Vue.extend<unknown, unknown, unknown, Props>({

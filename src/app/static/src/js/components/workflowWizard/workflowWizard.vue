@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div id="workflow-wizard" class="container">
             <step v-for="step in steps"
                   v-if="!step.hide"
                   :key="step.number"
@@ -43,12 +43,20 @@ interface Methods {
     handleClone: () => void
     handleCreate: () => void
     hasVisibility: (num: number) => {}
+    handleBackVisibility: (num: number) => boolean
+    handleNextVisibility: (num: number) => boolean
 }
 
 interface Props {
     runWorkflowMetadata: RunWorkflowMetadata | null
 }
 
+enum stepNumber {
+    Create = 1,
+    Report = 2,
+    Summary = 3,
+    Run = 4
+}
 const steps = [
     {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
     {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
@@ -63,19 +71,25 @@ export default Vue.extend<Data, Methods, unknown, Props>({
     },
     data(): Data {
         return {
-            activeStep: 1,
+            activeStep: stepNumber.Create,
             steps: steps,
             initiatedRerun: false
         }
     },
     methods: {
         hasVisibility(number) {
-            const run = number === 4
-            const cancel = number !== 1
-            const next = number !== 4
-            const back = number > 2
-
-            return {run, cancel, next, back, rerun: this.initiatedRerun}
+            return {
+                run: number === stepNumber.Run,
+                cancel: number !== stepNumber.Create,
+                next: this.handleNextVisibility(number),
+                back: this.handleBackVisibility(number)
+            }
+        },
+        handleBackVisibility: function (number) {
+            return number > stepNumber.Report && !this.initiatedRerun
+        },
+        handleNextVisibility: function (number) {
+            return number !== stepNumber.Run && number !== stepNumber.Create
         },
         isActive: function (num: number) {
             return num === this.activeStep
@@ -97,7 +111,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             }
         },
         cancel: function () {
-            this.activeStep = 1
+            this.activeStep = stepNumber.Create
         },
         run: function () {
             //This should be emitted to runWorkflow
@@ -113,17 +127,17 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         handleRerun: function () {
             this.hideReportStep()
             this.initiatedRerun = true
-            this.activeStep = 4
+            this.activeStep = stepNumber.Run
         },
         handleClone: function () {
             this.unHideReportStep()
             this.initiatedRerun = false
-            this.activeStep = 2
+            this.activeStep = stepNumber.Report
         },
         handleCreate: function () {
             this.unHideReportStep()
             this.initiatedRerun = false
-            this.activeStep = 2
+            this.activeStep = stepNumber.Report
         },
         jump: function (value) {
             switch (value) {

@@ -17,7 +17,7 @@ export default Vue.extend<Data, unknown, unknown, unknown>({
     name: "runWorkflow",
     data(): Data {
         return {
-            runWorkflowMetadata: {placeholder: "Shared state works"},
+            runWorkflowMetadata: null,
         }
     },
     components: {

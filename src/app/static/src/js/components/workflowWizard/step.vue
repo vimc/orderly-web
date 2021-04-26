@@ -3,11 +3,11 @@
         <div>
             <slot></slot>
         </div>
-        <div v-if="hasVisibility.cancel" class="pt-4">
-            <button type="button" class="btn btn-sm btn-secondary disabled"
+        <div class="pt-4">
+            <button v-if="hasVisibility.cancel" type="button" class="btn btn-sm btn-secondary disabled"
                     @click="jump('cancel')">Cancel
             </button>
-            <button v-if="hasVisibility.back & !hasVisibility.rerun" type="button" class="btn btn-sm btn-primary"
+            <button v-if="hasVisibility.back" type="button" class="btn btn-sm btn-primary"
                     @click="jump('back')">Back
             </button>
             <button v-if="hasVisibility.next" type="button" class="btn btn-sm btn-success"

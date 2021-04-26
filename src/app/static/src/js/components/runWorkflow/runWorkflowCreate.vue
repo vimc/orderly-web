@@ -1,20 +1,19 @@
 <template>
     <div>
-        <h2>Run workflow</h2>
+        <h2 id="create-workflow-header">Run workflow</h2>
         <div class="pt-2">
             <p>Either:</p>
-            <button @click="jump('create')" type="button" class="btn btn-success">
+            <button id="create-workflow" @click="jump('create')" type="button" class="btn btn-success">
                 Create a blank workflow
             </button>
         </div>
-        <div class="pt-4">
+        <div id="report-list" class="pt-4">
             <p>Or re-use an existing workflow:</p>
             <!-- use vue-select -->
-            <v-select :options="['FirstSelectedValue', 'SecondSelectedValue']"></v-select>
         </div>
         <div class="pt-4">
-            <button @click="jump('rerun')" type="button" class="btn btn-success">Re-run workflow</button>
-            <button @click="jump('clone')" type="button" class="btn btn-success">Clone workflow</button>
+            <button id="rerun" @click="jump('rerun')" type="button" class="btn btn-success">Re-run workflow</button>
+            <button id="clone" @click="jump('clone')" type="button" class="btn btn-success">Clone workflow</button>
         </div>
     </div>
 </template>
