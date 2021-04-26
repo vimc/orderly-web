@@ -5,7 +5,6 @@
                   :key="step.number"
                   :active="isActive(step.number)"
                   :hasVisibility="hasVisibility(step.number)"
-                  :name="step.name"
                   @jump="jump">
                 <component :is="step.component"
                            :workflow-metadata="runWorkflowMetadata"

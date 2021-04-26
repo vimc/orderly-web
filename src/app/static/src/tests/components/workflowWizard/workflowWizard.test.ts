@@ -15,7 +15,7 @@ describe(`workflowWizard`, () => {
     ]
 
 
-    const getWrapper = (activeStep = 1) => {
+    const getWrapper = (activeStep = 1, mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
                     runWorkflowMetadata: {placeholder: "testdata"},
@@ -23,7 +23,7 @@ describe(`workflowWizard`, () => {
                 data() {
                     return {
                         activeStep: activeStep,
-                        steps: steps,
+                        steps: mockStep,
                         initiatedRerun: false
                     }
                 }
@@ -31,7 +31,7 @@ describe(`workflowWizard`, () => {
         )
     }
 
-    it(`can render default component and step buttons`, async() => {
+    it(`can render default component and step buttons`, () => {
 
         const createButtonVisibility = {run: false, cancel: false, next: false, back: false}
         const wrapper = getWrapper()
@@ -54,7 +54,7 @@ describe(`workflowWizard`, () => {
         expect(mockStep.at(0).find(runWorkflowRun).exists()).toBe(false)
     })
 
-    it(`can render report component and elements`, async() => {
+    it(`can render report component and elements`, () => {
         //Report step
         const activeStep = 2
 
@@ -69,7 +69,7 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(3).text()).toBe("Next")
     })
 
-    it(`can trigger cancel from report component to create component`, async() => {
+    it(`can trigger cancel from report component to create component`, async () => {
         //Activate report step
         const activeStep = 2
 
@@ -81,7 +81,7 @@ describe(`workflowWizard`, () => {
         expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
     })
 
-    it(`can trigger next from report component to previous component `, async() => {
+    it(`can trigger next from report component to previous component `, async () => {
         //Activate report step
         const activeStep = 2
 
@@ -93,7 +93,7 @@ describe(`workflowWizard`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
-    it(`can render report component and elements`, async() => {
+    it(`can render report component and elements`, async () => {
         //Run step
         const activeStep = 4
 
@@ -107,7 +107,7 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(2).text()).toBe("Run workflow")
     })
 
-    it(`can trigger cancel from run component to create component`, async() => {
+    it(`can trigger cancel from run component to create component`, async () => {
         //Activate run step
         const activeStep = 4
 
@@ -119,7 +119,7 @@ describe(`workflowWizard`, () => {
         expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
     })
 
-    it(`can trigger back from run component to previous component `, async() => {
+    it(`can trigger back from run component to previous component `, async () => {
         //Activate run step
         const activeStep = 4
 
@@ -131,7 +131,7 @@ describe(`workflowWizard`, () => {
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
     })
 
-    it(`can trigger run from run component to progress tab`, async() => {
+    it(`can trigger run from run component to progress tab`, async () => {
         //Activate run step
         const activeStep = 4
 
@@ -142,5 +142,106 @@ describe(`workflowWizard`, () => {
         await buttons.at(2).trigger("click")
         //not linking yet
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
+    })
+
+    it(`does not render summary component to steps `, () => {
+        //Activate run step
+        const activeStep = 3
+
+        const wrapper = getWrapper(activeStep)
+        const buttons = wrapper.findAll("button")
+        expect(buttons.length).toBe(0)
+        expect(wrapper.find("#summary-header").exists()).toBe(false)
+    })
+
+    it(`can unhide and render summary report component `, async () => {
+        const steps = [
+            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
+            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
+            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
+            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+        ]
+
+        //Activate summary step
+        const activeStep = 3
+
+        const wrapper = getWrapper(activeStep, steps)
+        expect(wrapper.find("#summary-header").text()).toBe("Summary")
+
+        const buttons = wrapper.findAll("button")
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Back")
+        expect(buttons.at(2).text()).toBe("Next")
+    })
+
+    it(`can unhide and cancel from summary report component `, async () => {
+        const steps = [
+            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
+            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
+            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
+            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+        ]
+
+        //Activate summary step
+        const activeStep = 3
+
+        const wrapper = getWrapper(activeStep, steps)
+        const buttons = wrapper.findAll("button")
+        expect(buttons.at(0).text()).toBe("Cancel")
+        await buttons.at(0).trigger("click")
+        expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
+    })
+
+    it(`can unhide and back from summary report component `, async () => {
+        const steps = [
+            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
+            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
+            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
+            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+        ]
+
+        //Activate summary step
+        const activeStep = 3
+
+        const wrapper = getWrapper(activeStep, steps)
+        const buttons = wrapper.findAll("button")
+        expect(buttons.at(1).text()).toBe("Back")
+        await buttons.at(1).trigger("click")
+        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
+    })
+
+    it(`can unhide and next from summary report component `, async () => {
+        const steps = [
+            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
+            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
+            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
+            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+        ]
+
+        //Activate summary step
+        const activeStep = 3
+
+        const wrapper = getWrapper(activeStep, steps)
+        const buttons = wrapper.findAll("button")
+        expect(buttons.at(2).text()).toBe("Next")
+        await buttons.at(2).trigger("click")
+        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
+    })
+
+    it(`can hide any component from steps `, async () => {
+        const steps = [
+            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
+            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
+            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
+            {name: "run", number: 4, hide: true, component: "runWorkflowRun"}
+        ]
+
+        //Activate run step
+        const activeStep = 4
+
+        const wrapper = getWrapper(activeStep, steps)
+        const buttons = wrapper.findAll("button")
+        expect(buttons.length).toBe(0)
+        expect(wrapper.find("#run-header").exists()).toBe(false)
     })
 })
