@@ -63,9 +63,8 @@ describe("runReportTabs", () => {
     });
 
     it("reportLogs receives run key prop", async () => {
-        session.setSelectedRunningReportKey("key1");
         const wrapper = getWrapper()
-        await wrapper.setData({selectedTab: "reportLogs"})
+        await wrapper.setData({selectedTab: "reportLogs", selectedRunningReportKey: "key1"})
         const reportLog = wrapper.find("report-log-stub")
         expect(reportLog.props("selectedRunningReportKey")).toBe("key1");
         wrapper.setData({selectedRunningReportKey: "key2", selectedTab: "reportLogs"})
