@@ -64,7 +64,7 @@
         },
         mounted(){
             if (this.initialSelectedKey){
-                this.query = this.reports.filter(report => report.key === this.initialSelectedKey)[0]["name"]
+                this.query = this.reports.find(report => report.key === this.initialSelectedKey).name
             }
         },
         beforeDestroy() {
