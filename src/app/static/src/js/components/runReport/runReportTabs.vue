@@ -58,8 +58,8 @@
         ],
         data() {
             return {
-                selectedTab: session.getSelectedTab(),
-                selectedRunningReportKey: session.getSelectedRunningReportKey()
+                selectedTab: "runReport",
+                selectedRunningReportKey: ""
             }
         },
         methods: {
@@ -71,6 +71,10 @@
                 this.selectedTab = tab;
                 session.setSelectedTab(tab);
             }
+        },
+        mounted(){
+            this.selectedTab = session.getSelectedTab() || "runReport";
+            this.selectedRunningReportKey = session.getSelectedRunningReportKey() || "";
         }
     })
 </script>
