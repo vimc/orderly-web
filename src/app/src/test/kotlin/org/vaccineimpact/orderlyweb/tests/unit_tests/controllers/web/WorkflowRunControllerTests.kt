@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web
 
 import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
@@ -17,6 +18,7 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
+import java.io.File
 import java.time.Instant
 
 class WorkflowRunControllerTests
@@ -137,6 +139,8 @@ class WorkflowRunControllerTests
             }
         """.trimIndent()
 
+        assertThat(validateAgainstSchema(json)).isTrue()
+
         var workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
         assertThat(workflowRunRequest).isEqualTo(getWorkflowRunRequestExample())
     }
@@ -215,9 +219,11 @@ class WorkflowRunControllerTests
         val json = """
             {
               "name": "workflow1",
-              "reports": []
+              "reports": "report1"
             }
         """.trimIndent()
+
+        assertThat(validateAgainstSchema(json)).isFalse()
 
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn json
@@ -238,6 +244,8 @@ class WorkflowRunControllerTests
               "reports": [{"name": "report1"}]
             }
         """.trimIndent()
+
+        assertThat(validateAgainstSchema(json)).isTrue()
 
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn """{"name": "workflow1", "reports": [{"name": "report1"}]}"""
@@ -268,6 +276,8 @@ class WorkflowRunControllerTests
               "reports": [{"name": "report1"}]
             }
         """.trimIndent()
+
+        assertThat(validateAgainstSchema(json)).isTrue()
 
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn json
@@ -312,4 +322,11 @@ class WorkflowRunControllerTests
             "branch1",
             "commit1"
         )
+
+
+    private fun validateAgainstSchema(json: String) =
+        JsonSchemaFactory.byDefault()
+            .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
+            .validate(JsonLoader.fromString(json))
+            .isSuccess
 }

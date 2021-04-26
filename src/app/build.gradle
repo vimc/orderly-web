@@ -53,11 +53,11 @@ dependencies {
 
     compile "org.ocpsoft.prettytime:prettytime:4.0.5.Final"
 
-    compile "com.github.fge:json-schema-validator:2.2.6"
-
     testCompile "org.slf4j:slf4j-simple:1.7.21"
     testCompile "com.beust:klaxon:0.31"
     testCompile "com.opencsv:opencsv:3.9"
+
+    testCompile "com.github.fge:json-schema-validator:2.2.6"
 
     compile project(":databaseInterface")
 

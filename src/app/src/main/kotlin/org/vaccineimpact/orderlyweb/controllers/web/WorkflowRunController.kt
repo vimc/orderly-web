@@ -1,7 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
-import com.github.fge.jackson.JsonLoader
-import com.github.fge.jsonschema.main.JsonSchemaFactory
 import com.google.gson.annotations.SerializedName
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServer
@@ -16,7 +14,6 @@ import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunRequest
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
-import java.io.File
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
 
@@ -62,17 +59,14 @@ class WorkflowRunController(
     {
         val workflowRunRequestJson = context.getRequestBody()
 
-        val isValidWorkflow = JsonSchemaFactory.byDefault()
-            .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
-            .validate(JsonLoader.fromString(workflowRunRequestJson))
-            .isSuccess
-        if (!isValidWorkflow)
+        val workflowRunRequest = try
+        {
+            Serializer.instance.gson.fromJson(workflowRunRequestJson, WorkflowRunRequest::class.java)
+        }
+        catch (e: Exception)
         {
             throw BadRequest("Invalid workflow description")
         }
-
-        val workflowRunRequest =
-            Serializer.instance.gson.fromJson(workflowRunRequestJson, WorkflowRunRequest::class.java)
 
         val body = Serializer.instance.gson.toJson(
             listOfNotNull(
