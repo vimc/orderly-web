@@ -233,6 +233,7 @@ class WorkflowRunControllerTests
         val sut = WorkflowRunController(context, mock(), mock())
         assertThatThrownBy { sut.createWorkflowRun() }
             .isInstanceOf(BadRequest::class.java)
+            .hasMessageContaining("Invalid workflow description")
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
+import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServer
@@ -63,9 +64,9 @@ class WorkflowRunController(
         {
             Serializer.instance.gson.fromJson(workflowRunRequestJson, WorkflowRunRequest::class.java)
         }
-        catch (e: Exception)
+        catch (e: JsonSyntaxException)
         {
-            throw BadRequest("Invalid workflow description")
+            throw BadRequest("Invalid workflow description: ${e.message}")
         }
 
         val body = Serializer.instance.gson.toJson(
