@@ -58,21 +58,13 @@
             }
         },
         computed: {
-            initialInputValue(){
-                if (this.initialSelectedKey){
-                    return this.reports.map(report => {
-                        if (report.key === this.initialSelectedKey){
-                            return report.name
-                        }})[0]
-                } else return ''
-            },
             sortedReports() {
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
         mounted(){
-            if (this.initialInputValue){
-                this.query = this.initialInputValue
+            if (this.initialSelectedKey){
+                this.query = this.reports.filter(report => report.key === this.initialSelectedKey)[0]["name"]
             }
         },
         beforeDestroy() {
