@@ -26,12 +26,4 @@ class RunWorkflowTests : SeleniumTest()
         val url = RequestHelper.webBaseUrl + "/run-workflow/"
         driver.get(url)
     }
-
-    @Test
-    fun `can view run workflow tab`()
-    {
-        val tab = driver.findElement(By.id("run-workflow-tab"))
-        Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Create workflow")
-        Assertions.assertThat(tab.findElement(By.tagName("p")).text).isEqualTo("Run workflow is coming soon")
-    }
 }
