@@ -13,6 +13,10 @@ $here/../scripts/run-dependencies.sh
 # Run the OrderlyWeb image
 IMAGE=$ORG/orderly-web:$GIT_ID
 docker pull $IMAGE
+function cleanup() {
+  $here/../scripts/clear-docker.sh
+}
+trap cleanup EXIT
 docker run --rm \
     -d \
     -v $PWD/demo:/orderly \
