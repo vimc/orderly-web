@@ -19,5 +19,4 @@ describe('helpers', () => {
             expect(result).toBe("Wed May 15 2019");
         });
     });
-
 });

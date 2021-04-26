@@ -21,7 +21,8 @@ object VersionPageTestData
             artefacts = listOf(),
             resources = listOf(),
             dataInfo = listOf(),
-            parameterValues = mapOf("p1" to "v1", "p2" to "v2"))
+            parameterValues = mapOf("p1" to "v1", "p2" to "v2"),
+            instances=mapOf("p1" to "v1", "p2" to "v2"))
 
     val testArtefactViewModels = listOf(
             ArtefactViewModel(
@@ -72,6 +73,7 @@ object VersionPageTestData
                 listOf(),
                 listOf(),
                 "p1=v1, p2=v2",
+                mapOf(),
                 "Mon 12 Jun 2020 14:23",
                 "3 hours 2 minutes",
                 testDefaultModel)

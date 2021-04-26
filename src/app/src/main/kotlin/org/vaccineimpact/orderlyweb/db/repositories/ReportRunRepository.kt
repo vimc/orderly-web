@@ -25,11 +25,23 @@ interface ReportRunRepository
 
     @Throws(UnknownObjectError::class)
     fun getReportRun(key: String): ReportRunLog
+
     fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
+
+    fun updateReportRun(
+        key: String,
+        status: String,
+        version: String?,
+        logs: List<String>?
+    )
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
 {
+    companion object {
+        const val SUCCESS_STATUS = "success"
+    }
+
     override fun addReportRun(
         key: String,
         user: String,
@@ -99,6 +111,32 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
 
             return result.fetchInto(ReportRunWithDate::class.java)
+        }
+    }
+
+    override fun updateReportRun(
+        key: String,
+        status: String,
+        version: String?,
+        logs: List<String>?
+    )
+    {
+        val logsString = logs?.joinToString(separator = "\n")
+        val reportVersion = if (status == SUCCESS_STATUS)
+        {
+            version
+        }
+        else
+        {
+            null
+        }
+        JooqContext().use {
+            it.dsl.update(ORDERLYWEB_REPORT_RUN)
+                    .set(ORDERLYWEB_REPORT_RUN.STATUS, status)
+                    .set(ORDERLYWEB_REPORT_RUN.REPORT_VERSION, reportVersion)
+                    .set(ORDERLYWEB_REPORT_RUN.LOGS, logsString)
+                    .where(ORDERLYWEB_REPORT_RUN.KEY.eq(key))
+                    .execute()
         }
     }
 }

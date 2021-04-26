@@ -608,6 +608,9 @@ describe("runReport", () => {
                 ));
                 expect(wrapper.find("#run-report-status").text()).toContain("Run started");
                 expect(wrapper.vm.$data.runningKey).toBe("test-key");
+                expect(wrapper.emitted("update:key").length).toBe(1);
+                expect(wrapper.emitted("update:key")[0][0]).toBe("test-key");
+
                 done();
             });
         });
@@ -635,6 +638,7 @@ describe("runReport", () => {
                 expect(wrapper.vm.$data.runningKey).toBe("");
                 expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
                 expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when running report");
+                expect(wrapper.emitted("update:key")).toBeUndefined();
                 done();
             });
         });

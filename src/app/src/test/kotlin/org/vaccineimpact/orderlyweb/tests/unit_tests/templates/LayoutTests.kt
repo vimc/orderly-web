@@ -55,7 +55,7 @@ class LayoutTests
 
         assertHeaderRenderedCorrectly(doc, xml)
 
-        assertThat(doc.select(".logout").count()).isEqualTo(0) //should not show logged in view
+        assertThat(doc.select("#logged-in").count()).isEqualTo(0) //should not show logged in view
         assertThat(doc.select("#content").count()).isEqualTo(1)
         val script = doc.getElementsByTag("script")[0].html()
         assertThat(script.trim()).isEqualTo("var appUrl = \"http://localhost:8888\"")
@@ -70,7 +70,7 @@ class LayoutTests
 
         assertHeaderRenderedCorrectly(doc, xml)
 
-        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+        assertThat(doc.selectFirst(".nav-right #logged-in").text()).isEqualTo("Logged in as test.user")
         assertThat(doc.select("#logout-link").attr("href")).isEqualTo("#")
         assertThat(doc.select("#logout-link").attr("onclick")).isEqualTo("logoutViaMontagu()")
 
@@ -96,9 +96,9 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Manage access")
-        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/manage-access")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Manage access")
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/manage-access")
     }
 
     @Test
@@ -107,8 +107,8 @@ class LayoutTests
         val testModel = testModel()
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".nav-right #logged-in").text()).isEqualTo("Logged in as test.user")
     }
 
     @Test
@@ -135,8 +135,8 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout a").text()).isEqualTo("Logged in as test.user")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".nav-right #logged-in").text()).isEqualTo("Logged in as test.user")
     }
 
     @Test
@@ -154,9 +154,9 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Publish reports")
-        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Publish reports")
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
     }
 
     @Test
@@ -183,9 +183,9 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(2)
-        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Publish reports")
-        assertThat(doc.selectFirst(".logout a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(2)
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Publish reports")
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").attr("href")).isEqualTo("http://localhost:8888/publish-reports")
     }
 
     @Test
@@ -203,8 +203,8 @@ class LayoutTests
 
         val doc = template.jsoupDocFor(testModel)
 
-        assertThat(doc.select(".logout a.dropdown-item").count()).isEqualTo(1)
-        assertThat(doc.selectFirst(".logout a.dropdown-item").text()).isEqualTo("Logout")
+        assertThat(doc.select(".nav-right a.dropdown-item").count()).isEqualTo(1)
+        assertThat(doc.selectFirst(".nav-right a.dropdown-item").text()).isEqualTo("Logout")
     }
 
     private fun assertHeaderRenderedCorrectly(doc: Document, xml: Source)
@@ -225,5 +225,7 @@ class LayoutTests
         assertThat(doc.select(".site-title a").attr("href")).isEqualTo("http://localhost:8888")
         assertThat(doc.select(".site-title a").text()).isEqualTo(appName)
 
+        assertThat(doc.select(".nav-right #accessibility-link").text()).isEqualTo("Accessibility")
+        assertThat(doc.select(".nav-right #accessibility-link").attr("href")).isEqualTo("http://localhost:8888/accessibility")
     }
 }

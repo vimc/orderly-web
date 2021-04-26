@@ -52,6 +52,7 @@ class OrderlyTests : CleanDatabaseTests()
         on { getReportVersion("test", "v1") } doReturn basicReportVersionElapsed
         on { getAllReportVersions() } doReturn listOf(basicReportVersion, basicReportVersion.copy(id = "v2"))
         on { getParametersForVersions(listOf("v1")) } doReturn mapOf("v1" to mapOf("p1" to "param1", "p2" to "param2"))
+        on { getReportVersionInstances("v1") } doReturn mapOf("p1" to "v1", "p2" to "v2")
         on { getLatestVersion("test") } doReturn basicReportVersion.copy(id = "latest", date = now.minusSeconds(100))
         on { getDatedChangelogForReport("test", now.minusSeconds(100)) } doReturn
                 listOf(Changelog("v1", "public", "getLatestChangelog", true, true))
@@ -92,6 +93,7 @@ class OrderlyTests : CleanDatabaseTests()
         assertThat(result.parameterValues.keys.count()).isEqualTo(2)
         assertThat(result.parameterValues["p1"]).isEqualTo("param1")
         assertThat(result.parameterValues["p2"]).isEqualTo("param2")
+        assertThat(result.instances).isEqualTo(mapOf("p1" to "v1", "p2" to "v2"))
 
         // these come from the db
         assertThat(result.resources).hasSameElementsAs(listOf(FileInfo("file.csv", 2345), FileInfo("graph.png", 3456)))
