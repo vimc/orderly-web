@@ -4,6 +4,7 @@ import runningReportsDetails from "../../../js/components/reportLog/runningRepor
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {longTimestamp} from "../../../js/utils/helpers";
+import {ReportLog} from "../../../js/utils/types";
 
 describe(`runningReportDetails`, () => {
 
@@ -11,11 +12,11 @@ describe(`runningReportDetails`, () => {
         reportKey: "half_aardwolf"
     }
 
-    const initialReportLog = {
+    const initialReportLog: ReportLog = {
         email: "test@example.com",
         date: new Date(2021, 3, 21, 9, 26, 54).toISOString(),
         report: "minimal",
-        instances: { "database": "support", "instance" : "annexe"},
+        instances: { "source": "support", "annexe" : "annexe_1"},
         params: {"name" : "nmin", "cologne" : "ey6"},
         git_branch: "branch value",
         git_commit: "commit value",
@@ -91,25 +92,24 @@ describe(`runningReportDetails`, () => {
             expect(keyValSpan2.at(1).text()).toBe("ey6")
     })
 
-    it(`displays instance data values as expected`,  () => {
-            const wrapper = getWrapper()
-            const spans = wrapper.find("#report-database-source").findAll("span")
-            expect(spans.at(0).text()).toBe("Database:")
+    it(`displays database instances as expected`,  () => {
+            const wrapper = getWrapper();
+            const instances = wrapper.findAll("#report-database-instances .report-database-instance");
 
-            const liValues = spans.at(1).findAll("ul li")
-            expect(liValues.at(0).text()).toBe("support")
-            expect(liValues.at(1).text()).toBe("annexe")
-    })
+            expect(instances.length).toBe(2);
+            expect(instances.at(0).findAll("span").at(0).text()).toBe("Database \"source\":");
+            expect(instances.at(0).findAll("span").at(1).text()).toBe("support");
+            expect(instances.at(1).findAll("span").at(0).text()).toBe("Database \"annexe\":");
+            expect(instances.at(1).findAll("span").at(1).text()).toBe("annexe_1");
+    });
 
-    it(`displays instance data keys as expected`, () => {
-            const wrapper = getWrapper()
-            const spans = wrapper.find("#report-database-instance").findAll("span")
-            expect(spans.at(0).text()).toBe("Instance:")
+    it(`displays no database instance row if there are no instances`, () => {
+        let wrapper = getWrapper(props, {...initialReportLog, instances: null});
+        expect(wrapper.find("#report-database-instances").exists()).toBe(false);
 
-            const liKeys = spans.at(1).findAll("ul li")
-            expect(liKeys.at(0).text()).toBe("database")
-            expect(liKeys.at(1).text()).toBe("instance")
-    })
+        wrapper = getWrapper(props, {...initialReportLog, instances: {}});
+        expect(wrapper.find("#report-database-instances").exists()).toBe(false);
+    });
 
     it(`displays status data as expected`,  () => {
             const wrapper = getWrapper()
