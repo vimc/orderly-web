@@ -56,7 +56,7 @@ class ReportTests : IntegrationTest()
         val statusResponse = apiRequestHelper.get("/reports/$key/status",
                 userEmail = fakeGlobalReportReviewer())
         val status = JSONValidator.getData(statusResponse.text)["status"].asText()
-        assertThat(status).isEqualTo("interrupted")
+        assertThat(status).isEqualTo("cancelled")
     }
 
     @Test
