@@ -8,6 +8,7 @@ import org.junit.Test
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
+import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
@@ -474,5 +475,54 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         assertThatThrownBy {
             sut.getWorkflowRunDetails("fake_key")
         }.hasMessageContaining("Unknown workflow : 'fake_key'")
+    }
+
+    @Test
+    fun `can update status of a workflow`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val workflowRun = WorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            Instant.now(),
+            listOf(
+                WorkflowReportWithParams("reportA", emptyMap())
+            ),
+            emptyMap()
+        )
+
+        sut.addWorkflowRun(workflowRun)
+
+        JooqContext().use {
+            val result = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN).fetch()
+            assertThat(result.count()).isEqualTo(1)
+            assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.STATUS]).isNull()
+        }
+
+        sut.updateWorkflowRun(workflowRun.key, "success")
+
+        JooqContext().use {
+            val result = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN).fetch()
+            assertThat(result.count()).isEqualTo(1)
+            assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.STATUS]).isEqualTo("success")
+        }
+    }
+
+    @Test
+    fun `cannot update status of an unknown workflow`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        assertThatThrownBy {
+            sut.updateWorkflowRun("adventurous_aardvark", "success")
+        }
+            .isInstanceOf(UnknownObjectError::class.java)
+            .hasMessageContaining("adventurous_aardvark")
     }
 }

@@ -20,6 +20,9 @@ object WebWorkflowRouteConfig : RouteConfig
         WebEndpoint("/workflows/:key", WorkflowRunController::class, "getWorkflowRunDetails")
             .json()
             .secure(runReports)
-            .transform()
+            .transform(),
+        WebEndpoint("/workflows/:key/status", WorkflowRunController::class, "getWorkflowRunStatus")
+            .json()
+            .secure(runReports)
     )
 }

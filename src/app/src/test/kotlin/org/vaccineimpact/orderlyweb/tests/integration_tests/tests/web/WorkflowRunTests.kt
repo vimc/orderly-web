@@ -119,29 +119,7 @@ class WorkflowRunTests : IntegrationTest()
     }
 
     @Test
-    fun `runs basic workflow`()
-    {
-        assertThat(
-            runWorkflow(
-                """
-                {
-                  "name": "basic workflow",
-                  "reports": [
-                    {
-                      "name": "minimal"
-                    },
-                    {
-                      "name": "global"
-                    }
-                  ]
-                }
-            """.trimIndent()
-            )
-        ).isTrue()
-    }
-
-    @Test
-    fun `runs full workflow`()
+    fun `runs workflow`()
     {
         val branch = "other"
         val commits = OrderlyServer(AppConfig()).get(
@@ -152,9 +130,7 @@ class WorkflowRunTests : IntegrationTest()
         )
         val commit = commits.listData(GitCommit::class.java).first().id
 
-        assertThat(
-            runWorkflow(
-                """
+        val json = """
                 {
                   "name": "full workflow",
                   "reports": [
@@ -185,8 +161,82 @@ class WorkflowRunTests : IntegrationTest()
                   "git_commit": "$commit"
                 }
             """.trimIndent()
+
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflow",
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.post,
+            json
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
+
+        val workflowRunResponse = Serializer.instance.gson.fromJson(
+            JSONValidator.getData(response.text).toString(),
+            WorkflowRunController.WorkflowRunResponse::class.java
+        )
+
+        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
+
+        assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
+
+        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
+    }
+
+    @Test
+    fun `gets workflow status`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+
+        val runResponse = OrderlyServer(AppConfig()).post(
+            "/v1/workflow/run/",
+            """{"name": "minimal", "reports": [{"name": "minimal"}]}""",
+            emptyMap()
+        )
+        val workflowRunResponse = runResponse.data(WorkflowRunController.WorkflowRunResponse::class.java)
+        val repo = OrderlyWebWorkflowRunRepository()
+        repo.addWorkflowRun(
+            WorkflowRun(
+                "minimal workflow",
+                workflowRunResponse.key,
+                "test.user@example.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
             )
-        ).isTrue()
+        )
+        val status = workflowStatus(workflowRunResponse.key)
+        assertThat(status).isEqualTo("success")
+
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows/${workflowRunResponse.key}/status",
+            sessionCookie,
+            ContentTypes.json
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowStatus")
+        val workflowRunStatusResponse = Serializer.instance.gson.fromJson(
+            JSONValidator.getData(response.text).toString(),
+            WorkflowRunController.WorkflowRunStatusResponse::class.java
+        )
+        assertThat(workflowRunStatusResponse.status).isEqualTo(status)
+    }
+
+    @Test
+    fun `returns error getting status for unknown workflow`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows/fake/status",
+            sessionCookie,
+            ContentTypes.json
+        )
+        assertThat(response.statusCode).isEqualTo(404)
     }
 
     private fun addWorkflowRunExample()
@@ -213,46 +263,18 @@ class WorkflowRunTests : IntegrationTest()
         sut.addWorkflowRun(workflowRun)
     }
 
-    private fun runWorkflow(json: String): Boolean
+    private fun workflowStatus(key: String): String
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-
-        val response = webRequestHelper.requestWithSessionCookie(
-            "/workflow",
-            sessionCookie,
-            ContentTypes.json,
-            HttpMethod.post,
-            json
-        )
-        assertSuccessful(response)
-        assertJsonContentType(response)
-        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
-
-        val workflowRunResponse = Serializer.instance.gson.fromJson(
-            JSONValidator.getData(response.text).toString(),
-            WorkflowRunController.WorkflowRunResponse::class.java
-        )
-
-        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
-
-        assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
-
-        var successful = false
         for (i in 0..9)
         {
-            successful = workflowRunResponse.reports.all { key ->
-                val status = OrderlyServer(AppConfig()).get(
-                    "/v1/reports/$key/status/",
-                    emptyMap()
-                )
-                JSONValidator.getData(status.text)["status"].textValue() == "success"
-            }
-            if (successful)
+            val response = OrderlyServer(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
+            val status = JSONValidator.getData(response.text)["status"].textValue()
+            if (status in listOf("success", "error", "cancelled"))
             {
-                break
+                return status
             }
             Thread.sleep(1000)
         }
-        return successful
+        throw Exception("Workflow timeout")
     }
 }
