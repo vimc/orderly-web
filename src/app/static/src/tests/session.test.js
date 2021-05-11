@@ -4,7 +4,6 @@ describe('session', () => {
 
     beforeEach(() => {
         jest.restoreAllMocks()
-        // Storage.prototype.clear()
     });
 
     it('gets selected tab from local storage', () => {
