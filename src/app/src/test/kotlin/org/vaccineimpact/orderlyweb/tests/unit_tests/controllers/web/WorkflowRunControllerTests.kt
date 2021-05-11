@@ -311,6 +311,63 @@ class WorkflowRunControllerTests
         )
     }
 
+    @Test
+    fun `can get the status of a workflow`()
+    {
+        val context = mock<ActionContext> {
+            on { params(":key") } doReturn "workflow_key1"
+            on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
+        }
+
+        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "status": "success"}}"""
+
+        val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
+        }
+
+        val repo = mock<WorkflowRunRepository>()
+        val sut = WorkflowRunController(context, repo, apiClient)
+        val result = sut.getWorkflowRunStatus()
+
+        verify(apiClient).get("/v1/workflow/workflow_key1/status/", emptyMap())
+
+        assertThat(
+            Serializer.instance.gson.fromJson(
+                JsonLoader.fromString(result)["data"].toString(),
+                WorkflowRunController.WorkflowRunStatusResponse::class.java
+            )
+        ).isEqualTo(
+            WorkflowRunController.WorkflowRunStatusResponse("workflow_key1", "success")
+        )
+
+        verify(repo).updateWorkflowRun("workflow_key1", "success")
+    }
+
+    @Test
+    fun `passes through error when getting status of a workflow`()
+    {
+        val context = mock<ActionContext> {
+            on { params(":key") } doReturn "workflow_key1"
+            on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
+        }
+
+        val mockResponse = """{"status": "failure", "data": null, "errors": []}"""
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { get(any(), any<Map<String, String>>()) } doReturn OrderlyServerResponse(
+                mockResponse,
+                400
+            )
+        }
+
+        val sut = WorkflowRunController(context, mock(), apiClient)
+        val response = sut.getWorkflowRunStatus()
+        verify(context).setStatusCode(400)
+        assertThat(response).isEqualTo(mockResponse)
+    }
+
     private fun getWorkflowRunRequestExample() =
         WorkflowRunRequest(
             "workflow1",
@@ -323,7 +380,6 @@ class WorkflowRunControllerTests
             "branch1",
             "commit1"
         )
-
 
     private fun validateAgainstSchema(json: String) =
         JsonSchemaFactory.byDefault()
