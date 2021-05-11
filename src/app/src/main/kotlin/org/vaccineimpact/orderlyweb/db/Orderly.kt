@@ -26,12 +26,14 @@ class Orderly(val isReviewer: Boolean,
         val basicReportVersion = reportRepository.getReportVersion(name, version)
         val artefacts = artefactRepository.getArtefacts(name, version)
         val parameterValues = reportRepository.getParametersForVersions(listOf(version))[version] ?: mapOf()
+        val instances = reportRepository.getReportVersionInstances(version)
 
         return ReportVersionWithArtefactsDataDescParamsResources(basicReportVersion,
                 artefacts = artefacts,
                 resources = getResourceFiles(name, version),
                 dataInfo = getDataInfo(name, version),
-                parameterValues = parameterValues)
+                parameterValues = parameterValues,
+                instances = instances)
     }
 
     override fun getReportVersionTags(name: String, version: String): ReportVersionTags
