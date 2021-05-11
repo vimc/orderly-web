@@ -7,8 +7,8 @@ function getWrapper(key: string = '') {
         propsData: {
             initialSelectedKey: key,
             reports: [
-                {name: "report2", date: new Date().toISOString(), key: "report2Key"},
-                {name: "report1", date: new Date().toISOString(), key: "report1Key"}
+                {name: "report2", date: new Date(2021, 3, 21, 9, 10).toISOString(), key: "report2Key"},
+                {name: "report1", date: new Date(2021, 3, 21, 10, 1).toISOString(), key: "report1Key"}
             ]
         }
     });
@@ -40,6 +40,10 @@ describe("runningReportsList", () => {
         const reportSuggestions = wrapper.findAll("a div.sr-only");
         expect(reportSuggestions.length).toBe(1);
         expect(reportSuggestions.at(0).text()).toBe("report2");
+
+        const reportDates = wrapper.findAll("a span.text-muted");
+        expect(reportDates.length).toBe(1);
+        expect(reportDates.at(0).text()).toBe("Run started: Wed Apr 21 2021, 09:10");
 
         done();
     });

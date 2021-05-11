@@ -23,6 +23,10 @@ docker build --tag orderly-web-cli-build \
 $here/make-db.sh
 
 # Run the created image
+function cleanup() {
+  $here/../scripts/clear-docker.sh
+}
+trap cleanup EXIT
 docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $BUILDKITE_DOCKER_AUTH_PATH:/root/.docker/config.json \

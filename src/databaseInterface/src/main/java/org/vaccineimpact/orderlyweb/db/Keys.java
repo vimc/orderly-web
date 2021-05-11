@@ -45,6 +45,7 @@ import org.vaccineimpact.orderlyweb.db.tables.ReportVersionArtefact;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionBatch;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionCustomFields;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionData;
+import org.vaccineimpact.orderlyweb.db.tables.ReportVersionInstance;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionPackage;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionTag;
 import org.vaccineimpact.orderlyweb.db.tables.ReportVersionView;
@@ -87,6 +88,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionArtefactRecor
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionBatchRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionCustomFieldsRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionDataRecord;
+import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionInstanceRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionPackageRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionRecord;
 import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionTagRecord;
@@ -148,6 +150,7 @@ public class Keys {
     public static final UniqueKey<ReportVersionBatchRecord> PK_REPORT_VERSION_BATCH = UniqueKeys0.PK_REPORT_VERSION_BATCH;
     public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = UniqueKeys0.PK_REPORT_VERSION_CUSTOM_FIELDS;
     public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = UniqueKeys0.PK_REPORT_VERSION_DATA;
+    public static final UniqueKey<ReportVersionInstanceRecord> PK_REPORT_VERSION_INSTANCE = UniqueKeys0.PK_REPORT_VERSION_INSTANCE;
     public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = UniqueKeys0.PK_REPORT_VERSION_PACKAGE;
     public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = UniqueKeys0.PK_REPORT_VERSION_TAG;
     public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = UniqueKeys0.PK_REPORT_VERSION_VIEW;
@@ -199,6 +202,7 @@ public class Keys {
     public static final ForeignKey<ReportVersionCustomFieldsRecord, CustomFieldsRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1 = ForeignKeys0.FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1;
     public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_DATA_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionDataRecord, DataRecord> FK_REPORT_VERSION_DATA_DATA_1 = ForeignKeys0.FK_REPORT_VERSION_DATA_DATA_1;
+    public static final ForeignKey<ReportVersionInstanceRecord, ReportVersionRecord> FK_REPORT_VERSION_INSTANCE_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_INSTANCE_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionPackageRecord, ReportVersionRecord> FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionTagRecord, ReportVersionRecord> FK_REPORT_VERSION_TAG_REPORT_VERSION_1 = ForeignKeys0.FK_REPORT_VERSION_TAG_REPORT_VERSION_1;
     public static final ForeignKey<ReportVersionTagRecord, TagRecord> FK_REPORT_VERSION_TAG_TAG_1 = ForeignKeys0.FK_REPORT_VERSION_TAG_TAG_1;
@@ -245,6 +249,7 @@ public class Keys {
         public static final UniqueKey<ReportVersionBatchRecord> PK_REPORT_VERSION_BATCH = Internal.createUniqueKey(ReportVersionBatch.REPORT_VERSION_BATCH, "pk_report_version_batch", new TableField[] { ReportVersionBatch.REPORT_VERSION_BATCH.REPORT_VERSION }, true);
         public static final UniqueKey<ReportVersionCustomFieldsRecord> PK_REPORT_VERSION_CUSTOM_FIELDS = Internal.createUniqueKey(ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "pk_report_version_custom_fields", new TableField[] { ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.ID }, true);
         public static final UniqueKey<ReportVersionDataRecord> PK_REPORT_VERSION_DATA = Internal.createUniqueKey(ReportVersionData.REPORT_VERSION_DATA, "pk_report_version_data", new TableField[] { ReportVersionData.REPORT_VERSION_DATA.ID }, true);
+        public static final UniqueKey<ReportVersionInstanceRecord> PK_REPORT_VERSION_INSTANCE = Internal.createUniqueKey(ReportVersionInstance.REPORT_VERSION_INSTANCE, "pk_report_version_instance", new TableField[] { ReportVersionInstance.REPORT_VERSION_INSTANCE.REPORT_VERSION }, true);
         public static final UniqueKey<ReportVersionPackageRecord> PK_REPORT_VERSION_PACKAGE = Internal.createUniqueKey(ReportVersionPackage.REPORT_VERSION_PACKAGE, "pk_report_version_package", new TableField[] { ReportVersionPackage.REPORT_VERSION_PACKAGE.ID }, true);
         public static final UniqueKey<ReportVersionTagRecord> PK_REPORT_VERSION_TAG = Internal.createUniqueKey(ReportVersionTag.REPORT_VERSION_TAG, "pk_report_version_tag", new TableField[] { ReportVersionTag.REPORT_VERSION_TAG.ID }, true);
         public static final UniqueKey<ReportVersionViewRecord> PK_REPORT_VERSION_VIEW = Internal.createUniqueKey(ReportVersionView.REPORT_VERSION_VIEW, "pk_report_version_view", new TableField[] { ReportVersionView.REPORT_VERSION_VIEW.ID }, true);
@@ -294,6 +299,7 @@ public class Keys {
         public static final ForeignKey<ReportVersionCustomFieldsRecord, CustomFieldsRecord> FK_REPORT_VERSION_CUSTOM_FIELDS_CUSTOM_FIELDS_1 = Internal.createForeignKey(Keys.PK_CUSTOM_FIELDS, ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS, "fk_report_version_custom_fields_custom_fields_1", new TableField[] { ReportVersionCustomFields.REPORT_VERSION_CUSTOM_FIELDS.KEY }, true);
         public static final ForeignKey<ReportVersionDataRecord, ReportVersionRecord> FK_REPORT_VERSION_DATA_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, ReportVersionData.REPORT_VERSION_DATA, "fk_report_version_data_report_version_1", new TableField[] { ReportVersionData.REPORT_VERSION_DATA.REPORT_VERSION }, true);
         public static final ForeignKey<ReportVersionDataRecord, DataRecord> FK_REPORT_VERSION_DATA_DATA_1 = Internal.createForeignKey(Keys.PK_DATA, ReportVersionData.REPORT_VERSION_DATA, "fk_report_version_data_data_1", new TableField[] { ReportVersionData.REPORT_VERSION_DATA.HASH }, true);
+        public static final ForeignKey<ReportVersionInstanceRecord, ReportVersionRecord> FK_REPORT_VERSION_INSTANCE_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, ReportVersionInstance.REPORT_VERSION_INSTANCE, "fk_report_version_instance_report_version_1", new TableField[] { ReportVersionInstance.REPORT_VERSION_INSTANCE.REPORT_VERSION }, true);
         public static final ForeignKey<ReportVersionPackageRecord, ReportVersionRecord> FK_REPORT_VERSION_PACKAGE_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, ReportVersionPackage.REPORT_VERSION_PACKAGE, "fk_report_version_package_report_version_1", new TableField[] { ReportVersionPackage.REPORT_VERSION_PACKAGE.REPORT_VERSION }, true);
         public static final ForeignKey<ReportVersionTagRecord, ReportVersionRecord> FK_REPORT_VERSION_TAG_REPORT_VERSION_1 = Internal.createForeignKey(Keys.PK_REPORT_VERSION, ReportVersionTag.REPORT_VERSION_TAG, "fk_report_version_tag_report_version_1", new TableField[] { ReportVersionTag.REPORT_VERSION_TAG.REPORT_VERSION }, true);
         public static final ForeignKey<ReportVersionTagRecord, TagRecord> FK_REPORT_VERSION_TAG_TAG_1 = Internal.createForeignKey(Keys.PK_TAG, ReportVersionTag.REPORT_VERSION_TAG, "fk_report_version_tag_tag_1", new TableField[] { ReportVersionTag.REPORT_VERSION_TAG.TAG }, true);

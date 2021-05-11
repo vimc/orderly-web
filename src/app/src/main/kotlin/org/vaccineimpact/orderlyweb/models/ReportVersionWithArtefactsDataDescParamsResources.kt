@@ -6,7 +6,8 @@ data class ReportVersionWithArtefactsDataDescParamsResources(@Transient val basi
                                                              val artefacts: List<Artefact>,
                                                              val resources: List<FileInfo>,
                                                              val dataInfo: List<DataInfo>,
-                                                             val parameterValues: Map<String, String>)
+                                                             val parameterValues: Map<String, String>,
+                                                             val instances: Map<String, String>)
     : ReportVersion
 {
     override val date: Instant = basicReportVersion.date

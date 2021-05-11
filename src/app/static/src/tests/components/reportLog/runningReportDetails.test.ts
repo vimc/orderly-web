@@ -3,6 +3,7 @@ import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
+import {longTimestamp} from "../../../js/utils/helpers";
 
 describe(`runningReportDetails`, () => {
 
@@ -12,7 +13,7 @@ describe(`runningReportDetails`, () => {
 
     const initialReportLog = {
         email: "test@example.com",
-        date: "",
+        date: new Date(2021, 3, 21, 9, 26, 54).toISOString(),
         report: "minimal",
         instances: { "database": "support", "instance" : "annexe"},
         params: {"name" : "nmin", "cologne" : "ey6"},
@@ -45,6 +46,18 @@ describe(`runningReportDetails`, () => {
     afterEach(() => {
         jest.runOnlyPendingTimers();
         jest.useRealTimers();
+    });
+
+    it("displays report name and date as expected", () => {
+        const wrapper = getWrapper();
+
+        const name = wrapper.find("#report-name");
+        expect(name.findAll("span").at(0).text()).toBe("Report:");
+        expect(name.findAll("span").at(1).text()).toBe("minimal");
+
+        const start = wrapper.find("#report-start");
+        expect(start.findAll("span").at(0).text()).toBe("Run started:");
+        expect(start.findAll("span").at(1).text()).toBe("Wed Apr 21 2021, 09:26");
     });
 
     it(`displays git branch data as expected`, () => {

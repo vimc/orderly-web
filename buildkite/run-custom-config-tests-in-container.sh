@@ -18,6 +18,10 @@ $here/make-db.sh
 $here/../scripts/run-dependencies.sh
 
 # Run the created image
+function cleanup() {
+  $here/../scripts/clear-docker.sh
+}
+trap cleanup EXIT
 docker run --rm \
     -v $PWD/git:/api/src/customConfigTests/git \
     --network=host \
