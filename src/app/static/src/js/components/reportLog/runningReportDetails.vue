@@ -161,7 +161,6 @@
                     api.get(`/running/${this.reportKey}/logs/`)
                         .then(({data}) => {
                             this.reportLog = data.data;
-                            this.reportLog.instances = {source: "uat", annex: "annex_1"};
                             this.error = "";
                             this.defaultMessage = "";
 

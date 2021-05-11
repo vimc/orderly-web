@@ -8,11 +8,11 @@ describe('session', () => {
 
     it('gets selected tab from local storage', () => {
 
-        Storage.prototype.getItem = jest.fn((x) => x);
+        Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
 
         const result = session.getSelectedTab();
 
-        expect(result).toBe("selectedRunningReportTab");
+        expect(result).toBe("value for selectedRunningReportTab");
     });
 
     it('sets selected tab in local storage', () => {

@@ -59,7 +59,7 @@
         data() {
             return {
                 selectedTab: session.getSelectedTab() || "runReport",
-                selectedRunningReportKey: session.getSelectedRunningReportKey() || ""
+                selectedRunningReportKey: session.getSelectedRunningReportKey()
             }
         },
         methods: {
@@ -71,6 +71,10 @@
                 this.selectedTab = tab;
                 session.setSelectedTab(tab);
             }
-        }
+        },
+        // beforeDestroy(){
+        //     console.log("destroy fired")
+        //     session.setSelectedTab("runReport")
+        // }
     })
 </script>
