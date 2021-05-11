@@ -109,4 +109,25 @@ class WorkflowRunController(
         }
         return passThroughResponse(response)
     }
+
+    internal data class WorkflowRunStatusResponse(
+        @SerializedName(value = "workflow_key")
+        val key: String,
+        val status: String
+    )
+
+    fun getWorkflowRunStatus(): String
+    {
+        val key = context.params(":key")
+        val response = orderlyServerAPI.get(
+            "/v1/workflow/$key/status/",
+            emptyMap()
+        )
+        if (response.statusCode == HTTP_OK)
+        {
+            val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
+            workflowRunRepository.updateWorkflowRun(workflowRunStatusResponse.key, workflowRunStatusResponse.status)
+        }
+        return passThroughResponse(response)
+    }
 }

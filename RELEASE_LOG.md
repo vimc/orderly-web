@@ -333,3 +333,28 @@
 
 ## Other branches merged in this release
 
+# v1.8.1
+
+## Tickets
+* VIMC-4596: Change Run report button on ReportVersion page to link to run-report
+* mrc-2147: Show available running reports on Running report logs page
+* mrc-2148: Fetch and display logs and metadata for selected running report
+* mrc-2149: Poll for status updates while running report is incomplete
+* mrc-2173: Add report db instance to report version page
+* mrc-2198: Accessibility: OrderlyWeb - add report, address issues
+* mrc-2302: Create database table/logic for workflows
+* mrc-2304: Add endpoint to run a workflow
+* mrc-2305: Add endpoint to retrieve list of workflows
+* mrc-2307: Refactor navigation for running reports and workflows
+* mrc-2332: Use verified version of Codecov uploader
+* mrc-2339: Add report name and start time to running report details view
+* mrc-2343: Fix database instaces in report log details view
+* mrc-2354: Ensure interrupted orderly-web CI builds are cleaned-up
+* mrc-2360: Update wording on Accessibility page
+
+## Other branches merged in this release
+* dependabot/npm_and_yarn/src/app/static/elliptic-6.5.4
+* dependabot/npm_and_yarn/src/app/static/ssri-6.0.2
+* dependabot/npm_and_yarn/src/app/static/y18n-3.2.2
+* mrc-2303x
+
