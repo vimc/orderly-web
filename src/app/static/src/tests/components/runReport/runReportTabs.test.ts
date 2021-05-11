@@ -51,6 +51,7 @@ describe("runReportTabs", () => {
 
     it("tab panes switches to logs on click and renders logs", async () => {
         const wrapper = getWrapper()
+        Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
         const logsTab = wrapper.findAll(".nav-item").at(1).find("a");
         logsTab.trigger("click");
@@ -74,6 +75,7 @@ describe("runReportTabs", () => {
     });
 
     it("selects report key when reportRun emits update key event", () => {
+        Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
         const wrapper = getWrapper();
         const runReport = wrapper.find(RunReport);
