@@ -71,10 +71,6 @@
                 this.selectedTab = tab;
                 session.setSelectedTab(tab);
             }
-        },
-        // beforeDestroy(){
-        //     console.log("destroy fired")
-        //     session.setSelectedTab("runReport")
-        // }
+        }
     })
 </script>
