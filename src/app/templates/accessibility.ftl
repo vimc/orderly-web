@@ -4,7 +4,7 @@
 <@layout>
     <h1>Accessibility on ${appName}</h1>
     <p id="access-loc">This statement applies to content published on ${appUrl}</p>
-    <p>We want as many people as possible to be able to use this website. For example, that means you should
+    <p>We want this website to be as accessible as possible. For example, that means you should
         be able to:</p>
     <ul>
         <li>Resize your window with content being reformatted appropriately</li>

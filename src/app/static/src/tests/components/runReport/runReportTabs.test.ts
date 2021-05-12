@@ -84,4 +84,17 @@ describe("runReportTabs", () => {
         expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportKey");
         expect(spySetStorage.calls[0][1]).toBe("emittedKey");
     });
+
+    it("switches to the reportLogs tab when reportRun emits change tab event", async () => {
+        const wrapper = getWrapper();
+        const runReport = wrapper.find(RunReport);
+        runReport.vm.$emit("update:key", "emittedKey");
+        runReport.vm.$emit("changeTab");
+        await Vue.nextTick();
+        expect(wrapper.find("#run-tab").exists()).toBe(false);
+        const logsPane = wrapper.find("#logs-tab")
+        expect(logsPane.classes()).toEqual(["tab-pane", "active", "pt-4", "pt-md-1"]);
+        expect(wrapper.find("#logs-link").classes()).toContain("active");
+        expect(wrapper.find("#run-link").classes()).not.toContain("active");
+    });
 });
