@@ -32,7 +32,7 @@
         <div id="workflow-tags-div" class="form-group row">
             <label class="col-sm-4 col-form-label text-left">Report version tags</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="run-workflow-report-version-tags" placeholder="interim estimates">
+                <input type="text" @input="validateStep" class="form-control" id="run-workflow-report-version-tags" placeholder="interim estimates">
             </div>
         </div>
         <div id="workflow-completion-div" class="form-group row">
@@ -52,10 +52,22 @@ interface Props {
     workflowMetadata: RunWorkflowMetadata | null
 }
 
-export default Vue.extend<unknown, unknown, unknown, Props>({
+interface Computed {
+    validateStep: void
+}
+
+export default Vue.extend<unknown, Computed, unknown, Props>({
     name: "runWorkflowRun",
     props: {
         workflowMetadata: null
+    },
+    computed: {
+        validateStep: function () {
+            /**
+             * Todo: Validate this component and emit true if values are valid and false if otherwise
+             */
+            this.$emit("valid", false)
+        }
     }
 })
 </script>

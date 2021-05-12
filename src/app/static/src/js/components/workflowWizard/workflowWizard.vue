@@ -1,174 +1,127 @@
 <template>
     <div id="workflow-wizard" class="container">
             <step v-for="step in steps"
-                  v-if="!step.hide"
-                  :key="step.number"
-                  :active="isActive(step.number)"
-                  :hasVisibility="hasVisibility(step.number)"
-                  @jump="jump">
+                  :key="getCurrentIndex(step.name)"
+                  :active="isActive(step.name)"
+                  :hasVisibility="handleVisibility(step.name)"
+                  :valid="isValid"
+                  @back="back(step.name)"
+                  @next="next(step.name)"
+                  @cancel="cancel">
                 <component :is="step.component"
-                           :workflow-metadata="runWorkflowMetadata"
-                           @jump="jump">
+                           @valid="validate"
+                           :workflow-metadata="runWorkflowMetadata">
                 </component>
             </step>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import step from "../workflowWizard/step.vue";
-import {RunWorkflowMetadata} from "../../utils/types"
-import runWorkflowCreate from "../runWorkflow/runWorkflowCreate.vue";
-import runWorkflowSummary from "../runWorkflow/runWorkflowSummary.vue";
-import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue";
-import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue";
+    import Vue from "vue"
+    import step from "../workflowWizard/step.vue";
+    import {RunWorkflowMetadata} from "../../utils/types"
+    import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue";
+    import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue";
 
-interface Data {
-    activeStep: number
-    steps: {}
-    initiatedRerun: boolean
-}
-
-interface Methods {
-    isActive: (num: number) => boolean
-    jump: (action: string) => void
-    next: () => void
-    back: () => void
-    cancel: () => void
-    run: () => void
-    hideReportStep: () => void
-    unHideReportStep: () => void
-    handleRerun: () => void
-    handleClone: () => void
-    handleCreate: () => void
-    hasVisibility: (num: number) => {}
-    handleBackVisibility: (num: number) => boolean
-    handleNextVisibility: (num: number) => boolean
-}
-
-interface Props {
-    runWorkflowMetadata: RunWorkflowMetadata | null
-}
-
-enum stepNumber {
-    Create = 1,
-    Report = 2,
-    Summary = 3,
-    Run = 4
-}
-const steps = [
-    {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-    {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-    {name: "summary", number: 3, hide: true, component: "runWorkflowSummary"},
-    {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
-]
-
-export default Vue.extend<Data, Methods, unknown, Props>({
-    name: "workflowWizard",
-    props: {
-        runWorkflowMetadata: null
-    },
-    data(): Data {
-        return {
-            activeStep: stepNumber.Create,
-            steps: steps,
-            initiatedRerun: false
-        }
-    },
-    methods: {
-        hasVisibility(number) {
-            return {
-                run: number === stepNumber.Run,
-                cancel: number !== stepNumber.Create,
-                next: this.handleNextVisibility(number),
-                back: this.handleBackVisibility(number)
-            }
-        },
-        handleBackVisibility: function (number) {
-            return number > stepNumber.Report && !this.initiatedRerun
-        },
-        handleNextVisibility: function (number) {
-            return number !== stepNumber.Run && number !== stepNumber.Create
-        },
-        isActive: function (num: number) {
-            return num === this.activeStep
-        },
-        next: function () {
-            for (let i = this.activeStep; i < this.steps.length; i++) {
-                if (!this.steps[i].hide) {
-                    this.activeStep = this.steps[i].number
-                    break
-                }
-            }
-        },
-        back: function () {
-            for (let i = 1; i < this.activeStep; i--) {
-                if (!this.steps[i].hide) {
-                    this.activeStep = this.steps[i].number
-                    break
-                }
-            }
-        },
-        cancel: function () {
-            this.activeStep = stepNumber.Create
-        },
-        run: function () {
-            //This should be emitted to runWorkflow
-        },
-        hideReportStep: function () {
-            const index = this.steps.findIndex(step => step.name === "report")
-            this.steps[index].hide = true
-        },
-        unHideReportStep: function () {
-            const index = this.steps.findIndex(step => step.name === "report")
-            this.steps[index].hide = false
-        },
-        handleRerun: function () {
-            this.hideReportStep()
-            this.initiatedRerun = true
-            this.activeStep = stepNumber.Run
-        },
-        handleClone: function () {
-            this.unHideReportStep()
-            this.initiatedRerun = false
-            this.activeStep = stepNumber.Report
-        },
-        handleCreate: function () {
-            this.unHideReportStep()
-            this.initiatedRerun = false
-            this.activeStep = stepNumber.Report
-        },
-        jump: function (value) {
-            switch (value) {
-                case "next":
-                    this.next()
-                    break;
-                case "back":
-                    this.back()
-                    break;
-                case "cancel":
-                    this.cancel()
-                    break;
-                case "run":
-                    this.run()
-                    break;
-                case "create":
-                    this.handleCreate()
-                    break
-                case "rerun":
-                    this.handleRerun()
-                    break
-                case "clone":
-                    this.handleClone()
-            }
-        }
-    },
-    components: {
-        runWorkflowCreate,
-        runWorkflowReport,
-        runWorkflowSummary,
-        runWorkflowRun,
-        step
+    interface Data {
+        activeStep: number
+        steps: {},
+        isValid: boolean
     }
-})
+
+    interface Methods {
+        isActive: (name: string) => boolean
+        next: (name: string) => void
+        back: (name: string) => void
+        cancel: () => void
+        handleVisibility: (name: string) => {}
+        getCurrentIndex: (name: string) => number
+        validate: (valid: Event) => void
+    }
+
+    interface Props {
+        runWorkflowMetadata: RunWorkflowMetadata | null
+        entryStep: string | null
+    }
+
+    const steps = [
+        {name: "report", component: "runWorkflowReport"},
+        {name: "run", component: "runWorkflowRun"},
+    ]
+
+    interface Computed {
+        isValid: boolean
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
+        name: "workflowWizard",
+        props: {
+            runWorkflowMetadata: null,
+            entryStep: null
+        },
+        data(): Data {
+            return {
+                activeStep: steps.findIndex(step => step.name === this.entryStep),
+                steps: steps,
+                isValid: false
+            }
+        },
+        methods: {
+            handleVisibility(name) {
+                const number = this.getCurrentIndex(name)
+
+                /**
+                 * hides back button and next button changes
+                 * to run workflow when on final step
+                 */
+                if (number + 1 === this.steps.length) {
+                    return {cancel: true, next: false, back: false}
+                }
+
+                /**
+                 * Back button gets hidden when on first step
+                 */
+                if (number === 0) {
+                    return {cancel: true, next: true, back: false}
+                }
+                return {cancel: true, next: true, back: true}
+            },
+            isActive: function (name: string) {
+                return this.getCurrentIndex(name) === this.activeStep
+            },
+            next: function (name) {
+                if (this.isValid) {
+                    if (this.steps.length === this.getCurrentIndex(name) + 1) {
+                        this.$emit("complete", true)
+                    } else {
+                        this.activeStep = steps.findIndex(step => step.name === name) + 1
+                    }
+                }
+            },
+            back: function (name) {
+                if (this.isValid) {
+                    if (this.getCurrentIndex(name) !== 0) {
+                        this.activeStep = steps.findIndex(step => step.name === name) - 1
+                    }
+                }
+            },
+            cancel: function () {
+                //Todo: Change the confirm dialog implementation to something more appealing
+                if(confirm("Are you sure you want to cancel?")) {
+                    this.$emit("cancel")
+                }
+            },
+            getCurrentIndex: function (name) {
+                return steps.findIndex(step => step.name === name)
+            },
+            validate: function (valid) {
+                this.isValid = !!valid
+            }
+        },
+        components: {
+            runWorkflowReport,
+            runWorkflowRun,
+            step
+        }
+    })
 </script>

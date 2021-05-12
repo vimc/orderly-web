@@ -12,10 +12,22 @@ interface Props {
     workflowMetadata: RunWorkflowMetadata | null
 }
 
-export default Vue.extend<unknown, unknown, unknown, Props>({
+interface Computed {
+    validateStep: void
+}
+
+export default Vue.extend<unknown, Computed, unknown, Props>({
     name: "runWorkflowSummary",
     props: {
         workflowMetadata: null
+    },
+    computed: {
+    validateStep: function () {
+        /**
+         * Todo: Validate this component and emit true if values are valid and false if otherwise
+         */
+        this.$emit("valid", false)
     }
+}
 })
 </script>

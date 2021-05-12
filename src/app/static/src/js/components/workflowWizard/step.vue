@@ -3,18 +3,18 @@
         <div>
             <slot></slot>
         </div>
-        <div class="pt-4">
-            <button v-if="hasVisibility.cancel" type="button" class="btn btn-sm btn-secondary disabled"
-                    @click="jump('cancel')">Cancel
+        <div class="pt-4" v-if="hasValidComponent">
+            <button type="button" class="btn btn-sm btn-secondary"
+                    @click="cancel">Cancel
             </button>
-            <button v-if="hasVisibility.back" type="button" class="btn btn-sm btn-primary"
-                    @click="jump('back')">Back
+            <button v-if="hasVisibility.back" type="button"
+                    :class="!valid ? 'disabled' : ''"
+                    class="btn btn-sm btn-primary"
+                    @click="back">Back
             </button>
-            <button v-if="hasVisibility.next" type="button" class="btn btn-sm btn-success"
-                    @click="jump('next')">Next
-            </button>
-            <button v-if="hasVisibility.run" type="button" class="btn btn-sm btn-success"
-                    @click="jump('run')">Run workflow
+            <button type="button" class="btn btn-sm btn-success"
+                    :class="!valid ? 'disabled' : ''"
+                    @click="next"> {{ hasVisibility.next ? "Next" : "Run workflow" }}
             </button>
         </div>
     </div>
@@ -26,24 +26,46 @@ import Vue from "vue"
 interface Props {
     hasVisibility: {}
     active: boolean
+    valid: boolean
 }
 
 interface Methods {
-    jump: (action: string) => void
+    next: () => void
+    back: () => void
+    cancel: () => void
 }
 
-export default Vue.extend<unknown, Methods, unknown, Props>({
+interface Computed {
+    hasValidComponent: boolean
+}
+
+export default Vue.extend<unknown, Methods, Computed, Props>({
     name: "step",
     props: {
         hasVisibility: {},
         active: {
             type: Boolean,
             required: true
+        },
+        valid: {
+            type: Boolean,
+            required: true
+        }
+    },
+    computed: {
+        hasValidComponent() {
+            return !!this.$slots.default
         }
     },
     methods: {
-        jump: function (action) {
-            this.$emit("jump", action)
+        next: function () {
+            this.$emit("next")
+        },
+        back: function () {
+            this.$emit("back")
+        },
+        cancel: function () {
+            this.$emit("cancel")
         }
     }
 })

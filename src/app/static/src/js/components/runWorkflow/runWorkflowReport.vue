@@ -50,7 +50,7 @@
                 <div id="add-report-div" class="form-group row">
                     <label for="workflow-report" class="col-sm-2 col-form-label text-right">Add report</label>
                     <div class="col-sm-4 input-group">
-                        <input type="text" class="form-control mr-2" id="workflow-report" placeholder="16">
+                        <input type="text" @input="validateStep" class="form-control mr-2" id="workflow-report" placeholder="16">
                         <button id="add-report-button" type="button" class="px-2 btn btn-primary">Add report</button>
                     </div>
                 </div>
@@ -67,10 +67,22 @@ interface Props {
     workflowMetadata: RunWorkflowMetadata | null
 }
 
-export default Vue.extend<unknown, unknown, unknown, Props>({
+interface Computed {
+    validateStep: void
+}
+
+export default Vue.extend<unknown, Computed, unknown, Props>({
     name: "runWorkflowReport",
     props: {
         workflowMetadata: null
+    },
+    computed: {
+        validateStep: function () {
+            /**
+             * Todo: Validate this component and emit true if values are valid and false if otherwise
+             */
+            this.$emit("valid", true)
+        }
     }
 })
 </script>

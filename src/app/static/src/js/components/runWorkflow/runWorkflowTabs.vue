@@ -42,8 +42,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import runWorkflow from './runWorkflow'
-import runWorkflowProgress from './runWorkflowProgress'
+import runWorkflow from './runWorkflow.vue'
+import runWorkflowProgress from './runWorkflowProgress.vue'
 
 export default Vue.extend({
     name: "runWorkflowTabs",
