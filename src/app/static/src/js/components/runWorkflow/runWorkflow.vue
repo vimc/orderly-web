@@ -1,55 +1,79 @@
 <template>
     <div class="container">
-        <run-workflow-create v-if="!action" @jump="getAction"></run-workflow-create>
-        <workflow-wizard v-if="action" :entry-step="entryStep" @cancel=cancel
+        <run-workflow-create v-if="!workflowStarted"
+                             @rerun="handleRerun"
+                             @create="handleCreate"
+                             @clone="handleClone">
+        </run-workflow-create>
+        <workflow-wizard v-if="workflowStarted"
+                         :entry-step="entryStep"
+                         :rerunBack="backButtonVisible"
+                         @cancel=cancel
                          :run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
 </template>
 
 <script lang="ts">
-import Vue from "vue"
-import workflowWizard from "../workflowWizard/workflowWizard.vue";
-import {RunWorkflowMetadata} from "../../utils/types"
-import runWorkflowCreate from "./runWorkflowCreate.vue";
+    import Vue from "vue"
+    import workflowWizard from "../workflowWizard/workflowWizard.vue";
+    import {RunWorkflowMetadata} from "../../utils/types"
+    import runWorkflowCreate from "./runWorkflowCreate.vue";
 
-interface Data {
-    runWorkflowMetadata: RunWorkflowMetadata | null
-    action: boolean,
-    entryStep: string | null
-}
-
-interface Methods {
-    getAction: (action) => void
-    cancel: () => void
-}
-
-export default Vue.extend<Data, Methods, unknown, unknown>({
-    name: "runWorkflow",
-    data(): Data {
-        return {
-            runWorkflowMetadata: null,
-            action: false,
-            entryStep: null
-        }
-    },
-    methods: {
-        getAction: function (action) {
-            if (action == "clone") {
-                /**
-                 * Pre-population of runWorkflowMetadata can happen at this stage.
-                 */
-            }
-            this.entryStep = action === "rerun" ? "run" : "report";
-            this.action = true
-        },
-        cancel: function () {
-            this.action = false
-        }
-    },
-    components: {
-        workflowWizard,
-        runWorkflowCreate
+    interface Data {
+        runWorkflowMetadata: RunWorkflowMetadata | null
+        workflowStarted: boolean
+        entryStep: string | null
+        backButtonVisible: boolean
     }
-})
+
+    interface Methods {
+        cancel: () => void
+        handleRerun: () => void
+        handleCreate: () => void
+        handleClone: () => void
+    }
+
+    interface Computed {
+        handleRerun: void
+        handleCreate: void
+        handleClone: void
+    }
+
+    export default Vue.extend<Data, Methods, unknown, unknown>({
+        name: "runWorkflow",
+        data(): Data {
+            return {
+                runWorkflowMetadata: null,
+                workflowStarted: false,
+                entryStep: null,
+                backButtonVisible: true
+            }
+        },
+        methods: {
+            handleRerun: function () {
+                this.backButtonVisible = false
+                this.entryStep = "run"
+                this.workflowStarted = true
+            },
+            handleCreate: function () {
+                this.backButtonVisible = true
+                this.entryStep = "report"
+                this.workflowStarted = true
+            },
+            handleClone: function () {
+                //Can set metadata required for clone here
+                this.backButtonVisible = true
+                this.entryStep = "report"
+                this.workflowStarted = true
+            },
+            cancel: function () {
+                this.workflowStarted = false
+            }
+        },
+        components: {
+            workflowWizard,
+            runWorkflowCreate
+        }
+    })
 </script>

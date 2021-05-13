@@ -25,24 +25,21 @@ describe(`runWorkflowCreate`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#create-workflow").trigger("click")
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["create"])
+        expect(wrapper.emitted("create").length).toBe(1)
     })
 
     it(`can emit run navigation step`, async() => {
         const wrapper = getWrapper()
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#rerun").trigger("click")
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["rerun"])
+        expect(wrapper.emitted("rerun").length).toBe(1)
     })
 
     it(`can emit clone navigation step`, async() => {
         const wrapper = getWrapper()
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#clone").trigger("click")
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["clone"])
+        expect(wrapper.emitted("clone").length).toBe(1)
     })
 
 })

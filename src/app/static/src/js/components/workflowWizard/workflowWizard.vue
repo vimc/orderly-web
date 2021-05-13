@@ -1,32 +1,35 @@
 <template>
     <div id="workflow-wizard" class="container">
-            <step v-for="step in steps"
-                  :key="getCurrentIndex(step.name)"
-                  :active="isActive(step.name)"
-                  :hasVisibility="handleVisibility(step.name)"
-                  :valid="isValid"
-                  @back="back(step.name)"
-                  @next="next(step.name)"
-                  @cancel="cancel">
-                <component :is="step.component"
-                           @valid="validate"
-                           :workflow-metadata="runWorkflowMetadata">
-                </component>
-            </step>
+        <step v-for="step in steps"
+              :key="getCurrentIndex(step.name)"
+              :active="isActive(step.name)"
+              :hasVisibility="handleVisibility(step.name)"
+              :valid="isValid"
+              @back="back(step.name)"
+              @next="next(step.name)"
+              @cancel="confirmCancel">
+            <component :is="step.component"
+                       @valid="validate"
+                       :workflow-metadata="runWorkflowMetadata">
+            </component>
+        </step>
+        <cancel-dialog @cancel="cancel" @abortCancel="abortCancel" :show-modal="showModal"/>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
-    import step from "../workflowWizard/step.vue";
+    import step from "../workflowWizard/step.vue"
     import {RunWorkflowMetadata} from "../../utils/types"
-    import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue";
-    import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue";
+    import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue"
+    import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue"
+    import cancelDialog from "../runWorkflow/cancelDialog.vue"
 
     interface Data {
         activeStep: number
         steps: {},
-        isValid: boolean
+        isValid: {}
+        showModal: boolean
     }
 
     interface Methods {
@@ -34,6 +37,8 @@
         next: (name: string) => void
         back: (name: string) => void
         cancel: () => void
+        confirmCancel: () => void
+        abortCancel: () => void
         handleVisibility: (name: string) => {}
         getCurrentIndex: (name: string) => number
         validate: (valid: Event) => void
@@ -42,6 +47,7 @@
     interface Props {
         runWorkflowMetadata: RunWorkflowMetadata | null
         entryStep: string | null
+        rerunBack: boolean
     }
 
     const steps = [
@@ -49,33 +55,33 @@
         {name: "run", component: "runWorkflowRun"},
     ]
 
-    interface Computed {
-        isValid: boolean
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, unknown, Props>({
         name: "workflowWizard",
         props: {
             runWorkflowMetadata: null,
-            entryStep: null
+            entryStep: null,
+            rerunBack: {
+                type: Boolean,
+                required: false
+            }
         },
         data(): Data {
             return {
                 activeStep: steps.findIndex(step => step.name === this.entryStep),
                 steps: steps,
-                isValid: false
+                isValid: {back: false, next: false},
+                showModal: false
             }
         },
         methods: {
             handleVisibility(name) {
-                const number = this.getCurrentIndex(name)
+                let number = this.getCurrentIndex(name)
 
                 /**
-                 * hides back button and next button changes
-                 * to run workflow when on final step
+                 * next button changes to 'run workflow' when step is on final stage
                  */
                 if (number + 1 === this.steps.length) {
-                    return {cancel: true, next: false, back: false}
+                    return {cancel: true, next: false, back: this.rerunBack}
                 }
 
                 /**
@@ -90,7 +96,7 @@
                 return this.getCurrentIndex(name) === this.activeStep
             },
             next: function (name) {
-                if (this.isValid) {
+                if (this.isValid.next) {
                     if (this.steps.length === this.getCurrentIndex(name) + 1) {
                         this.$emit("complete", true)
                     } else {
@@ -99,29 +105,33 @@
                 }
             },
             back: function (name) {
-                if (this.isValid) {
+                if (this.isValid.back) {
                     if (this.getCurrentIndex(name) !== 0) {
                         this.activeStep = steps.findIndex(step => step.name === name) - 1
                     }
                 }
             },
             cancel: function () {
-                //Todo: Change the confirm dialog implementation to something more appealing
-                if(confirm("Are you sure you want to cancel?")) {
-                    this.$emit("cancel")
-                }
+                this.$emit("cancel")
+            },
+            confirmCancel: function() {
+                this.showModal = true;
+            },
+            abortCancel: function() {
+                this.showModal = false;
             },
             getCurrentIndex: function (name) {
                 return steps.findIndex(step => step.name === name)
             },
             validate: function (valid) {
-                this.isValid = !!valid
+                this.isValid = valid
             }
         },
         components: {
             runWorkflowReport,
             runWorkflowRun,
-            step
+            step,
+            cancelDialog
         }
     })
 </script>

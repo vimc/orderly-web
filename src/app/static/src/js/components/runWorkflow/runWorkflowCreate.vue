@@ -3,7 +3,7 @@
         <h2 id="create-workflow-header">Run workflow</h2>
         <div class="pt-2">
             <p>Either:</p>
-            <button id="create-workflow" @click="jump('create')" type="button" class="btn btn-success">
+            <button id="create-workflow" @click="create()" type="button" class="btn btn-success">
                 Create a blank workflow
             </button>
         </div>
@@ -12,8 +12,8 @@
             <!-- use vue-select -->
         </div>
         <div class="pt-4">
-            <button id="rerun" @click="jump('rerun')" type="button" class="btn btn-success">Re-run workflow</button>
-            <button id="clone" @click="jump('clone')" type="button" class="btn btn-success">Clone workflow</button>
+            <button id="rerun" @click="rerun()" type="button" class="btn btn-success">Re-run workflow</button>
+            <button id="clone" @click="clone()" type="button" class="btn btn-success">Clone workflow</button>
         </div>
     </div>
 </template>
@@ -22,14 +22,22 @@
 import Vue from "vue"
 
 interface Methods {
-    jump: (action: string) => void
+    create: () => void
+    clone: () => void
+    rerun: () => void
 }
 
 export default Vue.extend<unknown, Methods, unknown, unknown>({
     name: "runWorkflowCreate",
     methods: {
-        jump: function(action) {
-            this.$emit("jump", action)
+        create: function () {
+            this.$emit("create")
+        },
+        clone: function () {
+            this.$emit("clone")
+        },
+        rerun: function () {
+            this.$emit("rerun")
         }
     }
 })

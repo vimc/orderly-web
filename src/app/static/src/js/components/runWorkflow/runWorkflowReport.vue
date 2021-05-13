@@ -81,7 +81,7 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
             /**
              * Todo: Validate this component and emit true if values are valid and false if otherwise
              */
-            this.$emit("valid", true)
+            this.$emit("valid", {back: true, next: true})
         }
     }
 })

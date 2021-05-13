@@ -1,19 +1,19 @@
 <template>
-    <div v-if="active">
+    <div v-if="active && hasValidComponent">
         <div>
             <slot></slot>
         </div>
-        <div class="pt-4" v-if="hasValidComponent">
-            <button type="button" class="btn btn-sm btn-secondary"
+        <div class="pt-4">
+            <button id="cancel-workflow" type="button" class="btn btn-sm btn-secondary"
                     @click="cancel">Cancel
             </button>
-            <button v-if="hasVisibility.back" type="button"
-                    :class="!valid ? 'disabled' : ''"
+            <button id="previous-workflow" v-if="hasVisibility.back" type="button"
+                    :class="!valid.back ? 'disabled' : ''"
                     class="btn btn-sm btn-primary"
                     @click="back">Back
             </button>
-            <button type="button" class="btn btn-sm btn-success"
-                    :class="!valid ? 'disabled' : ''"
+            <button id="next-workflow" type="button" class="btn btn-sm btn-success"
+                    :class="!valid.next ? 'disabled' : ''"
                     @click="next"> {{ hasVisibility.next ? "Next" : "Run workflow" }}
             </button>
         </div>
@@ -26,7 +26,7 @@ import Vue from "vue"
 interface Props {
     hasVisibility: {}
     active: boolean
-    valid: boolean
+    valid: {}
 }
 
 interface Methods {
@@ -47,10 +47,7 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
             type: Boolean,
             required: true
         },
-        valid: {
-            type: Boolean,
-            required: true
-        }
+        valid: {}
     },
     computed: {
         hasValidComponent() {

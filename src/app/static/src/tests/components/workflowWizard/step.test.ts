@@ -1,11 +1,10 @@
 import {shallowMount} from "@vue/test-utils";
 import step from "../../../js/components/workflowWizard/step.vue"
+import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue"
 
 describe(`step`, () => {
 
     const hasVisibility = {
-        run: true,
-        cancel: true,
         next: true,
         back: true
     }
@@ -14,66 +13,48 @@ describe(`step`, () => {
         return shallowMount(step, {
             propsData: {
                 hasVisibility: stepsNavigationVisibility,
-                active: true
-            }
+                active: true,
+                valid: {}
+            },
+            slots: {default: runWorkflowReport}
         })
     }
 
-    it(`can show step buttons as expected`, () => {
+    it(`can show report step buttons as expected`, () => {
         const wrapper = getWrapper()
-        const buttons = wrapper.findAll("button")
-        expect(buttons.length).toBe(4)
-        expect(buttons.at(0).text()).toBe("Cancel")
-        expect(buttons.at(1).text()).toBe("Back")
-        expect(buttons.at(2).text()).toBe("Next")
-        expect(buttons.at(3).text()).toBe("Run workflow")
+        expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
+        expect(wrapper.find("#previous-workflow").text()).toBe("Back")
+        expect(wrapper.find("#next-workflow").text()).toBe("Next")
     })
 
-    it(`can hide step buttons as expected`, () => {
-        const hideVisibility = {
-            run: false,
-            cancel: false,
-            next: false,
-            back: false
-        }
-        const wrapper = getWrapper(hideVisibility)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.length).toBe(0)
+    it(`can toggle workflow from next to Run workflow button in final step`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.setProps({hasVisibility: {next: false}})
+        expect(wrapper.find("#next-workflow").text()).toBe("Run workflow")
     })
 
-    it(`can emit cancel when click event triggered as expected`, async () => {
+    it(`can disable workflow back/next button`, async () => {
         const wrapper = getWrapper()
-        const buttons = wrapper.findAll("button")
-        await buttons.at(0).trigger("click")
+        await wrapper.setProps({valid: {next: false, back: false}})
+        expect(wrapper.find("#previous-workflow").classes("disabled")).toBe(true)
+        expect(wrapper.find("#next-workflow").classes("disabled")).toBe(true)
+    })
 
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["cancel"])
+    it(`can emit cancel when click event gets triggered`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.find("#cancel-workflow").trigger("click")
+        expect(wrapper.emitted("cancel").length).toBe(1)
     })
 
     it(`can emit back when click event triggered as expected`, async () => {
         const wrapper = getWrapper()
-        const buttons = wrapper.findAll("button")
-        await buttons.at(1).trigger("click")
-
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["back"])
+        await wrapper.find("#previous-workflow").trigger("click")
+        expect(wrapper.emitted("back").length).toBe(1)
     })
 
     it(`can emit next when click event triggered as expected`, async () => {
         const wrapper = getWrapper()
-        const buttons = wrapper.findAll("button")
-        await buttons.at(2).trigger("click")
-
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["next"])
-    })
-
-    it(`can emit run when click event triggered as expected`, async () => {
-        const wrapper = getWrapper()
-        const buttons = wrapper.findAll("button")
-        await buttons.at(3).trigger("click")
-
-        expect(wrapper.emitted("jump").length).toBe(1)
-        expect(wrapper.emitted("jump")[0]).toMatchObject(["run"])
+        await wrapper.find("#next-workflow").trigger("click")
+        expect(wrapper.emitted("next").length).toBe(1)
     })
 })

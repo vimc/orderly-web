@@ -1,64 +1,111 @@
 import {mount, shallowMount} from "@vue/test-utils";
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue"
-import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
 
 describe(`workflowWizard`, () => {
-
     const steps = [
-        {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-        {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-        {name: "summary", number: 3, hide: true, component: "runWorkflowSummary"},
-        {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+        {name: "report", component: "runWorkflowReport"},
+        {name: "run", component: "runWorkflowRun"}
     ]
 
-
-    const getWrapper = (activeStep = 1, mockStep = steps) => {
+    const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    runWorkflowMetadata: {placeholder: "testdata"},
+                    runWorkflowMetadata: {placeholder: "testdata"}
                 },
                 data() {
                     return {
-                        activeStep: activeStep,
                         steps: mockStep,
-                        initiatedRerun: false
+                        isValid: {back: true, next: true},
+                        showModal: false
                     }
                 }
             }
         )
     }
 
-    it(`can render default component and step buttons`, () => {
-
-        const createButtonVisibility = {run: false, cancel: false, next: false, back: false}
+    it(`can render first step, component and buttons correctly`, async () => {
         const wrapper = getWrapper()
-
-        const mockStep = wrapper.findAll(step)
-
-        //Create component
-        expect(mockStep.at(0).props("active")).toBe(true)
-        expect(mockStep.at(0).props("hasVisibility")).toMatchObject(createButtonVisibility)
-        expect(mockStep.at(0).find(runWorkflowCreate).exists()).toBe(true)
-
-        //Report page buttons
-        const reportButtonVisibility = {run: false, cancel: true, next: true, back: false}
-        expect(mockStep.at(1).props("hasVisibility")).toMatchObject(reportButtonVisibility)
-        expect(mockStep.at(0).find(runWorkflowReport).exists()).toBe(false)
-
-        //Run page buttons
-        const runButtonVisibility = {run: true, cancel: true, next: false, back: true}
-        expect(mockStep.at(2).props("hasVisibility")).toMatchObject(runButtonVisibility)
-        expect(mockStep.at(0).find(runWorkflowRun).exists()).toBe(false)
+        await wrapper.setData({activeStep: 0})
+        const Steps = wrapper.findAll(step)
+        const mockButtonVisibility = {cancel: true, next: true}
+        expect(Steps.at(0).find(runWorkflowReport).exists()).toBe(true)
+        expect(Steps.at(0).props("hasVisibility")).toMatchObject(mockButtonVisibility)
     })
 
-    it(`can render report component and elements`, () => {
-        //Report step
-        const activeStep = 2
+    it(`can render final step component and buttons correctly`, async () => {
+        const wrapper = getWrapper()
+        const finalStepIndex = steps.length-1
+        await wrapper.setData({activeStep: finalStepIndex})
 
-        const wrapper = getWrapper(activeStep)
+        //set rerunBack to simulate workflow back button render
+        await wrapper.setProps({rerunBack: true})
+
+        const buttons = wrapper.findAll("button")
+
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Back")
+        expect(buttons.at(2).text()).toBe("Run workflow")
+
+        const Steps = wrapper.findAll(step)
+        expect(Steps.at(finalStepIndex).find(runWorkflowRun).exists()).toBe(true)
+    })
+
+    it(`can render final step, component and buttons correctly when re-running a workflow`, async () => {
+        const wrapper = getWrapper()
+        const finalStepIndex = steps.length-1
+        await wrapper.setData({activeStep: finalStepIndex})
+
+        //set rerunBack to simulate workflow back button render
+        await wrapper.setProps({rerunBack: false})
+
+        const buttons = wrapper.findAll("button")
+
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Run workflow")
+
+        const Steps = wrapper.findAll(step)
+        expect(Steps.at(finalStepIndex).find(runWorkflowRun).exists()).toBe(true)
+    })
+
+    it(`can render default propsData on steps correctly`, async () => {
+
+        const mockValid = {back: false, next: false}
+        const mockHasVisibility = {back: false, next: true, cancel: true}
+        const wrapper =  shallowMount(workflowWizard, {
+            propsData: {
+                runWorkflowMetadata: {placeholder: "testdata"}
+            },
+            data() {
+                return {
+                    steps: steps,
+                    showModal: false
+                }
+            }
+        })
+
+        const getSteps = wrapper.findAll(step)
+        expect(getSteps.length).toBe(2)
+
+        //first step
+        expect(getSteps.at(0).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(0).props().hasVisibility).toMatchObject(mockHasVisibility)
+        expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
+            .toMatchObject({"placeholder": "testdata"})
+
+        //Final stastepge
+        expect(getSteps.at(1).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(1).props().hasVisibility).toMatchObject({back: false, next: false, cancel: true})
+        expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
+            .toMatchObject({"placeholder": "testdata"})
+
+    })
+
+    it(`can render report component`, async() => {
+        const wrapper = getWrapper()
+        await wrapper.setData({activeStep: 0})
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
         expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
 
@@ -69,35 +116,15 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(3).text()).toBe("Next")
     })
 
-    it(`can trigger cancel from report component to create component`, async () => {
-        //Activate report step
-        const activeStep = 2
+    it(`can render run component`, async() => {
+        const wrapper = getWrapper()
 
-        const wrapper = getWrapper(activeStep)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(2).text()).toBe("Cancel")
+        //run step is usually the final step
+        const finalStepIndex = steps.length-1
+        await wrapper.setData({activeStep: finalStepIndex})
 
-        await buttons.at(2).trigger("click")
-        expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
-    })
-
-    it(`can trigger next from report component to previous component `, async () => {
-        //Activate report step
-        const activeStep = 2
-
-        const wrapper = getWrapper(activeStep)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(3).text()).toBe("Next")
-
-        await buttons.at(3).trigger("click")
-        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-    })
-
-    it(`can render report component and elements`, async () => {
-        //Run step
-        const activeStep = 4
-
-        const wrapper = getWrapper(activeStep)
+        //set rerunBack to simulate workflow back button render
+        await wrapper.setProps({rerunBack: true})
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
 
@@ -107,141 +134,86 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(2).text()).toBe("Run workflow")
     })
 
-    it(`can trigger cancel from run component to create component`, async () => {
-        //Activate run step
-        const activeStep = 4
-
-        const wrapper = getWrapper(activeStep)
+    it(`can go to the next step`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.setData({activeStep: 0})
         const buttons = wrapper.findAll("button")
-        expect(buttons.at(0).text()).toBe("Cancel")
 
-        await buttons.at(0).trigger("click")
-        expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
+        expect(buttons.at(3).text()).toBe("Next")
+
+        await buttons.at(3).trigger("click")
+        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
-    it(`can trigger back from run component to previous component `, async () => {
-        //Activate run step
-        const activeStep = 4
-
-        const wrapper = getWrapper(activeStep)
+    it(`can go to previous step `, async (done) => {
+        const wrapper = getWrapper()
+        await wrapper.setData({activeStep: 1})
+        await wrapper.setProps({rerunBack: true})
         const buttons = wrapper.findAll("button")
         expect(buttons.at(1).text()).toBe("Back")
 
         await buttons.at(1).trigger("click")
-        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
+        setTimeout(() => {
+            expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
+            done()
+        })
     })
 
-    it(`can trigger run from run component to progress tab`, async () => {
-        //Activate run step
-        const activeStep = 4
-
-        const wrapper = getWrapper(activeStep)
+    it(`can emit cancel event from report step as expected`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.setData({activeStep: 0})
         const buttons = wrapper.findAll("button")
-        expect(buttons.at(2).text()).toBe("Run workflow")
+        expect(buttons.at(2).text()).toBe("Cancel")
 
+        expect(wrapper.vm.$data.showModal).toBe(false)
         await buttons.at(2).trigger("click")
-        //not linking yet
-        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
+
+        expect(wrapper.vm.$data.showModal).toBe(true)
+        await wrapper.find("#confirm-cancel-btn").trigger("click")
+        expect(wrapper.emitted().cancel.length).toBe(1)
     })
 
-    it(`does not render summary component to steps `, () => {
-        //Activate run step
-        const activeStep = 3
-
-        const wrapper = getWrapper(activeStep)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.length).toBe(0)
-        expect(wrapper.find("#summary-header").exists()).toBe(false)
-    })
-
-    it(`can unhide and render summary report component `, async () => {
-        const steps = [
-            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
-            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
-        ]
-
-        //Activate summary step
-        const activeStep = 3
-
-        const wrapper = getWrapper(activeStep, steps)
-        expect(wrapper.find("#summary-header").text()).toBe("Summary")
-
+    it(`can emit cancel event from run step as expected`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.setData({activeStep: 1})
         const buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
-        expect(buttons.at(1).text()).toBe("Back")
-        expect(buttons.at(2).text()).toBe("Next")
-    })
 
-    it(`can unhide and cancel from summary report component `, async () => {
-        const steps = [
-            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
-            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
-        ]
-
-        //Activate summary step
-        const activeStep = 3
-
-        const wrapper = getWrapper(activeStep, steps)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(wrapper.vm.$data.showModal).toBe(false)
         await buttons.at(0).trigger("click")
-        expect(wrapper.find("#create-workflow-header").text()).toBe("Run workflow")
+
+        expect(wrapper.vm.$data.showModal).toBe(true)
+        await wrapper.find("#confirm-cancel-btn").trigger("click")
+        expect(wrapper.emitted().cancel.length).toBe(1)
     })
 
-    it(`can unhide and back from summary report component `, async () => {
-        const steps = [
-            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
-            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
+    it(`can add a new component to steps and display buttons as expected`, async () => {
+        const newSteps = [
+            {name: "report", component: "runWorkflowReport"},
+            {name: "summary", component: "testComponent"},
+            {name: "run", component: "runWorkflowRun"}
         ]
 
-        //Activate summary step
-        const activeStep = 3
+        const mockValid = {back: false, next: false}
+        const mockHasVisibility = {back: true, next: true, cancel: true}
+        const wrapper =  shallowMount(workflowWizard, {
+            propsData: {
+                runWorkflowMetadata: {placeholder: "testdata"}
+            },
+            data() {
+                return {
+                    steps: newSteps,
+                    showModal: false
+                }
+            }
+        })
 
-        const wrapper = getWrapper(activeStep, steps)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(1).text()).toBe("Back")
-        await buttons.at(1).trigger("click")
-        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
-    })
+        const getSteps = wrapper.findAll(step)
+        expect(getSteps.length).toBe(3)
 
-    it(`can unhide and next from summary report component `, async () => {
-        const steps = [
-            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
-            {name: "run", number: 4, hide: false, component: "runWorkflowRun"}
-        ]
-
-        //Activate summary step
-        const activeStep = 3
-
-        const wrapper = getWrapper(activeStep, steps)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(2).text()).toBe("Next")
-        await buttons.at(2).trigger("click")
-        expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-    })
-
-    it(`can hide any component from steps `, async () => {
-        const steps = [
-            {name: "create", number: 1, hide: false, component: "runWorkflowCreate"},
-            {name: "report", number: 2, hide: false, component: "runWorkflowReport"},
-            {name: "summary", number: 3, hide: false, component: "runWorkflowSummary"},
-            {name: "run", number: 4, hide: true, component: "runWorkflowRun"}
-        ]
-
-        //Activate run step
-        const activeStep = 4
-
-        const wrapper = getWrapper(activeStep, steps)
-        const buttons = wrapper.findAll("button")
-        expect(buttons.length).toBe(0)
-        expect(wrapper.find("#run-header").exists()).toBe(false)
+        //newly added step
+        expect(getSteps.at(1).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(1).props().hasVisibility).toMatchObject(mockHasVisibility)
+        expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
     })
 })
