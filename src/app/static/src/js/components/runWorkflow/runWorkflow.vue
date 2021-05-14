@@ -34,12 +34,6 @@
         handleClone: () => void
     }
 
-    interface Computed {
-        handleRerun: void
-        handleCreate: void
-        handleClone: void
-    }
-
     export default Vue.extend<Data, Methods, unknown, unknown>({
         name: "runWorkflow",
         data(): Data {
@@ -52,6 +46,7 @@
         },
         methods: {
             handleRerun: function () {
+                // can set metadata require to rerun here
                 this.finalStepBackButtonVisible = false
                 this.entryStep = "run"
                 this.workflowStarted = true
