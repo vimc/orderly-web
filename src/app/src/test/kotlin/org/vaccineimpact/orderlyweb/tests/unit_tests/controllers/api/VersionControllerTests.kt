@@ -110,7 +110,7 @@ class VersionControllerTests : ControllerTest()
                 name = "name", published = true, description = "description", latestVersion = "v1", elapsed = 1.5,
                 gitBranch="master", gitCommit="abc123"),
                 artefacts = listOf(),
-                resources = listOf(), dataInfo = listOf(), parameterValues = mapOf())
+                resources = listOf(), dataInfo = listOf(), parameterValues = mapOf(), instances = mapOf())
 
         val orderly = mock<OrderlyClient> {
             on { this.getDetailsByNameAndVersion(reportName, reportVersion) } doReturn report
@@ -141,6 +141,7 @@ class VersionControllerTests : ControllerTest()
         assertThat(result.resources.count()).isEqualTo(0)
         assertThat(result.dataInfo.count()).isEqualTo(0)
         assertThat(result.parameterValues.keys.count()).isEqualTo(0)
+        assertThat(result.instances.keys.count()).isEqualTo(0)
     }
 
     @Test

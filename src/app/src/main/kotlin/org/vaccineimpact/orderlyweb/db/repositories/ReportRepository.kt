@@ -21,6 +21,7 @@ interface ReportRepository
     fun togglePublishStatus(name: String, version: String): Boolean
 
     @Throws(UnknownObjectError::class)
+
     fun getReportVersion(name: String, version: String): ReportVersionWithDescLatestElapsed
 
     fun getAllReportVersions(): List<ReportVersionWithDescLatest>
@@ -47,6 +48,7 @@ interface ReportRepository
 
     fun getLatestReportVersions(reports: List<String>): List<ReportWithDate>
 
+    fun getReportVersionInstances(version: String): Map<String, String>
 }
 
 class OrderlyReportRepository(val isReviewer: Boolean,
@@ -116,6 +118,20 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                 it.value.maxBy { r -> r["latestVersion"] as String }
             }.sortedBy { r -> r!![ORDERLYWEB_PINNED_REPORT_GLOBAL.ORDERING] }
                     .map { r -> r!!.into(Report::class.java) }
+        }
+    }
+
+    override fun getReportVersionInstances(version: String): Map<String, String>
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                REPORT_VERSION_INSTANCE.INSTANCE,
+                REPORT_VERSION_INSTANCE.TYPE)
+                    .from(REPORT_VERSION_INSTANCE)
+                    .where(REPORT_VERSION_INSTANCE.REPORT_VERSION.eq(version))
+                    .fetch()
+                    .map {r -> r[REPORT_VERSION_INSTANCE.TYPE] to r[REPORT_VERSION_INSTANCE.INSTANCE]}
+                    .toMap()
         }
     }
 
@@ -283,7 +299,6 @@ class OrderlyReportRepository(val isReviewer: Boolean,
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.REPORT.eq(report))
                     .and(ORDERLYWEB_REPORT_VERSION_FULL.ID.eq(latestVersionForEachReport.field("latestVersion")))
                     .fetchAny()?.into(ReportVersionWithDescLatest::class.java) ?: throw UnknownObjectError(report, "report")
-
         }
     }
 

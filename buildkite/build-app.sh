@@ -28,6 +28,7 @@ $here/../scripts/run-dependencies.sh
 
 # Compile, test and package the app
 function cleanup() {
+  $here/../scripts/clear-docker.sh
   zip -qr reports.zip reports
   $here/codecov.sh -s coverage/
   sudo chown -R $UID reports coverage

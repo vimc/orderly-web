@@ -79,7 +79,7 @@
                     </button>
                     <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
                         {{ runningStatus }}
-                        <a @click.prevent="checkStatus" href="#">Check status</a>
+                        <a @click.prevent="$emit('changeTab')" href="#">View log</a>
                     </div>
                 </div>
             </div>
@@ -263,21 +263,6 @@
                         this.error = error;
                         this.defaultMessage = "An error occurred when running report";
                     });
-            },
-            checkStatus() {
-                //TODO: This can be removed, along with the check status link once the logging page is in - but is a
-                //handy diagnostic for now
-                api.get(`/report/${this.selectedReport}/actions/status/${this.runningKey}/`)
-                    .then(({data}) => {
-                        this.runningStatus = `Running status: ${data.data.status}`;
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred when fetching report status";
-                    });
-                this.disableRun = false;
             },
             clearRun() {
                 this.runningStatus = "";
