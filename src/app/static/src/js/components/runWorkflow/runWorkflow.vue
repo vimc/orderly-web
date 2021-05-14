@@ -7,7 +7,7 @@
         </run-workflow-create>
         <workflow-wizard v-if="workflowStarted"
                          :entry-step="entryStep"
-                         :rerunBack="backButtonVisible"
+                         :rerunBack="finalStepBackButtonVisible"
                          @cancel=cancel
                          :run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
@@ -24,7 +24,7 @@
         runWorkflowMetadata: RunWorkflowMetadata | null
         workflowStarted: boolean
         entryStep: string | null
-        backButtonVisible: boolean
+        finalStepBackButtonVisible: boolean
     }
 
     interface Methods {
@@ -47,23 +47,23 @@
                 runWorkflowMetadata: null,
                 workflowStarted: false,
                 entryStep: null,
-                backButtonVisible: true
+                finalStepBackButtonVisible: true
             }
         },
         methods: {
             handleRerun: function () {
-                this.backButtonVisible = false
+                this.finalStepBackButtonVisible = false
                 this.entryStep = "run"
                 this.workflowStarted = true
             },
             handleCreate: function () {
-                this.backButtonVisible = true
+                this.finalStepBackButtonVisible = true
                 this.entryStep = "report"
                 this.workflowStarted = true
             },
             handleClone: function () {
                 //Can set metadata required for clone here
-                this.backButtonVisible = true
+                this.finalStepBackButtonVisible = true
                 this.entryStep = "report"
                 this.workflowStarted = true
             },

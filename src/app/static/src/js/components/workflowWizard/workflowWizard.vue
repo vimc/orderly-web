@@ -75,22 +75,26 @@
         },
         methods: {
             handleVisibility(name) {
-                let number = this.getCurrentIndex(name)
-
-                /**
-                 * next button changes to 'run workflow' when step is on final stage
-                 */
-                if (number + 1 === this.steps.length) {
-                    return {cancel: true, next: false, back: this.rerunBack}
+                const currentIndex = this.getCurrentIndex(name)
+                if (currentIndex === this.steps.length - 1) {
+                    return {
+                        cancel: true,
+                        next: false,
+                        back: this.rerunBack
+                    }
                 }
-
-                /**
-                 * Back button gets hidden when on first step
-                 */
-                if (number === 0) {
-                    return {cancel: true, next: true, back: false}
+                if (currentIndex === 0) {
+                    return {
+                        cancel: true,
+                        next: true,
+                        back: false
+                    }
                 }
-                return {cancel: true, next: true, back: true}
+                return {
+                    cancel: true,
+                    next: true,
+                    back: true
+                }
             },
             isActive: function (name: string) {
                 return this.getCurrentIndex(name) === this.activeStep
