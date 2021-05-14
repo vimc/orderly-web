@@ -8,7 +8,7 @@
         <workflow-wizard v-if="workflowStarted"
                          :entry-step="entryStep"
                          :backButtonVisible="backButtonVisible"
-                         @cancel=cancel
+                         @cancel=handleCancel
                          @complete="handleComplete"
                          :run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
@@ -29,7 +29,7 @@
     }
 
     interface Methods {
-        cancel: () => void
+        handleCancel: () => void
         handleRerun: () => void
         handleCreate: () => void
         handleClone: () => void
@@ -64,7 +64,7 @@
                 this.entryStep = "report"
                 this.workflowStarted = true
             },
-            cancel: function () {
+            handleCancel: function () {
                 this.workflowStarted = false
             },
             handleComplete: function () {
