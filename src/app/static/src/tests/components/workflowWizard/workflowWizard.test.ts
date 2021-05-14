@@ -72,7 +72,6 @@ describe(`workflowWizard`, () => {
 
     it(`can render default propsData on steps correctly`, async () => {
 
-        const mockHasVisibility = {back: false, next: true, cancel: true}
         const wrapper =  shallowMount(workflowWizard, {
             propsData: {
                 runWorkflowMetadata: {placeholder: "testdata"},
@@ -89,12 +88,12 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(2)
 
         //first step
-        expect(getSteps.at(0).props().hasVisibility).toMatchObject(mockHasVisibility)
+        expect(getSteps.at(0).props().hasVisibility).toMatchObject({back: false, next: true, cancel: true})
         expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final step
-        expect(getSteps.at(1).props().hasVisibility).toMatchObject({back: false, next: false, cancel: true})
+        expect(getSteps.at(1).props().hasVisibility).toMatchObject({back: true, next: false, cancel: true})
         expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 

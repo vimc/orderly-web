@@ -55,7 +55,8 @@
             runWorkflowMetadata: null,
             backButtonVisible: {
                 type: Boolean,
-                required: false
+                required: false,
+                default: true
             },
             steps: {
                 type: [],
