@@ -18,7 +18,7 @@ describe(`workflowWizard`, () => {
                 data() {
                     return {
                         steps: mockStep,
-                        isValid: {back: true, next: true},
+                        enabled: {back: true, next: true},
                         showModal: false
                     }
                 }
@@ -40,8 +40,8 @@ describe(`workflowWizard`, () => {
         const finalStepIndex = steps.length-1
         await wrapper.setData({activeStep: finalStepIndex})
 
-        //set rerunBack to simulate workflow back button render
-        await wrapper.setProps({rerunBack: true})
+        //set backButtonVisible to simulate workflow back button render
+        await wrapper.setProps({backButtonVisible: true})
 
         const buttons = wrapper.findAll("button")
 
@@ -58,8 +58,8 @@ describe(`workflowWizard`, () => {
         const finalStepIndex = steps.length-1
         await wrapper.setData({activeStep: finalStepIndex})
 
-        //set rerunBack to simulate workflow back button render
-        await wrapper.setProps({rerunBack: false})
+        //set backButtonVisible to simulate workflow back button render
+        await wrapper.setProps({backButtonVisible: false})
 
         const buttons = wrapper.findAll("button")
 
@@ -90,13 +90,13 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(2)
 
         //first step
-        expect(getSteps.at(0).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(0).props().enabled).toMatchObject(mockValid)
         expect(getSteps.at(0).props().hasVisibility).toMatchObject(mockHasVisibility)
         expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final stastepge
-        expect(getSteps.at(1).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(1).props().enabled).toMatchObject(mockValid)
         expect(getSteps.at(1).props().hasVisibility).toMatchObject({back: false, next: false, cancel: true})
         expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
@@ -123,8 +123,8 @@ describe(`workflowWizard`, () => {
         const finalStepIndex = steps.length-1
         await wrapper.setData({activeStep: finalStepIndex})
 
-        //set rerunBack to simulate workflow back button render
-        await wrapper.setProps({rerunBack: true})
+        //set backButtonVisible to simulate workflow back button render
+        await wrapper.setProps({backButtonVisible: true})
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
 
@@ -148,7 +148,7 @@ describe(`workflowWizard`, () => {
     it(`can go to previous step `, async (done) => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 1})
-        await wrapper.setProps({rerunBack: true})
+        await wrapper.setProps({backButtonVisible: true})
         const buttons = wrapper.findAll("button")
         expect(buttons.at(1).text()).toBe("Back")
 
@@ -212,7 +212,7 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(3)
 
         //newly added step
-        expect(getSteps.at(1).props().valid).toMatchObject(mockValid)
+        expect(getSteps.at(1).props().enabled).toMatchObject(mockValid)
         expect(getSteps.at(1).props().hasVisibility).toMatchObject(mockHasVisibility)
         expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
     })

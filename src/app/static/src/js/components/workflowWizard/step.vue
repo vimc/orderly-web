@@ -8,12 +8,12 @@
                     @click="cancel">Cancel
             </button>
             <button id="previous-workflow" v-if="hasVisibility.back" type="button"
-                    :class="!valid.back ? 'disabled' : ''"
+                    :class="!enabled.back ? 'disabled' : ''"
                     class="btn btn-sm btn-primary"
                     @click="back">Back
             </button>
             <button id="next-workflow" type="button" class="btn btn-sm btn-success"
-                    :class="!valid.next ? 'disabled' : ''"
+                    :class="!enabled.next ? 'disabled' : ''"
                     @click="next"> {{ hasVisibility.next ? "Next" : "Run workflow" }}
             </button>
         </div>
@@ -26,7 +26,7 @@ import Vue from "vue"
 interface Props {
     hasVisibility: {}
     active: boolean
-    valid: {}
+    enabled: {}
 }
 
 interface Methods {
@@ -47,7 +47,7 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
             type: Boolean,
             required: true
         },
-        valid: {}
+        enabled: {}
     },
     computed: {
         hasValidComponent() {

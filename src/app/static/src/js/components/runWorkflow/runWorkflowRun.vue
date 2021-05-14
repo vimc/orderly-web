@@ -66,7 +66,7 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
             /**
              * ValidateStep should enable/disable buttons once validation is complete
              */
-            this.$emit("valid", {back: true, next: false})
+            this.$emit("enabled", {back: true, next: false})
         }
     }
 })

@@ -4,12 +4,12 @@
               :key="getCurrentIndex(step.name)"
               :active="isActive(step.name)"
               :hasVisibility="handleVisibility(step.name)"
-              :valid="isValid"
+              :enabled="enabledButtons"
               @back="back(step.name)"
               @next="next(step.name)"
               @cancel="confirmCancel">
             <component :is="step.component"
-                       @valid="validate"
+                       @enabled="handleEnabledButtons"
                        :workflow-metadata="runWorkflowMetadata">
             </component>
         </step>
@@ -28,7 +28,7 @@
     interface Data {
         activeStep: number
         steps: {},
-        isValid: {}
+        enabledButtons: {}
         showModal: boolean
     }
 
@@ -41,13 +41,13 @@
         abortCancel: () => void
         handleVisibility: (name: string) => {}
         getCurrentIndex: (name: string) => number
-        validate: (valid: Event) => void
+        handleEnabledButtons: (enabled: Event) => void
     }
 
     interface Props {
         runWorkflowMetadata: RunWorkflowMetadata | null
         entryStep: string | null
-        rerunBack: boolean
+        backButtonVisible: boolean
     }
 
     const steps = [
@@ -60,7 +60,7 @@
         props: {
             runWorkflowMetadata: null,
             entryStep: null,
-            rerunBack: {
+            backButtonVisible: {
                 type: Boolean,
                 required: false
             }
@@ -69,7 +69,7 @@
             return {
                 activeStep: steps.findIndex(step => step.name === this.entryStep),
                 steps: steps,
-                isValid: {back: false, next: false},
+                enabledButtons: {back: false, next: false},
                 showModal: false
             }
         },
@@ -80,7 +80,7 @@
                     return {
                         cancel: true,
                         next: false,
-                        back: this.rerunBack
+                        back: this.backButtonVisible
                     }
                 }
                 if (currentIndex === 0) {
@@ -100,7 +100,7 @@
                 return this.getCurrentIndex(name) === this.activeStep
             },
             next: function (name) {
-                if (this.isValid.next) {
+                if (this.enabledButtons.next) {
                     if (this.steps.length === this.getCurrentIndex(name) + 1) {
                         this.$emit("complete", true)
                     } else {
@@ -109,7 +109,7 @@
                 }
             },
             back: function (name) {
-                if (this.isValid.back) {
+                if (this.enabledButtons.back) {
                     if (this.getCurrentIndex(name) !== 0) {
                         this.activeStep = steps.findIndex(step => step.name === name) - 1
                     }
@@ -127,8 +127,8 @@
             getCurrentIndex: function (name) {
                 return steps.findIndex(step => step.name === name)
             },
-            validate: function (valid) {
-                this.isValid = valid
+            handleEnabledButtons: function (enabled) {
+                this.enabledButtons = enabled
             }
         },
         components: {

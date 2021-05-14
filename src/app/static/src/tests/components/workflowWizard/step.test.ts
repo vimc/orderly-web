@@ -14,7 +14,7 @@ describe(`step`, () => {
             propsData: {
                 hasVisibility: stepsNavigationVisibility,
                 active: true,
-                valid: {}
+                enabled: {}
             },
             slots: {default: runWorkflowReport}
         })
