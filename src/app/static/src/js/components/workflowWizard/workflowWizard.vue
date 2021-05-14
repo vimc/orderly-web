@@ -4,12 +4,12 @@
               :key="getCurrentIndex(step.name)"
               :active="isActive(step.name)"
               :hasVisibility="handleVisibility(step.name)"
-              :enabled="enabledButtons"
+              :valid="validStep"
               @back="back(step.name)"
               @next="next(step.name)"
               @cancel="confirmCancel">
             <component :is="step.component"
-                       @enabled="handleEnabledButtons"
+                       @valid="handleStepValidity"
                        :workflow-metadata="runWorkflowMetadata">
             </component>
         </step>
@@ -20,15 +20,14 @@
 <script lang="ts">
     import Vue from "vue"
     import step from "../workflowWizard/step.vue"
-    import {RunWorkflowMetadata} from "../../utils/types"
+    import {RunWorkflowMetadata, Steps} from "../../utils/types"
     import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue"
     import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue"
     import cancelDialog from "../runWorkflow/cancelDialog.vue"
 
     interface Data {
         activeStep: number
-        steps: {},
-        enabledButtons: {}
+        validStep: boolean
         showModal: boolean
     }
 
@@ -41,35 +40,32 @@
         abortCancel: () => void
         handleVisibility: (name: string) => {}
         getCurrentIndex: (name: string) => number
-        handleEnabledButtons: (enabled: Event) => void
+        handleStepValidity: (valid: Event) => void
     }
 
     interface Props {
         runWorkflowMetadata: RunWorkflowMetadata | null
-        entryStep: string | null
         backButtonVisible: boolean
+        steps: Steps[]
     }
-
-    const steps = [
-        {name: "report", component: "runWorkflowReport"},
-        {name: "run", component: "runWorkflowRun"},
-    ]
 
     export default Vue.extend<Data, Methods, unknown, Props>({
         name: "workflowWizard",
         props: {
             runWorkflowMetadata: null,
-            entryStep: null,
             backButtonVisible: {
                 type: Boolean,
                 required: false
+            },
+            steps: {
+                type: [],
+                required: true
             }
         },
         data(): Data {
             return {
-                activeStep: steps.findIndex(step => step.name === this.entryStep),
-                steps: steps,
-                enabledButtons: {back: false, next: false},
+                activeStep: 0,
+                validStep: false,
                 showModal: false
             }
         },
@@ -100,20 +96,18 @@
                 return this.getCurrentIndex(name) === this.activeStep
             },
             next: function (name) {
-                if (this.enabledButtons.next) {
+                if (this.validStep) {
                     if (this.steps.length - 1 === this.getCurrentIndex(name)) {
                         this.$emit("complete", true)
                     } else {
-                        this.activeStep = steps.findIndex(step => step.name === name) + 1
+                        this.activeStep = this.steps.findIndex(step => step.name === name) + 1
                     }
                 }
             },
             back: function (name) {
-                if (this.enabledButtons.back) {
                     if (this.getCurrentIndex(name) !== 0) {
-                        this.activeStep = steps.findIndex(step => step.name === name) - 1
+                        this.activeStep = this.steps.findIndex(step => step.name === name) - 1
                     }
-                }
             },
             cancel: function () {
                 this.$emit("cancel")
@@ -125,10 +119,10 @@
                 this.showModal = false;
             },
             getCurrentIndex: function (name) {
-                return steps.findIndex(step => step.name === name)
+                return this.steps.findIndex(step => step.name === name)
             },
-            handleEnabledButtons: function (enabled) {
-                this.enabledButtons = enabled
+            handleStepValidity: function (valid) {
+                this.validStep = valid
             }
         },
         components: {

@@ -14,7 +14,7 @@ describe(`step`, () => {
             propsData: {
                 hasVisibility: stepsNavigationVisibility,
                 active: true,
-                enabled: {}
+                valid: false
             },
             slots: {default: runWorkflowReport}
         })
@@ -35,8 +35,7 @@ describe(`step`, () => {
 
     it(`can disable workflow back/next button`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setProps({valid: {next: false, back: false}})
-        expect(wrapper.find("#previous-workflow").classes("disabled")).toBe(true)
+        await wrapper.setProps({valid: false})
         expect(wrapper.find("#next-workflow").classes("disabled")).toBe(true)
     })
 

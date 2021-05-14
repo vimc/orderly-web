@@ -22,7 +22,7 @@ describe(`cancelDialog`, () => {
         expect(buttons.at(1).text()).toBe("No")
 
         expect(wrapper.find("#cancel-heading").text()).toBe("Confirm cancellation")
-        expect(wrapper.find("#cancel-text").text()).toBe("Are you sure you want to cancel ?")
+        expect(wrapper.find("#cancel-text").text()).toBe("Are you sure you want to cancel?")
     })
 
     it(`can open cancel dialog`, () => {

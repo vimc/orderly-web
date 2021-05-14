@@ -13,8 +13,8 @@ describe(`runWorkflow`, () => {
                 return {
                     runWorkflowMetadata:  null,
                     workflowStarted: false,
-                    entryStep: null,
-                    backButtonVisible: true
+                    backButtonVisible: true,
+                    stepComponents: null
                 }
             }
         })
@@ -34,7 +34,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
-        expect(wrapper.vm.$data.entryStep).toBe("run")
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.vm.$data.backButtonVisible).toBe(false)
 
@@ -63,7 +62,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
-        expect(wrapper.vm.$data.entryStep).toBe("report")
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.vm.$data.backButtonVisible).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
@@ -103,7 +101,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
-        expect(wrapper.vm.$data.entryStep).toBe("report")
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.vm.$data.backButtonVisible).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
@@ -153,7 +150,7 @@ describe(`runWorkflow`, () => {
         expect(buttons.at(1).text()).toBe("Run workflow")
 
         //Enable run workflow button and trigger event
-        await wrapper.find(workflowWizard).setData({enabledButtons:{next: true}})
+        await wrapper.find(workflowWizard).setData({validStep: true})
         await buttons.at(1).trigger("click")
         expect(wrapper.find(workflowWizard).emitted().complete.length).toBe(1)
     })

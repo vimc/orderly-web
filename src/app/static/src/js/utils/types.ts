@@ -3,6 +3,11 @@ export interface Parameter {
     value: string
 }
 
+export interface Steps {
+    name: string,
+    component: string
+}
+
 export interface ReportLog{
     email: string,
     date: string,
