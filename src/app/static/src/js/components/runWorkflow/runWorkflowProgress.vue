@@ -1,9 +1,9 @@
 <template>
     <!-- <p>Run workflow progress is coming soon</p> -->
-    <div class="containter">
+    <div class="containter" v-if="workflowStatus">
         <div class="row">
             <h4 class="col">Worflow</h4>
-            <table class="table col-10">
+            <table class="table-bordered col-10">
                 <tr>
                     <td>Name</td>
                     <td>{{ workflowStatus.status }}</td>
@@ -11,9 +11,9 @@
                 </tr>
             </table>
         </div>
-        <div class="row">
+        <div class="row" v-if="workflowStatus.reports.length">
             <h4 class="col">Reports</h4>
-            <table class="table col-10">
+            <table class="table-bordered col-10">
                 <tr v-for="report in workflowStatus.reports">
                     <td>Name</td>
                     <td>{{ report.status }}</td>
@@ -32,7 +32,7 @@ export default Vue.extend({
     name: "runWorkflowProgress",
     data(){
         return {
-            workflowStatus: {}
+            workflowStatus: null
         }
     },
     methods: {
