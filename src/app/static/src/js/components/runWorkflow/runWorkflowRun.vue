@@ -64,7 +64,7 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
     computed: {
         validateStep: function () {
             /**
-             * Todo: Validate this component and emit true if values are valid and false if otherwise
+             * ValidateStep should enable/disable buttons once validation is complete
              */
             this.$emit("valid", {back: true, next: false})
         }
