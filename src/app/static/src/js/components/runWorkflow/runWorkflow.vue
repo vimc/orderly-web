@@ -9,6 +9,7 @@
                          :entry-step="entryStep"
                          :backButtonVisible="backButtonVisible"
                          @cancel=cancel
+                         @complete="handleComplete"
                          :run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
@@ -32,6 +33,7 @@
         handleRerun: () => void
         handleCreate: () => void
         handleClone: () => void
+        handleComplete: () => void
     }
 
     export default Vue.extend<Data, Methods, unknown, unknown>({
@@ -64,6 +66,9 @@
             },
             cancel: function () {
                 this.workflowStarted = false
+            },
+            handleComplete: function () {
+                //handle submitted report here
             }
         },
         components: {

@@ -164,4 +164,19 @@ describe(`runWorkflow`, () => {
         expect(wrapper.vm.$data.workflowStarted).toBe(false)
         expect(wrapper.find(workflowWizard).exists()).toBe(false)
     })
+
+    it(`can emit complete when on final step and run report is triggered`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.find(workflowWizard).exists()).toBe(true)
+
+        const buttons = wrapper.findAll("button")
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Run workflow")
+
+        //Enable run workflow button and trigger event
+        await wrapper.find(workflowWizard).setData({enabledButtons:{next: true}})
+        await buttons.at(1).trigger("click")
+        expect(wrapper.find(workflowWizard).emitted().complete.length).toBe(1)
+    })
 })

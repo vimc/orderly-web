@@ -101,7 +101,7 @@
             },
             next: function (name) {
                 if (this.enabledButtons.next) {
-                    if (this.steps.length === this.getCurrentIndex(name) + 1) {
+                    if (this.steps.length - 1 === this.getCurrentIndex(name)) {
                         this.$emit("complete", true)
                     } else {
                         this.activeStep = steps.findIndex(step => step.name === name) + 1
