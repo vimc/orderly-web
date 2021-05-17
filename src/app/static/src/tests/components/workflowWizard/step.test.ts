@@ -14,7 +14,8 @@ describe(`step`, () => {
             propsData: {
                 hasVisibility: stepsNavigationVisibility,
                 active: true,
-                valid: false
+                valid: false,
+                toggleNext: null
             },
             slots: {default: runWorkflowReport}
         })
@@ -27,9 +28,15 @@ describe(`step`, () => {
         expect(wrapper.find("#next-workflow").text()).toBe("Next")
     })
 
-    it(`can toggle workflow from next to Run workflow button in final step`, async () => {
+    it(`can display default workflow setup for next button in final step`, async () => {
         const wrapper = getWrapper()
         await wrapper.setProps({hasVisibility: {next: false}})
+        expect(wrapper.find("#next-workflow").text()).toBe("Submit")
+    })
+
+    it(`can toggle workflow from next to Run workflow button in final step`, async () => {
+        const wrapper = getWrapper()
+        await wrapper.setProps({hasVisibility: {next: false}, toggleNext: "Run workflow"})
         expect(wrapper.find("#next-workflow").text()).toBe("Run workflow")
     })
 

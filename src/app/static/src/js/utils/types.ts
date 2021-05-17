@@ -3,7 +3,7 @@ export interface Parameter {
     value: string
 }
 
-export interface Steps {
+export interface Step {
     name: string,
     component: string
 }

@@ -2,6 +2,7 @@
     <div id="workflow-wizard" class="container">
         <step v-for="step in steps"
               :key="getCurrentIndex(step.name)"
+              :toggle-next="toggleNext"
               :active="isActive(step.name)"
               :hasVisibility="handleVisibility(step.name)"
               :valid="validStep"
@@ -20,7 +21,7 @@
 <script lang="ts">
     import Vue from "vue"
     import step from "../workflowWizard/step.vue"
-    import {RunWorkflowMetadata, Steps} from "../../utils/types"
+    import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue"
     import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue"
     import cancelDialog from "../runWorkflow/cancelDialog.vue"
@@ -45,22 +46,21 @@
 
     interface Props {
         runWorkflowMetadata: RunWorkflowMetadata | null
-        backButtonVisible: boolean
-        steps: Steps[]
+        steps: Step[]
+        toggleNext : string | null
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
         name: "workflowWizard",
         props: {
             runWorkflowMetadata: null,
-            backButtonVisible: {
-                type: Boolean,
-                required: false,
-                default: true
-            },
             steps: {
                 type: [],
                 required: true
+            },
+            toggleNext: {
+                type: String,
+                required: false
             }
         },
         data(): Data {
@@ -77,7 +77,7 @@
                     return {
                         cancel: true,
                         next: false,
-                        back: this.backButtonVisible
+                        back: this.steps.length !== 1
                     }
                 }
                 if (currentIndex === 0) {

@@ -7,7 +7,7 @@
         </run-workflow-create>
         <workflow-wizard v-if="workflowStarted"
                          :steps="stepComponents"
-                         :backButtonVisible="backButtonVisible"
+                         :toggle-next="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
                          :run-workflow-metadata="runWorkflowMetadata">
@@ -18,14 +18,14 @@
 <script lang="ts">
     import Vue from "vue"
     import workflowWizard from "../workflowWizard/workflowWizard.vue";
-    import {RunWorkflowMetadata, Steps} from "../../utils/types"
+    import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
 
     interface Data {
         runWorkflowMetadata: RunWorkflowMetadata | null
         workflowStarted: boolean
-        backButtonVisible: boolean
-        stepComponents: Steps[]
+        stepComponents: Step[]
+        toggleFinalStepNextTo: string | null
     }
 
     interface Methods {
@@ -42,15 +42,14 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         return {
             runWorkflowMetadata: null,
             workflowStarted: false,
-            backButtonVisible: true,
-            stepComponents: []
+            stepComponents: [],
+            toggleFinalStepNextTo: "Run workflow"
         }
     },
     methods: {
         handleRerun: function () {
             // can set metadata require to rerun here
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
-            this.backButtonVisible = false
             this.workflowStarted = true
         },
         handleCreate: function () {
@@ -58,7 +57,6 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
-            this.backButtonVisible = true
             this.workflowStarted = true
         },
         handleClone: function () {
@@ -67,7 +65,6 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
-            this.backButtonVisible = true
             this.workflowStarted = true
         },
         handleCancel: function () {

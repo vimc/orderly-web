@@ -13,7 +13,7 @@ describe(`runWorkflow`, () => {
                 return {
                     runWorkflowMetadata:  null,
                     workflowStarted: false,
-                    backButtonVisible: true,
+                    toggleFinalStepNextTo: "Run workflow",
                     stepComponents: null
                 }
             }
@@ -35,7 +35,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
-        expect(wrapper.vm.$data.backButtonVisible).toBe(false)
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const buttons = wrapper.findAll("button")
@@ -63,7 +62,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
-        expect(wrapper.vm.$data.backButtonVisible).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
         const buttons = wrapper.findAll("button")
@@ -102,7 +100,6 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
-        expect(wrapper.vm.$data.backButtonVisible).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
         const buttons = wrapper.findAll("button")

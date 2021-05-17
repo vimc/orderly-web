@@ -13,7 +13,7 @@
             </button>
             <button id="next-workflow" type="button" class="btn btn-sm btn-success"
                     :class="{disabled: !valid}"
-                    @click="next"> {{ hasVisibility.next ? "Next" : "Run workflow" }}
+                    @click="next"> {{ hasVisibility.next ? "Next" : handleToggledButton}}
             </button>
         </div>
     </div>
@@ -26,6 +26,7 @@ interface Props {
     hasVisibility: {}
     active: boolean
     valid: boolean
+    toggleNext: string | null
 }
 
 interface Methods {
@@ -36,6 +37,7 @@ interface Methods {
 
 interface Computed {
     hasValidComponent: boolean
+    handleToggledButton: string
 }
 
 export default Vue.extend<unknown, Methods, Computed, Props>({
@@ -49,6 +51,10 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
         valid: {
             type: Boolean,
             required: true
+        },
+        toggleNext: {
+            type: String,
+            required: false
         }
     },
     computed: {
@@ -58,6 +64,9 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
              * the slot has "default" name as I didnt name it specifically.
              */
             return !!this.$slots.default
+        },
+        handleToggledButton() {
+            return this.toggleNext ? this.toggleNext : "Submit"
         }
     },
     methods: {

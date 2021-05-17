@@ -40,34 +40,28 @@ describe(`workflowWizard`, () => {
         const finalStepIndex = steps.length-1
         await wrapper.setData({activeStep: finalStepIndex})
 
-        //set backButtonVisible to simulate workflow back button render
-        await wrapper.setProps({backButtonVisible: true})
-
         const buttons = wrapper.findAll("button")
 
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Back")
-        expect(buttons.at(2).text()).toBe("Run workflow")
+        expect(buttons.at(2).text()).toBe("Submit")
 
         const getSteps = wrapper.findAll(step)
         expect(getSteps.at(finalStepIndex).find(runWorkflowRun).exists()).toBe(true)
     })
 
     it(`can render final step, component and buttons correctly when re-running a workflow`, async () => {
-        const wrapper = getWrapper()
-        const finalStepIndex = steps.length-1
-        await wrapper.setData({activeStep: finalStepIndex})
-
-        //set backButtonVisible to simulate workflow back button render
-        await wrapper.setProps({backButtonVisible: false})
-
+        const mockStep = [
+            {name: "run", component: "runWorkflowRun"}
+        ]
+        const wrapper = getWrapper(mockStep)
         const buttons = wrapper.findAll("button")
 
         expect(buttons.at(0).text()).toBe("Cancel")
-        expect(buttons.at(1).text()).toBe("Run workflow")
+        expect(buttons.at(1).text()).toBe("Submit")
 
         const getSteps = wrapper.findAll(step)
-        expect(getSteps.at(finalStepIndex).find(runWorkflowRun).exists()).toBe(true)
+        expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
     })
 
     it(`can render default propsData on steps correctly`, async () => {
@@ -119,15 +113,13 @@ describe(`workflowWizard`, () => {
         const finalStepIndex = steps.length-1
         await wrapper.setData({activeStep: finalStepIndex})
 
-        //set backButtonVisible to simulate workflow back button render
-        await wrapper.setProps({backButtonVisible: true})
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
 
         const buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Back")
-        expect(buttons.at(2).text()).toBe("Run workflow")
+        expect(buttons.at(2).text()).toBe("Submit")
     })
 
     it(`can go to the next step`, async () => {
@@ -144,7 +136,7 @@ describe(`workflowWizard`, () => {
     it(`can go to previous step `, async (done) => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 1})
-        await wrapper.setProps({backButtonVisible: true})
+
         const buttons = wrapper.findAll("button")
         expect(buttons.at(1).text()).toBe("Back")
 
@@ -210,5 +202,20 @@ describe(`workflowWizard`, () => {
         //newly added step
         expect(getSteps.at(1).props().hasVisibility).toMatchObject(mockHasVisibility)
         expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
+    })
+
+    it(`can toggle final step button`, async () => {
+        const mockStep = [
+            {name: "run", component: "runWorkflowRun"}
+        ]
+        const wrapper = getWrapper(mockStep)
+        await wrapper.setProps({toggleNext: "Any name"})
+        const buttons = wrapper.findAll("button")
+
+        expect(buttons.at(0).text()).toBe("Cancel")
+        expect(buttons.at(1).text()).toBe("Any name")
+
+        const getSteps = wrapper.findAll(step)
+        expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
     })
 })
