@@ -30,9 +30,9 @@ describe(`workflowWizard`, () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
         const getSteps = wrapper.findAll(step)
-        const mockButtonVisibility = {cancel: true, next: true}
+        const mockButtonVisibility = {next: true}
         expect(getSteps.at(0).find(runWorkflowReport).exists()).toBe(true)
-        expect(getSteps.at(0).props("hasVisibility")).toMatchObject(mockButtonVisibility)
+        expect(getSteps.at(0).props("buttonVisibility")).toMatchObject(mockButtonVisibility)
     })
 
     it(`can render final step component and buttons correctly`, async () => {
@@ -82,15 +82,14 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(2)
 
         //first step
-        expect(getSteps.at(0).props().hasVisibility).toMatchObject({back: false, next: true, cancel: true})
+        expect(getSteps.at(0).props().buttonVisibility).toMatchObject({back: false, next: true})
         expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final step
-        expect(getSteps.at(1).props().hasVisibility).toMatchObject({back: true, next: false, cancel: true})
+        expect(getSteps.at(1).props().buttonVisibility).toMatchObject({back: true, next: false})
         expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
-
     })
 
     it(`can render report component`, async() => {
@@ -182,7 +181,7 @@ describe(`workflowWizard`, () => {
             {name: "run", component: "runWorkflowRun"}
         ]
 
-        const mockHasVisibility = {back: true, next: true, cancel: true}
+        const mockHasVisibility = {back: true, next: true}
         const wrapper =  shallowMount(workflowWizard, {
             propsData: {
                 runWorkflowMetadata: {placeholder: "testdata"},
@@ -200,7 +199,7 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(3)
 
         //newly added step
-        expect(getSteps.at(1).props().hasVisibility).toMatchObject(mockHasVisibility)
+        expect(getSteps.at(1).props().buttonVisibility).toMatchObject(mockHasVisibility)
         expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
     })
 
@@ -209,7 +208,7 @@ describe(`workflowWizard`, () => {
             {name: "run", component: "runWorkflowRun"}
         ]
         const wrapper = getWrapper(mockStep)
-        await wrapper.setProps({toggleNext: "Any name"})
+        await wrapper.setProps({submitLabel: "Any name"})
         const buttons = wrapper.findAll("button")
 
         expect(buttons.at(0).text()).toBe("Cancel")

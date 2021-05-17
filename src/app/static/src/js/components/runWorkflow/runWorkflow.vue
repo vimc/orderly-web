@@ -7,7 +7,7 @@
         </run-workflow-create>
         <workflow-wizard v-if="workflowStarted"
                          :steps="stepComponents"
-                         :toggle-next="toggleFinalStepNextTo"
+                         :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
                          :run-workflow-metadata="runWorkflowMetadata">

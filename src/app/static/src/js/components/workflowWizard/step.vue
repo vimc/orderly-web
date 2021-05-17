@@ -7,13 +7,13 @@
             <button id="cancel-workflow" type="button" class="btn btn-sm btn-secondary"
                     @click="cancel">Cancel
             </button>
-            <button id="previous-workflow" v-if="hasVisibility.back" type="button"
+            <button id="previous-workflow" v-if="buttonVisibility.back" type="button"
                     class="btn btn-sm btn-primary"
                     @click="back">Back
             </button>
             <button id="next-workflow" type="button" class="btn btn-sm btn-success"
                     :class="{disabled: !valid}"
-                    @click="next"> {{ hasVisibility.next ? "Next" : handleToggledButton}}
+                    @click="next">{{ buttonVisibility.next ? "Next" : handleToggledButton}}
             </button>
         </div>
     </div>
@@ -23,10 +23,10 @@
 import Vue from "vue"
 
 interface Props {
-    hasVisibility: {}
+    buttonVisibility: {}
     active: boolean
     valid: boolean
-    toggleNext: string | null
+    submitLabel: string | null
 }
 
 interface Methods {
@@ -43,7 +43,7 @@ interface Computed {
 export default Vue.extend<unknown, Methods, Computed, Props>({
     name: "step",
     props: {
-        hasVisibility: {},
+        buttonVisibility: {},
         active: {
             type: Boolean,
             required: true
@@ -52,7 +52,7 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
             type: Boolean,
             required: true
         },
-        toggleNext: {
+        submitLabel: {
             type: String,
             required: false
         }
@@ -66,7 +66,7 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
             return !!this.$slots.default
         },
         handleToggledButton() {
-            return this.toggleNext ? this.toggleNext : "Submit"
+            return this.submitLabel ? this.submitLabel : "Submit"
         }
     },
     methods: {

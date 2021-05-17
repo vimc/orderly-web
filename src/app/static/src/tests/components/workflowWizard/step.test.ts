@@ -4,18 +4,18 @@ import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowRep
 
 describe(`step`, () => {
 
-    const hasVisibility = {
+    const buttonVisibility = {
         next: true,
         back: true
     }
 
-    const getWrapper = (stepsNavigationVisibility = hasVisibility) => {
+    const getWrapper = (stepsNavigationVisibility = buttonVisibility) => {
         return shallowMount(step, {
             propsData: {
-                hasVisibility: stepsNavigationVisibility,
+                buttonVisibility: stepsNavigationVisibility,
                 active: true,
                 valid: false,
-                toggleNext: null
+                submitLabel: null
             },
             slots: {default: runWorkflowReport}
         })
@@ -30,13 +30,13 @@ describe(`step`, () => {
 
     it(`can display default workflow setup for next button in final step`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setProps({hasVisibility: {next: false}})
+        await wrapper.setProps({buttonVisibility: {next: false}})
         expect(wrapper.find("#next-workflow").text()).toBe("Submit")
     })
 
     it(`can toggle workflow from next to Run workflow button in final step`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setProps({hasVisibility: {next: false}, toggleNext: "Run workflow"})
+        await wrapper.setProps({buttonVisibility: {next: false}, submitLabel: "Run workflow"})
         expect(wrapper.find("#next-workflow").text()).toBe("Run workflow")
     })
 

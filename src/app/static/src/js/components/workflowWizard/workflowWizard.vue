@@ -2,9 +2,9 @@
     <div id="workflow-wizard" class="container">
         <step v-for="step in steps"
               :key="getCurrentIndex(step.name)"
-              :toggle-next="toggleNext"
+              :submit-label="submitLabel"
               :active="isActive(step.name)"
-              :hasVisibility="handleVisibility(step.name)"
+              :button-visibility="handleVisibility(step.name)"
               :valid="validStep"
               @back="back(step.name)"
               @next="next(step.name)"
@@ -47,7 +47,7 @@
     interface Props {
         runWorkflowMetadata: RunWorkflowMetadata | null
         steps: Step[]
-        toggleNext : string | null
+        submitLabel : string | null
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
@@ -58,7 +58,7 @@
                 type: [],
                 required: true
             },
-            toggleNext: {
+            submitLabel: {
                 type: String,
                 required: false
             }
@@ -75,20 +75,17 @@
                 const currentIndex = this.getCurrentIndex(name)
                 if (currentIndex === this.steps.length - 1) {
                     return {
-                        cancel: true,
                         next: false,
                         back: this.steps.length !== 1
                     }
                 }
                 if (currentIndex === 0) {
                     return {
-                        cancel: true,
                         next: true,
                         back: false
                     }
                 }
                 return {
-                    cancel: true,
                     next: true,
                     back: true
                 }
