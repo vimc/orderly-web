@@ -102,6 +102,7 @@
                         this.$emit("complete", true)
                     } else {
                         this.activeStep = this.steps.findIndex(step => step.name === name) + 1
+                        this.validStep = false
                     }
                 }
             },
@@ -114,10 +115,11 @@
                 this.$emit("cancel")
             },
             confirmCancel: function() {
-                this.showModal = true;
+                this.showModal = true
+                this.validStep = false
             },
             abortCancel: function() {
-                this.showModal = false;
+                this.showModal = false
             },
             getCurrentIndex: function (name) {
                 return this.steps.findIndex(step => step.name === name)
