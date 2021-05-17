@@ -27,10 +27,4 @@ class RunWorkflowTests : SeleniumTest()
         driver.get(url)
     }
 
-    @Test
-    fun `can view run workflow tab`()
-    {
-        val tab = driver.findElement(By.id("run-workflow-tab"))
-        Assertions.assertThat(tab.findElement(By.id("runWorkflow")).isDisplayed).isTrue()
-    }
 }
