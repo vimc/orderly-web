@@ -7,13 +7,13 @@
             <button id="cancel-workflow" type="button" class="btn btn-sm btn-secondary"
                     @click="cancel">Cancel
             </button>
-            <button id="previous-workflow" v-if="buttonVisibility.back" type="button"
+            <button id="previous-workflow" v-if="buttonOptions.back" type="button"
                     class="btn btn-sm btn-primary"
                     @click="back">Back
             </button>
             <button id="next-workflow" type="button" class="btn btn-sm btn-success"
-                    :class="{disabled: !valid}"
-                    @click="next">{{ buttonVisibility.next ? "Next" : handleToggledButton}}
+                    :disabled="handleValid"
+                    @click="next">{{ buttonOptions.hasCustomSubmitLabel ? handleToggledLabel : "Next" }}
             </button>
         </div>
     </div>
@@ -23,7 +23,7 @@
 import Vue from "vue"
 
 interface Props {
-    buttonVisibility: {}
+    buttonOptions: Record<string, boolean>
     active: boolean
     valid: boolean
     submitLabel: string | null
@@ -37,13 +37,14 @@ interface Methods {
 
 interface Computed {
     hasValidComponent: boolean
-    handleToggledButton: string
+    handleToggledLabel: string
+    handleValid: boolean
 }
 
 export default Vue.extend<unknown, Methods, Computed, Props>({
     name: "step",
     props: {
-        buttonVisibility: {},
+        buttonOptions: {},
         active: {
             type: Boolean,
             required: true
@@ -65,8 +66,11 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
              */
             return !!this.$slots.default
         },
-        handleToggledButton() {
+        handleToggledLabel() {
             return this.submitLabel ? this.submitLabel : "Submit"
+        },
+        handleValid() {
+            return !this.valid
         }
     },
     methods: {

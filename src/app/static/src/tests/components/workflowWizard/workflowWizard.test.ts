@@ -30,9 +30,9 @@ describe(`workflowWizard`, () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
         const getSteps = wrapper.findAll(step)
-        const mockButtonVisibility = {next: true}
+        const mockButtonVisibility = {back: false}
         expect(getSteps.at(0).find(runWorkflowReport).exists()).toBe(true)
-        expect(getSteps.at(0).props("buttonVisibility")).toMatchObject(mockButtonVisibility)
+        expect(getSteps.at(0).props("buttonOptions")).toMatchObject(mockButtonVisibility)
     })
 
     it(`can render final step component and buttons correctly`, async () => {
@@ -82,12 +82,12 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(2)
 
         //first step
-        expect(getSteps.at(0).props().buttonVisibility).toMatchObject({back: false, next: true})
+        expect(getSteps.at(0).props().buttonOptions).toMatchObject({back: false})
         expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final step
-        expect(getSteps.at(1).props().buttonVisibility).toMatchObject({back: true, next: false})
+        expect(getSteps.at(1).props().buttonOptions).toMatchObject({back: true})
         expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
     })
@@ -181,7 +181,7 @@ describe(`workflowWizard`, () => {
             {name: "run", component: "runWorkflowRun"}
         ]
 
-        const mockHasVisibility = {back: true, next: true}
+        const mockHasVisibility = {back: true}
         const wrapper =  shallowMount(workflowWizard, {
             propsData: {
                 runWorkflowMetadata: {placeholder: "testdata"},
@@ -199,7 +199,7 @@ describe(`workflowWizard`, () => {
         expect(getSteps.length).toBe(3)
 
         //newly added step
-        expect(getSteps.at(1).props().buttonVisibility).toMatchObject(mockHasVisibility)
+        expect(getSteps.at(1).props().buttonOptions).toMatchObject(mockHasVisibility)
         expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
     })
 

@@ -4,15 +4,15 @@ import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowRep
 
 describe(`step`, () => {
 
-    const buttonVisibility = {
+    const buttonOptions = {
         next: true,
         back: true
     }
 
-    const getWrapper = (stepsNavigationVisibility = buttonVisibility) => {
+    const getWrapper = (options = buttonOptions) => {
         return shallowMount(step, {
             propsData: {
-                buttonVisibility: stepsNavigationVisibility,
+                buttonOptions: options,
                 active: true,
                 valid: false,
                 submitLabel: null
@@ -30,20 +30,20 @@ describe(`step`, () => {
 
     it(`can display default workflow setup for next button in final step`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setProps({buttonVisibility: {next: false}})
+        await wrapper.setProps({buttonOptions: {hasCustomSubmitLabel: true}})
         expect(wrapper.find("#next-workflow").text()).toBe("Submit")
     })
 
     it(`can toggle workflow from next to Run workflow button in final step`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setProps({buttonVisibility: {next: false}, submitLabel: "Run workflow"})
+        await wrapper.setProps({buttonOptions: {hasCustomSubmitLabel: true}, submitLabel: "Run workflow"})
         expect(wrapper.find("#next-workflow").text()).toBe("Run workflow")
     })
 
-    it(`can disable workflow back/next button`, async () => {
+    it(`can disable workflow next button`, async () => {
         const wrapper = getWrapper()
         await wrapper.setProps({valid: false})
-        expect(wrapper.find("#next-workflow").classes("disabled")).toBe(true)
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
     })
 
     it(`can emit cancel when click event gets triggered`, async () => {
@@ -60,7 +60,9 @@ describe(`step`, () => {
 
     it(`can emit next when click event triggered as expected`, async () => {
         const wrapper = getWrapper()
-        await wrapper.find("#next-workflow").trigger("click")
+        await wrapper.setProps({valid: true})
+        wrapper.find("#next-workflow").trigger("click")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe(undefined)
         expect(wrapper.emitted("next").length).toBe(1)
     })
 })

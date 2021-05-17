@@ -4,7 +4,7 @@
               :key="getCurrentIndex(step.name)"
               :submit-label="submitLabel"
               :active="isActive(step.name)"
-              :button-visibility="handleVisibility(step.name)"
+              :button-options="handleButtonOptions(step.name)"
               :valid="validStep"
               @back="back(step.name)"
               @next="next(step.name)"
@@ -39,7 +39,7 @@
         cancel: () => void
         confirmCancel: () => void
         abortCancel: () => void
-        handleVisibility: (name: string) => {}
+        handleButtonOptions: (name: string) => {}
         getCurrentIndex: (name: string) => number
         handleStepValidity: (valid: Event) => void
     }
@@ -67,26 +67,24 @@
             return {
                 activeStep: 0,
                 validStep: false,
-                showModal: false
+                showModal: false,
             }
         },
         methods: {
-            handleVisibility(name) {
+            handleButtonOptions(name) {
                 const currentIndex = this.getCurrentIndex(name)
                 if (currentIndex === this.steps.length - 1) {
                     return {
-                        next: false,
+                        hasCustomSubmitLabel: true,
                         back: this.steps.length !== 1
                     }
                 }
                 if (currentIndex === 0) {
                     return {
-                        next: true,
                         back: false
                     }
                 }
                 return {
-                    next: true,
                     back: true
                 }
             },
@@ -110,10 +108,10 @@
             },
             cancel: function () {
                 this.$emit("cancel")
+                this.validStep = false
             },
             confirmCancel: function() {
                 this.showModal = true
-                this.validStep = false
             },
             abortCancel: function() {
                 this.showModal = false
