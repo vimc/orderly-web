@@ -44,10 +44,11 @@ class WorkflowRunController(
 
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
     {
-        return workflowRunRepository.getWorkflowRunSummaries(
-            context.queryParams("email"),
-            context.queryParams("namePrefix")
-        )
+        // return workflowRunRepository.getWorkflowRunSummaries(
+        //     context.queryParams("email"),
+        //     context.queryParams("namePrefix")
+        // )
+        return listOf(WorkflowRunSummary())
     }
 
     internal data class WorkflowRunResponse(
