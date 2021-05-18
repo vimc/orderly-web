@@ -23,7 +23,6 @@
         },
         methods: {
             clearRunReportSession(){
-                session.setSelectedRunningReportKey("");
                 session.setSelectedTab("runReport");
             }
         }
