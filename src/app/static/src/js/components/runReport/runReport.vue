@@ -94,7 +94,6 @@
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
     import ReportList from "./reportList.vue";
-    import {session} from "./../../utils/session.js"
 
     export default Vue.extend({
         name: "runReport",
@@ -121,7 +120,7 @@
                 error: "",
                 defaultMessage: "",
                 runningStatus: "",
-                runningKey: session.getSelectedRunningReportKey(),
+                runningKey: "",
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
@@ -266,7 +265,6 @@
                     });
             },
             clearRun() {
-                console.log("clear run fired")
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
