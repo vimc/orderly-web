@@ -17,6 +17,7 @@
     "@babel/preset-env": "^7.12.11",
     "@babel/register": "^7.12.10",
     "@types/jest": "^26.0.20",
+    "@types/vue-select": "^3.11.1",
     "@vue/test-utils": "^1.1.2",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.19.0",
@@ -56,5 +57,8 @@
     "webpack": "^4.46.0",
     "webpack-node-externals": "^1.7.2",
     "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "vue-select": "^3.11.2"
   }
 }

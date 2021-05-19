@@ -30,9 +30,9 @@
 
     interface Methods {
         handleCancel: () => void
-        handleRerun: () => void
+        handleRerun: (data: Event) => void
         handleCreate: () => void
-        handleClone: () => void
+        handleClone: (data: Event) => void
         handleComplete: () => void
     }
 
@@ -47,20 +47,21 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         }
     },
     methods: {
-        handleRerun: function () {
-            // can set metadata require to rerun here
+        handleRerun: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
             this.workflowStarted = true
         },
         handleCreate: function () {
+            this.runWorkflowMetadata = null
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
             this.workflowStarted = true
         },
-        handleClone: function () {
-            //Can set metadata required for clone here
+        handleClone: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},

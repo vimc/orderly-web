@@ -10,7 +10,7 @@
                         <label class="col-sm-3 col-form-label text-right">Branch</label>
                         <div class="col-sm-8">
                             <select class="form-control" id="workflow-git-branch">
-                                <option value="master ">master</option>
+                                <option value="master">master</option>
                             </select>
                         </div>
                     </div>

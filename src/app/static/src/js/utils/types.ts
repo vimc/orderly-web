@@ -22,7 +22,14 @@ export interface ReportLog{
 }
 
 export interface RunWorkflowMetadata {
-    placeholder: string
+    name: string
+    date: string
+    email: string
+    reports: Record<string, string>,
+    instances: Record<string, string>,
+    git_branch: string | null
+    git_commit: string | null
+    key: string
 }
 
 export interface Error {
