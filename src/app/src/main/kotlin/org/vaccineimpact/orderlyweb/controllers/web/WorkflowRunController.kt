@@ -40,6 +40,7 @@ class WorkflowRunController(
     {
         val key = context.params(":key")
         return workflowRunRepository.getWorkflowRunDetails(key)
+        // return WorkflowRun()
     }
 
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
@@ -48,7 +49,7 @@ class WorkflowRunController(
         //     context.queryParams("email"),
         //     context.queryParams("namePrefix")
         // )
-        return listOf(WorkflowRunSummary())
+        return listOf(WorkflowRunSummary("name1",  "key1", "email1", Instant.now()), WorkflowRunSummary("name2",  "key2", "email2", Instant.now()))
     }
 
     internal data class WorkflowRunResponse(
