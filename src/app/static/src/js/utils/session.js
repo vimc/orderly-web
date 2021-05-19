@@ -1,11 +1,6 @@
 export const session = function () {
-    const RUNNING_REPORT_STATUS_PREFIX = "runningReportStatus_";
-
-    const RUNNING_STATUS = "runningStatus";
-    const RUNNING_KEY = "runningKey";
-    const NEW_VERSION_FROM_RUN = "newVersionFromRun";
-
-    const RUNNING_REPORT_STATUS_KEYS = [RUNNING_STATUS, RUNNING_KEY, NEW_VERSION_FROM_RUN];
+    const SELECTED_RUNNING_REPORT_TAB = "selectedRunningReportTab";
+    const SELECTED_RUNNING_REPORT_KEY = "selectedRunningReportKey";
 
     function getItem(key) {
         return window.sessionStorage.getItem(key);
@@ -23,21 +18,18 @@ export const session = function () {
         window.sessionStorage.removeItem(key);
     }
 
-    function buildStorageKey(reportName, valueKey) {
-        return RUNNING_REPORT_STATUS_PREFIX + reportName + "_" + valueKey;
-    }
-
     return {
-        getRunningReportStatus: function (reportName) {
-            const result = {};
-            RUNNING_REPORT_STATUS_KEYS.forEach(x => result[x] = getItem(buildStorageKey(reportName, x)));
-            return result;
+        getSelectedTab: function () {
+            return getItem(SELECTED_RUNNING_REPORT_TAB);
         },
-        setRunningReportStatus: function (reportName, runningReportStatus) {
-            RUNNING_REPORT_STATUS_KEYS.forEach(x => setItem(buildStorageKey(reportName, x), runningReportStatus[x]))
+        setSelectedTab: function (tab) {
+            setItem(SELECTED_RUNNING_REPORT_TAB, tab);
         },
-        removeRunningReportStatus: function (reportName) {
-            RUNNING_REPORT_STATUS_KEYS.forEach(x => removeItem(buildStorageKey(reportName, x)));
+        getSelectedRunningReportKey: function () {
+            return getItem(SELECTED_RUNNING_REPORT_KEY);
+        },
+        setSelectedRunningReportKey: function (key) {
+            setItem(SELECTED_RUNNING_REPORT_KEY, key);
         }
     };
 }();

@@ -57,8 +57,10 @@
                 return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
             }
         },
-        beforeDestroy() {
-            this.$emit('update:key', "");
+        mounted(){
+            if (this.initialSelectedKey){
+                this.query = this.reports.find(report => report.key === this.initialSelectedKey).name
+            }
         }
     })
 
