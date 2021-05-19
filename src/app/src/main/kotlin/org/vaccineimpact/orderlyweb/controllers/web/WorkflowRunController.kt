@@ -14,6 +14,7 @@ import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunRequest
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
+import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
@@ -39,8 +40,12 @@ class WorkflowRunController(
     fun getWorkflowRunDetails(): WorkflowRun
     {
         val key = context.params(":key")
-        return workflowRunRepository.getWorkflowRunDetails(key)
-        // return WorkflowRun()
+        // return workflowRunRepository.getWorkflowRunDetails(key)
+        if (key == "key1"){
+            return WorkflowRun("name1", "key1", "email1", Instant.now(), listOf(WorkflowReportWithParams("name1a", mapOf("p1a" to "v1a"))), mapOf("p1" to "v1"), "gitBranch1", "gitCommit1")
+        } else if (key == "key2"){
+            return WorkflowRun("name2", "key2", "email2", Instant.now(), listOf(WorkflowReportWithParams("name2a", mapOf("p2a" to "v2a"))), mapOf("p2" to "v2"), "gitBranch2", "gitCommit2")
+        } else return workflowRunRepository.getWorkflowRunDetails(key)
     }
 
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>

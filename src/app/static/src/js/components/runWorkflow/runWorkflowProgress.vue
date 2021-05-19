@@ -1,8 +1,7 @@
 <template>
     <!-- <p>Run workflow progress is coming soon</p> -->
-    <div class="containter" v-if="workflowRunSummaries">
-
-        <div class="row">
+    <div class="containter mt-3" v-if="workflowRunSummaries">
+        <div class="row mb-3">
             <!-- <h4 class="col">Worflow</h4>
             <table class="table-bordered col-10">
                 <tr>
@@ -12,7 +11,7 @@
                 </tr>
             </table> -->
             <label for="workflows" class="form-label col">Workflow</label>
-            <select name="workflows" id="workflows" class="form-select col-10">
+            <select name="workflows" id="workflows" class="form-select col-10" v-model="selectedWorkflowKey">
                 <option v-for="workflow in workflowRunSummaries.data" :value="workflow.key">
                     <span >{{ workflow.name }}</span>
                     <span>Started: {{ formatDate(workflow.date) }}</span>
@@ -23,13 +22,18 @@
                 </option>
             </select>
         </div>
-        <div class="row" v-if="workflowRunSummaries.data.length">
-            <h4 class="col">Reports</h4>
+        <div class="row" v-if="workflowRunDetails">
+            <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
-                <tr v-for="report in workflowRunSummaries.data">
+                <!-- <tr v-for="report in workflowRunDetails.data">
                     <td>{{ report.name }}</td>
-                    <td>{{ workflowRunSummaries.status }}</td>
+                    <td>{{ workflowRunDetails.status }}</td>
                     <td>{{ report.date }}</td>
+                </tr> -->
+                <tr>
+                    <td>{{ workflowRunDetails.data.name }}</td>
+                    <td>{{ workflowRunDetails.status }}</td>
+                    <td>{{ formatDate(workflowRunDetails.data.date) }}</td>
                 </tr>
             </table>
         </div>
@@ -45,7 +49,9 @@ export default Vue.extend({
     name: "runWorkflowProgress",
     data(){
         return {
-            workflowRunSummaries: null
+            workflowRunSummaries: null,
+            selectedWorkflowKey: null,
+            workflowRunDetails: null
         }
     },
     methods: {
@@ -103,8 +109,29 @@ export default Vue.extend({
             // this.workflowRunSummaries = status.data
             // console.log(status)
         },
+        getWorkflowRunDetails(key){
+            api.get(`/workflows/${key}`, )
+                .then(({data}) => {
+                    console.log("details", data)
+                    this.workflowRunDetails = data
+                    // this.reports = data.data;
+                    // this.error = "";
+                    // this.defaultMessage = "";
+                })
+                .catch((error) => {
+                    console.log(error)
+                    // this.error = error;
+                    // this.defaultMessage = "An error occurred fetching the running reports";
+                });
+        },
         formatDate(date) {
             return longTimestamp(new Date(date));
+        }
+    },
+    watch: {
+        selectedWorkflowKey(){
+            console.log(this.selectedWorkflowKey)
+            this.getWorkflowRunDetails(this.selectedWorkflowKey)
         }
     },
     mounted() {
