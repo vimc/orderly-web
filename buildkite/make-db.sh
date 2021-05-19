@@ -1,6 +1,6 @@
 set -ex
 
-ORDERLY_IMAGE=$ORG/orderly:master
+ORDERLY_IMAGE=$ORG/orderly:mrc-2416
 MIGRATE_IMAGE=$ORG/orderlyweb-migrate:$GIT_ID
 
 rm demo -rf

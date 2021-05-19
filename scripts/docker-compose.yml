@@ -11,7 +11,7 @@ services:
   orderly_server:
     image: vimc/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}
-    command: --workers=1 /orderly
+    command: --workers=1 --backup-period=10 /orderly
     ports:
       - "8321:8321"
     volumes:
