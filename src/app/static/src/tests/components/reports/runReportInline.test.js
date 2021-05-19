@@ -2,6 +2,10 @@ import {shallowMount} from '@vue/test-utils';
 import runReportInline from "../../../js/components/reports/runReportInline";
 
 describe("runReportInline", () => {
+    beforeEach(() => {
+        jest.restoreAllMocks()
+    });
+
     const getWrapper = () => {
         return shallowMount(runReportInline, {propsData: {report: {name: "report-data"}}})
     }
@@ -26,6 +30,16 @@ describe("runReportInline", () => {
     it(`it renders href link as expected`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("div a").attributes("href")).toBe("http://app/run-report?report-name=report-data")
+    })
+
+    it(`clicking link clears run report key and tab from session`, () => {
+        Storage.prototype.setItem = jest.fn();
+        const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
+        const wrapper = getWrapper()
+        const link = wrapper.find("div a")
+        link.trigger("click")
+        expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportTab");
+        expect(spySetStorage.calls[0][1]).toBe("runReport");
     })
 });
 
