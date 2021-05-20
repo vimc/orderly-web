@@ -29,11 +29,11 @@
             <button id="rerun" @click="rerun()"
                     type="button"
                     class="btn btn-success"
-                    :disabled="!selectedWorkflow && !error">Re-run workflow
+                    :disabled="!selectedWorkflow && error">Re-run workflow
             </button>
             <button id="clone" @click="clone()"
                     type="button" class="btn btn-success"
-                    :disabled="!selectedWorkflow && !error">Clone workflow
+                    :disabled="!selectedWorkflow && error">Clone workflow
             </button>
         </div>
         <div class="pt-4 col-sm-6">
