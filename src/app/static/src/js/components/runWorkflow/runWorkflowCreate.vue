@@ -1,29 +1,31 @@
 <template>
     <div>
         <h2 id="create-workflow-header">Run workflow</h2>
-        <div class="pt-2 col-md-6">
+        <div class="pt-2 col-sm-6">
             <p>Either:</p>
             <button id="create-workflow" @click="create()"
                     type="button" class="btn btn-success">
                 Create a blank workflow
             </button>
         </div>
-        <div id="report-list" class="pt-4 col-md-8">
+        <div id="report-list" class="pt-4 col-sm-6">
             <p>Or re-use an existing workflow:</p>
             <div>
                 <v-select label="name"
-                          :options="workflows" v-model="selectedWorkflow"
-                          :reduce="workflows => workflows.key"
-                          placeholder="Search by name...">
+                          :filter="searchWorkflows"
+                          :options="workflows.slice(0, 10)"
+                          v-model="selectedWorkflow"
+                          placeholder="Search by name or user...">
                     <template #option="{ name, email, date }">
-                        <span>{{ name }}<span class="text-secondary pl-4">
-                            {{ email }} | {{ date }}</span>
-                        </span>
+                        <div>{{ name }}
+                            <span style="opacity: 0.5; float:right;">
+                            {{ handleUser(email) }} | {{ handleDate(date) }}</span>
+                        </div>
                     </template>
                 </v-select>
             </div>
         </div>
-        <div class="pt-4 col-md-6">
+        <div class="pt-4 col-sm-6">
             <button id="rerun" @click="rerun()"
                     type="button"
                     class="btn btn-success"
@@ -43,6 +45,7 @@ import vSelect from 'vue-select'
 import {api} from "../../utils/api";
 import {RunWorkflowMetadata} from "../../utils/types";
 import "vue-select/dist/vue-select.css";
+import {longTimestamp} from "../../utils/helpers";
 
 interface Methods {
     create: () => void
@@ -50,6 +53,9 @@ interface Methods {
     rerun: () => void
     getWorkflows: () => void
     getCloneableWorkflow: () => void
+    searchWorkflows: (options: [], search: string) => void
+    handleDate: (date: string) => string
+    handleUser: (user: string) => string
 }
 
 interface Data {
@@ -68,6 +74,11 @@ const cloneableWorkflowMetadata = {
     git_branch: null,
     git_commit: null,
     key: null
+}
+
+interface Computed {
+
+    handleUser: string
 }
 
 export default Vue.extend<Data, Methods, unknown, unknown>({
@@ -97,7 +108,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             }
         },
         getWorkflows: function () {
-            api.get(`/workflows/runnable`)
+            api.get(`/workflows`)
                 .then(({data}) => {
                     this.workflows = data.data
                 })
@@ -106,17 +117,27 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 })
         },
         getCloneableWorkflow: function () {
-            api.get(`/workflows/${this.selectedWorkflow}/`)
+            api.get(`/workflows/${this.selectedWorkflow.key}/`)
                 .then(({data}) => {
                     this.runWorkflowMetadata = data.data
                 })
                 .catch(({error}) => {
                     this.error = error
                 })
+        },
+        searchWorkflows: function (options, search) {
+            return this.workflows.filter(option => {
+                const {email, name} = option;
+                return ([email, name].toString() || '').toLowerCase().indexOf(search.toLowerCase()) > -1
+            });
+        },
+        handleDate: function (date) {
+            const dateConverter = new Date(date)
+            return longTimestamp(dateConverter)
+        },
+        handleUser: function (user) {
+            return user.split("@")[0]
         }
-    },
-    components: {
-        vSelect
     },
     mounted() {
         this.getWorkflows()
@@ -127,6 +148,9 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 this.getCloneableWorkflow()
             }
         }
+    },
+    components: {
+        vSelect
     }
 })
 </script>
