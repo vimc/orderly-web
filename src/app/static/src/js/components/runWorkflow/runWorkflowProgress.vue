@@ -33,9 +33,17 @@
                 <tr v-for="report in workflowRunStatus.data.reports">
                     <td>{{ report.name }}</td>
                     <td>{{ report.status }}</td>
-                    <td>{{ formatDate(report.date) }}</td>
+                    <td>{{ report.date && formatDate(report.date) }}</td>
                 </tr>
             </table>
+        </div>
+        <div class="row justify-content-end mt-3">
+            <!-- <div class="col"></div>
+            <div class="col"></div> -->
+            <!-- <div class="mt-3"> -->
+            <button class="button mr-3">Clone workflow</button>
+            <button class="btn btn-grey">Cancel workflow</button>
+            <!-- </div> -->
         </div>
     </div>
 </template>
