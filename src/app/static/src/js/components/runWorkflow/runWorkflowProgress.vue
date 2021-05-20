@@ -22,18 +22,18 @@
                 </option>
             </select>
         </div>
-        <div class="row" v-if="workflowRunDetails">
+        <div class="row" v-if="workflowRunStatus">
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
-                <!-- <tr v-for="report in workflowRunDetails.data">
+                <!-- <tr v-for="report in workflowRunStatus.data">
                     <td>{{ report.name }}</td>
-                    <td>{{ workflowRunDetails.status }}</td>
+                    <td>{{ workflowRunStatus.status }}</td>
                     <td>{{ report.date }}</td>
                 </tr> -->
-                <tr>
-                    <td>{{ workflowRunDetails.data.name }}</td>
-                    <td>{{ workflowRunDetails.status }}</td>
-                    <td>{{ formatDate(workflowRunDetails.data.date) }}</td>
+                <tr v-for="report in workflowRunStatus.data.reports">
+                    <td>{{ report.name }}</td>
+                    <td>{{ report.status }}</td>
+                    <td>{{ formatDate(report.date) }}</td>
                 </tr>
             </table>
         </div>
@@ -51,7 +51,7 @@ export default Vue.extend({
         return {
             workflowRunSummaries: null,
             selectedWorkflowKey: null,
-            workflowRunDetails: null
+            workflowRunStatus: null
         }
     },
     methods: {
@@ -109,11 +109,11 @@ export default Vue.extend({
             // this.workflowRunSummaries = status.data
             // console.log(status)
         },
-        getWorkflowRunDetails(key){
-            api.get(`/workflows/${key}`, )
+        getWorkflowRunStatus(key){
+            api.get(`/workflows/${key}/status`, )
                 .then(({data}) => {
                     console.log("details", data)
-                    this.workflowRunDetails = data
+                    this.workflowRunStatus = data
                     // this.reports = data.data;
                     // this.error = "";
                     // this.defaultMessage = "";
@@ -131,7 +131,7 @@ export default Vue.extend({
     watch: {
         selectedWorkflowKey(){
             console.log(this.selectedWorkflowKey)
-            this.getWorkflowRunDetails(this.selectedWorkflowKey)
+            this.getWorkflowRunStatus(this.selectedWorkflowKey)
         }
     },
     mounted() {

@@ -40,12 +40,12 @@ class WorkflowRunController(
     fun getWorkflowRunDetails(): WorkflowRun
     {
         val key = context.params(":key")
-        // return workflowRunRepository.getWorkflowRunDetails(key)
-        if (key == "key1"){
-            return WorkflowRun("name1", "key1", "email1", Instant.now(), listOf(WorkflowReportWithParams("name1a", mapOf("p1a" to "v1a"))), mapOf("p1" to "v1"), "gitBranch1", "gitCommit1")
-        } else if (key == "key2"){
-            return WorkflowRun("name2", "key2", "email2", Instant.now(), listOf(WorkflowReportWithParams("name2a", mapOf("p2a" to "v2a"))), mapOf("p2" to "v2"), "gitBranch2", "gitCommit2")
-        } else return workflowRunRepository.getWorkflowRunDetails(key)
+        return workflowRunRepository.getWorkflowRunDetails(key)
+        // if (key == "key1"){
+        //     return WorkflowRun("name1", "key1", "email1", Instant.now(), listOf(WorkflowReportWithParams("name1a", mapOf("p1a" to "v1a"))), mapOf("p1" to "v1"), "gitBranch1", "gitCommit1")
+        // } else if (key == "key2"){
+        //     return WorkflowRun("name2", "key2", "email2", Instant.now(), listOf(WorkflowReportWithParams("name2a", mapOf("p2a" to "v2a"))), mapOf("p2" to "v2"), "gitBranch2", "gitCommit2")
+        // } else return workflowRunRepository.getWorkflowRunDetails(key)
     }
 
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
@@ -126,15 +126,80 @@ class WorkflowRunController(
     fun getWorkflowRunStatus(): String
     {
         val key = context.params(":key")
-        val response = orderlyServerAPI.get(
-            "/v1/workflow/$key/status/",
-            emptyMap()
-        )
-        if (response.statusCode == HTTP_OK)
+        // val response = orderlyServerAPI.get(
+        //     "/v1/workflow/$key/status/",
+        //     emptyMap()
+        // )
+        // if (response.statusCode == HTTP_OK)
+        // {
+        //     val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
+        //     workflowRunRepository.updateWorkflowRun(workflowRunStatusResponse.key, workflowRunStatusResponse.status)
+        // }
+        // return passThroughResponse(response)
+        val response1 = """
         {
-            val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
-            workflowRunRepository.updateWorkflowRun(workflowRunStatusResponse.key, workflowRunStatusResponse.status)
+          "status": "success",
+          "errors": null,
+          "data": {
+            "status": "running",
+            "reports": [
+              {
+                "key": "preterrestrial_andeancockoftherock",
+                "name": "report one a",
+                "status": "error",
+                "date": "${Instant.now()}"
+              },
+              {
+                "key": "hygienic_mammoth",
+                "name": "report two a",
+                "status": "success",
+                "version": "20210510-100458-8f1a9624",
+                "date": "${Instant.now()}"
+              },
+              {
+                "key": "blue_bird",
+                "name": "report three a",
+                "status": "running",
+                "date": null
+              }
+            ]
+          }
         }
-        return passThroughResponse(response)
+        """
+        val response2 = """
+        {
+          "status": "success",
+          "errors": null,
+          "data": {
+            "status": "running",
+            "reports": [
+              {
+                "key": "preterrestrial_andeancockoftherock",
+                "name": "report one b",
+                "status": "error",
+                "date": "${Instant.now()}"
+              },
+              {
+                "key": "hygienic_mammoth",
+                "name": "report two b",
+                "status": "success",
+                "version": "20210510-100458-8f1a9624",
+                "date": "${Instant.now()}"
+              },
+              {
+                "key": "blue_bird",
+                "name": "report three b",
+                "status": "running",
+                "date": null
+              }
+            ]
+          }
+        }
+        """
+        if (key == "key1"){
+            return response1
+        } else if (key == "key2"){
+            return response2
+        } else return "nothing"
     }
 }
