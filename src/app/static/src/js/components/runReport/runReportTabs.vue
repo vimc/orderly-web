@@ -59,6 +59,7 @@
     import Vue from "vue"
     import runReport from "./runReport.vue"
     import reportLog from "./../reportLog/reportLog.vue"
+    import {session} from "./../../utils/session.js"
     export default Vue.extend({
         name: "runReportTabs",
         components: {
@@ -72,16 +73,18 @@
         ],
         data() {
             return {
-                selectedTab: "runReport",
-                selectedRunningReportKey: ""
+                selectedTab: session.getSelectedTab() || "runReport",
+                selectedRunningReportKey: session.getSelectedRunningReportKey()
             }
         },
         methods: {
             setSelectedReportKey(e){
-                this.selectedRunningReportKey = e
+                this.selectedRunningReportKey = e;
+                session.setSelectedRunningReportKey(e);
             },
             switchTab(tab){
-                this.selectedTab = tab
+                this.selectedTab = tab;
+                session.setSelectedTab(tab);
             }
         }
     })
