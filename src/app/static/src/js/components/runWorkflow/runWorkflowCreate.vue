@@ -47,7 +47,6 @@
     import vSelect from 'vue-select'
     import {api} from "../../utils/api";
     import {RunWorkflowMetadata} from "../../utils/types";
-    import "vue-select/dist/vue-select.css";
     import {longTimestamp} from "../../utils/helpers";
     import ErrorInfo from "../errorInfo.vue";
 
