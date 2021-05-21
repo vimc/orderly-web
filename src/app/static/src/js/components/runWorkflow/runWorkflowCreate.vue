@@ -16,7 +16,7 @@
                           :options="workflows.slice(0, 10)"
                           v-model="selectedWorkflow"
                           placeholder="Search by name or user...">
-                    <template #option="{ name, email, date }">
+                    <template id="optionTemplate" #option="{ name, email, date }">
                         <div>{{ name }}
                             <span style="opacity: 0.5; float:right;">
                             {{ getUsername(email) }} | {{ getLongTimestamp(date) }}</span>
@@ -69,7 +69,7 @@
         runWorkflowMetadata: RunWorkflowMetadata | null
     }
 
-    const cloneableWorkflowMetadata = {
+    let cloneableWorkflowMetadata = {
         name: null,
         date: null,
         email: null,
@@ -123,7 +123,7 @@
                         this.error = "";
                         this.defaultMessage = "";
                     })
-                    .catch(({error}) => {
+                    .catch((error) => {
                         this.error = error
                         this.defaultMessage = "An error occurred while retrieving previously run workflows";
                     })
@@ -135,7 +135,7 @@
                         this.error = "";
                         this.defaultMessage = "";
                     })
-                    .catch(({error}) => {
+                    .catch((error) => {
                         this.error = error
                         this.defaultMessage = "An error occurred while retrieving workflow details";
                     })

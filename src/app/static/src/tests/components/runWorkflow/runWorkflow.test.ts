@@ -1,12 +1,27 @@
 import {mount} from "@vue/test-utils";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
+import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
+import Vue from "vue"
 
 describe(`runWorkflow`, () => {
 
-    const workflowMetadata = {
-        placeholder: "Placeholder works"
-    }
+    const selectedWorkflow = [
+        {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
+    ]
+
+    const workflowMetadata = [{
+        name: "interim report",
+        date: "2021-05-19T16:28:24Z",
+        email: "test@example.com",
+        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"name": "reportB", "params": {"param3": "three"}}],
+        instances: {'name': 'value'},
+        git_branch: "branch",
+        git_commit: "commit",
+        key: "fake"
+    }]
+
     const getWrapper = () => {
         return mount(runWorkflow, {
             data() {
@@ -27,12 +42,17 @@ describe(`runWorkflow`, () => {
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from re-run`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-        await wrapper.find("#rerun").trigger("click")
 
+        //Enables rerun button
+        await wrapper.find(runWorkflowCreate).setData(
+            {
+                runWorkflowMetadata: workflowMetadata,
+                selectedWorkflow: selectedWorkflow
+            })
+
+        await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
 
@@ -54,18 +74,23 @@ describe(`runWorkflow`, () => {
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from clone`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+        //Enables rerun and clone buttons
+        await wrapper.find(runWorkflowCreate).setData(
+            {
+                runWorkflowMetadata: workflowMetadata,
+                selectedWorkflow: selectedWorkflow
+            })
         await wrapper.find("#clone").trigger("click")
-
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
+
+        setTimeout(() => {
+            expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
+        })
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
         const buttons = wrapper.findAll("button")
-
         expect(buttons.at(0).text()).toBe("Remove report")
         expect(buttons.at(1).text()).toBe("Add report")
         expect(buttons.at(2).text()).toBe("Cancel")
@@ -92,18 +117,15 @@ describe(`runWorkflow`, () => {
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
         await wrapper.find("#create-workflow").trigger("click")
-
+        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata").placeholder).toBe("Placeholder works")
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
         const buttons = wrapper.findAll("button")
-
         expect(buttons.at(0).text()).toBe("Remove report")
         expect(buttons.at(1).text()).toBe("Add report")
         expect(buttons.at(2).text()).toBe("Cancel")
@@ -130,6 +152,14 @@ describe(`runWorkflow`, () => {
 
     it(`can cancel workflow wizard`, async () => {
         const wrapper = getWrapper()
+
+        //Enables rerun and clone buttons
+        await wrapper.find(runWorkflowCreate).setData(
+            {
+                runWorkflowMetadata: workflowMetadata,
+                selectedWorkflow: selectedWorkflow
+            })
+
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         await wrapper.find("#confirm-cancel-btn").trigger("click")
@@ -139,6 +169,14 @@ describe(`runWorkflow`, () => {
 
     it(`can emit complete when on final step and run report is triggered`, async () => {
         const wrapper = getWrapper()
+
+        //Enables rerun button
+        await wrapper.find(runWorkflowCreate).setData(
+            {
+                runWorkflowMetadata: workflowMetadata,
+                selectedWorkflow: selectedWorkflow
+            })
+
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
 
