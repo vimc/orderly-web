@@ -196,10 +196,15 @@ class WorkflowRunController(
           }
         }
         """
+        val response3 = """
+        {
+          "status": "failure"
+        }
+        """
         if (key == "key1"){
             return response1
         } else if (key == "key2"){
             return response2
-        } else return "nothing"
+        } else return response3
     }
 }
