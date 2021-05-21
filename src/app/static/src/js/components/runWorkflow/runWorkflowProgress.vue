@@ -39,8 +39,9 @@
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
                 <tr v-for="report in workflowRunStatus.data.reports">
-                    <td>{{ report.name }}</td>
-                    <td>{{ report.status }}</td>
+                    <td v-if="report.status === 'success'"><a :href="runReportHref(report.name)">{{ report.name }}</a></td>
+                    <td v-else>{{ report.name }}</td>
+                    <td :style="{color: statusColour(report.status)}">{{ report.status }}</td>
                     <td>{{ report.date && formatDate(report.date) }}</td>
                 </tr>
             </table>
@@ -59,12 +60,29 @@ import vSelect from 'vue-select';
 import { api } from "../../utils/api";
 import {longTimestamp} from "../../utils/helpers";
 import ErrorInfo from "../errorInfo.vue";
+import {RunWorkflowMetadata} from "../../utils/types";
+import {buildFullUrl} from "../../utils/api";
 
-export default Vue.extend({
+// interface Data {
+//     workflowRunSummaries: null,
+//     selectedWorkflowKey: null,
+//     workflowRunStatus: null,
+//     error: string,
+//     defaultMessage: string
+// }
+
+interface Props {
+    workflowMetadata: RunWorkflowMetadata | null
+}
+
+export default Vue.extend<unknown, unknown, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         vSelect
+    },
+    props: {
+        workflowMetadata: null
     },
     data(){
         return {
@@ -115,6 +133,24 @@ export default Vue.extend({
         },
         formatDate(date) {
             return longTimestamp(new Date(date));
+        },
+        runReportHref(name) {
+            const url = `/run-report?report-name=${name}`
+            return buildFullUrl(url)
+        },
+        statusColour(status){
+            let colour = ""
+            switch(status) {
+                case "error":
+                    colour = "red"
+                    break;
+                case "running":
+                    colour = "grey"
+                    break;
+                // default:
+                //     return ""
+            }
+            return colour
         }
     },
     watch: {

@@ -1,15 +1,14 @@
 import {shallowMount} from "@vue/test-utils";
-import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
+import runWorkflowSummary from "../../../js/components/runWorkflow/runWorkflowSummary.vue"
 
-describe(`runWorkflowProgress`, () => {
-
+describe(`runWorkflowSummary`, () => {
     const getWrapper = () => {
-        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
+        return shallowMount(runWorkflowSummary, {propsData: {workflowMetadata: {}}})
     }
 
-    it(`it can render runWorkflowProgress page`, () => {
+    it(`it renders workflow summary page correctly`, () => {
         const wrapper = getWrapper()
-        expect(wrapper.find("p").text()).toBe("Run workflow progress is coming soon")
+        expect(wrapper.find("#summary-header").text()).toBe("Summary")
     })
 
     it(`it can set and render props correctly`, async() => {
