@@ -113,10 +113,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.id("run-report-status")).text).startsWith("Run started")
 
         driver.findElement(By.id("logs-link")).click()
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h2"), "Running report logs"))
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("#report-logs textarea"),
-                "[ git        ]  fetch")) //This is always the first log message
-
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#report-status .font-weight-bold"), "running"))
     }
 
     @Test

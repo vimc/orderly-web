@@ -19,7 +19,7 @@
                     <template #option="{ name, email, date }">
                         <div>{{ name }}
                             <span style="opacity: 0.5; float:right;">
-                            {{ handleUser(email) }} | {{ handleDate(date) }}</span>
+                            {{ getUsername(email) }} | {{ getLongTimestamp(date) }}</span>
                         </div>
                     </template>
                 </v-select>
@@ -29,11 +29,11 @@
             <button id="rerun" @click="rerun()"
                     type="button"
                     class="btn btn-success"
-                    :disabled="!selectedWorkflow && error">Re-run workflow
+                    :disabled="enableButtons">Re-run workflow
             </button>
             <button id="clone" @click="clone()"
                     type="button" class="btn btn-success"
-                    :disabled="!selectedWorkflow && error">Clone workflow
+                    :disabled="enableButtons">Clone workflow
             </button>
         </div>
         <div class="pt-4 col-sm-6">
@@ -58,8 +58,8 @@
         getWorkflows: () => void
         getCloneableWorkflow: () => void
         searchWorkflows: (options: [], search: string) => void
-        handleDate: (date: string) => string
-        handleUser: (user: string) => string
+        getLongTimestamp: (date: string) => string
+        getUsername: (email: string) => string
     }
 
     interface Data {
@@ -81,7 +81,11 @@
         key: null
     }
 
-    export default Vue.extend<Data, Methods, unknown, unknown>({
+    interface Computed {
+        enableButtons: boolean
+    }
+
+    export default Vue.extend<Data, Methods, Computed, unknown>({
         name: "runWorkflowCreate",
         data(): Data {
             return {
@@ -92,12 +96,17 @@
                 runWorkflowMetadata: null
             }
         },
+        computed: {
+            enableButtons: function () {
+                return !this.selectedWorkflow || !this.runWorkflowMetadata
+            }
+        },
         methods: {
             create: function () {
                 this.$emit("create")
             },
             clone: function () {
-                if (this.selectedWorkflow) {
+                if (this.selectedWorkflow && this.runWorkflowMetadata) {
                     const {reports, git_branch, git_commit} = this.runWorkflowMetadata
                     const clonedWorkflow = {...cloneableWorkflowMetadata, ...{reports, git_branch, git_commit}}
                     this.$emit("clone", clonedWorkflow)
@@ -112,6 +121,8 @@
                 api.get(`/workflows`)
                     .then(({data}) => {
                         this.workflows = data.data
+                        this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch(({error}) => {
                         this.error = error
@@ -122,6 +133,8 @@
                 api.get(`/workflows/${this.selectedWorkflow.key}/`)
                     .then(({data}) => {
                         this.runWorkflowMetadata = data.data
+                        this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch(({error}) => {
                         this.error = error
@@ -134,12 +147,12 @@
                     return ([email, name].toString() || '').toLowerCase().indexOf(search.toLowerCase()) > -1
                 });
             },
-            handleDate: function (date) {
+            getLongTimestamp: function (date) {
                 const dateConverter = new Date(date)
                 return longTimestamp(dateConverter)
             },
-            handleUser: function (user) {
-                return user.split("@")[0]
+            getUsername: function (email) {
+                return email.split("@")[0]
             }
         },
         mounted() {
