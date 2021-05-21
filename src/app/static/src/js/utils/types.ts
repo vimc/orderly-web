@@ -3,6 +3,11 @@ export interface Parameter {
     value: string
 }
 
+export interface Step {
+    name: string,
+    component: string
+}
+
 export interface ReportLog{
     email: string,
     date: string,
@@ -14,6 +19,10 @@ export interface ReportLog{
     status: string | null,
     logs: string | null,
     report_version: string | null
+}
+
+export interface RunWorkflowMetadata {
+    placeholder: string
 }
 
 export interface Error {

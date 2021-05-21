@@ -26,7 +26,6 @@
             <div class="col-12 col-md-8 tab-content">
                 <div v-if="selectedTab === 'runWorkflow'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <h2>Create workflow</h2>
                         <run-workflow></run-workflow>
                     </div>
                 </div>
@@ -43,8 +42,8 @@
 
 <script lang="ts">
 import Vue from "vue";
-import runWorkflow from './runWorkflow'
-import runWorkflowProgress from './runWorkflowProgress'
+import runWorkflow from './runWorkflow.vue'
+import runWorkflowProgress from './runWorkflowProgress.vue'
 
 export default Vue.extend({
     name: "runWorkflowTabs",
