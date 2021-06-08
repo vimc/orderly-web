@@ -40,6 +40,7 @@
             <table class="table-bordered col-10">
                 <tr v-for="report in workflowRunStatus.data.reports">
                     <td v-if="report.status === 'success'"><a :href="runReportHref(report.name)">{{ report.name }}</a></td>
+                    <td v-else-if="report.status === 'error'"><a :href="reportLogsHref(report.name)">{{ report.name }}</a></td>
                     <td v-else>{{ report.name }}</td>
                     <td :style="{color: statusColour(report.status)}">{{ report.status }}</td>
                     <td>{{ report.date && formatDate(report.date) }}</td>
@@ -136,6 +137,10 @@ export default Vue.extend<unknown, unknown, unknown, Props>({
         },
         runReportHref(name) {
             const url = `/run-report?report-name=${name}`
+            return buildFullUrl(url)
+        },
+        reportLogsHref(name) {
+            const url = `/run-report?report-name=${name}` // this will eventually be changed to link to report logs once vimc-4618 has been implemented
             return buildFullUrl(url)
         },
         statusColour(status){
