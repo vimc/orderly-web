@@ -8,7 +8,7 @@
                 Create a blank workflow
             </button>
         </div>
-        <div id="report-list" class="pt-4 col-sm-6">
+        <div id="report-list" class="pt-4 col-sm-8">
             <p>Or re-use an existing workflow:</p>
             <div>
                 <v-select label="name"
@@ -19,7 +19,7 @@
                     <template id="optionTemplate" #option="{ name, email, date }">
                         <div>{{ name }}
                             <span style="opacity: 0.5; float:right;">
-                            {{ getUsername(email) }} | {{ getLongTimestamp(date) }}</span>
+                            {{ email }} | {{ getLongTimestamp(date) }}</span>
                         </div>
                     </template>
                 </v-select>
@@ -55,10 +55,9 @@
         clone: () => void
         rerun: () => void
         getWorkflows: () => void
-        getCloneableWorkflow: () => void
+        getWorkflowDetails: () => void
         searchWorkflows: (options: [], search: string) => void
         getLongTimestamp: (date: string) => string
-        getUsername: (email: string) => string
     }
 
     interface Data {
@@ -70,14 +69,14 @@
     }
 
     let cloneableWorkflowMetadata = {
-        name: null,
-        date: null,
-        email: null,
-        reports: {},
+        name: "",
+        date: "",
+        email: "",
+        reports: [],
         instances: {},
         git_branch: null,
         git_commit: null,
-        key: null
+        key: ""
     }
 
     interface Computed {
@@ -107,12 +106,15 @@
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
                     const {reports, git_branch, git_commit} = this.runWorkflowMetadata
-                    const clonedWorkflow = {...cloneableWorkflowMetadata, ...{reports, git_branch, git_commit}}
+                    const clonedWorkflow = {...cloneableWorkflowMetadata, reports, git_branch, git_commit}
                     this.$emit("clone", clonedWorkflow)
                 }
             },
             rerun: function () {
-                if (this.selectedWorkflow) {
+                if (this.selectedWorkflow ) {
+                    this.runWorkflowMetadata["key"] = ""
+                    this.runWorkflowMetadata["date"] = ""
+                    this.runWorkflowMetadata["email"] = ""
                     this.$emit("rerun", this.runWorkflowMetadata)
                 }
             },
@@ -128,7 +130,7 @@
                         this.defaultMessage = "An error occurred while retrieving previously run workflows";
                     })
             },
-            getCloneableWorkflow: function () {
+            getWorkflowDetails: function () {
                 api.get(`/workflows/${this.selectedWorkflow.key}/`)
                     .then(({data}) => {
                         this.runWorkflowMetadata = data.data
@@ -143,15 +145,12 @@
             searchWorkflows: function (options, search) {
                 return this.workflows.filter(option => {
                     const {email, name} = option;
-                    return ([email, name].toString() || '').toLowerCase().indexOf(search.toLowerCase()) > -1
+                    return ([email, name].toString() || "").toLowerCase().indexOf(search.toLowerCase()) > -1
                 });
             },
             getLongTimestamp: function (date) {
                 const dateConverter = new Date(date)
                 return longTimestamp(dateConverter)
-            },
-            getUsername: function (email) {
-                return email.split("@")[0]
             }
         },
         mounted() {
@@ -160,7 +159,7 @@
         watch: {
             selectedWorkflow() {
                 if (this.selectedWorkflow) {
-                    this.getCloneableWorkflow()
+                    this.getWorkflowDetails()
                 }
             }
         },

@@ -13,6 +13,30 @@ describe(`runWorkflowCreate`, () => {
             .reply(200, {"data": workflowSummaryMetadata});
     })
 
+    const runnableWorkflowMetadata = [{
+        name: "interim report",
+        date: "",
+        email: "",
+        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"name": "reportB", "params": {"param3": "three"}}],
+        instances: {'name': 'value'},
+        git_branch: "branch",
+        git_commit: "commit",
+        key: ""
+    }]
+
+    const clonedWorkflowMetadata = [{
+        name: "",
+        date: "",
+        email: "",
+        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"name": "reportB", "params": {"param3": "three"}}],
+        instances: {},
+        git_branch: "branch",
+        git_commit: "commit",
+        key: ""
+    }]
+
     const workflowSummaryMetadata = [
         {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"},
         {name: "interim report2", date: "2021-06-19T16:28:24Z", email: "test@example.com2", key: "fake2"}
@@ -26,8 +50,9 @@ describe(`runWorkflowCreate`, () => {
         name: "interim report",
         date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
-        reports: {},
-        instances: {},
+        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"name": "reportB", "params": {"param3": "three"}}],
+        instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit",
         key: "fake"
@@ -67,7 +92,7 @@ describe(`runWorkflowCreate`, () => {
         expect(wrapper.emitted("create").length).toBe(1)
     })
 
-    it(`can emit run navigation step`, async (done) => {
+    it(`can emit re-run navigation step`, async (done) => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
@@ -84,11 +109,12 @@ describe(`runWorkflowCreate`, () => {
 
             wrapper.find("#rerun").trigger("click")
             expect(wrapper.emitted("rerun").length).toBe(1)
+            expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
             done()
         })
     })
 
-    it(`can emit clone navigation step`, async(done) => {
+    it(`can emit clone navigation step`, async (done) => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
@@ -105,6 +131,7 @@ describe(`runWorkflowCreate`, () => {
 
             await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
+            expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
             done()
         })
     })
