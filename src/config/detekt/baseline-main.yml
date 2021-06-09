@@ -53,7 +53,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebGitRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebSettingsRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.app_start.routing.web.WebWorkflowRouteConfig.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.api.UserController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt:1</ID>
@@ -169,6 +168,7 @@
     <ID>MandatoryBracesIfStatements:ReportRepository.kt$OrderlyReportRepository$CHANGELOG_LABEL.PUBLIC.isTrue.and(CHANGELOG.REPORT_VERSION_PUBLIC.isNotNull)</ID>
     <ID>MandatoryBracesIfStatements:ReportRepository.kt$OrderlyReportRepository$trueCondition()</ID>
     <ID>MandatoryBracesIfStatements:ResourceController.kt$ResourceController$throw OrderlyFileNotFoundError(resourcename)</ID>
+    <ID>MatchingDeclarationName:Annotations.kt$NoCoverageGenerated</ID>
     <ID>MaxLineLength:AmbiguousRelationBetweenTables.kt$AmbiguousRelationBetweenTables$"Attempted to construct join from ${from.name} to ${to.name}, but there is more than one key relating those tables."</ID>
     <ID>MaxLineLength:AppViewModel.kt$DefaultViewModel$constructor</ID>
     <ID>MaxLineLength:AuthorizationRepository.kt$OrderlyAuthorizationRepository$.</ID>
@@ -361,7 +361,6 @@
     <ID>NewLineAtEndOfFile:WebSettingsRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebSettingsRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebTokenHelper.kt$org.vaccineimpact.orderlyweb.security.WebTokenHelper.kt</ID>
     <ID>NewLineAtEndOfFile:WebUserRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebUserRouteConfig.kt</ID>
-    <ID>NewLineAtEndOfFile:WebWorkflowRouteConfig.kt$org.vaccineimpact.orderlyweb.app_start.routing.web.WebWorkflowRouteConfig.kt</ID>
     <ID>NewLineAtEndOfFile:WebloginViewModel.kt$org.vaccineimpact.orderlyweb.viewmodels.WebloginViewModel.kt</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.APIEndpoint.kt:64</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.Helpers.kt:33</ID>
@@ -446,8 +445,6 @@
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:4</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:6</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:7</ID>
-    <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:11</ID>
-    <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:12</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.db.UserMapper.kt:4</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.db.UserMapper.kt:6</ID>
     <ID>NoUnusedImports:org.vaccineimpact.orderlyweb.models.ReportVersionWithDescCustomFieldsLatestParamsTags.kt:3</ID>
@@ -855,7 +852,6 @@
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.api.UserController.kt:13</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:11</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:16</ID>
-    <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.IndexController.kt:20</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.controllers.web.RoleController.kt:123</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.db.JoinPath.kt:71</ID>
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.db.JoinPath.kt:72</ID>
