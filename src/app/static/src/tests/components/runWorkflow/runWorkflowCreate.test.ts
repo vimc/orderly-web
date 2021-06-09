@@ -107,9 +107,25 @@ describe(`runWorkflowCreate`, () => {
             vueSelect.vm.$emit("input", selectedWorkflow)
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
 
-            wrapper.find("#rerun").trigger("click")
+            await wrapper.find("#rerun").trigger("click")
             expect(wrapper.emitted("rerun").length).toBe(1)
-            expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
+            done()
+        })
+    })
+
+    it(`can emit re-run metadata`, async (done) => {
+        const wrapper = getWrapper()
+
+        setTimeout(async () => {
+            expect(wrapper.find("h2").text()).toBe("Run workflow")
+            expect(mockAxios.history.get.length).toBe(1)
+            const vueSelect = wrapper.find(VueSelect)
+            vueSelect.vm.$emit("input", selectedWorkflow)
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+
+            await wrapper.vm.$emit("rerun", runnableWorkflowMetadata)
+            expect(wrapper.emitted("rerun").length).toBe(1)
+            expect(wrapper.emitted().rerun[0]).toEqual([runnableWorkflowMetadata])
             done()
         })
     })
@@ -131,7 +147,23 @@ describe(`runWorkflowCreate`, () => {
 
             await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
-            expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
+            done()
+        })
+    })
+
+    it(`can emit clone metadata`, async (done) => {
+        const wrapper = getWrapper()
+
+        setTimeout(async () => {
+            expect(wrapper.find("h2").text()).toBe("Run workflow")
+            expect(mockAxios.history.get.length).toBe(1)
+            const vueSelect = wrapper.find(VueSelect)
+            vueSelect.vm.$emit("input", selectedWorkflow)
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+
+            await wrapper.vm.$emit("clone", clonedWorkflowMetadata)
+            expect(wrapper.emitted("clone").length).toBe(1)
+            expect(wrapper.emitted().clone[0]).toEqual([clonedWorkflowMetadata])
             done()
         })
     })

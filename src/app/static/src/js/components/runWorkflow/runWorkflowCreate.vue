@@ -106,16 +106,25 @@
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
                     const {reports, git_branch, git_commit} = this.runWorkflowMetadata
-                    const clonedWorkflow = {...cloneableWorkflowMetadata, reports, git_branch, git_commit}
+                    const clonedWorkflow: RunWorkflowMetadata = {
+                        ...cloneableWorkflowMetadata,
+                        reports,
+                        git_branch,
+                        git_commit
+                    }
                     this.$emit("clone", clonedWorkflow)
                 }
             },
             rerun: function () {
-                if (this.selectedWorkflow ) {
-                    this.runWorkflowMetadata["key"] = ""
-                    this.runWorkflowMetadata["date"] = ""
-                    this.runWorkflowMetadata["email"] = ""
-                    this.$emit("rerun", this.runWorkflowMetadata)
+                if (this.selectedWorkflow) {
+                    const data = this.runWorkflowMetadata
+                    const runMetadata: RunWorkflowMetadata = {
+                        ...data,
+                        key: "",
+                        date: "",
+                        email: ""
+                    }
+                    this.$emit("rerun", runMetadata)
                 }
             },
             getWorkflows: function () {
