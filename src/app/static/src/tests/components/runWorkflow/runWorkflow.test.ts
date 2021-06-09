@@ -45,8 +45,8 @@ describe(`runWorkflow`, () => {
         //Enables rerun and clone buttons
         await wrapper.find(runWorkflowCreate).setData(
             {
-                runWorkflowMetadata: workflowMetadata,
-                selectedWorkflow: selectedWorkflow
+                selectedWorkflow: selectedWorkflow,
+                runWorkflowMetadata: workflowMetadata
             })
 
         await wrapper.find("#rerun").trigger("click")
@@ -88,11 +88,9 @@ describe(`runWorkflow`, () => {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata
             })
-
+        expect(wrapper.find(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
-
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
@@ -119,6 +117,8 @@ describe(`runWorkflow`, () => {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata
             })
+
+        expect(wrapper.find(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
         await wrapper.find("#clone").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
 
