@@ -22,7 +22,7 @@ describe(`runWorkflowTabs`, () => {
         expect(wrapper.find("#workflow-progress-tab").exists()).toBe(false)
         expect(wrapper.find("#run-workflow-tab").exists()).toBe(true)
         expect(wrapper.find("run-workflow-stub").exists()).toBe(true)
-        expect(wrapper.find("#run-workflow-tab").find("h2").text()).toBe("Create workflow")
+        expect(wrapper.find("#workflow-container").exists()).toBe(true)
     })
 
     it(`it can render progress tab-content`, async () => {
