@@ -1,7 +1,7 @@
 <template>
     <div>
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
-        <div class="pb-4">
+        <!--<div class="pb-4">
             <h2 id="git-header">Git</h2>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label text-right"></label>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>-->
     </div>
 </template>
 
