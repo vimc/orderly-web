@@ -21,7 +21,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 class ReportController(
     context: ActionContext,
     val orderly: OrderlyClient,
-    private val orderlyServerAPI: OrderlyServerAPI,
+    val orderlyServerAPI: OrderlyServerAPI,
     private val reportRepository: ReportRepository,
     private val tagRepository: TagRepository
 ) : Controller(context)
@@ -51,26 +51,17 @@ class ReportController(
         val reportKey = "report-name"
         val reportName = context.queryParams(reportKey).toString()
 
-        val metadata = orderlyServerAPI
-                .throwOnError()
-                .get("/run-metadata", emptyMap())
-                .data(RunReportMetadata::class.java)
-
-        val gitBranches = if (metadata.gitSupported)
-        {
-            val branchResponse = orderlyServerAPI
-                    .throwOnError()
-                    .get("/git/branches", emptyMap())
-
-            branchResponse.listData(GitBranch::class.java)
-                    .map { it.name }
-        }
-        else
-        {
-            listOf()
-        }
+        val metadata = getReportRunMetadata()
+        val gitBranches = getGitBranches(metadata)
 
         return RunReportViewModel(context, metadata, gitBranches, reportName)
+    }
+
+    fun getRunMetadata(): RunReportMetadataWithBranches
+    {
+        val metadata = getReportRunMetadata()
+        val gitBranches = getGitBranches(metadata)
+        return RunReportMetadataWithBranches(metadata, gitBranches)
     }
 
     fun getRunnableReports(): List<ReportWithDate>
@@ -146,5 +137,30 @@ class ReportController(
         val name = context.params(":name")
         val response = orderlyServerAPI.get("/v1/reports/$name/dependencies/", context)
         return passThroughResponse(response)
+    }
+
+    private fun getReportRunMetadata(): RunReportMetadata
+    {
+        return orderlyServerAPI
+                .throwOnError()
+                .get("/run-metadata", emptyMap())
+                .data(RunReportMetadata::class.java)
+    }
+
+    private fun getGitBranches(metadata: RunReportMetadata): List<String>
+    {
+        return if (metadata.gitSupported)
+        {
+            val branchResponse = orderlyServerAPI
+                    .throwOnError()
+                    .get("/git/branches", emptyMap())
+
+            branchResponse.listData(GitBranch::class.java)
+                    .map { it.name }
+        }
+        else
+        {
+            listOf()
+        }
     }
 }

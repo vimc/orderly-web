@@ -101,7 +101,7 @@
         },
         methods: {
             create: function () {
-                this.$emit("create")
+                this.$emit("create", emptyWorkflowMetadata)
             },
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {

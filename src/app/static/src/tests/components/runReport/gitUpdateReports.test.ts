@@ -72,6 +72,20 @@ describe("gitUpdateReports", () => {
         })
     });
 
+    it("does not render git drop downs if git not supported", async () => {
+        const wrapper = shallowMount(GitUpdateReports, {
+            propsData: {
+                metadata: {git_supported: false, instances_supported: false},
+                initiatBranches: null
+            }
+        });
+
+        await Vue.nextTick();
+        expect(mockAxios.history.get.length).toBe(1);
+        expect(wrapper.find("#git-branch-form-group").exists()).toBe(false);
+        expect(wrapper.find("#git-commit-form-group").exists()).toBe(false);
+    });
+
     it("emits expected events on mount when initial values provided", (done) => {
         const wrapper = getWrapper();
         expect(wrapper.emitted("branchSelected")?.length).toBe(1);
@@ -107,6 +121,24 @@ describe("gitUpdateReports", () => {
         });
     });
 
+    it("updates reports when git not supported", (done) => {
+        mockAxios.onGet('http://app/reports/runnable/')
+            .reply(200, {"data": [ reports[0] ]});
+        const wrapper = shallowMount(GitUpdateReports, {
+            propsData: {
+                metadata: {git_supported: false, instances_supported: false},
+                initiatBranches: null
+            }
+        });
+        setTimeout(() => {
+            expect(wrapper.emitted("branchSelected")).toBe(undefined);
+            expect(wrapper.emitted("commitSelected")).toBe(undefined);
+            expect(wrapper.emitted("reportsUpdate")?.length).toBe(1);
+            expect(wrapper.emitted("reportsUpdate")![0][0]).toStrictEqual([reports[0]]);
+            done();
+        });
+    });
+
     it("defaults to first commit if initial commit not found", (done) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
             .reply(200, {"data": reports});
@@ -118,20 +150,6 @@ describe("gitUpdateReports", () => {
             expect(wrapper.emitted("reportsUpdate")![0][0]).toStrictEqual(reports);
             done();
         });
-    });
-
-    it("does not render git drop downs if git not supported", async () => {
-        const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                metadata: {git_supported: false, instances_supported: false},
-                initiatBranches: null
-            }
-        });
-
-        await Vue.nextTick();
-        expect(mockAxios.history.get.length).toBe(1);
-        expect(wrapper.find("#git-branch-form-group").exists()).toBe(false);
-        expect(wrapper.find("#git-commit-form-group").exists()).toBe(false);
     });
 
     it("calls api to get commits when branch changes and updates commits drop down", async (done) => {

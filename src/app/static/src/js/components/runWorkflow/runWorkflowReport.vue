@@ -1,8 +1,19 @@
 <template>
-    <div>
+    <div v-if="workflowMetadata">
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
-        <!--<div class="pb-4">
+        <div class="pb-4">
             <h2 id="git-header">Git</h2>
+            <git-update-reports
+                v-if="runReportMetadata"
+                :initialBranch="workflowMetadata.git_branch"
+                :initialCommitId="workflowMetadata.git_commit"
+                :metadata="runReportMetadata"
+                :initial-branches="initialBranches"
+                @branchSelected="branchSelected"
+                @commitSelected="commitSelected"
+                @reportsUpdate="updateReports"
+            ></git-update-reports>
+            <!--
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label text-right"></label>
                 <div>
@@ -23,7 +34,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>-->
         </div>
         <div class="pb-4">
             <h2 id="report-sub-header">Reports</h2>
@@ -55,13 +66,15 @@
                     </div>
                 </div>
             </div>
-        </div>-->
+        </div>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
 import {RunWorkflowMetadata} from "../../utils/types";
+import {api} from "../../utils/api";
+import GitUpdateReports from "../runReport/gitUpdateReports.vue";
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata | null
@@ -74,7 +87,20 @@ interface Computed {
 export default Vue.extend<unknown, Computed, unknown, Props>({
     name: "runWorkflowReport",
     props: {
-        workflowMetadata: null
+        workflowMetadata: Object
+    },
+    components: {
+        GitUpdateReports
+    },
+    data() {
+        return {
+            runReportMetadata: null,
+            initialBranches: null,
+            reports: [],
+            error: "",
+            defaultMessage: ""
+        }
+        //TODO: Add ErrorInfo
     },
     computed: {
         validateStep: function () {
@@ -83,6 +109,31 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
              */
             this.$emit("valid", true)
         }
+    },
+    methods: {
+        branchSelected(git_branch: string) {
+            this.emit("update", {git_branch});
+        },
+        commitSelected(git_commit: string) {
+            this.emit("update", {git_commit})
+        },
+        updateReports(reports) {
+            this.reports = reports;
+            console.log("available reports updated: " + JSON.stringify(reports))
+        }
+    },
+    mounted() {
+        api.get(`/report/run-metadata`)
+            .then(({data}) => {
+                this.runReportMetadata = data.data.metadata;
+                this.initialBranches = data.data.gitBranches;
+                this.error = "";
+                this.defaultMessage = "";
+            })
+            .catch((error) => {
+                this.error = error;
+                this.defaultMessage = "An error occurred fetching run report metadata";
+            });
     }
 })
 </script>

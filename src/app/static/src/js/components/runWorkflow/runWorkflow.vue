@@ -10,7 +10,7 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
-                         :run-workflow-metadata="runWorkflowMetadata">
+                         :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
 </template>
