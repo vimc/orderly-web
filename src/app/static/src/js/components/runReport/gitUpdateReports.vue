@@ -32,15 +32,19 @@
 <script lang="ts">
     import Vue from "vue";
     import {api} from "../../utils/api";
+    import ErrorInfo from "../errorInfo.vue";
 
     export default Vue.extend({
         name: "gitUpdateReports",
         props: [
             "metadata",
-            "initialGitBranches",
+            "initialBranches",
             "initialBranch",
             "initialCommitId"
         ],
+        components: {
+            ErrorInfo
+        },
         data: () => {
             return {
                 gitRefreshing: false,
@@ -62,14 +66,18 @@
             }
         },
         methods: {
-            changedBranch() {
+            changedBranch(initialCommit=null) {
                 this.$emit("branchSelected", this.selectedBranch);
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
                         this.gitCommits = data.data;
                         if (this.gitCommits.length) {
-                            //select the first commit in the branch
-                            this.selectedCommitId = this.gitCommits[0].id;
+                            if (initialCommit && this.gitCommits.map((c) => c.id).includes(initialCommit)) {
+                                this.selectedCommitId = initialCommit;
+                            } else {
+                                //select the first commit in the branch
+                                this.selectedCommitId = this.gitCommits[0].id;
+                            }
                             this.changedCommit();
                         }
                         this.error = "";
@@ -104,7 +112,13 @@
                 api.get('/git/fetch/')
                     .then(({data}) => {
                         this.gitRefreshing = false;
-                        this.gitBranches = data.data.map(branch => branch.name)
+                        this.gitBranches = data.data.map(branch => branch.name);
+
+                        this.gitCommits = [];
+                        this.reports = [];
+                        this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
+                        this.selectedCommitId = "";
+                        this.changedBranch();
                     })
                     .catch((error) => {
                         this.gitRefreshing = false;
@@ -115,33 +129,18 @@
         },
         mounted() {
             if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialGitBranches];
+                this.gitBranches = [...this.initialBranches];
 
-                if (this.initialGitBranch) {
-                    this.selectedBranch = this.initialGitBranch
+                if (this.initialBranch) {
+                    this.selectedBranch = this.initialBranch
                 } else {
                     this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
-                    this.changedBranch();
                 }
-
-                this.selectedCommitId = this.initialCommitId;
-                if (this.selectedBranch && this.selectedCommitId) {
-                    this.updateReports();
-                }
+                this.changedBranch(this.initialCommitId);
 
             } else {
                 this.updateReports();
             }
-        },
-        watch: {
-            gitBranches(){
-                this.gitCommits = [];
-                this.reports = [];
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.selectedCommitId = "";
-                this.selectedReport = "";
-                this.changedBranch()
-            },
         }
     });
 </script>

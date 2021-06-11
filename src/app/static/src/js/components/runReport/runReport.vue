@@ -4,9 +4,7 @@
         <form class="mt-3">
             <git-update-reports
                 :metadata="metadata"
-                :initial-git-branches="initialGitBranches"
-                :selected-branch="selectedBranch"
-                :selected-commit-id="selectedCommitId"
+                :initial-branches="initialGitBranches"
                 @branchSelected="branchSelected"
                 @commitSelected="commitSelected"
                 @reportsUpdate="updateReports"
@@ -138,16 +136,14 @@
                 this.disableRun = !valid
             },
             branchSelected(newBranch) {
-                alert("branch selected: " + newBranch)
                 this.selectedBranch = newBranch;
             },
             commitSelected(newCommit) {
-                alert("commit selected: "+ newCommit)
                 this.selectedCommitId = newCommit;
             },
             updateReports(newReports) {
-                alert("reports updated: " + JSON.stringify(newReports))
                 this.reports = newReports;
+                this.selectedReport = "";
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
@@ -232,7 +228,7 @@
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
-                    this.setParameters()
+                    this.setParameters();
                 }
                 this.parameterValues.length = 0
             },
