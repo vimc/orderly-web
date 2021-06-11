@@ -2,7 +2,7 @@ import Vue from "vue";
 import {mount, shallowMount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
-import GitUpdateReports from "../../../js/component/runReport/gitUpdateReports.vue";
+import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
@@ -20,7 +20,8 @@ describe("runReport", () => {
             git_supported: true,
             instances_supported: false
         },
-        initialGitBranches
+        initialGitBranches,
+        initialReportName: ""
     };
 
     const reports = [
@@ -28,11 +29,20 @@ describe("runReport", () => {
         {name: "report2", date: null}
     ];
 
-    const getWrapper = (report = reports, propsData = props) => {
-        return mount(RunReport, {
-            propsData
+    const getWrapper = (propsData = props) => {
+        return shallowMount(RunReport, {
+            propsData,
+            data() {
+                return {
+                    reports
+                }
+            }
         });
-    }
+    };
+
+    beforeEach(() => {
+        mockAxios.reset();
+    });
 
     it("renders header", () => {
 
@@ -47,14 +57,14 @@ describe("runReport", () => {
     });
 
     it("renders gitUpdateReports component", () => {
-        const wrapper = shallowMount(RunReport, props);
+        const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        expect(gitUpdateReports.props("metadata").toBe(props.metadata));
-        expect(gitUpdateReports.props("initialGitBranches")).toBe(initialGitBranches);
+        expect(gitUpdateReports.props("metadata")).toBe(props.metadata);
+        expect(gitUpdateReports.props("initialBranches")).toBe(initialGitBranches);
     });
 
     it("selects branch when event emitted from gitUpdateReports", async () => {
-        const wrapper = shallowMount(RunReport, props);
+        const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         gitUpdateReports.vm.$emit("branchSelected", "dev");
         await Vue.nextTick();
@@ -62,7 +72,7 @@ describe("runReport", () => {
     });
 
     it("selects commit when event emitted from gitUpdateReports", async () => {
-        const wrapper = shallowMount(RunReport, props);
+        const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         gitUpdateReports.vm.$emit("commitSelected", "abc123");
         await Vue.nextTick();
@@ -70,7 +80,7 @@ describe("runReport", () => {
     });
 
     it("updates reports when event emitted from gitUpdateReports", async () => {
-        const wrapper = shallowMount(RunReport, props);
+        const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         const newReports = [{name: "report3", date: new Date().toISOString()}];
         gitUpdateReports.vm.$emit("reportsUpdate", newReports);
@@ -78,37 +88,30 @@ describe("runReport", () => {
         expect(wrapper.vm.$data["reports"]).toBe(newReports);
     });
 
-    it("displays report list in order and allows selection and reset", (done) => {
-        const wrapper = getWrapper();
-
-        setTimeout(async () => {
-            wrapper.find(ReportList).find("a:last-of-type").trigger("click");
-            expect(wrapper.vm.$data["selectedReport"]).toBe("report2");
-            await Vue.nextTick();
-            wrapper.find(ReportList).find("button").trigger("click");
-            expect(wrapper.vm.$data["selectedReport"]).toBe("");
-            done();
-        });
-    });
-
-    it("report list shows initialReportName prop", async (done) => {
-
-        const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: true,
-                },
-                initialGitBranches,
-                initialReportName: "minimal"
+    it("displays report list in order and allows selection and reset", async () => {
+        const wrapper = mount(RunReport, {
+            propsData: props,
+            data() {
+                return {
+                    reports
+                }
             }
         });
+        wrapper.find(ReportList).find("a:last-of-type").trigger("click");
+        expect(wrapper.vm.$data["selectedReport"]).toBe("report2");
+        await Vue.nextTick();
+        wrapper.find(ReportList).find("button").trigger("click");
+        expect(wrapper.vm.$data["selectedReport"]).toBe("");
+    });
 
-        setTimeout(() => {
-            expect(wrapper.find("report-list-stub").attributes("initialselectedreport")).toBe("minimal")
-            done()
-        })
-    })
+    it("report list shows initialReportName prop", () => {
+
+        const wrapper = getWrapper({
+            ...props,
+            initialReportName: "minimal"
+        });
+        expect(wrapper.find(ReportList).props("initialSelectedReport")).toBe("minimal")
+    });
 
     it("shows instances if instances supported", () => {
         const wrapper = shallowMount(RunReport, {
@@ -178,7 +181,6 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    gitCommits: gitCommits,
                     parameterValues: mockParams,
                     selectedReport: "reports"
                 }
@@ -208,7 +210,6 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    gitCommits: gitCommits,
                     parameterValues: [],
                     selectedReport: "reports"
                 }
@@ -218,34 +219,35 @@ describe("runReport", () => {
         expect(wrapper.find(ParameterList).exists()).toBe(false);
     });
 
-    it("parameters endpoint can get data successfully", async (done) => {
-        const mockAxiosParam = [{name: "minimal", value: "random_39id"}]
-        const url = "http://app/report/minimal/parameters/?commit=abcdef"
+    it("parameters endpoint can get data successfully", (done) => {
+        const mockAxiosParam = [{name: "minimal", value: "random_39id"}];
+        const url = "http://app/report/minimal/parameters/?commit=abcdef";
 
         mockAxios.onGet(url)
             .reply(200, {"data": mockAxiosParam});
 
-        const wrapper = getWrapper()
-        setTimeout(async () => {
+        const wrapper = getWrapper();
+        //setTimeout(async () => {
             wrapper.setData({
                 selectedReport: "minimal",
+                selectedCommitId: "abcdef",
                 error: "test-error",
                 defaultMessage: "test-msg",
                 parameterValues: []
             });
-            await Vue.nextTick();
+            //await Vue.nextTick();
 
             setTimeout(() => {
-                expect(mockAxios.history.get.length).toBe(5);
-                expect(mockAxios.history.get[4].url).toBe(url);
+                expect(mockAxios.history.get.length).toBe(1);
+                expect(mockAxios.history.get[0].url).toBe(url);
                 expect(wrapper.find("#parameters").exists()).toBe(true);
                 expect(wrapper.vm.$data.parameterValues).toMatchObject(mockAxiosParam);
                 expect(wrapper.vm.$data.error).toBe("");
                 expect(wrapper.vm.$data.defaultMessage).toBe("");
                 done();
             });
-        });
-    })
+        //});
+    });
 
     it("parameters endpoint can set defaultmessage when errored", (done) => {
         const url = "http://app/report/minimal/parameters/?commit=test-commit"
@@ -253,22 +255,19 @@ describe("runReport", () => {
             .reply(500, "Parameter fetching error");
 
         const wrapper = getWrapper();
+        wrapper.setData({
+            selectedReport: "minimal",
+            selectedCommitId: "test-commit",
+            error: "",
+            defaultMessage: ""
+        });
 
-        setTimeout(async () => {
-            wrapper.setData({
-                selectedReport: "minimal",
-                selectedCommitId: "test-commit",
-                error: "",
-                defaultMessage: ""
-            });
-
-            setTimeout(() => {
-                expect(mockAxios.history.get.length).toBe(5);
-                expect(mockAxios.history.get[4].url).toBe(url);
-                expect(wrapper.find("#parameters").exists()).toBe(false);
-                expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when getting parameters");
-                done();
-            });
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get[0].url).toBe(url);
+            expect(wrapper.find("#parameters").exists()).toBe(false);
+            expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred when getting parameters");
+            done();
         });
     });
 
@@ -282,7 +281,6 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    gitCommits: gitCommits,
                     parameterValues: [],
                     selectedReport: ""
                 }
@@ -319,7 +317,7 @@ describe("runReport", () => {
         mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
-        const wrapper = mount(RunReport, {
+        const wrapper = shallowMount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: true,
@@ -338,49 +336,49 @@ describe("runReport", () => {
                 }
             }
         });
-        setTimeout(async () => { //give the wrapper time to fetch reports
-            wrapper.setData({
-                selectedReport: "test-report",
-                selectedCommitId: "test-commit",
-                selectedInstances: {source: "science", annexe: "a1"},
-                error: "test-error",
-                defaultMessage: "test-msg"
-            });
-            await Vue.nextTick()
-            wrapper.setData({
-                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
-            })
-            await Vue.nextTick()
-            wrapper.find("#run-form-group button").trigger("click");
-            setTimeout(() => {
-                expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(5);
-                expect(mockAxios.history.get[4].url).toBe(param_url);
-                expect(mockAxios.history.post[0].url).toBe(url);
-                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                    {
-                        "instances": {
-                            "source": "science",
-                            "annexe": "science"
-                        },
-                        "params": {
-                            "minimal": "test",
-                            "global": "random_39id"
+        wrapper.setData({
+            selectedReport: "test-report",
+            selectedBranch: "master",
+            selectedCommitId: "test-commit",
+            selectedInstances: {source: "science", annexe: "a1"},
+            error: "test-error",
+            defaultMessage: "test-msg",
+            parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}]
+        });
+        await Vue.nextTick();
+        wrapper.setData({
+            parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
+        });
+        await Vue.nextTick();
+        wrapper.find("#run-form-group button").trigger("click");
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get[0].url).toBe(param_url);
+            expect(mockAxios.history.post[0].url).toBe(url);
+            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+                {
+                    "instances": {
+                        "source": "science",
+                        "annexe": "science"
+                    },
+                    "params": {
+                        "minimal": "test",
+                        "global": "random_39id"
 
-                        },
-                        changelog: null,
-                        "gitBranch": "master",
-                        "gitCommit": "test-commit"
-                    }
-                ));
-                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
-                expect(wrapper.find("#run-report-status a").text()).toBe("View log");
-                expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
-                expect(wrapper.vm.$data.runningKey).toBe("test-key");
-                expect(wrapper.vm.$data.error).toBe("");
-                expect(wrapper.vm.$data.defaultMessage).toBe("");
-                done();
-            });
+                    },
+                    changelog: null,
+                    "gitBranch": "master",
+                    "gitCommit": "test-commit"
+                }
+            ));
+            expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+            expect(wrapper.find("#run-report-status a").text()).toBe("View log");
+            expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
+            expect(wrapper.vm.$data.runningKey).toBe("test-key");
+            expect(wrapper.vm.$data.error).toBe("");
+            expect(wrapper.vm.$data.defaultMessage).toBe("");
+            done();
         });
     });
 
@@ -649,7 +647,6 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    gitCommits: gitCommits,
                     parameterValues: localParam,
                     selectedReport: "reports"
                 }
@@ -674,7 +671,6 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    gitCommits: gitCommits,
                     selectedReport: "reports",
                     parameterValues: localParam
                 }
