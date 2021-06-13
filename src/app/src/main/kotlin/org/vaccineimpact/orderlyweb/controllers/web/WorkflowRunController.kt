@@ -33,8 +33,6 @@ class WorkflowRunController(
     @Template("run-workflow-page.ftl")
     fun getRunWorkflow(): WorkflowRunViewModel
     {
-        val metadata = getReportRunMetadata()
-        val gitBranches = getGitBranches(metadata)
         return WorkflowRunViewModel(context)
     }
 

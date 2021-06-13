@@ -67,6 +67,7 @@
         },
         methods: {
             changedBranch(initialCommit=null) {
+                console.log("changing branch")
                 this.$emit("branchSelected", this.selectedBranch);
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -89,10 +90,12 @@
                     });
             },
             changedCommit() {
+                console.log("changing commit")
                 this.$emit("commitSelected", this.selectedCommitId);
                 this.updateReports();
             },
             updateReports() {
+                console.log("updating reports")
                 this.reports = [];
                 const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
                 api.get(`/reports/runnable/${query}`)

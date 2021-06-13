@@ -8,6 +8,11 @@ export interface Step {
     component: string
 }
 
+export interface ReportWithDate {
+    name: string,
+    date: Date | null
+}
+
 export interface ReportLog{
     email: string,
     date: string,
@@ -25,11 +30,16 @@ export interface RunWorkflowMetadata {
     name: string
     date: string
     email: string
-    reports: [],
+    reports: WorkflowReportWithParams[],
     instances: Record<string, string>,
     git_branch: string | null
     git_commit: string | null
     key: string
+}
+
+export interface WorkflowReportWithParams {
+    name: string,
+    params?: Record<string, string>
 }
 
 export interface Error {

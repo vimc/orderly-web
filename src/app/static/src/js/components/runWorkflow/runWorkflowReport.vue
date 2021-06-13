@@ -67,14 +67,16 @@
                 </div>
             </div>
         </div>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue"
-import {RunWorkflowMetadata} from "../../utils/types";
+import {ReportWithDate, RunWorkflowMetadata} from "../../utils/types";
 import {api} from "../../utils/api";
 import GitUpdateReports from "../runReport/gitUpdateReports.vue";
+import ErrorInfo from "../errorInfo.vue";
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata | null
@@ -84,13 +86,20 @@ interface Computed {
     validateStep: void
 }
 
-export default Vue.extend<unknown, Computed, unknown, Props>({
+interface Methods {
+    branchSelected: (git_branch: string) => void,
+    commitSelected: (git_commit: string) => void,
+    updateReports: (reports: ReportWithDate) =>  void
+}
+
+export default Vue.extend<unknown, Methods, Computed, Props>({
     name: "runWorkflowReport",
     props: {
         workflowMetadata: Object
     },
     components: {
-        GitUpdateReports
+        GitUpdateReports,
+        ErrorInfo
     },
     data() {
         return {
@@ -100,7 +109,6 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
             error: "",
             defaultMessage: ""
         }
-        //TODO: Add ErrorInfo
     },
     computed: {
         validateStep: function () {
@@ -123,10 +131,12 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
         }
     },
     mounted() {
+        console.log("mounting runWorkflowReport")
         api.get(`/report/run-metadata`)
             .then(({data}) => {
-                this.runReportMetadata = data.data.metadata;
+                console.log("got metadata")
                 this.initialBranches = data.data.gitBranches;
+                this.runReportMetadata = data.data.metadata;
                 this.error = "";
                 this.defaultMessage = "";
             })
