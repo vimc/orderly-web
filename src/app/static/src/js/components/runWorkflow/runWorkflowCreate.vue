@@ -156,7 +156,7 @@
             searchWorkflows: function (options, search) {
                 return this.workflows.filter(option => {
                     const {email, name} = option;
-                    return ([email, name].toString() || "").toLowerCase().indexOf(search.toLowerCase()) > -1
+                    return ([email, name].toString()).toLowerCase().indexOf(search.toLowerCase()) > -1
                 });
             },
             getLongTimestamp: function (date) {

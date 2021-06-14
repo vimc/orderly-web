@@ -25,7 +25,7 @@ export interface RunWorkflowMetadata {
     name: string
     date: string
     email: string
-    reports: [],
+    reports: Record<string, any>[],
     instances: Record<string, string>,
     git_branch: string | null
     git_commit: string | null

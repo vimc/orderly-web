@@ -2,6 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue"
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
+import Vue from "vue";
 
 describe(`runWorkflowCreate`, () => {
 
@@ -160,10 +161,8 @@ describe(`runWorkflowCreate`, () => {
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
-            await wrapper.vm.$emit("clone", clonedWorkflowMetadata)
+            await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
-            expect(wrapper.emitted().clone[0]).toEqual([clonedWorkflowMetadata])
             done()
         })
     })
