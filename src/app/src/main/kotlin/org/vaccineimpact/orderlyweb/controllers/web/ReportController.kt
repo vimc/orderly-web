@@ -21,7 +21,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel
 class ReportController(
     context: ActionContext,
     val orderly: OrderlyClient,
-    val orderlyServerAPI: OrderlyServerAPI,
+    private val orderlyServerAPI: OrderlyServerAPI,
     private val reportRepository: ReportRepository,
     private val tagRepository: TagRepository
 ) : Controller(context)

@@ -118,6 +118,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         updateReports(reports) {
             this.reports = reports;
+            console.log(`Updating reports with ${JSON.stringify(reports)}`); //TODO: Update reports list
         }
     },
     mounted() {
