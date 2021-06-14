@@ -138,9 +138,7 @@
         },
         mounted() {
             this.runWorkflowMetadata = {
-                ...this.initialRunWorkflowMetadata,
-                reports: [...this.initialRunWorkflowMetadata.reports],
-                instances: {...this.initialRunWorkflowMetadata.instances}
+                ...this.initialRunWorkflowMetadata
             };
         },
         components: {

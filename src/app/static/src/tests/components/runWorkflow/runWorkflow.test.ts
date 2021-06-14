@@ -1,7 +1,9 @@
 import {mount} from "@vue/test-utils";
+import Vue from "vue";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
+import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 
 describe(`runWorkflow`, () => {
 
@@ -153,9 +155,12 @@ describe(`runWorkflow`, () => {
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`, async () => {
         const wrapper = getWrapper()
         await wrapper.find("#create-workflow").trigger("click")
-        await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
+
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
-        expect(wrapper.find(workflowWizard).props("runWorkflowMetadata")).toMatchObject(workflowMetadata)
+        expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
 
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         const buttons = wrapper.find(workflowWizard).findAll("button")

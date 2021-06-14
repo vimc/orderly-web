@@ -1,47 +1,49 @@
 <template>
-    <div v-if="isReady">
+    <div>
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
-        <div class="pb-4">
-            <h2 id="git-header">Git</h2>
-            <div>
-                <git-update-reports
-                    :metadata="runReportMetadata"
-                    :initial-branch="workflowMetadata.git_branch"
-                    :initial-commit-id="workflowMetadata.git_commit"
-                    :initial-branches="initialBranches"
-                    @branchSelected="branchSelected"
-                    @commitSelected="commitSelected"
-                    @reportsUpdate="updateReports"
-                ></git-update-reports>
-            </div>
-        </div>
-        <div class="pb-4">
-            <h2 id="report-sub-header">Reports</h2>
-            <div>
-                <div id="preprocess-div" class="form-group row">
-                    <label class="col-sm-2 col-form-label text-right">Preprocess</label>
-                    <div>
-                    <div class="form-group row">
-                        <label for="n-min" class="col-sm-4 col-form-label text-right">nmin:</label>
-                        <div class="col-sm-8 input-group">
-                            <input type="text" class="form-control mr-2" id="n-min" placeholder="7">
-                            <button id="workflow-remove-button" type="button" class="px-2 btn btn-primary">Remove report</button>
-                        </div>
-                    </div>
-                    <div class="form-group row">
-                        <label for="n-max" class="col-sm-4 col-form-label text-right">nmax:</label>
-                        <div class="col-sm-4">
-                            <input type="text" class="form-control" id="n-max" placeholder="16">
-                        </div>
-                    </div>
-                    </div>
+        <div v-if="isReady">
+            <div class="pb-4">
+                <h2 id="git-header">Git</h2>
+                <div>
+                    <git-update-reports
+                        :metadata="runReportMetadata"
+                        :initial-branch="workflowMetadata.git_branch"
+                        :initial-commit-id="workflowMetadata.git_commit"
+                        :initial-branches="initialBranches"
+                        @branchSelected="branchSelected"
+                        @commitSelected="commitSelected"
+                        @reportsUpdate="updateReports"
+                    ></git-update-reports>
                 </div>
+            </div>
+            <div class="pb-4">
+                <h2 id="report-sub-header">Reports</h2>
+                <div>
+                    <div id="preprocess-div" class="form-group row">
+                        <label class="col-sm-2 col-form-label text-right">Preprocess</label>
+                        <div>
+                        <div class="form-group row">
+                            <label for="n-min" class="col-sm-4 col-form-label text-right">nmin:</label>
+                            <div class="col-sm-8 input-group">
+                                <input type="text" class="form-control mr-2" id="n-min" placeholder="7">
+                                <button id="workflow-remove-button" type="button" class="px-2 btn btn-primary">Remove report</button>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="n-max" class="col-sm-4 col-form-label text-right">nmax:</label>
+                            <div class="col-sm-4">
+                                <input type="text" class="form-control" id="n-max" placeholder="16">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
 
-                <div id="add-report-div" class="form-group row">
-                    <label for="workflow-report" class="col-sm-2 col-form-label text-right">Add report</label>
-                    <div class="col-sm-4 input-group">
-                        <input type="text" @input="validateStep" class="form-control mr-2" id="workflow-report" placeholder="16">
-                        <button id="add-report-button" type="button" class="px-2 btn btn-primary">Add report</button>
+                    <div id="add-report-div" class="form-group row">
+                        <label for="workflow-report" class="col-sm-2 col-form-label text-right">Add report</label>
+                        <div class="col-sm-4 input-group">
+                            <input type="text" @input="validateStep" class="form-control mr-2" id="workflow-report" placeholder="16">
+                            <button id="add-report-button" type="button" class="px-2 btn btn-primary">Add report</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -100,7 +102,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     },
     computed: {
         isReady: function() {
-            return !!this.runReportMetadata && !! this.workflowMetadata;
+            return !!this.runReportMetadata && !!this.workflowMetadata;
         }
     },
     methods: {

@@ -3,6 +3,17 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
 
+export const emptyWorkflowMetadata = {
+    name: "",
+    date: "",
+    email: "",
+    reports: [],
+    instances: {},
+    git_branch: null,
+    git_commit: null,
+    key: ""
+};
+
 describe(`runWorkflowCreate`, () => {
 
     beforeEach(() => {
@@ -90,6 +101,7 @@ describe(`runWorkflowCreate`, () => {
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#create-workflow").trigger("click")
         expect(wrapper.emitted("create").length).toBe(1)
+        expect(wrapper.emitted("create")[0][0]).toStrictEqual(emptyWorkflowMetadata);
     })
 
     it(`can emit re-run navigation step`, async (done) => {

@@ -1,4 +1,5 @@
 import {mount, shallowMount} from "@vue/test-utils";
+import Vue from "vue";
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue"
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
@@ -13,7 +14,7 @@ describe(`workflowWizard`, () => {
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    runWorkflowMetadata: {placeholder: "testdata"},
+                    initialRunWorkflowMetadata: {placeholder: "testdata"},
                     steps: mockStep
                 },
                 data() {
@@ -26,6 +27,11 @@ describe(`workflowWizard`, () => {
         )
     }
 
+    it(`copied initialRunWorkflowMetadata prop to data`, () => {
+        const wrapper = getWrapper();
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testData"});
+    });
+
     it(`can render first step, component and buttons correctly`, async () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
@@ -33,7 +39,7 @@ describe(`workflowWizard`, () => {
         const mockButtonVisibility = {back: false}
         expect(getSteps.at(0).find(runWorkflowReport).exists()).toBe(true)
         expect(getSteps.at(0).props("buttonOptions")).toMatchObject(mockButtonVisibility)
-    })
+    });
 
     it(`can render final step component and buttons correctly`, async () => {
         const wrapper = getWrapper()
@@ -217,4 +223,13 @@ describe(`workflowWizard`, () => {
         const getSteps = wrapper.findAll(step)
         expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
     })
+
+    it(`handles metadata update event from step component`, async () => {
+        const wrapper = getWrapper();
+        await wrapper.setData({activeStep: 0});
+
+        wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testdata", newProp: "newVal"});
+    });
 })

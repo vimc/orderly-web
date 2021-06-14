@@ -1,34 +1,95 @@
+import {mockAxios} from "../../mockAxios";
 import {shallowMount} from "@vue/test-utils";
-import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue"
+import Vue from "vue";
+import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
+import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
+import ErrorInfo from "../../../js/components/errorInfo.vue";
+import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 
 describe(`runWorkflowReport`, () => {
 
-    const getWrapper = () => {
-        return shallowMount(runWorkflowReport, {propsData: {workflowMetadata: {}}})
-    }
+    const runReportMetadataResponse = {
+        metadata: {
+            instances_supported: false,
+            git_supported: true,
+            instances: {"source": []},
+            changelog_types: ["published", "internaal"]
+        },
+        git_branches: ["master", "dev"]
+    };
+
+    beforeEach(() => {
+        mockAxios.reset();
+
+        mockAxios.onGet('http://app/report/run-metadata')
+            .reply(200, {"data": runReportMetadataResponse});
+    });
+
+    const getWrapper = (propsData = {workflowMetadata: {}}) => {
+        return shallowMount(runWorkflowReport, {propsData})
+    };
+
+    it("fetches report run metadata and renders gitUpdateReports component", (done) => {
+        mockAxios.onGet('http://app/report/run-metadata')
+            .reply(200, {"data": runReportMetadataResponse});
+
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_branch: "master",
+                git_commit: "abc123"
+            }
+        });
+        setTimeout(() => {
+            const git = wrapper.findComponent(GitUpdateReports);
+            expect(git.props("metadata")).toStrictEqual(runReportMetadataResponse.metadata);
+            expect(git.props("initialBranches")).toStrictEqual(runReportMetadataResponse.git_branches);
+            expect(git.props("initialBranch")).toBe("master");
+            expect(git.props("initialCommitId")).toBe("abc123");
+
+            const error = wrapper.findComponent(ErrorInfo);
+            expect(error.props("apiError")).toBe("");
+            expect(error.props("defaultMessage")).toBe("");
+
+            done();
+        });
+    });
+
+    it("renders error when error on fetch report run metadata", (done) => {
+        const testError = {test: "something"};
+        mockAxios.onGet('http://app/report/run-metadata')
+            .reply(500, testError);
+
+        const wrapper = getWrapper();
+        setTimeout(() => {
+            const git = wrapper.findComponent(GitUpdateReports);
+            expect(git.exists()).toBe(false);
+
+            const error = wrapper.findComponent(ErrorInfo);
+            expect(error.props("apiError").response.data).toStrictEqual(testError);
+            expect(error.props("defaultMessage")).toBe("An error occurred fetching run report metadata");
+            done();
+        });
+    });
+
+    it("does not render content until workflowMetadata and run report metadta are both set", (done) => {
+        const wrapper = getWrapper({workflowMetadata: null});
+        expect(wrapper.find(GitUpdateReports).exists()).toBe(false);
+        setTimeout(async () => {
+            expect(wrapper.find(GitUpdateReports).exists()).toBe(false);
+            wrapper.setProps({workflowMetadata: emptyWorkflowMetadata});
+            await Vue.nextTick();
+            expect(wrapper.find(GitUpdateReports).exists()).toBe(true);
+            done();
+        });
+    });
 
     it(`it renders workflow report headers correctly`, () => {
         const wrapper = getWrapper()
         expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
         expect(wrapper.find("#git-header").text()).toBe("Git")
         expect(wrapper.find("#report-sub-header").text()).toBe("Reports")
-    })
-
-    it(`it renders workflow branch menu correctly`, () => {
-        const wrapper = getWrapper()
-        const branch = wrapper.find("#workflow-branch-div")
-        expect(branch.find("label").text()).toBe("Branch")
-        expect(branch.findAll("select option").length).toBe(1)
-        expect(branch.find("select option").text()).toBe("master")
-    })
-
-    it(`it renders workflow commit menu correctly`, () => {
-        const wrapper = getWrapper()
-        const commit = wrapper.find("#workflow-commit-div")
-        expect(commit.find("label").text()).toBe("Commit")
-        expect(commit.findAll("select option").length).toBe(1)
-        expect(commit.find("select option").text()).toBe("adfbd130 (2021-03-8 11:36:19)")
-    })
+    });
 
     it(`it renders workflow preprocess menu correctly`, () => {
         const wrapper = getWrapper()
@@ -55,5 +116,41 @@ describe(`runWorkflowReport`, () => {
         const wrapper = getWrapper()
         await wrapper.setProps({workflowMetadata: workflowMeta})
         expect(wrapper.vm.$props.workflowMetadata).toBe(workflowMeta)
-    })
-})
+    });
+
+    it("emits update on branch selected", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(async () => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("branchSelected", "dev");
+            await Vue.nextTick();
+            expect(wrapper.emitted("update").length).toBe(1);
+            expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_branch: "dev"});
+            done();
+        });
+    });
+
+    it("emits update on commit selected", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(async () => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("commitSelected", "xyz987");
+            await Vue.nextTick();
+            expect(wrapper.emitted("update").length).toBe(1);
+            expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_commit: "xyz987"});
+            done();
+        });
+    });
+
+    it("Updates reports from git component", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(async () => {
+            const reports = [
+                { name: "minimal", date: null },
+                { name: "other", date: new Date() }
+            ];
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
+            await Vue.nextTick();
+            expect(wrapper.vm.$data.reports).toBe(reports);
+            done();
+        });
+    });
+});
