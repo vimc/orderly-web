@@ -67,12 +67,9 @@
         },
         methods: {
             changedBranch(initialCommit=null) {
-                console.log("changing branch")
                 this.$emit("branchSelected", this.selectedBranch);
-                console.log("emitted branch selected from gitUpdateReports");
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
-                        console.log("handling commits response")
                         this.gitCommits = data.data;
                         if (this.gitCommits.length) {
                             if (initialCommit && this.gitCommits.map((c) => c.id).includes(initialCommit)) {
@@ -92,12 +89,10 @@
                     });
             },
             changedCommit() {
-                console.log("changing commit")
                 this.$emit("commitSelected", this.selectedCommitId);
                 this.updateReports();
             },
             updateReports() {
-                console.log("updating reports")
                 this.reports = [];
                 const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
                 api.get(`/reports/runnable/${query}`)
@@ -132,22 +127,15 @@
                     });
             },
         },
-        created() {
-            console.log("creating gitUpdateReports")
-        },
         mounted() {
-            console.log("mounting gitUpdateREports")
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialBranches];
-                console.log("Set gitBRanches to " + JSON.stringify(this.gitBranches))
 
                 if (this.initialBranch) {
                     this.selectedBranch = this.initialBranch
                 } else {
                     this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
-                    console.log("Set selectedBranch to " + JSON.stringify(this.selectedBranch))
                 }
-                console.log("calling changedBRanch from mounted")
                 this.changedBranch(this.initialCommitId);
 
             } else {

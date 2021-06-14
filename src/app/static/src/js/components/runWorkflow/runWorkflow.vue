@@ -54,7 +54,6 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         },
         handleCreate: function (data) {
             this.runWorkflowMetadata = data
-            console.log("Creating: setting runWorkfloMetadata to " + JSON.stringify(data))
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},

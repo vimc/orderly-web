@@ -14,28 +14,6 @@
                     @reportsUpdate="updateReports"
                 ></git-update-reports>
             </div>
-            <!--
-            <div class="form-group row">
-                <label class="col-sm-2 col-form-label text-right"></label>
-                <div>
-                    <div id="workflow-branch-div" class="form-group row">
-                        <label class="col-sm-3 col-form-label text-right">Branch</label>
-                        <div class="col-sm-8">
-                            <select class="form-control" id="workflow-git-branch">
-                                <option value="master">master</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div id="workflow-commit-div" class="form-group row">
-                        <label class="col-sm-3 col-form-label text-right">Commit</label>
-                        <div class="col-sm-8">
-                            <select class="form-control" id="workflow-git-commit">
-                                <option value="commit ">adfbd130 (2021-03-8 11:36:19)</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-            </div>-->
         </div>
         <div class="pb-4">
             <h2 id="report-sub-header">Reports</h2>
@@ -133,23 +111,18 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.$emit("valid", true)
         },
         branchSelected(git_branch: string) {
-            console.log("handling branchSelected in runWOrkflowReport for " + JSON.stringify("git_branch"))
             this.$emit("update", {git_branch});
-            console.log("handled branchSelected in runWOrkflowReport")
         },
         commitSelected(git_commit: string) {
             this.$emit("update", {git_commit})
         },
         updateReports(reports) {
             this.reports = reports;
-            console.log("available reports updated: " + JSON.stringify(reports))
         }
     },
     mounted() {
-        console.log("mounting runWorkflowReport")
         api.get(`/report/run-metadata`)
             .then(({data}) => {
-                console.log("got metadata: " + JSON.stringify(data))
                 this.initialBranches = data.data.git_branches;
                 this.runReportMetadata = data.data.metadata;
                 this.error = "";
