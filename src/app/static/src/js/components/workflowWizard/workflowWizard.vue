@@ -61,7 +61,7 @@
                 required: true
             },
             steps: {
-                type: [],
+                type: Array,
                 required: true
             },
             submitLabel: {
@@ -130,16 +130,19 @@
                 this.validStep = valid
             },
             updateMetadata: function (metadata: Partial<RunWorkflowMetadata>) {
+                console.log("handling updateMetadata in workflowWizard for metadata " +  JSON.stringify(metadata))
                 this.runWorkflowMetadata = {
                     ...this.runWorkflowMetadata,
                     ...metadata
                 };
+                console.log("updated to " +  JSON.stringify(this.runWorkflowMetadata))
             }
         },
         mounted() {
+            console.log("Mounting wizard with " + JSON.stringify(this.initialRunWorkflowMetadata))
             this.runWorkflowMetadata = {
                 ...this.initialRunWorkflowMetadata,
-                reports: [...this.initiallRunWorkflowMetadata.reports],
+                reports: [...this.initialRunWorkflowMetadata.reports],
                 instances: {...this.initialRunWorkflowMetadata.instances}
             };
         },

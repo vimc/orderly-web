@@ -1,18 +1,19 @@
 <template>
-    <div v-if="workflowMetadata">
+    <div v-if="isReady">
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
         <div class="pb-4">
             <h2 id="git-header">Git</h2>
-            <git-update-reports
-                v-if="runReportMetadata"
-                :initialBranch="workflowMetadata.git_branch"
-                :initialCommitId="workflowMetadata.git_commit"
-                :metadata="runReportMetadata"
-                :initial-branches="initialBranches"
-                @branchSelected="branchSelected"
-                @commitSelected="commitSelected"
-                @reportsUpdate="updateReports"
-            ></git-update-reports>
+            <div>
+                <git-update-reports
+                    :metadata="runReportMetadata"
+                    :initial-branch="workflowMetadata.git_branch"
+                    :initial-commit-id="workflowMetadata.git_commit"
+                    :initial-branches="initialBranches"
+                    @branchSelected="branchSelected"
+                    @commitSelected="commitSelected"
+                    @reportsUpdate="updateReports"
+                ></git-update-reports>
+            </div>
             <!--
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label text-right"></label>
@@ -73,7 +74,7 @@
 
 <script lang="ts">
 import Vue from "vue"
-import {ReportWithDate, RunWorkflowMetadata} from "../../utils/types";
+import {ReportWithDate, RunReportMetadata, RunWorkflowMetadata} from "../../utils/types";
 import {api} from "../../utils/api";
 import GitUpdateReports from "../runReport/gitUpdateReports.vue";
 import ErrorInfo from "../errorInfo.vue";
@@ -83,16 +84,25 @@ interface Props {
 }
 
 interface Computed {
-    validateStep: void
+    isReady: boolean
 }
 
 interface Methods {
+    validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
     updateReports: (reports: ReportWithDate) =>  void
 }
 
-export default Vue.extend<unknown, Methods, Computed, Props>({
+interface Data {
+    runReportMetadata: RunReportMetadata | null,
+    initialBranches:  string[] | null,
+    reports: ReportWithDate[],
+    error: string,
+    defaultMessage: string
+}
+
+export default Vue.extend<Data, Methods, Computed, Props>({
     name: "runWorkflowReport",
     props: {
         workflowMetadata: Object
@@ -111,19 +121,24 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
         }
     },
     computed: {
+        isReady: function() {
+            return !!this.runReportMetadata && !! this.workflowMetadata;
+        }
+    },
+    methods: {
         validateStep: function () {
             /**
              *  Valid step should be set to true or false once validation is complete
              */
             this.$emit("valid", true)
-        }
-    },
-    methods: {
+        },
         branchSelected(git_branch: string) {
-            this.emit("update", {git_branch});
+            console.log("handling branchSelected in runWOrkflowReport for " + JSON.stringify("git_branch"))
+            this.$emit("update", {git_branch});
+            console.log("handled branchSelected in runWOrkflowReport")
         },
         commitSelected(git_commit: string) {
-            this.emit("update", {git_commit})
+            this.$emit("update", {git_commit})
         },
         updateReports(reports) {
             this.reports = reports;
@@ -134,8 +149,8 @@ export default Vue.extend<unknown, Methods, Computed, Props>({
         console.log("mounting runWorkflowReport")
         api.get(`/report/run-metadata`)
             .then(({data}) => {
-                console.log("got metadata")
-                this.initialBranches = data.data.gitBranches;
+                console.log("got metadata: " + JSON.stringify(data))
+                this.initialBranches = data.data.git_branches;
                 this.runReportMetadata = data.data.metadata;
                 this.error = "";
                 this.defaultMessage = "";

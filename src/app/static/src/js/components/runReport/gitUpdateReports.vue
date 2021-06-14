@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
+        <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
                 <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
@@ -9,7 +9,7 @@
             </div>
             <button @click.prevent="refreshGit"
                     id="git-refresh-btn"
-                    class="btn col-sm-1"
+                    class="btn"
                     :disabled="gitRefreshing"
                     type="submit">
                 {{refreshGitText}}
@@ -69,8 +69,10 @@
             changedBranch(initialCommit=null) {
                 console.log("changing branch")
                 this.$emit("branchSelected", this.selectedBranch);
+                console.log("emitted branch selected from gitUpdateReports");
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
+                        console.log("handling commits response")
                         this.gitCommits = data.data;
                         if (this.gitCommits.length) {
                             if (initialCommit && this.gitCommits.map((c) => c.id).includes(initialCommit)) {
@@ -130,15 +132,22 @@
                     });
             },
         },
+        created() {
+            console.log("creating gitUpdateReports")
+        },
         mounted() {
+            console.log("mounting gitUpdateREports")
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialBranches];
+                console.log("Set gitBRanches to " + JSON.stringify(this.gitBranches))
 
                 if (this.initialBranch) {
                     this.selectedBranch = this.initialBranch
                 } else {
                     this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
+                    console.log("Set selectedBranch to " + JSON.stringify(this.selectedBranch))
                 }
+                console.log("calling changedBRanch from mounted")
                 this.changedBranch(this.initialCommitId);
 
             } else {

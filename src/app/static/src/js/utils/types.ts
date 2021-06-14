@@ -26,6 +26,13 @@ export interface ReportLog{
     report_version: string | null
 }
 
+export interface RunReportMetadata {
+    instances_supported: boolean,
+    git_supported: boolean,
+    instances: Record<string, string[]>,
+    changelog_types: string[]
+}
+
 export interface RunWorkflowMetadata {
     name: string
     date: string

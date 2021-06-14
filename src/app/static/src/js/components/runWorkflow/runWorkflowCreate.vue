@@ -68,7 +68,7 @@
         runWorkflowMetadata: RunWorkflowMetadata | null
     }
 
-    let emptyWorkflowMetadata = {
+    const emptyWorkflowMetadata = {
         name: "",
         date: "",
         email: "",
@@ -77,7 +77,7 @@
         git_branch: null,
         git_commit: null,
         key: ""
-    }
+    };
 
     interface Computed {
         enableButtons: boolean
