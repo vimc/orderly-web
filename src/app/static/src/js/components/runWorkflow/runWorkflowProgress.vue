@@ -3,7 +3,7 @@
     <div class="container mt-3" v-if="workflowRunSummaries">
         <div class="row mb-3">
             <label for="workflows" class="form-label col">Workflow</label>
-            <div class="col-10">
+            <div class="col-10 px-0">
                 <!-- <v-select 
                     :options="workflowOptions" 
                     label="label" 
@@ -60,13 +60,13 @@
                     <td :style="{ color: statusColour(report.status) }">
                         {{ report.status }}
                     </td>
-                    <td>{{ report.date && formatDate(report.date) }}</td>
+                    <td v-if="report.date">{{ formatDate(report.date) }}</td>
                 </tr>
             </table>
         </div>
         <div class="row justify-content-end mt-3">
-            <button class="button mr-3">Clone workflow</button>
-            <button class="btn btn-grey">Cancel workflow</button>
+            <button class="button mr-3" type="button" disabled>Clone workflow</button>
+            <button class="btn btn-grey" type="button" disabled>Cancel workflow</button>
         </div>
         <error-info
             :default-message="defaultMessage"
