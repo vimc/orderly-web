@@ -6,6 +6,7 @@ import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.ExpectedConditions.not
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -46,11 +47,12 @@ class RunWorkflowTests : SeleniumTest()
         Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
         val commitSelect = driver.findElement(By.id("git-commit"))
         val commitValue = commitSelect.getAttribute("value")
+        Assertions.assertThat(commitValue).isNotBlank()
 
         Select(branchSelect).selectByIndex(1)
-        wait.withTimeout(Duration.ofMillis(400))
-        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
-        Assertions.assertThat(commitSelect.getAttribute("value")).isNotEqualTo(commitValue)
+        //Default commit value should update when new branch selected
+        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+        Assertions.assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
 }
