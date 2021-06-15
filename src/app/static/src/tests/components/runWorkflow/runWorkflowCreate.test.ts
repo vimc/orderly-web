@@ -106,27 +106,11 @@ describe(`runWorkflowCreate`, () => {
 
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
+            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata[0]})
             await wrapper.find("#rerun").trigger("click")
             expect(wrapper.emitted("rerun").length).toBe(1)
-            done()
-        })
-    })
-
-    it(`can emit re-run metadata`, async (done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            const vueSelect = wrapper.find(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
-            await wrapper.vm.$emit("rerun", runnableWorkflowMetadata)
-            expect(wrapper.emitted("rerun").length).toBe(1)
-            expect(wrapper.emitted().rerun[0]).toEqual([runnableWorkflowMetadata])
+            expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
             done()
         })
     })
@@ -144,25 +128,12 @@ describe(`runWorkflowCreate`, () => {
 
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
+            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata[0]})
 
             await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
-            done()
-        })
-    })
-
-    it(`can emit clone metadata`, async (done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            const vueSelect = wrapper.find(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-            await wrapper.find("#clone").trigger("click")
-            expect(wrapper.emitted("clone").length).toBe(1)
+            expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
             done()
         })
     })
