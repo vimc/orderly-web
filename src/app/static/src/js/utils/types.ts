@@ -43,3 +43,23 @@ export interface ReportDependencies {
     direction: "upstream" | "downstream",
     dependency_tree: ReportDependency
 }
+
+export interface WorkflowRunSummary {
+    name: string,
+    key: string,
+    vemail: string,
+    date: string
+}
+
+export interface WorkflowRunStatus {
+    status: string,
+    reports: WorkflowRunReportStatus[]
+}
+
+export interface WorkflowRunReportStatus {
+    name: string,
+    key: string,
+    status: string,
+    version: string | null
+    date?: string
+}

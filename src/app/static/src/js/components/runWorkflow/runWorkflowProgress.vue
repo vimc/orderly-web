@@ -70,23 +70,38 @@ import vSelect from "vue-select";
 import { api } from "../../utils/api";
 import { longTimestamp } from "../../utils/helpers";
 import ErrorInfo from "../errorInfo.vue";
-import { RunWorkflowMetadata } from "../../utils/types";
+import {
+    RunWorkflowMetadata,
+    WorkflowRunSummary,
+    WorkflowRunStatus,
+} from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 import { session } from "./../../utils/session.js";
 
-// interface Data {
-//     workflowRunSummaries: null,
-//     selectedWorkflowKey: null,
-//     workflowRunStatus: null,
-//     error: string,
-//     defaultMessage: string
-// }
+interface Data {
+    workflowRunSummaries: null | WorkflowRunSummary[];
+    selectedWorkflowKey: null | string;
+    workflowRunStatus: null | WorkflowRunStatus;
+    error: string;
+    defaultMessage: string;
+}
+
+interface Methods {
+    getWorkflowRunSummaries: () => void;
+    getWorkflowRunStatus: (key: string) => void;
+    formatDate: (date: string) => string;
+    runReportHref: (name: string) => string;
+    reportLogsHref: (name: string) => string;
+    statusColour: (status: string) => string;
+    setRunReportTab: () => void;
+    setReportLogsTab: () => void;
+}
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata | null;
 }
 
-export default Vue.extend<unknown, unknown, unknown, Props>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
@@ -104,22 +119,22 @@ export default Vue.extend<unknown, unknown, unknown, Props>({
             defaultMessage: "",
         };
     },
-    computed: {
-        workflowOptions() {
-            const options = [];
-            if (this.workflowRunSummaries.status === "success") {
-                this.workflowRunSummaries.data.forEach((workflow) =>
-                    options.push({
-                        label: `${workflow.name} Started: ${this.formatDate(
-                            workflow.date
-                        )}`,
-                        key: workflow.key,
-                    })
-                );
-            }
-            return options;
-        },
-    },
+    // computed: {
+    //     workflowOptions() {
+    //         const options = [];
+    //         if (this.workflowRunSummaries.status === "success") {
+    //             this.workflowRunSummaries.data.forEach((workflow) =>
+    //                 options.push({
+    //                     label: `${workflow.name} Started: ${this.formatDate(
+    //                         workflow.date
+    //                     )}`,
+    //                     key: workflow.key,
+    //                 })
+    //             );
+    //         }
+    //         return options;
+    //     },
+    // },
     methods: {
         getWorkflowRunSummaries() {
             api.get("/workflows")
@@ -179,7 +194,7 @@ export default Vue.extend<unknown, unknown, unknown, Props>({
         },
         setReportLogsTab() {
             session.setSelectedTab("reportLogs");
-        }
+        },
     },
     watch: {
         selectedWorkflowKey() {
