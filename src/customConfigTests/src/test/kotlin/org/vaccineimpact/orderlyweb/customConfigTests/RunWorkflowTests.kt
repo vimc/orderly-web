@@ -50,6 +50,7 @@ class RunWorkflowTests : SeleniumTest()
         Assertions.assertThat(commitValue).isNotBlank()
 
         Select(branchSelect).selectByIndex(1)
+        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         //Default commit value should update when new branch selected
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
         Assertions.assertThat(commitSelect.getAttribute("value")).isNotBlank()
