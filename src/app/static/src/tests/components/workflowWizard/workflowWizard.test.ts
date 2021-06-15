@@ -1,9 +1,11 @@
 import {mount, shallowMount} from "@vue/test-utils";
+import {mockAxios} from "../../mockAxios";
 import Vue from "vue";
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue"
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
+import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport.test";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -27,9 +29,16 @@ describe(`workflowWizard`, () => {
         )
     }
 
-    it(`copied initialRunWorkflowMetadata prop to data`, () => {
+    beforeEach(() => {
+        mockAxios.reset();
+
+        mockAxios.onGet('http://app/report/run-metadata')
+            .reply(200, {"data": runReportMetadataResponse});
+    });
+
+    it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testData"});
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testdata"});
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
@@ -74,7 +83,7 @@ describe(`workflowWizard`, () => {
 
         const wrapper =  shallowMount(workflowWizard, {
             propsData: {
-                runWorkflowMetadata: {placeholder: "testdata"},
+                initialRunWorkflowMetadata: {placeholder: "testdata"},
                 steps: steps
             },
             data() {
@@ -87,28 +96,33 @@ describe(`workflowWizard`, () => {
         const getSteps = wrapper.findAll(step)
         expect(getSteps.length).toBe(2)
 
+        await Vue.nextTick()
+
         //first step
         expect(getSteps.at(0).props().buttonOptions).toMatchObject({back: false})
-        expect(getSteps.at(0).find("runworkflowreport-stub").props().workflowMetadata)
+        expect(getSteps.at(0).find(runWorkflowReport).props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final step
         expect(getSteps.at(1).props().buttonOptions).toMatchObject({back: true})
-        expect(getSteps.at(1).find("runworkflowrun-stub").props().workflowMetadata)
+        expect(getSteps.at(1).find(runWorkflowRun).props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
     })
 
-    it(`can render report component`, async() => {
+    it(`can render report component`, (done) => {
         const wrapper = getWrapper()
-        await wrapper.setData({activeStep: 0})
-        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
-        expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
+        wrapper.setData({activeStep: 0})
+        setTimeout(async () => {
+            expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(0).text()).toBe("Remove report")
-        expect(buttons.at(1).text()).toBe("Add report")
-        expect(buttons.at(2).text()).toBe("Cancel")
-        expect(buttons.at(3).text()).toBe("Next")
+            const buttons = wrapper.findAll("button")
+            expect(buttons.at(0).text()).toBe("Refresh git")
+            expect(buttons.at(1).text()).toBe("Remove report")
+            expect(buttons.at(2).text()).toBe("Add report")
+            expect(buttons.at(3).text()).toBe("Cancel")
+            expect(buttons.at(4).text()).toBe("Next")
+            done();
+        });
     })
 
     it(`can render run component`, async() => {
@@ -119,7 +133,6 @@ describe(`workflowWizard`, () => {
         await wrapper.setData({activeStep: finalStepIndex})
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-        expect(wrapper.vm.$props.runWorkflowMetadata).toMatchObject({placeholder: "testdata"})
 
         const buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
@@ -130,11 +143,12 @@ describe(`workflowWizard`, () => {
     it(`can go to the next step`, async () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
+        await wrapper.find(runWorkflowReport).vm.$emit("valid", true)
         const buttons = wrapper.findAll("button")
 
-        expect(buttons.at(3).text()).toBe("Next")
+        expect(buttons.at(1).text()).toBe("Next")
 
-        await buttons.at(3).trigger("click")
+        await buttons.at(1).trigger("click")
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
@@ -152,18 +166,21 @@ describe(`workflowWizard`, () => {
         })
     })
 
-    it(`can emit cancel event from report step as expected`, async () => {
+    it(`can emit cancel event from report step as expected`, (done) => {
         const wrapper = getWrapper()
-        await wrapper.setData({activeStep: 0})
-        const buttons = wrapper.findAll("button")
-        expect(buttons.at(2).text()).toBe("Cancel")
+        wrapper.setData({activeStep: 0})
+        setTimeout(async () => {
+            const buttons = wrapper.findAll("button")
+            expect(buttons.at(3).text()).toBe("Cancel")
 
-        expect(wrapper.vm.$data.showModal).toBe(false)
-        await buttons.at(2).trigger("click")
+            expect(wrapper.vm.$data.showModal).toBe(false)
+            await buttons.at(3).trigger("click")
 
-        expect(wrapper.vm.$data.showModal).toBe(true)
-        await wrapper.find("#confirm-cancel-btn").trigger("click")
-        expect(wrapper.emitted().cancel.length).toBe(1)
+            expect(wrapper.vm.$data.showModal).toBe(true)
+            await wrapper.find("#confirm-cancel-btn").trigger("click")
+            expect(wrapper.emitted().cancel.length).toBe(1)
+            done();
+        });
     })
 
     it(`can emit cancel event from run step as expected`, async () => {

@@ -6,18 +6,17 @@ import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 
+export const runReportMetadataResponse = {
+    metadata: {
+        instances_supported: false,
+        git_supported: true,
+        instances: {"source": []},
+        changelog_types: ["published", "internaal"]
+    },
+    git_branches: ["master", "dev"]
+};
+
 describe(`runWorkflowReport`, () => {
-
-    const runReportMetadataResponse = {
-        metadata: {
-            instances_supported: false,
-            git_supported: true,
-            instances: {"source": []},
-            changelog_types: ["published", "internaal"]
-        },
-        git_branches: ["master", "dev"]
-    };
-
     beforeEach(() => {
         mockAxios.reset();
 
@@ -84,31 +83,40 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it(`it renders workflow report headers correctly`, () => {
+    it(`it renders workflow report headers correctly`, (done) => {
         const wrapper = getWrapper()
-        expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
-        expect(wrapper.find("#git-header").text()).toBe("Git")
-        expect(wrapper.find("#report-sub-header").text()).toBe("Reports")
+        setTimeout(() => {
+            expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
+            expect(wrapper.find("#git-header").text()).toBe("Git")
+            expect(wrapper.find("#report-sub-header").text()).toBe("Reports")
+            done();
+        });
     });
 
-    it(`it renders workflow preprocess menu correctly`, () => {
+    it(`it renders workflow preprocess menu correctly`, (done) => {
         const wrapper = getWrapper()
-        const preprocessor = wrapper.find("#preprocess-div")
-        expect(preprocessor.findAll("label").at(0).text()).toBe("Preprocess")
-        expect(preprocessor.findAll("label").at(1).text()).toBe("nmin:")
-        expect(preprocessor.findAll("label").at(2).text()).toBe("nmax:")
+        setTimeout(() => {
+            const preprocessor = wrapper.find("#preprocess-div")
+            expect(preprocessor.findAll("label").at(0).text()).toBe("Preprocess")
+            expect(preprocessor.findAll("label").at(1).text()).toBe("nmin:")
+            expect(preprocessor.findAll("label").at(2).text()).toBe("nmax:")
 
-        expect(preprocessor.find("input#n-min").exists()).toBe(true)
-        expect(wrapper.find("#workflow-remove-button").text()).toBe("Remove report")
-        expect(preprocessor.find("input#n-max").exists()).toBe(true)
+            expect(preprocessor.find("input#n-min").exists()).toBe(true)
+            expect(wrapper.find("#workflow-remove-button").text()).toBe("Remove report")
+            expect(preprocessor.find("input#n-max").exists()).toBe(true)
+            done();
+        });
     })
 
-    it(`it renders Add report menu correctly`, () => {
+    it(`it renders Add report menu correctly`, (done) => {
         const wrapper = getWrapper()
-        const report = wrapper.find("#add-report-div")
-        expect(report.find("label").text()).toBe("Add report")
-        expect(report.find("input#workflow-report").exists()).toBe(true)
-        expect(report.find("#add-report-button").text()).toBe("Add report")
+        setTimeout(() => {
+            const report = wrapper.find("#add-report-div")
+            expect(report.find("label").text()).toBe("Add report")
+            expect(report.find("input#workflow-report").exists()).toBe(true)
+            expect(report.find("#add-report-button").text()).toBe("Add report")
+            done();
+        })
     })
 
     it(`it can set and render props correctly`, async() => {
