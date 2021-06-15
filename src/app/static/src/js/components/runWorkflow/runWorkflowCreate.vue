@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="create-workflow-container">
         <h2 id="create-workflow-header">Run workflow</h2>
         <div class="pt-2 col-sm-6">
             <p>Either:</p>
@@ -10,7 +10,7 @@
         </div>
         <div id="report-list" class="pt-4 col-sm-8">
             <p>Or re-use an existing workflow:</p>
-            <div>
+            <div id="v-select">
                 <v-select label="name"
                           :filter="searchWorkflows"
                           :options="workflows.slice(0, 10)"
