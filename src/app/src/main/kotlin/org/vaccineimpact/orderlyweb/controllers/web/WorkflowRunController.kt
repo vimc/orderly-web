@@ -35,11 +35,6 @@ class WorkflowRunController(
     {
         val key = context.params(":key")
         return workflowRunRepository.getWorkflowRunDetails(key)
-        // if (key == "key1"){
-        //     return WorkflowRun("name1", "key1", "email1", Instant.now(), listOf(WorkflowReportWithParams("name1a", mapOf("p1a" to "v1a"))), mapOf("p1" to "v1"), "gitBranch1", "gitCommit1")
-        // } else if (key == "key2"){
-        //     return WorkflowRun("name2", "key2", "email2", Instant.now(), listOf(WorkflowReportWithParams("name2a", mapOf("p2a" to "v2a"))), mapOf("p2" to "v2"), "gitBranch2", "gitCommit2")
-        // } else return workflowRunRepository.getWorkflowRunDetails(key)
     }
 
     fun getWorkflowRunSummaries(): List<WorkflowRunSummary>
@@ -123,7 +118,6 @@ class WorkflowRunController(
         data class WorkflowRunStatusResponseReport(
             val key: String,
             val status: String,
-            // val date: String,
             val version: String?
         )
     }
@@ -140,7 +134,6 @@ class WorkflowRunController(
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
             workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-            // WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.date, report.version)
             WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
         })
     //     val response1 = """

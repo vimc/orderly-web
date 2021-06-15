@@ -1,17 +1,8 @@
 <template>
-    <!-- <p>Run workflow progress is coming soon</p> -->
     <div class="container mt-3" v-if="workflowRunSummaries">
         <div class="row mb-3">
             <label for="workflows" class="form-label col">Workflow</label>
             <div class="col-10 px-0">
-                <!-- <v-select 
-                    :options="workflowOptions" 
-                    label="label" 
-                    :reduce="label => label.key" 
-                    name="workflows" 
-                    id="workflows" 
-                    v-model="selectedWorkflowKey">
-                </v-select> -->
                 <v-select
                     :options="workflowRunSummaries.data"
                     label="name"
@@ -22,8 +13,6 @@
                     placeholder="Search by name..."
                 >
                     <template #option="{ name, email, date }">
-                        <!-- <span class="col-4">{{ option.name }}</span>
-                            <span class="col-4">Started: {{ formatDate(option.date) }}</span> -->
                         <div>
                             {{ name }}
                             <span style="opacity: 0.5; float: right">
@@ -34,15 +23,6 @@
                 </v-select>
             </div>
         </div>
-        <!-- <div class="row mb-3">
-            <label for="workflows" class="form-label col">Workflow</label>
-            <select name="workflows" id="workflows" class="form-select col-10" v-model="selectedWorkflowKey">
-                <option v-for="workflow in workflowRunSummaries.data" :value="workflow.key">
-                    <span >{{ workflow.name }}</span>
-                    <span>Started: {{ formatDate(workflow.date) }}</span>
-                </option>
-            </select>
-        </div> -->
         <div class="row" v-if="workflowRunStatus">
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
@@ -191,8 +171,6 @@ export default Vue.extend<unknown, unknown, unknown, Props>({
                 case "running":
                     colour = "grey";
                     break;
-                // default:
-                //     return ""
             }
             return colour;
         },

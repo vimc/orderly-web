@@ -42,7 +42,6 @@ data class WorkflowRunStatus(
         val key: String,
         val status: String,
         val version: String? = null
-        // val date: String
     )
 }
 
