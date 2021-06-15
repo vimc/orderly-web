@@ -123,8 +123,8 @@ class WorkflowRunController(
         data class WorkflowRunStatusResponseReport(
             val key: String,
             val status: String,
+            // val date: String,
             val version: String?
-            // val date: String
         )
     }
 
@@ -140,7 +140,7 @@ class WorkflowRunController(
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
             workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-            // WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version, report.date)
+            // WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.date, report.version)
             WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
         })
     //     val response1 = """
