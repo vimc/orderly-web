@@ -6,7 +6,6 @@ data class RunReportMetadata(
         val instances: Map<String, List<String>>,
         val changelogTypes: List<String>)
 
-
 data class RunReportMetadataWithBranches(
     val metadata: RunReportMetadata,
     val gitBranches: List<String>
