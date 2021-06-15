@@ -4,9 +4,12 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.Select
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
+import java.time.Duration
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -31,6 +34,23 @@ class RunWorkflowTests : SeleniumTest()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
         Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
+    }
+
+    @Test
+    fun `can create a new workflow`()
+    {
+        val button = driver.findElement(By.id("create-workflow"))
+        button.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+        val branchSelect = driver.findElement(By.id("git-branch"))
+        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        val commitSelect = driver.findElement(By.id("git-commit"))
+        val commitValue = commitSelect.getAttribute("value")
+
+        Select(branchSelect).selectByIndex(1)
+        wait.withTimeout(Duration.ofMillis(400))
+        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        Assertions.assertThat(commitSelect.getAttribute("value")).isNotEqualTo(commitValue)
     }
 
 }
