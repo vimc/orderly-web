@@ -2,19 +2,13 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServer
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.models.WorkflowRun
-import org.vaccineimpact.orderlyweb.models.WorkflowRunRequest
-import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
-import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
@@ -117,25 +111,38 @@ class WorkflowRunController(
         return passThroughResponse(response)
     }
 
+    @NoCoverage
     internal data class WorkflowRunStatusResponse(
         @SerializedName(value = "workflow_key")
         val key: String,
-        val status: String
+        val status: String,
+        val reports: List<WorkflowRunStatusResponseReport>
     )
+    {
+        @NoCoverage
+        data class WorkflowRunStatusResponseReport(
+            val key: String,
+            val status: String,
+            val version: String?
+            // val date: String
+        )
+    }
 
-    fun getWorkflowRunStatus(): String
+    fun getWorkflowRunStatus(): WorkflowRunStatus
     {
         val key = context.params(":key")
-        val response = orderlyServerAPI.get(
-            "/v1/workflow/$key/status/",
-            emptyMap()
-        )
-        if (response.statusCode == HTTP_OK)
-        {
-            val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
-            workflowRunRepository.updateWorkflowRun(workflowRunStatusResponse.key, workflowRunStatusResponse.status)
-        }
-        return passThroughResponse(response)
+        val response = orderlyServerAPI
+            .throwOnError()
+            .get("/v1/workflow/$key/status/", emptyMap())
+        val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
+        workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
+        val reportNames = workflowRunRepository.getWorkflowRunDetails(key).reports.map { it.name }
+        return WorkflowRunStatus(
+            workflowRunStatusResponse.status,
+            workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
+            // WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version, report.date)
+            WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
+        })
     //     val response1 = """
     //     {
     //       "status": "success",
