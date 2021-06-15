@@ -19,6 +19,7 @@
                     name="workflows"
                     id="workflows"
                     v-model="selectedWorkflowKey"
+                    placeholder="Search by name..."
                 >
                     <template #option="{ name, email, date }">
                         <!-- <span class="col-4">{{ option.name }}</span>
@@ -47,14 +48,18 @@
             <table class="table-bordered col-10">
                 <tr v-for="report in workflowRunStatus.data.reports">
                     <td v-if="report.status === 'success'">
-                        <a :href="runReportHref(report.name)">{{
-                            report.name
-                        }}</a>
+                        <a
+                            :href="runReportHref(report.name)"
+                            @click="setRunReportTab"
+                            >{{ report.name }}</a
+                        >
                     </td>
                     <td v-else-if="report.status === 'error'">
-                        <a :href="reportLogsHref(report.name)">{{
-                            report.name
-                        }}</a>
+                        <a
+                            :href="reportLogsHref(report.name)"
+                            @click="setReportLogsTab"
+                            >{{ report.name }}</a
+                        >
                     </td>
                     <td v-else>{{ report.name }}</td>
                     <td :style="{ color: statusColour(report.status) }">
@@ -65,8 +70,12 @@
             </table>
         </div>
         <div class="row justify-content-end mt-3">
-            <button class="button mr-3" type="button" disabled>Clone workflow</button>
-            <button class="btn btn-grey" type="button" disabled>Cancel workflow</button>
+            <button class="button mr-3" type="button" disabled>
+                Clone workflow
+            </button>
+            <button class="btn btn-grey" type="button" disabled>
+                Cancel workflow
+            </button>
         </div>
         <error-info
             :default-message="defaultMessage"
@@ -83,6 +92,7 @@ import { longTimestamp } from "../../utils/helpers";
 import ErrorInfo from "../errorInfo.vue";
 import { RunWorkflowMetadata } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
+import { session } from "./../../utils/session.js";
 
 // interface Data {
 //     workflowRunSummaries: null,
@@ -185,6 +195,12 @@ export default Vue.extend<unknown, unknown, unknown, Props>({
                 //     return ""
             }
             return colour;
+        },
+        setRunReportTab() {
+            session.setSelectedTab("runReport");
+        },
+        setReportLogsTab() {
+            session.setSelectedTab("reportLogs");
         }
     },
     watch: {
