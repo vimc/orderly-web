@@ -7,13 +7,11 @@ import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
 import org.pac4j.core.profile.CommonProfile
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.OrderlyServerResponse
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
@@ -318,31 +316,80 @@ class WorkflowRunControllerTests
             on { params(":key") } doReturn "workflow_key1"
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
-
-        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "status": "success"}}"""
-
+        val mockAPIResponseText = """
+        {
+          "data":{
+            "status":"running",
+            "reports":[
+              {
+                "key":"preterrestrial_andeancockoftherock",
+                "name":"Report A",
+                "status":"error"
+              },
+              {
+                "key":"hygienic_mammoth",
+                "name":"Report B",
+                "status":"success",
+                "version":"20210510-100458-8f1a9624"
+              },
+              {
+                "key":"supercurious_woodlouse",
+                "name":"Report C",
+                "status":"running"
+              }
+            ]
+          }
+        }
+        """.trimIndent()
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
-
         val apiClient = mock<OrderlyServerAPI> {
             on { get(any(), any<Map<String, String>>()) } doReturn mockAPIResponse
         }
-
-        val repo = mock<WorkflowRunRepository>()
-        val sut = WorkflowRunController(context, repo, apiClient)
-        val result = sut.getWorkflowRunStatus()
-
-        verify(apiClient).get("/v1/workflow/workflow_key1/status/", emptyMap())
-
-        assertThat(
-            Serializer.instance.gson.fromJson(
-                JsonLoader.fromString(result)["data"].toString(),
-                WorkflowRunController.WorkflowRunStatusResponse::class.java
+        val apiClientWithError = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn apiClient
+        }
+        val repo = mock<WorkflowRunRepository>(verboseLogging = true) {
+            on { getWorkflowRunDetails("workflow_key1") } doReturn WorkflowRun(
+                "workflow",
+                "workflow_key1",
+                "test@user.com",
+                Instant.now(),
+                listOf(
+                    WorkflowReportWithParams("Report A", emptyMap()),
+                    WorkflowReportWithParams("Report B", emptyMap()),
+                    WorkflowReportWithParams("Report C", emptyMap())
+                ),
+                emptyMap()
             )
-        ).isEqualTo(
-            WorkflowRunController.WorkflowRunStatusResponse("workflow_key1", "success")
-        )
+        }
 
-        verify(repo).updateWorkflowRun("workflow_key1", "success")
+        val sut = WorkflowRunController(context, repo, apiClientWithError)
+        val result = sut.getWorkflowRunStatus()
+        assertThat(result).isEqualTo(
+            WorkflowRunStatus(
+                "running",
+                listOf(
+                    WorkflowRunStatus.WorkflowRunReportStatus(
+                        "Report A",
+                        "preterrestrial_andeancockoftherock",
+                        "error"
+                    ),
+                    WorkflowRunStatus.WorkflowRunReportStatus(
+                        "Report B",
+                        "hygienic_mammoth",
+                        "success",
+                        "20210510-100458-8f1a9624"
+                    ),
+                    WorkflowRunStatus.WorkflowRunReportStatus(
+                        "Report C",
+                        "supercurious_woodlouse",
+                        "running"
+                    )
+                )
+            )
+        )
+        verify(apiClient).get("/v1/workflow/workflow_key1/status/", emptyMap())
+        verify(repo).updateWorkflowRun("workflow_key1", "running")
     }
 
     @Test
@@ -352,20 +399,15 @@ class WorkflowRunControllerTests
             on { params(":key") } doReturn "workflow_key1"
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
-
-        val mockResponse = """{"status": "failure", "data": null, "errors": []}"""
-
         val apiClient = mock<OrderlyServerAPI> {
-            on { get(any(), any<Map<String, String>>()) } doReturn OrderlyServerResponse(
-                mockResponse,
-                400
-            )
+            on { get(any(), any<Map<String, String>>()) } doThrow OrderlyServerError("", 400)
+        }
+        val apiClientWithError = mock<OrderlyServerAPI> {
+            on { throwOnError() } doReturn apiClient
         }
 
-        val sut = WorkflowRunController(context, mock(), apiClient)
-        val response = sut.getWorkflowRunStatus()
-        verify(context).setStatusCode(400)
-        assertThat(response).isEqualTo(mockResponse)
+        val sut = WorkflowRunController(context, mock(), apiClientWithError)
+        assertThatThrownBy { sut.getWorkflowRunStatus() }.isInstanceOf(OrderlyServerError::class.java)
     }
 
     private fun getWorkflowRunRequestExample() =

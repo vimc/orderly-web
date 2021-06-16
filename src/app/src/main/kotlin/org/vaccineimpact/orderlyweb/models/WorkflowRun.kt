@@ -32,6 +32,19 @@ data class WorkflowRun(
     val gitCommit: String? = null
 )
 
+data class WorkflowRunStatus(
+    val status: String,
+    val reports: List<WorkflowRunReportStatus>
+)
+{
+    data class WorkflowRunReportStatus(
+        val name: String,
+        val key: String,
+        val status: String,
+        val version: String? = null
+    )
+}
+
 data class WorkflowRunSummary(
     val name: String,
     val key: String,

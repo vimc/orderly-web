@@ -102,6 +102,13 @@ works, which is necessary because it is called implicitly during the Docker imag
 
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
 
+### Coverage
+
+The `@NoCoverage` annotation defined in [Annotations.kt](src/app/src/main/kotlin/org/vaccineimpact/orderlyweb/Annotations.kt)
+excludes specified classes from processing by JaCoCo in order to avoid the necessity of writing artificial test logic
+simply to satisfy coverage metrics. It is only intended for use with `internal data class`es used to
+(de)serialise orderly.server responses.
+
 ### Regenerate database interface
 ```
 cd src

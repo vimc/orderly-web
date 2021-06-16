@@ -204,12 +204,11 @@ class WorkflowRunTests : IntegrationTest()
                 workflowRunResponse.key,
                 "test.user@example.com",
                 Instant.now(),
-                emptyList(),
+                listOf(WorkflowReportWithParams("minimal", emptyMap())),
                 emptyMap()
             )
         )
-        val status = workflowStatus(workflowRunResponse.key)
-        assertThat(status).isEqualTo("success")
+        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
 
         val response = webRequestHelper.requestWithSessionCookie(
             "/workflows/${workflowRunResponse.key}/status",
@@ -218,12 +217,20 @@ class WorkflowRunTests : IntegrationTest()
         )
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowStatus")
-        val workflowRunStatusResponse = Serializer.instance.gson.fromJson(
+        val workflowRunStatus = Serializer.instance.gson.fromJson(
             JSONValidator.getData(response.text).toString(),
-            WorkflowRunController.WorkflowRunStatusResponse::class.java
+            WorkflowRunStatus::class.java
         )
-        assertThat(workflowRunStatusResponse.status).isEqualTo(status)
+
+        val orderlyServerResponse =
+            OrderlyServer(AppConfig()).get("/v1/workflow/${workflowRunResponse.key}/status/", emptyMap())
+        val workflowRunStatusResponse =
+            orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
+        assertThat(workflowRunStatus.status).isEqualTo(workflowRunStatusResponse.status)
+        assertThat(workflowRunStatus.reports[0].name).isEqualTo("minimal")
+        assertThat(workflowRunStatus.reports[0].status).isEqualTo(workflowRunStatusResponse.reports[0].status)
+        assertThat(workflowRunStatus.reports[0].key).isEqualTo(workflowRunStatusResponse.reports[0].key)
+        assertThat(workflowRunStatus.reports[0].version).isEqualTo(workflowRunStatusResponse.reports[0].version)
     }
 
     @Test
