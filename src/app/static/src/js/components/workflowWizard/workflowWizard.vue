@@ -11,6 +11,7 @@
               @cancel="confirmCancel">
             <component :is="step.component"
                        @valid="handleStepValidity"
+                       :is-rerun ="isRerun"
                        :workflow-metadata="runWorkflowMetadata">
             </component>
         </step>
@@ -48,6 +49,7 @@
         runWorkflowMetadata: RunWorkflowMetadata | null
         steps: Step[]
         submitLabel : string | null
+        isRerun: boolean
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
@@ -60,6 +62,10 @@
             },
             submitLabel: {
                 type: String,
+                required: false
+            },
+            isRerun: {
+                type: Boolean,
                 required: false
             }
         },

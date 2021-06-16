@@ -50,3 +50,14 @@ export interface ReportDependencies {
     direction: "upstream" | "downstream",
     dependency_tree: ReportDependency
 }
+
+
+export interface RunMetadata {
+    git_branches: [],
+    metadata: {
+        changelog_types: [] | null,
+        git_supported: boolean,
+        instances: {} | null,
+        instances_supported: boolean
+    }
+}

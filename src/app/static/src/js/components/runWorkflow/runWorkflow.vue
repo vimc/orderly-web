@@ -10,6 +10,7 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
+                         :is-rerun="isRerun"
                          :run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
@@ -26,6 +27,7 @@
         workflowStarted: boolean
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
+        isRerun: boolean
     }
 
     interface Methods {
@@ -43,7 +45,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             runWorkflowMetadata: null,
             workflowStarted: false,
             stepComponents: [],
-            toggleFinalStepNextTo: "Run workflow"
+            toggleFinalStepNextTo: "Run workflow",
+            isRerun: false
         }
     },
     methods: {
@@ -51,6 +54,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.runWorkflowMetadata = data
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
             this.workflowStarted = true
+            this.isRerun = true
         },
         handleCreate: function () {
             this.runWorkflowMetadata = null
