@@ -38,11 +38,20 @@
                         </div>
                     </div>
 
-                    <div id="add-report-div" class="form-group row">
-                        <label for="workflow-report" class="col-sm-2 col-form-label text-right">Add report</label>
-                        <div class="col-sm-4 input-group">
-                            <input type="text" @input="validateStep" class="form-control mr-2" id="workflow-report" placeholder="16">
-                            <button id="add-report-button" type="button" class="px-2 btn btn-primary">Add report</button>
+                    <div v-if="hasReports" id="add-report-div" class="form-group row">
+                        <label for="workflow-report" class="col-sm-2 col-form-label text-right font-weight-bold">
+                            Add report
+                        </label>
+                        <div class="col-sm-6">
+                            <report-list id="workflow-report" :reports="reports"
+                                         :report.sync="selectedReport"/>
+                        </div>
+                        <div class="col-sm-2">
+                            <button :disabled="!selectedReport"
+                                    id="add-report-button"
+                                    type="button"
+                                    class="px-2 btn btn-primary"
+                                    @click="addReport">Add report</button>
                         </div>
                     </div>
                 </div>
@@ -57,6 +66,7 @@ import Vue from "vue"
 import {ReportWithDate, RunReportMetadata, RunWorkflowMetadata} from "../../utils/types";
 import {api} from "../../utils/api";
 import GitUpdateReports from "../runReport/gitUpdateReports.vue";
+import ReportList from "../runReport/reportList.vue";
 import ErrorInfo from "../errorInfo.vue";
 
 interface Props {
@@ -64,20 +74,23 @@ interface Props {
 }
 
 interface Computed {
-    isReady: boolean
+    isReady: boolean,
+    hasReports: boolean
 }
 
 interface Methods {
     validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
-    updateReports: (reports: ReportWithDate) =>  void
+    updateReports: (reports: ReportWithDate) =>  void,
+    addReport: () => void
 }
 
 interface Data {
     runReportMetadata: RunReportMetadata | null,
     initialBranches:  string[] | null,
     reports: ReportWithDate[],
+    selectedReport: string,
     error: string,
     defaultMessage: string
 }
@@ -89,6 +102,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     },
     components: {
         GitUpdateReports,
+        ReportList,
         ErrorInfo
     },
     data() {
@@ -96,6 +110,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             runReportMetadata: null,
             initialBranches: null,
             reports: [],
+            selectedReport: "",
             error: "",
             defaultMessage: ""
         }
@@ -103,6 +118,9 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     computed: {
         isReady: function() {
             return !!this.runReportMetadata && !!this.workflowMetadata;
+        },
+        hasReports: function() {
+            return this.reports.length > 0;
         }
     },
     methods: {
@@ -120,7 +138,31 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         updateReports(reports) {
             this.reports = reports;
-            console.log(`Updating reports with ${JSON.stringify(reports)}`); //TODO: Update reports list
+        },
+        addReport() {
+            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : ''
+            api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                .then(({data}) => {
+                    const parameterValues = data.data.reduce(function(result, param) {
+                        result[param.name] = param.value;
+                        return result;
+                    }, {});
+                    const newReports = [
+                        ...this.workflowMetadata.reports,
+                        {
+                            name: this.selectedReport,
+                            params: parameterValues
+                        }
+                    ];
+                    this.$emit("update", {reports: newReports});
+
+                    this.error = "";
+                    this.defaultMessage = "";
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage = "An error occurred when getting parameters";
+                })
         }
     },
     mounted() {
