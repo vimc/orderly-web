@@ -96,28 +96,6 @@ class RunReportTests
     }
 
     @Test
-    fun `getRunMetadata returns run report metadata`()
-    {
-        val mockOrderlyServerWithError = mock<OrderlyServerAPI> {
-            on { get("/git/branches", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeBranchResponse), 200)
-            on { get("/run-metadata", mapOf()) } doReturn
-                    OrderlyServerResponse(Serializer.instance.toResult(fakeMetadata), 200)
-        }
-        val mockOrderlyServer = mock<OrderlyServerAPI> {
-            on { throwOnError() } doReturn mockOrderlyServerWithError
-        }
-
-        val sut = ReportController(mock(), mock(), mockOrderlyServer, mock(), mock())
-        val result = sut.getRunMetadata()
-        assertThat(result.gitBranches).hasSameElementsAs(listOf("master", "dev"))
-        assertThat(result.metadata.gitSupported).isTrue()
-        assertThat(result.metadata.instancesSupported).isTrue()
-        assertThat(result.metadata.changelogTypes).hasSameElementsAs(listOf("internal", "published"))
-        assertThat(result.metadata.instances["source"]).hasSameElementsAs(listOf("uat", "science"))
-    }
-
-    @Test
     fun `gets parameters for report as expected with commitId`()
     {
         val mockContext: ActionContext = mock {
