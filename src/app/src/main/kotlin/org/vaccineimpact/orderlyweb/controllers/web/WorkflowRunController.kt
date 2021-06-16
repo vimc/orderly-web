@@ -43,7 +43,6 @@ class WorkflowRunController(
             context.queryParams("email"),
             context.queryParams("namePrefix")
         )
-        // return listOf(WorkflowRunSummary("name1",  "key1", "email1", Instant.now()), WorkflowRunSummary("name2",  "key2", "email2", Instant.now()))
     }
 
     internal data class WorkflowRunResponse(
@@ -136,75 +135,5 @@ class WorkflowRunController(
             workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
             WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
         })
-    //     val response1 = """
-    //     {
-    //       "status": "success",
-    //       "errors": null,
-    //       "data": {
-    //         "status": "running",
-    //         "reports": [
-    //           {
-    //             "key": "preterrestrial_andeancockoftherock",
-    //             "name": "report one a",
-    //             "status": "error",
-    //             "date": "${Instant.now()}"
-    //           },
-    //           {
-    //             "key": "hygienic_mammoth",
-    //             "name": "report two a",
-    //             "status": "success",
-    //             "version": "20210510-100458-8f1a9624",
-    //             "date": "${Instant.now()}"
-    //           },
-    //           {
-    //             "key": "blue_bird",
-    //             "name": "report three a",
-    //             "status": "running",
-    //             "date": null
-    //           }
-    //         ]
-    //       }
-    //     }
-    //     """
-    //     val response2 = """
-    //     {
-    //       "status": "success",
-    //       "errors": null,
-    //       "data": {
-    //         "status": "running",
-    //         "reports": [
-    //           {
-    //             "key": "preterrestrial_andeancockoftherock",
-    //             "name": "report one b",
-    //             "status": "error",
-    //             "date": "${Instant.now()}"
-    //           },
-    //           {
-    //             "key": "hygienic_mammoth",
-    //             "name": "report two b",
-    //             "status": "success",
-    //             "version": "20210510-100458-8f1a9624",
-    //             "date": "${Instant.now()}"
-    //           },
-    //           {
-    //             "key": "blue_bird",
-    //             "name": "report three b",
-    //             "status": "running",
-    //             "date": null
-    //           }
-    //         ]
-    //       }
-    //     }
-    //     """
-    //     val response3 = """
-    //     {
-    //       "status": "failure"
-    //     }
-    //     """
-    //     if (key == "key1"){
-    //         return response1
-    //     } else if (key == "key2"){
-    //         return response2
-    //     } else return response3
     }
 }

@@ -120,33 +120,15 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             defaultMessage: "",
         };
     },
-    // computed: {
-    //     workflowOptions() {
-    //         const options = [];
-    //         if (this.workflowRunSummaries.status === "success") {
-    //             this.workflowRunSummaries.data.forEach((workflow) =>
-    //                 options.push({
-    //                     label: `${workflow.name} Started: ${this.formatDate(
-    //                         workflow.date
-    //                     )}`,
-    //                     key: workflow.key,
-    //                 })
-    //             );
-    //         }
-    //         return options;
-    //     },
-    // },
     methods: {
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
-                    console.log('getWorkflowRunSummaries data', data);
                     this.workflowRunSummaries = data;
                     this.error = "";
                     this.defaultMessage = "";
                 })
                 .catch((error) => {
-                    console.log(error);
                     this.error = error;
                     this.defaultMessage =
                         "An error occurred fetching the workflows";
@@ -155,13 +137,11 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         getWorkflowRunStatus(key) {
             api.get(`/workflows/${key}/status`)
                 .then(({ data }) => {
-                    console.log("details", data);
                     this.workflowRunStatus = data;
                     this.error = "";
                     this.defaultMessage = "";
                 })
                 .catch((error) => {
-                    console.log(error);
                     this.error = error;
                     this.defaultMessage =
                         "An error occurred fetching the workflow reports";
@@ -200,7 +180,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
     watch: {
         selectedWorkflowKey() {
             if (this.selectedWorkflowKey) {
-                console.log(this.selectedWorkflowKey);
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
             } else this.workflowRunStatus = null;
         },

@@ -1,8 +1,7 @@
-import {shallowMount, mount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
 import Vue from "vue";
-// import vSelect from "vue-select";
 
 const workflows = {
     "status": "success",
@@ -62,10 +61,6 @@ describe(`runWorkflowProgress`, () => {
         return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
     }
 
-    // const getFullWrapper = () => {
-    //     return mount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
-    // }
-
     it(`it can render if no workflows returned`, async () => {
         mockAxios.onGet('http://app/workflows')
             .reply(200, null);
@@ -95,23 +90,6 @@ describe(`runWorkflowProgress`, () => {
         await wrapper.setProps({workflowMetadata: workflowMeta})
         expect(wrapper.vm.$props.workflowMetadata).toBe(workflowMeta)
     })
-
-    // it(`it can render reports table`, async () => {
-    //     const wrapper = getFullWrapper()
-        
-    //     await Vue.nextTick()
-    //     await Vue.nextTick()
-    //     await Vue.nextTick()
-    //     const dropdown = wrapper.findComponent(vSelect)
-    //     expect(dropdown.props("placeholder")).toBe("Search by name...")
-    //     // await dropdown.trigger("click")
-    //     // await Vue.nextTick()
-    //     // await dropdown.find("input").setValue("name")
-    //     // expect(dropdown.html()).toBe("Search by name...")
-    //     await wrapper.setData({workflowRunStatus: workflowStatus1})
-    //     await Vue.nextTick()
-    //     expect(wrapper.html()).toBe("Search by name...")
-    // })
 
     it(`it can render reports table`, async () => {
         const wrapper = getWrapper()
