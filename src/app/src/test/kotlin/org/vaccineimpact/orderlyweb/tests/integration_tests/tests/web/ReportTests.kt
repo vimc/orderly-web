@@ -135,4 +135,33 @@ class ReportTests : IntegrationTest()
         assertThat(responseData["dependency_tree"]["name"].textValue()).isEqualTo("minimal")
         assertThat(responseData["dependency_tree"]["id"].textValue().count()).isGreaterThan(0)
     }
+
+    @Test
+    fun `report runners can get report run metadata`()
+    {
+        val url="/report/run-metadata"
+        val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val responseData = JSONValidator.getData(response.text)
+        assertThat(responseData["metadata"]["instances_supported"].asBoolean()).isFalse()
+        assertThat(responseData["metadata"]["git_supported"].asBoolean()).isTrue()
+        assertThat(responseData["metadata"]["instances"]["source"].count()).isEqualTo(0)
+        assertThat(responseData["metadata"]["changelog_types"].count()).isEqualTo(2)
+        assertThat(responseData["git_branches"].count()).isEqualTo(2)
+        assertThat(responseData["git_branches"][0].asText()).isEqualTo("master")
+    }
+
+    @Test
+    fun `only report runners can get report run metadata`()
+    {
+        val url = "/report/run-metadata"
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.run", Scope.Global())),
+                method = HttpMethod.get,
+                contentType = ContentTypes.json)
+    }
 }
