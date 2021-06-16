@@ -47,19 +47,19 @@ export interface ReportDependencies {
 export interface WorkflowRunSummary {
     name: string,
     key: string,
-    vemail: string,
+    email: string,
     date: string
 }
 
 export interface WorkflowRunStatus {
-    status: string,
+    status: "queued" | "running" | "success" | "error" | "cancelled",
     reports: WorkflowRunReportStatus[]
 }
 
 export interface WorkflowRunReportStatus {
     name: string,
     key: string,
-    status: string,
+    status: "queued" | "running" | "success" | "error" | "orphan" | "interrupted" | "deferred" | "impossible" | "missing",
     version: string | null
     date?: string
 }

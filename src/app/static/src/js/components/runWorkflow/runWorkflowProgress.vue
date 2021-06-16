@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-3" v-if="workflowRunSummaries">
+    <div class="container mt-3" id="workflow-progress-container" v-if="workflowRunSummaries">
         <div class="row mb-3">
             <label for="workflows" class="form-label col">Workflow</label>
             <div class="col-10 px-0">
@@ -8,7 +8,7 @@
                     label="name"
                     :reduce="(label) => label.key"
                     name="workflows"
-                    id="workflows"
+                    id="v-select"
                     v-model="selectedWorkflowKey"
                     placeholder="Search by name..."
                 >
@@ -23,7 +23,7 @@
                 </v-select>
             </div>
         </div>
-        <div class="row" v-if="workflowRunStatus">
+        <div class="row" v-if="workflowRunStatus" id="workflow-table">
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
                 <tr v-for="report in workflowRunStatus.data.reports">
@@ -62,6 +62,7 @@
             :api-error="error"
         ></error-info>
     </div>
+    <p v-else>No workflows to show</p>
 </template>
 
 <script lang="ts">
@@ -139,7 +140,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
-                    console.log(data);
+                    console.log('getWorkflowRunSummaries data', data);
                     this.workflowRunSummaries = data;
                     this.error = "";
                     this.defaultMessage = "";
