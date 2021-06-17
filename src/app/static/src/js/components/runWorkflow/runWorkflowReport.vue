@@ -12,30 +12,36 @@
                         :initial-branches="initialBranches"
                         @branchSelected="branchSelected"
                         @commitSelected="commitSelected"
-                        @reportsUpdate="updateReports"
+                        @reportsUpdate="updateAvailableReports"
                     ></git-update-reports>
                 </div>
             </div>
             <div class="pb-4">
                 <h2 id="report-sub-header">Reports</h2>
                 <div>
-                    <div id="preprocess-div" class="form-group row">
-                        <label class="col-sm-2 col-form-label text-right">Preprocess</label>
-                        <div>
-                        <div class="form-group row">
-                            <label for="n-min" class="col-sm-4 col-form-label text-right">nmin:</label>
-                            <div class="col-sm-8 input-group">
-                                <input type="text" class="form-control mr-2" id="n-min" placeholder="7">
-                                <button id="workflow-remove-button" type="button" class="px-2 btn btn-primary">Remove report</button>
-                            </div>
+                    <div v-for="(report, index) in workflowMetadata.reports"
+                         :id="`workflow-report-${index}`"
+                         :key="index"
+                         class="form-group row">
+
+                        <label class="col-sm-2 col-form-label text-right">{{report.name}}</label>
+                        <parameter-list
+                            v-if="reportParameters[index].length > 0"
+                            :params="reportParameters[index]"
+                            @paramsChanged="paramsChanged(index, $event)"
+                        ></parameter-list>
+                        <div v-if="reportParameters[index].length === 0"
+                             class="col-sm-6 col-form-label text-secondary">
+                            <em>No parameters</em>
                         </div>
-                        <div class="form-group row">
-                            <label for="n-max" class="col-sm-4 col-form-label text-right">nmax:</label>
-                            <div class="col-sm-4">
-                                <input type="text" class="form-control" id="n-max" placeholder="16">
-                            </div>
+                        <div class="col-sm-2">
+                            <button
+                            type="button"
+                            class="remove-workflow-report btn btn-primary"
+                            @click="removeReport(index)"
+                            >Remove report</button>
                         </div>
-                        </div>
+                        <hr/>
                     </div>
 
                     <div v-if="hasReports" id="add-report-div" class="form-group row">
@@ -63,11 +69,22 @@
 
 <script lang="ts">
 import Vue from "vue"
-import {ReportWithDate, RunReportMetadata, RunWorkflowMetadata} from "../../utils/types";
+import {
+    Parameter,
+    ReportWithDate,
+    RunReportMetadata,
+    RunWorkflowMetadata,
+    WorkflowReportWithParams
+} from "../../utils/types";
 import {api} from "../../utils/api";
 import GitUpdateReports from "../runReport/gitUpdateReports.vue";
 import ReportList from "../runReport/reportList.vue";
+import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
+import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
+
+//TODO: validation
+//TODO: check UI for real VIMC report names - probably too long to really work in a LH column
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata | null
@@ -75,15 +92,19 @@ interface Props {
 
 interface Computed {
     isReady: boolean,
-    hasReports: boolean
+    hasReports: boolean,
+    reportParameters: Parameter[][]
 }
 
 interface Methods {
     validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
-    updateReports: (reports: ReportWithDate) =>  void,
+    updateAvailableReports: (reports: ReportWithDate) =>  void,
     addReport: () => void
+    paramsChanged: (index: number, params: Parameter[]) => void
+    removeReport: (index: number) => void
+    updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void
 }
 
 interface Data {
@@ -103,6 +124,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     components: {
         GitUpdateReports,
         ReportList,
+        ParameterList,
         ErrorInfo
     },
     data() {
@@ -121,6 +143,9 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         hasReports: function() {
             return this.reports.length > 0;
+        },
+        reportParameters: function() {
+            return this.workflowMetadata.reports.map(r => r.params ? mapRecordToParameterArray(r.params) : []);
         }
     },
     methods: {
@@ -136,17 +161,16 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         commitSelected(git_commit: string) {
             this.$emit("update", {git_commit})
         },
-        updateReports(reports) {
+        updateAvailableReports(reports) {
+            //TODO: when available reports are updated, we may have an invalid workflow - may not have reports or parameters
+            //in the report set in the new commit, so may need remove reports or parameters from wf metadata
             this.reports = reports;
         },
         addReport() {
-            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : ''
+            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
             api.get(`/report/${this.selectedReport}/parameters/${commit}`)
                 .then(({data}) => {
-                    const parameterValues = data.data.reduce(function(result, param) {
-                        result[param.name] = param.value;
-                        return result;
-                    }, {});
+                    const parameterValues = mapParameterArrayToRecord(data.data);
                     const newReports = [
                         ...this.workflowMetadata.reports,
                         {
@@ -154,7 +178,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                             params: parameterValues
                         }
                     ];
-                    this.$emit("update", {reports: newReports});
+                    this.updateWorkflowReports(newReports);
 
                     this.error = "";
                     this.defaultMessage = "";
@@ -162,7 +186,23 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 .catch((error) => {
                     this.error = error;
                     this.defaultMessage = "An error occurred when getting parameters";
-                })
+                });
+
+        },
+        removeReport(index: number) {
+            const newReports = [...this.workflowMetadata.reports]
+            newReports.splice(index, 1);
+            this.updateWorkflowReports(newReports);
+        },
+        paramsChanged(index: number, params: Parameter[]) {
+            const newReports = [
+                ...this.workflowMetadata.reports,
+            ];
+            newReports[index] = {...newReports[index], params: mapParameterArrayToRecord(params)};
+            this.updateWorkflowReports(newReports);
+        },
+        updateWorkflowReports(reports: WorkflowReportWithParams[]) {
+            this.$emit("update", {reports: reports});
         }
     },
     mounted() {
