@@ -61,3 +61,10 @@ export interface RunMetadata {
         instances_supported: boolean
     }
 }
+
+export interface WorkflowSummary {
+    date: string,
+    email: string,
+    key: string,
+    name: string
+}
