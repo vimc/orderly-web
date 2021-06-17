@@ -92,11 +92,18 @@ describe(`runWorkflow`, () => {
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
+        expect(wrapper.find(workflowWizard).props("isRerun")).toBe(true)
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Run workflow")
+        expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBe("readonly")
+
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+        //set workflow Name
+        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
@@ -135,9 +142,17 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const runButtons = wrapper.findAll("button")
 
+        expect(wrapper.find(workflowWizard).props("isRerun")).toBe(false)
+        expect(wrapper.find("#workflow-name-div input").attributes("disabled")).toBeUndefined()
+
         expect(runButtons.at(0).text()).toBe("Cancel")
         expect(runButtons.at(1).text()).toBe("Back")
         expect(runButtons.at(2).text()).toBe("Run workflow")
+
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+        //set workflow Name
+        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
@@ -168,9 +183,17 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const runButtons = wrapper.findAll("button")
 
+        expect(wrapper.find(workflowWizard).props("isRerun")).toBe(false)
+        expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
+
         expect(runButtons.at(0).text()).toBe("Cancel")
         expect(runButtons.at(1).text()).toBe("Back")
         expect(runButtons.at(2).text()).toBe("Run workflow")
+
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+        //set workflow Name
+        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")

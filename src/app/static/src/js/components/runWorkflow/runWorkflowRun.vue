@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div id="run-workflow-id">
         <h2 id="run-header">Run workflow</h2>
         <div id="workflow-name-div" class="form-group row">
             <label class="col-sm-4 col-form-label text-left">Name</label>
             <div class="col-sm-4">
                 <input type="text"
-                       :disabled="isRerun"
+                       :readonly="isRerun"
                        @input="handleValidation"
                        v-model="workflowName"
                        class="form-control"
