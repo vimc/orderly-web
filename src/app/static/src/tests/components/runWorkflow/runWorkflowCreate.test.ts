@@ -47,7 +47,7 @@ describe(`runWorkflowCreate`, () => {
         {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
     ]
 
-    const workflowMetadata = [{
+    const workflowMetadata = {
         name: "interim report",
         date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
@@ -57,7 +57,7 @@ describe(`runWorkflowCreate`, () => {
         git_branch: "branch",
         git_commit: "commit",
         key: "fake"
-    }]
+    }
     const getWrapper = () => {
         return mount(runWorkflowCreate,
             {
@@ -107,7 +107,7 @@ describe(`runWorkflowCreate`, () => {
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata[0]})
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
             await wrapper.find("#rerun").trigger("click")
             expect(wrapper.emitted("rerun").length).toBe(1)
             expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
@@ -129,7 +129,7 @@ describe(`runWorkflowCreate`, () => {
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata[0]})
+            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
 
             await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
