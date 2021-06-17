@@ -41,10 +41,14 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can create a new workflow`()
+    fun `can create a blank workflow`()
     {
-        val button = driver.findElement(By.id("create-workflow"))
-        button.click()
+        val tab = driver.findElement(By.id("run-workflow-tab"))
+        val page = tab.findElement(By.id("create-workflow-container"))
+        val createButton = page.findElement(By.id("create-workflow"))
+        Assertions.assertThat(createButton.isEnabled).isTrue()
+        Assertions.assertThat(createButton.text).isEqualTo("Create a blank workflow")
+        createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
         val branchSelect = driver.findElement(By.id("git-branch"))
         Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
@@ -52,6 +56,7 @@ class RunWorkflowTests : SeleniumTest()
         val commitValue = commitSelect.getAttribute("value")
         Assertions.assertThat(commitValue).isNotBlank()
 
+        //Select a git branch
         Select(branchSelect).selectByIndex(1)
         Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         //Default commit value should update when new branch selected

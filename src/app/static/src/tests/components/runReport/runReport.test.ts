@@ -227,26 +227,24 @@ describe("runReport", () => {
             .reply(200, {"data": mockAxiosParam});
 
         const wrapper = getWrapper();
-        //setTimeout(async () => {
-            wrapper.setData({
-                selectedReport: "minimal",
-                selectedCommitId: "abcdef",
-                error: "test-error",
-                defaultMessage: "test-msg",
-                parameterValues: []
-            });
-            //await Vue.nextTick();
+        wrapper.setData({
+            selectedReport: "minimal",
+            selectedCommitId: "abcdef",
+            error: "test-error",
+            defaultMessage: "test-msg",
+            parameterValues: []
+        });
 
-            setTimeout(() => {
-                expect(mockAxios.history.get.length).toBe(1);
-                expect(mockAxios.history.get[0].url).toBe(url);
-                expect(wrapper.find("#parameters").exists()).toBe(true);
-                expect(wrapper.vm.$data.parameterValues).toMatchObject(mockAxiosParam);
-                expect(wrapper.vm.$data.error).toBe("");
-                expect(wrapper.vm.$data.defaultMessage).toBe("");
-                done();
-            });
-        //});
+        setTimeout(() => {
+            expect(mockAxios.history.get.length).toBe(1);
+            expect(mockAxios.history.get[0].url).toBe(url);
+            expect(wrapper.find("#parameters").exists()).toBe(true);
+            expect(wrapper.vm.$data.parameterValues).toMatchObject(mockAxiosParam);
+            expect(wrapper.vm.$data.error).toBe("");
+            expect(wrapper.vm.$data.defaultMessage).toBe("");
+            done();
+        });
+
     });
 
     it("parameters endpoint can set defaultmessage when errored", (done) => {
