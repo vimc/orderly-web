@@ -2,6 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue"
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
+import Vue from "vue";
 
 export const emptyWorkflowMetadata = {
     name: "",
@@ -57,7 +58,7 @@ describe(`runWorkflowCreate`, () => {
         {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
     ]
 
-    const workflowMetadata = [{
+    const workflowMetadata = {
         name: "interim report",
         date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
@@ -67,7 +68,7 @@ describe(`runWorkflowCreate`, () => {
         git_branch: "branch",
         git_commit: "commit",
         key: "fake"
-    }]
+    }
     const getWrapper = () => {
         return mount(runWorkflowCreate,
             {
@@ -117,27 +118,11 @@ describe(`runWorkflowCreate`, () => {
 
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
+            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
             await wrapper.find("#rerun").trigger("click")
             expect(wrapper.emitted("rerun").length).toBe(1)
-            done()
-        })
-    })
-
-    it(`can emit re-run metadata`, async (done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            const vueSelect = wrapper.find(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
-            await wrapper.vm.$emit("rerun", runnableWorkflowMetadata)
-            expect(wrapper.emitted("rerun").length).toBe(1)
-            expect(wrapper.emitted().rerun[0]).toEqual([runnableWorkflowMetadata])
+            expect(wrapper.emitted().rerun[0]).toEqual(runnableWorkflowMetadata)
             done()
         })
     })
@@ -155,27 +140,12 @@ describe(`runWorkflowCreate`, () => {
 
             const vueSelect = wrapper.find(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
+            expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
 
             await wrapper.find("#clone").trigger("click")
             expect(wrapper.emitted("clone").length).toBe(1)
-            done()
-        })
-    })
-
-    it(`can emit clone metadata`, async (done) => {
-        const wrapper = getWrapper()
-
-        setTimeout(async () => {
-            expect(wrapper.find("h2").text()).toBe("Run workflow")
-            expect(mockAxios.history.get.length).toBe(1)
-            const vueSelect = wrapper.find(VueSelect)
-            vueSelect.vm.$emit("input", selectedWorkflow)
-            await wrapper.setData({runWorkflowMetadata: workflowMetadata})
-
-            await wrapper.vm.$emit("clone", clonedWorkflowMetadata)
-            expect(wrapper.emitted("clone").length).toBe(1)
-            expect(wrapper.emitted().clone[0]).toEqual([clonedWorkflowMetadata])
+            expect(wrapper.emitted().clone[0]).toEqual(clonedWorkflowMetadata)
             done()
         })
     })
