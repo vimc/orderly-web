@@ -1,5 +1,9 @@
 <template>
-    <div class="container mt-3" id="workflow-progress-container" v-if="workflowRunSummaries">
+    <div
+        class="container mt-3"
+        id="workflow-progress-container"
+        v-if="workflowRunSummaries"
+    >
         <div class="row mb-3">
             <label for="workflows" class="form-label col">Workflow</label>
             <div class="col-10 px-0">
@@ -12,11 +16,11 @@
                     v-model="selectedWorkflowKey"
                     placeholder="Search by name..."
                 >
-                    <template #option="{ name, email, date }">
+                    <template #option="{ name, date }">
                         <div>
                             {{ name }}
                             <span style="opacity: 0.5; float: right">
-                                {{ email }} | {{ formatDate(date) }}</span
+                                {{ formatDate(date) }}</span
                             >
                         </div>
                     </template>
@@ -29,8 +33,9 @@
                 <tr v-for="report in workflowRunStatus.data.reports">
                     <td v-if="report.status === 'success'">
                         <a
-                            :href="runReportHref(report.name)"
-                            @click="setRunReportTab"
+                            :href="
+                                reportVersionHref(report.name, report.version)
+                            "
                             >{{ report.name }}</a
                         >
                     </td>
@@ -42,8 +47,8 @@
                         >
                     </td>
                     <td v-else>{{ report.name }}</td>
-                    <td :style="{ color: statusColour(report.status) }">
-                        {{ report.status }}
+                    <td :class="statusColour(report.status)">
+                        {{ interpretStatus(report.status) }}
                     </td>
                     <td v-if="report.date">{{ formatDate(report.date) }}</td>
                 </tr>
@@ -91,10 +96,11 @@ interface Methods {
     getWorkflowRunSummaries: () => void;
     getWorkflowRunStatus: (key: string) => void;
     formatDate: (date: string) => string;
-    runReportHref: (name: string) => string;
+    reportVersionHref: (name: string, version: string) => string;
     reportLogsHref: (name: string) => string;
     statusColour: (status: string) => string;
-    setRunReportTab: () => void;
+    interpretStatus: (status: string) => string;
+    // setRunReportTab: () => void;
     setReportLogsTab: () => void;
 }
 
@@ -150,31 +156,44 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         formatDate(date) {
             return longTimestamp(new Date(date));
         },
-        runReportHref(name) {
-            const url = `/run-report?report-name=${name}`;
+        reportVersionHref(name, version) {
+            const url = `/report/${name}/${version}/`;
             return buildFullUrl(url);
         },
         reportLogsHref(name) {
-            const url = `/run-report?report-name=${name}`; // this will eventually be changed to link to report logs once vimc-4618 has been implemented
+            const url = `/run-report?report-name=${name}`; // full implementation into report logs will be covered in a future ticket
             return buildFullUrl(url);
         },
         statusColour(status) {
-            let colour = "";
-            switch (status) {
-                case "error":
-                    colour = "red";
-                    break;
-                case "running":
-                    colour = "grey";
-                    break;
-            }
-            return colour;
+            if (["queued", "running"].indexOf(status) >= 0) {
+                return "text-secondary";
+            } else if (
+                [
+                    "error",
+                    "orphan",
+                    "impossible",
+                    "missing",
+                    "interrupted",
+                ].indexOf(status) >= 0
+            ) {
+                return "text-danger";
+            } else return "";
         },
-        setRunReportTab() {
-            session.setSelectedTab("runReport");
-        },
+        // setRunReportTab() {
+        //     session.setSelectedTab("runReport");
+        // },
         setReportLogsTab() {
             session.setSelectedTab("reportLogs");
+        },
+        interpretStatus(status) {
+            if (status === "success") {
+                return "Complete";
+            } else if (
+                ["error", "orphan", "impossible", "missing"].indexOf(status) >=
+                0
+            ) {
+                return "Failed";
+            } else return status.charAt(0).toUpperCase() + status.slice(1);
         },
     },
     watch: {

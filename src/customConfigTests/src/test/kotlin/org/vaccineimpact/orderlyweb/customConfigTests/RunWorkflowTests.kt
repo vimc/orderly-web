@@ -49,7 +49,7 @@ class RunWorkflowTests : SeleniumTest()
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
         Assertions.assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-                        "test.user@example.com | Tue Jun 15 2021, 14:50")
+                        "Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
         val table = driver.findElement(By.id("workflow-table"))
