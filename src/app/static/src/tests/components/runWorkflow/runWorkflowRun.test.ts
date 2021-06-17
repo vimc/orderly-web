@@ -1,4 +1,4 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {shallowMount} from "@vue/test-utils";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
 import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
