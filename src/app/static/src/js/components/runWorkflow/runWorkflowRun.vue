@@ -66,7 +66,7 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
             /**
              * Valid step should be set to true or false once validation is complete
              */
-            this.$emit("valid", false)
+            this.$emit("valid", true)
         }
     }
 })

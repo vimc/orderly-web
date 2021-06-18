@@ -79,14 +79,25 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.workflowStarted = false;
         },
         handleComplete: function () {
-            const data = this.runWorkflowMetadata
-            console.log('data', data)
+            // const data = this.runWorkflowMetadata
+            const data: RunWorkflowMetadata = {
+                name: "name1",
+                date: "2021-06-18T16:28:16Z",
+                email: "email@email.com",
+                reports: [],
+                instances: {},
+                git_branch: "string",
+                git_commit: "string",
+                key: "string",
+            };
+            console.log("data", data);
             api.post(`/workflow`, data)
                 .then((response) => {
                     // this.error = null;
-                    console.log('response', response)
+                    console.log("response", response);
                 })
                 .catch((error) => {
+                    console.log("error", error);
                     // this.error = error;
                     // this.defaultMessage = `could not add user`;
                 });
