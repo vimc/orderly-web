@@ -43,7 +43,7 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
         props: {
-            params: []
+            params: Array
         },
         data(): Data {
             return {

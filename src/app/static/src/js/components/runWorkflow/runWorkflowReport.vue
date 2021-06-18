@@ -15,8 +15,18 @@
                         @reportsUpdate="updateAvailableReports"
                     ></git-update-reports>
                 </div>
+                <b-alert
+                    :show="workflowRemovals"
+                    dismissible
+                    variant="warning"
+                    @dismissed="workflowRemovals=null">
+                    The following item  are not present in this git commit and have been removed from the workflow:
+                    <ul>
+                        <li v-for="item in workflowRemovals">item</li>
+                    </ul>
+                </b-alert>
             </div>
-            <div class="pb-4">
+            <div class="pb-4" id="workflow-reports">
                 <h2 id="report-sub-header">Reports</h2>
                 <div>
                     <div v-for="(report, index) in workflowMetadata.reports"
@@ -31,13 +41,13 @@
                             @paramsChanged="paramsChanged(index, $event)"
                         ></parameter-list>
                         <div v-if="reportParameters[index].length === 0"
-                             class="col-sm-6 col-form-label text-secondary">
+                             class="col-sm-6 col-form-label text-secondary no-parameters">
                             <em>No parameters</em>
                         </div>
                         <div class="col-sm-2">
                             <button
                             type="button"
-                            class="remove-workflow-report btn btn-primary"
+                            class="remove-report-button btn btn-primary"
                             @click="removeReport(index)"
                             >Remove report</button>
                         </div>
@@ -68,7 +78,8 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
+import Vue from "vue";
+import {BAlert} from "bootstrap-vue";
 import {
     Parameter,
     ReportWithDate,
@@ -82,6 +93,7 @@ import ReportList from "../runReport/reportList.vue";
 import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
+import {AxiosResponse} from "axios";
 
 //TODO: validation
 //TODO: check UI for real VIMC report names - probably too long to really work in a LH column
@@ -100,7 +112,8 @@ interface Methods {
     validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
-    updateAvailableReports: (reports: ReportWithDate) =>  void,
+    getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
+    updateAvailableReports: (reports: ReportWithDate[]) =>  void,
     addReport: () => void
     paramsChanged: (index: number, params: Parameter[]) => void
     removeReport: (index: number) => void
@@ -113,7 +126,8 @@ interface Data {
     reports: ReportWithDate[],
     selectedReport: string,
     error: string,
-    defaultMessage: string
+    defaultMessage: string,
+    workflowRemovals: string[] | null
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -134,7 +148,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reports: [],
             selectedReport: "",
             error: "",
-            defaultMessage: ""
+            defaultMessage: "",
+            workflowRemovals: null
         }
     },
     computed: {
@@ -161,14 +176,68 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         commitSelected(git_commit: string) {
             this.$emit("update", {git_commit})
         },
-        updateAvailableReports(reports) {
-            //TODO: when available reports are updated, we may have an invalid workflow - may not have reports or parameters
-            //in the report set in the new commit, so may need remove reports or parameters from wf metadata
+        getParametersApiCall(report: string) {
+            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
+            return api.get(`/report/${report}/parameters/${commit}`);
+        },
+        async updateAvailableReports(reports: ReportWithDate[]) {
             this.reports = reports;
+
+            // We may now have an invalid workflow - it may contain reports or parameters not in the newly selected commit
+            // - remove obsolete reports or params and notify user
+            // 1. Check reports
+            const removals: string[] = [];
+            const addToRemovals(s: string) {
+                //avoid duplicates
+                if (!removals.includes(s)) {
+
+                }
+            }
+            const newReports = [];
+            const availableReportNames = reports.map(r => r.name);
+            this.workflowMetadataReports.forEach((r: WorkflowReportWithParams) => {
+                if (availableReportNames.includes(r.name)) {
+                    newReports.push({...r, params: {...r.params}});
+                } else {
+                    removals.push(`Report '${r.name}'`);
+                }
+            });
+            // 2. Check parameters
+            const calls = newReports.map(r => {
+                return this.getParametersApiCall(r.name)
+                    .then(({data}) => {
+                        const newParameterValues = mapParameterArrayToRecord(data.data);
+                        // Check for parameters in metadata not in fetched params
+                        for (const p of Object.keys(r.params)) {
+                            if (!Object.keys(newParameterValues).includes(p)) {
+                                delete r.params[p];
+                                removals.push(`Parameter '${p}' in report '${r.name}'`);
+                            }
+                        }
+
+                        // Check for parameters in fetched params not in metadata
+                        for (const p of Object.keys(newParameterValues)) {
+                            if (!Object.keys(r.params).includes(p)) {
+                                r.params[p] = newParameterValues[p];
+                            }
+                        }
+
+                        this.error = "";
+                        this.defaultMessage = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred when refreshing parameters";
+                    });
+            });
+
+            await Promise.all(calls);
+            removals = Array.from(new Set(removals)); //dedupe
+
+            this.workflowRemovals = removals.length > 0 ? removals : null;
         },
         addReport() {
-            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
-            api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+            this.getParametersApiCall(this.selectedReport)
                 .then(({data}) => {
                     const parameterValues = mapParameterArrayToRecord(data.data);
                     const newReports = [
