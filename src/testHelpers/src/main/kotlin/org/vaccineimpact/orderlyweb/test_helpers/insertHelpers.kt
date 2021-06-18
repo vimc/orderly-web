@@ -151,6 +151,39 @@ fun insertReport(name: String,
     }
 }
 
+data class WorkflowReportWithParams(
+        val name: String,
+        val params: Map<String, String>
+)
+
+fun insertWorkflow(email: String,
+                   key: String,
+                   name: String,
+                   date: Timestamp = Timestamp.valueOf("2021-06-15 14:50:41.047"),
+                   reports: List<WorkflowReportWithParams> =
+                           listOf(WorkflowReportWithParams("test_report", mapOf("param1" to "one", "param2" to "two"))),
+                   instances: Map<String, String> = mapOf("name" to "value"),
+                   git_branch: String? = "branch",
+                   git_commit: String? = "commit")
+{
+    JooqContext().use {
+        val workflowRunRecord = it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.name = name
+                    this.email = email
+                    this.key = key
+                    this.date = date
+                    this.reports = Gson().toJson(reports)
+                    this.instances = Gson().toJson(instances)
+                    this.gitBranch = git_branch
+                    this.gitCommit = git_commit
+                    this.status = "pending"
+                }
+        workflowRunRecord.store()
+    }
+}
+
 data class WorkflowRunReportStatus(
     val name: String,
     val params: Map<String, String>,
@@ -159,13 +192,13 @@ data class WorkflowRunReportStatus(
     val version: String? = null
 )
 
-fun insertWorkflow(email: String,
+fun insertWorkflowWithReports(email: String,
                    key: String,
                    name: String,
                    date: Timestamp = Timestamp.valueOf("2021-06-15 14:50:41.047"),
                    reports: List<WorkflowRunReportStatus> =
                            listOf(WorkflowRunReportStatus("test_report", mapOf("param1" to "one", "param2" to "two"), "key1", "success", "version1")),
-                   instances: Map<String, String> = mapOf("name" to "value"),
+                           instances: Map<String, String> = mapOf("name" to "value"),
                    git_branch: String? = "branch",
                    git_commit: String? = "commit")
 {
