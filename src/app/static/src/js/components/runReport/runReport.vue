@@ -52,25 +52,12 @@
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <div v-if="showChangelog">
-                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-                    <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-                    <div class="col-sm-6">
-                        <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
-                                  rows="2"></textarea>
-                    </div>
-                </div>
-                <div id="changelog-type" class="form-group row">
-                    <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" id="changelogType" v-model="changeLogTypeValue">
-                            <option v-for="option in metadata.changelog_types" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <change-log :show-changelog="showChangelog"
+                        :show-change-message="showChangeMessage"
+                        :change-log-message-value="changeLogMessageValue"
+                        :change-log-type-value="changeLogTypeValue"
+                        :report-metadata="metadata">
+            </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -94,6 +81,7 @@
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
     import ReportList from "./reportList.vue";
+    import ChangeLog from "./changeLog.vue";
 
     export default Vue.extend({
         name: "runReport",
@@ -105,7 +93,8 @@
         components: {
             ErrorInfo,
             ReportList,
-            ParameterList
+            ParameterList,
+            ChangeLog
         },
         data: () => {
             return {

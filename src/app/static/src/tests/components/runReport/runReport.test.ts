@@ -5,6 +5,7 @@ import ReportList from "../../../js/components/runReport/reportList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
+import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -800,7 +801,6 @@ describe("runReport", () => {
             }
         }
         });
-
         const options = wrapper.find("#changelogType")
             .find("select").findAll("option")
         options.at(1).setSelected()
