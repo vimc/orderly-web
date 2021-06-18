@@ -128,20 +128,6 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
-    // it(`clicking successful report link sets run report tab in session`, async () => {
-    //     Storage.prototype.setItem = jest.fn();
-    //     const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
-    //     const wrapper = getWrapper()
-    //     await Vue.nextTick()
-    //     await Vue.nextTick()
-    //     await Vue.nextTick()
-    //     await wrapper.setData({workflowRunStatus: workflowStatus1})
-    //     const link = wrapper.findAll("td > a").at(1)
-    //     link.trigger("click")
-    //     expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportTab");
-    //     expect(spySetStorage.calls[0][1]).toBe("runReport");
-    // })
-
     it(`clicking an unsuccessful report link sets report logs tab in session`, async (done) => {
         Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;

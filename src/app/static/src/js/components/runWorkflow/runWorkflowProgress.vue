@@ -100,7 +100,6 @@ interface Methods {
     reportLogsHref: (name: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
-    // setRunReportTab: () => void;
     setReportLogsTab: () => void;
 }
 
@@ -179,9 +178,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 return "text-danger";
             } else return "";
         },
-        // setRunReportTab() {
-        //     session.setSelectedTab("runReport");
-        // },
         setReportLogsTab() {
             session.setSelectedTab("reportLogs");
         },
