@@ -16,13 +16,13 @@
                     ></git-update-reports>
                 </div>
                 <b-alert
-                    :show="workflowRemovals"
+                    :show="!!workflowRemovals"
                     dismissible
                     variant="warning"
                     @dismissed="workflowRemovals=null">
-                    The following item  are not present in this git commit and have been removed from the workflow:
-                    <ul>
-                        <li v-for="item in workflowRemovals">item</li>
+                    The following items are not present in this git commit and have been removed from the workflow:
+                    <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
+                        <li v-for="item in workflowRemovals">{{item}}</li>
                     </ul>
                 </b-alert>
             </div>
@@ -139,7 +139,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         GitUpdateReports,
         ReportList,
         ParameterList,
-        ErrorInfo
+        ErrorInfo,
+        BAlert
     },
     data() {
         return {
@@ -187,19 +188,21 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             // - remove obsolete reports or params and notify user
             // 1. Check reports
             const removals: string[] = [];
-            const addToRemovals(s: string) {
+            let newParamsAdded = false;
+            const addToRemovals = (s: string) => {
                 //avoid duplicates
                 if (!removals.includes(s)) {
-
+                    removals.push(s);
                 }
-            }
+            };
+
             const newReports = [];
             const availableReportNames = reports.map(r => r.name);
-            this.workflowMetadataReports.forEach((r: WorkflowReportWithParams) => {
+            this.workflowMetadata.reports.forEach((r: WorkflowReportWithParams) => {
                 if (availableReportNames.includes(r.name)) {
                     newReports.push({...r, params: {...r.params}});
                 } else {
-                    removals.push(`Report '${r.name}'`);
+                    addToRemovals(`Report '${r.name}'`);
                 }
             });
             // 2. Check parameters
@@ -211,7 +214,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         for (const p of Object.keys(r.params)) {
                             if (!Object.keys(newParameterValues).includes(p)) {
                                 delete r.params[p];
-                                removals.push(`Parameter '${p}' in report '${r.name}'`);
+                                addToRemovals(`Parameter '${p}' in report '${r.name}'`);
                             }
                         }
 
@@ -219,6 +222,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         for (const p of Object.keys(newParameterValues)) {
                             if (!Object.keys(r.params).includes(p)) {
                                 r.params[p] = newParameterValues[p];
+                                newParamsAdded = true;
                             }
                         }
 
@@ -232,9 +236,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             });
 
             await Promise.all(calls);
-            removals = Array.from(new Set(removals)); //dedupe
-
             this.workflowRemovals = removals.length > 0 ? removals : null;
+            if ((removals.length > 0) || newParamsAdded) {
+                this.updateWorkflowReports(newReports);
+            }
         },
         addReport() {
             this.getParametersApiCall(this.selectedReport)

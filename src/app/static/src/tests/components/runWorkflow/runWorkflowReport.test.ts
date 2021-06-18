@@ -1,5 +1,5 @@
 import {mockAxios} from "../../mockAxios";
-import {shallowMount} from "@vue/test-utils";
+import {shallowMount, mount} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
@@ -7,6 +7,7 @@ import ReportList from "../../../js/components/runReport/reportList.vue";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
+import {BAlert} from "bootstrap-vue";
 
 export const runReportMetadataResponse = {
     metadata: {
@@ -191,6 +192,9 @@ describe(`runWorkflowReport`, () => {
             ]);
             expect(report2Div.find(".no-parameters").exists()).toBe(false);
             expect(report2Div.find(".remove-report-button").text()).toBe("Remove report");
+
+            expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
+
             done();
         });
     });
@@ -296,5 +300,212 @@ describe(`runWorkflowReport`, () => {
             });
             done();
         });
+    });
+
+    it("can remove obsolete reports from worfklow on available reports update", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [
+                    {name: "minimal"},
+                    {name: "nonexistent"},
+                    {name: "global"}
+                ]
+            }
+        });
+        const newAvailableReports = [
+            {name: "minimal", date: null},
+            {name: "global", date: new Date()},
+            {name: "another", date: null}
+        ];
+        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/another/parameters/?commit=abc123').reply(200, {data: []});
+        setTimeout(() => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(1);
+                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+                    reports: [
+                        {name: "minimal", params: {}},
+                        {name: "global", params: {}}
+                    ]
+                });
+
+                const alert = wrapper.findComponent(BAlert);
+                expect(alert.props("show")).toBe(true);
+                expect(alert.text()).toContain("The following items are not present in this git commit and have been removed from the workflow:");
+                expect(alert.findAll("li").length).toBe(1);
+                expect(alert.findAll("li").at(0).text()).toBe("Report 'nonexistent'");
+                done();
+            });
+        });
+    });
+
+    it("can remove obsolete parameters from workflow reports on available reports update", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [
+                    {name: "minimal", params: {nmin: "5"}},
+                    {name: "global", params: {p1: "v1", p2: "v2", p3: "v3"}}
+                ]
+            }
+        });
+        const newAvailableReports = [
+            {name: "minimal", date: null},
+            {name: "global", date: new Date()}
+        ];
+        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+            {name: "p2", value: "newValue"}
+        ]});
+
+        setTimeout(() => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(1);
+                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+                    reports: [
+                        {name: "minimal", params: {}},
+                        {name: "global", params: {p2: "v2"}}
+                    ]
+                });
+
+                const alert = wrapper.findComponent(BAlert);
+                expect(alert.props("show")).toBe(true);
+                expect(alert.findAll("li").length).toBe(3);
+                expect(alert.findAll("li").at(0).text()).toBe("Parameter 'nmin' in report 'minimal'");
+                expect(alert.findAll("li").at(1).text()).toBe("Parameter 'p1' in report 'global'");
+                expect(alert.findAll("li").at(2).text()).toBe("Parameter 'p3' in report 'global'");
+                done();
+            });
+        });
+    });
+
+    it("can add new parameters to workflow reports on available reports update", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [
+                    {name: "minimal", params: {nmin: "5"}},
+                    {name: "global"}
+                ]
+            }
+        });
+        const newAvailableReports = [
+            {name: "minimal", date: null},
+            {name: "global", date: new Date()}
+        ];
+        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: [
+            {name: "aNewParam", value: "1"},
+            {name: "nmin", value: "6"}
+        ]});
+        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+            {name: "p1", value: "v1"},
+            {name: "p2", value: "v2"}
+         ]});
+
+        setTimeout(() => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(1);
+                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+                    reports: [
+                        {name: "minimal", params: {aNewParam: "1", nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ]
+                });
+
+                expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
+                done();
+            });
+        });
+    });
+
+    it("can combine workflow changes on available reports update", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [
+                    {name: "minimal", params: {nmin: "5"}},
+                    {name: "global", params: {p1: "v1", p2: "v2"}}
+                ]
+            }
+        });
+        const newAvailableReports = [
+            {name: "global", date: new Date()}
+        ];
+        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+                {name: "p2", value: "newValue2"},
+                {name: "p3", value: "newValue3"}
+            ]});
+
+        setTimeout(() => {
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(1);
+                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+                    reports: [
+                        {name: "global", params: {p2: "v2", p3: "newValue3"}}
+                    ]
+                });
+
+                const alert = wrapper.findComponent(BAlert);
+                expect(alert.props("show")).toBe(true);
+                expect(alert.findAll("li").length).toBe(2);
+                expect(alert.findAll("li").at(0).text()).toBe("Report 'minimal'");
+                expect(alert.findAll("li").at(1).text()).toBe("Parameter 'p1' in report 'global'");
+                done();
+            });
+        });
+    });
+
+    it("renders error received when checking parameters on update available reports", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [
+                    {name: "minimal", params: {nmin: "5"}}
+                ]
+            }
+        });
+        const newAvailableReports = [
+            {name: "minimal", date: new Date()}
+        ];
+
+        setTimeout(() => {
+            const testError = {test: "something"};
+            mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(500, testError);
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                const error = wrapper.findComponent(ErrorInfo);
+                expect(error.props("apiError").response.data).toStrictEqual(testError);
+                expect(error.props("defaultMessage")).toBe("An error occurred when refreshing parameters");
+                done();
+            });
+        });
+    });
+
+    it("can dismiss workflow removals alert", async () => {
+        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: {...emptyWorkflowMetadata}}});
+        wrapper.setData({workflowRemovals: ["Test removal"], runReportMetadata: {}});
+        await Vue.nextTick();
+
+        const dismissButton = wrapper.findComponent(BAlert).find("button.close");
+        dismissButton.trigger("click");
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.workflowRemovals).toStrictEqual(null);
+        expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 });
