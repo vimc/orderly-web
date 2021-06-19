@@ -134,10 +134,9 @@
                     ...this.runWorkflowMetadata,
                     ...metadata
                 };
-                console.log("New metadata: " + JSON.stringify(this.runWorkflowMetadata))
             }
         },
-        mounted() {
+        created() {
             this.runWorkflowMetadata = {
                 ...this.initialRunWorkflowMetadata
             };

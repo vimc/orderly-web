@@ -38,7 +38,7 @@
                         <parameter-list
                             v-if="reportParameters[index].length > 0"
                             :params="reportParameters[index]"
-                            @paramsChanged="paramsChanged(index, $event)"
+                            @paramsChanged="(...args) => paramsChanged(index, ...args)"
                         ></parameter-list>
                         <div v-if="reportParameters[index].length === 0"
                              class="col-sm-6 col-form-label text-secondary no-parameters">
@@ -95,29 +95,27 @@ import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
 
-//TODO: validation
-//TODO: check UI for real VIMC report names - probably too long to really work in a LH column
-
 interface Props {
-    workflowMetadata: RunWorkflowMetadata | null
+    workflowMetadata: RunWorkflowMetadata
 }
 
 interface Computed {
     isReady: boolean,
     hasReports: boolean,
-    reportParameters: Parameter[][]
+    reportParameters: Parameter[][],
+    stepIsValid: boolean
 }
 
 interface Methods {
-    validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
     getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
     updateAvailableReports: (reports: ReportWithDate[]) =>  void,
     addReport: () => void
-    paramsChanged: (index: number, params: Parameter[]) => void
+    paramsChanged: (index: number, params: Parameter[], valid: boolean) => void
     removeReport: (index: number) => void
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void
+    initialValidValue: (report: WorkflowReportWithParams) => boolean
 }
 
 interface Data {
@@ -127,7 +125,8 @@ interface Data {
     selectedReport: string,
     error: string,
     defaultMessage: string,
-    workflowRemovals: string[] | null
+    workflowRemovals: string[] | null,
+    reportsValid: boolean[]
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -150,7 +149,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             selectedReport: "",
             error: "",
             defaultMessage: "",
-            workflowRemovals: null
+            workflowRemovals: null,
+            reportsValid: []
         }
     },
     computed: {
@@ -162,15 +162,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         reportParameters: function() {
             return this.workflowMetadata.reports.map(r => r.params ? mapRecordToParameterArray(r.params) : []);
+        },
+        stepIsValid: function() {
+            return (this.reportsValid.length > 0 ) && (this.reportsValid.every(v => v));
         }
     },
     methods: {
-        validateStep: function () {
-            /**
-             *  Valid step should be set to true or false once validation is complete
-             */
-            this.$emit("valid", true)
-        },
         branchSelected(git_branch: string) {
             this.$emit("update", {git_branch});
         },
@@ -198,15 +195,23 @@ export default Vue.extend<Data, Methods, Computed, Props>({
 
             const newReports = [];
             const availableReportNames = reports.map(r => r.name);
-            this.workflowMetadata.reports.forEach((r: WorkflowReportWithParams) => {
+            const validityIndexRemovals = [];
+            this.workflowMetadata.reports.forEach((r: WorkflowReportWithParams, index: number) => {
                 if (availableReportNames.includes(r.name)) {
                     newReports.push({...r, params: {...r.params}});
                 } else {
                     addToRemovals(`Report '${r.name}'`);
+                    validityIndexRemovals.push(index);
                 }
             });
+
+            //Deal with removing valid flags by index in reverse to avoid moving index bug
+            for(let i = validityIndexRemovals.length-1; i >=0; i--) {
+                this.reportsValid.splice(validityIndexRemovals[i], 1);
+            }
+
             // 2. Check parameters
-            const calls = newReports.map(r => {
+            const calls = newReports.map((r, index) => {
                 return this.getParametersApiCall(r.name)
                     .then(({data}) => {
                         const newParameterValues = mapParameterArrayToRecord(data.data);
@@ -215,6 +220,11 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                             if (!Object.keys(newParameterValues).includes(p)) {
                                 delete r.params[p];
                                 addToRemovals(`Parameter '${p}' in report '${r.name}'`);
+
+                                // If we have removed the last param from a report it becomes valid
+                                if (Object.keys(r.params).length === 0) {
+                                    this.$set(this.reportsValid, index, true);
+                                }
                             }
                         }
 
@@ -245,14 +255,17 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.getParametersApiCall(this.selectedReport)
                 .then(({data}) => {
                     const parameterValues = mapParameterArrayToRecord(data.data);
+                    const newReport = {
+                        name: this.selectedReport,
+                        params: parameterValues
+                    };
                     const newReports = [
                         ...this.workflowMetadata.reports,
-                        {
-                            name: this.selectedReport,
-                            params: parameterValues
-                        }
+                        newReport
                     ];
                     this.updateWorkflowReports(newReports);
+
+                    this.reportsValid.push(this.initialValidValue(newReport));
 
                     this.error = "";
                     this.defaultMessage = "";
@@ -264,19 +277,26 @@ export default Vue.extend<Data, Methods, Computed, Props>({
 
         },
         removeReport(index: number) {
-            const newReports = [...this.workflowMetadata.reports]
+            const newReports = [...this.workflowMetadata.reports];
             newReports.splice(index, 1);
+            this.reportsValid.splice(index, 1);
             this.updateWorkflowReports(newReports);
         },
-        paramsChanged(index: number, params: Parameter[]) {
+        paramsChanged(index: number, params: Parameter[], valid: boolean) {
             const newReports = [
                 ...this.workflowMetadata.reports,
             ];
             newReports[index] = {...newReports[index], params: mapParameterArrayToRecord(params)};
             this.updateWorkflowReports(newReports);
+
+            this.$set(this.reportsValid, index, valid);
         },
         updateWorkflowReports(reports: WorkflowReportWithParams[]) {
             this.$emit("update", {reports: reports});
+        },
+        initialValidValue(report: WorkflowReportWithParams) {
+            // report with no parameters is by definition valid, those with params with notify via parameterList
+            return !(report.params && Object.keys(report.params).length > 0);
         }
     },
     mounted() {
@@ -291,6 +311,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 this.error = error;
                 this.defaultMessage = "An error occurred fetching run report metadata";
             });
+
+        this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
+    },
+    watch: {
+        stepIsValid(newVal) {
+            this.$emit("valid", newVal);
+        }
     }
 })
 </script>
