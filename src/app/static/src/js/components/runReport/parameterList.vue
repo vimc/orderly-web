@@ -84,6 +84,12 @@
             if(this.paramValues) {
                 this.onParameterChanged()
             }
+        },
+        watch: {
+            params() {
+                this.paramValues = this.params;
+                this.onParameterChanged()
+            }
         }
     })
 </script>

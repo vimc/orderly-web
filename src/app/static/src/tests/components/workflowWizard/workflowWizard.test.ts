@@ -5,7 +5,7 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
-import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport.test";
+import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport/runWorkflowReport.test";
 
 describe(`workflowWizard`, () => {
     const steps = [

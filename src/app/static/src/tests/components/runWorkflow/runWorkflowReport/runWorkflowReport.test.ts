@@ -1,12 +1,12 @@
-import {mockAxios} from "../../mockAxios";
+import {mockAxios} from "../../../mockAxios";
 import {shallowMount, mount} from "@vue/test-utils";
 import Vue from "vue";
-import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
-import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
-import ReportList from "../../../js/components/runReport/reportList.vue";
-import ParameterList from "../../../js/components/runReport/parameterList.vue";
-import ErrorInfo from "../../../js/components/errorInfo.vue";
-import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
+import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
+import GitUpdateReports from "../../../../js/components/runReport/gitUpdateReports.vue";
+import ReportList from "../../../../js/components/runReport/reportList.vue";
+import ParameterList from "../../../../js/components/runReport/parameterList.vue";
+import ErrorInfo from "../../../../js/components/errorInfo.vue";
+import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
 import {BAlert} from "bootstrap-vue";
 
 export const runReportMetadataResponse = {

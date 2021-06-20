@@ -164,7 +164,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             return this.workflowMetadata.reports.map(r => r.params ? mapRecordToParameterArray(r.params) : []);
         },
         stepIsValid: function() {
-            return (this.reportsValid.length > 0 ) && (this.reportsValid.every(v => v));
+            return (this.reportsValid.length > 0) && (this.reportsValid.every(v => v));
         }
     },
     methods: {
@@ -295,7 +295,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.$emit("update", {reports: reports});
         },
         initialValidValue(report: WorkflowReportWithParams) {
-            // report with no parameters is by definition valid, those with params with notify via parameterList
+            // report with no parameters is by definition valid, those with params will notify via parameterList
             return !(report.params && Object.keys(report.params).length > 0);
         }
     },
