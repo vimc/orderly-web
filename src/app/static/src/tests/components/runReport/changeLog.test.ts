@@ -18,7 +18,6 @@ describe(`changeLog`, () => {
         return mount(ChangeLog,
             {
                 propsData: {
-                    showChangelog: true,
                     showChangeMessage: true,
                     reportMetadata: reportMetadata
                 }
@@ -33,16 +32,15 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$props).toEqual(
             {
                 reportMetadata,
-                "showChangeMessage": true,
-                "showChangelog": true
+                "showChangeMessage": true
             })
     })
 
-    it(`does not render component if showChangelog is false`, async() => {
+    it(`does not render component if showChangeMessage is false`, async() => {
         const wrapper = getWrapper();
-        await wrapper.setData({showChangelog: false})
+        await wrapper.setData({showChangeMessage: false})
         expect(wrapper.find("#changelog-message").exists()).toBeFalsy()
-        expect(wrapper.find("#changelog-type").exists()).toBeFalsy()
+        expect(wrapper.find("#changelog-type").exists()).toBeTruthy()
     })
 
     it(`can set and get changelog message`, () => {
