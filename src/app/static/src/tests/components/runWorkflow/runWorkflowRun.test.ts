@@ -1,4 +1,4 @@
-import {shallowMount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
 import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
@@ -34,7 +34,7 @@ describe(`runWorkflowRun`, () => {
     })
 
     const getWrapper = () => {
-        return shallowMount(runWorkflowRun,
+        return mount(runWorkflowRun,
             {
                 propsData: {workflowMetadata: {}},
                 data() {
@@ -43,7 +43,7 @@ describe(`runWorkflowRun`, () => {
                         workflowName: "",
                         runMetadata: null,
                         changeLogTypeValue: "",
-                        changeLogMessage: "",
+                        changeLogMessageValue: "",
                         workflows: [],
                         workflowNameError: ""
                     }
@@ -57,7 +57,7 @@ describe(`runWorkflowRun`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
-    it(`can render workflow-name elements`, async (done) => {
+    it(`can render workflow-name elements`, (done) => {
         const wrapper = getWrapper()
         setTimeout(async () => {
             const workflowName = wrapper.find("#workflow-name-div")
@@ -95,7 +95,7 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const label = wrapper.findAll("#workflow-source-div label")
+            const label = wrapper.findAll("#workflow-instances-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 
@@ -115,7 +115,7 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const label = wrapper.findAll("#workflow-source-div label")
+            const label = wrapper.findAll("#workflow-instances-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 
@@ -141,9 +141,12 @@ describe(`runWorkflowRun`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const changelog = wrapper.find("#workflow-changelog-div")
-            expect(changelog.find("label").text()).toBe("Changelog message")
-            expect(changelog.find("input").exists()).toBe(true)
+            const changelog = wrapper.find("#changelog-container")
+            const labels = changelog.findAll("label")
+            expect(labels.at(0).text()).toBe("Changelog Message")
+            expect(labels.at(1).text()).toBe("Changelog Type")
+            expect(changelog.find("textarea").exists()).toBe(true)
+            expect(changelog.find("select").exists()).toBe(true)
             done()
         })
     })
@@ -152,15 +155,15 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const changelog = wrapper.find("#workflow-changelog-div")
-            expect(changelog.find("label").text()).toBe("Changelog message")
-            const input = changelog.find("input")
-            expect(changelog.find("input").exists()).toBe(true)
+            const changelog = wrapper.find("#changelog-message")
+            expect(changelog.find("label").text()).toBe("Changelog Message")
+            const textarea = changelog.find("textarea")
+            expect(changelog.find("textarea").exists()).toBe(true)
 
-            await input.setValue("test message input")
-            const inputValue = input.element as HTMLInputElement
-            expect(inputValue.value).toBe("test message input")
-            expect(wrapper.vm.$data.changeLogMessage).toEqual("test message input")
+            await textarea.setValue("test message input")
+            const textAreaValue = textarea.element as HTMLTextAreaElement
+            expect(textAreaValue.value).toBe("test message input")
+            expect(wrapper.vm.$data.changeLogMessageValue).toEqual("test message input")
             done()
         })
     })
@@ -176,8 +179,8 @@ describe(`runWorkflowRun`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const changelogType = wrapper.find("#workflow-changelog-type-div")
-            expect(wrapper.find("#workflow-changelog-type-div label").text()).toEqual("Changelog type")
+            const changelogType = wrapper.find("#changelog-type")
+            expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
             const options = changelogType.find("select").findAll("option")
             expect(options.at(0).text()).toBe(changelogTypes[0]);
             expect(options.at(1).text()).toBe(changelogTypes[1]);
@@ -189,19 +192,20 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const changelogType = wrapper.find("#workflow-changelog-type-div")
-            expect(wrapper.find("#workflow-changelog-type-div label").text()).toEqual("Changelog type")
+            const changelogType = wrapper.find("#changelog-type")
+            expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type")
             const selectOptions = changelogType.find("select")
             selectOptions.setValue(changelogTypes[1])
             const optionsValue = selectOptions.element as HTMLSelectElement
             expect(optionsValue.value).toEqual(changelogTypes[1])
+            expect(wrapper.vm.$data.selectedInstances).toEqual({"annex": "one", "source": "prod"})
             done()
         })
     })
 
     it(`can render workflow-tags elements`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setData({switchFeatureComponentOn: true})
+        await wrapper.setData({switchV2FeatureComponentOn: true})
         const tags = wrapper.find("#workflow-tags-div")
         expect(tags.text()).toBe("Report version tags")
         expect(tags.find("input#run-workflow-report-version-tags").exists()).toBe(true)
@@ -209,7 +213,7 @@ describe(`runWorkflowRun`, () => {
 
     it(`can render workflow-completion elements`, async () => {
         const wrapper = getWrapper()
-        await wrapper.setData({switchFeatureComponentOn: true})
+        await wrapper.setData({switchV2FeatureComponentOn: true})
         const completion = wrapper.find("#workflow-completion-div")
         expect(completion.find("label").text()).toBe("Only commit reports on workflow completion")
         expect(completion.find("#run-workflow-ticked").exists()).toBe(true)

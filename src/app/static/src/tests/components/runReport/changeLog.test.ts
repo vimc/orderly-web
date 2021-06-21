@@ -14,10 +14,16 @@ describe(`changeLog`, () => {
                 annex: ["one"]
             }
     }
+
+    const changelogStyle = {
+        label: {size: 2, justify: "text-right"},
+        control: {size: 6}
+    }
     const getWrapper = () => {
         return mount(ChangeLog,
             {
                 propsData: {
+                    changelogStyle: changelogStyle,
                     showChangeMessage: true,
                     reportMetadata: reportMetadata
                 }
@@ -32,6 +38,7 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$props).toEqual(
             {
                 reportMetadata,
+                changelogStyle,
                 "showChangeMessage": true
             })
     })
@@ -40,7 +47,7 @@ describe(`changeLog`, () => {
         const wrapper = getWrapper();
         await wrapper.setData({showChangeMessage: false})
         expect(wrapper.find("#changelog-message").exists()).toBeFalsy()
-        expect(wrapper.find("#changelog-type").exists()).toBeTruthy()
+        expect(wrapper.find("#changelog-type").exists()).toBeFalsy()
     })
 
     it(`can set and get changelog message`, () => {

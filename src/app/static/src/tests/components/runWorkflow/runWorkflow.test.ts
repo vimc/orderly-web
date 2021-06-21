@@ -100,9 +100,6 @@ describe(`runWorkflow`, () => {
         expect(buttons.at(1).text()).toBe("Run workflow")
         expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBe("readonly")
 
-        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
-        //set workflow Name
-        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
         expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
         //cancel workflow
