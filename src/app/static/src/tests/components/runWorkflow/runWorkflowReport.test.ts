@@ -41,7 +41,7 @@ describe(`runWorkflowReport`, () => {
         });
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.props("metadata")).toStrictEqual(runReportMetadataResponse.metadata);
+            expect(git.props("reportMetadata")).toStrictEqual(runReportMetadataResponse.metadata);
             expect(git.props("initialBranches")).toStrictEqual(runReportMetadataResponse.git_branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");

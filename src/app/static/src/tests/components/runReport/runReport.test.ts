@@ -59,7 +59,7 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        expect(gitUpdateReports.props("metadata")).toBe(props.metadata);
+        expect(gitUpdateReports.props("reportMetadata")).toBe(props.metadata);
         expect(gitUpdateReports.props("initialBranches")).toBe(initialGitBranches);
     });
 

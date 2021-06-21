@@ -6,7 +6,7 @@
                 <h2 id="git-header">Git</h2>
                 <div>
                     <git-update-reports
-                        :metadata="runReportMetadata"
+                        :report-metadata="runReportMetadata"
                         :initial-branch="workflowMetadata.git_branch"
                         :initial-commit-id="workflowMetadata.git_commit"
                         :initial-branches="initialBranches"
@@ -68,6 +68,7 @@ interface Computed {
 }
 
 interface Methods {
+    getRunReportMetadata: () => void,
     validateStep: () => void,
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
@@ -121,20 +122,23 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         updateReports(reports) {
             this.reports = reports;
             console.log(`Updating reports with ${JSON.stringify(reports)}`); //TODO: Update reports list
+        },
+        getRunReportMetadata() {
+            api.get(`/report/run-metadata`)
+                .then(({data}) => {
+                    this.initialBranches = data.data.git_branches;
+                    this.runReportMetadata = data.data.metadata;
+                    this.error = "";
+                    this.defaultMessage = "";
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage = "An error occurred fetching run report metadata";
+                });
         }
     },
     mounted() {
-        api.get(`/report/run-metadata`)
-            .then(({data}) => {
-                this.initialBranches = data.data.git_branches;
-                this.runReportMetadata = data.data.metadata;
-                this.error = "";
-                this.defaultMessage = "";
-            })
-            .catch((error) => {
-                this.error = error;
-                this.defaultMessage = "An error occurred fetching run report metadata";
-            });
+        this.getRunReportMetadata();
     }
 })
 </script>

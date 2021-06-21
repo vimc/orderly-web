@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
+        <div v-if="reportMetadata && reportMetadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
                 <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
@@ -37,7 +37,7 @@
     export default Vue.extend({
         name: "gitUpdateReports",
         props: [
-            "metadata",
+            "reportMetadata",
             "initialBranches",
             "initialBranch",
             "initialCommitId"
@@ -66,6 +66,21 @@
             }
         },
         methods: {
+            initialise() {
+                if (this.reportMetadata.git_supported) {
+                    this.gitBranches = [...this.initialBranches];
+
+                    if (this.initialBranch) {
+                        this.selectedBranch = this.initialBranch
+                    } else {
+                        this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
+                    }
+                    this.changedBranch(this.initialCommitId);
+
+                } else {
+                    this.updateReports();
+                }
+            },
             changedBranch(initialCommit=null) {
                 this.$emit("branchSelected", this.selectedBranch);
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
@@ -94,7 +109,7 @@
             },
             updateReports() {
                 this.reports = [];
-                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
+                const query = this.reportMetadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;
@@ -128,19 +143,7 @@
             },
         },
         mounted() {
-            if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialBranches];
-
-                if (this.initialBranch) {
-                    this.selectedBranch = this.initialBranch
-                } else {
-                    this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
-                }
-                this.changedBranch(this.initialCommitId);
-
-            } else {
-                this.updateReports();
-            }
+            this.initialise();
         }
     });
 </script>

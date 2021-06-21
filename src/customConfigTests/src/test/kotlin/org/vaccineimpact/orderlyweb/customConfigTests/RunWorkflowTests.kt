@@ -107,4 +107,21 @@ class RunWorkflowTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-report-header")))
     }
+
+    @Test
+    fun `can refresh git`()
+    {
+        val tab = driver.findElement(By.id("run-workflow-tab"))
+        val page = tab.findElement(By.id("create-workflow-container"))
+        val createButton = page.findElement(By.id("create-workflow"))
+
+        createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+
+        Assertions.assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
+
+        val refreshButton = driver.findElement(By.id("git-refresh-btn"))
+        refreshButton.click()
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
+    }
 }
