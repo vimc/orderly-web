@@ -52,12 +52,13 @@
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <change-log :show-changelog="showChangelog"
-                        :show-change-message="showChangeMessage"
+            <div v-if="showChangelog">
+            <change-log :show-change-message="showChangeMessage"
                         :report-metadata="metadata"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
+            </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">

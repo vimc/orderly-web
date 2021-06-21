@@ -1,28 +1,26 @@
 <template>
     <div>
-        <div v-if="showChangelog">
-            <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-                <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-                <div class="col-sm-6">
+        <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
+            <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
+            <div class="col-sm-6">
                         <textarea class="form-control" id="changelogMessage"
                                   v-model="changeLogMessageValue"
                                   @input="handleChangeLogMessage"
                                   rows="2">
                         </textarea>
-                </div>
             </div>
-            <div id="changelog-type" class="form-group row">
-                <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-                <div class="col-sm-6">
-                    <select class="form-control"
-                            id="changelogType"
-                            v-model="changeLogTypeValue"
-                            @change="handleChangeLogType">
-                        <option v-for="option in reportMetadata.changelog_types" :value="option">
-                            {{ option }}
-                        </option>
-                    </select>
-                </div>
+        </div>
+        <div id="changelog-type" class="form-group row">
+            <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
+            <div class="col-sm-6">
+                <select class="form-control"
+                        id="changelogType"
+                        v-model="changeLogTypeValue"
+                        @change="handleChangeLogType">
+                    <option v-for="option in reportMetadata.changelog_types" :value="option">
+                        {{ option }}
+                    </option>
+                </select>
             </div>
         </div>
     </div>
@@ -33,7 +31,6 @@
     import {ReportMetadata} from "../../utils/types";
 
     interface Props {
-        showChangelog: boolean
         showChangeMessage: boolean
         reportMetadata: ReportMetadata[] | null
     }
@@ -57,10 +54,6 @@
             }
         },
         props: {
-            showChangelog: {
-                required: true,
-                type: Boolean
-            },
             showChangeMessage: {
                 required: true,
                 type: Boolean
