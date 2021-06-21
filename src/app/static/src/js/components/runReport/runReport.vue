@@ -53,7 +53,7 @@
                                 :params="parameterValues"></parameter-list>
             </div>
             <div v-if="showChangelog">
-            <change-log :show-changelog="handleChangeLogType"
+            <change-log :show-changelog="handleShowChangeLog"
                         :changelog-type-options="metadata.changelog_types"
                         :changelog-style="changelogStyle"
                         @changelogMessage="handleChangeLogMessageValue"
@@ -144,7 +144,7 @@
             showChangelog: function () {
                 return !!this.selectedReport
             },
-            handleChangeLogType: function () {
+            handleShowChangeLog: function () {
                 return this.metadata.changelog_types
             }
         },
