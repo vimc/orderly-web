@@ -28,8 +28,8 @@
             </div>
         </template>
         <div v-if="runMetadata">
-            <change-log :show-change-message="showChangeMessage"
-                        :report-metadata="runMetadata.metadata"
+            <change-log :show-changelog="handleShowChangeLog"
+                        :changelog-type-options="this.runMetadata.metadata.changelog_types"
                         :changelog-style="changelogStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
@@ -65,7 +65,7 @@
 
     interface Computed {
         showInstances: boolean,
-        showChangeMessage: boolean
+        handleShowChangeLog: void
     }
 
     interface Data {
@@ -124,7 +124,7 @@
             showInstances() {
                 return !!this.runMetadata && this.runMetadata.metadata.instances_supported;
             },
-            showChangeMessage: function () {
+            handleShowChangeLog: function () {
                 return this.runMetadata && !!this.runMetadata.metadata.changelog_types;
             }
         },

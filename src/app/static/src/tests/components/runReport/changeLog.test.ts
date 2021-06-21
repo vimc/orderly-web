@@ -2,18 +2,7 @@ import {mount} from "@vue/test-utils";
 import ChangeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe(`changeLog`, () => {
-    const changelogTypes = ["internal", "public"]
-    const source = ["prod", "uat"]
-
-    const reportMetadata = {
-            changelog_types: changelogTypes,
-            git_supported: false,
-            instances_supported: true,
-            instances: {
-                source: source,
-                annex: ["one"]
-            }
-    }
+    const changelogTypeOptions = ["internal", "public"]
 
     const changelogStyle = {
         label: {size: 2, justify: "text-right"},
@@ -24,8 +13,8 @@ describe(`changeLog`, () => {
             {
                 propsData: {
                     changelogStyle: changelogStyle,
-                    showChangeMessage: true,
-                    reportMetadata: reportMetadata
+                    showChangelog: true,
+                    changelogTypeOptions: changelogTypeOptions
                 }
             })
     }
@@ -37,15 +26,15 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$data).toEqual({"changeLogMessageValue": "", "changeLogTypeValue": ""})
         expect(wrapper.vm.$props).toEqual(
             {
-                reportMetadata,
+                changelogTypeOptions,
                 changelogStyle,
-                "showChangeMessage": true
+                "showChangelog": true
             })
     })
 
     it(`does not render component if showChangeMessage is false`, async() => {
         const wrapper = getWrapper();
-        await wrapper.setData({showChangeMessage: false})
+        await wrapper.setData({showChangelog: false})
         expect(wrapper.find("#changelog-message").exists()).toBeFalsy()
         expect(wrapper.find("#changelog-type").exists()).toBeFalsy()
     })
@@ -70,7 +59,7 @@ describe(`changeLog`, () => {
         options.at(1).setSelected()
 
         expect(wrapper.emitted().changelogType.length).toBe(1)
-        expect(wrapper.emitted().changelogType[0][0]).toEqual(changelogTypes[1])
+        expect(wrapper.emitted().changelogType[0][0]).toEqual(changelogTypeOptions[1])
 
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
         const typeValue = wrapper.find("#changelogType").element as HTMLSelectElement

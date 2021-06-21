@@ -1,5 +1,5 @@
 <template>
-    <div id="changelog-container" v-if="showChangeMessage">
+    <div id="changelog-container" v-if="showChangelog">
         <div id="changelog-message" class="form-group row">
             <label for="changelogMessage"
                    :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
@@ -21,7 +21,7 @@
                         id="changelogType"
                         v-model="changeLogTypeValue"
                         @change="handleChangeLogType">
-                    <option v-for="option in reportMetadata.changelog_types" :value="option">
+                    <option v-for="option in changelogTypeOptions" :value="option">
                         {{ option }}
                     </option>
                 </select>
@@ -32,11 +32,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ChangelogStyle, ReportMetadata} from "../../utils/types";
+    import {ChangelogStyle} from "../../utils/types";
 
     interface Props {
-        showChangeMessage: boolean
-        reportMetadata: ReportMetadata[] | null
+        showChangelog: boolean
+        changelogTypeOptions: string[]
         changelogStyle: ChangelogStyle
     }
 
@@ -59,12 +59,12 @@
             }
         },
         props: {
-            showChangeMessage: {
+            showChangelog: {
                 required: true,
                 type: Boolean
             },
             changelogStyle: Object,
-            reportMetadata: null
+            changelogTypeOptions: []
         },
         methods: {
             handleChangeLogType: function () {
