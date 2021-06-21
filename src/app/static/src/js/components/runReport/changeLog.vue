@@ -1,8 +1,8 @@
 <template>
     <div>
         <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-            <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-            <div class="col-sm-6">
+            <label for="changelogMessage" class="col-sm-4 col-form-label text-left">Changelog Message</label>
+            <div class="col-sm-4">
                         <textarea class="form-control" id="changelogMessage"
                                   v-model="changeLogMessageValue"
                                   @input="handleChangeLogMessage"
@@ -11,8 +11,8 @@
             </div>
         </div>
         <div id="changelog-type" class="form-group row">
-            <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-            <div class="col-sm-6">
+            <label for="changelogType" class="col-sm-4 col-form-label text-left">Changelog Type</label>
+            <div class="col-sm-4">
                 <select class="form-control"
                         id="changelogType"
                         v-model="changeLogTypeValue"

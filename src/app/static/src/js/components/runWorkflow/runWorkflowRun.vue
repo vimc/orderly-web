@@ -9,10 +9,9 @@
                        @input="handleValidation"
                        v-model="workflowName"
                        class="form-control"
-                       id="run-workflow-name"
-                       placeholder="Impact estimates">
-                <small class="text-danger">{{workflowNameError}}</small>
+                       id="run-workflow-name">
             </div>
+            <small class="text-danger">{{ workflowNameError }}</small>
         </div>
         <template v-if="showInstances">
             <div v-for="(options, name) in runMetadata.metadata.instances" v-if="options.length > 1"
@@ -28,34 +27,17 @@
                 </div>
             </div>
         </template>
-        <div>
-        <div v-if="showChangeMessage">
-        <div id="workflow-changelog-div" class="form-group row">
-            <label id="workflow-changelog-label" class="col-sm-4 col-form-label text-left">Changelog message</label>
-            <div class="col-sm-4">
-                <input type="text"
-                       v-model="changeLogMessage"
-                       class="form-control"
-                       id="run-workflow-changelog">
-            </div>
-        </div>
-        <div id="workflow-changelog-type-div" class="form-group row">
-            <label class="col-sm-4 col-form-label text-left">Changelog type</label>
-            <div class="col-sm-4">
-                <select class="form-control" id="run-workflow-changelog-type"
-                        v-model="changeLogTypeValue">
-                    <option v-for="option in runMetadata.metadata.changelog_types" :value="option">
-                        {{ option }}
-                    </option>
-                </select>
-            </div>
-        </div>
-        </div>
+        <div v-if="runMetadata">
+            <change-log :show-change-message="showChangeMessage"
+                        :report-metadata="runMetadata.metadata"
+                        @changelogMessage="handleChangeLogMessageValue"
+                        @changelogType="handleChangeLogTypeValue">
+            </change-log>
         </div>
         <div v-if="switchFeatureComponentOn" id="workflow-tags-div" class="form-group row">
             <label class="col-sm-4 col-form-label text-left">Report version tags</label>
             <div class="col-sm-4">
-                <input type="text" class="form-control" id="run-workflow-report-version-tags" placeholder="interim estimates">
+                <input type="text" class="form-control" id="run-workflow-report-version-tags">
             </div>
         </div>
         <div v-if="switchFeatureComponentOn" id="workflow-completion-div" class="form-group row">
@@ -73,6 +55,7 @@
     import {RunMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
+    import ChangeLog from "../../../js/components/runReport/changeLog.vue";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata | null
@@ -99,6 +82,8 @@
         getRunMetadata: () => void
         handleValidation: () => void
         getWorkflows: () => void
+        handleChangeLogTypeValue: (changelogType: string) => void
+        handleChangeLogMessageValue: (changelogMessage: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -138,6 +123,12 @@
             }
         },
         methods: {
+            handleChangeLogTypeValue: function (changelogType) {
+                this.changeLogTypeValue = changelogType
+            },
+            handleChangeLogMessageValue: function (changelogMessage) {
+                this.changeLogMessageValue = changelogMessage
+            },
             getRunMetadata: function () {
                 api.get('/report/run-metadata')
                     .then(({data}) => {
@@ -193,7 +184,8 @@
             }
         },
         components: {
-            ErrorInfo
+            ErrorInfo,
+            ChangeLog
         }
     })
 </script>
