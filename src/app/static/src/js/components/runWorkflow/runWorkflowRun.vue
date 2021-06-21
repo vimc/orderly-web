@@ -28,6 +28,7 @@
                 </div>
             </div>
         </template>
+        <div>
         <div v-if="showChangeMessage">
         <div id="workflow-changelog-div" class="form-group row">
             <label id="workflow-changelog-label" class="col-sm-4 col-form-label text-left">Changelog message</label>
@@ -48,6 +49,7 @@
                     </option>
                 </select>
             </div>
+        </div>
         </div>
         </div>
         <div v-if="switchFeatureComponentOn" id="workflow-tags-div" class="form-group row">

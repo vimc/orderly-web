@@ -782,7 +782,7 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
-    it("it can accepts changelog  and type log message values", () => {
+    it("it can accepts changelog  and type log message values", async () => {
         const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
             propsData: {
@@ -800,12 +800,10 @@ describe("runReport", () => {
             }
         }
         });
-
         const options = wrapper.find("#changelogType")
             .find("select").findAll("option")
         options.at(1).setSelected()
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
-
         wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
     });
