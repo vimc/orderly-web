@@ -57,3 +57,8 @@ export interface ReportMetadata {
     instances: {} | null,
     instances_supported: boolean
 }
+
+export interface ChangelogStyle {
+    label: { size: number, justify: string },
+    control: { size: number }
+}

@@ -1,8 +1,10 @@
 <template>
-    <div>
-        <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-            <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-            <div class="col-sm-6">
+    <div v-if="showChangeMessage">
+        <div id="changelog-message" class="form-group row">
+            <label for="changelogMessage"
+                   :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
+                   class="col-form-label">Changelog Message</label>
+            <div :class="`col-sm-${changelogStyle.control.size}`">
                         <textarea class="form-control" id="changelogMessage"
                                   v-model="changeLogMessageValue"
                                   @input="handleChangeLogMessage"
@@ -11,8 +13,10 @@
             </div>
         </div>
         <div id="changelog-type" class="form-group row">
-            <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-            <div class="col-sm-6">
+            <label for="changelogType"
+                   :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
+                   class="col-form-label">Changelog Type</label>
+            <div :class="`col-sm-${changelogStyle.control.size}`">
                 <select class="form-control"
                         id="changelogType"
                         v-model="changeLogTypeValue"
@@ -28,11 +32,12 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ReportMetadata} from "../../utils/types";
+    import {ChangelogStyle, ReportMetadata} from "../../utils/types";
 
     interface Props {
         showChangeMessage: boolean
         reportMetadata: ReportMetadata[] | null
+        changelogStyle: ChangelogStyle
     }
 
     interface Data {
@@ -58,6 +63,7 @@
                 required: true,
                 type: Boolean
             },
+            changelogStyle: Object,
             reportMetadata: null
         },
         methods: {
