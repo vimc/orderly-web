@@ -54,9 +54,9 @@
             </div>
             <change-log :show-changelog="showChangelog"
                         :show-change-message="showChangeMessage"
-                        :change-log-message-value="changeLogMessageValue"
-                        :change-log-type-value="changeLogTypeValue"
-                        :report-metadata="metadata">
+                        :report-metadata="metadata"
+                        @changelogMessage="handleChangeLogMessageValue"
+                        @changelogType="handleChangeLogTypeValue">
             </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
@@ -136,13 +136,19 @@
                 return this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return this.selectedReport
+                return !!this.selectedReport
             },
             showChangeMessage: function () {
                 return this.metadata.changelog_types
             }
         },
         methods: {
+            handleChangeLogTypeValue: function (type: string) {
+                this.changeLogTypeValue = type
+            },
+            handleChangeLogMessageValue: function (message: string) {
+                this.changeLogMessageValue = message
+            },
             refreshGit: function () {
                 this.gitRefreshing = true
                 api.get('/git/fetch/')

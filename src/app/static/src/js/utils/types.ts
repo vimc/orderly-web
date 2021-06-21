@@ -51,12 +51,9 @@ export interface ReportDependencies {
     dependency_tree: ReportDependency
 }
 
-export interface RunMetadata {
-    git_branches: [],
-    metadata: {
-        changelog_types: [] | null,
-        git_supported: boolean,
-        instances: {} | null,
-        instances_supported: boolean
-    }
+export interface ReportMetadata {
+    changelog_types: [] | null,
+    git_supported: boolean,
+    instances: {} | null,
+    instances_supported: boolean
 }

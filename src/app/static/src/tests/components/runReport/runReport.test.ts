@@ -5,7 +5,6 @@ import ReportList from "../../../js/components/runReport/reportList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
-import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -783,7 +782,7 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
-    it("it can accepts changelog  and type log message values", () => {
+    it("it can accepts changelog  and type log message values", async () => {
         const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
             propsData: {
@@ -805,7 +804,6 @@ describe("runReport", () => {
             .find("select").findAll("option")
         options.at(1).setSelected()
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
-
         wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
     });
