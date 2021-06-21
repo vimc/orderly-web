@@ -51,13 +51,6 @@ export interface ReportDependencies {
     dependency_tree: ReportDependency
 }
 
-export interface ReportMetadata {
-    changelog_types: [] | null,
-    git_supported: boolean,
-    instances: {} | null,
-    instances_supported: boolean
-}
-
 export interface ChangelogStyle {
     label: { size: number, justify: string },
     control: { size: number }
