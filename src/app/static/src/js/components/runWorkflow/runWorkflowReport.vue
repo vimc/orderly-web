@@ -80,6 +80,7 @@
 <script lang="ts">
 import Vue from "vue";
 import {BAlert} from "bootstrap-vue";
+import {isEqual} from "lodash";
 import {
     Parameter,
     ReportWithDate,
@@ -250,6 +251,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             if ((removals.length > 0) || newParamsAdded) {
                 this.updateWorkflowReports(newReports);
             }
+
+            if (this.selectedReport) {
+                const newReportNames = reports.map(r => r.name);
+                if (!newReportNames.includes(this.selectedReport)) {
+                    this.selectedReport = "";
+                }
+            }
         },
         addReport() {
             this.getParametersApiCall(this.selectedReport)
@@ -283,13 +291,16 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.updateWorkflowReports(newReports);
         },
         paramsChanged(index: number, params: Parameter[], valid: boolean) {
-            const newReports = [
-                ...this.workflowMetadata.reports,
-            ];
-            newReports[index] = {...newReports[index], params: mapParameterArrayToRecord(params)};
-            this.updateWorkflowReports(newReports);
+            const paramsAsRecord = mapParameterArrayToRecord(params);
+            if (!isEqual(paramsAsRecord, this.workflowMetadata.reports[index].params)) {
+                const newReports = [
+                    ...this.workflowMetadata.reports,
+                ];
+                newReports[index] = {...newReports[index], params: paramsAsRecord};
+                this.updateWorkflowReports(newReports);
 
-            this.$set(this.reportsValid, index, valid);
+                this.$set(this.reportsValid, index, valid);
+            }
         },
         updateWorkflowReports(reports: WorkflowReportWithParams[]) {
             this.$emit("update", {reports: reports});
