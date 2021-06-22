@@ -13,20 +13,11 @@
                 <small class="text-danger">{{ workflowNameError }}</small>
             </div>
         </div>
-        <template v-if="showInstances">
-            <div v-for="(options, name) in runMetadata.metadata.instances" v-if="options.length > 1"
-                 id="workflow-instances-div" class="form-group row">
-                <label :for="name" class="col-sm-4 col-form-label text-left">Database "{{ name }}"</label>
-                <div class="col-sm-4">
-                    <select class="form-control" :id="name"
-                            v-model="selectedInstances[name]">
-                        <option v-for="option in options" :value="option">
-                            {{ option }}
-                        </option>
-                    </select>
-                </div>
-            </div>
-        </template>
+        <div v-if="showInstances">
+            <instances :instances="runMetadata.metadata.instances"
+                       @selectedValues="handleInstancesValue"
+                       :changelog-style="changelogStyle"/>
+        </div>
         <div v-if="runMetadata">
             <change-log :show-changelog="handleShowChangeLog"
                         :changelog-type-options="this.runMetadata.metadata.changelog_types"
@@ -53,10 +44,11 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChangelogStyle, RunMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
+    import {ChangelogStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
+    import Instances from "../../../js/components/runReport/instances.vue";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata | null
@@ -71,7 +63,7 @@
     interface Data {
         selectedInstances: {};
         workflowName: string;
-        runMetadata: RunMetadata | null;
+        runMetadata: RunReportMetadata | null;
         changeLogTypeValue: string;
         changeLogMessageValue: string;
         workflows: WorkflowSummary[];
@@ -86,6 +78,7 @@
         getWorkflows: () => void
         handleChangeLogTypeValue: (changelogType: string) => void
         handleChangeLogMessageValue: (changelogMessage: string) => void
+        handleInstancesValue: (instances: Object) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -129,6 +122,9 @@
             }
         },
         methods: {
+            handleInstancesValue: function (instances) {
+                this.selectedInstances = instances
+            },
             handleChangeLogTypeValue: function (changelogType) {
                 this.changeLogTypeValue = changelogType
             },
@@ -168,7 +164,10 @@
                     this.workflowNameError = "Workflow name already exists, please rename your workflow."
                 }
                 this.$emit("valid", valid);
-                this.$emit("update", {name: this.workflowName})
+
+                if(this.workflowName) {
+                    this.$emit("update", {name: this.workflowName})
+                }
             }
         },
         mounted() {
@@ -187,20 +186,12 @@
                 if (this.runMetadata && this.runMetadata.metadata.changelog_types) {
                     this.changeLogTypeValue = this.runMetadata.metadata.changelog_types[0];
                 }
-
-                if (this.runMetadata && this.runMetadata.metadata.instances_supported) {
-                    const instances = this.runMetadata.metadata.instances;
-                    for (const key in instances) {
-                        if (instances[key].length > 0) {
-                            this.$set(this.selectedInstances, key, instances[key][0]);
-                        }
-                    }
-                }
             }
         },
         components: {
             ErrorInfo,
-            ChangeLog
+            ChangeLog,
+            Instances
         }
     })
 </script>

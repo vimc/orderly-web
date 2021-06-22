@@ -35,18 +35,13 @@
                                  :initial-selected-report="initialReportName"/>
                 </div>
             </div>
-            <template v-if="showInstances">
-                <div v-for="(options, name) in metadata.instances" v-if="options.length > 1" class="form-group row">
-                    <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
-                            <option v-for="option in options" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </template>
+
+            <div v-if="showInstances">
+                <instances :instances="metadata.instances"
+                           @selectedValues="handleInstancesValue"
+                           @clearRun="clearRun"
+                           :changelog-style="changelogStyle"/>
+            </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
@@ -84,6 +79,7 @@
     import Vue from "vue";
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
+    import Instances from "./instances.vue";
 
     export default Vue.extend({
         name: "runReport",
@@ -96,7 +92,8 @@
             ErrorInfo,
             ReportList,
             ParameterList,
-            ChangeLog
+            ChangeLog,
+            Instances
         },
         data: () => {
             return {
@@ -119,7 +116,8 @@
                 changelogStyle: {
                     label: {size: 2, justify: "text-right"},
                     control: {size: 6}
-                }
+                },
+                //meta: {}
             }
         },
         computed: {
@@ -149,6 +147,33 @@
             }
         },
         methods: {
+            /*
+            metas: function () {
+                //this.metadata
+
+                //test
+                const changelogTypes = ["internal", "public"]
+                const source = ["prod", "uat"]
+                const runMetadata = {
+                    git_branches: [],
+                    metadata: {
+                        changelog_types: changelogTypes,
+                        git_supported: true,
+                        instances_supported: true,
+                        instances: {
+                            source: source,
+                            annex: ["one"]
+                        }
+                    }
+                }
+                this.metadata = runMetadata.metadata
+                console.log(this.meta)
+            },
+
+             */
+            handleInstancesValue: function (instances) {
+                this.selectedInstances = instances
+            },
             handleChangeLogTypeValue: function (type: string) {
                 this.changeLogTypeValue = type
             },
@@ -273,6 +298,7 @@
             }
         },
         mounted() {
+            //this.metas()
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
@@ -282,15 +308,6 @@
             }
             if(this.metadata.changelog_types) {
                 this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
-
-            if (this.metadata.instances_supported) {
-                const instances = this.metadata.instances;
-                for (const key in instances) {
-                    if (instances[key].length > 0) {
-                        this.$set(this.selectedInstances, key, instances[key][0]);
-                    }
-                }
             }
         },
         watch: {
@@ -308,12 +325,6 @@
                     this.setParameters()
                 }
                 this.parameterValues.length = 0
-            },
-            selectedInstances: {
-                deep: true,
-                handler() {
-                    this.clearRun();
-                }
             }
         }
     })

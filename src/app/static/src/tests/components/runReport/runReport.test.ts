@@ -5,6 +5,7 @@ import ReportList from "../../../js/components/runReport/reportList.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
+import Instances from "../../../js/components/runReport/instances.vue";
 
 describe("runReport", () => {
     beforeEach(() => {
@@ -285,8 +286,8 @@ describe("runReport", () => {
         })
     })
 
-    it("shows instances if instances supported", () => {
-        const wrapper = shallowMount(RunReport, {
+    it("shows instances if instances supported", async() => {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: false,
@@ -305,7 +306,6 @@ describe("runReport", () => {
                 }
             }
         });
-
         const sourceOptions = wrapper.findAll("#source option");
         expect(sourceOptions.length).toBe(2);
         expect(sourceOptions.at(0).attributes().value).toBe("prod");
@@ -513,15 +513,20 @@ describe("runReport", () => {
                 }
             }
         });
+        expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
+        expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: "test-report",
                 selectedCommitId: "test-commit",
-                selectedInstances: {source: "science", annexe: "a1"},
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
             await Vue.nextTick()
+            wrapper.find(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+            expect(wrapper.find(Instances).emitted().clearRun.length).toBe(1)
+            expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
+            expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
             wrapper.setData({
                 parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
             })
@@ -693,7 +698,7 @@ describe("runReport", () => {
     });
 
     it("changing a selected instance updates data and resets runningStatus and disabledRun", async () => {
-        const wrapper = shallowMount(RunReport, {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: true,

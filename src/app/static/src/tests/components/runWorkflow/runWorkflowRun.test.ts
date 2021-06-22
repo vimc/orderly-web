@@ -2,6 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
 import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
+import Instances from "../../../js/components/runReport/instances.vue";
 
 describe(`runWorkflowRun`, () => {
 
@@ -93,9 +94,11 @@ describe(`runWorkflowRun`, () => {
 
     it(`can render workflow-source elements`, async (done) => {
         const wrapper = getWrapper()
-
         setTimeout(async () => {
-            const label = wrapper.findAll("#workflow-instances-div label")
+            expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
+            expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annex": "one", "source": "prod"})
+
+            const label = wrapper.findAll("#instances-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 
@@ -115,7 +118,7 @@ describe(`runWorkflowRun`, () => {
         const wrapper = getWrapper()
 
         setTimeout(async () => {
-            const label = wrapper.findAll("#workflow-instances-div label")
+            const label = wrapper.findAll("#instances-div label")
             expect(label.length).toBe(1)
             expect(label.at(0).text()).toBe("Database \"source\"")
 

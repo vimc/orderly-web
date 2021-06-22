@@ -51,11 +51,6 @@ export interface ReportDependencies {
     dependency_tree: ReportDependency
 }
 
-export interface RunMetadata {
-    git_branches: [],
-    metadata: ReportMetadata
-}
-
 export interface WorkflowSummary {
     date: string,
     email: string,
@@ -63,7 +58,12 @@ export interface WorkflowSummary {
     name: string
 }
 
-export interface ReportMetadata {
+export interface RunReportMetadata {
+    git_branches: [],
+    metadata: RunReportMetadataDependency
+}
+
+export interface RunReportMetadataDependency {
     changelog_types: [] | null,
     git_supported: boolean,
     instances: {} | null,
