@@ -23,7 +23,7 @@ describe(`changeLog`, () => {
         const wrapper = getWrapper();
         expect(wrapper.find("#changelog-message").exists()).toBeTruthy()
         expect(wrapper.find("#changelog-type").exists()).toBeTruthy()
-        expect(wrapper.vm.$data).toEqual({"changeLogMessageValue": "", "changeLogTypeValue": ""})
+        expect(wrapper.vm.$data).toEqual({"changeLogMessageValue": "", "changeLogTypeValue": "internal"})
         expect(wrapper.vm.$props).toEqual(
             {
                 changelogTypeOptions,
@@ -58,8 +58,9 @@ describe(`changeLog`, () => {
             .find("select").findAll("option")
         options.at(1).setSelected()
 
-        expect(wrapper.emitted().changelogType.length).toBe(1)
-        expect(wrapper.emitted().changelogType[0][0]).toEqual(changelogTypeOptions[1])
+        expect(wrapper.emitted().changelogType.length).toBe(2)
+        expect(wrapper.emitted().changelogType[0][0]).toEqual(changelogTypeOptions[0]) //on mount initial selection
+        expect(wrapper.emitted().changelogType[1][0]).toEqual(changelogTypeOptions[1])  // selected value
 
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
         const typeValue = wrapper.find("#changelogType").element as HTMLSelectElement
