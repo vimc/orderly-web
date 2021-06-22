@@ -32,7 +32,7 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {"data": runReportMetadataResponse});
     });
 
-    const getWrapper = (propsData = {workflowMetadata: {}}) => {
+    const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
         return shallowMount(runWorkflowReport, {propsData})
     };
 
@@ -79,13 +79,10 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("does not render content until workflowMetadata and run report metadata are both set", (done) => {
-        const wrapper = getWrapper({workflowMetadata: null});
+    it("does not render content until run report metadata is set", (done) => {
+        const wrapper = getWrapper();
         expect(wrapper.find(GitUpdateReports).exists()).toBe(false);
         setTimeout(async () => {
-            expect(wrapper.find(GitUpdateReports).exists()).toBe(false);
-            wrapper.setProps({workflowMetadata: emptyWorkflowMetadata});
-            await Vue.nextTick();
             expect(wrapper.find(GitUpdateReports).exists()).toBe(true);
             done();
         });
@@ -123,7 +120,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("Updates reports from git component", (done) => {
+    it("updates reports from git component", (done) => {
         const wrapper = getWrapper();
         setTimeout(async () => {
             const reports = [
@@ -136,6 +133,37 @@ describe(`runWorkflowReport`, () => {
             done();
         });
     });
+
+    it("clears selected report on update reports if it is no longer in the list", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(async () => {
+            wrapper.setData({selectedReport: "global"});
+            const reports = [
+                { name: "minimal", date: null },
+                { name: "other", date: new Date() }
+            ];
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
+            await Vue.nextTick();
+            expect(wrapper.vm.$data.selectedReport).toBe("");
+            done();
+        });
+    });
+
+    it("does not clear selected report on update reports if it is in the new list", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(async () => {
+            wrapper.setData({selectedReport: "other"});
+            const reports = [
+                { name: "minimal", date: null },
+                { name: "other", date: new Date() }
+            ];
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
+            await Vue.nextTick();
+            expect(wrapper.vm.$data.selectedReport).toBe("other");
+        });
+        done();
+    });
+
 
     it("renders add report as expected", (done) => {
         const wrapper = getWrapper();
@@ -205,6 +233,7 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = getWrapper({
             workflowMetadata: {
+                ...emptyWorkflowMetadata,
                 git_commit: "abc123",
                 reports: [{name: "minimal"}]
             }
@@ -257,6 +286,7 @@ describe(`runWorkflowReport`, () => {
     it("Clicking remove report emits expected workflow metadata update", (done) => {
         const wrapper = getWrapper({
             workflowMetadata: {
+                ...emptyWorkflowMetadata,
                 git_commit: "abc123",
                 reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
             }
@@ -298,6 +328,22 @@ describe(`runWorkflowReport`, () => {
                     {name: "other", params: {p1: "v1", p2: "v2"}}
                 ]
             });
+            done();
+        });
+    });
+
+    it("avoids infinite parameters update loop by not emitting if changed params match existing", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                reports: [
+                    {name: "minimal", params: {nmin: "8"}}
+                ]
+            }
+        });
+        setTimeout(() => {
+            wrapper.findAllComponents(ParameterList).at(0).vm.$emit("paramsChanged", [{name: "nmin", value: "8"}]);
+            expect(wrapper.emitted("update")).toBeUndefined();
             done();
         });
     });
