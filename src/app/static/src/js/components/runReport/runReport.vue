@@ -116,8 +116,7 @@
                 changelogStyle: {
                     label: {size: 2, justify: "text-right"},
                     control: {size: 6}
-                },
-                //meta: {}
+                }
             }
         },
         computed: {
@@ -147,30 +146,6 @@
             }
         },
         methods: {
-            /*
-            metas: function () {
-                //this.metadata
-
-                //test
-                const changelogTypes = ["internal", "public"]
-                const source = ["prod", "uat"]
-                const runMetadata = {
-                    git_branches: [],
-                    metadata: {
-                        changelog_types: changelogTypes,
-                        git_supported: true,
-                        instances_supported: true,
-                        instances: {
-                            source: source,
-                            annex: ["one"]
-                        }
-                    }
-                }
-                this.metadata = runMetadata.metadata
-                console.log(this.meta)
-            },
-
-             */
             handleInstancesValue: function (instances) {
                 this.selectedInstances = instances
             },
@@ -298,7 +273,6 @@
             }
         },
         mounted() {
-            //this.metas()
             if (this.metadata.git_supported) {
                 this.gitBranches = [...this.initialGitBranches]
                 this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
