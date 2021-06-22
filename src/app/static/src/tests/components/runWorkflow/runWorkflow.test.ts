@@ -140,13 +140,11 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
 
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(4).trigger("click")
+            await buttons.at(2).trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
@@ -182,13 +180,11 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
 
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(4).trigger("click")
+            await buttons.at(2).trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 

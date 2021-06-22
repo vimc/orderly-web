@@ -109,4 +109,22 @@ describe(`run report parameter list`, () => {
         expect(wrapper.emitted("paramsChanged")[1][1]).toBe(false);
 
     });
+
+    it("does not emit changed event when params prop changes to identical", async () => {
+        const initialParams = [
+            {name: "p1", value: "v1"},
+            {name: "p2", value: "v2"}
+        ];
+
+        const wrapper = shallowMount(ParameterList,
+            {
+                propsData: {params: initialParams}
+            }
+        );
+        expect(wrapper.emitted("paramsChanged").length).toBe(1);
+
+        const newParams = [...initialParams];
+        await wrapper.setProps({params: newParams});
+        expect(wrapper.emitted("paramsChanged").length).toBe(1);
+    });
 });

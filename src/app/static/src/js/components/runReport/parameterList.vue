@@ -21,6 +21,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Parameter} from "../../utils/types";
+    import {isEqual} from "lodash";
 
     interface Props {
         params: Parameter[]
@@ -86,9 +87,11 @@
             }
         },
         watch: {
-            params() {
-                this.paramValues = this.params;
-                this.onParameterChanged()
+            params(newVal, oldVal) {
+                if (!isEqual(newVal, oldVal)) {
+                    this.paramValues = this.params;
+                    this.onParameterChanged()
+                }
             }
         }
     })

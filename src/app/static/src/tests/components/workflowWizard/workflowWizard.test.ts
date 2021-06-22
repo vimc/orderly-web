@@ -6,6 +6,7 @@ import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
 import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport/runWorkflowReport.test";
+import {emptyWorkflowMetadata} from "../runWorkflow/runWorkflowCreate.test";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -16,7 +17,7 @@ describe(`workflowWizard`, () => {
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    initialRunWorkflowMetadata: {placeholder: "testdata"},
+                    initialRunWorkflowMetadata: {...emptyWorkflowMetadata},
                     steps: mockStep
                 },
                 data() {
@@ -38,7 +39,7 @@ describe(`workflowWizard`, () => {
 
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testdata"});
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
@@ -117,10 +118,8 @@ describe(`workflowWizard`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
             done();
         });
     })
@@ -171,10 +170,10 @@ describe(`workflowWizard`, () => {
         wrapper.setData({activeStep: 0})
         setTimeout(async () => {
             const buttons = wrapper.findAll("button")
-            expect(buttons.at(3).text()).toBe("Cancel")
+            expect(buttons.at(1).text()).toBe("Cancel")
 
             expect(wrapper.vm.$data.showModal).toBe(false)
-            await buttons.at(3).trigger("click")
+            await buttons.at(1).trigger("click")
 
             expect(wrapper.vm.$data.showModal).toBe(true)
             await wrapper.find("#confirm-cancel-btn").trigger("click")
@@ -247,6 +246,6 @@ describe(`workflowWizard`, () => {
 
         wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({placeholder: "testdata", newProp: "newVal"});
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, newProp: "newVal"});
     });
 })

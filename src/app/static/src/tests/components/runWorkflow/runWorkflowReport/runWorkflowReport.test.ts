@@ -332,22 +332,6 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("avoids infinite parameters update loop by not emitting if changed params match existing", (done) => {
-        const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                reports: [
-                    {name: "minimal", params: {nmin: "8"}}
-                ]
-            }
-        });
-        setTimeout(() => {
-            wrapper.findAllComponents(ParameterList).at(0).vm.$emit("paramsChanged", [{name: "nmin", value: "8"}]);
-            expect(wrapper.emitted("update")).toBeUndefined();
-            done();
-        });
-    });
-
     it("can remove obsolete reports from worfklow on available reports update", (done) => {
         const wrapper = getWrapper({
             workflowMetadata: {
