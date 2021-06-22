@@ -73,6 +73,12 @@
             handleChangeLogMessage: function () {
                 this.$emit("changelogMessage", this.changeLogMessageValue)
             }
+        },
+        mounted() {
+            if(this.changelogTypeOptions) {
+                this.changeLogTypeValue = this.changelogTypeOptions[0]
+                this.$emit("changelogType", this.changeLogTypeValue)
+            }
         }
     })
 </script>

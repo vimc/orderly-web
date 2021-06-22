@@ -165,6 +165,11 @@
                 }
                 this.$emit("valid", valid);
 
+                /**
+                 * This code is dependent on Emma's report branch. We are likely to merge that
+                 * before before we can test that the emit works with the workflow wizard
+                 *
+                 */
                 if(this.workflowName) {
                     this.$emit("update", {name: this.workflowName})
                 }
@@ -179,13 +184,6 @@
             if (this.isRerun) {
                 this.workflowName = this.workflowMetadata.name
                 this.$emit("valid", true);
-            }
-        },
-        watch: {
-            runMetadata() {
-                if (this.runMetadata && this.runMetadata.metadata.changelog_types) {
-                    this.changeLogTypeValue = this.runMetadata.metadata.changelog_types[0];
-                }
             }
         },
         components: {

@@ -306,9 +306,6 @@
             } else {
                 this.updateReports();
             }
-            if(this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
         },
         watch: {
             gitBranches(){
