@@ -176,7 +176,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         getParametersApiCall(report: string) {
             const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
-            return api.get(`/report/${report}/parameters/${commit}`);
+            return api.get(`/report/${report}/config/parameters/${commit}`);
         },
         async updateAvailableReports(reports: ReportWithDate[]) {
             this.reports = reports;
