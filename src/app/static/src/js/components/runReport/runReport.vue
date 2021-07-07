@@ -2,31 +2,13 @@
     <div>
         <h2>Run a report</h2>
         <form class="mt-3">
-            <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
-                <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                        <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
-                    </select>
-                </div>
-                <button @click.prevent="refreshGit"
-                    id="git-refresh-btn"
-                    class="btn col-sm-1"
-                    :disabled="gitRefreshing"
-                    type="submit">
-                    {{refreshGitText}}
-                </button>
-            </div>
-            <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
-                <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-commit" v-model="selectedCommitId" @change="changedCommit">
-                        <option v-for="commit in gitCommits" :value="commit.id">
-                            {{ commit.id }} ({{ commit.date_time }})
-                        </option>
-                    </select>
-                </div>
-            </div>
+            <git-update-reports
+                :report-metadata="metadata"
+                :initial-branches="initialGitBranches"
+                @branchSelected="branchSelected"
+                @commitSelected="commitSelected"
+                @reportsUpdate="updateReports"
+            ></git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
@@ -82,6 +64,7 @@
     import ParameterList from "./parameterList.vue"
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
+    import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
 
@@ -94,15 +77,13 @@
         ],
         components: {
             ErrorInfo,
+            GitUpdateReports,
             ReportList,
             ParameterList,
             ChangeLog
         },
         data: () => {
             return {
-                gitRefreshing: false,
-                gitBranches: [],
-                gitCommits: [],
                 reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
@@ -123,12 +104,6 @@
             }
         },
         computed: {
-            refreshGitText(){
-                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
-            },
-            showCommits() {
-                return this.gitCommits && this.gitCommits.length;
-            },
             showReports() {
                 return this.reports && this.reports.length;
             },
@@ -190,22 +165,15 @@
                 }
                 this.disableRun = !valid
             },
-            changedCommit() {
-                this.updateReports();
+            branchSelected(newBranch) {
+                this.selectedBranch = newBranch;
             },
-            updateReports() {
-                this.reports = [];
-                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
-                api.get(`/reports/runnable/${query}`)
-                    .then(({data}) => {
-                        this.reports = data.data;
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching reports";
-                    });
+            commitSelected(newCommit) {
+                this.selectedCommitId = newCommit;
+            },
+            updateReports(newReports) {
+                this.reports = newReports;
+                this.selectedReport = "";
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
@@ -279,6 +247,8 @@
                 this.changedBranch();
             } else {
                 this.updateReports();
+            if(this.metadata.changelog_types) {
+                this.changeLogTypeValue = this.metadata.changelog_types[0]
             }
 
             if (this.metadata.instances_supported) {
@@ -291,18 +261,10 @@
             }
         },
         watch: {
-            gitBranches(){
-                this.gitCommits = [];
-                this.reports = [];
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.selectedCommitId = "";
-                this.selectedReport = "";
-                this.changedBranch()
-            },
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
-                    this.setParameters()
+                    this.setParameters();
                 }
                 this.parameterValues.length = 0
             },

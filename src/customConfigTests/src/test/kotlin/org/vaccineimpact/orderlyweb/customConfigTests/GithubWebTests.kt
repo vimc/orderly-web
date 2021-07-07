@@ -72,4 +72,12 @@ class GithubWebTests : SeleniumTest()
         driver.get(RequestHelper.webBaseUrl + "/reports/testreport/20170103-143015-1234abcd/")
         assertThat(driver.findElement(By.cssSelector("h1")).text).isEqualTo("Page not found")
     }
+
+    @Test
+    fun `requestedUrl in login query string is not interpreted as HTML`()
+    {
+        startApp("auth.provider=github")
+        driver.get("http://localhost:${AppConfig()["app.port"]}/weblogin?requestedUrl=<<<<\"ksrcdg%20>>>545454")
+        assertThat(driver.findElement(By.className("btn-xl")).text).isEqualTo("Log in with\nGitHub")
+    }
 }
