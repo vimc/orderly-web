@@ -11,7 +11,8 @@
                          @cancel="handleCancel"
                          @complete="handleComplete"
                          :is-rerun="isRerun"
-                         :run-workflow-metadata="runWorkflowMetadata">
+                         :run-workflow-metadata="runWorkflowMetadata"
+                         :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
 </template>
@@ -33,11 +34,10 @@
     interface Methods {
         handleCancel: () => void
         handleRerun: (data: Event) => void
-        handleCreate: () => void
+        handleCreate: (data: Event) => void
         handleClone: (data: Event) => void
         handleComplete: () => void
     }
-
 export default Vue.extend<Data, Methods, unknown, unknown>({
     name: "runWorkflow",
     data(): Data {
@@ -56,8 +56,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.workflowStarted = true
             this.isRerun = true
         },
-        handleCreate: function () {
-            this.runWorkflowMetadata = null
+        handleCreate: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
