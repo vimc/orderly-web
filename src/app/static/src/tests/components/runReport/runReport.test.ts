@@ -231,7 +231,7 @@ describe("runReport", () => {
 
     it("parameters endpoint can get data successfully", (done) => {
         const mockAxiosParam = [{name: "minimal", value: "random_39id"}];
-        const url = "http://app/report/minimal/parameters/?commit=abcdef";
+        const url = "http://app/report/minimal/config/parameters/?commit=abcdef";
 
         mockAxios.onGet(url)
             .reply(200, {"data": mockAxiosParam});
@@ -260,7 +260,7 @@ describe("runReport", () => {
     });
 
     it("parameters endpoint can set defaultmessage when errored", (done) => {
-        const url = "http://app/report/minimal/parameters/?commit=test-commit"
+        const url = "http://app/report/minimal/config/parameters/?commit=test-commit"
         mockAxios.onGet(url)
             .reply(500, "Parameter fetching error");
 
@@ -319,7 +319,7 @@ describe("runReport", () => {
     });
 
     it("clicking run button sends run request and displays status on success", async (done) => {
-        const param_url = "http://app/report/test-report/parameters/?commit=test-commit"
+        const param_url = "http://app/report/test-report/config/parameters/?commit=test-commit"
         mockAxios.onGet(param_url)
             .reply(200, {"data": []});
 

@@ -98,7 +98,7 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true when workflow becomes valid after adding report with no parameters", (done) => {
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: []});
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
@@ -115,7 +115,7 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true with workflow becomes valid after adding report with parameters with default", (done) => {
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
@@ -134,7 +134,7 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid false when workflow becomes invalid after adding report with parameters without default", (done) => {
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: [{name: "p1", value: null}, {name: "p2", value: "v2"}]});
         const wrapper = getWrapper({
             git_commit: "abcdef",
@@ -247,10 +247,10 @@ describe("runWorkflowReport validation", () => {
 
     it("emits valid true when commit change removes parameter which made report invalid", (done) => {
         //Responses for default commit
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: []});
 
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abcdef')
             .reply(200, {data: [{name: "p1", value: null}]});
 
         //Responses for newly selected commit
@@ -260,10 +260,10 @@ describe("runWorkflowReport validation", () => {
                 { name: "global", date: null }
             ]});
 
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
 
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123')
             .reply(200, {data: []});
 
         const wrapper = getWrapper({
@@ -288,10 +288,10 @@ describe("runWorkflowReport validation", () => {
 
     it("emits valid false when commit change adds parameter which makes report invalid", (done) => {
         //Responses for default commit
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: []});
 
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abcdef')
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abcdef')
             .reply(200, {data: [{name: "p1", value: null}]});
 
 
@@ -302,10 +302,10 @@ describe("runWorkflowReport validation", () => {
                     { name: "global", date: null }
                 ]});
 
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
 
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123')
             .reply(200, {data: [
                 {name: "p1", value: null},
                 {name: "p2", value: null}

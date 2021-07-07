@@ -228,7 +228,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("Clicking add report button fetches parameters and emits expected workflow metadata update", (done) => {
-        mockAxios.onGet('http://app/report/other/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/other/config/parameters/?commit=abc123')
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
 
         const wrapper = getWrapper({
@@ -263,7 +263,7 @@ describe(`runWorkflowReport`, () => {
 
     it("Error from adding report is rendered", (done) => {
         const testError = {test: "something"};
-        mockAxios.onGet('http://app/report/other/parameters/')
+        mockAxios.onGet('http://app/report/other/config/parameters/')
             .reply(500, testError);
 
         const wrapper = getWrapper();
@@ -349,9 +349,9 @@ describe(`runWorkflowReport`, () => {
             {name: "global", date: new Date()},
             {name: "another", date: null}
         ];
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: []});
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: []});
-        mockAxios.onGet('http://app/report/another/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/another/config/parameters/?commit=abc123').reply(200, {data: []});
         setTimeout(() => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
 
@@ -389,8 +389,8 @@ describe(`runWorkflowReport`, () => {
             {name: "minimal", date: null},
             {name: "global", date: new Date()}
         ];
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: []});
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {data: []});
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
             {name: "p2", value: "newValue"}
         ]});
 
@@ -432,11 +432,11 @@ describe(`runWorkflowReport`, () => {
             {name: "minimal", date: null},
             {name: "global", date: new Date()}
         ];
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(200, {data: [
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(200, {data: [
             {name: "aNewParam", value: "1"},
             {name: "nmin", value: "6"}
         ]});
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
             {name: "p1", value: "v1"},
             {name: "p2", value: "v2"}
          ]});
@@ -473,7 +473,7 @@ describe(`runWorkflowReport`, () => {
         const newAvailableReports = [
             {name: "global", date: new Date()}
         ];
-        mockAxios.onGet('http://app/report/global/parameters/?commit=abc123').reply(200, {data: [
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: [
                 {name: "p2", value: "newValue2"},
                 {name: "p3", value: "newValue3"}
             ]});
@@ -515,7 +515,7 @@ describe(`runWorkflowReport`, () => {
 
         setTimeout(() => {
             const testError = {test: "something"};
-            mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123').reply(500, testError);
+            mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(500, testError);
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
 
             setTimeout(() => {
