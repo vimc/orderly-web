@@ -247,15 +247,16 @@
                 this.changedBranch();
             } else {
                 this.updateReports();
-            if(this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
+                if (this.metadata.changelog_types) {
+                    this.changeLogTypeValue = this.metadata.changelog_types[0]
+                }
 
-            if (this.metadata.instances_supported) {
-                const instances = this.metadata.instances;
-                for (const key in instances) {
-                    if (instances[key].length > 0) {
-                        this.$set(this.selectedInstances, key, instances[key][0]);
+                if (this.metadata.instances_supported) {
+                    const instances = this.metadata.instances;
+                    for (const key in instances) {
+                        if (instances[key].length > 0) {
+                            this.$set(this.selectedInstances, key, instances[key][0]);
+                        }
                     }
                 }
             }
