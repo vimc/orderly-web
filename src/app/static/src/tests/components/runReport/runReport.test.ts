@@ -172,8 +172,6 @@ describe("runReport", () => {
             {name: "minimal", value: "Set new value 2"}
         ];
 
-        console.log("mounting..")
-
         const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
@@ -189,25 +187,17 @@ describe("runReport", () => {
             }
         });
 
-        console.log("mounted")
-
         expect(wrapper.find("#parameters").exists()).toBe(true);
         const labels = wrapper.find(ParameterList).findAll("label")
         expect(labels.at(0).text()).toBe("global");
         expect(labels.at(1).text()).toBe("minimal");
 
-        console.log("mounted2")
-
         const inputs = wrapper.find(ParameterList).findAll("input")
         inputs.at(0).setValue("Set new value");
         inputs.at(1).setValue("Set new value 2");
 
-        console.log("mounted3")
-
         const newValues = (wrapper.vm as any).parameterValues;
         expect(newValues).toStrictEqual(expectedParams);
-
-        console.log("mounted4")
     });
 
     it("does not render parameters control if report is not selected", () => {

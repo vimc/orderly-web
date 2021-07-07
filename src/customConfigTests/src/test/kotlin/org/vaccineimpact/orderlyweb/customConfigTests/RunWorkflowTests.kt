@@ -222,4 +222,3 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 }
-
