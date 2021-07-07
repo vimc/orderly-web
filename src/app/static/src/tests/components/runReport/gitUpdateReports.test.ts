@@ -28,7 +28,7 @@ describe("gitUpdateReports", () => {
     const initialCommitId = "abc123";
 
     const props = {
-        metadata: {
+        reportMetadata: {
             git_supported: true,
             instances_supported: false
         },
@@ -75,7 +75,7 @@ describe("gitUpdateReports", () => {
     it("does not render git drop downs if git not supported", async () => {
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                metadata: {git_supported: false, instances_supported: false},
+                reportMetadata: {git_supported: false, instances_supported: false},
                 initiatBranches: null
             }
         });
@@ -126,7 +126,7 @@ describe("gitUpdateReports", () => {
             .reply(200, {"data": [ reports[0] ]});
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                metadata: {git_supported: false, instances_supported: false},
+                reportMetadata: {git_supported: false, instances_supported: false},
                 initiatBranches: null
             }
         });
@@ -208,13 +208,13 @@ describe("gitUpdateReports", () => {
         });
     });
 
-    it("show error message if error getting git commits", (done) => {
+    it("shows error message if error getting git commits", (done) => {
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(500, "TEST ERROR");
 
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                metadata: {git_supported: true, instances_supported: false},
+                reportMetadata: {git_supported: true, instances_supported: false},
                 initialBranches
             }
         });
@@ -224,6 +224,24 @@ describe("gitUpdateReports", () => {
             expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
             done();
         })
+    });
+
+    it("shows error message if error fetching runnable reports", (done) => {
+        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
+            .reply(500, "TEST ERROR");
+
+        const wrapper = shallowMount(GitUpdateReports, {
+            propsData: {
+                reportMetadata: {git_supported: true, instances_supported: false},
+                initialBranches
+            }
+        });
+
+        setTimeout(() => {
+            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching reports");
+            done();
+        });
     });
 
 
@@ -280,7 +298,7 @@ describe("gitUpdateReports", () => {
 
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                metadata: {git_supported: true, instances_supported: false},
+                reportMetadata: {git_supported: true, instances_supported: false},
                 initialBranches
             }
         });

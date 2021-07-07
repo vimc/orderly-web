@@ -3,7 +3,7 @@
         <h2>Run a report</h2>
         <form class="mt-3">
             <git-update-reports
-                :metadata="metadata"
+                :report-metadata="metadata"
                 :initial-branches="initialGitBranches"
                 @branchSelected="branchSelected"
                 @commitSelected="commitSelected"

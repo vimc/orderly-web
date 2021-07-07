@@ -6,7 +6,7 @@
                 <h2 id="git-header">Git</h2>
                 <div>
                     <git-update-reports
-                        :metadata="runReportMetadata"
+                        :report-metadata="runReportMetadata"
                         :initial-branch="workflowMetadata.git_branch"
                         :initial-commit-id="workflowMetadata.git_commit"
                         :initial-branches="initialBranches"
@@ -111,11 +111,12 @@ interface Methods {
     commitSelected: (git_commit: string) => void,
     getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
     updateAvailableReports: (reports: ReportWithDate[]) =>  void,
-    addReport: () => void
-    paramsChanged: (index: number, params: Parameter[], valid: boolean) => void
-    removeReport: (index: number) => void
-    updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void
-    initialValidValue: (report: WorkflowReportWithParams) => boolean
+    addReport: () => void,
+    paramsChanged: (index: number, params: Parameter[], valid: boolean) => void,
+    removeReport: (index: number) => void,
+    updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
+    initialValidValue: (report: WorkflowReportWithParams) => boolean,
+    getRunReportMetadata: () => void
 }
 
 interface Data {
@@ -271,9 +272,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         newReport
                     ];
                     this.updateWorkflowReports(newReports);
-
                     this.reportsValid.push(this.initialValidValue(newReport));
-
                     this.error = "";
                     this.defaultMessage = "";
                 })
@@ -281,7 +280,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     this.error = error;
                     this.defaultMessage = "An error occurred when getting parameters";
                 });
-
         },
         removeReport(index: number) {
             const newReports = [...this.workflowMetadata.reports];
@@ -305,21 +303,23 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         initialValidValue(report: WorkflowReportWithParams) {
             // report with no parameters is by definition valid, those with params will notify via parameterList
             return !(report.params && Object.keys(report.params).length > 0);
+        },
+        getRunReportMetadata() {
+            api.get(`/report/run-metadata`)
+                .then(({data}) => {
+                    this.initialBranches = data.data.git_branches;
+                    this.runReportMetadata = data.data.metadata;
+                    this.error = "";
+                    this.defaultMessage = "";
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage = "An error occurred fetching run report metadata";
+                });
         }
     },
     mounted() {
-        api.get(`/report/run-metadata`)
-            .then(({data}) => {
-                this.initialBranches = data.data.git_branches;
-                this.runReportMetadata = data.data.metadata;
-                this.error = "";
-                this.defaultMessage = "";
-            })
-            .catch((error) => {
-                this.error = error;
-                this.defaultMessage = "An error occurred fetching run report metadata";
-            });
-
+        this.getRunReportMetadata();
         this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
     },
     watch: {
