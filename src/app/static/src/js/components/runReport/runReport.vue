@@ -130,35 +130,6 @@
             handleChangeLogMessageValue: function (message: string) {
                 this.changeLogMessageValue = message
             },
-            refreshGit: function () {
-                this.gitRefreshing = true
-                api.get('/git/fetch/')
-                    .then(({data}) => {
-                        this.gitRefreshing = false
-                        this.gitBranches = data.data.map(branch => branch.name)
-                    })
-                    .catch((error) => {
-                        this.gitRefreshing = false
-                        this.error = error;
-                        this.defaultMessage = "An error occurred refreshing Git";
-                    });
-            },
-            changedBranch() {
-                api.get(`/git/branch/${this.selectedBranch}/commits/`)
-                    .then(({data}) => {
-                        this.gitCommits = data.data;
-                        if (this.gitCommits.length) {
-                            this.selectedCommitId = this.gitCommits[0].id;
-                            this.changedCommit();
-                        }
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching Git commits";
-                    });
-            },
             getParameterValues(values, valid) {
                 if (valid) {
                     this.parameterValues = [...values]
@@ -241,22 +212,14 @@
             }
         },
         mounted() {
-            if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.changedBranch();
-            } else {
-                this.updateReports();
-                if (this.metadata.changelog_types) {
-                    this.changeLogTypeValue = this.metadata.changelog_types[0]
-                }
-
-                if (this.metadata.instances_supported) {
-                    const instances = this.metadata.instances;
-                    for (const key in instances) {
-                        if (instances[key].length > 0) {
-                            this.$set(this.selectedInstances, key, instances[key][0]);
-                        }
+            if (this.metadata.changelog_types) {
+                this.changeLogTypeValue = this.metadata.changelog_types[0]
+            }
+            if (this.metadata.instances_supported) {
+                const instances = this.metadata.instances;
+                for (const key in instances) {
+                    if (instances[key].length > 0) {
+                        this.$set(this.selectedInstances, key, instances[key][0]);
                     }
                 }
             }
