@@ -10,8 +10,9 @@
               @next="next(step.name)"
               @cancel="confirmCancel">
             <component :is="step.component"
+                       :workflow-metadata="runWorkflowMetadata"
                        @valid="handleStepValidity"
-                       :workflow-metadata="runWorkflowMetadata">
+                       @update="updateMetadata">
             </component>
         </step>
         <cancel-dialog @cancel="cancel" @abortCancel="abortCancel" :show-modal="showModal"/>
@@ -30,6 +31,7 @@
         activeStep: number
         validStep: boolean
         showModal: boolean
+        runWorkflowMetadata: RunWorkflowMetadata | null
     }
 
     interface Methods {
@@ -42,10 +44,11 @@
         handleButtonOptions: (name: string) => {}
         getCurrentIndex: (name: string) => number
         handleStepValidity: (valid: Event) => void
+        updateMetadata: (metadata: Partial<RunWorkflowMetadata>) => void
     }
 
     interface Props {
-        runWorkflowMetadata: RunWorkflowMetadata | null
+        initialRunWorkflowMetadata: RunWorkflowMetadata
         steps: Step[]
         submitLabel : string | null
     }
@@ -53,9 +56,12 @@
     export default Vue.extend<Data, Methods, unknown, Props>({
         name: "workflowWizard",
         props: {
-            runWorkflowMetadata: null,
+            initialRunWorkflowMetadata: {
+                type: Object,
+                required: true
+            },
             steps: {
-                type: [],
+                type: Array,
                 required: true
             },
             submitLabel: {
@@ -68,6 +74,7 @@
                 activeStep: 0,
                 validStep: false,
                 showModal: false,
+                runWorkflowMetadata: null
             }
         },
         methods: {
@@ -121,7 +128,18 @@
             },
             handleStepValidity: function (valid) {
                 this.validStep = valid
+            },
+            updateMetadata: function (metadata: Partial<RunWorkflowMetadata>) {
+                this.runWorkflowMetadata = {
+                    ...this.runWorkflowMetadata,
+                    ...metadata
+                };
             }
+        },
+        mounted() {
+            this.runWorkflowMetadata = {
+                ...this.initialRunWorkflowMetadata
+            };
         },
         components: {
             runWorkflowReport,

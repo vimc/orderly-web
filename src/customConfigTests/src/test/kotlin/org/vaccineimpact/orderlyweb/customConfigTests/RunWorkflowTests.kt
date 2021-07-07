@@ -4,11 +4,15 @@ import org.assertj.core.api.Assertions
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.ExpectedConditions
+import org.openqa.selenium.support.ui.ExpectedConditions.not
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
+import java.time.Duration
+
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -45,8 +49,19 @@ class RunWorkflowTests : SeleniumTest()
         Assertions.assertThat(createButton.isEnabled).isTrue()
         Assertions.assertThat(createButton.text).isEqualTo("Create a blank workflow")
         createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+        val branchSelect = driver.findElement(By.id("git-branch"))
+        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        val commitSelect = driver.findElement(By.id("git-commit"))
+        val commitValue = commitSelect.getAttribute("value")
+        Assertions.assertThat(commitValue).isNotBlank()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-report-header")))
+        //Select a git branch
+        Select(branchSelect).selectByIndex(1)
+        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        //Default commit value should update when new branch selected
+        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+        Assertions.assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
     @Test
@@ -91,5 +106,22 @@ class RunWorkflowTests : SeleniumTest()
         cloneButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-report-header")))
+    }
+
+    @Test
+    fun `can refresh git`()
+    {
+        val tab = driver.findElement(By.id("run-workflow-tab"))
+        val page = tab.findElement(By.id("create-workflow-container"))
+        val createButton = page.findElement(By.id("create-workflow"))
+
+        createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+
+        Assertions.assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
+
+        val refreshButton = driver.findElement(By.id("git-refresh-btn"))
+        refreshButton.click()
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 }
