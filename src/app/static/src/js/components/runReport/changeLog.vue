@@ -63,8 +63,7 @@
         props: {
             changelogStyleReport: {
                 required: false,
-                type: Boolean,
-                default: false
+                type: Boolean
             },
             changelogTypeOptions: Array
         },
