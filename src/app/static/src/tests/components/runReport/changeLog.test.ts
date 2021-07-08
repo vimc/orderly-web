@@ -1,18 +1,14 @@
 import {mount} from "@vue/test-utils";
 import ChangeLog from "../../../js/components/runReport/changeLog.vue";
+import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe(`changeLog`, () => {
     const changelogTypeOptions = ["internal", "public"]
 
-    const changelogStyle = {
-        label: {size: 2, justify: "text-right"},
-        control: {size: 6}
-    }
     const getWrapper = () => {
         return mount(ChangeLog,
             {
                 propsData: {
-                    changelogStyle: changelogStyle,
                     showChangelog: true,
                     changelogTypeOptions: changelogTypeOptions
                 }
@@ -27,7 +23,7 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$props).toEqual(
             {
                 changelogTypeOptions,
-                changelogStyle,
+                "changelogStyleReport": false,
                 "showChangelog": true
             })
     })
@@ -65,5 +61,20 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
         const typeValue = wrapper.find("#changelogType").element as HTMLSelectElement
         expect(typeValue.value).toBe("public")
+    })
+
+    it(`renders changelog col styles correctly if changelog-style-report prop is not set`, () => {
+        const wrapper = getWrapper();
+
+        const label = ["col-form-label", "col-sm-4", "text-left"]
+        const control = ["col-sm-4"]
+
+        const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
+        const changelogType= wrapper.find(changeLog).find("#changelog-type")
+
+        expect(changelogMessage.find("label").classes()).toEqual(label)
+        expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)
+        expect(changelogType.find("label").classes()).toEqual(label)
+        expect(changelogType.find("#change-type-control").classes()).toEqual(control)
     })
 })

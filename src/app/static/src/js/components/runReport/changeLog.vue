@@ -2,9 +2,9 @@
     <div v-if="showChangelog">
         <div id="changelog-message" class="form-group row">
             <label for="changelogMessage"
-                   :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
+                   :class="displayStyle.label"
                    class="col-form-label">Changelog Message</label>
-            <div :class="`col-sm-${changelogStyle.control.size}`">
+            <div id="change-message-control" :class="displayStyle.control">
                         <textarea class="form-control" id="changelogMessage"
                                   v-model="changeLogMessageValue"
                                   @input="handleChangeLogMessage"
@@ -14,9 +14,9 @@
         </div>
         <div id="changelog-type" class="form-group row">
             <label for="changelogType"
-                   :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
+                   :class="displayStyle.label.toString()"
                    class="col-form-label">Changelog Type</label>
-            <div :class="`col-sm-${changelogStyle.control.size}`">
+            <div id="change-type-control" :class="displayStyle.control.toString()">
                 <select class="form-control"
                         id="changelogType"
                         v-model="changeLogTypeValue"
@@ -32,12 +32,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ChangelogStyle} from "../../utils/types";
 
     interface Props {
         showChangelog: boolean
         changelogTypeOptions: string[]
-        changelogStyle: ChangelogStyle
+        changelogStyleReport: boolean
     }
 
     interface Data {
@@ -50,7 +49,11 @@
         handleChangeLogType: () => void
     }
 
-    export default Vue.extend<Data, Methods, unknown, Props>({
+    interface Computed {
+        displayStyle: object
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "changeLog",
         data(): Data {
             return {
@@ -63,8 +66,21 @@
                 required: true,
                 type: Boolean
             },
-            changelogStyle: Object,
-            changelogTypeOptions: []
+            changelogStyleReport: {
+                required: false,
+                type: Boolean,
+                default: false
+            },
+            changelogTypeOptions: Array
+        },
+        computed: {
+            displayStyle() {
+                if (this.changelogStyleReport) {
+                    return {label: "col-sm-2 text-right", control: "col-sm-6"}
+                }
+
+                return {label: "col-sm-4 text-left", control: "col-sm-4"}
+            }
         },
         methods: {
             handleChangeLogType: function () {
@@ -75,7 +91,7 @@
             }
         },
         mounted() {
-            if(this.changelogTypeOptions) {
+            if (this.changelogTypeOptions) {
                 this.changeLogTypeValue = this.changelogTypeOptions[0]
                 this.$emit("changelogType", this.changeLogTypeValue)
             }

@@ -67,8 +67,3 @@ export interface ReportDependencies {
     direction: "upstream" | "downstream",
     dependency_tree: ReportDependency
 }
-
-export interface ChangelogStyle {
-    label: { size: number, justify: string },
-    control: { size: number }
-}
