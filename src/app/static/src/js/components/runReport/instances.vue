@@ -5,7 +5,7 @@
             <label :for="name"
                    :class="displayStyle.label"
                    class="col-form-label">Database "{{ name }}"</label>
-            <div :class="displayStyle.control">
+            <div id="instance-control" :class="displayStyle.control">
                 <select class="form-control" :id="name"
                         @change="handleSelectedInstances"
                         v-model="selectedInstances[name]">
@@ -22,7 +22,7 @@
     import Vue from "vue"
 
     interface Props {
-        instances: Record<string, any>,
+        instances: Record<string, any>
         changelogStyleReport: boolean
     }
 
@@ -59,7 +59,7 @@
         },
         methods: {
             handleSelectedInstances: function () {
-                this.$emit("selectedValues", this.selectedInstances)
+                this.$emit("selectedValues", this.selectedInstances);
             },
             selectInitialInstance: function () {
                 if (this.instances && this.showInstances) {
@@ -70,12 +70,12 @@
                         }
                     }
                 }
-                this.$emit("selectedValues", this.selectedInstances)
+                this.$emit("selectedValues", this.selectedInstances);
             }
         },
         computed: {
             showInstances() {
-                return !!this.instances
+                return !!this.instances;
             },
             displayStyle() {
                 if (this.changelogStyleReport) {
@@ -86,16 +86,16 @@
             }
         },
         mounted() {
-            this.selectInitialInstance()
+            this.selectInitialInstance();
         },
         watch: {
             instances() {
-                this.selectInitialInstance()
+                this.selectInitialInstance();
             },
             selectedInstances: {
                 deep: true,
                 handler() {
-                    this.$emit("clearRun")
+                    this.$emit("clearRun");
                 }
             }
         }
