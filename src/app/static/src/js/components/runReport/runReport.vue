@@ -22,21 +22,19 @@
                 <instances :instances="metadata.instances"
                            @selectedValues="handleInstancesValue"
                            @clearRun="clearRun"
-                           :changelog-style="changelogStyle"/>
+                           :changelog-style-report="true"/>
             </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <div v-if="showChangelog">
-            <change-log :show-changelog="handleShowChangeLog"
+            <change-log :show-changelog="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
-                        :changelog-style="changelogStyle"
+                        :changelog-style-report="true"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
-            </div>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -93,11 +91,7 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: "",
-                changelogStyle: {
-                    label: {size: 2, justify: "text-right"},
-                    control: {size: 6}
-                }
+                changeLogTypeValue: ""
             }
         },
         computed: {
@@ -114,10 +108,7 @@
                 return this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return !!this.selectedReport
-            },
-            handleShowChangeLog: function () {
-                return this.metadata.changelog_types
+                return !!this.selectedReport && this.metadata.changelog_types
             }
         },
         methods: {

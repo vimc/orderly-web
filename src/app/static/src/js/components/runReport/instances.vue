@@ -3,9 +3,9 @@
         <div v-for="(options, name) in instances" v-if="options.length > 1"
              id="instances-div" class="form-group row">
             <label :for="name"
-                   :class="`col-sm-${changelogStyle.label.size} ${changelogStyle.label.justify}`"
+                   :class="displayStyle.label"
                    class="col-form-label">Database "{{ name }}"</label>
-            <div :class="`col-sm-${changelogStyle.control.size}`">
+            <div :class="displayStyle.control">
                 <select class="form-control" :id="name"
                         @change="handleSelectedInstances"
                         v-model="selectedInstances[name]">
@@ -20,11 +20,10 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChangelogStyle} from "../../utils/types";
 
     interface Props {
         instances: Record<string, any>,
-        changelogStyle: ChangelogStyle
+        changelogStyleReport: boolean
     }
 
     interface Data {
@@ -38,6 +37,7 @@
 
     interface Computed {
         showInstances: boolean
+        displayStyle: object
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -47,9 +47,9 @@
                 required: true,
                 type: Object
             },
-            changelogStyle: {
-                required: true,
-                type: Object
+            changelogStyleReport: {
+                required: false,
+                type: Boolean
             }
         },
         data(): Data {
@@ -76,6 +76,13 @@
         computed: {
             showInstances() {
                 return !!this.instances
+            },
+            displayStyle() {
+                if (this.changelogStyleReport) {
+                    return {label: "col-sm-2 text-right", control: "col-sm-6"}
+                }
+
+                return {label: "col-sm-4 text-left", control: "col-sm-4"}
             }
         },
         mounted() {

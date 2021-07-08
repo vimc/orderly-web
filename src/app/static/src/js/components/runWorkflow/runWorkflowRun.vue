@@ -15,13 +15,11 @@
         </div>
         <div v-if="showInstances">
             <instances :instances="runMetadata.metadata.instances"
-                       @selectedValues="handleInstancesValue"
-                       :changelog-style="changelogStyle"/>
+                       @selectedValues="handleInstancesValue"/>
         </div>
         <div v-if="runMetadata">
             <change-log :show-changelog="handleShowChangeLog"
                         :changelog-type-options="this.runMetadata.metadata.changelog_types"
-                        :changelog-style="changelogStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -44,7 +42,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChangelogStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
+    import {RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
@@ -68,8 +66,7 @@
         changeLogMessageValue: string;
         workflows: WorkflowSummary[];
         workflowNameError: string,
-        switchV2FeatureComponentOn: boolean,
-        changelogStyle: ChangelogStyle;
+        switchV2FeatureComponentOn: boolean
     }
 
     interface Methods {
@@ -106,11 +103,7 @@
                  * This variable was added because I didnt want to remove the code
                  * created. This blocked section is meant to be implemented in v2.
                  */
-                switchV2FeatureComponentOn: false,
-                changelogStyle: {
-                    label: {size: 4, justify: "text-left"},
-                    control: {size: 4}
-                }
+                switchV2FeatureComponentOn: false
             }
         },
         computed: {

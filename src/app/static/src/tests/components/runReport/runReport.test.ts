@@ -3,10 +3,10 @@ import {mount, shallowMount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import ReportList from "../../../js/components/runReport/reportList.vue";
 import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
-import ErrorInfo from "../../../js/components/errorInfo.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
+import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe("runReport", () => {
     const mockParams = [
@@ -113,25 +113,6 @@ describe("runReport", () => {
         });
         expect(wrapper.find(ReportList).props("initialSelectedReport")).toBe("minimal")
     });
-
-    it("report list shows initialReportName prop", async (done) => {
-
-        const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    instances_supported: true,
-                },
-                initialGitBranches,
-                initialReportName: "minimal"
-            }
-        });
-
-        setTimeout(() => {
-            expect(wrapper.find("report-list-stub").attributes("initialselectedreport")).toBe("minimal")
-            done()
-        })
-    })
 
     it("shows instances if instances supported", async() => {
         const wrapper = mount(RunReport, {
@@ -334,7 +315,7 @@ describe("runReport", () => {
         mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
-        const wrapper = shallowMount(RunReport, {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: true,
@@ -375,8 +356,8 @@ describe("runReport", () => {
             wrapper.find("#run-form-group button").trigger("click");
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
-                expect(mockAxios.history.get.length).toBe(5);
-                expect(mockAxios.history.get[4].url).toBe(param_url);
+                expect(mockAxios.history.get.length).toBe(2);
+                expect(mockAxios.history.get[1].url).toBe(param_url);
                 expect(mockAxios.history.post[0].url).toBe(url);
                 expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
                     {
@@ -608,26 +589,6 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
-    it("it does not render changelog message and type if changeLogType is empty", () => {
-        const changelogTypes =  []
-        const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    changelog_types: changelogTypes,
-                },
-                data() {
-                    return {
-                        selectedReport: "report"
-                    }
-                },
-                initialGitBranches
-            }
-        });
-        expect(wrapper.find("#changelog-message").exists()).toBe(false);
-        expect(wrapper.find("#changelog-type").exists()).toBe(false);
-    });
-
     it("it can accepts changelog  and type log message values", () => {
         const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
@@ -647,6 +608,9 @@ describe("runReport", () => {
         }
         });
 
+        const label = ["col-form-label", "col-sm-2", "text-right"]
+        const control = ["col-sm-6"]
+
         const options = wrapper.find("#changelogType")
             .find("select").findAll("option")
         options.at(1).setSelected()
@@ -654,6 +618,14 @@ describe("runReport", () => {
 
         wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
+
+        const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
+        const changelogType= wrapper.find(changeLog).find("#changelog-type")
+
+        expect(changelogMessage.find("label").classes()).toEqual(label)
+        expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)
+        expect(changelogType.find("label").classes()).toEqual(label)
+        expect(changelogType.find("#change-type-control").classes()).toEqual(control)
     });
 
     it("it does not disable runButton or display error msg when parameters pass validation", async () => {
