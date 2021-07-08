@@ -1,5 +1,5 @@
 <template>
-    <div id="changelog-container" v-if="showChangelog">
+    <div id="changelog-container">
         <div id="changelog-message" class="form-group row">
             <label for="changelogMessage"
                    :class="displayStyle.label"
@@ -34,7 +34,6 @@
     import Vue from "vue";
 
     interface Props {
-        showChangelog: boolean
         changelogTypeOptions: string[]
         changelogStyleReport: boolean
     }
@@ -62,10 +61,6 @@
             }
         },
         props: {
-            showChangelog: {
-                required: true,
-                type: Boolean
-            },
             changelogStyleReport: {
                 required: false,
                 type: Boolean,

@@ -29,7 +29,7 @@
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <change-log :show-changelog="showChangelog"
+            <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
                         :changelog-style-report="true"
                         @changelogMessage="handleChangeLogMessageValue"
@@ -204,9 +204,6 @@
             }
         },
         mounted() {
-            if (this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
