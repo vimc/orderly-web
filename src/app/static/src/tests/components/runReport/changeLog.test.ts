@@ -9,7 +9,6 @@ describe(`changeLog`, () => {
         return mount(ChangeLog,
             {
                 propsData: {
-                    showChangelog: true,
                     changelogTypeOptions: changelogTypeOptions
                 }
             })
@@ -23,16 +22,14 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$props).toEqual(
             {
                 changelogTypeOptions,
-                "changelogStyleReport": false,
-                "showChangelog": true
+                "changelogStyleReport": false
             })
     })
 
-    it(`does not render component if showChangeMessage is false`, async() => {
+    it(`emits changelogType first index when component gets mounted`, () => {
         const wrapper = getWrapper();
-        await wrapper.setData({showChangelog: false})
-        expect(wrapper.find("#changelog-message").exists()).toBeFalsy()
-        expect(wrapper.find("#changelog-type").exists()).toBeFalsy()
+        expect(wrapper.emitted().changelogType.length).toBe(1)
+        expect(wrapper.emitted().changelogType[0][0]).toBe("internal")
     })
 
     it(`can set and get changelog message`, () => {
