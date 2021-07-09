@@ -51,3 +51,10 @@ data class WorkflowRunSummary(
     val email: String,
     val date: Instant
 )
+
+data class WorkflowRunReport(
+        val reportKey: String,
+        val workflowKey: String,
+        val name: String,
+        val params: Map<String, String>
+)
