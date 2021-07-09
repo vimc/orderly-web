@@ -42,6 +42,9 @@ describe("runWorkflowReport validation", () => {
     const expectEmittedValid = (wrapper: Wrapper<runWorkflowReport>) => {
         expect(wrapper.emitted("valid").length).toBe(1);
         expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
+        expect(wrapper.vm.$data.error).toBe("");
+        expect(wrapper.vm.$data.defaultMessage).toBe("");
     };
 
     const updateComponentMetadataFromLastEmitted = (wrapper: Wrapper<runWorkflowReport>) => {
@@ -57,6 +60,11 @@ describe("runWorkflowReport validation", () => {
     };
 
     it("emits valid true when initialised with valid workflow with no parameters", (done) => {
+        mockAxios.onGet('http://app/report/minimal/config/parameters/')
+            .reply(200, {data: []});
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: []});
+
         const wrapper = getWrapper({
             reports: [
                 {name: "minimal"},
@@ -70,6 +78,11 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true when initialised with valid workflow with parameters", (done) => {
+        mockAxios.onGet('http://app/report/minimal/config/parameters/')
+            .reply(200, {data: [{name: "nmin", value: ""}, {name: "nmax", value: ""}]});
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: []});
+
         const wrapper = getWrapper({
             reports: [
                 {name: "minimal", params: {"nmin": "7", "nmax": "4"}},
@@ -134,6 +147,8 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid false when workflow becomes invalid after adding report with parameters without default", (done) => {
+        mockAxios.onGet('http://app/report/global/config/parameters/?commit=abcdef')
+            .reply(200, {data: []});
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abcdef')
             .reply(200, {data: [{name: "p1", value: null}, {name: "p2", value: "v2"}]});
         const wrapper = getWrapper({
@@ -157,6 +172,9 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true when workflow becomes valid after set parameter value", (done) => {
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: [{name: "p1", value: null}]});
+
         const wrapper = getWrapper({
             reports: [{name: "global", params: {p1: null}}]
         });
@@ -171,6 +189,9 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid false when workflow becomes invalid after unset parameter value", (done) => {
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: [{name: "p1", value: null}]});
+
         const wrapper = getWrapper({
             reports: [{name: "global", params: {p1: "v1"}}]
         });
@@ -186,6 +207,9 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid false when workflow becomes invalid when remove only report", (done) => {
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: []});
+
         const wrapper = getWrapper({
             reports: [{name: "global"}]
         });
@@ -201,6 +225,11 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true when workflow becomes valid when remove invalid report", (done) => {
+        mockAxios.onGet('http://app/report/global/config/parameters/')
+            .reply(200, {data: []});
+        mockAxios.onGet('http://app/report/minimal/config/parameters/')
+            .reply(200, {data: [{name: "p1", value: null}]});
+
         const wrapper = getWrapper({
             reports: [
                 {name: "global"},
@@ -222,7 +251,7 @@ describe("runWorkflowReport validation", () => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123')
             .reply(200, {"data": [{ name: "minimal", date: null }]});
 
-        mockAxios.onGet('http://app/report/minimal/parameters/?commit=abc123')
+        mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
 
         const wrapper = getWrapper({
@@ -267,6 +296,7 @@ describe("runWorkflowReport validation", () => {
             .reply(200, {data: []});
 
         const wrapper = getWrapper({
+            git_commit: "abcdef",
             reports: [
                 {name: "global", params: {p1: null}},
                 {name: "minimal"}
@@ -312,6 +342,7 @@ describe("runWorkflowReport validation", () => {
              ]});
 
         const wrapper = getWrapper({
+            git_commit: "abcdef",
             reports: [
                 {name: "global", params: {p1: "v1"}},
                 {name: "minimal"}
