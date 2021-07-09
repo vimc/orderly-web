@@ -20,6 +20,7 @@
         <div v-if="runMetadata">
             <change-log :show-changelog="handleShowChangeLog"
                         :changelog-type-options="this.runMetadata.metadata.changelog_types"
+                        :custom-style="changelogStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -42,7 +43,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
+    import {ChangelogStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
@@ -66,7 +67,8 @@
         changeLogMessageValue: string;
         workflows: WorkflowSummary[];
         workflowNameError: string,
-        switchV2FeatureComponentOn: boolean
+        switchV2FeatureComponentOn: boolean,
+        changelogStyle: ChangelogStyle
     }
 
     interface Methods {
@@ -103,7 +105,8 @@
                  * This variable was added because I didnt want to remove the code
                  * created. This blocked section is meant to be implemented in v2.
                  */
-                switchV2FeatureComponentOn: false
+                switchV2FeatureComponentOn: false,
+                changelogStyle: {label: "col-sm-4 text-left", control: "col-sm-4"}
             }
         },
         computed: {
