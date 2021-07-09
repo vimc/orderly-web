@@ -34,25 +34,12 @@
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <div v-if="showChangelog">
-                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-                    <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-                    <div class="col-sm-6">
-                        <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
-                                  rows="2"></textarea>
-                    </div>
-                </div>
-                <div id="changelog-type" class="form-group row">
-                    <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" id="changelogType" v-model="changeLogTypeValue">
-                            <option v-for="option in metadata.changelog_types" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <change-log v-if="showChangelog"
+                        :changelog-type-options="metadata.changelog_types"
+                        :custom-style="changelogStyle"
+                        @changelogMessage="handleChangeLogMessageValue"
+                        @changelogType="handleChangeLogTypeValue">
+            </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -77,6 +64,7 @@
     import Vue from "vue";
     import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
+    import ChangeLog from "./changeLog.vue";
 
     export default Vue.extend({
         name: "runReport",
@@ -89,7 +77,8 @@
             ErrorInfo,
             GitUpdateReports,
             ReportList,
-            ParameterList
+            ParameterList,
+            ChangeLog
         },
         data: () => {
             return {
@@ -105,7 +94,8 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: ""
+                changeLogTypeValue: "",
+                changelogStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {
@@ -122,13 +112,16 @@
                 return this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return this.selectedReport
-            },
-            showChangeMessage: function () {
-                return this.metadata.changelog_types
+                return !!this.selectedReport && this.metadata.changelog_types
             }
         },
         methods: {
+            handleChangeLogTypeValue: function (type: string) {
+                this.changeLogTypeValue = type
+            },
+            handleChangeLogMessageValue: function (message: string) {
+                this.changeLogMessageValue = message
+            },
             getParameterValues(values, valid) {
                 if (valid) {
                     this.parameterValues = [...values]
@@ -211,10 +204,6 @@
             }
         },
         mounted() {
-            if(this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
-
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
