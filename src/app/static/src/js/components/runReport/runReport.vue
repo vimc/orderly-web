@@ -36,7 +36,7 @@
             </div>
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
-                        :changelog-style-report="true"
+                        :custom-style="changelogStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -94,7 +94,8 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: ""
+                changeLogTypeValue: "",
+                changelogStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {

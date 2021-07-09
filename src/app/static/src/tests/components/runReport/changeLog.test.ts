@@ -9,7 +9,8 @@ describe(`changeLog`, () => {
         return mount(ChangeLog,
             {
                 propsData: {
-                    changelogTypeOptions: changelogTypeOptions
+                    changelogTypeOptions: changelogTypeOptions,
+                    customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
                 }
             })
     }
@@ -22,7 +23,7 @@ describe(`changeLog`, () => {
         expect(wrapper.vm.$props).toEqual(
             {
                 changelogTypeOptions,
-                "changelogStyleReport": false
+                customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             })
     })
 
@@ -60,11 +61,11 @@ describe(`changeLog`, () => {
         expect(typeValue.value).toBe("public")
     })
 
-    it(`renders changelog col styles correctly if changelog-style-report prop is not set`, () => {
+    it(`renders changelog col styles correctly if custom-style prop is set`, () => {
         const wrapper = getWrapper();
 
-        const label = ["col-form-label", "col-sm-4", "text-left"]
-        const control = ["col-sm-4"]
+        const label = ["col-form-label", "col-sm-2", "text-right"]
+        const control = ["col-sm-6"]
 
         const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
         const changelogType= wrapper.find(changeLog).find("#changelog-type")

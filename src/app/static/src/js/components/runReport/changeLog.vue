@@ -2,9 +2,9 @@
     <div>
         <div id="changelog-message" class="form-group row">
             <label for="changelogMessage"
-                   :class="displayStyle.label"
+                   :class="customStyle.label"
                    class="col-form-label">Changelog Message</label>
-            <div id="change-message-control" :class="displayStyle.control">
+            <div id="change-message-control" :class="customStyle.control">
                         <textarea class="form-control" id="changelogMessage"
                                   v-model="changeLogMessageValue"
                                   @input="handleChangeLogMessage"
@@ -14,9 +14,9 @@
         </div>
         <div id="changelog-type" class="form-group row">
             <label for="changelogType"
-                   :class="displayStyle.label.toString()"
+                   :class="customStyle.label"
                    class="col-form-label">Changelog Type</label>
-            <div id="change-type-control" :class="displayStyle.control.toString()">
+            <div id="change-type-control" :class="customStyle.control">
                 <select class="form-control"
                         id="changelogType"
                         v-model="changeLogTypeValue"
@@ -32,10 +32,11 @@
 
 <script lang="ts">
     import Vue from "vue";
+    import {ChangelogStyle} from "../../utils/types";
 
     interface Props {
         changelogTypeOptions: string[]
-        changelogStyleReport: boolean
+        customStyle: ChangelogStyle
     }
 
     interface Data {
@@ -48,11 +49,7 @@
         handleChangeLogType: () => void
     }
 
-    interface Computed {
-        displayStyle: object
-    }
-
-    export default Vue.extend<Data, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, unknown, Props>({
         name: "changeLog",
         data(): Data {
             return {
@@ -61,21 +58,8 @@
             }
         },
         props: {
-            changelogStyleReport: {
-                required: false,
-                type: Boolean,
-                default: false
-            },
+            customStyle: {},
             changelogTypeOptions: Array
-        },
-        computed: {
-            displayStyle() {
-                if (this.changelogStyleReport) {
-                    return {label: "col-sm-2 text-right", control: "col-sm-6"}
-                }
-
-                return {label: "col-sm-4 text-left", control: "col-sm-4"}
-            }
         },
         methods: {
             handleChangeLogType: function () {
