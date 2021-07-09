@@ -20,9 +20,9 @@
 
             <div v-if="showInstances">
                 <instances :instances="metadata.instances"
+                           :custom-style="changelogStyle"
                            @selectedValues="handleInstancesValue"
-                           @clearRun="clearRun"
-                           :changelog-style-report="true"/>
+                           @clearRun="clearRun"/>
             </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>

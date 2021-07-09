@@ -9,7 +9,8 @@ describe(`instances`, () => {
             propsData: {
                 instances: {
                     source: ["prod", "uat"]
-                }
+                },
+                customStyle: {}
             }
         })
     }
@@ -27,23 +28,12 @@ describe(`instances`, () => {
         expect(sourceOptions.at(1).text()).toBe("uat");
     });
 
-    it('renders styles correctly when changelogStyleReport prop is not set', () => {
-        const wrapper = getWrapper()
-
-        const label = ["col-form-label", "col-sm-4", "text-left"]
-        const control = ["col-sm-4"]
-
-        const instances = wrapper.find("#instances-div")
-        expect(instances.find("label").classes()).toEqual(label)
-        expect(wrapper.find("#instance-control").classes()).toEqual(control)
-    });
-
-    it('renders styles correctly when changelogStyleReport prop is set to true', async() => {
+    it('renders styles correctly when custom style prop is set', async() => {
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
         const wrapper = getWrapper()
-        await wrapper.setProps({changelogStyleReport: true})
+        await wrapper.setProps({customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}})
 
         const instances = wrapper.find("#instances-div")
         expect(instances.find("label").classes()).toEqual(label)

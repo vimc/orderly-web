@@ -15,6 +15,7 @@
         </div>
         <div v-if="showInstances">
             <instances :instances="runMetadata.metadata.instances"
+                       :custom-style="changelogStyle"
                        @selectedValues="handleInstancesValue"/>
         </div>
         <div v-if="runMetadata">
