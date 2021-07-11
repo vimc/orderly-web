@@ -1,5 +1,16 @@
 <template>
     <div>
+        <b-alert
+                :show="!!workflowRemovals"
+                dismissible
+                variant="warning"
+                class="col-sm-10"
+                @dismissed="workflowRemovals=null">
+            The following items are not present in this git commit and have been removed from the workflow:
+            <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
+                <li v-for="item in workflowRemovals">{{item}}</li>
+            </ul>
+        </b-alert>
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
         <div v-if="isReady">
             <div class="pb-4">
@@ -12,19 +23,9 @@
                         :initial-branches="initialBranches"
                         @branchSelected="branchSelected"
                         @commitSelected="commitSelected"
-                        @reportsUpdate="updateAvailableReports"
+                        @reportsUpdate="updateAvailableReportsFromGit"
                     ></git-update-reports>
                 </div>
-                <b-alert
-                    :show="!!workflowRemovals"
-                    dismissible
-                    variant="warning"
-                    @dismissed="workflowRemovals=null">
-                    The following items are not present in this git commit and have been removed from the workflow:
-                    <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                        <li v-for="item in workflowRemovals">{{item}}</li>
-                    </ul>
-                </b-alert>
             </div>
             <div class="pb-4" id="workflow-reports">
                 <h2 id="report-sub-header">Reports</h2>
@@ -38,7 +39,7 @@
                         <parameter-list
                             v-if="reportParameters[index].length > 0"
                             :params="reportParameters[index]"
-                            @paramsChanged="(...args) => paramsChanged(index, ...args)"
+                            @paramsChanged="(...eventArgs) => paramsChanged(index, ...eventArgs)"
                         ></parameter-list>
                         <div v-if="reportParameters[index].length === 0"
                              class="col-sm-6 col-form-label text-secondary no-parameters">
@@ -110,7 +111,7 @@ interface Methods {
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
     getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
-    updateAvailableReports: (reports: ReportWithDate[]) =>  void,
+    updateAvailableReportsFromGit: (reports: ReportWithDate[]) =>  void,
     addReport: () => void,
     paramsChanged: (index: number, params: Parameter[], valid: boolean) => void,
     removeReport: (index: number) => void,
@@ -179,7 +180,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
             return api.get(`/report/${report}/config/parameters/${commit}`);
         },
-        async updateAvailableReports(reports: ReportWithDate[]) {
+        async updateAvailableReportsFromGit(reports: ReportWithDate[]) {
             this.reports = reports;
 
             // We may now have an invalid workflow - it may contain reports or parameters not in the newly selected commit
@@ -195,13 +196,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             };
 
             const newReports = [];
-            const availableReportNames = reports.map(r => r.name);
+            const availableReportNames = reports.map(report => report.name);
             const validityIndexRemovals = [];
-            this.workflowMetadata.reports.forEach((r: WorkflowReportWithParams, index: number) => {
-                if (availableReportNames.includes(r.name)) {
-                    newReports.push({...r, params: {...r.params}});
+            this.workflowMetadata.reports.forEach((report: WorkflowReportWithParams, index: number) => {
+                if (availableReportNames.includes(report.name)) {
+                    newReports.push({...report, params: {...report.params}});
                 } else {
-                    addToRemovals(`Report '${r.name}'`);
+                    addToRemovals(`Report '${report.name}'`);
                     validityIndexRemovals.push(index);
                 }
             });
@@ -212,27 +213,27 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
 
             // 2. Check parameters
-            const calls = newReports.map((r, index) => {
-                return this.getParametersApiCall(r.name)
+            const calls = newReports.map((report, index) => {
+                return this.getParametersApiCall(report.name)
                     .then(({data}) => {
                         const newParameterValues = mapParameterArrayToRecord(data.data);
                         // Check for parameters in metadata not in fetched params
-                        for (const p of Object.keys(r.params)) {
-                            if (!Object.keys(newParameterValues).includes(p)) {
-                                delete r.params[p];
-                                addToRemovals(`Parameter '${p}' in report '${r.name}'`);
+                        for (const paramName of Object.keys(report.params)) {
+                            if (!Object.keys(newParameterValues).includes(paramName)) {
+                                delete report.params[paramName];
+                                addToRemovals(`Parameter '${paramName}' in report '${report.name}'`);
 
                                 // If we have removed the last param from a report it becomes valid
-                                if (Object.keys(r.params).length === 0) {
+                                if (Object.keys(report.params).length === 0) {
                                     this.$set(this.reportsValid, index, true);
                                 }
                             }
                         }
 
                         // Check for parameters in fetched params not in metadata
-                        for (const p of Object.keys(newParameterValues)) {
-                            if (!Object.keys(r.params).includes(p)) {
-                                r.params[p] = newParameterValues[p];
+                        for (const paramName of Object.keys(newParameterValues)) {
+                            if (!Object.keys(report.params).includes(paramName)) {
+                                report.params[paramName] = newParameterValues[paramName];
                                 newParamsAdded = true;
                             }
                         }
@@ -253,7 +254,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
 
             if (this.selectedReport) {
-                const newReportNames = reports.map(r => r.name);
+                const newReportNames = reports.map(report => report.name);
                 if (!newReportNames.includes(this.selectedReport)) {
                     this.selectedReport = "";
                 }
