@@ -71,4 +71,14 @@ describe("reportList", () => {
         done();
     });
 
+    it("updates query when report prop changes", async () => {
+        const wrapper = getWrapper();
+        wrapper.find("input").setValue("rt2");
+
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.query).toBe("rt2");
+
+        await wrapper.setProps({report: ""});
+        expect(wrapper.vm.$data.query).toBe("");
+    });
 });

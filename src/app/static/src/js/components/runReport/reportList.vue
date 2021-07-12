@@ -70,6 +70,11 @@
         },
         beforeDestroy() {
             this.$emit('update:report', "");
+        },
+        watch: {
+            report(newVal) {
+                this.query = newVal;
+            }
         }
     })
 

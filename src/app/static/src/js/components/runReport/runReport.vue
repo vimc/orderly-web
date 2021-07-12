@@ -2,31 +2,13 @@
     <div>
         <h2>Run a report</h2>
         <form class="mt-3">
-            <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
-                <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                        <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
-                    </select>
-                </div>
-                <button @click.prevent="refreshGit"
-                    id="git-refresh-btn"
-                    class="btn col-sm-1"
-                    :disabled="gitRefreshing"
-                    type="submit">
-                    {{refreshGitText}}
-                </button>
-            </div>
-            <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
-                <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-commit" v-model="selectedCommitId" @change="changedCommit">
-                        <option v-for="commit in gitCommits" :value="commit.id">
-                            {{ commit.id }} ({{ commit.date_time }})
-                        </option>
-                    </select>
-                </div>
-            </div>
+            <git-update-reports
+                :report-metadata="metadata"
+                :initial-branches="initialGitBranches"
+                @branchSelected="branchSelected"
+                @commitSelected="commitSelected"
+                @reportsUpdate="updateReports"
+            ></git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
@@ -52,25 +34,12 @@
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <div v-if="showChangelog">
-                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-                    <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-                    <div class="col-sm-6">
-                        <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
-                                  rows="2"></textarea>
-                    </div>
-                </div>
-                <div id="changelog-type" class="form-group row">
-                    <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" id="changelogType" v-model="changeLogTypeValue">
-                            <option v-for="option in metadata.changelog_types" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <change-log v-if="showChangelog"
+                        :changelog-type-options="metadata.changelog_types"
+                        :custom-style="changelogStyle"
+                        @changelogMessage="handleChangeLogMessageValue"
+                        @changelogType="handleChangeLogTypeValue">
+            </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -93,7 +62,9 @@
     import ParameterList from "./parameterList.vue"
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
+    import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
+    import ChangeLog from "./changeLog.vue";
 
     export default Vue.extend({
         name: "runReport",
@@ -104,14 +75,13 @@
         ],
         components: {
             ErrorInfo,
+            GitUpdateReports,
             ReportList,
-            ParameterList
+            ParameterList,
+            ChangeLog
         },
         data: () => {
             return {
-                gitRefreshing: false,
-                gitBranches: [],
-                gitCommits: [],
                 reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
@@ -124,16 +94,11 @@
                 disableRun: false,
                 parameterValues: [],
                 changeLogMessageValue: "",
-                changeLogTypeValue: ""
+                changeLogTypeValue: "",
+                changelogStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {
-            refreshGitText(){
-                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
-            },
-            showCommits() {
-                return this.gitCommits && this.gitCommits.length;
-            },
             showReports() {
                 return this.reports && this.reports.length;
             },
@@ -147,41 +112,15 @@
                 return this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return this.selectedReport
-            },
-            showChangeMessage: function () {
-                return this.metadata.changelog_types
+                return !!this.selectedReport && this.metadata.changelog_types
             }
         },
         methods: {
-            refreshGit: function () {
-                this.gitRefreshing = true
-                api.get('/git/fetch/')
-                    .then(({data}) => {
-                        this.gitRefreshing = false
-                        this.gitBranches = data.data.map(branch => branch.name)
-                    })
-                    .catch((error) => {
-                        this.gitRefreshing = false
-                        this.error = error;
-                        this.defaultMessage = "An error occurred refreshing Git";
-                    });
+            handleChangeLogTypeValue: function (type: string) {
+                this.changeLogTypeValue = type
             },
-            changedBranch() {
-                api.get(`/git/branch/${this.selectedBranch}/commits/`)
-                    .then(({data}) => {
-                        this.gitCommits = data.data;
-                        if (this.gitCommits.length) {
-                            this.selectedCommitId = this.gitCommits[0].id;
-                            this.changedCommit();
-                        }
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching Git commits";
-                    });
+            handleChangeLogMessageValue: function (message: string) {
+                this.changeLogMessageValue = message
             },
             getParameterValues(values, valid) {
                 if (valid) {
@@ -189,26 +128,19 @@
                 }
                 this.disableRun = !valid
             },
-            changedCommit() {
-                this.updateReports();
+            branchSelected(newBranch) {
+                this.selectedBranch = newBranch;
             },
-            updateReports() {
-                this.reports = [];
-                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
-                api.get(`/reports/runnable/${query}`)
-                    .then(({data}) => {
-                        this.reports = data.data;
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching reports";
-                    });
+            commitSelected(newCommit) {
+                this.selectedCommitId = newCommit;
+            },
+            updateReports(newReports) {
+                this.reports = newReports;
+                this.selectedReport = "";
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-                api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                api.get(`/report/${this.selectedReport}/config/parameters/${commit}`)
                     .then(({data}) => {
                         this.parameterValues = data.data
                         this.error = "";
@@ -272,17 +204,6 @@
             }
         },
         mounted() {
-            if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.changedBranch();
-            } else {
-                this.updateReports();
-            }
-            if(this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
-
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
@@ -293,18 +214,10 @@
             }
         },
         watch: {
-            gitBranches(){
-                this.gitCommits = [];
-                this.reports = [];
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.selectedCommitId = "";
-                this.selectedReport = "";
-                this.changedBranch()
-            },
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
-                    this.setParameters()
+                    this.setParameters();
                 }
                 this.parameterValues.length = 0
             },

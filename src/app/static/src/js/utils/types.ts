@@ -8,6 +8,11 @@ export interface Step {
     component: string
 }
 
+export interface ReportWithDate {
+    name: string,
+    date: Date | null
+}
+
 export interface ReportLog{
     email: string,
     date: string,
@@ -21,15 +26,27 @@ export interface ReportLog{
     report_version: string | null
 }
 
+export interface RunReportMetadata {
+    instances_supported: boolean,
+    git_supported: boolean,
+    instances: Record<string, string[]>,
+    changelog_types: string[]
+}
+
 export interface RunWorkflowMetadata {
     name: string
     date: string
     email: string
-    reports: Record<string, any>[],
+    reports: WorkflowReportWithParams[],
     instances: Record<string, string>,
     git_branch: string | null
     git_commit: string | null
     key: string
+}
+
+export interface WorkflowReportWithParams {
+    name: string,
+    params?: Record<string, string>
 }
 
 export interface Error {
@@ -69,4 +86,9 @@ export interface WorkflowRunReportStatus {
     status: "queued" | "running" | "success" | "error" | "orphan" | "interrupted" | "deferred" | "impossible" | "missing",
     version: string | null
     date?: string
+}
+
+export interface ChangelogStyle {
+    label: string,
+    control: string
 }
