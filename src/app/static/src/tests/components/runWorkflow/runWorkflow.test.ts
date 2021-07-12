@@ -196,14 +196,13 @@ describe(`runWorkflow`, () => {
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
+
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
 
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(4).trigger("click")
+            await buttons.at(2).trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
@@ -233,58 +232,5 @@ describe(`runWorkflow`, () => {
 
             done();
         });
-        /*
-        wrapper.find("#create-workflow").trigger("click")
-
-        setTimeout(async () => {
-
-            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
-
-        expect(wrapper.find(workflowWizard).props("isRerun")).toBe(false)
-        expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
-
-        //expect(runButtons.at(0).text()).toBe("Cancel")
-        //expect(runButtons.at(1).text()).toBe("Back")
-        //expect(runButtons.at(2).text()).toBe("Run workflow")
-
-        expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
-        //set workflow Name
-        await wrapper.find("#workflow-name-div input").setValue("interim workflow")
-        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
-
-        //cancel workflow
-        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-            expect(wrapper.find(workflowWizard).exists()).toBe(true)
-            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
-            expect(wrapper.vm.$data.workflowStarted).toBe(true);
-
-            const buttons = wrapper.find(workflowWizard).findAll("button")
-            expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Cancel")
-            expect(buttons.at(2).text()).toBe("Next")
-
-            await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(2).trigger("click")
-            expect(wrapper.find("#run-header").text()).toBe("Run workflow")
-            const runButtons = wrapper.findAll("button")
-
-            expect(runButtons.at(0).text()).toBe("Cancel")
-            expect(runButtons.at(1).text()).toBe("Back")
-            expect(runButtons.at(2).text()).toBe("Run workflow")
-
-            //cancel workflow
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-
-            await runButtons.at(0).trigger("click")
-            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
-
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(false)
-            await wrapper.find("#confirm-cancel-btn").trigger("click")
-            expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
-
-            done();
-        });
-
-         */
     })
 })
