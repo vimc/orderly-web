@@ -31,7 +31,7 @@
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
                 <tr v-for="report in workflowRunStatus.data.reports">
-                    <td v-if="report.status === 'success'">
+                    <td v-if="report.status === 'success'" class="p-2">
                         <a
                             :href="
                                 reportVersionHref(report.name, report.version)
@@ -39,18 +39,18 @@
                             >{{ report.name }}</a
                         >
                     </td>
-                    <td v-else-if="report.status === 'error'">
+                    <td v-else-if="report.status === 'error'" class="p-2">
                         <a
                             :href="reportLogsHref(report.name)"
                             @click="setReportLogsTab"
                             >{{ report.name }}</a
                         >
                     </td>
-                    <td v-else>{{ report.name }}</td>
-                    <td :class="statusColour(report.status)">
+                    <td v-else class="p-2">{{ report.name }}</td>
+                    <td :class="statusColour(report.status)" class="p-2">
                         {{ interpretStatus(report.status) }}
                     </td>
-                    <td v-if="report.date">{{ formatDate(report.date) }}</td>
+                    <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
                 </tr>
             </table>
         </div>

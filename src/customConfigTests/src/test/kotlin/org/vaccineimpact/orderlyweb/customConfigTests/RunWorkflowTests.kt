@@ -11,7 +11,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-// import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflowWithReports
+import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflowWithReports
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -21,7 +21,7 @@ class RunWorkflowTests : SeleniumTest()
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertWorkflow("test.user@example.com", "newkey", "workflow1")
-            // insertWorkflowWithReports("test.user@example.com", "newkey", "workflow1")
+            insertWorkflowWithReports("test.user@example.com", "newkey", "workflow1")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
@@ -40,25 +40,25 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
     }
 
-    // @Test
-    // fun `can select workflow progress tab and selecting a workflow option generates reports table`()
-    // {
-    //     val link = driver.findElement(By.id("workflow-progress-link"))
-    //     Assertions.assertThat(link.text).isEqualTo("Workflow progress")
-    //     link.click()
-    //     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
-    //     val vSelectInput = driver.findElement(By.tagName("input"))
-    //     vSelectInput.sendKeys("workf")
+    @Test
+    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    {
+        val link = driver.findElement(By.id("workflow-progress-link"))
+        assertThat(link.text).isEqualTo("Workflow progress")
+        link.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val vSelectInput = driver.findElement(By.tagName("input"))
+        vSelectInput.sendKeys("workf")
 
-    //     val vSelect = driver.findElement(By.id("v-select"))
-    //     val dropdownMenu = vSelect.findElements(By.tagName("li"))
-    //     Assertions.assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-    //         "Tue Jun 15 2021, 14:50")
-    //     dropdownMenu[0].click()
-    //     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
-    //     val table = driver.findElement(By.id("workflow-table"))
-    //     Assertions.assertThat(table.text).contains("Reports")
-    // }
+        val vSelect = driver.findElement(By.id("v-select"))
+        val dropdownMenu = vSelect.findElements(By.tagName("li"))
+        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
+            "Tue Jun 15 2021, 14:50")
+        dropdownMenu[0].click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+        val table = driver.findElement(By.id("workflow-table"))
+        assertThat(table.text).contains("Reports")
+    }
 
     @Test
     fun `can create a blank workflow and select git branch`()
