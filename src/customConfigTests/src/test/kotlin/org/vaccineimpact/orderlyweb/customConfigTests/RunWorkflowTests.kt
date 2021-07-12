@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
@@ -11,8 +11,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-import java.time.Duration
-
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -37,31 +35,32 @@ class RunWorkflowTests : SeleniumTest()
     fun `can view run workflow tab`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
-        Assertions.assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
+        assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
     }
 
     @Test
-    fun `can create a blank workflow`()
+    fun `can create a blank workflow and select git branch`()
     {
         val tab = driver.findElement(By.id("run-workflow-tab"))
         val page = tab.findElement(By.id("create-workflow-container"))
         val createButton = page.findElement(By.id("create-workflow"))
-        Assertions.assertThat(createButton.isEnabled).isTrue()
-        Assertions.assertThat(createButton.text).isEqualTo("Create a blank workflow")
+        assertThat(createButton.isEnabled).isTrue()
+        assertThat(createButton.text).isEqualTo("Create a blank workflow")
+
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
         val branchSelect = driver.findElement(By.id("git-branch"))
-        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
         val commitSelect = driver.findElement(By.id("git-commit"))
         val commitValue = commitSelect.getAttribute("value")
-        Assertions.assertThat(commitValue).isNotBlank()
+        assertThat(commitValue).isNotBlank()
 
         //Select a git branch
         Select(branchSelect).selectByIndex(1)
-        Assertions.assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         //Default commit value should update when new branch selected
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-        Assertions.assertThat(commitSelect.getAttribute("value")).isNotBlank()
+        assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
     @Test
@@ -74,13 +73,13 @@ class RunWorkflowTests : SeleniumTest()
 
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        Assertions.assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-                        "test.user@example.com | Tue Jun 15 2021, 14:50")
+        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
+                "test.user@example.com | Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
 
         val rerunButton = page.findElement(By.id("rerun"))
-        Assertions.assertThat(rerunButton.isEnabled).isTrue()
-        Assertions.assertThat(rerunButton.text).isEqualTo("Re-run workflow")
+        assertThat(rerunButton.isEnabled).isTrue()
+        assertThat(rerunButton.text).isEqualTo("Re-run workflow")
         rerunButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
@@ -96,16 +95,80 @@ class RunWorkflowTests : SeleniumTest()
 
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        Assertions.assertThat(dropdownMenu[0].text).contains("workflow1\n" +
+        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
                 "test.user@example.com | Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
 
         val cloneButton = page.findElement(By.id("clone"))
-        Assertions.assertThat(cloneButton.isEnabled).isTrue()
-        Assertions.assertThat(cloneButton.text).isEqualTo("Clone workflow")
+        assertThat(cloneButton.isEnabled).isTrue()
+        assertThat(cloneButton.text).isEqualTo("Clone workflow")
         cloneButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("add-report-header")))
+    }
+
+
+    @Test
+    fun `can add and remove reports from workflow`()
+    {
+        createWorkflow()
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isFalse()
+        addReport("minimal")
+        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text).isEqualTo("minimal")
+        assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text).isEqualTo("No parameters")
+        assertThat(nextButton.isEnabled()).isTrue()
+
+        driver.findElement(By.cssSelector(".remove-report-button")).click()
+        assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
+        assertThat(nextButton.isEnabled()).isFalse()
+    }
+
+    @Test
+    fun `can set parameter value`()
+    {
+        createWorkflow()
+
+        //Change branch to find report with parameter
+        changeToOtherBranch()
+
+        //Add the report - Next button should be disabled until we set the parameter value
+        addReport("other")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isFalse()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("param-control-0")))
+        val parameterInvalidLabel = driver.findElement(By.cssSelector("#workflow-report-0 .text-danger"))
+        assertThat(parameterInvalidLabel.text).isEqualTo("Parameter value(s) required")
+        driver.findElement(By.id("param-control-0")).sendKeys("1")
+
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
+        assertThat(nextButton.isEnabled).isTrue()
+    }
+
+    @Test
+    fun `can change branch and see resulting workflow change`()
+    {
+        createWorkflow()
+        addReport("minimal")
+
+        //Expect report to be removed from workflow when change to a branch where report does not exist
+        changeToOtherBranch()
+        assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
+        assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
+                "The following items are not present in this git commit and have been removed from the workflow:\n" +
+                "Report 'minimal'")
+    }
+
+    @Test
+    fun `can progress to finalise step`()
+    {
+        createWorkflow()
+        addReport("minimal")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
     }
 
     @Test
@@ -118,10 +181,44 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        Assertions.assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
+        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
+    }
+
+    private fun addReport(reportName: String)
+    {
+        driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report a")))
+        driver.findElement(By.cssSelector("#workflow-report a")).click()
+        val addButton = driver.findElement(By.id("add-report-button"))
+        wait.until(ExpectedConditions.elementToBeClickable(addButton))
+        addButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
+    }
+
+    private fun createWorkflow()
+    {
+        val createButton = driver.findElement(By.id("create-workflow"))
+        createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+    }
+
+    private fun changeToOtherBranch()
+    {
+        val branchSelect = driver.findElement(By.id("git-branch"))
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        val commitSelect = driver.findElement(By.id("git-commit"))
+        val commitValue = commitSelect.getAttribute("value")
+        assertThat(commitValue).isNotBlank()
+
+        //Select a git branch
+        Select(branchSelect).selectByIndex(1)
+        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 }
