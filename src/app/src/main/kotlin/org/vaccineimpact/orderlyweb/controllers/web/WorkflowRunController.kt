@@ -133,7 +133,7 @@ class WorkflowRunController(
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
             workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-            WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
-        })
+                WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
+            })
     }
 }

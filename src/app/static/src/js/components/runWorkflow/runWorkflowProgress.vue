@@ -14,7 +14,7 @@
                     name="workflows"
                     id="v-select"
                     v-model="selectedWorkflowKey"
-                    placeholder="Search by name..."
+                    placeholder="Select workflow or search by name..."
                 >
                     <template #option="{ name, date }">
                         <div>
@@ -54,11 +54,11 @@
                 </tr>
             </table>
         </div>
-        <div class="row justify-content-end mt-3">
-            <button class="button mr-3" type="button" disabled>
+        <div class="row justify-content-end mt-3" v-if="false">
+            <button class="button mr-3" type="button">
                 Clone workflow
             </button>
-            <button class="btn btn-grey" type="button" disabled>
+            <button class="btn btn-secondary" type="button">
                 Cancel workflow
             </button>
         </div>
@@ -106,6 +106,8 @@ interface Methods {
 interface Props {
     workflowMetadata: RunWorkflowMetadata | null;
 }
+
+const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
@@ -164,19 +166,15 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             return buildFullUrl(url);
         },
         statusColour(status) {
-            if (["queued", "running"].indexOf(status) >= 0) {
+            if (["queued", "running"].includes(status)) {
                 return "text-secondary";
             } else if (
-                [
-                    "error",
-                    "orphan",
-                    "impossible",
-                    "missing",
-                    "interrupted",
-                ].indexOf(status) >= 0
+                failStates.includes(status)
             ) {
                 return "text-danger";
-            } else return "";
+            } else {
+                return "";
+            }
         },
         setReportLogsTab() {
             session.setSelectedTab("reportLogs");
@@ -185,18 +183,21 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             if (status === "success") {
                 return "Complete";
             } else if (
-                ["error", "orphan", "impossible", "missing"].indexOf(status) >=
-                0
+                failStates.includes(status)
             ) {
                 return "Failed";
-            } else return status.charAt(0).toUpperCase() + status.slice(1);
+            } else {
+                return status.charAt(0).toUpperCase() + status.slice(1);
+            }
         },
     },
     watch: {
         selectedWorkflowKey() {
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
-            } else this.workflowRunStatus = null;
+            } else {
+                this.workflowRunStatus = null;
+            }
         },
     },
     mounted() {
