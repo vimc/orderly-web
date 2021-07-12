@@ -140,7 +140,7 @@
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-                api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                api.get(`/report/${this.selectedReport}/config/parameters/${commit}`)
                     .then(({data}) => {
                         this.parameterValues = data.data
                         this.error = "";

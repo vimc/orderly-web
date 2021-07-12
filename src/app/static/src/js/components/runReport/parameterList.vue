@@ -21,6 +21,7 @@
 <script lang="ts">
     import Vue from "vue";
     import {Parameter} from "../../utils/types";
+    import {isEqual} from "lodash";
 
     interface Props {
         params: Parameter[]
@@ -43,7 +44,7 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "parameterList",
         props: {
-            params: []
+            params: Array
         },
         data(): Data {
             return {
@@ -83,6 +84,14 @@
             // run validation and emit event on initial values
             if(this.paramValues) {
                 this.onParameterChanged()
+            }
+        },
+        watch: {
+            params(newVal, oldVal) {
+                if (!isEqual(newVal, oldVal)) {
+                    this.paramValues = this.params;
+                    this.onParameterChanged()
+                }
             }
         }
     })

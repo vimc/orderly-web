@@ -136,7 +136,7 @@
                 };
             }
         },
-        mounted() {
+        created() {
             this.runWorkflowMetadata = {
                 ...this.initialRunWorkflowMetadata
             };
