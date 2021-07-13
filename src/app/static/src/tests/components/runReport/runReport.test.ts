@@ -346,7 +346,6 @@ describe("runReport", () => {
             });
             await Vue.nextTick()
             wrapper.find(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
-            expect(wrapper.find(Instances).emitted().clearRun.length).toBe(1)
             expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
             expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
             wrapper.setData({

@@ -12,7 +12,7 @@
             <component :is="step.component"
                        :workflow-metadata="runWorkflowMetadata"
                        @valid="handleStepValidity"
-                       :is-rerun ="isRerun"
+                       :disable-rename ="disableRename"
                        @update="updateMetadata">
             </component>
         </step>
@@ -52,7 +52,7 @@
         initialRunWorkflowMetadata: RunWorkflowMetadata
         steps: Step[]
         submitLabel : string | null
-        isRerun: boolean
+        disableRename: boolean
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
@@ -70,7 +70,7 @@
                 type: String,
                 required: false
             },
-            isRerun: {
+            disableRename: {
                 type: Boolean,
                 required: false
             }

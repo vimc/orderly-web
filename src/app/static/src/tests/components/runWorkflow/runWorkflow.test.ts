@@ -104,7 +104,7 @@ describe(`runWorkflow`, () => {
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
-        expect(wrapper.find(workflowWizard).props("isRerun")).toBe(true)
+        expect(wrapper.find(workflowWizard).props("disableRename")).toBe(true)
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const buttons = wrapper.findAll("button")
@@ -154,7 +154,7 @@ describe(`runWorkflow`, () => {
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
-            expect(wrapper.find(workflowWizard).props("isRerun")).toBe(false)
+            expect(wrapper.find(workflowWizard).props("disableRename")).toBe(false)
             expect(wrapper.find("#workflow-name-div input").attributes("disabled")).toBeUndefined()
 
             expect(runButtons.at(0).text()).toBe("Cancel")
@@ -210,7 +210,7 @@ describe(`runWorkflow`, () => {
              * this test ascertain that when a workflow is entered from a rerun step,
              * the name input should be disabled. While entry from any other step should be enabled.
              */
-            expect(wrapper.find(workflowWizard).props("isRerun")).toBe(false)
+            expect(wrapper.find(workflowWizard).props("disableRename")).toBe(false)
             expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
 
             expect(runButtons.at(0).text()).toBe("Cancel")

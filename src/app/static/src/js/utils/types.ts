@@ -87,7 +87,7 @@ export interface RunReportMetadataDependency {
     instances_supported: boolean
 }
 
-export interface ChangelogStyle {
+export interface ChildCustomStyle {
     label: string,
     control: string
 }

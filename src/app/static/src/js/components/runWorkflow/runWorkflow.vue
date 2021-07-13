@@ -10,8 +10,7 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
-                         :is-rerun="isRerun"
-                         :run-workflow-metadata="runWorkflowMetadata"
+                         :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
@@ -28,7 +27,7 @@
         workflowStarted: boolean
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
-        isRerun: boolean
+        disableRename: boolean
     }
 
     interface Methods {
@@ -46,7 +45,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowStarted: false,
             stepComponents: [],
             toggleFinalStepNextTo: "Run workflow",
-            isRerun: false
+            disableRename: false
         }
     },
     methods: {
@@ -54,7 +53,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.runWorkflowMetadata = data
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
             this.workflowStarted = true
-            this.isRerun = true
+            this.disableRename = true
         },
         handleCreate: function (data) {
             this.runWorkflowMetadata = data
@@ -74,6 +73,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         },
         handleCancel: function () {
             this.workflowStarted = false
+            this.disableRename = false
         },
         handleComplete: function () {
             //handle submitted report here

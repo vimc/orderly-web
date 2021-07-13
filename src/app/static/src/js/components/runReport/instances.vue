@@ -84,12 +84,6 @@
         watch: {
             instances() {
                 this.selectInitialInstance();
-            },
-            selectedInstances: {
-                deep: true,
-                handler() {
-                    this.$emit("clearRun");
-                }
             }
         }
     })

@@ -206,23 +206,6 @@ describe(`runWorkflowRun`, () => {
         })
     })
 
-    it(`can render workflow-tags elements`, async () => {
-        const wrapper = getWrapper()
-        await wrapper.setData({switchV2FeatureComponentOn: true})
-        const tags = wrapper.find("#workflow-tags-div")
-        expect(tags.text()).toBe("Report version tags")
-        expect(tags.find("input#run-workflow-report-version-tags").exists()).toBe(true)
-    })
-
-    it(`can render workflow-completion elements`, async () => {
-        const wrapper = getWrapper()
-        await wrapper.setData({switchV2FeatureComponentOn: true})
-        const completion = wrapper.find("#workflow-completion-div")
-        expect(completion.find("label").text()).toBe("Only commit reports on workflow completion")
-        expect(completion.find("#run-workflow-ticked").exists()).toBe(true)
-        expect(completion.find("#run-workflow-ticked p").text()).toBe("ticked")
-    })
-
     it(`it can set and render props correctly`, async (done) => {
         const workflowMeta = {placeholder: "test placeholder"}
         const wrapper = getWrapper()

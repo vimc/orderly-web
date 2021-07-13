@@ -40,12 +40,11 @@ describe(`instances`, () => {
         expect(wrapper.find("#instance-control").classes()).toEqual(control)
     });
 
-    it('emits selected value and clear run when an instance is selected', async() => {
+    it('emits selected value when an instance is selected', async() => {
         const wrapper = getWrapper()
         const options = wrapper.find("select").findAll("option")
         await options.at(0).setSelected()
 
-        expect(wrapper.emitted().clearRun.length).toBe(1)
         expect(wrapper.emitted().selectedValues.length).toBe(1)
         expect(wrapper.emitted().selectedValues[0][0]).toEqual({"source": "prod"})
     });

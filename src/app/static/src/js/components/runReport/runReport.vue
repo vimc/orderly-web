@@ -20,7 +20,7 @@
 
             <div v-if="showInstances">
                 <instances :instances="metadata.instances"
-                           :custom-style="changelogStyle"
+                           :custom-style="childCustomStyle"
                            @selectedValues="handleInstancesValue"
                            @clearRun="clearRun"/>
             </div>
@@ -31,7 +31,7 @@
             </div>
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
-                        :custom-style="changelogStyle"
+                        :custom-style="childCustomStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -92,7 +92,7 @@
                 parameterValues: [],
                 changeLogMessageValue: "",
                 changeLogTypeValue: "",
-                changelogStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
+                childCustomStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {
@@ -221,6 +221,12 @@
                     this.setParameters();
                 }
                 this.parameterValues.length = 0
+            },
+            selectedInstances: {
+                deep: true,
+                handler() {
+                    this.clearRun()
+                }
             }
         }
     })
