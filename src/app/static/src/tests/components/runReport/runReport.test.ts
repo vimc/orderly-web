@@ -5,6 +5,7 @@ import ReportList from "../../../js/components/runReport/reportList.vue";
 import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
 import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
+import Instances from "../../../js/components/runReport/instances.vue";
 import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe("runReport", () => {
@@ -113,8 +114,8 @@ describe("runReport", () => {
         expect(wrapper.find(ReportList).props("initialSelectedReport")).toBe("minimal")
     });
 
-    it("shows instances if instances supported", () => {
-        const wrapper = shallowMount(RunReport, {
+    it("shows instances if instances supported", async() => {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: false,
@@ -133,7 +134,6 @@ describe("runReport", () => {
                 }
             }
         });
-
         const sourceOptions = wrapper.findAll("#source option");
         expect(sourceOptions.length).toBe(2);
         expect(sourceOptions.at(0).attributes().value).toBe("prod");
@@ -315,7 +315,7 @@ describe("runReport", () => {
         mockAxios.onPost(url)
             .reply(200, {data: {key: "test-key"}});
 
-        const wrapper = shallowMount(RunReport, {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: true,
@@ -334,49 +334,54 @@ describe("runReport", () => {
                 }
             }
         });
-        wrapper.setData({
-            selectedReport: "test-report",
-            selectedBranch: "master",
-            selectedCommitId: "test-commit",
-            selectedInstances: {source: "science", annexe: "a1"},
-            error: "test-error",
-            defaultMessage: "test-msg",
-            parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}]
-        });
-        await Vue.nextTick();
-        wrapper.setData({
-            parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
-        });
-        await Vue.nextTick();
-        wrapper.find("#run-form-group button").trigger("click");
-        setTimeout(() => {
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.get.length).toBe(1);
-            expect(mockAxios.history.get[0].url).toBe(param_url);
-            expect(mockAxios.history.post[0].url).toBe(url);
-            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                {
-                    "instances": {
-                        "source": "science",
-                        "annexe": "science"
-                    },
-                    "params": {
-                        "minimal": "test",
-                        "global": "random_39id"
 
-                    },
-                    changelog: null,
-                    "gitBranch": "master",
-                    "gitCommit": "test-commit"
-                }
-            ));
-            expect(wrapper.find("#run-report-status").text()).toContain("Run started");
-            expect(wrapper.find("#run-report-status a").text()).toBe("View log");
-            expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
-            expect(wrapper.vm.$data.runningKey).toBe("test-key");
-            expect(wrapper.vm.$data.error).toBe("");
-            expect(wrapper.vm.$data.defaultMessage).toBe("");
-            done();
+        expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
+        expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
+        setTimeout(async () => { //give the wrapper time to fetch reports
+            wrapper.setData({
+                selectedReport: "test-report",
+                selectedCommitId: "test-commit",
+                error: "test-error",
+                defaultMessage: "test-msg"
+            });
+            await Vue.nextTick()
+            wrapper.find(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+            expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
+            expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
+            wrapper.setData({
+                parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
+            })
+            await Vue.nextTick()
+            wrapper.find("#run-form-group button").trigger("click");
+            setTimeout(() => {
+                expect(mockAxios.history.post.length).toBe(1);
+                expect(mockAxios.history.get.length).toBe(2);
+                expect(mockAxios.history.get[1].url).toBe(param_url);
+                expect(mockAxios.history.post[0].url).toBe(url);
+                expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+                    {
+                        "instances": {
+                            "source": "science",
+                            "annexe": "science"
+                        },
+                        "params": {
+                            "minimal": "test",
+                            "global": "random_39id"
+
+                        },
+                        changelog: null,
+                        "gitBranch": "master",
+                        "gitCommit": "test-commit"
+                    }
+                ));
+                expect(wrapper.find("#run-report-status").text()).toContain("Run started");
+                expect(wrapper.find("#run-report-status a").text()).toBe("View log");
+                expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
+                expect(wrapper.vm.$data.runningKey).toBe("test-key");
+                expect(wrapper.vm.$data.error).toBe("");
+                expect(wrapper.vm.$data.defaultMessage).toBe("");
+                done();
+            });
         });
     });
 
@@ -514,7 +519,7 @@ describe("runReport", () => {
     });
 
     it("changing a selected instance updates data and resets runningStatus and disabledRun", async () => {
-        const wrapper = shallowMount(RunReport, {
+        const wrapper = mount(RunReport, {
             propsData: {
                 metadata: {
                     git_supported: true,

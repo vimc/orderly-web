@@ -10,6 +10,7 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
+                         :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
@@ -26,6 +27,7 @@
         workflowStarted: boolean
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
+        disableRename: boolean
     }
 
     interface Methods {
@@ -35,7 +37,6 @@
         handleClone: (data: Event) => void
         handleComplete: () => void
     }
-
 export default Vue.extend<Data, Methods, unknown, unknown>({
     name: "runWorkflow",
     data(): Data {
@@ -43,7 +44,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             runWorkflowMetadata: null,
             workflowStarted: false,
             stepComponents: [],
-            toggleFinalStepNextTo: "Run workflow"
+            toggleFinalStepNextTo: "Run workflow",
+            disableRename: false
         }
     },
     methods: {
@@ -51,6 +53,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.runWorkflowMetadata = data
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
             this.workflowStarted = true
+            this.disableRename = true
         },
         handleCreate: function (data) {
             this.runWorkflowMetadata = data
@@ -70,6 +73,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         },
         handleCancel: function () {
             this.workflowStarted = false
+            this.disableRename = false
         },
         handleComplete: function () {
             //handle submitted report here

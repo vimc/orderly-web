@@ -17,18 +17,13 @@
                                  :initial-selected-report="initialReportName"/>
                 </div>
             </div>
-            <template v-if="showInstances">
-                <div v-for="(options, name) in metadata.instances" v-if="options.length > 1" class="form-group row">
-                    <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
-                            <option v-for="option in options" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </template>
+
+            <div v-if="showInstances">
+                <instances :instances="metadata.instances"
+                           :custom-style="childCustomStyle"
+                           @selectedValues="handleInstancesValue"
+                           @clearRun="clearRun"/>
+            </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
@@ -36,7 +31,7 @@
             </div>
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
-                        :custom-style="changelogStyle"
+                        :custom-style="childCustomStyle"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -65,6 +60,7 @@
     import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
+    import Instances from "./instances.vue";
 
     export default Vue.extend({
         name: "runReport",
@@ -78,7 +74,8 @@
             GitUpdateReports,
             ReportList,
             ParameterList,
-            ChangeLog
+            ChangeLog,
+            Instances
         },
         data: () => {
             return {
@@ -95,7 +92,7 @@
                 parameterValues: [],
                 changeLogMessageValue: "",
                 changeLogTypeValue: "",
-                changelogStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
+                childCustomStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {
@@ -116,6 +113,9 @@
             }
         },
         methods: {
+            handleInstancesValue: function (instances) {
+                this.selectedInstances = instances
+            },
             handleChangeLogTypeValue: function (type: string) {
                 this.changeLogTypeValue = type
             },
@@ -161,7 +161,8 @@
                 if (this.metadata.instances_supported && this.metadata.instances &&
                     Object.keys(this.metadata.instances).length > 0) {
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
-                    const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    const instance = this.selectedInstances[instanceName];
+                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
@@ -224,7 +225,7 @@
             selectedInstances: {
                 deep: true,
                 handler() {
-                    this.clearRun();
+                    this.clearRun()
                 }
             }
         }

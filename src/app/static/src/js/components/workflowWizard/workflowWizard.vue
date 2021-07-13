@@ -12,6 +12,7 @@
             <component :is="step.component"
                        :workflow-metadata="runWorkflowMetadata"
                        @valid="handleStepValidity"
+                       :disable-rename ="disableRename"
                        @update="updateMetadata">
             </component>
         </step>
@@ -51,6 +52,7 @@
         initialRunWorkflowMetadata: RunWorkflowMetadata
         steps: Step[]
         submitLabel : string | null
+        disableRename: boolean
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
@@ -66,6 +68,10 @@
             },
             submitLabel: {
                 type: String,
+                required: false
+            },
+            disableRename: {
+                type: Boolean,
                 required: false
             }
         },
