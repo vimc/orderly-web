@@ -40,50 +40,50 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(tab.findElement(By.tagName("h2")).text).isEqualTo("Run workflow")
     }
 
-    @Test
-    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
-    {
-        val link = driver.findElement(By.id("workflow-progress-link"))
-        assertThat(link.text).isEqualTo("Workflow progress")
-        link.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
-        val vSelectInput = driver.findElement(By.tagName("input"))
-        vSelectInput.sendKeys("workf")
-
-        val vSelect = driver.findElement(By.id("v-select"))
-        val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[1].text).contains("workflow\n" +
-            "Tue Jun 15 2021, 14:50")
-        dropdownMenu[0].click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
-        val table = driver.findElement(By.id("workflow-table"))
-        assertThat(table.text).contains("Reports")
-    }
-
     // @Test
-    // fun `can create a blank workflow and select git branch`()
+    // fun `can select workflow progress tab and selecting a workflow option generates reports table`()
     // {
-    //     val tab = driver.findElement(By.id("run-workflow-tab"))
-    //     val page = tab.findElement(By.id("create-workflow-container"))
-    //     val createButton = page.findElement(By.id("create-workflow"))
-    //     assertThat(createButton.isEnabled).isTrue()
-    //     assertThat(createButton.text).isEqualTo("Create a blank workflow")
+    //     val link = driver.findElement(By.id("workflow-progress-link"))
+    //     assertThat(link.text).isEqualTo("Workflow progress")
+    //     link.click()
+    //     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+    //     val vSelectInput = driver.findElement(By.tagName("input"))
+    //     vSelectInput.sendKeys("workf")
 
-    //     createButton.click()
-    //     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
-    //     val branchSelect = driver.findElement(By.id("git-branch"))
-    //     assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
-    //     val commitSelect = driver.findElement(By.id("git-commit"))
-    //     val commitValue = commitSelect.getAttribute("value")
-    //     assertThat(commitValue).isNotBlank()
-
-    //     //Select a git branch
-    //     Select(branchSelect).selectByIndex(1)
-    //     assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
-    //     //Default commit value should update when new branch selected
-    //     wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-    //     assertThat(commitSelect.getAttribute("value")).isNotBlank()
+    //     val vSelect = driver.findElement(By.id("v-select"))
+    //     val dropdownMenu = vSelect.findElements(By.tagName("li"))
+    //     assertThat(dropdownMenu[1].text).contains("workflow\n" +
+    //         "Tue Jun 15 2021, 14:50")
+    //     dropdownMenu[0].click()
+    //     wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+    //     val table = driver.findElement(By.id("workflow-table"))
+    //     assertThat(table.text).contains("Reports")
     // }
+
+    @Test
+    fun `can create a blank workflow and select git branch`()
+    {
+        val tab = driver.findElement(By.id("run-workflow-tab"))
+        val page = tab.findElement(By.id("create-workflow-container"))
+        val createButton = page.findElement(By.id("create-workflow"))
+        assertThat(createButton.isEnabled).isTrue()
+        assertThat(createButton.text).isEqualTo("Create a blank workflow")
+
+        createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+        val branchSelect = driver.findElement(By.id("git-branch"))
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        val commitSelect = driver.findElement(By.id("git-commit"))
+        val commitValue = commitSelect.getAttribute("value")
+        assertThat(commitValue).isNotBlank()
+
+        //Select a git branch
+        Select(branchSelect).selectByIndex(1)
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        //Default commit value should update when new branch selected
+        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+        assertThat(commitSelect.getAttribute("value")).isNotBlank()
+    }
 
     @Test
     fun `can rerun workflow`()
