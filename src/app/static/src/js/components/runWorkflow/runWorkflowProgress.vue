@@ -54,7 +54,7 @@
                 </tr>
             </table>
         </div>
-        <!-- Buttons to be unhidden once clone workflow endpoint is added -->
+        <!-- Buttons to be unhidden and made active once workflow wizard is implemented -->
         <div class="row justify-content-end mt-3" v-if="false">
             <button class="button mr-3" type="button">
                 Clone workflow
@@ -163,7 +163,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             return buildFullUrl(url);
         },
         reportLogsHref(name) {
-            const url = `/run-report?report-name=${name}`; // full implementation into report logs will be covered in a future ticket
+            const url = `/run-report?report-name=${name}`;
             return buildFullUrl(url);
         },
         statusColour(status) {
