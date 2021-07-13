@@ -208,6 +208,16 @@ class WorkflowRunTests : IntegrationTest()
                 emptyMap()
             )
         )
+
+        repo.addWorkflowRunReport(
+                WorkflowRunReport(
+                        workflowRunResponse.key,
+                        workflowRunResponse.reports.first(),
+                        "minimal",
+                        emptyMap()
+                )
+        )
+
         assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
 
         val response = webRequestHelper.requestWithSessionCookie(

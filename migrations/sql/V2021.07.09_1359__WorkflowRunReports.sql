@@ -4,6 +4,6 @@ CREATE TABLE orderlyweb_workflow_run_reports
     workflow_key    TEXT      NOT NULL,
     report_key      TEXT      NOT NULL UNIQUE,
     name            TEXT      NOT NULL,
-    params          TEXT      NOT NULL,
+    params          TEXT,
     FOREIGN KEY(workflow_key) REFERENCES orderlyweb_workflow_run(key)
 );
