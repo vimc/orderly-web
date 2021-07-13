@@ -103,14 +103,13 @@ class WorkflowRunController(
                 )
             )
 
-            for (reportKey in workflowRun.reports)
-            {
+            workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
                 workflowRunRepository.addWorkflowRunReport(
                         WorkflowRunReport(
                                 workflowRun.key,
                                 reportKey,
-                                workflowRunRequest.name,
-                                emptyMap()
+                                report.name,
+                                report.params
                         )
                 )
             }

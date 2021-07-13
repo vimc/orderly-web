@@ -24,6 +24,8 @@ interface WorkflowRunRepository
     @Throws(UnknownObjectError::class)
     fun updateWorkflowRun(key: String, status: String)
     fun addWorkflowRunReport(workflowRunReport: WorkflowRunReport)
+    fun getWorkflowRunReportByWorkflowKey(workflowKey: String): List<WorkflowRunReport>
+    fun getWorkflowRunReportByReportKey(reportKey: String): WorkflowRunReport
 }
 
 class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
@@ -137,6 +139,51 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME, workflowRunReport.name)
                     .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS, Gson().toJson(workflowRunReport.params))
                     .execute()
+        }
+    }
+
+    override fun getWorkflowRunReportByReportKey(reportKey: String): WorkflowRunReport
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
+            )
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY.eq(reportKey))
+                    .singleOrNull()
+                    ?: throw UnknownObjectError(reportKey, "workflow")
+
+            return WorkflowRunReport(
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY],
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                    jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
+            )
+        }
+    }
+
+    override fun getWorkflowRunReportByWorkflowKey(workflowKey: String): List<WorkflowRunReport>
+    {
+        JooqContext().use {
+            return it.dsl.select(
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
+            )
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY.eq(workflowKey))
+                    .map { result ->
+                        WorkflowRunReport(
+                                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
+                                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY],
+                                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                                jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
+                        )
+                    }
         }
     }
 }
