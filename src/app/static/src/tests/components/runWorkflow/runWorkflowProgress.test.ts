@@ -78,6 +78,7 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
+            // Tests to be reinstated once clone workflow endpoint is added
             // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
             // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
             done();

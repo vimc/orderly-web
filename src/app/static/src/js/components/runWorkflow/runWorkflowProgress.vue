@@ -54,6 +54,7 @@
                 </tr>
             </table>
         </div>
+        <!-- Buttons to be unhidden once clone workflow endpoint is added -->
         <div class="row justify-content-end mt-3" v-if="false">
             <button class="button mr-3" type="button">
                 Clone workflow
