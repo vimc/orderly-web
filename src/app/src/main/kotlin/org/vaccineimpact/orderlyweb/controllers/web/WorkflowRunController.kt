@@ -88,6 +88,20 @@ class WorkflowRunController(
         if (response.statusCode == HTTP_OK)
         {
             val workflowRun = response.data(WorkflowRunResponse::class.java)
+
+            for (reportKey in workflowRun.reports)
+            {
+                workflowRunRepository.addWorkflowRunReport(
+                        WorkflowRunReport(
+                                workflowRun.key,
+                                reportKey,
+                                workflowRunRequest.name,
+                                emptyMap()
+                        )
+                )
+            }
+
+            /*
             workflowRunRepository.addWorkflowRun(
                 WorkflowRun(
                     workflowRunRequest.name,
@@ -101,6 +115,7 @@ class WorkflowRunController(
                     workflowRunRequest.gitCommit
                 )
             )
+             */
         }
         return passThroughResponse(response)
     }
