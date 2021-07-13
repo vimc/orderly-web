@@ -20,11 +20,11 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChangelogStyle} from "../../utils/types";
+    import {ChildCustomStyle} from "../../utils/types";
 
     interface Props {
         instances: Record<string, any>
-        customStyle: ChangelogStyle
+        customStyle: ChildCustomStyle
     }
 
     interface Data {
