@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunReposit
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
+import org.vaccineimpact.orderlyweb.models.WorkflowRunReport
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -524,5 +525,132 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         }
             .isInstanceOf(UnknownObjectError::class.java)
             .hasMessageContaining("adventurous_aardvark")
+    }
+
+    @Test
+    fun `cannot add workflow run report with duplicate report key`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        sut.addWorkflowRun(WorkflowRun(
+                "Interim report",
+                "fake_workflow_key",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
+        ))
+
+        sut.addWorkflowRunReport(
+                WorkflowRunReport(
+                        "fake_workflow_key",
+                        "adventurous_aardvark",
+                        "report one",
+                        emptyMap()
+                )
+        )
+        assertThatThrownBy {
+            sut.addWorkflowRunReport(
+                    WorkflowRunReport(
+                            "fake_workflow_key",
+                            "adventurous_aardvark",
+                            "report one",
+                            emptyMap()
+                    )
+            )
+        }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run_reports.report_key")
+    }
+
+    @Test
+    fun `can get workflow run reports by report key`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        sut.addWorkflowRun(WorkflowRun(
+                "Interim report",
+                "fake_workflow_key",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
+        ))
+
+        sut.addWorkflowRunReport(WorkflowRunReport(
+                "fake_workflow_key",
+                "adventurous_aardvark",
+                "report one",
+                mapOf("param1" to "one", "param2" to "two")
+        ))
+
+        val results = sut.getWorkflowRunReportByReportKey("adventurous_aardvark")
+
+        assertThat(results).isEqualTo(WorkflowRunReport(
+                "fake_workflow_key",
+                "adventurous_aardvark",
+                "report one",
+                mapOf("param1" to "one", "param2" to "two")
+        ))
+    }
+
+    @Test
+    fun `can get workflow run reports by workflow key`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        sut.addWorkflowRun(WorkflowRun(
+                "Interim report",
+                "fake_workflow_key",
+                "user@email.com",
+                Instant.now(),
+                emptyList(),
+                emptyMap()
+        ))
+
+        sut.addWorkflowRunReport(WorkflowRunReport(
+                "fake_workflow_key",
+                "adventurous_aardvark",
+                "report one",
+                mapOf("param1" to "one", "param2" to "two")
+        ))
+
+        sut.addWorkflowRunReport(WorkflowRunReport(
+                "fake_workflow_key",
+                "adventurous_crook",
+                "report two",
+                mapOf("param1" to "one", "param2" to "two")
+        ))
+
+        val results = sut.getWorkflowRunReportByWorkflowKey("fake_workflow_key")
+
+        assertThat(results).isEqualTo(listOf(WorkflowRunReport(
+                "fake_workflow_key",
+                "adventurous_aardvark",
+                "report one",
+                mapOf("param1" to "one", "param2" to "two")),
+
+                WorkflowRunReport(
+                        "fake_workflow_key",
+                        "adventurous_crook",
+                        "report two",
+                        mapOf("param1" to "one", "param2" to "two"))
+        ))
+    }
+
+    @Test
+    fun `cannot get workflow run reports when workflow key does not exist `()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val results = sut.getWorkflowRunReportByWorkflowKey("fake_workflow_key")
+
+        assertThat(results).isEmpty()
     }
 }
