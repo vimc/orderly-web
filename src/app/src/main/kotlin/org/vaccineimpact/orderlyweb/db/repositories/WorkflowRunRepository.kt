@@ -25,6 +25,7 @@ interface WorkflowRunRepository
     fun updateWorkflowRun(key: String, status: String)
     fun addWorkflowRunReport(workflowRunReport: WorkflowRunReport)
     fun getWorkflowRunReportByWorkflowKey(workflowKey: String): List<WorkflowRunReport>
+    @Throws(UnknownObjectError::class)
     fun getWorkflowRunReportByReportKey(reportKey: String): WorkflowRunReport
 }
 

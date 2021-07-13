@@ -88,6 +88,103 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `can get workflow run reports by workflowKey`()
+    {
+        val workflowRunReport = listOf(
+            WorkflowRunReport(
+                "workflow_key",
+                "report_key",
+                "name",
+                emptyMap()
+            ),
+            WorkflowRunReport(
+                "workflow_key",
+                "report_key2",
+                "name",
+                emptyMap()
+            )
+        )
+
+        val mockContext = mock<ActionContext> {
+            on { params(":key") } doReturn "workflow_key"
+        }
+
+        val mockRepo = mock<WorkflowRunRepository> {
+            on { getWorkflowRunReportByWorkflowKey("workflow_key") } doReturn workflowRunReport
+        }
+
+        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+
+        val results = sut.getWorkflowRunReportByWorkflowKey()
+        assertThat(results).isEqualTo(workflowRunReport)
+    }
+
+    @Test
+    fun `can get workflow run reports by reportKey`()
+    {
+        val workflowRunReport = listOf(
+            WorkflowRunReport(
+                "workflow_key",
+                "report_key",
+                "name",
+                emptyMap()
+            ),
+            WorkflowRunReport(
+                "workflow_key",
+                "report_key2",
+                "name",
+                emptyMap()
+            )
+        )
+
+        val mockContext = mock<ActionContext> {
+            on { params(":key") } doReturn "report_key2"
+        }
+
+        val mockRepo = mock<WorkflowRunRepository> {
+            on { getWorkflowRunReportByReportKey("report_key2") } doReturn workflowRunReport.last()
+        }
+
+        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+
+        val results = sut.getWorkflowRunReportByReportKey()
+        assertThat(results).isEqualTo(workflowRunReport.last())
+    }
+
+    @Test
+    fun `throws UnknownObjectError if report key is invalid`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { params(":key") } doReturn "fakeKey"
+        }
+
+        val mockRepo = mock<WorkflowRunRepository> {
+            on { getWorkflowRunReportByReportKey("fakeKey") } doThrow UnknownObjectError("key", "workflow")
+        }
+
+        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+
+        assertThatThrownBy { sut.getWorkflowRunReportByReportKey() }
+            .isInstanceOf(UnknownObjectError::class.java)
+            .hasMessageContaining("Unknown workflow : 'key'")
+    }
+
+    @Test
+    fun `returns empty list if workflow key is invalid`()
+    {
+        val mockContext = mock<ActionContext>()
+
+        val mockRepo = mock<WorkflowRunRepository> {
+            on { getWorkflowRunReportByWorkflowKey("fakeKey") } doReturn emptyList<WorkflowRunReport>()
+        }
+
+        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+
+        val results = sut.getWorkflowRunReportByWorkflowKey()
+        assertThat(results).isEmpty()
+    }
+
+    @Test
     fun `throws UnknownObjectError if key is invalid`()
     {
         val mockContext = mock<ActionContext> {
@@ -209,6 +306,13 @@ class WorkflowRunControllerTests
             assertThat(it.gitBranch).isEqualTo(workflowRunRequest.gitBranch)
             assertThat(it.gitCommit).isEqualTo(workflowRunRequest.gitCommit)
         })
+
+        verify(repo).addWorkflowRunReport(check {
+            assertThat(it.workflowKey).isEqualTo("workflow_key1")
+            assertThat(it.reportKey).isEqualTo("report_key1")
+            assertThat(it.name).isEqualTo(workflowRunRequest.reports[0].name)
+            assertThat(it.params).isEqualTo(workflowRunRequest.reports[0].params)
+        })
     }
 
     @Test
@@ -272,7 +376,7 @@ class WorkflowRunControllerTests
         val json = """
             {
               "name": "workflow1",
-              "reports": [{"name": "report1"}]
+              "reports": [{"name": "report1", "params": {"key": "value"}}]
             }
         """.trimIndent()
 
@@ -300,7 +404,7 @@ class WorkflowRunControllerTests
                     "reports" to listOf(
                         mapOf(
                             "name" to "report1",
-                            "params" to null
+                            "params" to mapOf("key" to "value")
                         )
                     )
                 )

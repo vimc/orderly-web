@@ -148,4 +148,16 @@ class WorkflowRunController(
                 WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
             })
     }
+
+    fun getWorkflowRunReportByWorkflowKey(): List<WorkflowRunReport>
+    {
+        val workflowKey = context.params(":key")
+        return workflowRunRepository.getWorkflowRunReportByWorkflowKey(workflowKey)
+    }
+
+    fun getWorkflowRunReportByReportKey(): WorkflowRunReport
+    {
+        val reportKey = context.params(":key")
+        return workflowRunRepository.getWorkflowRunReportByReportKey(reportKey)
+    }
 }
