@@ -13,6 +13,7 @@
             :submit-label="toggleFinalStepNextTo"
             @cancel="handleCancel"
             @complete="handleComplete"
+            :disable-rename="disableRename"
             :run-workflow-metadata="runWorkflowMetadata"
         >
         </workflow-wizard>
@@ -31,6 +32,7 @@ interface Data {
     workflowStarted: boolean;
     stepComponents: Step[];
     toggleFinalStepNextTo: string | null;
+    disableRename: boolean
 }
 
 interface Methods {
@@ -49,18 +51,18 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowStarted: false,
             stepComponents: [],
             toggleFinalStepNextTo: "Run workflow",
-        };
+            disableRename: false
+        }
     },
     methods: {
         handleRerun: function (data) {
-            this.runWorkflowMetadata = data;
-            this.stepComponents = [
-                { name: "run", component: "runWorkflowRun" },
-            ];
-            this.workflowStarted = true;
+            this.runWorkflowMetadata = data
+            this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
+            this.workflowStarted = true
+            this.disableRename = true
         },
-        handleCreate: function () {
-            this.runWorkflowMetadata = null;
+        handleCreate: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [
                 { name: "report", component: "runWorkflowReport" },
                 { name: "run", component: "runWorkflowRun" },
@@ -76,7 +78,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.workflowStarted = true;
         },
         handleCancel: function () {
-            this.workflowStarted = false;
+            this.workflowStarted = false
+            this.disableRename = false
         },
         handleComplete: function () {
             // const data = this.runWorkflowMetadata
@@ -105,7 +108,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     components: {
         workflowWizard,
-        runWorkflowCreate,
-    },
-});
+        runWorkflowCreate
+    }
+})
 </script>
