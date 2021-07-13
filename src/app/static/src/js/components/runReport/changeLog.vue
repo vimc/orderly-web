@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="changelog-container">
         <div id="changelog-message" class="form-group row">
             <label for="changelogMessage"
                    :class="customStyle.label"
@@ -32,11 +32,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import {ChangelogStyle} from "../../utils/types";
+    import {ChildCustomStyle} from "../../utils/types";
 
     interface Props {
         changelogTypeOptions: string[]
-        customStyle: ChangelogStyle
+        customStyle: ChildCustomStyle
     }
 
     interface Data {

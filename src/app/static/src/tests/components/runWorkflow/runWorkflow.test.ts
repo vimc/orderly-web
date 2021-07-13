@@ -5,7 +5,7 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
-import {runReportMetadataResponse} from "./runWorkflowReport.test";
+import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.test";
 
 describe(`runWorkflow`, () => {
 
@@ -92,22 +92,26 @@ describe(`runWorkflow`, () => {
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from re-run`, async () => {
         const wrapper = getWrapper()
-
         //Enables rerun button
         await wrapper.find(runWorkflowCreate).setData(
             {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata
+
             })
+
         expect(wrapper.find(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
+        expect(wrapper.find(workflowWizard).props("disableRename")).toBe(true)
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
         const buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Run workflow")
+        expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBe("readonly")
+        expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
@@ -140,19 +144,31 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
 
+        //cancel workflow
+        expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(4).trigger("click")
+            await buttons.at(2).trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
+
+            expect(wrapper.find(workflowWizard).props("disableRename")).toBe(false)
+            expect(wrapper.find("#workflow-name-div input").attributes("disabled")).toBeUndefined()
 
             expect(runButtons.at(0).text()).toBe("Cancel")
             expect(runButtons.at(1).text()).toBe("Back")
             expect(runButtons.at(2).text()).toBe("Run workflow")
+
+            expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+
+            /**
+             * this test ascertain that when a workflow is entered from a rerun step,
+             * the name input should be disabled. While entry from any other step should be enabled.
+             */
+            await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+            expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
 
             //cancel workflow
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
@@ -167,38 +183,46 @@ describe(`runWorkflow`, () => {
         });
     })
 
-    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`, (done) => {
+    it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`,  (done) => {
         const wrapper = getWrapper()
-
         wrapper.find("#create-workflow").trigger("click")
 
         setTimeout(async () => {
             expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
 
+            expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
             expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
-
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
+
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Remove report")
-            expect(buttons.at(2).text()).toBe("Add report")
-            expect(buttons.at(3).text()).toBe("Cancel")
-            expect(buttons.at(4).text()).toBe("Next")
+            expect(buttons.at(1).text()).toBe("Cancel")
+            expect(buttons.at(2).text()).toBe("Next")
 
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(4).trigger("click")
+            await buttons.at(2).trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
+
+            /**
+             * this test ascertain that when a workflow is entered from a rerun step,
+             * the name input should be disabled. While entry from any other step should be enabled.
+             */
+            expect(wrapper.find(workflowWizard).props("disableRename")).toBe(false)
+            expect(wrapper.find("#workflow-name-div input").attributes("readonly")).toBeUndefined()
 
             expect(runButtons.at(0).text()).toBe("Cancel")
             expect(runButtons.at(1).text()).toBe("Back")
             expect(runButtons.at(2).text()).toBe("Run workflow")
 
+            expect(wrapper.find("#next-workflow").attributes("disabled")).toBe("disabled")
+            await wrapper.find("#workflow-name-div input").setValue("interim workflow")
+            expect(wrapper.find("#next-workflow").attributes("disabled")).toBeUndefined()
+
             //cancel workflow
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-
             await runButtons.at(0).trigger("click")
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-show")
 

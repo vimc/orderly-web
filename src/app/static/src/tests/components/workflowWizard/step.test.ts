@@ -17,7 +17,7 @@ describe(`step`, () => {
                 valid: false,
                 submitLabel: null
             },
-            slots: {default: runWorkflowReport}
+            slots: {default: "<div/>"}
         })
     }
 
