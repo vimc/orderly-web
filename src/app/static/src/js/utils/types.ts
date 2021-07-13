@@ -68,7 +68,26 @@ export interface ReportDependencies {
     dependency_tree: ReportDependency
 }
 
-export interface ChangelogStyle {
+export interface WorkflowSummary {
+    date: string,
+    email: string,
+    key: string,
+    name: string
+}
+
+export interface RunReportMetadata {
+    git_branches: [],
+    metadata: RunReportMetadataDependency
+}
+
+export interface RunReportMetadataDependency {
+    changelog_types: [] | null,
+    git_supported: boolean,
+    instances: {} | null,
+    instances_supported: boolean
+}
+
+export interface ChildCustomStyle {
     label: string,
     control: string
 }
