@@ -18,8 +18,8 @@
                        :custom-style="childCustomStyle"
                        @selectedValues="handleInstancesValue"/>
         </div>
-        <div v-if="runMetadata">
-            <change-log v-if="showChangelog"
+        <div v-if="showChangelog">
+            <change-log
                         :changelog-type-options="this.runMetadata.metadata.changelog_types"
                         :custom-style="childCustomStyle"
                         @changelogMessage="handleChangeLogMessageValue"
