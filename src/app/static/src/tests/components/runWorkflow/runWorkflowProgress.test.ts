@@ -122,7 +122,7 @@ describe(`runWorkflowProgress`, () => {
                 expect(runningStatus.classes()).toContain("text-secondary")
 
                 const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
-                expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 10:51")
+                expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 9:51")
                 done();
             })
         })
