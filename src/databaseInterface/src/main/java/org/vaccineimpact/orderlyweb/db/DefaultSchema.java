@@ -41,7 +41,6 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermissio
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRun;
-import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRunReports;
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
@@ -66,7 +65,7 @@ import org.vaccineimpact.orderlyweb.db.tables.Workflow;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class DefaultSchema extends SchemaImpl {
 
-    private static final long serialVersionUID = -250746836;
+    private static final long serialVersionUID = -508547040;
 
     /**
      * The reference instance of <code>DEFAULT_SCHEMA</code>
@@ -229,11 +228,6 @@ public class DefaultSchema extends SchemaImpl {
     public final OrderlywebWorkflowRun ORDERLYWEB_WORKFLOW_RUN = OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN;
 
     /**
-     * The table <code>orderlyweb_workflow_run_reports</code>.
-     */
-    public final OrderlywebWorkflowRunReports ORDERLYWEB_WORKFLOW_RUN_REPORTS = OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS;
-
-    /**
      * The table <code>parameters</code>.
      */
     public final Parameters PARAMETERS = Parameters.PARAMETERS;
@@ -360,7 +354,6 @@ public class DefaultSchema extends SchemaImpl {
             OrderlywebUserGroupUser.ORDERLYWEB_USER_GROUP_USER,
             OrderlywebUserGroupVersionPermission.ORDERLYWEB_USER_GROUP_VERSION_PERMISSION,
             OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN,
-            OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS,
             Parameters.PARAMETERS,
             ParametersType.PARAMETERS_TYPE,
             Report.REPORT,
