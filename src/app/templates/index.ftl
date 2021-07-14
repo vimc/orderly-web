@@ -32,6 +32,12 @@
                 </a>
             </button>
         </#if>
+        <#if isRunner>
+            <button id="run-workflow" class="ml-5 btn-link btn btn-lg"><a href="${appUrl}/run-workflow">Run a workflow
+                    <@customSvg />
+                </a>
+            </button>
+        </#if>
     </h3>
     <h1 class="h3 mb-3 reports-list">Find a report</h1>
     <div class="helper-text text-muted mb-2">Click on a column heading to sort by that field. Hold shift to multi-sort.

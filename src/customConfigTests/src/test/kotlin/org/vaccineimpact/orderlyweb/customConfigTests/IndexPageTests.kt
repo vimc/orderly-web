@@ -131,6 +131,40 @@ class IndexPageTests : SeleniumTest()
     }
 
     @Test
+    fun `can link to run workflow page with permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.run", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.id("run-workflow"))
+        assertThat(component.count()).isEqualTo(1)
+        component[0].click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-container")))
+    }
+
+    @Test
+    fun `does not link to run workflow page without run permission`()
+    {
+        setUpDb()
+        startApp("auth.provider=montagu")
+
+        addUserWithPermissions(listOf(
+                ReifiedPermission("reports.read", Scope.Global())))
+
+        loginWithMontagu()
+        driver.get(RequestHelper.webBaseUrl)
+
+        val component = driver.findElements(By.id("run-workflow"))
+        assertThat(component.count()).isEqualTo(0)
+    }
+
+    @Test
     fun `can not link to run report page without permission`()
     {
         setUpDb()
