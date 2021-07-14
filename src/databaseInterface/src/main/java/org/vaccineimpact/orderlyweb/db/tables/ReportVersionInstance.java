@@ -11,7 +11,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row4;
+import org.jooq.Row3;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -30,7 +30,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.ReportVersionInstanceRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class ReportVersionInstance extends TableImpl<ReportVersionInstanceRecord> {
 
-    private static final long serialVersionUID = 313331233;
+    private static final long serialVersionUID = -2054588;
 
     /**
      * The reference instance of <code>report_version_instance</code>
@@ -46,14 +46,9 @@ public class ReportVersionInstance extends TableImpl<ReportVersionInstanceRecord
     }
 
     /**
-     * The column <code>report_version_instance.id</code>.
-     */
-    public final TableField<ReportVersionInstanceRecord, Integer> ID = createField(DSL.name("id"), org.jooq.impl.SQLDataType.INTEGER, this, "");
-
-    /**
      * The column <code>report_version_instance.report_version</code>.
      */
-    public final TableField<ReportVersionInstanceRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<ReportVersionInstanceRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * The column <code>report_version_instance.type</code>.
@@ -149,11 +144,11 @@ public class ReportVersionInstance extends TableImpl<ReportVersionInstanceRecord
     }
 
     // -------------------------------------------------------------------------
-    // Row4 type methods
+    // Row3 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row4<Integer, String, String, String> fieldsRow() {
-        return (Row4) super.fieldsRow();
+    public Row3<String, String, String> fieldsRow() {
+        return (Row3) super.fieldsRow();
     }
 }
