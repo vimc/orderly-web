@@ -35,7 +35,6 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupReportPermissio
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupUser;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebUserGroupVersionPermission;
 import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRun;
-import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRunReports;
 import org.vaccineimpact.orderlyweb.db.tables.Parameters;
 import org.vaccineimpact.orderlyweb.db.tables.ParametersType;
 import org.vaccineimpact.orderlyweb.db.tables.Report;
@@ -214,11 +213,6 @@ public class Tables {
      * The table <code>orderlyweb_workflow_run</code>.
      */
     public static final OrderlywebWorkflowRun ORDERLYWEB_WORKFLOW_RUN = OrderlywebWorkflowRun.ORDERLYWEB_WORKFLOW_RUN;
-
-    /**
-     * The table <code>orderlyweb_workflow_run_reports</code>.
-     */
-    public static final OrderlywebWorkflowRunReports ORDERLYWEB_WORKFLOW_RUN_REPORTS = OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS;
 
     /**
      * The table <code>parameters</code>.
