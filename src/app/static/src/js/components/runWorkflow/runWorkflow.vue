@@ -109,6 +109,9 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     components: {
         workflowWizard,
         runWorkflowCreate
+    },
+    mounted(){
+        this.handleComplete()
     }
 })
 </script>
