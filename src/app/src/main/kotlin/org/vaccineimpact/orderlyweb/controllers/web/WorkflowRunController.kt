@@ -58,8 +58,7 @@ class WorkflowRunController(
         val workflowRunRequest = try
         {
             Serializer.instance.gson.fromJson(workflowRunRequestJson, WorkflowRunRequest::class.java)
-        }
-        catch (e: JsonSyntaxException)
+        } catch (e: JsonSyntaxException)
         {
             throw BadRequest("Invalid workflow description: ${e.message}")
         }
@@ -105,12 +104,12 @@ class WorkflowRunController(
 
             workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
                 workflowRunRepository.addWorkflowRunReport(
-                        WorkflowRunReport(
-                                workflowRun.key,
-                                reportKey,
-                                report.name,
-                                report.params
-                        )
+                    WorkflowRunReport(
+                        workflowRun.key,
+                        reportKey,
+                        report.name,
+                        report.params
+                    )
                 )
             }
         }
