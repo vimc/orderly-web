@@ -653,4 +653,16 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         assertThat(results).isEmpty()
     }
+
+    @Test
+    fun `cannot get workflow run report when report key does not exist`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        assertThatThrownBy {
+            sut.getWorkflowRunReportByReportKey("fake_workflow_key")
+        }.hasMessageContaining("Unknown workflow : 'fake_workflow_key'")
+    }
 }
