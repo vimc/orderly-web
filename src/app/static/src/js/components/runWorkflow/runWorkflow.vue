@@ -38,7 +38,7 @@ interface Data {
 interface Methods {
     handleCancel: () => void;
     handleRerun: (data: Event) => void;
-    handleCreate: () => void;
+    handleCreate: (data: Event) => void;
     handleClone: (data: Event) => void;
     handleComplete: () => void;
 }
