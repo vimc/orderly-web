@@ -102,13 +102,9 @@ describe(`runWorkflowProgress`, () => {
                 expect(wrapper.find("table").exists()).toBe(true)
                 expect(wrapper.findAll("tr").length).toBe(3)
                 const reportLinks = wrapper.findAll("td > a")
-                expect(reportLinks.length).toBe(2)
+                expect(reportLinks.length).toBe(1)
 
-                const errorReportLink = reportLinks.at(0)
-                expect(errorReportLink.text()).toBe("report one a")
-                expect(errorReportLink.attributes("href")).toBe("http://app/run-report?report-name=report one a")
-
-                const completedReportLink = reportLinks.at(1)
+                const completedReportLink = reportLinks.at(0)
                 expect(completedReportLink.text()).toBe("report two a")
                 expect(completedReportLink.attributes("href")).toBe("http://app/report/report two a/20210510-100458-8f1a9624/")
 
@@ -128,21 +124,5 @@ describe(`runWorkflowProgress`, () => {
                 done();
             })
         })
-    })
-
-    it(`clicking an unsuccessful report link sets report logs tab in session`, async (done) => {
-        Storage.prototype.setItem = jest.fn();
-        const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
-        const wrapper = getWrapper()
-        setTimeout(() => {
-            wrapper.setData({workflowRunStatus: workflowStatus1.data})
-            setTimeout(() => {
-                const link = wrapper.findAll("td > a").at(0)
-                link.trigger("click")
-                expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportTab");
-                expect(spySetStorage.calls[0][1]).toBe("reportLogs");
-                done();
-            })
-        });
     })
 })

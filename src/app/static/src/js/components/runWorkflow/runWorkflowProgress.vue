@@ -36,13 +36,6 @@
                             {{ report.name }}
                         </a>
                     </td>
-                    <td v-else-if="report.status === 'error'" class="p-2">
-                        <a
-                            :href="reportLogsHref(report.name)"
-                            @click="setReportLogsTab"
-                            >{{ report.name }}
-                        </a>
-                    </td>
                     <td v-else class="p-2">{{ report.name }}</td>
                     <td :class="statusColour(report.status)" class="p-2">
                         {{ interpretStatus(report.status) }}
@@ -95,10 +88,8 @@ interface Methods {
     getWorkflowRunStatus: (key: string) => void;
     formatDate: (date: string) => string;
     reportVersionHref: (name: string, version: string) => string;
-    reportLogsHref: (name: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
-    setReportLogsTab: () => void;
 }
 
 interface Props {
@@ -159,10 +150,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             const url = `/report/${name}/${version}/`;
             return buildFullUrl(url);
         },
-        reportLogsHref(name) {
-            const url = `/run-report?report-name=${name}`;
-            return buildFullUrl(url);
-        },
         statusColour(status) {
             if (["queued", "running"].includes(status)) {
                 return "text-secondary";
@@ -171,9 +158,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             } else {
                 return "";
             }
-        },
-        setReportLogsTab() {
-            session.setSelectedTab("reportLogs");
         },
         interpretStatus(status) {
             if (status === "success") {
