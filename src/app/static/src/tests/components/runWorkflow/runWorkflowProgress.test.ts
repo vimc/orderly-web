@@ -13,9 +13,9 @@ describe(`runWorkflowProgress`, () => {
     })
 
     it(`it can set and render props correctly`, async() => {
-        const workflowMeta = {placeholder: "test placeholder"}
+        const workflowRun = {placeholder: "test placeholder"}
         const wrapper = getWrapper()
-        await wrapper.setProps({workflowMetadata: workflowMeta})
-        expect(wrapper.vm.$props.workflowMetadata).toBe(workflowMeta)
+        await wrapper.setProps({workflowRun: workflowRun})
+        expect(wrapper.vm.$props.workflowRun).toBe(workflowRun)
     })
 })

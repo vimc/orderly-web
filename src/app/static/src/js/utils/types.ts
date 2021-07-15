@@ -33,14 +33,24 @@ export interface RunReportMetadata {
     changelog_types: string[]
 }
 
-export interface RunWorkflowMetadata {
-    name: string
-    date: string
-    email: string
+export interface WorkflowMetadata {
+    name: string,
     reports: WorkflowReportWithParams[],
     instances: Record<string, string>,
     git_branch: string | null
     git_commit: string | null
+}
+
+export interface RunWorkflowMetadata extends WorkflowMetadata {
+    changelog: {
+        message: string,
+        type: string
+    } | null
+}
+
+export interface WorkflowRun extends WorkflowMetadata {
+    date: string
+    email: string
     key: string
 }
 
