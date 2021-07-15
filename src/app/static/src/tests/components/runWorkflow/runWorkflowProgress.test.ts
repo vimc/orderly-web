@@ -78,9 +78,10 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
-            // Tests to be reinstated once buttons are integrated with workflow wizard
+            // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
             // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
             // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
+            expect(wrapper.findAll("button").length).toBe(0)
             done();
         })
     })
@@ -96,7 +97,7 @@ describe(`runWorkflowProgress`, () => {
         const wrapper = getWrapper()
         
         setTimeout(() => {
-            wrapper.setData({workflowRunStatus: workflowStatus1})
+            wrapper.setData({workflowRunStatus: workflowStatus1.data})
             setTimeout(() => {
                 expect(wrapper.find("table").exists()).toBe(true)
                 expect(wrapper.findAll("tr").length).toBe(3)
@@ -134,7 +135,7 @@ describe(`runWorkflowProgress`, () => {
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
         const wrapper = getWrapper()
         setTimeout(() => {
-            wrapper.setData({workflowRunStatus: workflowStatus1})
+            wrapper.setData({workflowRunStatus: workflowStatus1.data})
             setTimeout(() => {
                 const link = wrapper.findAll("td > a").at(0)
                 link.trigger("click")

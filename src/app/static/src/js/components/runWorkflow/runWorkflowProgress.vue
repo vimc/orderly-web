@@ -8,11 +8,11 @@
             <label for="workflows" class="form-label col">Workflow</label>
             <div class="col-10 px-0">
                 <v-select
-                    :options="workflowRunSummaries.data"
+                    :options="workflowRunSummaries"
                     label="name"
                     :reduce="(label) => label.key"
                     name="workflows"
-                    id="v-select"
+                    id="workflows"
                     v-model="selectedWorkflowKey"
                     placeholder="Select workflow or search by name..."
                 >
@@ -30,21 +30,18 @@
         <div class="row" v-if="workflowRunStatus" id="workflow-table">
             <label class="form-label col">Reports</label>
             <table class="table-bordered col-10">
-                <tr v-for="report in workflowRunStatus.data.reports">
+                <tr v-for="report in workflowRunStatus.reports">
                     <td v-if="report.status === 'success'" class="p-2">
-                        <a
-                            :href="
-                                reportVersionHref(report.name, report.version)
-                            "
-                            >{{ report.name }}</a
-                        >
+                        <a :href="reportVersionHref(report.name, report.version)">
+                            {{ report.name }}
+                        </a>
                     </td>
                     <td v-else-if="report.status === 'error'" class="p-2">
                         <a
                             :href="reportLogsHref(report.name)"
                             @click="setReportLogsTab"
-                            >{{ report.name }}</a
-                        >
+                            >{{ report.name }}
+                        </a>
                     </td>
                     <td v-else class="p-2">{{ report.name }}</td>
                     <td :class="statusColour(report.status)" class="p-2">
@@ -54,7 +51,7 @@
                 </tr>
             </table>
         </div>
-        <!-- Buttons to be unhidden and made active once workflow wizard is implemented -->
+        <!-- Buttons to be unhidden and made active by mrc-2513 -->
         <div class="row justify-content-end mt-3" v-if="false">
             <button class="button mr-3" type="button">
                 Clone workflow
@@ -83,7 +80,7 @@ import {
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
-import { session } from "./../../utils/session.js";
+import { session } from "../../utils/session.js";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -132,7 +129,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
-                    this.workflowRunSummaries = data;
+                    this.workflowRunSummaries = data.data;
                     this.error = "";
                     this.defaultMessage = "";
                 })
@@ -145,7 +142,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         getWorkflowRunStatus(key) {
             api.get(`/workflows/${key}/status`)
                 .then(({ data }) => {
-                    this.workflowRunStatus = data;
+                    this.workflowRunStatus = data.data;
                     this.error = "";
                     this.defaultMessage = "";
                 })
@@ -169,9 +166,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         statusColour(status) {
             if (["queued", "running"].includes(status)) {
                 return "text-secondary";
-            } else if (
-                failStates.includes(status)
-            ) {
+            } else if (failStates.includes(status)) {
                 return "text-danger";
             } else {
                 return "";
