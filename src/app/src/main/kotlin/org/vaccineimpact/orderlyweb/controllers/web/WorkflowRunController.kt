@@ -98,20 +98,17 @@ class WorkflowRunController(
                     workflowRunRequest.reports,
                     workflowRunRequest.instances ?: emptyMap(),
                     workflowRunRequest.gitBranch,
-                    workflowRunRequest.gitCommit
+                    workflowRunRequest.gitCommit,
+                    workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                        WorkflowRunReport(
+                            workflowRun.key,
+                            reportKey,
+                            report.name,
+                            report.params
+                        )
+                    }
                 )
             )
-
-            workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
-                workflowRunRepository.addWorkflowRunReport(
-                    WorkflowRunReport(
-                        workflowRun.key,
-                        reportKey,
-                        report.name,
-                        report.params
-                    )
-                )
-            }
         }
         return passThroughResponse(response)
     }

@@ -431,7 +431,15 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 ),
                 mapOf("instanceA" to "pre-staging"),
                 "branch1",
-                "commit1"
+                "commit1",
+                listOf(
+                    WorkflowRunReport(
+                        "adventurous_aardvark",
+                        "adventurous_report_key",
+                        "Interim report1",
+                        emptyMap()
+                    )
+                )
         ))
 
         val results = sut.getWorkflowRunDetails("adventurous_aardvark")
@@ -446,7 +454,15 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 ),
                 mapOf("instanceA" to "pre-staging"),
                 "branch1",
-                "commit1"
+                "commit1",
+                listOf(
+                    WorkflowRunReport(
+                        "adventurous_aardvark",
+                        "adventurous_report_key",
+                        "Interim report1",
+                        emptyMap()
+                    )
+                )
         ))
     }
 
@@ -470,7 +486,15 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 ),
                 mapOf("instanceA" to "pre-staging"),
                 "branch1",
-                "commit1"
+                "commit1",
+                listOf(
+                    WorkflowRunReport(
+                        "adventurous_aardvark",
+                        "adventurous_report_key",
+                        "Interim report1",
+                        emptyMap()
+                    )
+                )
         )
         sut.addWorkflowRun(workflowRun)
         assertThatThrownBy {
@@ -594,64 +618,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 "report one",
                 mapOf("param1" to "one", "param2" to "two")
         ))
-    }
-
-    @Test
-    fun `can get workflow run reports by workflow key`()
-    {
-        insertUser("user@email.com", "user.name")
-
-        val sut = OrderlyWebWorkflowRunRepository()
-
-        sut.addWorkflowRun(WorkflowRun(
-                "Interim report",
-                "fake_workflow_key",
-                "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap()
-        ))
-
-        sut.addWorkflowRunReport(WorkflowRunReport(
-                "fake_workflow_key",
-                "adventurous_aardvark",
-                "report one",
-                mapOf("param1" to "one", "param2" to "two")
-        ))
-
-        sut.addWorkflowRunReport(WorkflowRunReport(
-                "fake_workflow_key",
-                "adventurous_crook",
-                "report two",
-                mapOf("param1" to "one", "param2" to "two")
-        ))
-
-        val results = sut.getWorkflowRunReportByWorkflowKey("fake_workflow_key")
-
-        assertThat(results).isEqualTo(listOf(WorkflowRunReport(
-                "fake_workflow_key",
-                "adventurous_aardvark",
-                "report one",
-                mapOf("param1" to "one", "param2" to "two")),
-
-                WorkflowRunReport(
-                        "fake_workflow_key",
-                        "adventurous_crook",
-                        "report two",
-                        mapOf("param1" to "one", "param2" to "two"))
-        ))
-    }
-
-    @Test
-    fun `cannot get workflow run reports when workflow key does not exist `()
-    {
-        insertUser("user@email.com", "user.name")
-
-        val sut = OrderlyWebWorkflowRunRepository()
-
-        val results = sut.getWorkflowRunReportByWorkflowKey("fake_workflow_key")
-
-        assertThat(results).isEmpty()
     }
 
     @Test

@@ -70,7 +70,15 @@ class WorkflowRunControllerTests
             ),
             mapOf("instanceA" to "pre-staging"),
             "branch1",
-            "commit1"
+            "commit1",
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "key",
+                    "Interim report",
+                    emptyMap()
+                )
+            )
         )
 
         val mockContext = mock<ActionContext> {
@@ -208,13 +216,16 @@ class WorkflowRunControllerTests
             assertThat(it.instances).isEqualTo(workflowRunRequest.instances)
             assertThat(it.gitBranch).isEqualTo(workflowRunRequest.gitBranch)
             assertThat(it.gitCommit).isEqualTo(workflowRunRequest.gitCommit)
-        })
-
-        verify(repo).addWorkflowRunReport(check {
-            assertThat(it.workflowKey).isEqualTo("workflow_key1")
-            assertThat(it.reportKey).isEqualTo("report_key1")
-            assertThat(it.name).isEqualTo(workflowRunRequest.reports[0].name)
-            assertThat(it.params).isEqualTo(workflowRunRequest.reports[0].params)
+            assertThat(it.workflowRunReports).isEqualTo(
+                listOf(
+                    WorkflowRunReport(
+                        "workflow_key1",
+                        "report_key1",
+                        workflowRunRequest.reports[0].name,
+                        workflowRunRequest.reports[0].params
+                    )
+                )
+            )
         })
     }
 
@@ -323,6 +334,41 @@ class WorkflowRunControllerTests
             on { params(":key") } doReturn "workflow_key1"
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
+
+        val workflowRun = WorkflowRun(
+            "workflow",
+            "workflow_key1",
+            "test@user.com",
+            Instant.now(),
+            listOf(
+                WorkflowReportWithParams("Report A", emptyMap()),
+                WorkflowReportWithParams("Report B", emptyMap()),
+                WorkflowReportWithParams("Report C", emptyMap())
+            ),
+            emptyMap()
+        )
+
+        val workflowRunReportOne = WorkflowRunReport(
+            "workflow_key1",
+            "preterrestrial_andeancockoftherock",
+            "Report A",
+            emptyMap()
+        )
+
+        val workflowRunReportTwo = WorkflowRunReport(
+            "workflow_key1",
+            "hygienic_mammoth",
+            "Report B",
+            emptyMap()
+        )
+
+        val workflowRunReportThree = WorkflowRunReport(
+            "workflow_key1",
+            "supercurious_woodlouse",
+            "Report C",
+            emptyMap()
+        )
+
         val mockAPIResponseText = """
         {
           "data":{
@@ -356,18 +402,10 @@ class WorkflowRunControllerTests
             on { throwOnError() } doReturn apiClient
         }
         val repo = mock<WorkflowRunRepository>(verboseLogging = true) {
-            on { getWorkflowRunDetails("workflow_key1") } doReturn WorkflowRun(
-                "workflow",
-                "workflow_key1",
-                "test@user.com",
-                Instant.now(),
-                listOf(
-                    WorkflowReportWithParams("Report A", emptyMap()),
-                    WorkflowReportWithParams("Report B", emptyMap()),
-                    WorkflowReportWithParams("Report C", emptyMap())
-                ),
-                emptyMap()
-            )
+            on { getWorkflowRunDetails("workflow_key1") } doReturn workflowRun
+            on { getWorkflowRunReportsByReportKey("preterrestrial_andeancockoftherock") } doReturn workflowRunReportOne
+            on { getWorkflowRunReportsByReportKey("hygienic_mammoth") } doReturn workflowRunReportTwo
+            on { getWorkflowRunReportsByReportKey("supercurious_woodlouse") } doReturn workflowRunReportThree
         }
 
         val sut = WorkflowRunController(context, repo, apiClientWithError)
