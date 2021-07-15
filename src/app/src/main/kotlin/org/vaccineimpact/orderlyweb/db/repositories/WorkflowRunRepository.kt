@@ -26,7 +26,7 @@ interface WorkflowRunRepository
     fun addWorkflowRunReport(workflowRunReport: WorkflowRunReport)
     fun getWorkflowRunReportByWorkflowKey(workflowKey: String): List<WorkflowRunReport>
     @Throws(UnknownObjectError::class)
-    fun getWorkflowRunReportByReportKey(reportKey: String): WorkflowRunReport
+    fun getWorkflowRunReportsByReportKey(reportKey: String): WorkflowRunReport
 }
 
 class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
@@ -65,6 +65,18 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                 .singleOrNull()
                 ?: throw UnknownObjectError(key, "workflow")
 
+            val resultForReports = it.dsl.select(
+                ORDERLYWEB_WORKFLOW_RUN.KEY,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
+            )
+                .from(ORDERLYWEB_WORKFLOW_RUN)
+                .join(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                .on(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY))
+                .where(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(key))
+                .fetch()
+
             return WorkflowRun(
                 result[ORDERLYWEB_WORKFLOW_RUN.NAME],
                 result[ORDERLYWEB_WORKFLOW_RUN.KEY],
@@ -76,7 +88,15 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                 ),
                 jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN.INSTANCES]),
                 result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],
-                result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]
+                result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
+                resultForReports.map { report ->
+                    WorkflowRunReport(
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY],
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                        jsonToStringMap(report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
+                    )
+                }
             )
         }
     }
@@ -143,7 +163,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
         }
     }
 
-    override fun getWorkflowRunReportByReportKey(reportKey: String): WorkflowRunReport
+    override fun getWorkflowRunReportsByReportKey(reportKey: String): WorkflowRunReport
     {
         JooqContext().use {
             val result = it.dsl.select(

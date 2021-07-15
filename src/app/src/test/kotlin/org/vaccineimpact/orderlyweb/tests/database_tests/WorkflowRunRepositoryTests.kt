@@ -586,7 +586,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 mapOf("param1" to "one", "param2" to "two")
         ))
 
-        val results = sut.getWorkflowRunReportByReportKey("adventurous_aardvark")
+        val results = sut.getWorkflowRunReportsByReportKey("adventurous_aardvark")
 
         assertThat(results).isEqualTo(WorkflowRunReport(
                 "fake_workflow_key",
@@ -662,7 +662,7 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         assertThatThrownBy {
-            sut.getWorkflowRunReportByReportKey("fake_workflow_key")
+            sut.getWorkflowRunReportsByReportKey("fake_workflow_key")
         }.hasMessageContaining("Unknown workflow : 'fake_workflow_key'")
     }
 }

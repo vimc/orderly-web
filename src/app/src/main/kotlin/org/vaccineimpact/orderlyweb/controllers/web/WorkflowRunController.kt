@@ -132,7 +132,7 @@ class WorkflowRunController(
         )
     }
 
-    fun getWorkflowRunStatus(): WorkflowRunStatus
+        fun getWorkflowRunStatus(): WorkflowRunStatus
     {
         val key = context.params(":key")
         val response = orderlyServerAPI
@@ -140,23 +140,21 @@ class WorkflowRunController(
             .get("/v1/workflow/$key/status/", emptyMap())
         val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
         workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
-        val reportNames = workflowRunRepository.getWorkflowRunDetails(key).reports.map { it.name }
+
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
-            workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-                WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
+            workflowRunStatusResponse.reports.map { report ->
+                WorkflowRunStatus.WorkflowRunReportStatus(
+                    getReportName(report.key),
+                    report.key,
+                    report.status,
+                    report.version
+                )
             })
     }
 
-    fun getWorkflowRunReportByWorkflowKey(): List<WorkflowRunReport>
+    private fun getReportName(key: String): String
     {
-        val workflowKey = context.params(":key")
-        return workflowRunRepository.getWorkflowRunReportByWorkflowKey(workflowKey)
-    }
-
-    fun getWorkflowRunReportByReportKey(): WorkflowRunReport
-    {
-        val reportKey = context.params(":key")
-        return workflowRunRepository.getWorkflowRunReportByReportKey(reportKey)
+        return workflowRunRepository.getWorkflowRunReportsByReportKey(key).name
     }
 }
