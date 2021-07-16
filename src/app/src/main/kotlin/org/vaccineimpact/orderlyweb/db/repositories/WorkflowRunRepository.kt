@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
+import org.jooq.exception.DataAccessException
 import org.jooq.impl.DSL.*
+import org.sqlite.core.Codes.SQLITE_CONSTRAINT
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
@@ -12,6 +14,8 @@ import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
 import org.vaccineimpact.orderlyweb.models.WorkflowRunReport
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
+import java.sql.SQLException
+import java.sql.SQLIntegrityConstraintViolationException
 import java.sql.Timestamp
 
 interface WorkflowRunRepository
@@ -22,7 +26,6 @@ interface WorkflowRunRepository
     fun getWorkflowRunSummaries(email: String? = null, namePrefix: String? = null): List<WorkflowRunSummary>
     @Throws(UnknownObjectError::class)
     fun updateWorkflowRun(key: String, status: String)
-    fun addWorkflowRunReport(workflowRunReport: WorkflowRunReport)
     @Throws(UnknownObjectError::class)
     fun getWorkflowRunReportsByReportKey(reportKey: String): WorkflowRunReport
 }
@@ -160,18 +163,6 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
             {
                 throw UnknownObjectError(key, "workflow")
             }
-        }
-    }
-
-    override fun addWorkflowRunReport(workflowRunReport: WorkflowRunReport)
-    {
-        JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY, workflowRunReport.workflowKey)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY, workflowRunReport.reportKey)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME, workflowRunReport.name)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS, Gson().toJson(workflowRunReport.params))
-                    .execute()
         }
     }
 

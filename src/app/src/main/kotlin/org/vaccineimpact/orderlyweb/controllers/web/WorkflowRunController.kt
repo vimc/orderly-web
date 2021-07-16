@@ -130,7 +130,7 @@ class WorkflowRunController(
         )
     }
 
-        fun getWorkflowRunStatus(): WorkflowRunStatus
+    fun getWorkflowRunStatus(): WorkflowRunStatus
     {
         val key = context.params(":key")
         val response = orderlyServerAPI

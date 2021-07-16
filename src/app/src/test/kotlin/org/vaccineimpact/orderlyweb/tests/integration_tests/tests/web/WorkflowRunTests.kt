@@ -207,17 +207,14 @@ class WorkflowRunTests : IntegrationTest()
                 "test.user@example.com",
                 Instant.now(),
                 listOf(WorkflowReportWithParams("minimal", emptyMap())),
-                emptyMap()
+                emptyMap(),
+                workflowRunReports = listOf(WorkflowRunReport(
+                    workflowRunResponse.key,
+                    workflowRunResponse.reports.first(),
+                    "minimal",
+                    emptyMap()
+                ))
             )
-        )
-
-        repo.addWorkflowRunReport(
-                WorkflowRunReport(
-                        workflowRunResponse.key,
-                        workflowRunResponse.reports.first(),
-                        "minimal",
-                        emptyMap()
-                )
         )
 
         assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")

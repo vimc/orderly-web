@@ -552,42 +552,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
-    fun `cannot add workflow run report with duplicate report key`()
-    {
-        insertUser("user@email.com", "user.name")
-
-        val sut = OrderlyWebWorkflowRunRepository()
-
-        sut.addWorkflowRun(WorkflowRun(
-                "Interim report",
-                "fake_workflow_key",
-                "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap()
-        ))
-
-        sut.addWorkflowRunReport(
-                WorkflowRunReport(
-                        "fake_workflow_key",
-                        "adventurous_aardvark",
-                        "report one",
-                        emptyMap()
-                )
-        )
-        assertThatThrownBy {
-            sut.addWorkflowRunReport(
-                    WorkflowRunReport(
-                            "fake_workflow_key",
-                            "adventurous_aardvark",
-                            "report one",
-                            emptyMap()
-                    )
-            )
-        }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run_reports.report_key")
-    }
-
-    @Test
     fun `can get workflow run reports by report key`()
     {
         insertUser("user@email.com", "user.name")
@@ -595,26 +559,32 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         sut.addWorkflowRun(WorkflowRun(
-                "Interim report",
-                "fake_workflow_key",
-                "user@email.com",
-                Instant.now(),
-                emptyList(),
-                emptyMap()
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            Instant.now(),
+            listOf(
+                WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+            ),
+            mapOf("instanceA" to "pre-staging"),
+            "branch1",
+            "commit1",
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param2" to "two")
+                )
+            )
         ))
 
-        sut.addWorkflowRunReport(WorkflowRunReport(
-                "fake_workflow_key",
-                "adventurous_aardvark",
-                "report one",
-                mapOf("param1" to "one", "param2" to "two")
-        ))
-
-        val results = sut.getWorkflowRunReportsByReportKey("adventurous_aardvark")
+        val results = sut.getWorkflowRunReportsByReportKey("adventurous_key")
 
         assertThat(results).isEqualTo(WorkflowRunReport(
-                "fake_workflow_key",
                 "adventurous_aardvark",
+                "adventurous_key",
                 "report one",
                 mapOf("param1" to "one", "param2" to "two")
         ))
