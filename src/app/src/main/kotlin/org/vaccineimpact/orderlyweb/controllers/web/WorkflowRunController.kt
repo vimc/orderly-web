@@ -88,6 +88,7 @@ class WorkflowRunController(
         if (response.statusCode == HTTP_OK)
         {
             val workflowRun = response.data(WorkflowRunResponse::class.java)
+
             workflowRunRepository.addWorkflowRun(
                 WorkflowRun(
                     workflowRunRequest.name,
@@ -98,7 +99,15 @@ class WorkflowRunController(
                     workflowRunRequest.reports,
                     workflowRunRequest.instances ?: emptyMap(),
                     workflowRunRequest.gitBranch,
-                    workflowRunRequest.gitCommit
+                    workflowRunRequest.gitCommit,
+                    workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                        WorkflowRunReport(
+                            workflowRun.key,
+                            reportKey,
+                            report.name,
+                            report.params
+                        )
+                    }
                 )
             )
         }
@@ -129,11 +138,21 @@ class WorkflowRunController(
             .get("/v1/workflow/$key/status/", emptyMap())
         val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
         workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
-        val reportNames = workflowRunRepository.getWorkflowRunDetails(key).reports.map { it.name }
+
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
-            workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-                WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
+            workflowRunStatusResponse.reports.map { report ->
+                WorkflowRunStatus.WorkflowRunReportStatus(
+                    getReportName(report.key),
+                    report.key,
+                    report.status,
+                    report.version
+                )
             })
+    }
+
+    private fun getReportName(key: String): String
+    {
+        return workflowRunRepository.getWorkflowRunReportsByReportKey(key).name
     }
 }

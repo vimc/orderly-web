@@ -147,10 +147,12 @@ class WorkflowRunTests : IntegrationTest()
                       }
                     },
                     {
-                      "name": "minimal"
+                      "name": "minimal",
+                      "params": {}
                     },
                     {
-                      "name": "global"
+                      "name": "global",
+                      "params": {}
                     }
                   ],
                   "changelog": {
@@ -205,9 +207,16 @@ class WorkflowRunTests : IntegrationTest()
                 "test.user@example.com",
                 Instant.now(),
                 listOf(WorkflowReportWithParams("minimal", emptyMap())),
-                emptyMap()
+                emptyMap(),
+                workflowRunReports = listOf(WorkflowRunReport(
+                    workflowRunResponse.key,
+                    workflowRunResponse.reports.first(),
+                    "minimal",
+                    emptyMap()
+                ))
             )
         )
+
         assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
 
         val response = webRequestHelper.requestWithSessionCookie(

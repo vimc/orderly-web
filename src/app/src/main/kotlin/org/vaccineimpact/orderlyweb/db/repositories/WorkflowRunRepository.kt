@@ -1,15 +1,16 @@
 package org.vaccineimpact.orderlyweb.db.repositories
 
 import com.google.gson.Gson
-import org.jooq.impl.DSL.lower
-import org.jooq.impl.DSL.noCondition
+import org.jooq.impl.DSL.*
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.jsonToGenericList
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
+import org.vaccineimpact.orderlyweb.models.WorkflowRunReport
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import java.sql.Timestamp
 
@@ -21,6 +22,8 @@ interface WorkflowRunRepository
     fun getWorkflowRunSummaries(email: String? = null, namePrefix: String? = null): List<WorkflowRunSummary>
     @Throws(UnknownObjectError::class)
     fun updateWorkflowRun(key: String, status: String)
+    @Throws(UnknownObjectError::class)
+    fun getWorkflowRunReportsByReportKey(reportKey: String): WorkflowRunReport
 }
 
 class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
@@ -28,16 +31,30 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
     override fun addWorkflowRun(workflowRun: WorkflowRun)
     {
         JooqContext().use {
-            it.dsl.insertInto(ORDERLYWEB_WORKFLOW_RUN)
-                .set(ORDERLYWEB_WORKFLOW_RUN.NAME, workflowRun.name)
-                .set(ORDERLYWEB_WORKFLOW_RUN.KEY, workflowRun.key)
-                .set(ORDERLYWEB_WORKFLOW_RUN.EMAIL, workflowRun.email)
-                .set(ORDERLYWEB_WORKFLOW_RUN.DATE, Timestamp.from(workflowRun.date))
-                .set(ORDERLYWEB_WORKFLOW_RUN.REPORTS, Gson().toJson(workflowRun.reports))
-                .set(ORDERLYWEB_WORKFLOW_RUN.INSTANCES, Gson().toJson(workflowRun.instances))
-                .set(ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH, workflowRun.gitBranch)
-                .set(ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT, workflowRun.gitCommit)
-                .execute()
+
+            it.dsl.transaction { config ->
+                val dsl = using(config)
+
+                dsl.insertInto(ORDERLYWEB_WORKFLOW_RUN)
+                    .set(ORDERLYWEB_WORKFLOW_RUN.NAME, workflowRun.name)
+                    .set(ORDERLYWEB_WORKFLOW_RUN.KEY, workflowRun.key)
+                    .set(ORDERLYWEB_WORKFLOW_RUN.EMAIL, workflowRun.email)
+                    .set(ORDERLYWEB_WORKFLOW_RUN.DATE, Timestamp.from(workflowRun.date))
+                    .set(ORDERLYWEB_WORKFLOW_RUN.REPORTS, Gson().toJson(workflowRun.reports))
+                    .set(ORDERLYWEB_WORKFLOW_RUN.INSTANCES, Gson().toJson(workflowRun.instances))
+                    .set(ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH, workflowRun.gitBranch)
+                    .set(ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT, workflowRun.gitCommit)
+                    .execute()
+
+                workflowRun.workflowRunReports?.forEach { report ->
+                    dsl.insertInto(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY, report.workflowKey)
+                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY, report.reportKey)
+                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME, report.name)
+                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS, Gson().toJson(report.params))
+                        .execute()
+                }
+            }
         }
     }
 
@@ -59,6 +76,18 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                 .singleOrNull()
                 ?: throw UnknownObjectError(key, "workflow")
 
+            val resultForReports = it.dsl.select(
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
+            )
+                .from(ORDERLYWEB_WORKFLOW_RUN)
+                .join(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                .on(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY))
+                .where(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(key))
+                .fetch()
+
             return WorkflowRun(
                 result[ORDERLYWEB_WORKFLOW_RUN.NAME],
                 result[ORDERLYWEB_WORKFLOW_RUN.KEY],
@@ -70,7 +99,15 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                 ),
                 jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN.INSTANCES]),
                 result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],
-                result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]
+                result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
+                resultForReports.map { report ->
+                    WorkflowRunReport(
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY],
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                        jsonToStringMap(report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
+                    )
+                }
             )
         }
     }
@@ -122,6 +159,29 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
             {
                 throw UnknownObjectError(key, "workflow")
             }
+        }
+    }
+
+    override fun getWorkflowRunReportsByReportKey(reportKey: String): WorkflowRunReport
+    {
+        JooqContext().use {
+            val result = it.dsl.select(
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
+            )
+                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY.eq(reportKey))
+                    .singleOrNull()
+                    ?: throw UnknownObjectError(reportKey, "workflow")
+
+            return WorkflowRunReport(
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_KEY],
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                    jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
+            )
         }
     }
 }

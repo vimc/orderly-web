@@ -355,6 +355,7 @@ class VersionTests : CleanDatabaseTests()
         JooqContext().use {
             val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
                     .apply {
+                        this.id = 1
                         this.reportVersion = "version1"
                         this.instance = "instance1"
                         this.type = "type1"
@@ -363,6 +364,7 @@ class VersionTests : CleanDatabaseTests()
             
             val instanceRecord2 = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
                     .apply {
+                        this.id = 2
                         this.reportVersion = "version1"
                         this.instance = "instance2"
                         this.type = "type2"
