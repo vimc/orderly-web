@@ -247,6 +247,6 @@ class RunWorkflowTests : SeleniumTest()
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
         assertThat(rows[0].text).isEqualTo("minimal Running")
-        assertThat(rows[1].text).isEqualTo("global Running")
+        assertThat(rows[1].text).isEqualTo("global Queued")
     }
 }
