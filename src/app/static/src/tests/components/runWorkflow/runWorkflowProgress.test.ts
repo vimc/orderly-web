@@ -86,13 +86,6 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
-    it(`it can set and render props correctly`, async() => {
-        const workflowMeta = {placeholder: "test placeholder"}
-        const wrapper = getWrapper()
-        await wrapper.setProps({workflowMetadata: workflowMeta})
-        expect(wrapper.vm.$props.workflowMetadata).toBe(workflowMeta)
-    })
-
     it(`it can render reports table`, async (done) => {
         const wrapper = getWrapper()
         

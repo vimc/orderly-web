@@ -68,7 +68,6 @@ import { api } from "../../utils/api";
 import { longTimestamp } from "../../utils/helpers";
 import ErrorInfo from "../errorInfo.vue";
 import {
-    RunWorkflowMetadata,
     WorkflowRunSummary,
     WorkflowRunStatus,
 } from "../../utils/types";
@@ -92,20 +91,13 @@ interface Methods {
     interpretStatus: (status: string) => string;
 }
 
-interface Props {
-    workflowMetadata: RunWorkflowMetadata | null;
-}
-
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
-export default Vue.extend<Data, Methods, unknown, Props>({
+export default Vue.extend<Data, Methods, unknown, unknown>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         vSelect,
-    },
-    props: {
-        workflowMetadata: null,
     },
     data() {
         return {

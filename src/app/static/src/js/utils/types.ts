@@ -34,14 +34,15 @@ export interface RunReportMetadata {
 }
 
 export interface RunWorkflowMetadata {
-    name: string
-    date: string
-    email: string
+    name: string,
     reports: WorkflowReportWithParams[],
     instances: Record<string, string>,
-    git_branch: string | null
-    git_commit: string | null
-    key: string
+    git_branch: string | null,
+    git_commit: string | null,
+    changelog: {
+        message: string,
+        type: string
+    } | null
 }
 
 export interface WorkflowReportWithParams {
