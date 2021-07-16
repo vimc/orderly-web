@@ -14,15 +14,13 @@ describe(`runWorkflow`, () => {
     ]
 
     const workflowMetadata = [{
-        name: "interim report",
-        date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
         reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
             {"name": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit",
-        key: "fake"
+        changelog: {type: "message", message: "test changelog"}
     }]
 
     beforeEach(() => {

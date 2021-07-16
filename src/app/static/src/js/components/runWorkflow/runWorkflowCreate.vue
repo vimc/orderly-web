@@ -70,13 +70,11 @@
 
     const emptyWorkflowMetadata = {
         name: "",
-        date: "",
-        email: "",
         reports: [],
         instances: {},
         git_branch: null,
         git_commit: null,
-        key: ""
+        changelog: null
     };
 
     interface Computed {
