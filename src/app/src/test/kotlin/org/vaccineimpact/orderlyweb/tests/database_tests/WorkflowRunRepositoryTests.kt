@@ -420,50 +420,38 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
 
-        sut.addWorkflowRun(WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+        val workflowRun = WorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            listOf(
+                WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
+                WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+            ),
+            mapOf("instanceA" to "pre-staging"),
+            "branch1",
+            "commit1",
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_report_key",
+                    "Interim report1",
+                    mapOf("param1" to "one")
                 ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1",
-                listOf(
-                    WorkflowRunReport(
-                        "adventurous_aardvark",
-                        "adventurous_report_key",
-                        "Interim report1",
-                        emptyMap()
-                    )
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_report_key2",
+                    "Interim report2",
+                    mapOf("param2" to "two")
                 )
-        ))
+            )
+        )
+
+        sut.addWorkflowRun(workflowRun)
 
         val results = sut.getWorkflowRunDetails("adventurous_aardvark")
-        assertThat(results).isEqualTo(WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
-                ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1",
-                listOf(
-                    WorkflowRunReport(
-                        "adventurous_aardvark",
-                        "adventurous_report_key",
-                        "Interim report1",
-                        emptyMap()
-                    )
-                )
-        ))
+        assertThat(results).isEqualTo(workflowRun)
     }
 
     @Test
