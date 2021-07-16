@@ -145,7 +145,6 @@
                     })
             },
             handleWorkflowName: function (event: Event) {
-                console.log("hnadling workflow name")
                 const workflowName = (event.target as HTMLInputElement).value;
                 let valid = !!workflowName;
                 this.workflowNameError = "";
