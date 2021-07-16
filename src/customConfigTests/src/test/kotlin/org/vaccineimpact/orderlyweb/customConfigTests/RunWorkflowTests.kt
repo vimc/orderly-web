@@ -7,6 +7,7 @@ import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
+import org.openqa.selenium.JavascriptExecutor
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -227,20 +228,25 @@ class RunWorkflowTests : SeleniumTest()
     @Test
     fun `can select workflow progress tab and selecting a workflow option generates reports table`()
     {
+        //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
+        val jse = driver as JavascriptExecutor
+        jse.executeScript("""fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"})""")
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("workf")
-
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-            "Tue Jun 15 2021, 14:50")
+        assertThat(dropdownMenu[0].text).contains("My workflow")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
         val table = driver.findElement(By.id("workflow-table"))
         assertThat(table.text).contains("Reports")
+        val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
+        assertThat(rows.count()).isEqualTo(2)
+        assertThat(rows[0].text).isEqualTo("minimal Running")
+        assertThat(rows[1].text).isEqualTo("global Running")
     }
 }
