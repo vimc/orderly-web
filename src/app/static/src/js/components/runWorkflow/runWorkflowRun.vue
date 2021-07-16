@@ -116,7 +116,7 @@
             handleChangeLogMessageValue: function (changelogMessage) {
                 const changelog = {
                     message: changelogMessage,
-                    type: this.workflowMetadata.changelog.type || ""
+                    type: this.workflowMetadata.changelog?.type || ""
                 };
                 this.$emit("update", {changelog});
             },
@@ -145,6 +145,7 @@
                     })
             },
             handleWorkflowName: function (event: Event) {
+                console.log("hnadling workflow name")
                 const workflowName = (event.target as HTMLInputElement).value;
                 let valid = !!workflowName;
                 this.workflowNameError = "";
