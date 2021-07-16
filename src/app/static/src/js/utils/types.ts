@@ -69,6 +69,26 @@ export interface ReportDependencies {
     dependency_tree: ReportDependency
 }
 
+export interface WorkflowRunSummary {
+    name: string,
+    key: string,
+    email: string,
+    date: string
+}
+
+export interface WorkflowRunStatus {
+    status: "queued" | "running" | "success" | "error" | "cancelled",
+    reports: WorkflowRunReportStatus[]
+}
+
+export interface WorkflowRunReportStatus {
+    name: string,
+    key: string,
+    status: "queued" | "running" | "success" | "error" | "orphan" | "interrupted" | "deferred" | "impossible" | "missing",
+    version: string | null
+    date?: string
+}
+
 export interface WorkflowSummary {
     date: string,
     email: string,
