@@ -1,16 +1,18 @@
 import {shallowMount} from "@vue/test-utils";
+import Vue from "vue";
 import Instances from "../../../js/components/runReport/instances.vue"
 
 describe(`instances`, () => {
 
 
-    const getWrapper = () => {
+    const getWrapper = (propsData: any = {}) => {
         return shallowMount(Instances, {
             propsData: {
                 instances: {
                     source: ["prod", "uat"]
                 },
-                customStyle: {}
+                customStyle: {},
+                ...propsData,
             }
         })
     }
@@ -49,4 +51,25 @@ describe(`instances`, () => {
         expect(wrapper.emitted().selectedValues[0][0]).toEqual({"source": "prod"})
     });
 
+    it(`can set initial selected instances`, async () => {
+        const wrapper = getWrapper({initialSelectedInstances: {source: "uat"}});
+        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({source: "uat"});
+        await Vue.nextTick();
+        expect((wrapper.find("select").element as HTMLSelectElement).value).toBe("uat")
+    });
+
+    it(`can set initial selected instances with defaults where no initial value provided`, async () => {
+        const wrapper = getWrapper({
+            instances: {
+                annexe: ["annexe1", "annexe2"],
+                source: ["prod", "uat"]
+            },
+            initialSelectedInstances: {source: "uat"}
+        });
+        expect(wrapper.vm.$data.selectedInstances).toStrictEqual({annexe: "annexe1", source: "uat"});
+        await Vue.nextTick();
+        const selects = wrapper.findAll("select");
+        expect((selects.at(0).element as HTMLSelectElement).value).toBe("annexe1");
+        expect((selects.at(1).element as HTMLSelectElement).value).toBe("uat");
+    });
 })
