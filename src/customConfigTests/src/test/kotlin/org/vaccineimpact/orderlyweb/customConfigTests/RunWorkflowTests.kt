@@ -230,7 +230,7 @@ class RunWorkflowTests : SeleniumTest()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
-        jse.executeScript("""fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"workflow1\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"})""")
+        jse.executeScript("""fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"})""")
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()
@@ -239,7 +239,7 @@ class RunWorkflowTests : SeleniumTest()
         vSelectInput.sendKeys("workf")
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[0].text).contains("workflow1")
+        assertThat(dropdownMenu[0].text).contains("My workflow")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
         val table = driver.findElement(By.id("workflow-table"))
