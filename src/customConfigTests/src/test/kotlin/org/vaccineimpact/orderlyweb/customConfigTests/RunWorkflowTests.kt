@@ -11,6 +11,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
+import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -20,6 +21,7 @@ class RunWorkflowTests : SeleniumTest()
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertWorkflow("test.user@example.com", "newkey", "workflow1")
+            insertReport("test_report", "version1")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
@@ -61,26 +63,6 @@ class RunWorkflowTests : SeleniumTest()
         //Default commit value should update when new branch selected
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
-    }
-
-    @Test
-    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
-    {
-        val link = driver.findElement(By.id("workflow-progress-link"))
-        assertThat(link.text).isEqualTo("Workflow progress")
-        link.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
-        val vSelectInput = driver.findElement(By.tagName("input"))
-        vSelectInput.sendKeys("workf")
-
-        val vSelect = driver.findElement(By.id("workflows"))
-        val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[1].text).contains("workflow\n" +
-            "Tue Jun 15 2021, 14:50")
-        dropdownMenu[0].click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
-        val table = driver.findElement(By.id("workflow-table"))
-        assertThat(table.text).contains("Reports")
     }
 
     @Test
@@ -240,5 +222,25 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
         assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
+    }
+
+    @Test
+    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    {
+        val link = driver.findElement(By.id("workflow-progress-link"))
+        assertThat(link.text).isEqualTo("Workflow progress")
+        link.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val vSelectInput = driver.findElement(By.tagName("input"))
+        vSelectInput.sendKeys("workf")
+
+        val vSelect = driver.findElement(By.id("workflows"))
+        val dropdownMenu = vSelect.findElements(By.tagName("li"))
+        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
+            "Tue Jun 15 2021, 14:50")
+        dropdownMenu[0].click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+        val table = driver.findElement(By.id("workflow-table"))
+        assertThat(table.text).contains("Reports")
     }
 }
