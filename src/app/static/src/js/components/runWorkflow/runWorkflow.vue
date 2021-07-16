@@ -85,13 +85,11 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             // const data = this.runWorkflowMetadata
             const data: RunWorkflowMetadata = {
                 name: "name1",
-                date: "2021-06-18T16:28:16Z",
-                email: "email@email.com",
                 reports: [],
                 instances: {},
                 git_branch: "string",
                 git_commit: "string",
-                key: "string",
+                changelog: null
             };
             console.log("data", data);
             api.post(`/workflow`, data)
