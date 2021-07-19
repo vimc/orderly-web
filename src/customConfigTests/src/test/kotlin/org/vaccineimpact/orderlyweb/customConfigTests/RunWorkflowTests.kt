@@ -230,7 +230,11 @@ class RunWorkflowTests : SeleniumTest()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
-        jse.executeScript("""fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"})""")
+        jse.executeAsyncScript(
+            "var callback = arguments[arguments.length - 1];" +
+            """await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""" +
+            "callback();"
+        )
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()
@@ -246,7 +250,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
-        assertThat(rows[0].text).isEqualTo("minimal Running")
-        assertThat(rows[1].text).isEqualTo("global Queued")
+        assertThat(rows[0].text).isIn(listOf("minimal Queued", "minimal Running"))
+        assertThat(rows[1].text).isIn(listOf("global Queued", "global Running"))
     }
 }
