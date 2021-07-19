@@ -4,27 +4,27 @@ steps:
 
     - wait
 
-    - label: ":mag: Build and test app"
-      command: buildkite/build-app.sh
-      key: build-app
-      artifact_paths:
-        - reports.zip
-        - reports/tests/test/index.html
-        - reports/detekt/main.html
+#    - label: ":mag: Build and test app"
+#      command: buildkite/build-app.sh
+#      key: build-app
+#      artifact_paths:
+#        - reports.zip
+#        - reports/tests/test/index.html
+#        - reports/detekt/main.html
 
     - label: ":mag: Run custom config tests in container"
       command: buildkite/run-custom-config-tests-in-container.sh
 
-    - label: ":mag: Test release script"
-      command: scripts/release/tests/test-release.sh
-
-    - wait
-
-    - label: ":construction_worker: Make user CLI"
-      command: buildkite/build-cli.sh
-
-    - label: ":mag: Run smoke test"
-      command: buildkite/run-smoke-test.sh
-
-    - label: ":sparkle: Build css generator"
-      command: buildkite/build-css-generator.sh
+#    - label: ":mag: Test release script"
+#      command: scripts/release/tests/test-release.sh
+#
+#    - wait
+#
+#    - label: ":construction_worker: Make user CLI"
+#      command: buildkite/build-cli.sh
+#
+#    - label: ":mag: Run smoke test"
+#      command: buildkite/run-smoke-test.sh
+#
+#    - label: ":sparkle: Build css generator"
+#      command: buildkite/build-css-generator.sh

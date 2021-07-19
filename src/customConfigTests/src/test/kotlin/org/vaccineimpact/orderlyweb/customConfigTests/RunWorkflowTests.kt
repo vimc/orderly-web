@@ -230,11 +230,7 @@ class RunWorkflowTests : SeleniumTest()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
-        jse.executeAsyncScript(
-            "var callback = arguments[arguments.length - 1];" +
-            """await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""" +
-            "callback();"
-        )
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()
