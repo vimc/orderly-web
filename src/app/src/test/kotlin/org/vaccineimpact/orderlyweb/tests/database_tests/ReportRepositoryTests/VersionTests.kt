@@ -11,8 +11,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_INSTANCE
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -353,16 +353,16 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test2", "version2")
 
         JooqContext().use {
-            it.dsl.insertInto(Tables.REPORT_VERSION_INSTANCE)
-                .set(Tables.REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
-                .set(Tables.REPORT_VERSION_INSTANCE.INSTANCE, "instance1")
-                .set(Tables.REPORT_VERSION_INSTANCE.TYPE, "type1")
+            it.dsl.insertInto(REPORT_VERSION_INSTANCE)
+                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance1")
+                .set(REPORT_VERSION_INSTANCE.TYPE, "type1")
                 .execute()
 
-            it.dsl.insertInto(Tables.REPORT_VERSION_INSTANCE)
-                .set(Tables.REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
-                .set(Tables.REPORT_VERSION_INSTANCE.INSTANCE, "instance2")
-                .set(Tables.REPORT_VERSION_INSTANCE.TYPE, "type2")
+            it.dsl.insertInto(REPORT_VERSION_INSTANCE)
+                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance2")
+                .set(REPORT_VERSION_INSTANCE.TYPE, "type2")
                 .execute()
         }
 
