@@ -70,12 +70,22 @@
                 if (this.showInstances) {
                     const instances = this.instances;
                     const initialInstances = this.initialSelectedInstances || {};
+                    let updated = false;
                     for (const key in instances) {
                         if (instances[key].length > 0) {
-                            this.$set(this.selectedInstances, key, initialInstances[key] || instances[key][0]);
+                            let initialValue;
+                            if (initialInstances[key]){
+                                initialValue = initialInstances[key];
+                            } else {
+                                initialValue = instances[key][0];
+                                updated = true;
+                            }
+                            this.$set(this.selectedInstances, key, initialValue);
                         }
                     }
-                    this.$emit("selectedValues", this.selectedInstances);
+                    if (updated) {
+                        this.$emit("selectedValues", this.selectedInstances);
+                    }
                 }
             }
         },

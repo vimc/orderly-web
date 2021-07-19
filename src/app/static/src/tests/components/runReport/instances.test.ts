@@ -72,4 +72,38 @@ describe(`instances`, () => {
         expect((selects.at(0).element as HTMLSelectElement).value).toBe("annexe1");
         expect((selects.at(1).element as HTMLSelectElement).value).toBe("uat");
     });
+
+    it("emits initial selectedValues event when no defaults provided", () => {
+        const wrapper = getWrapper({
+            instances: {
+                annexe: ["annexe1", "annexe2"],
+                source: ["prod", "uat"]
+            }
+        });
+        expect(wrapper.emitted("selectedValues").length).toBe(1);
+        expect(wrapper.emitted("selectedValues")[0][0]).toStrictEqual({annexe: "annexe1", source: "prod"});
+    });
+
+    it("does not emit initial selectedValues when all defaults provided", () => {
+        const wrapper = getWrapper({
+            instances: {
+                annexe: ["annexe1", "annexe2"],
+                source: ["prod", "uat"]
+            },
+            initialSelectedInstances: {annexe: "annexe2", source: "uat"}
+        });
+        expect(wrapper.emitted("selectedValues")).toBeUndefined();
+    });
+
+    it("emits initial selectedValues event when some defaults provided", () => {
+        const wrapper = getWrapper({
+            instances: {
+                annexe: ["annexe1", "annexe2"],
+                source: ["prod", "uat"]
+            },
+            initialSelectedInstances: {annexe: "annexe2"}
+        });
+        expect(wrapper.emitted("selectedValues").length).toBe(1);
+        expect(wrapper.emitted("selectedValues")[0][0]).toStrictEqual({annexe: "annexe2", source: "prod"});
+    });
 })
