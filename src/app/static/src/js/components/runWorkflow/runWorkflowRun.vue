@@ -46,7 +46,7 @@
     interface Computed {
         showInstances: boolean,
         showChangelog: void,
-        validateStep: void
+        // validateStep: void
     }
 
     interface Data {
@@ -93,12 +93,12 @@
             }
         },
         computed: {
-            validateStep: function () {
-                /**
-                 * Valid step should be set to true or false once validation is complete
-                 */
-                this.$emit("valid", true)
-            },
+            // validateStep: function () {
+            //     /**
+            //      * Valid step should be set to true or false once validation is complete
+            //      */
+            //     this.$emit("valid", true)
+            // },
             showInstances() {
                 return !!this.runMetadata && this.runMetadata.metadata.instances_supported;
             },
