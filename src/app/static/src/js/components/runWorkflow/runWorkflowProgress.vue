@@ -20,8 +20,8 @@
                         <div>
                             {{ name }}
                             <span style="opacity: 0.5; float: right">
-                                {{ formatDate(date) }}</span
-                            >
+                                {{ formatDate(date) }}
+                            </span>
                         </div>
                     </template>
                 </v-select>
