@@ -17,26 +17,26 @@
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
+    import Vue from "vue"
     import workflowWizard from "../workflowWizard/workflowWizard.vue";
-    import { RunWorkflowMetadata, Step } from "../../utils/types";
+    import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
     import { api } from "../../utils/api";
 
     interface Data {
-        runWorkflowMetadata: RunWorkflowMetadata | null;
-        workflowStarted: boolean;
-        stepComponents: Step[];
-        toggleFinalStepNextTo: string | null;
+        runWorkflowMetadata: RunWorkflowMetadata | null
+        workflowStarted: boolean
+        stepComponents: Step[]
+        toggleFinalStepNextTo: string | null
         disableRename: boolean
     }
-
+    
     interface Methods {
-        handleCancel: () => void;
-        handleRerun: (data: Event) => void;
-        handleCreate: (data: Event) => void;
-        handleClone: (data: Event) => void;
-        handleComplete: () => void;
+        handleCancel: () => void
+        handleRerun: (data: Event) => void
+        handleCreate: (data: Event) => void
+        handleClone: (data: Event) => void
+        handleComplete: () => void
     }
 
 export default Vue.extend<Data, Methods, unknown, unknown>({
