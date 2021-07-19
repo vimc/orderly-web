@@ -184,7 +184,7 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(2)
+        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
