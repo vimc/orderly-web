@@ -30,7 +30,7 @@
         toggleFinalStepNextTo: string | null
         disableRename: boolean
     }
-    
+
     interface Methods {
         handleCancel: () => void
         handleRerun: (data: Event) => void
