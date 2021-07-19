@@ -151,11 +151,6 @@ fun insertReport(name: String,
     }
 }
 
-data class WorkflowReportWithParams(
-        val name: String,
-        val params: Map<String, String>
-)
-
 fun insertWorkflow(email: String,
                    key: String,
                    name: String,
