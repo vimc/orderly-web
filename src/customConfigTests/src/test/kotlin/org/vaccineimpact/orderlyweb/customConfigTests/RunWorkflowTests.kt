@@ -2,7 +2,9 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.FixMethodOrder
 import org.junit.Test
+import org.junit.runners.MethodSorters
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.ExpectedConditions
@@ -13,7 +15,9 @@ import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
+import java.time.Duration
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class RunWorkflowTests : SeleniumTest()
 {
     @Before
@@ -184,7 +188,7 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(2)
+        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
