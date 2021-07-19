@@ -67,6 +67,7 @@
         handleChangeLogTypeValue: (changelogType: string) => void,
         handleChangeLogMessageValue: (changelogMessage: string) => void,
         handleInstancesValue: (instances: Object) => void
+        validateWorkflowName: (workflowName: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -138,6 +139,7 @@
                         this.workflows = data.data
                         this.error = "";
                         this.defaultMessage = "";
+                        this.validateWorkflowName(this.workflowMetadata.name);
                     })
                     .catch((error) => {
                         this.error = error
@@ -146,6 +148,10 @@
             },
             handleWorkflowName: function (event: Event) {
                 const workflowName = (event.target as HTMLInputElement).value;
+                this.validateWorkflowName(workflowName);
+                this.$emit("update", {name: workflowName});
+            },
+            validateWorkflowName: function(workflowName: string) {
                 let valid = !!workflowName;
                 this.workflowNameError = "";
                 if (this.workflows.find(workflow =>
@@ -154,7 +160,6 @@
                     this.workflowNameError = "Workflow name already exists, please rename your workflow."
                 }
                 this.$emit("valid", valid);
-                this.$emit("update", {name: workflowName});
             }
         },
         mounted() {

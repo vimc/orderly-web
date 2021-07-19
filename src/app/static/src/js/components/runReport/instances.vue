@@ -67,7 +67,7 @@
                 this.$emit("selectedValues", this.selectedInstances);
             },
             selectInitialInstance: function () {
-                if (this.instances && this.showInstances) {
+                if (this.showInstances) {
                     const instances = this.instances;
                     const initialInstances = this.initialSelectedInstances || {};
                     for (const key in instances) {

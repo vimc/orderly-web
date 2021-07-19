@@ -59,22 +59,61 @@ describe(`runWorkflowRun`, () => {
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
-    it(`can render workflow-name elements, and emit update event on name change`, async () => {
+    it("emits initial valid event when workflow name is blank", (done) => {
+        const wrapper = getWrapper();
+        setTimeout(() => {
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(false);
+            done();
+        });
+    });
+
+    it("emits initial valid event when workflow name matches existing workflow", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                name: "Interim report"
+            }
+        });
+        setTimeout(() => {
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(false);
+            done();
+        });
+    });
+
+    it("emits initial valid event when workflow name is valid", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                name: "Interim report3"
+            }
+        });
+        setTimeout(() => {
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(true);
+            done();
+        });
+    });
+
+    it(`can render workflow-name elements, and emit update event on name change`, (done) => {
         const wrapper = getWrapper()
 
         const workflowName = wrapper.find("#workflow-name-div")
         expect(workflowName.text()).toBe("Name")
         const workflowNameInput = workflowName.find("input#run-workflow-name")
         expect(workflowNameInput.exists()).toBe(true)
+        setTimeout(async () => {
+            await workflowNameInput.setValue("New Workflow name")
+            expect(workflowName.find("small").text())
+                .toEqual("")
+            expect(wrapper.emitted().update.length).toBe(3); // this follows initial changelog and instances updates
+            expect(wrapper.emitted().update[2][0]).toStrictEqual({name: "New Workflow name"});
 
-        await workflowNameInput.setValue("New Workflow name")
-        expect(workflowName.find("small").text())
-            .toEqual("")
-        expect(wrapper.emitted().update.length).toBe(1);
-        expect(wrapper.emitted().update[0][0]).toStrictEqual({name: "New Workflow name"});
-
-        expect(wrapper.emitted().valid.length).toBe(1);
-        expect(wrapper.emitted().valid[0][0]).toBe(true);
+            expect(wrapper.emitted().valid.length).toBe(2);
+            expect(wrapper.emitted().valid[1][0]).toBe(true);
+            done();
+        });
     })
 
     it(`emits valid false on workflow name change to empty string`, (done) => {
@@ -85,8 +124,8 @@ describe(`runWorkflowRun`, () => {
             const workflowNameInput = wrapper.find("input#run-workflow-name");
             await workflowNameInput.setValue("");
 
-            expect(wrapper.emitted().valid.length).toBe(1);
-            expect(wrapper.emitted().valid[0][0]).toBe(false);
+            expect(wrapper.emitted().valid.length).toBe(2);
+            expect(wrapper.emitted().valid[1][0]).toBe(false);
             done();
         });
     });
@@ -99,8 +138,8 @@ describe(`runWorkflowRun`, () => {
             const workflowNameInput = wrapper.find("input#run-workflow-name");
             await workflowNameInput.setValue("interim report");
 
-            expect(wrapper.emitted().valid.length).toBe(1);
-            expect(wrapper.emitted().valid[0][0]).toBe(false);
+            expect(wrapper.emitted().valid.length).toBe(2);
+            expect(wrapper.emitted().valid[1][0]).toBe(false);
             done();
         });
     });
@@ -308,7 +347,7 @@ describe(`runWorkflowRun`, () => {
         })
     });
 
-    it(`initialises changelog type and value from workflow metadata`, () => {
+    it(`initialises changelog type and value from workflow metadata`, (done) => {
         const wrapper = getWrapper({
             workflowMetadata: {
                 changelog: {
@@ -323,6 +362,7 @@ describe(`runWorkflowRun`, () => {
 
             expect((wrapper.find("#changelogMessage").element as HTMLTextAreaElement).value).toBe("Workflow message");
             expect((wrapper.find("#changelogType").element as HTMLSelectElement).value).toBe("public");
+            done();
         });
     });
 
