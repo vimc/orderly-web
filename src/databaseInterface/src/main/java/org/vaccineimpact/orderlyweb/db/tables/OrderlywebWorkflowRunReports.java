@@ -30,7 +30,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRepor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRunReportsRecord> {
 
-    private static final long serialVersionUID = -77562619;
+    private static final long serialVersionUID = -539466922;
 
     /**
      * The reference instance of <code>orderlyweb_workflow_run_reports</code>
@@ -56,9 +56,9 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
     public final TableField<OrderlywebWorkflowRunReportsRecord, String> WORKFLOW_KEY = createField(DSL.name("workflow_key"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
-     * The column <code>orderlyweb_workflow_run_reports.report_key</code>.
+     * The column <code>orderlyweb_workflow_run_reports.key</code>.
      */
-    public final TableField<OrderlywebWorkflowRunReportsRecord, String> REPORT_KEY = createField(DSL.name("report_key"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
+    public final TableField<OrderlywebWorkflowRunReportsRecord, String> KEY = createField(DSL.name("key"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>orderlyweb_workflow_run_reports.name</code>.

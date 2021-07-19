@@ -96,10 +96,6 @@ class WorkflowRunController(
                     @Suppress("UnsafeCallOnNullableType")
                     context.userProfile!!.id,
                     Instant.now(),
-                    workflowRunRequest.reports,
-                    workflowRunRequest.instances ?: emptyMap(),
-                    workflowRunRequest.gitBranch,
-                    workflowRunRequest.gitCommit,
                     workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
                         WorkflowRunReport(
                             workflowRun.key,
@@ -107,7 +103,10 @@ class WorkflowRunController(
                             report.name,
                             report.params
                         )
-                    }
+                    },
+                    workflowRunRequest.instances ?: emptyMap(),
+                    workflowRunRequest.gitBranch,
+                    workflowRunRequest.gitCommit
                 )
             )
         }
@@ -139,20 +138,18 @@ class WorkflowRunController(
         val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
         workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
 
+        val runWorkflow = workflowRunRepository.getWorkflowRunDetails(key)
+
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
             workflowRunStatusResponse.reports.map { report ->
                 WorkflowRunStatus.WorkflowRunReportStatus(
-                    getReportName(report.key),
+                    @Suppress("UnsafeCallOnNullableType")
+                    runWorkflow.reports.find{it.key == report.key}!!.name,
                     report.key,
                     report.status,
                     report.version
                 )
             })
-    }
-
-    private fun getReportName(key: String): String
-    {
-        return workflowRunRepository.getWorkflowRunReportsByReportKey(key).name
     }
 }
