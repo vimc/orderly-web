@@ -163,7 +163,7 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
 
-        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}"""
+        val mockAPIResponseText = """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1", "report_key2"]}}"""
 
         val mockAPIResponse = OrderlyServerResponse(mockAPIResponseText, 200)
 
@@ -207,7 +207,7 @@ class WorkflowRunControllerTests
                 WorkflowRunController.WorkflowRunResponse::class.java
             )
         ).isEqualTo(
-            WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1"))
+            WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1", "report_key2"))
         )
 
         verify(repo).addWorkflowRun(check {
@@ -224,6 +224,12 @@ class WorkflowRunControllerTests
                         "report_key1",
                         workflowRunRequest.reports[0].name,
                         workflowRunRequest.reports[0].params
+                    ),
+                    WorkflowRunReport(
+                        "workflow_key1",
+                        "report_key2",
+                        workflowRunRequest.reports[1].name,
+                        workflowRunRequest.reports[1].params
                     )
                 )
             )
