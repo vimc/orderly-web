@@ -55,6 +55,6 @@ data class WorkflowRunSummary(
 data class WorkflowRunReport(
     val workflowKey: String,
     val key: String,
-    val name: String,
+    val report: String,
     val params: Map<String, String>
 )

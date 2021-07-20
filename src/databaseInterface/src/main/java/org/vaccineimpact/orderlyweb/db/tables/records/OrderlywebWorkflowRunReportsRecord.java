@@ -18,7 +18,7 @@ import org.vaccineimpact.orderlyweb.db.tables.OrderlywebWorkflowRunReports;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<OrderlywebWorkflowRunReportsRecord> implements Record5<Integer, String, String, String, String> {
 
-    private static final long serialVersionUID = 613729243;
+    private static final long serialVersionUID = 1532069591;
 
     /**
      * Setter for <code>orderlyweb_workflow_run_reports.id</code>.
@@ -63,16 +63,16 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
     }
 
     /**
-     * Setter for <code>orderlyweb_workflow_run_reports.name</code>.
+     * Setter for <code>orderlyweb_workflow_run_reports.report</code>.
      */
-    public void setName(String value) {
+    public void setReport(String value) {
         set(3, value);
     }
 
     /**
-     * Getter for <code>orderlyweb_workflow_run_reports.name</code>.
+     * Getter for <code>orderlyweb_workflow_run_reports.report</code>.
      */
-    public String getName() {
+    public String getReport() {
         return (String) get(3);
     }
 
@@ -130,7 +130,7 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
 
     @Override
     public Field<String> field4() {
-        return OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME;
+        return OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT;
     }
 
     @Override
@@ -155,7 +155,7 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
 
     @Override
     public String component4() {
-        return getName();
+        return getReport();
     }
 
     @Override
@@ -180,7 +180,7 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
 
     @Override
     public String value4() {
-        return getName();
+        return getReport();
     }
 
     @Override
@@ -208,7 +208,7 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
 
     @Override
     public OrderlywebWorkflowRunReportsRecord value4(String value) {
-        setName(value);
+        setReport(value);
         return this;
     }
 
@@ -242,13 +242,13 @@ public class OrderlywebWorkflowRunReportsRecord extends UpdatableRecordImpl<Orde
     /**
      * Create a detached, initialised OrderlywebWorkflowRunReportsRecord
      */
-    public OrderlywebWorkflowRunReportsRecord(Integer id, String workflowKey, String key, String name, String params) {
+    public OrderlywebWorkflowRunReportsRecord(Integer id, String workflowKey, String key, String report, String params) {
         super(OrderlywebWorkflowRunReports.ORDERLYWEB_WORKFLOW_RUN_REPORTS);
 
         set(0, id);
         set(1, workflowKey);
         set(2, key);
-        set(3, name);
+        set(3, report);
         set(4, params);
     }
 }

@@ -145,7 +145,7 @@ class WorkflowRunController(
             workflowRunStatusResponse.reports.map { report ->
                 WorkflowRunStatus.WorkflowRunReportStatus(
                     @Suppress("UnsafeCallOnNullableType")
-                    runWorkflow.reports.find{it.key == report.key}!!.name,
+                    runWorkflow.reports.find{it.key == report.key}!!.report,
                     report.key,
                     report.status,
                     report.version

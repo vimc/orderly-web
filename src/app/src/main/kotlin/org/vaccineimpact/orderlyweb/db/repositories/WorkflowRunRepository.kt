@@ -45,7 +45,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     dsl.insertInto(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
                         .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY, report.workflowKey)
                         .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY, report.key)
-                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME, report.name)
+                        .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT, report.report)
                         .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS, Gson().toJson(report.params))
                         .execute()
                 }
@@ -73,7 +73,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
             val resultForReports = it.dsl.select(
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY,
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY,
-                ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS
             )
                 .from(ORDERLYWEB_WORKFLOW_RUN)
@@ -91,7 +91,7 @@ class OrderlyWebWorkflowRunRepository : WorkflowRunRepository
                     WorkflowRunReport(
                         report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY],
                         report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY],
-                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.NAME],
+                        report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT],
                         jsonToStringMap(report[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS])
                     )
                 },
