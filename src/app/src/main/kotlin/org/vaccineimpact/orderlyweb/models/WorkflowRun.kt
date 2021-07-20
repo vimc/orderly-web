@@ -26,7 +26,7 @@ data class WorkflowRun(
     val key: String,
     val email: String,
     val date: Instant,
-    val reports: List<WorkflowReportWithParams>,
+    val reports: List<WorkflowRunReport>,
     val instances: Map<String, String>,
     val gitBranch: String? = null,
     val gitCommit: String? = null
@@ -50,4 +50,11 @@ data class WorkflowRunSummary(
     val key: String,
     val email: String,
     val date: Instant
+)
+
+data class WorkflowRunReport(
+    val workflowKey: String,
+    val key: String,
+    val report: String,
+    val params: Map<String, String>
 )
