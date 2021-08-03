@@ -22,6 +22,10 @@
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
 
+    interface Props{
+        workflowToRerun: RunWorkflowMetadata | null
+    }
+
     interface Data {
         runWorkflowMetadata: RunWorkflowMetadata | null
         workflowStarted: boolean
@@ -37,7 +41,7 @@
         handleClone: (data: Event) => void
         handleComplete: () => void
     }
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
     data(): Data {
         return {
@@ -82,6 +86,11 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     components: {
         workflowWizard,
         runWorkflowCreate
+    },
+    mounted() {
+        if (this.workflowToRerun) {
+            this.handleRerun(this.workflowToRerun);
+        }
     }
 })
 </script>

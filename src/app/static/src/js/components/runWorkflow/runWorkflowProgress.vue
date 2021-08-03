@@ -44,12 +44,12 @@
                 </tr>
             </table>
         </div>
-        <!-- Buttons to be unhidden and made active by mrc-2513 -->
-        <div class="row justify-content-end mt-3" v-if="false">
-            <button class="button mr-3" type="button">
-                Clone workflow
+        <div class="row justify-content-end mt-3">
+            <button class="button mr-3" type="button" @click="rerun">
+                Re-run workflow
             </button>
-            <button class="btn btn-secondary" type="button">
+            <!-- Cancel button to be implemented in mrc-2549 -->
+            <button class="btn btn-secondary" type="button" v-if="false">
                 Cancel workflow
             </button>
         </div>
@@ -89,6 +89,7 @@ interface Methods {
     reportVersionHref: (name: string, version: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
+    rerun: () => void;
 }
 
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
@@ -133,6 +134,17 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                     this.error = error;
                     this.defaultMessage =
                         "An error occurred fetching the workflow reports";
+                });
+        },
+        rerun() {
+            api.get(`workflows/${this.selectedWorkflowKey}/`)
+                .then(({data}) => {
+                    this.$emit("rerun", data.data);
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage =
+                        "An error occurred fetching workflow details";
                 });
         },
         formatDate(date) {

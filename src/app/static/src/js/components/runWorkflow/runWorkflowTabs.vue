@@ -26,13 +26,13 @@
             <div class="col-12 col-md-8 tab-content">
                 <div v-if="selectedTab === 'runWorkflow'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <run-workflow></run-workflow>
+                        <run-workflow :workflowToRerun="workflowToRerun"></run-workflow>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'runWorkflowProgress'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="workflow-progress-tab">
                     <div id="runWorkflowProgress">
                         <h2>Workflow progress</h2>
-                       <run-workflow-progress></run-workflow-progress>
+                       <run-workflow-progress @rerun="rerunWorkflow"></run-workflow-progress>
                     </div>
                 </div>
             </div>
@@ -49,12 +49,17 @@ export default Vue.extend({
     name: "runWorkflowTabs",
     data() {
         return {
-            selectedTab: "runWorkflow"
+            selectedTab: "runWorkflow",
+            workflowToRerun: null
         }
     },
     methods: {
         switchTab(tab) {
             this.selectedTab = tab
+        },
+        rerunWorkflow(workflow) {
+            this.workflowToRerun = workflow;
+            this.switchTab("runWorkflow");
         }
     },
     components: {
