@@ -43,6 +43,9 @@
     }
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
+    props: {
+        workflowToRerun: null
+    },
     data(): Data {
         return {
             runWorkflowMetadata: null,
