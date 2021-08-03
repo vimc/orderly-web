@@ -6,8 +6,8 @@
             <div class="col-sm-4">
                 <input type="text"
                        :readonly="disableRename"
-                       @input="handleValidation"
-                       v-model="workflowName"
+                       :value="workflowMetadata.name"
+                       @input="handleWorkflowName"
                        class="form-control"
                        id="run-workflow-name">
                 <small class="text-danger">{{ workflowNameError }}</small>
@@ -15,6 +15,7 @@
         </div>
         <div v-if="showInstances">
             <instances :instances="runMetadata.metadata.instances"
+                       :initial-selected-instances="workflowMetadata.instances"
                        :custom-style="childCustomStyle"
                        @selectedValues="handleInstancesValue"/>
         </div>
@@ -22,6 +23,8 @@
             <change-log
                         :changelog-type-options="this.runMetadata.metadata.changelog_types"
                         :custom-style="childCustomStyle"
+                        :initial-message="initialChangelogMessage"
+                        :initial-type="initialChangelogType"
                         @changelogMessage="handleChangeLogMessageValue"
                         @changelogType="handleChangeLogTypeValue">
             </change-log>
@@ -45,27 +48,26 @@
 
     interface Computed {
         showInstances: boolean,
-        showChangelog: void
+        showChangelog: void,
+        initialChangelogMessage: string | null,
+        initialChangelogType: string | null
     }
 
     interface Data {
-        selectedInstances: {};
-        workflowName: string;
-        runMetadata: RunReportMetadata | null;
-        changeLogTypeValue: string;
-        changeLogMessageValue: string;
-        workflows: WorkflowSummary[];
+        runMetadata: RunReportMetadata | null,
+        workflows: WorkflowSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
     }
 
     interface Methods {
         getRunMetadata: () => void
-        handleValidation: () => void
+        handleWorkflowName: (event: Event) => void
         getWorkflows: () => void
-        handleChangeLogTypeValue: (changelogType: string) => void
-        handleChangeLogMessageValue: (changelogMessage: string) => void
+        handleChangeLogTypeValue: (changelogType: string) => void,
+        handleChangeLogMessageValue: (changelogMessage: string) => void,
         handleInstancesValue: (instances: Object) => void
+        validateWorkflowName: (workflowName: string) => void
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -79,11 +81,7 @@
         },
         data() {
             return {
-                selectedInstances: {},
-                workflowName: "",
                 runMetadata: null,
-                changeLogTypeValue: "",
-                changeLogMessageValue: "",
                 error: "",
                 defaultMessage: "",
                 workflows: [],
@@ -97,17 +95,31 @@
             },
             showChangelog: function () {
                 return this.runMetadata && !!this.runMetadata.metadata.changelog_types;
+            },
+            initialChangelogMessage() {
+                return this.workflowMetadata.changelog?.message
+            },
+            initialChangelogType() {
+                return this.workflowMetadata.changelog?.type
             }
         },
         methods: {
             handleInstancesValue: function (instances) {
-                this.selectedInstances = instances
+                this.$emit("update", {instances});
             },
             handleChangeLogTypeValue: function (changelogType) {
-                this.changeLogTypeValue = changelogType
+                const changelog = {
+                    message: this.workflowMetadata.changelog?.message || "",
+                    type: changelogType
+                };
+                this.$emit("update", {changelog});
             },
             handleChangeLogMessageValue: function (changelogMessage) {
-                this.changeLogMessageValue = changelogMessage
+                const changelog = {
+                    message: changelogMessage,
+                    type: this.workflowMetadata.changelog?.type || ""
+                };
+                this.$emit("update", {changelog});
             },
             getRunMetadata: function () {
                 api.get('/report/run-metadata')
@@ -127,30 +139,32 @@
                         this.workflows = data.data
                         this.error = "";
                         this.defaultMessage = "";
+                        this.validateWorkflowName(this.workflowMetadata.name);
                     })
                     .catch((error) => {
                         this.error = error
                         this.defaultMessage = "An error occurred while retrieving previously run workflows";
                     })
             },
-            handleValidation: function () {
-                let valid = !!this.workflowName;
+            handleWorkflowName: function (event: Event) {
+                const workflowName = (event.target as HTMLInputElement).value;
+                this.validateWorkflowName(workflowName);
+                this.$emit("update", {name: workflowName});
+            },
+            validateWorkflowName: function(workflowName: string) {
+                let valid = !!workflowName;
                 this.workflowNameError = "";
                 if (this.workflows.find(workflow =>
-                    workflow.name.toLowerCase() === this.workflowName.toLowerCase())) {
+                    workflow.name.toLowerCase() === workflowName.toLowerCase())) {
                     valid = false;
                     this.workflowNameError = "Workflow name already exists, please rename your workflow."
                 }
                 this.$emit("valid", valid);
-                if(this.workflowName) {
-                    this.$emit("update", {name: this.workflowName})
-                }
             }
         },
         mounted() {
             this.getRunMetadata();
             if (this.disableRename) {
-                this.workflowName = this.workflowMetadata.name
                 this.$emit("valid", true);
             } else {
                 this.getWorkflows();

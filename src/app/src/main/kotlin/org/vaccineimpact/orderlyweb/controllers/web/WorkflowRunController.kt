@@ -88,6 +88,7 @@ class WorkflowRunController(
         if (response.statusCode == HTTP_OK)
         {
             val workflowRun = response.data(WorkflowRunResponse::class.java)
+
             workflowRunRepository.addWorkflowRun(
                 WorkflowRun(
                     workflowRunRequest.name,
@@ -95,7 +96,14 @@ class WorkflowRunController(
                     @Suppress("UnsafeCallOnNullableType")
                     context.userProfile!!.id,
                     Instant.now(),
-                    workflowRunRequest.reports,
+                    workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                        WorkflowRunReport(
+                            workflowRun.key,
+                            reportKey,
+                            report.name,
+                            report.params
+                        )
+                    },
                     workflowRunRequest.instances ?: emptyMap(),
                     workflowRunRequest.gitBranch,
                     workflowRunRequest.gitCommit
@@ -129,11 +137,19 @@ class WorkflowRunController(
             .get("/v1/workflow/$key/status/", emptyMap())
         val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
         workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
-        val reportNames = workflowRunRepository.getWorkflowRunDetails(key).reports.map { it.name }
+
+        val runWorkflow = workflowRunRepository.getWorkflowRunDetails(key)
+
         return WorkflowRunStatus(
             workflowRunStatusResponse.status,
-            workflowRunStatusResponse.reports.zip(reportNames) { report, reportName ->
-                WorkflowRunStatus.WorkflowRunReportStatus(reportName, report.key, report.status, report.version)
+            workflowRunStatusResponse.reports.map { report ->
+                WorkflowRunStatus.WorkflowRunReportStatus(
+                    @Suppress("UnsafeCallOnNullableType")
+                    runWorkflow.reports.find{it.key == report.key}!!.report,
+                    report.key,
+                    report.status,
+                    report.version
+                )
             })
     }
 }

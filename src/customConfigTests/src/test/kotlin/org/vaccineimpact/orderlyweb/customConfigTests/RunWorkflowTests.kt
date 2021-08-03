@@ -171,7 +171,17 @@ class RunWorkflowTests : SeleniumTest()
         val nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
+
+        val submitButton = driver.findElement(By.id("next-workflow"))
+        assertThat(submitButton.isEnabled).isFalse()
+        val changelogTypes = driver.findElements(By.cssSelector("#change-type-control option"))
+        assertThat(changelogTypes.count()).isEqualTo(2)
+        assertThat(changelogTypes[0].text).isEqualTo("internal")
+        assertThat(changelogTypes[1].text).isEqualTo("public")
+
+        driver.findElement(By.id("run-workflow-name")).sendKeys("new workflow name")
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton))
     }
 
     @Test
