@@ -1,7 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
-import Vue from "vue";
 
 const workflows = {
     "status": "success",
@@ -118,4 +117,25 @@ describe(`runWorkflowProgress`, () => {
             })
         })
     })
+
+    it(`can fetch workflow details and emit rerun event`, (done) => {
+        const workflowDetails = {name: "Test Workflow", reports: []};
+        mockAxios.onGet('http://app/workflows/test-key/')
+            .reply(200, {data: workflowDetails});
+
+        const wrapper = shallowMount(runWorkflowProgress, {
+            data: () => {
+            return {
+                    selectedWorkflowKey: "test-key",
+                    workflowRunSummaries: []
+                };
+            }
+        });
+
+        wrapper.find("#rerun").trigger("click");
+        setTimeout(() => {
+            expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(workflowDetails);
+            done();
+        });
+    });
 })

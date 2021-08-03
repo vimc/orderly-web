@@ -45,7 +45,7 @@
             </table>
         </div>
         <div class="row justify-content-end mt-3">
-            <button class="button mr-3" type="button" @click="rerun">
+            <button v-if="selectedWorkflowKey" id="rerun" class="button mr-3" type="button" @click="rerun">
                 Re-run workflow
             </button>
             <!-- Cancel button to be implemented in mrc-2549 -->
