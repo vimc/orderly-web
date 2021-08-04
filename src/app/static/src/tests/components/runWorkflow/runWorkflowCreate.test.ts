@@ -6,13 +6,11 @@ import Vue from "vue";
 
 export const emptyWorkflowMetadata = {
     name: "",
-    date: "",
-    email: "",
     reports: [],
     instances: {},
     git_branch: null,
     git_commit: null,
-    key: ""
+    changelog: null
 };
 
 describe(`runWorkflowCreate`, () => {
@@ -27,26 +25,22 @@ describe(`runWorkflowCreate`, () => {
 
     const runnableWorkflowMetadata = [{
         name: "interim report",
-        date: "",
-        email: "",
         reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
             {"name": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit",
-        key: ""
+        changelog: null,
     }]
 
     const clonedWorkflowMetadata = [{
         name: "",
-        date: "",
-        email: "",
         reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
             {"name": "reportB", "params": {"param3": "three"}}],
         instances: {},
         git_branch: "branch",
         git_commit: "commit",
-        key: ""
+        changelog: null
     }]
 
     const workflowSummaryMetadata = [

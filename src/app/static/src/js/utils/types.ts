@@ -34,14 +34,15 @@ export interface RunReportMetadata {
 }
 
 export interface RunWorkflowMetadata {
-    name: string
-    date: string
-    email: string
+    name: string,
     reports: WorkflowReportWithParams[],
     instances: Record<string, string>,
-    git_branch: string | null
-    git_commit: string | null
-    key: string
+    git_branch: string | null,
+    git_commit: string | null,
+    changelog: {
+        message: string,
+        type: string
+    } | null
 }
 
 export interface WorkflowReportWithParams {
@@ -66,26 +67,6 @@ export interface ReportDependency {
 export interface ReportDependencies {
     direction: "upstream" | "downstream",
     dependency_tree: ReportDependency
-}
-
-export interface WorkflowRunSummary {
-    name: string,
-    key: string,
-    email: string,
-    date: string
-}
-
-export interface WorkflowRunStatus {
-    status: "queued" | "running" | "success" | "error" | "cancelled",
-    reports: WorkflowRunReportStatus[]
-}
-
-export interface WorkflowRunReportStatus {
-    name: string,
-    key: string,
-    status: "queued" | "running" | "success" | "error" | "orphan" | "interrupted" | "deferred" | "impossible" | "missing",
-    version: string | null
-    date?: string
 }
 
 export interface WorkflowSummary {

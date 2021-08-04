@@ -37,6 +37,8 @@
     interface Props {
         changelogTypeOptions: string[]
         customStyle: ChildCustomStyle
+        initialMessage: string,
+        initialType: string
     }
 
     interface Data {
@@ -59,7 +61,9 @@
         },
         props: {
             customStyle: {},
-            changelogTypeOptions: Array
+            changelogTypeOptions: Array,
+            initialMessage: String,
+            initialType: String
         },
         methods: {
             handleChangeLogType: function () {
@@ -70,7 +74,12 @@
             }
         },
         mounted() {
-            if (this.changelogTypeOptions) {
+            if (this.initialMessage) {
+                this.changeLogMessageValue = this.initialMessage;
+            }
+            if (this.initialType) {
+                this.changeLogTypeValue = this.initialType;
+            } else if (this.changelogTypeOptions) {
                 this.changeLogTypeValue = this.changelogTypeOptions[0]
                 this.$emit("changelogType", this.changeLogTypeValue)
             }
