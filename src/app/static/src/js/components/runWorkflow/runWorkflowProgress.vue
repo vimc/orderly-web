@@ -81,6 +81,7 @@ interface Data {
     workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
+    polling: string;
 }
 
 interface Methods {
@@ -90,6 +91,8 @@ interface Methods {
     reportVersionHref: (name: string, version: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
+    startPolling: () => void
+    stopPolling: () => void
 }
 
 interface Props {
@@ -114,9 +117,18 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
+            polling: ""
         };
     },
     methods: {
+        startPolling() {
+            this.polling = setInterval(() => {
+                this.getWorkflowRunStatus(this.selectedWorkflowKey)
+            },3000)
+        },
+        stopPolling() {
+            clearInterval(this.polling)
+        },
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
@@ -174,11 +186,19 @@ export default Vue.extend<Data, Methods, unknown, Props>({
     watch: {
         selectedWorkflowKey() {
             if (this.selectedWorkflowKey) {
-                this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.startPolling()
             } else {
                 this.workflowRunStatus = null;
             }
         },
+        workflowRunStatus: {
+            handler(status) {
+                if (status === "success" || status === "error") {
+                    this.stopPolling()
+                }
+            },
+            deep: true
+        }
     },
     mounted() {
         this.getWorkflowRunSummaries();
