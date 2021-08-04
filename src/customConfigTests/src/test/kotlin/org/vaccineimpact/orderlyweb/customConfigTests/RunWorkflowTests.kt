@@ -248,7 +248,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val runWorkflow = driver.findElement(By.id("next-workflow"))
         assertThat(runWorkflow.isEnabled).isTrue()
-        assertThat(runWorkflow.text).isEqualTo("Re-run workflow")
+        assertThat(runWorkflow.text).isEqualTo("Run workflow")
         runWorkflow.click()
 
         val runningStatus = driver.findElement(By.id("run-workflow-status"))
