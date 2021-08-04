@@ -187,7 +187,7 @@ class RunWorkflowTests : SeleniumTest()
         // This test changes the state of the orderly container since refreshing git causes the fake git system to add a new commit
         // It should be passing on Buildkite, but it will fail locally if you don't restart the deps between test runs.
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
-        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0))
+        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
