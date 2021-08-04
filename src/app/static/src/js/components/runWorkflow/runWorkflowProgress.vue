@@ -72,7 +72,6 @@ import {
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
-import { session } from "../../utils/session.js";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];

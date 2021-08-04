@@ -184,7 +184,10 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
+        // This test changes the state of the orderly container since refreshing git causes the fake git system to add a new commit
+        // It should be passing on Buildkite, but it will fail locally if you don't restart the deps between test runs.
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
+        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0))
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
@@ -230,11 +233,7 @@ class RunWorkflowTests : SeleniumTest()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
-        jse.executeAsyncScript(
-            "var callback = arguments[arguments.length - 1];" +
-            """await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My    workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""" +
-            "callback();"
-        )
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()

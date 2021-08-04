@@ -1,7 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
-import Vue from "vue";
 
 const workflows = {
     "status": "success",
@@ -86,7 +85,7 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
-    it(`it can render reports table`, async (done) => {
+    it(`it can render reports table`, (done) => {
         const wrapper = getWrapper()
         
         setTimeout(() => {
