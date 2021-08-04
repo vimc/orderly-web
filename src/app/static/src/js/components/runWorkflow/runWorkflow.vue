@@ -80,14 +80,18 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         handleComplete: function () {
             // const data = this.runWorkflowMetadata
             // const data: RunWorkflowMetadata = {
+            // const data = {
+            //     name: "My workflow",
+            //     reports: [{"name":"minimal"},{"name":"global"}],
+            //     changelog: {"message":"message1","type":"internal"}
+            // };
+            console.log("runWorkflowMetadata", this.runWorkflowMetadata);
+            const { name, reports, changelog } = this.runWorkflowMetadata;
             const data = {
-                name: "My workflow",
-                reports: [{"name":"minimal"},{"name":"global"}],
-                // instances: {},
-                // git_branch: "string",
-                // git_commit: "string",
-                changelog: {"message":"message1","type":"internal"}
-            };
+                name,
+                reports,
+                changelog
+            }
             console.log("data", data);
             api.post(`/workflow`, data)
                 .then((response) => {
