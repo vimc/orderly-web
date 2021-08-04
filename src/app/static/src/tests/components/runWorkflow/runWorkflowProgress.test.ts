@@ -1,6 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
+import errorInfo from "../../../js/components/errorInfo.vue";
 
 const workflows = {
     "status": "success",
@@ -77,9 +78,6 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
-            // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
-            // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
-            // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
             expect(wrapper.findAll("button").length).toBe(0)
             done();
         })
@@ -120,7 +118,7 @@ describe(`runWorkflowProgress`, () => {
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
         const workflowDetails = {name: "Test Workflow", reports: []};
-        mockAxios.onGet('http://app/workflows/test-key/')
+        mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
         const wrapper = shallowMount(runWorkflowProgress, {
@@ -132,9 +130,32 @@ describe(`runWorkflowProgress`, () => {
             }
         });
 
-        wrapper.find("#rerun").trigger("click");
+        const rerunButton = wrapper.find("#rerun");
+        expect(rerunButton.text()).toBe("Re-run workflow");
+        rerunButton.trigger("click");
         setTimeout(() => {
             expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(workflowDetails);
+            done();
+        });
+    });
+
+    it(`sets error when fail to fetch workflow details`, (done) => {
+        mockAxios.onGet("http://app/workflows/test-key/")
+            .reply(500, "TEST ERROR");
+        const wrapper = shallowMount(runWorkflowProgress, {
+            data: () => {
+                return {
+                    selectedWorkflowKey: "test-key",
+                    workflowRunSummaries: []
+                };
+            }
+        });
+
+        wrapper.find("#rerun").trigger("click");
+        setTimeout(() => {
+            expect(wrapper.find(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.find(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
+            expect(wrapper.emitted("rerun")).toBeUndefined();
             done();
         });
     });
