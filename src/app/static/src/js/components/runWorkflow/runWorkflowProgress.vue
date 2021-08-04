@@ -124,7 +124,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         startPolling() {
             this.polling = setInterval(() => {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey)
-            },3000)
+            },1500)
         },
         stopPolling() {
             clearInterval(this.polling)
