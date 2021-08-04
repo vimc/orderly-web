@@ -184,8 +184,7 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        // This test changes the state of the orderly container since refreshing git causes the fake git system to add a new commit
-        // It should be passing on Buildkite, but it will fail locally if you don't restart the deps between test runs.
+        // There should be only one git commit option, but bk needs 2 to run successfully; possibly related to running a workflow
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
         assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
 
