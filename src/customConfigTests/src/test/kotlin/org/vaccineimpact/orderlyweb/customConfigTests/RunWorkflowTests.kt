@@ -194,12 +194,12 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        // There should be only one git commit option, but bk needs 2 to run successfully; possibly related to running a workflow
+        // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
-        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
+        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 
@@ -242,13 +242,13 @@ class RunWorkflowTests : SeleniumTest()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
-        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\"},{\"name\":\"global\"}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
         val link = driver.findElement(By.id("workflow-progress-link"))
         assertThat(link.text).isEqualTo("Workflow progress")
         link.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
         val vSelectInput = driver.findElement(By.tagName("input"))
-        vSelectInput.sendKeys("workf")
+        vSelectInput.sendKeys("My work")
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
         assertThat(dropdownMenu[0].text).contains("My workflow")
@@ -258,7 +258,10 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(table.text).contains("Reports")
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
-        assertThat(rows[0].text).isIn(listOf("minimal Queued", "minimal Running"))
-        assertThat(rows[1].text).isIn(listOf("global Queued", "global Running"))
+        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
+        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val globalRow = rows.find{ it.text.startsWith("global") }!!
+        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
     }
+
 }
