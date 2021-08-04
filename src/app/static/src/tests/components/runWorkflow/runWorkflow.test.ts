@@ -231,4 +231,27 @@ describe(`runWorkflow`, () => {
             done();
         });
     })
+
+    it(`can render running status, clicks view log link and emits changeTab `,  async() => {
+        const wrapper = getWrapper()
+        //Enables rerun button
+        await wrapper.find(runWorkflowCreate).setData(
+            {
+                selectedWorkflow: selectedWorkflow,
+                runWorkflowMetadata: workflowMetadata
+
+            })
+
+        expect(wrapper.find(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
+        await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.find(workflowWizard).exists()).toBe(true)
+
+        const buttons = wrapper.findAll("button")
+        await buttons.at(1).trigger("click")
+        expect(wrapper.find(workflowWizard).find("#run-workflow-status").text()).toContain("Run started")
+        expect(wrapper.find(workflowWizard).find("#run-workflow-status a").text()).toBe("View log")
+
+        await wrapper.find(workflowWizard).find("#run-workflow-status a").trigger("click")
+        expect(wrapper.find(workflowWizard).emitted("changeTab").length).toBe(1)
+    })
 })

@@ -16,6 +16,11 @@
                        @update="updateMetadata">
             </component>
         </step>
+        <div id="run-workflow-status" v-if="runningStatus"
+             class="row justify-content-end col-sm-10 text-secondary mt-2">
+            {{ runningStatus }}
+            <a @click.prevent="$emit('changeTab')" href="#">View log</a>
+        </div>
         <cancel-dialog @cancel="cancel" @abortCancel="abortCancel" :show-modal="showModal"/>
     </div>
 </template>
@@ -33,6 +38,7 @@
         validStep: boolean
         showModal: boolean
         runWorkflowMetadata: RunWorkflowMetadata | null
+        runningStatus: string
     }
 
     interface Methods {
@@ -80,7 +86,8 @@
                 activeStep: 0,
                 validStep: false,
                 showModal: false,
-                runWorkflowMetadata: null
+                runWorkflowMetadata: null,
+                runningStatus: ""
             }
         },
         methods: {
@@ -108,6 +115,7 @@
                 if (this.validStep) {
                     if (this.steps.length - 1 === this.getCurrentIndex(name)) {
                         this.$emit("complete", true)
+                        this.runningStatus = "Run started"
                     } else {
                         this.activeStep = this.steps.findIndex(step => step.name === name) + 1
                         this.validStep = false
@@ -117,11 +125,13 @@
             back: function (name) {
                     if (this.getCurrentIndex(name) !== 0) {
                         this.activeStep = this.steps.findIndex(step => step.name === name) - 1
+                        this.runningStatus = ""
                     }
             },
             cancel: function () {
                 this.$emit("cancel")
                 this.validStep = false
+                this.runningStatus = ""
             },
             confirmCancel: function() {
                 this.showModal = true

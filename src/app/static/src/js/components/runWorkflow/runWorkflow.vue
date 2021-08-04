@@ -10,6 +10,7 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
+                         @changeTab="handleChangeTab"
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
@@ -36,6 +37,7 @@
         handleCreate: (data: Event) => void
         handleClone: (data: Event) => void
         handleComplete: () => void
+        handleChangeTab: () => void
     }
 export default Vue.extend<Data, Methods, unknown, unknown>({
     name: "runWorkflow",
@@ -77,6 +79,9 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         },
         handleComplete: function () {
             //handle submitted report here
+        },
+        handleChangeTab: function () {
+            this.$emit("changeTab")
         }
     },
     components: {

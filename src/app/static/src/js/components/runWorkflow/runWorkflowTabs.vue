@@ -26,7 +26,7 @@
             <div class="col-12 col-md-8 tab-content">
                 <div v-if="selectedTab === 'runWorkflow'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <run-workflow></run-workflow>
+                        <run-workflow @changeTab="switchTab('runWorkflowProgress')"></run-workflow>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'runWorkflowProgress'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="workflow-progress-tab">
