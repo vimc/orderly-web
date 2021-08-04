@@ -221,4 +221,41 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
+
+    @Test
+    fun `can render running workflow status and link to progress tab`()
+    {
+        val tab = driver.findElement(By.id("run-workflow-tab"))
+        val page = tab.findElement(By.id("create-workflow-container"))
+        val vSelectInput = driver.findElement(By.tagName("input"))
+        vSelectInput.sendKeys("workf")
+
+        val vSelect = driver.findElement(By.id("v-select"))
+        val dropdownMenu = vSelect.findElements(By.tagName("li"))
+        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
+                "test.user@example.com | Tue Jun 15 2021, 14:50")
+        dropdownMenu[0].click()
+
+        val rerunButton = page.findElement(By.id("rerun"))
+        assertThat(rerunButton.isEnabled).isTrue()
+        assertThat(rerunButton.text).isEqualTo("Re-run workflow")
+        rerunButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+
+        val runWorkflowPage = driver.findElement(By.tagName("input"))
+        runWorkflowPage.sendKeys("Workflow name")
+
+        val runWorkflow = page.findElement(By.id("next-workflow"))
+        assertThat(runWorkflow.isEnabled).isTrue()
+        assertThat(runWorkflow.text).isEqualTo("Re-run workflow")
+        runWorkflow.click()
+
+        val runningStatus = driver.findElement(By.id("run-workflow-status"))
+        assertThat(runningStatus.text).contains("Run started")
+        assertThat(runningStatus.findElement(By.tagName("a")).text).isEqualTo("View log")
+        runningStatus.findElement(By.tagName("a")).click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+    }
 }
