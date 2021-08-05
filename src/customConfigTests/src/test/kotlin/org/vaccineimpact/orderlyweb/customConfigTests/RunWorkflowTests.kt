@@ -199,7 +199,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
-        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
+        assertThat(driver.findElements(By.cssSelector("div[class*='error-message']")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 
