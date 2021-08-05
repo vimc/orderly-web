@@ -17,7 +17,7 @@
             </component>
         </step>
         <div id="run-workflow-status" v-if="runningStatus"
-             class="row justify-content-end col-sm-10 text-secondary mt-2">
+             class="row justify-content-end col-sm-8 text-secondary mt-2">
             {{ runningStatus }}
             <a @click.prevent="$emit('changeTab')" href="#">View log</a>
         </div>
