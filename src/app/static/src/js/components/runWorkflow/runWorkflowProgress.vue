@@ -1,64 +1,66 @@
 <template>
-    <div
-        class="container mt-3"
-        id="workflow-progress-container"
-        v-if="workflowRunSummaries"
-    >
-        <div class="row mb-3">
-            <label for="workflows" class="form-label col">Workflow</label>
-            <div class="col-10 px-0">
-                <v-select
-                    :options="workflowRunSummaries"
-                    label="name"
-                    :reduce="(label) => label.key"
-                    name="workflows"
-                    id="workflows"
-                    v-model="selectedWorkflowKey"
-                    placeholder="Select workflow or search by name..."
-                >
-                    <template #option="{ name, date }">
-                        <div>
-                            {{ name }}
-                            <span style="opacity: 0.5; float: right">
-                                {{ formatDate(date) }}
-                            </span>
-                        </div>
-                    </template>
-                </v-select>
+    <div>
+        <div
+            class="container mt-3"
+            id="workflow-progress-container"
+            v-if="workflowRunSummaries"
+        >
+            <div class="row mb-3">
+                <label for="workflows" class="form-label col">Workflow</label>
+                <div class="col-10 px-0">
+                    <v-select
+                        :options="workflowRunSummaries"
+                        label="name"
+                        :reduce="(label) => label.key"
+                        name="workflows"
+                        id="workflows"
+                        v-model="selectedWorkflowKey"
+                        placeholder="Select workflow or search by name..."
+                    >
+                        <template #option="{ name, date }">
+                            <div>
+                                {{ name }}
+                                <span style="opacity: 0.5; float: right">
+                                    {{ formatDate(date) }}
+                                </span>
+                            </div>
+                        </template>
+                    </v-select>
+                </div>
+            </div>
+            <div class="row" v-if="workflowRunStatus" id="workflow-table">
+                <label class="form-label col">Reports</label>
+                <table class="table-bordered col-10">
+                    <tr v-for="report in workflowRunStatus.reports">
+                        <td v-if="report.status === 'success'" class="p-2">
+                            <a :href="reportVersionHref(report.name, report.version)">
+                                {{ report.name }}
+                            </a>
+                        </td>
+                        <td v-else class="p-2">{{ report.name }}</td>
+                        <td :class="statusColour(report.status)" class="p-2">
+                            {{ interpretStatus(report.status) }}
+                        </td>
+                        <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
+                    </tr>
+                </table>
+            </div>
+            <div v-if="selectedWorkflowKey" class="row justify-content-end mt-3">
+                <button id="rerun" class="button mr-3" type="button" @click="rerun">
+                    Re-run workflow
+                </button>
+                <!-- Cancel button to be implemented in mrc-2549 -->
+                <button class="btn btn-secondary" type="button" v-if="false">
+                    Cancel workflow
+                </button>
             </div>
         </div>
-        <div class="row" v-if="workflowRunStatus" id="workflow-table">
-            <label class="form-label col">Reports</label>
-            <table class="table-bordered col-10">
-                <tr v-for="report in workflowRunStatus.reports">
-                    <td v-if="report.status === 'success'" class="p-2">
-                        <a :href="reportVersionHref(report.name, report.version)">
-                            {{ report.name }}
-                        </a>
-                    </td>
-                    <td v-else class="p-2">{{ report.name }}</td>
-                    <td :class="statusColour(report.status)" class="p-2">
-                        {{ interpretStatus(report.status) }}
-                    </td>
-                    <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
-                </tr>
-            </table>
-        </div>
-        <div v-if="selectedWorkflowKey" class="row justify-content-end mt-3">
-            <button id="rerun" class="button mr-3" type="button" @click="rerun">
-                Re-run workflow
-            </button>
-            <!-- Cancel button to be implemented in mrc-2549 -->
-            <button class="btn btn-secondary" type="button" v-if="false">
-                Cancel workflow
-            </button>
-        </div>
+        <p v-else>No workflows to show</p>
         <error-info
             :default-message="defaultMessage"
             :api-error="error"
         ></error-info>
     </div>
-    <p v-else>No workflows to show</p>
 </template>
 
 <script lang="ts">
@@ -72,7 +74,6 @@ import {
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
-import { session } from "../../utils/session.js";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];

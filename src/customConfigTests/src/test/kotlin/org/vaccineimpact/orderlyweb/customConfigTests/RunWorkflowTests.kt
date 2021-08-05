@@ -12,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -22,7 +21,6 @@ class RunWorkflowTests : SeleniumTest()
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertWorkflow("test.user@example.com", "newkey", "workflow1")
-            insertReport("test_report", "version1")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
@@ -194,12 +192,13 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        // There should be only one git commit option, but bk needs 2 to run successfully; possibly related to running a workflow
+        // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
         assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
+        assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 
@@ -270,4 +269,5 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(workflowNameInput.getAttribute("value")).isEqualTo("My workflow")
         assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
+
 }
