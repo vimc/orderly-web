@@ -85,36 +85,65 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
-    it(`it can render reports table`, (done) => {
+    it(`renders get workflows error message`, async (done) => {
+        mockAxios.reset();
+        mockAxios.onGet('http://app/workflows')
+            .reply(500, "TEST ERROR");
         const wrapper = getWrapper()
         
         setTimeout(() => {
-            wrapper.setData({workflowRunStatus: workflowStatus1.data})
-            setTimeout(() => {
-                expect(wrapper.find("table").exists()).toBe(true)
-                expect(wrapper.findAll("tr").length).toBe(3)
-                const reportLinks = wrapper.findAll("td > a")
-                expect(reportLinks.length).toBe(1)
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflows")
+            expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
+            expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
+            expect(wrapper.vm.$data.workflowRunSummaries).toStrictEqual(null)
+            done();
+        })
+    })
 
-                const completedReportLink = reportLinks.at(0)
-                expect(completedReportLink.text()).toBe("report two a")
-                expect(completedReportLink.attributes("href")).toBe("http://app/report/report two a/20210510-100458-8f1a9624/")
+    it(`renders get workflow run status error message`, async (done) => {
+        mockAxios.reset();
+        mockAxios.onGet('http://app/workflows/key1/status')
+            .reply(500, "TEST ERROR");
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+        
+        setTimeout(() => {
+            expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflow reports")
+            expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
+            expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
+            expect(wrapper.vm.$data.workflowRunStatus).toStrictEqual(null)
+            done();
+        })
+    })
 
-                const errorStatus = wrapper.findAll("tr > td:nth-child(2)").at(0)
-                expect(errorStatus.text()).toBe("Failed")
-                expect(errorStatus.classes()).toContain("text-danger")
+    it(`it can render reports table`, (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+        
+        setTimeout(() => {
+            expect(wrapper.find("table").exists()).toBe(true)
+            expect(wrapper.findAll("tr").length).toBe(3)
+            const reportLinks = wrapper.findAll("td > a")
+            expect(reportLinks.length).toBe(1)
 
-                const successStatus = wrapper.findAll("tr > td:nth-child(2)").at(1)
-                expect(successStatus.text()).toBe("Complete")
+            const completedReportLink = reportLinks.at(0)
+            expect(completedReportLink.text()).toBe("report two a")
+            expect(completedReportLink.attributes("href")).toBe("http://app/report/report two a/20210510-100458-8f1a9624/")
 
-                const runningStatus = wrapper.findAll("tr > td:nth-child(2)").at(2)
-                expect(runningStatus.text()).toBe("Running")
-                expect(runningStatus.classes()).toContain("text-secondary")
+            const errorStatus = wrapper.findAll("tr > td:nth-child(2)").at(0)
+            expect(errorStatus.text()).toBe("Failed")
+            expect(errorStatus.classes()).toContain("text-danger")
 
-                const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
-                expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
-                done();
-            })
+            const successStatus = wrapper.findAll("tr > td:nth-child(2)").at(1)
+            expect(successStatus.text()).toBe("Complete")
+
+            const runningStatus = wrapper.findAll("tr > td:nth-child(2)").at(2)
+            expect(runningStatus.text()).toBe("Running")
+            expect(runningStatus.classes()).toContain("text-secondary")
+
+            const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
+            expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
+            done();
         })
     })
 })
