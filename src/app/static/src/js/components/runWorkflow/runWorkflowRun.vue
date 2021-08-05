@@ -66,6 +66,7 @@
         getWorkflows: () => void
         handleChangeLogTypeValue: (changelogType: string) => void
         handleChangeLogMessageValue: (changelogMessage: string) => void
+        updateChangeLogs: () => void
         handleInstancesValue: (instances: Object) => void
     }
 
@@ -112,10 +113,13 @@
             },
             handleChangeLogTypeValue: function (changelogType) {
                 this.changeLogTypeValue = changelogType;
-                this.$emit("update", { changelog: { type: this.changeLogTypeValue, message: this.changeLogMessageValue } })
+                this.updateChangeLogs();
             },
             handleChangeLogMessageValue: function (changelogMessage) {
                 this.changeLogMessageValue = changelogMessage;
+                this.updateChangeLogs();
+            },
+            updateChangeLogs: function (){
                 this.$emit("update", { changelog: { type: this.changeLogTypeValue, message: this.changeLogMessageValue } });
             },
             getRunMetadata: function () {

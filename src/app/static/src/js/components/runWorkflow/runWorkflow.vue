@@ -97,7 +97,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             const { name, reports, changelog } = this.runWorkflowMetadata;
             const data = {
                 name,
-                reports,
+                // reports,
+                reports: [{"name":"minimal","params":{}},{"name":"global","params":{}}],
                 changelog
             }
             console.log("data", data);
