@@ -7,6 +7,7 @@ import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.Select
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
+import org.openqa.selenium.JavascriptExecutor
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
@@ -191,10 +192,12 @@ class RunWorkflowTests : SeleniumTest()
         createButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
 
-        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isEqualTo(1)
+        // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
+        assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
+        assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 
@@ -231,4 +234,32 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
+
+    @Test
+    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    {
+        //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
+        val jse = driver as JavascriptExecutor
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
+        val link = driver.findElement(By.id("workflow-progress-link"))
+        assertThat(link.text).isEqualTo("Workflow progress")
+        link.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val vSelectInput = driver.findElement(By.tagName("input"))
+        vSelectInput.sendKeys("My work")
+        val vSelect = driver.findElement(By.id("workflows"))
+        val dropdownMenu = vSelect.findElements(By.tagName("li"))
+        assertThat(dropdownMenu[0].text).contains("My workflow")
+        dropdownMenu[0].click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+        val table = driver.findElement(By.id("workflow-table"))
+        assertThat(table.text).contains("Reports")
+        val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
+        assertThat(rows.count()).isEqualTo(2)
+        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
+        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val globalRow = rows.find{ it.text.startsWith("global") }!!
+        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
+    }
+
 }
