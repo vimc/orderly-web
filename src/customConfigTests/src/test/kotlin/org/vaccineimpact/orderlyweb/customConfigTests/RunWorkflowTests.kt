@@ -12,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -22,7 +21,6 @@ class RunWorkflowTests : SeleniumTest()
         JooqContext().use {
             insertUserAndGroup(it, "test.user@example.com")
             insertWorkflow("test.user@example.com", "newkey", "workflow1")
-            insertReport("test_report", "version1")
             giveUserGroupGlobalPermission(it, "test.user@example.com", "reports.run")
         }
 
@@ -199,7 +197,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
-        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
+        assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
     }
 
