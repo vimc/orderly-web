@@ -111,10 +111,12 @@
                 this.selectedInstances = instances
             },
             handleChangeLogTypeValue: function (changelogType) {
-                this.changeLogTypeValue = changelogType
+                this.changeLogTypeValue = changelogType;
+                this.$emit("update", { changelog: { type: this.changeLogTypeValue, message: this.changeLogMessageValue } })
             },
             handleChangeLogMessageValue: function (changelogMessage) {
-                this.changeLogMessageValue = changelogMessage
+                this.changeLogMessageValue = changelogMessage;
+                this.$emit("update", { changelog: { type: this.changeLogTypeValue, message: this.changeLogMessageValue } });
             },
             getRunMetadata: function () {
                 api.get('/report/run-metadata')

@@ -147,6 +147,12 @@
                 ...this.initialRunWorkflowMetadata
             };
         },
+    watch: {
+        runWorkflowMetadata(){
+            console.log("wizard runWorkflowMetadata", this.runWorkflowMetadata);
+            this.$emit("update-run-workflow-metadata", this.runWorkflowMetadata)
+        }
+    },
         components: {
             runWorkflowReport,
             runWorkflowRun,

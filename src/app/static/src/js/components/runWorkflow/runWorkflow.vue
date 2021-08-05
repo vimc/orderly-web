@@ -10,9 +10,13 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
+                         @update-run-workflow-metadata="updateRunWorkflowMetadata"
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
+        <div class="pt-4 col-sm-6">
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        </div>
     </div>
 </template>
 
@@ -22,6 +26,7 @@
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
     import { api } from "../../utils/api";
+    import ErrorInfo from "../errorInfo.vue";
 
     interface Data {
         runWorkflowMetadata: RunWorkflowMetadata | null
@@ -29,6 +34,7 @@
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
         disableRename: boolean
+        error: string | null
     }
 
     interface Methods {
@@ -37,6 +43,7 @@
         handleCreate: (data: Event) => void
         handleClone: (data: Event) => void
         handleComplete: () => void
+        updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
 
 export default Vue.extend<Data, Methods, unknown, unknown>({
@@ -47,7 +54,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowStarted: false,
             stepComponents: [],
             toggleFinalStepNextTo: "Run workflow",
-            disableRename: false
+            disableRename: false,
+            error: "",
         }
     },
     methods: {
@@ -100,17 +108,26 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 })
                 .catch((error) => {
                     console.log("error", error);
-                    // this.error = error;
-                    // this.defaultMessage = `could not add user`;
+                    this.error = error;
+                    this.defaultMessage = "An error occurred while running the workflow";
                 });
         },
+        updateRunWorkflowMetadata: function (update) {
+            this.runWorkflowMetadata = update;
+        }
     },
     components: {
         workflowWizard,
-        runWorkflowCreate
+        runWorkflowCreate,
+        ErrorInfo
     },
-    mounted(){
-        this.handleComplete()
+    watch: {
+        runWorkflowMetadata(){
+            console.log("runWorkflowMetadata", this.runWorkflowMetadata);
+        }
     }
+    // mounted(){
+    //     this.handleComplete()
+    // }
 })
 </script>
