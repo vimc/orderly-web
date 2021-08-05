@@ -194,7 +194,6 @@ class RunWorkflowTests : SeleniumTest()
 
         // We generally expect one git commit option in demo orderly before refresh, but have found that this can be two commits on Buildkite run. This may be related to having run a workflow in another test
         assertThat(driver.findElements(By.cssSelector("#git-commit option")).count()).isIn(listOf(1, 2))
-        assertThat(driver.findElements(By.cssSelector("error-info")).count()).isEqualTo(0)
 
         val refreshButton = driver.findElement(By.id("git-refresh-btn"))
         refreshButton.click()
