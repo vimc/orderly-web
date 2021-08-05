@@ -25,6 +25,7 @@
     interface Props {
         instances: Record<string, any>
         customStyle: ChildCustomStyle
+        initialSelectedInstances: Record<string, string>
     }
 
     interface Data {
@@ -50,6 +51,10 @@
             customStyle: {
                 required: true,
                 type: Object
+            },
+            initialSelectedInstances: {
+                required: false,
+                type: Object
             }
         },
         data(): Data {
@@ -62,15 +67,26 @@
                 this.$emit("selectedValues", this.selectedInstances);
             },
             selectInitialInstance: function () {
-                if (this.instances && this.showInstances) {
+                if (this.showInstances) {
                     const instances = this.instances;
+                    const initialInstances = this.initialSelectedInstances || {};
+                    let updated = false;
                     for (const key in instances) {
                         if (instances[key].length > 0) {
-                            this.$set(this.selectedInstances, key, instances[key][0]);
+                            let initialValue;
+                            if (initialInstances[key]){
+                                initialValue = initialInstances[key];
+                            } else {
+                                initialValue = instances[key][0];
+                                updated = true;
+                            }
+                            this.$set(this.selectedInstances, key, initialValue);
                         }
                     }
+                    if (updated) {
+                        this.$emit("selectedValues", this.selectedInstances);
+                    }
                 }
-                this.$emit("selectedValues", this.selectedInstances);
             }
         },
         computed: {

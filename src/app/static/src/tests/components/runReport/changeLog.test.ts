@@ -1,16 +1,17 @@
 import {mount} from "@vue/test-utils";
+import Vue from "vue";
 import ChangeLog from "../../../js/components/runReport/changeLog.vue";
-import changeLog from "../../../js/components/runReport/changeLog.vue";
 
 describe(`changeLog`, () => {
     const changelogTypeOptions = ["internal", "public"]
 
-    const getWrapper = () => {
+    const getWrapper = (propsData: any = {}) => {
         return mount(ChangeLog,
             {
                 propsData: {
                     changelogTypeOptions: changelogTypeOptions,
-                    customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
+                    customStyle: {label: "col-sm-2 text-right", control: "col-sm-6"},
+                    ...propsData,
                 }
             })
     }
@@ -67,12 +68,27 @@ describe(`changeLog`, () => {
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
-        const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
-        const changelogType= wrapper.find(changeLog).find("#changelog-type")
+        const changelogMessage = wrapper.find(ChangeLog).find("#changelog-message")
+        const changelogType= wrapper.find(ChangeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)
         expect(changelogType.find("label").classes()).toEqual(label)
         expect(changelogType.find("#change-type-control").classes()).toEqual(control)
-    })
+    });
+
+    it(`can set changelog message from initial value`, async () => {
+        const wrapper = getWrapper({initialMessage: "some message"});
+        expect(wrapper.vm.$data.changeLogMessageValue).toBe("some message");
+        await Vue.nextTick();
+        expect((wrapper.find("#changelogMessage").element as HTMLTextAreaElement).value).toBe("some message");
+    });
+
+    it(`can set changelog message from initial type`, async () => {
+        const wrapper = getWrapper({initialType: "public"});
+        expect(wrapper.vm.$data.changeLogTypeValue).toBe("public");
+        await Vue.nextTick();
+        expect((wrapper.find("#changelogType").element as HTMLSelectElement).value).toBe("public");
+        expect(wrapper.emitted().changelogType).toBeUndefined();
+    });
 })

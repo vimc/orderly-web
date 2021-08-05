@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row10;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRecor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRun extends TableImpl<OrderlywebWorkflowRunRecord> {
 
-    private static final long serialVersionUID = -1021759661;
+    private static final long serialVersionUID = 1090014044;
 
     /**
      * The reference instance of <code>orderlyweb_workflow_run</code>
@@ -70,11 +70,6 @@ public class OrderlywebWorkflowRun extends TableImpl<OrderlywebWorkflowRunRecord
      * The column <code>orderlyweb_workflow_run.date</code>.
      */
     public final TableField<OrderlywebWorkflowRunRecord, Timestamp> DATE = createField(DSL.name("date"), org.jooq.impl.SQLDataType.TIMESTAMP.nullable(false), this, "");
-
-    /**
-     * The column <code>orderlyweb_workflow_run.reports</code>.
-     */
-    public final TableField<OrderlywebWorkflowRunRecord, String> REPORTS = createField(DSL.name("reports"), org.jooq.impl.SQLDataType.CLOB.nullable(false), this, "");
 
     /**
      * The column <code>orderlyweb_workflow_run.instances</code>.
@@ -180,11 +175,11 @@ public class OrderlywebWorkflowRun extends TableImpl<OrderlywebWorkflowRunRecord
     }
 
     // -------------------------------------------------------------------------
-    // Row10 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row10<Integer, String, String, String, Timestamp, String, String, String, String, String> fieldsRow() {
-        return (Row10) super.fieldsRow();
+    public Row9<Integer, String, String, String, Timestamp, String, String, String, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
