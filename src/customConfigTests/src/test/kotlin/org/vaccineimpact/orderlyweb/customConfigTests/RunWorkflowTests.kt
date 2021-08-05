@@ -261,7 +261,7 @@ class RunWorkflowTests : SeleniumTest()
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
         assertThat(minimalRow.text).isIn(listOf("minimal Complete"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
-        assertThat(globalRow.text).isIn(listOf("global Complete"))
+        assertThat(globalRow.text).isIn(listOf("global Running"))
     }
 
 }
