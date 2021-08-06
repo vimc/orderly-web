@@ -14,7 +14,7 @@
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
-        <div class="pt-4 col-sm-6">
+        <div class="pt-4">
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
     </div>
@@ -23,7 +23,7 @@
 <script lang="ts">
     import Vue from "vue"
     import workflowWizard from "../workflowWizard/workflowWizard.vue";
-    import {RunWorkflowMetadata, Step} from "../../utils/types"
+    import {RunWorkflowMetadata, WorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
     import { api } from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
@@ -37,6 +37,10 @@
         error: string | null
     }
 
+    interface Computed {
+        workflowMetadata: WorkflowMetadata | null
+    }
+
     interface Methods {
         handleCancel: () => void
         handleRerun: (data: Event) => void
@@ -46,7 +50,7 @@
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
 
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, Computed, unknown>({
     name: "runWorkflow",
     data(): Data {
         return {
@@ -56,6 +60,12 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             toggleFinalStepNextTo: "Run workflow",
             disableRename: false,
             error: "",
+        }
+    },
+    computed: {
+        workflowMetadata(){
+            const { name, reports, changelog } = this.runWorkflowMetadata;
+            return { name, reports, changelog }
         }
     },
     methods: {
@@ -94,15 +104,14 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             //     changelog: {"message":"message1","type":"internal"}
             // };
             console.log("runWorkflowMetadata", this.runWorkflowMetadata);
-            const { name, reports, changelog } = this.runWorkflowMetadata;
-            const data = {
-                name,
-                reports,
-                // reports: [{"name":"minimal","params":{}},{"name":"global","params":{}}],
-                changelog
-            }
-            console.log("data", data);
-            api.post(`/workflow`, data)
+            // const { name, reports, changelog } = this.runWorkflowMetadata;
+            // const data = {
+            //     name,
+            //     reports,
+            //     changelog
+            // }
+            console.log("data", this.workflowMetadata);
+            api.post(`/workflow`, this.workflowMetadata)
                 .then((response) => {
                     this.error = null;
                     console.log("response", response);

@@ -33,6 +33,15 @@ export interface RunReportMetadata {
     changelog_types: string[]
 }
 
+export interface WorkflowMetadata {
+    name: string,
+    reports: WorkflowReportWithParams[],
+    changelog: {
+        message: string,
+        type: string
+    } | null
+}
+
 export interface RunWorkflowMetadata {
     name: string,
     reports: WorkflowReportWithParams[],

@@ -172,6 +172,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     watch: {
         selectedWorkflowKey() {
+            this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
+            console.log("emitted key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
             } else {
