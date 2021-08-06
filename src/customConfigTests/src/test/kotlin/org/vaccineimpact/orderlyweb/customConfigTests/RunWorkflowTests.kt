@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
+import java.util.concurrent.TimeUnit
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -260,6 +261,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(minimalRow.text).isEqualTo("minimal Complete")
         val globalRow = rows.find{ it.text.startsWith("global") }!!
         assertThat(globalRow.text).isEqualTo("global Running")
+        driver.manage().timeouts().implicitlyWait(3, TimeUnit.SECONDS)
+        assertThat(globalRow.text).isEqualTo("global Complete")
     }
 
 }

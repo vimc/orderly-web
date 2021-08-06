@@ -81,7 +81,7 @@ interface Data {
     workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
-    polling: null | number;
+    pollingTimer: null | number;
 }
 
 interface Methods {
@@ -110,18 +110,18 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
-            polling: null
+            pollingTimer: null
         };
     },
     methods: {
         startPolling() {
-            if(!this.polling) {
-                this.polling = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+            if (!this.pollingTimer) {
+                this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
             }
         },
         stopPolling() {
-            clearInterval(this.polling)
-            this.polling = null
+            clearInterval(this.pollingTimer)
+            this.pollingTimer = null
         },
         getWorkflowRunSummaries() {
             api.get("/workflows")
@@ -197,6 +197,9 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     mounted() {
         this.getWorkflowRunSummaries();
+    },
+    beforeDestroy() {
+        this.stopPolling();
     }
 });
 </script>
