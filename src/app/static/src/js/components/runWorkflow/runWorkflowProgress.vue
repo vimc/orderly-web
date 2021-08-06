@@ -100,6 +100,12 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         ErrorInfo,
         vSelect,
     },
+    props: {
+            selectedWorkflow: {
+                type: String || null,
+                required: true
+            },
+        },
     data() {
         return {
             workflowRunSummaries: null,
@@ -172,9 +178,15 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 this.workflowRunStatus = null;
             }
         },
+        // selectedWorkflow() {
+        //     this.selectedWorkflowKey = this.selectedWorkflow;
+        //     console.log("progress selected workflow key", this.selectedWorkflowKey)
+        // }
     },
     mounted() {
         this.getWorkflowRunSummaries();
+        this.selectedWorkflowKey = this.selectedWorkflow;
+        console.log("progress selected workflow key", this.selectedWorkflowKey)
     },
 });
 </script>

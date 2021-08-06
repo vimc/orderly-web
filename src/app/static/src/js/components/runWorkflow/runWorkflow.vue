@@ -97,15 +97,16 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             const { name, reports, changelog } = this.runWorkflowMetadata;
             const data = {
                 name,
-                // reports,
-                reports: [{"name":"minimal","params":{}},{"name":"global","params":{}}],
+                reports,
+                // reports: [{"name":"minimal","params":{}},{"name":"global","params":{}}],
                 changelog
             }
             console.log("data", data);
             api.post(`/workflow`, data)
                 .then((response) => {
-                    // this.error = null;
+                    this.error = null;
                     console.log("response", response);
+                    this.$emit("view-progress", response.data.data.workflow_key)
                 })
                 .catch((error) => {
                     console.log("error", error);
