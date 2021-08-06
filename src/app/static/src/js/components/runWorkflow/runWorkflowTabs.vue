@@ -13,7 +13,7 @@
                                 <li class="nav-item">
                                     <a id="run-workflow-link"
                                        class="nav-link"
-                                       :class="selectedTab === 'runWorkflow' ? 'active' : ''"
+                                       :class="{ active: selectedTab === 'runWorkflow' }"
                                        data-toggle="tab"
                                        role="tab"
                                        href="#"
@@ -22,7 +22,7 @@
                                 <li class="nav-item">
                                     <a id="workflow-progress-link"
                                        class="nav-link"
-                                       :class="selectedTab === 'runWorkflowProgress' ? 'active' : ''"
+                                       :class="{ active: selectedTab === 'runWorkflowProgress' }"
                                        data-toggle="tab"
                                        role="tab"
                                        href="#"
