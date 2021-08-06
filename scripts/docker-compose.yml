@@ -7,7 +7,7 @@ services:
     depends_on:
     - api
     logging:
-      driver: syslog
+      driver: none
   orderly_server:
     image: vimc/orderly.server:${MONTAGU_ORDERLY_SERVER_VERSION}
     user: ${ORDERLY_SERVER_USER_ID}

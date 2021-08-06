@@ -81,7 +81,7 @@ interface Data {
     workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
-    polling: string;
+    polling: null | number;
 }
 
 interface Methods {
@@ -91,8 +91,8 @@ interface Methods {
     reportVersionHref: (name: string, version: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
-    startPolling: () => void
-    stopPolling: () => void
+    startPolling: () => void;
+    stopPolling: () => void;
 }
 
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
@@ -110,17 +110,18 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
-            polling: ""
+            polling: null
         };
     },
     methods: {
         startPolling() {
-            this.polling = setInterval(() => {
-                this.getWorkflowRunStatus(this.selectedWorkflowKey)
-            },1500)
+            if(!this.polling) {
+                this.polling = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+            }
         },
         stopPolling() {
             clearInterval(this.polling)
+            this.polling = null
         },
         getWorkflowRunSummaries() {
             api.get("/workflows")
@@ -179,18 +180,19 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     watch: {
         selectedWorkflowKey() {
             if (this.selectedWorkflowKey) {
-                this.startPolling()
+                this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.startPolling();
             } else {
                 this.workflowRunStatus = null;
             }
         },
         workflowRunStatus: {
-            handler(status) {
-                if (status === "success" || status === "error") {
-                    this.stopPolling()
+            handler(workflowRun) {
+                const interpretStatus = this.interpretStatus(workflowRun.status)
+                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                    this.stopPolling();
                 }
-            },
-            deep: true
+            }
         }
     },
     mounted() {

@@ -257,9 +257,9 @@ class RunWorkflowTests : SeleniumTest()
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
-        assertThat(minimalRow.text).isIn(listOf("minimal Complete"))
+        assertThat(minimalRow.text).isEqualTo("minimal Complete")
         val globalRow = rows.find{ it.text.startsWith("global") }!!
-        assertThat(globalRow.text).isIn(listOf("global Running"))
+        assertThat(globalRow.text).isEqualTo("global Running")
     }
 
 }
