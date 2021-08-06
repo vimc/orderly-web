@@ -173,7 +173,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     watch: {
         selectedWorkflowKey() {
             this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
-            console.log("emitted key", this.selectedWorkflowKey)
+            // console.log("emitted key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
             } else {
@@ -188,7 +188,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     mounted() {
         this.getWorkflowRunSummaries();
         this.selectedWorkflowKey = this.selectedWorkflow;
-        console.log("progress selected workflow key", this.selectedWorkflowKey)
+        // console.log("progress selected workflow key", this.selectedWorkflowKey)
     },
 });
 </script>
