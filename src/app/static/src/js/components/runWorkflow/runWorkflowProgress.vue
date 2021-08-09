@@ -92,9 +92,12 @@ interface Methods {
     interpretStatus: (status: string) => string;
 }
 
+interface Props {
+    initialSelectedWorkflow: string;
+}
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,

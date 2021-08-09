@@ -56,8 +56,8 @@ describe(`runWorkflowProgress`, () => {
             .reply(200, workflowStatus1);
     });
 
-    const getWrapper = () => {
-        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
+    const getWrapper = (initialSelectedWorkflow = "") => {
+        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}, initialSelectedWorkflow}})
     }
 
     it(`it can render if no workflows returned`, async (done) => {
@@ -81,6 +81,15 @@ describe(`runWorkflowProgress`, () => {
             // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
             // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
             expect(wrapper.findAll("button").length).toBe(0)
+            done();
+        })
+    })
+
+    it(`initial selected workflow is set by props and emitted`, async (done) => {
+        const wrapper = getWrapper("test")
+        setTimeout(() => {
+            expect(wrapper.vm.$data.selectedWorkflowKey).toBe("test")
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
             done();
         })
     })

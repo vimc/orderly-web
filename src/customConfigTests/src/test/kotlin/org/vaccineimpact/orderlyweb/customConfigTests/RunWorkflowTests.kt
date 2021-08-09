@@ -162,7 +162,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can progress to finalise step`()
+    fun `can progress to finalise step and generate link to progress page`()
     {
         createWorkflow()
         addReport("minimal")
@@ -180,6 +180,13 @@ class RunWorkflowTests : SeleniumTest()
 
         driver.findElement(By.id("run-workflow-name")).sendKeys("new workflow name")
         wait.until(ExpectedConditions.elementToBeClickable(submitButton))
+        submitButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
+        assertThat(driver.findElement(By.id("view-progress-link")).text).isEqualTo("View workflow progress")
+        driver.findElement(By.id("view-progress-link")).click()
+        // wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        // val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
+        // assertThat(rows.count()).isEqualTo(2)
     }
 
     @Test

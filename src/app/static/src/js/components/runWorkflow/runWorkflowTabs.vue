@@ -50,7 +50,7 @@ export default Vue.extend({
     data() {
         return {
             selectedTab: "runWorkflow",
-            selectedWorkflow: null
+            selectedWorkflow: ""
         }
     },
     methods: {

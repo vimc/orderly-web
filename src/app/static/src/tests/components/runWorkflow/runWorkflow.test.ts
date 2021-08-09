@@ -187,11 +187,11 @@ describe(`runWorkflow`, () => {
         wrapper.find("#create-workflow").trigger("click")
 
         setTimeout(async () => {
-            // expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
+            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, git_branch: "master"});
 
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
-            // expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
+            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject({...emptyWorkflowMetadata, git_branch: "master"});
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")

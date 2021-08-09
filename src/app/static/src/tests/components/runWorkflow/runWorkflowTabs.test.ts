@@ -35,4 +35,22 @@ describe(`runWorkflowTabs`, () => {
         expect(wrapper.find("run-workflow-progress-stub").exists()).toBe(true)
         expect(wrapper.find("#workflow-progress-tab").find("h2").text()).toBe("Workflow progress")
     })
+
+    it(`view progress emit switches to progress tab and sets selected workflow`, async () => {
+        const wrapper = getWrapper()
+        const sidebar = wrapper.find("#sidebar")
+        await sidebar.findAll("ul li a").at(0).trigger("click")
+        await wrapper.find("run-workflow-stub").vm.$emit("view-progress", "workflowKey")
+        expect(wrapper.find("run-workflow-progress-stub").props("initialSelectedWorkflow")).toBe("workflowKey")
+        expect(wrapper.find("#workflow-progress-link").classes()).toStrictEqual(["nav-link", "active"])
+    })
+
+    it(`workflow progress tab emit updates workflow key`, async () => {
+        const wrapper = getWrapper()
+        const sidebar = wrapper.find("#sidebar")
+        sidebar.findAll("ul li a").at(1).trigger("click")
+        await Vue.nextTick()
+        await wrapper.find("run-workflow-progress-stub").vm.$emit("set-selected-workflow-key", "workflowKey")
+        expect(wrapper.vm.$data.selectedWorkflow).toBe("workflowKey")
+    })
 })
