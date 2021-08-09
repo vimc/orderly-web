@@ -46,14 +46,21 @@ const workflowStatus1 = {
     }
   }
 
+const realSetTimeout = setTimeout;
 
 describe(`runWorkflowProgress`, () => {
     beforeEach(() => {
         mockAxios.reset();
+        jest.useFakeTimers();
         mockAxios.onGet('http://app/workflows')
             .reply(200, workflows);
         mockAxios.onGet('http://app/workflows/key1/status')
             .reply(200, workflowStatus1);
+    });
+
+    afterEach(() => {
+        jest.runOnlyPendingTimers();
+        jest.useRealTimers();
     });
 
     const getWrapper = () => {
@@ -64,8 +71,8 @@ describe(`runWorkflowProgress`, () => {
         mockAxios.onGet('http://app/workflows')
             .reply(200, null);
         const wrapper = getWrapper()
-        
-        setTimeout(() => {
+
+        realSetTimeout(() => {
             expect(wrapper.find("p").text()).toBe("No workflows to show")
             done();
         })
@@ -73,8 +80,8 @@ describe(`runWorkflowProgress`, () => {
 
     it(`it can render runWorkflowProgress page`, async (done) => {
         const wrapper = getWrapper()
-        
-        setTimeout(() => {
+
+        realSetTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
             // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
@@ -90,8 +97,8 @@ describe(`runWorkflowProgress`, () => {
         mockAxios.onGet('http://app/workflows')
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper()
-        
-        setTimeout(() => {
+
+        realSetTimeout(() => {
             expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflows")
             expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
             expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
@@ -106,8 +113,8 @@ describe(`runWorkflowProgress`, () => {
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
-        
-        setTimeout(() => {
+
+        realSetTimeout(() => {
             expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflow reports")
             expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
             expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
@@ -119,8 +126,8 @@ describe(`runWorkflowProgress`, () => {
     it(`it can render reports table`, (done) => {
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
-        
-        setTimeout(() => {
+
+        realSetTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
             expect(wrapper.findAll("tr").length).toBe(3)
             const reportLinks = wrapper.findAll("td > a")
@@ -146,4 +153,109 @@ describe(`runWorkflowProgress`, () => {
             done();
         })
     })
+
+    it(`does start polling when workflow key is selected`, async (done) => {
+        const key = "fakeKey";
+        const wrapper = getWrapper()
+
+        await wrapper.setData({selectedWorkflowKey: key})
+
+        realSetTimeout(() => {
+            expect(mockAxios.history.get[1].url).toBe(`http://app/workflows/${key}/status`)
+            expect(wrapper.vm.$data.pollingTimer).not.toBe(null);
+            expect(setInterval).toHaveBeenCalledTimes(1);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+            done();
+        });
+    })
+
+    it(`does not start new polling when polling is currently running`, async (done) => {
+        const key = "fakeKey";
+        const key2 = "fakeKey2";
+
+        const workflowStatusComplete = {
+            "status": "success",
+            "errors": null,
+            "data": {
+                "status": "complete",
+                "reports": [
+                    {
+                        "key": "preterrestrial_andeancockoftherock",
+                        "name": "report one a",
+                        "status": "success",
+                        "date": "2021-06-16T09:51:16Z"
+                    }
+                ]
+            }
+        }
+
+        mockAxios.onGet(`http://app/workflows/${key2}/status`)
+            .reply(200, workflowStatusComplete);
+
+        const wrapper = getWrapper()
+
+        await wrapper.setData({selectedWorkflowKey: key, pollingTimer: 100})
+
+        realSetTimeout(async() => {
+            expect(mockAxios.history.get[1].url).toBe(`http://app/workflows/${key}/status`)
+            expect(wrapper.vm.$data.pollingTimer).toBe(100);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+
+            await wrapper.setData({selectedWorkflowKey: key2})
+            expect(mockAxios.history.get[2].url).toBe(`http://app/workflows/${key2}/status`)
+            expect(wrapper.vm.$data.pollingTimer).toBe(100);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+
+            done();
+        });
+    })
+
+
+    it(`can stop polling when workflow run is complete`, async (done) => {
+        const key = "fakeKey";
+        const workflowStatusComplete = {
+            "status": "success",
+            "errors": null,
+            "data": {
+                "status": "complete",
+                "reports": [
+                    {
+                        "key": "preterrestrial_andeancockoftherock",
+                        "name": "report one a",
+                        "status": "success",
+                        "date": "2021-06-16T09:51:16Z"
+                    }
+                ]
+            }
+        }
+
+        mockAxios.onGet(`http://app/workflows/${key}/status`)
+            .reply(200, workflowStatusComplete);
+
+        const wrapper = getWrapper()
+
+        await wrapper.setData({selectedWorkflowKey: key})
+
+        realSetTimeout(() => {
+            expect(mockAxios.history.get[1].url).toBe(`http://app/workflows/${key}/status`)
+            expect(wrapper.vm.$data.pollingTimer).toBe(null);
+            expect(setInterval).toHaveBeenCalledTimes(1);
+            expect(clearInterval).toHaveBeenCalledTimes(1);
+            done();
+        });
+    })
+
+    it(`it does not start polling when workflow is not selected`, async (done) => {
+        const wrapper = getWrapper()
+
+        realSetTimeout(() => {
+            expect(wrapper.vm.$data.pollingTimer).toBe(null);
+            expect(setInterval).toHaveBeenCalledTimes(0);
+            expect(clearInterval).toHaveBeenCalledTimes(0);
+            done();
+        });
+    })
+
 })
