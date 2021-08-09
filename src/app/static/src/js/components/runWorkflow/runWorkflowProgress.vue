@@ -120,8 +120,10 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             }
         },
         stopPolling() {
-            clearInterval(this.pollingTimer)
-            this.pollingTimer = null
+            if(this.pollingTimer) {
+                clearInterval(this.pollingTimer)
+                this.pollingTimer = null
+            }
         },
         getWorkflowRunSummaries() {
             api.get("/workflows")
