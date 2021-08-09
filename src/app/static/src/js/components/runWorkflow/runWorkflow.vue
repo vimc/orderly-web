@@ -14,6 +14,10 @@
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
+        <div v-if="createdWorkflowKey" class="text-secondary mt-2">
+            {{ runningStatus }}
+            <a @click.prevent="$emit('view-progress', createdWorkflowKey)" href="#">View log</a>
+        </div>
         <div class="pt-4">
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
@@ -35,6 +39,7 @@
         toggleFinalStepNextTo: string | null
         disableRename: boolean
         error: string | null
+        createdWorkflowKey: string
     }
 
     interface Computed {
@@ -60,6 +65,7 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
             toggleFinalStepNextTo: "Run workflow",
             disableRename: false,
             error: "",
+            createdWorkflowKey: ""
         }
     },
     computed: {
@@ -115,7 +121,8 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
                 .then((response) => {
                     this.error = null;
                     console.log("response", response);
-                    this.$emit("view-progress", response.data.data.workflow_key)
+                    // this.$emit("view-progress", response.data.data.workflow_key)
+                    this.createdWorkflowKey = response.data.data.workflow_key
                 })
                 .catch((error) => {
                     // console.log("error", error);
