@@ -235,51 +235,66 @@ describe(`runWorkflow`, () => {
 
 
 
-    it(`can call workflow endpoint when on final step and run report is triggered`, async (done) => {
+    it(`can call workflow endpoint when on final step and generate link that emits key to workflow`, async (done) => {
 
         const runWorkflowResponse = {
-            "status": "success",
-            "errors": null,
             data: {
-                data: {
-                    workflow_key: "newKey"
-                }
+                workflow_key: "workflowKey"
             }
-    
         }
-
         mockAxios.onPost('http://app/workflow')
-        .reply(200, {"data": runWorkflowResponse});
+        .reply(200, runWorkflowResponse);
 
         const getShallowWrapper = () => {
             return shallowMount(runWorkflow)
         }
         const wrapper = getShallowWrapper()
-        // expect(wrapper.html()).toBe("Cancel")
-
         await wrapper.find("run-workflow-create-stub").vm.$emit("create")
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         expect(workflowWizard.exists()).toBe(true)
-        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
-        expect(wrapper.vm.$data.runWorkflowMetadata).toBe(workflowMetadata)
-        workflowWizard.vm.$emit("complete")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        expect(wrapper.vm.$data.runWorkflowMetadata).toBe(workflowMetadata[0])
+        expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+        await workflowWizard.vm.$emit("complete")
         setTimeout(() => {
-            // expect(mockAxios.history).toBe(1);
-            // expect(mockAxios.history.post).toBe(1);
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
             expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
                 {
-                    "name": "",
-                    "params": {
-                        "minimal": "test",
-                        "global": "random_39id"
-
-                    },
-                    changelog: null
+                    "name": workflowMetadata[0].name,
+                    "reports": workflowMetadata[0].reports,
+                    "changelog": workflowMetadata[0].changelog
                 }
             ));
-            expect(wrapper.emitted("view-progress").length).toBe(1)
+            expect(wrapper.vm.$data.createdWorkflowKey).toBe("workflowKey")
+            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+            wrapper.find("#view-progress-link > a").trigger("click")
+            setTimeout(() => {
+                expect(wrapper.emitted("view-progress")).toStrictEqual([["workflowKey"]])
+                done()
+            });
+        });
+    })
+
+    it(`error response from workflow endpoint generates error message`, async (done) => {
+        mockAxios.onPost('http://app/workflow')
+        .reply(500, "TEST ERROR");
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        await workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(wrapper.vm.$data.createdWorkflowKey).toBe("")
+            expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+            const errorMessage = wrapper.find("error-info-stub")
+            expect(errorMessage.props("defaultMessage")).toBe("An error occurred while running the workflow")
+            expect(errorMessage.props("apiError")).toBeTruthy()
             done()
         });
     })
