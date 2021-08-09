@@ -32,7 +32,7 @@
                 <div v-if="selectedTab === 'runWorkflowProgress'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="workflow-progress-tab">
                     <div id="runWorkflowProgress">
                         <h2>Workflow progress</h2>
-                       <run-workflow-progress :selected-workflow="selectedWorkflow" @set-selected-workflow-key="setSelectedWorkflow"></run-workflow-progress>
+                       <run-workflow-progress :initial-selected-workflow="selectedWorkflow" @set-selected-workflow-key="setSelectedWorkflow"></run-workflow-progress>
                     </div>
                 </div>
             </div>

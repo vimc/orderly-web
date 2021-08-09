@@ -101,8 +101,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         vSelect,
     },
     props: {
-            selectedWorkflow: {
-                type: String || null,
+            initialSelectedWorkflow: {
+                type: String,
                 required: true
             },
         },
@@ -187,7 +187,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     mounted() {
         this.getWorkflowRunSummaries();
-        this.selectedWorkflowKey = this.selectedWorkflow;
+        this.selectedWorkflowKey = this.initialSelectedWorkflow;
         // console.log("progress selected workflow key", this.selectedWorkflowKey)
     },
 });

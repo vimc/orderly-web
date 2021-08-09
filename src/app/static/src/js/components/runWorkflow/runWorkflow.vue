@@ -114,7 +114,7 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
             api.post(`/workflow`, this.workflowMetadata)
                 .then((response) => {
                     this.error = null;
-                    // console.log("response", response);
+                    console.log("response", response);
                     this.$emit("view-progress", response.data.data.workflow_key)
                 })
                 .catch((error) => {

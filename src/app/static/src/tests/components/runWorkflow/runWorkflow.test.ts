@@ -1,4 +1,4 @@
-import {mount} from "@vue/test-utils";
+import {mount, shallowMount} from "@vue/test-utils";
 import {mockAxios} from "../../mockAxios";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
@@ -14,6 +14,7 @@ describe(`runWorkflow`, () => {
     ]
 
     const workflowMetadata = [{
+        name: "test",
         email: "test@example.com",
         reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
             {"name": "reportB", "params": {"param3": "three"}}],
@@ -65,22 +66,7 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).exists()).toBe(false)
     })
 
-    it(`can emit complete and call workflow endpoint when on final step and run report is triggered`, async () => {
-
-        const runWorkflowResponse = {
-            "status": "success",
-            "errors": null,
-            data: {
-                data: {
-                    workflow_key: "newKey"
-                }
-            }
-    
-        }
-
-        mockAxios.onPost('http://app/workflow')
-        .reply(200, {"data": runWorkflowResponse});
-
+    it(`can emit complete when on final step and run report is triggered`, async () => {
         const wrapper = getWrapper()
 
         //Enables rerun button
@@ -99,30 +85,8 @@ describe(`runWorkflow`, () => {
 
         //Enable run workflow button and trigger event
         await wrapper.find(workflowWizard).setData({validStep: true})
-        // await wrapper.setData({
-        //     runWorkflowMetadata: workflowMetadata
-        // })
         await buttons.at(1).trigger("click")
         expect(wrapper.find(workflowWizard).emitted().complete.length).toBe(1)
-        setTimeout(() => {
-            
-            expect(wrapper.emitted("view-progress").length).toBe(1)
-            expect(mockAxios.history).toBe(1);
-            expect(mockAxios.history.post).toBe(1);
-            expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
-            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                {
-                    "name": "",
-                    "params": {
-                        "minimal": "test",
-                        "global": "random_39id"
-
-                    },
-                    changelog: null
-                }
-            ));
-        });
     })
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from re-run`, async () => {
@@ -266,6 +230,57 @@ describe(`runWorkflow`, () => {
             expect(wrapper.find("#create-workflow-header").exists()).toBe(true)
 
             done();
+        });
+    })
+
+
+
+    it(`can call workflow endpoint when on final step and run report is triggered`, async (done) => {
+
+        const runWorkflowResponse = {
+            "status": "success",
+            "errors": null,
+            data: {
+                data: {
+                    workflow_key: "newKey"
+                }
+            }
+    
+        }
+
+        mockAxios.onPost('http://app/workflow')
+        .reply(200, {"data": runWorkflowResponse});
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        // expect(wrapper.html()).toBe("Cancel")
+
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        expect(workflowWizard.exists()).toBe(true)
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
+        expect(wrapper.vm.$data.runWorkflowMetadata).toBe(workflowMetadata)
+        workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            // expect(mockAxios.history).toBe(1);
+            // expect(mockAxios.history.post).toBe(1);
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
+            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
+                {
+                    "name": "",
+                    "params": {
+                        "minimal": "test",
+                        "global": "random_39id"
+
+                    },
+                    changelog: null
+                }
+            ));
+            expect(wrapper.emitted("view-progress").length).toBe(1)
+            done()
         });
     })
 })
