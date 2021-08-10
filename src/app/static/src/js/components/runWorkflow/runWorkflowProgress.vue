@@ -81,6 +81,7 @@ interface Data {
     workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
+    pollingTimer: null | number;
 }
 
 interface Methods {
@@ -90,6 +91,8 @@ interface Methods {
     reportVersionHref: (name: string, version: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
+    startPolling: () => void;
+    stopPolling: () => void;
 }
 
 interface Props {
@@ -116,9 +119,21 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
+            pollingTimer: null
         };
     },
     methods: {
+        startPolling() {
+            if (!this.pollingTimer) {
+                this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+            }
+        },
+        stopPolling() {
+            if(this.pollingTimer) {
+                clearInterval(this.pollingTimer)
+                this.pollingTimer = null
+            }
+        },
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
@@ -178,8 +193,17 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.startPolling();
             } else {
                 this.workflowRunStatus = null;
+            }
+        },
+        workflowRunStatus: {
+            handler(workflowRun) {
+                const interpretStatus = this.interpretStatus(workflowRun.status)
+                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                    this.stopPolling();
+                }
             }
         }
     },
@@ -187,5 +211,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         this.getWorkflowRunSummaries();
         this.selectedWorkflowKey = this.initialSelectedWorkflow;
     },
+    beforeDestroy() {
+        this.stopPolling();
+    }
 });
 </script>
