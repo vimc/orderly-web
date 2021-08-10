@@ -41,10 +41,6 @@
         createdWorkflowKey: string
     }
 
-    interface Computed {
-        workflowMetadata: WorkflowMetadata | null
-    }
-
     interface Methods {
         handleCancel: () => void
         handleRerun: (data: Event) => void
@@ -54,7 +50,7 @@
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
 
-export default Vue.extend<Data, Methods, Computed, unknown>({
+export default Vue.extend<Data, Methods, unknown, unknown>({
     name: "runWorkflow",
     data(): Data {
         return {
@@ -65,12 +61,6 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
             disableRename: false,
             error: "",
             createdWorkflowKey: ""
-        }
-    },
-    computed: {
-        workflowMetadata(){
-            const { name, reports, changelog } = this.runWorkflowMetadata;
-            return { name, reports, changelog }
         }
     },
     methods: {
@@ -101,10 +91,10 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
             this.disableRename = false
         },
         handleComplete: function () {
-            api.post(`/workflow`, this.workflowMetadata)
+            api.post(`/workflow`, this.runWorkflowMetadata)
                 .then((response) => {
                     this.error = null;
-                    this.createdWorkflowKey = response.data.data.workflow_key
+                    this.createdWorkflowKey = response.data.data.workflow_key;
                 })
                 .catch((error) => {
                     this.error = error;
