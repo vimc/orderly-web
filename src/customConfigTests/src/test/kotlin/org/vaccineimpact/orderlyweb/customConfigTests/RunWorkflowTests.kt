@@ -273,9 +273,6 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
         assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
-
-        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
-        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
     }
 
 }
