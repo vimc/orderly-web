@@ -46,21 +46,13 @@ const workflowStatus1 = {
     }
   }
 
-const realSetTimeout = setTimeout;
-
 describe(`runWorkflowProgress`, () => {
     beforeEach(() => {
         mockAxios.reset();
-        jest.useFakeTimers();
         mockAxios.onGet('http://app/workflows')
             .reply(200, workflows);
         mockAxios.onGet('http://app/workflows/key1/status')
             .reply(200, workflowStatus1);
-    });
-
-    afterEach(() => {
-        jest.runOnlyPendingTimers();
-        jest.useRealTimers();
     });
 
     const getWrapper = () => {
@@ -72,7 +64,7 @@ describe(`runWorkflowProgress`, () => {
             .reply(200, null);
         const wrapper = getWrapper()
 
-        realSetTimeout(() => {
+        setTimeout(() => {
             expect(wrapper.find("p").text()).toBe("No workflows to show")
             done();
         })
@@ -81,7 +73,7 @@ describe(`runWorkflowProgress`, () => {
     it(`it can render runWorkflowProgress page`, async (done) => {
         const wrapper = getWrapper()
 
-        realSetTimeout(() => {
+        setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
             // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
@@ -98,7 +90,7 @@ describe(`runWorkflowProgress`, () => {
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper()
 
-        realSetTimeout(() => {
+        setTimeout(() => {
             expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflows")
             expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
             expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
@@ -114,7 +106,7 @@ describe(`runWorkflowProgress`, () => {
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
 
-        realSetTimeout(() => {
+        setTimeout(() => {
             expect(wrapper.find("error-info-stub").props("defaultMessage")).toBe("An error occurred fetching the workflow reports")
             expect(wrapper.find("error-info-stub").props("apiError")).toBeTruthy()
             expect(wrapper.vm.$data.error.response.data).toStrictEqual("TEST ERROR")
@@ -127,7 +119,7 @@ describe(`runWorkflowProgress`, () => {
         const wrapper = getWrapper()
         wrapper.setData({selectedWorkflowKey: "key1"})
 
-        realSetTimeout(() => {
+        setTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
             expect(wrapper.findAll("tr").length).toBe(3)
             const reportLinks = wrapper.findAll("td > a")
@@ -157,6 +149,8 @@ describe(`runWorkflowProgress`, () => {
     it(`does start polling when workflow key is selected`, async (done) => {
         const key = "fakeKey";
         const wrapper = getWrapper()
+        const realSetTimeout = setTimeout;
+        jest.useFakeTimers();
 
         await wrapper.setData({selectedWorkflowKey: key})
 
@@ -165,6 +159,8 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).not.toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(1);
             expect(clearInterval).toHaveBeenCalledTimes(0);
+
+            jest.useRealTimers()
             done();
         });
     })
@@ -193,6 +189,8 @@ describe(`runWorkflowProgress`, () => {
             .reply(200, workflowStatusComplete);
 
         const wrapper = getWrapper()
+        const realSetTimeout = setTimeout;
+        jest.useFakeTimers();
 
         await wrapper.setData({selectedWorkflowKey: key, pollingTimer: 100})
 
@@ -208,6 +206,7 @@ describe(`runWorkflowProgress`, () => {
             expect(setInterval).toHaveBeenCalledTimes(0);
             expect(clearInterval).toHaveBeenCalledTimes(0);
 
+            jest.useRealTimers()
             done();
         });
     })
@@ -235,6 +234,8 @@ describe(`runWorkflowProgress`, () => {
             .reply(200, workflowStatusComplete);
 
         const wrapper = getWrapper()
+        const realSetTimeout = setTimeout;
+        jest.useFakeTimers();
 
         await wrapper.setData({selectedWorkflowKey: key})
 
@@ -243,6 +244,8 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(1);
             expect(clearInterval).toHaveBeenCalledTimes(1);
+
+            jest.useRealTimers()
             done();
         });
     })
@@ -250,10 +253,15 @@ describe(`runWorkflowProgress`, () => {
     it(`it does not start polling when workflow is not selected`, async (done) => {
         const wrapper = getWrapper()
 
+        const realSetTimeout = setTimeout;
+        jest.useFakeTimers();
+
         realSetTimeout(() => {
             expect(wrapper.vm.$data.pollingTimer).toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(0);
             expect(clearInterval).toHaveBeenCalledTimes(0);
+
+            jest.useRealTimers()
             done();
         });
     })
