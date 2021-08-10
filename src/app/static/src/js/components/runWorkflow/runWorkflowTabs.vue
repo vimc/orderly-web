@@ -44,17 +44,24 @@
 import Vue from "vue";
 import runWorkflow from './runWorkflow.vue'
 import runWorkflowProgress from './runWorkflowProgress.vue'
+import {
+    SELECTED_RUNNING_REPORT_TAB,
+    SELECTED_RUNNING_WORKFLOW_KEY,
+    SELECTED_RUNNING_WORKFLOW_TAB,
+    session
+} from "../../utils/session";
 
 export default Vue.extend({
     name: "runWorkflowTabs",
     data() {
         return {
-            selectedTab: "runWorkflow"
+            selectedTab: session.getSelectedTab(SELECTED_RUNNING_WORKFLOW_TAB) || "runWorkflow"
         }
     },
     methods: {
         switchTab(tab) {
             this.selectedTab = tab
+            session.setSelectedTab(SELECTED_RUNNING_WORKFLOW_TAB, tab);
         }
     },
     components: {
