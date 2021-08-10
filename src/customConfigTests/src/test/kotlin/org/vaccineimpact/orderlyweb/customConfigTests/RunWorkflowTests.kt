@@ -239,7 +239,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    fun `can create a workflow and selecting view progress link navigates to progress tab and generates reports table`()
     {
         createWorkflow()
         addReport("minimal")

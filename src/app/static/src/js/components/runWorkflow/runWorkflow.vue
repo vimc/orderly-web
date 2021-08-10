@@ -101,30 +101,12 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
             this.disableRename = false
         },
         handleComplete: function () {
-            // const data = this.runWorkflowMetadata
-            // const data: RunWorkflowMetadata = {
-            // const data = {
-            //     name: "My workflow",
-            //     reports: [{"name":"minimal"},{"name":"global"}],
-            //     changelog: {"message":"message1","type":"internal"}
-            // };
-            // console.log("runWorkflowMetadata", this.runWorkflowMetadata);
-            // const { name, reports, changelog } = this.runWorkflowMetadata;
-            // const data = {
-            //     name,
-            //     reports,
-            //     changelog
-            // }
-            // console.log("data", this.workflowMetadata);
             api.post(`/workflow`, this.workflowMetadata)
                 .then((response) => {
                     this.error = null;
-                    console.log("response", response);
-                    // this.$emit("view-progress", response.data.data.workflow_key)
                     this.createdWorkflowKey = response.data.data.workflow_key
                 })
                 .catch((error) => {
-                    // console.log("error", error);
                     this.error = error;
                     this.defaultMessage = "An error occurred while running the workflow";
                 });
@@ -137,14 +119,6 @@ export default Vue.extend<Data, Methods, Computed, unknown>({
         workflowWizard,
         runWorkflowCreate,
         ErrorInfo
-    },
-    // watch: {
-    //     runWorkflowMetadata(){
-    //         console.log("runWorkflowMetadata", this.runWorkflowMetadata);
-    //     }
-    // }
-    // mounted(){
-    //     this.handleComplete()
-    // }
+    }
 })
 </script>

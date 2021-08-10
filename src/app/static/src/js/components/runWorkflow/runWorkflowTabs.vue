@@ -60,11 +60,9 @@ export default Vue.extend({
         viewProgress(workflowKey) {
             this.switchTab('runWorkflowProgress');
             this.selectedWorkflow = workflowKey;
-            // console.log("tab selected workflow", this.selectedWorkflow)
         },
         setSelectedWorkflow(key){
             this.selectedWorkflow = key;
-            // console.log("set workflow key", this.selectedWorkflow)
         },
     },
     components: {
