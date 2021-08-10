@@ -55,6 +55,10 @@ describe(`runWorkflowProgress`, () => {
             .reply(200, workflowStatus1);
     });
 
+    afterEach(() => {
+        jest.useRealTimers()
+    })
+
     const getWrapper = () => {
         return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
     }
@@ -159,8 +163,6 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).not.toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(1);
             expect(clearInterval).toHaveBeenCalledTimes(0);
-
-            jest.useRealTimers()
             done();
         });
     })
@@ -205,8 +207,6 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).toBe(100);
             expect(setInterval).toHaveBeenCalledTimes(0);
             expect(clearInterval).toHaveBeenCalledTimes(0);
-
-            jest.useRealTimers()
             done();
         });
     })
@@ -244,8 +244,6 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(1);
             expect(clearInterval).toHaveBeenCalledTimes(1);
-
-            jest.useRealTimers()
             done();
         });
     })
@@ -260,8 +258,6 @@ describe(`runWorkflowProgress`, () => {
             expect(wrapper.vm.$data.pollingTimer).toBe(null);
             expect(setInterval).toHaveBeenCalledTimes(0);
             expect(clearInterval).toHaveBeenCalledTimes(0);
-
-            jest.useRealTimers()
             done();
         });
     })
