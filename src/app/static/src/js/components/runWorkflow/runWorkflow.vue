@@ -17,7 +17,7 @@
         <div v-if="createdWorkflowKey" id="view-progress-link" class="text-secondary mt-2">
             <a @click.prevent="$emit('view-progress', createdWorkflowKey)" href="#">View workflow progress</a>
         </div>
-        <div class="pt-4 pt-2 col-sm-6">
+        <div class="pt-4 pt-2 col-sm-6 pl-3">
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
     </div>

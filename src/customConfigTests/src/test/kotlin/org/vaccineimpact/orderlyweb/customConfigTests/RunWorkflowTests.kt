@@ -214,6 +214,8 @@ class RunWorkflowTests : SeleniumTest()
         addButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
+        val xButton = driver.findElement(By.cssSelector(".btn-outline-secondary"))
+        xButton.click()
     }
 
     private fun createWorkflow()
@@ -252,15 +254,8 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.elementToBeClickable(submitButton))
         submitButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
-        val progressLink = driver.findElement(By.id("view-progress-link"))
-        assertThat(progressLink.text).isEqualTo("View workflow progress")
+        val progressLink = driver.findElement(By.cssSelector("#view-progress-link a"))
         progressLink.click()
-        //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
-        // val jse = driver as JavascriptExecutor
-        // jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
-        // val link = driver.findElement(By.id("workflow-progress-link"))
-        // assertThat(link.text).isEqualTo("Workflow progress")
-        // link.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("My work")
