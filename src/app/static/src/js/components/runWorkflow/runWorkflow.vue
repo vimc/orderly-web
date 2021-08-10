@@ -14,10 +14,10 @@
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
-        <div v-if="createdWorkflowKey" id="view-progress-link" class="text-secondary mt-2">
+        <div v-if="createdWorkflowKey" id="view-progress-link" class="text-secondary mt-2 pl-3">
             <a @click.prevent="$emit('view-progress', createdWorkflowKey)" href="#">View workflow progress</a>
         </div>
-        <div class="pt-4 pt-2 col-sm-6 pl-3">
+        <div class="pt-4 col-sm-6">
             <error-info :default-message="defaultMessage" :api-error="error"></error-info>
         </div>
     </div>
