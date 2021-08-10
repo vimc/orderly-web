@@ -183,10 +183,6 @@ class RunWorkflowTests : SeleniumTest()
         submitButton.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
         assertThat(driver.findElement(By.id("view-progress-link")).text).isEqualTo("View workflow progress")
-        driver.findElement(By.id("view-progress-link")).click()
-        // wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
-        // val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
-        // assertThat(rows.count()).isEqualTo(2)
     }
 
     @Test
@@ -245,12 +241,26 @@ class RunWorkflowTests : SeleniumTest()
     @Test
     fun `can select workflow progress tab and selecting a workflow option generates reports table`()
     {
+        createWorkflow()
+        addReport("minimal")
+        addReport("global")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        nextButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
+        val submitButton = driver.findElement(By.id("next-workflow"))
+        driver.findElement(By.id("run-workflow-name")).sendKeys("My workflow")
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton))
+        submitButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
+        val progressLink = driver.findElement(By.id("view-progress-link"))
+        assertThat(progressLink.text).isEqualTo("View workflow progress")
+        progressLink.click()
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
-        val jse = driver as JavascriptExecutor
-        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
-        val link = driver.findElement(By.id("workflow-progress-link"))
-        assertThat(link.text).isEqualTo("Workflow progress")
-        link.click()
+        // val jse = driver as JavascriptExecutor
+        // jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
+        // val link = driver.findElement(By.id("workflow-progress-link"))
+        // assertThat(link.text).isEqualTo("Workflow progress")
+        // link.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("My work")
