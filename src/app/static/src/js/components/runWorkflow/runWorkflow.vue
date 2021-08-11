@@ -31,6 +31,10 @@
     import { api } from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
 
+    interface Props{
+        workflowToRerun: RunWorkflowMetadata | null
+    }
+
     interface Data {
         runWorkflowMetadata: RunWorkflowMetadata | null
         workflowStarted: boolean
@@ -49,9 +53,11 @@
         handleComplete: () => void
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
-
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
+    props: {
+        workflowToRerun: null
+    },
     data(): Data {
         return {
             runWorkflowMetadata: null,
@@ -109,6 +115,11 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         workflowWizard,
         runWorkflowCreate,
         ErrorInfo
+    },
+    mounted() {
+        if (this.workflowToRerun) {
+            this.handleRerun(this.workflowToRerun);
+        }
     }
 })
 </script>

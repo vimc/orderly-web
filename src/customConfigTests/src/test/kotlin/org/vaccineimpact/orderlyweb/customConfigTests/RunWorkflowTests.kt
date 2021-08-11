@@ -254,6 +254,7 @@ class RunWorkflowTests : SeleniumTest()
         vSelectInput.sendKeys("My work")
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
+
         assertThat(dropdownMenu[0].text).contains("My workflow")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
@@ -308,6 +309,12 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
         wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
         wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+
+        driver.findElement(By.id("rerun")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+        val workflowNameInput = driver.findElement(By.cssSelector("#workflow-name-div input"))
+        assertThat(workflowNameInput.getAttribute("value")).isEqualTo("My workflow")
+        assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
 
 }

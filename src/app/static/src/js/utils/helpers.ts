@@ -1,3 +1,5 @@
+import {WorkflowRun} from "./types"
+
 export function reportVersionToLongTimestamp(versionId) {
     const regex = /(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([0-9a-f]{8})/;
     const match = versionId.match(regex);
@@ -27,3 +29,18 @@ function padZero(number) {
     // This always sticks a zero on the front and then takes the last two digits
     return ('0' + number).slice(-2);
 }
+
+export function workflowRunDetailsToMetadata(details: WorkflowRun) {
+    return {
+        name: details.name,
+        instances: details.instances,
+        git_branch: details.git_branch,
+        git_commit: details.git_commit,
+        changelog: null,
+        reports: details.reports.map(report => {
+            return {name: report.report, params: report.params}
+        })
+    }
+}
+
+

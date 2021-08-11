@@ -1,4 +1,5 @@
 import {mount, shallowMount} from "@vue/test-utils";
+import Vue from "vue";
 import {mockAxios} from "../../mockAxios";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
@@ -233,8 +234,6 @@ describe(`runWorkflow`, () => {
         });
     })
 
-
-
     it(`can call workflow endpoint when on final step and generate link that emits key to workflow`, async (done) => {
 
         const runWorkflowResponse = {
@@ -292,4 +291,23 @@ describe(`runWorkflow`, () => {
             done()
         });
     })
+    
+    it(`handles rerun if workflowToRun is set`, async () => {
+        const workflowToRerun = {name: "TEST WORKFLOW"};
+        const wrapper = shallowMount(runWorkflow, {propsData: {workflowToRerun}});
+        await Vue.nextTick();
+
+        const wizard = wrapper.findComponent(workflowWizard);
+        expect(wizard.props("initialRunWorkflowMetadata")).toBe(workflowToRerun);
+        expect(wizard.props("steps")).toStrictEqual([{name: "run", component: "runWorkflowRun"}]);
+        expect(wizard.props("disableRename")).toBe(true);
+    });
+
+    it(`does not handle rerun if worklflowToRun is not set`, async () => {
+        const wrapper = shallowMount(runWorkflow);
+        await Vue.nextTick();
+
+        expect(wrapper.findComponent(workflowWizard).exists()).toBe(false);
+        expect(wrapper.vm.$data.runWorkflowMetadata).toBe(null);
+    });
 })
