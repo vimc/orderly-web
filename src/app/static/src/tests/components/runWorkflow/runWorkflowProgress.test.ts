@@ -149,7 +149,29 @@ describe(`runWorkflowProgress`, () => {
     })
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
-        const workflowDetails = {name: "Test Workflow", reports: []};
+        const workflowDetails = {
+            name: "Test Workflow",
+            key: "curious_mongoose",
+            email: "test.user@example.com",
+            date: "2021-08-01",
+            instances: {source: "UAT"},
+            git_branch: "master",
+            git_commit: null,
+            reports: [
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "terrified_ocelot",
+                    report: "report1",
+                    params: {p1: "v1" }
+                },
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "weird_anteater",
+                    report: "report2",
+                    params: {}
+                }
+            ]
+        };
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
@@ -165,8 +187,26 @@ describe(`runWorkflowProgress`, () => {
         const rerunButton = wrapper.find("#rerun");
         expect(rerunButton.text()).toBe("Re-run workflow");
         rerunButton.trigger("click");
+
+        const expectedWorkflowMetadata = {
+            name: "Test Workflow",
+            instances: {source: "UAT"},
+            git_branch: "master",
+            git_commit: null,
+            changelog: null,
+            reports: [
+                {
+                    name: "report1",
+                    params: {p1: "v1" }
+                },
+                {
+                    name: "report2",
+                    params: {}
+                }
+            ]
+        };
         setTimeout(() => {
-            expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(workflowDetails);
+            expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(expectedWorkflowMetadata);
             done();
         });
     });

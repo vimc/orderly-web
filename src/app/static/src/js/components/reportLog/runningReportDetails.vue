@@ -86,7 +86,7 @@
     import {ReportLog} from "../../utils/types";
     import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {longTimestamp} from "../../utils/helpers";
+    import {longTimestamp} from "../../utils/helpers.ts";
 
     interface Methods {
         getLogs: () => void,

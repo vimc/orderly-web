@@ -1,3 +1,5 @@
+import {WorkflowRun} from "./types"
+
 export function reportVersionToLongTimestamp(versionId) {
     const regex = /(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([0-9a-f]{8})/;
     const match = versionId.match(regex);
@@ -28,40 +30,17 @@ function padZero(number) {
     return ('0' + number).slice(-2);
 }
 
-function workflowRunDetailsToMetadata(details: WorkflowRun) {
+export function workflowRunDetailsToMetadata(details: WorkflowRun) {
     return {
         name: details.name,
         instances: details.instances,
         git_branch: details.git_branch,
         git_commit: details.git_commit,
         changelog: null,
-        reports: {}
+        reports: details.reports.map(report => {
+            return {name: report.report, params: report.params}
+        })
     }
 }
-
-/*
-export interface WorkflowRun {
-    name: string,
-    key: string,
-    email: string,
-    date: string,
-    reports: WorkflowRunReport[],
-    instances: Record<string, string>,
-    git_branch: string | null,
-    git_commit: string | null
-}
-
-export interface RunWorkflowMetadata {
-    name: string,
-    reports: WorkflowReportWithParams[],
-    instances: Record<string, string>,
-    git_branch: string | null,
-    git_commit: string | null,
-    changelog: {
-        message: string,
-        type: string
-    } | null
-}
- */
 
 

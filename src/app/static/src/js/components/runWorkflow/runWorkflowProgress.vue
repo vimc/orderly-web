@@ -67,7 +67,7 @@
 import Vue from "vue";
 import vSelect from "vue-select";
 import { api } from "../../utils/api";
-import { longTimestamp } from "../../utils/helpers";
+import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
 import ErrorInfo from "../errorInfo.vue";
 import {
     WorkflowRunSummary,
@@ -155,8 +155,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         rerun() {
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
-                    console.log("Rerunning with data: " + JSON.stringify(data.data))
-                    this.$emit("rerun", data.data);
+                    const reportMetadata = workflowRunDetailsToMetadata(data.data)
+                    this.$emit("rerun", reportMetadata);
                 })
                 .catch((error) => {
                     this.error = error;
