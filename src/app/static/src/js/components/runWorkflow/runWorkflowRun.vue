@@ -25,8 +25,7 @@
                         :custom-style="childCustomStyle"
                         :initial-message="initialChangelogMessage"
                         :initial-type="initialChangelogType"
-                        @changelogMessage="handleChangeLogMessageValue"
-                        @changelogType="handleChangeLogTypeValue">
+                        @changelog="handleChangelog">
             </change-log>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -64,9 +63,8 @@
         getRunMetadata: () => void
         handleWorkflowName: (event: Event) => void
         getWorkflows: () => void
-        handleChangeLogTypeValue: (changelogType: string) => void,
-        handleChangeLogMessageValue: (changelogMessage: string) => void,
-        handleInstancesValue: (instances: Object) => void
+        handleChangelog: (changelog: object) => void,
+        handleInstancesValue: (instances: object) => void
         validateWorkflowName: (workflowName: string) => void
     }
 
@@ -107,18 +105,7 @@
             handleInstancesValue: function (instances) {
                 this.$emit("update", {instances});
             },
-            handleChangeLogTypeValue: function (changelogType) {
-                const changelog = {
-                    message: this.workflowMetadata.changelog?.message || "",
-                    type: changelogType
-                };
-                this.$emit("update", {changelog});
-            },
-            handleChangeLogMessageValue: function (changelogMessage) {
-                const changelog = {
-                    message: changelogMessage,
-                    type: this.workflowMetadata.changelog?.type || ""
-                };
+            handleChangelog: function (changelog) {
                 this.$emit("update", {changelog});
             },
             getRunMetadata: function () {

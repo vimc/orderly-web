@@ -258,12 +258,12 @@ describe(`runWorkflowRun`, () => {
             expect(changelog.find("textarea").exists()).toBe(true)
 
             // expect initial emit of default selected type + selected instances
-            expect(wrapper.emitted().update.length).toBe(2);
-            expect(wrapper.emitted().update[1][0]).toStrictEqual({changelog: {message: "", type: "internal"}})
+            expect(wrapper.emitted().update.length).toBe(2)
+            expect(wrapper.emitted().update[1][0]).toStrictEqual({changelog: null})
 
             await textarea.setValue("test message input")
-            expect(wrapper.emitted().update.length).toBe(3);
-            expect(wrapper.emitted().update[2][0]).toStrictEqual({changelog: {message: "test message input", type: ""}})
+            expect(wrapper.emitted().update.length).toBe(3)
+            expect(wrapper.emitted().update[2][0]).toStrictEqual({changelog: {message: "test message input", type: "internal"}})
             done()
         })
     });
@@ -314,13 +314,19 @@ describe(`runWorkflowRun`, () => {
     it(`emits update on changelog type change`, async (done) => {
         const wrapper = getWrapper();
 
-        setTimeout(async () => {
-            const changelogType = wrapper.find("#changelog-type");
+        setTimeout(async() => {
+            const changelogType = wrapper.find("#changelog-type")
             expect(wrapper.find("#changelog-type label").text()).toEqual("Changelog Type");
-            const selectOptions = changelogType.find("select")
-            selectOptions.setValue(changelogTypes[1]);
-            expect(wrapper.emitted().update.length).toBe(3);
-            expect(wrapper.emitted().update[2][0]).toStrictEqual({changelog: {message: "", type: "public"}});
+
+            await wrapper.find("#changelog-message").find("textarea").setValue("test message input")
+            await changelogType.find("select").setValue(changelogTypes[1])
+            expect(wrapper.emitted().update.length).toBe(4)
+            expect(wrapper.emitted().update[3][0]).toStrictEqual({
+                changelog: {
+                    message: "test message input",
+                    type: "public"
+                }
+            })
             done()
         })
     })

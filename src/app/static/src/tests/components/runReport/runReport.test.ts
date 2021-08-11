@@ -417,7 +417,10 @@ describe("runReport", () => {
             await Vue.nextTick();
 
             wrapper.setData({
-                changeLogMessageValue: "test changelog"
+                changelog: {
+                    message: "test changelog",
+                    type: "internal"
+                }
             });
 
             wrapper.find("#run-form-group button").trigger("click");
@@ -588,7 +591,7 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
-    it("it can accepts changelog  and type log message values", () => {
+    it("it can accepts changelog  and type log message values", async () => {
         const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
             propsData: {
@@ -599,24 +602,22 @@ describe("runReport", () => {
                 initialGitBranches
             },
             data() {
-            return {
-                selectedReport: "report",
-                changeLogMessageValue: "Text area message",
-                changeLogTypeValue: "selectedType"
+                return {
+                    selectedReport: "report"
+                }
             }
-        }
         });
 
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
-        const options = wrapper.find("#changelogType")
-            .find("select").findAll("option")
-        options.at(1).setSelected()
-        expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
+        await wrapper.find("#changelogMessage").setValue("Message")
+        const options = wrapper.find("#changelogType").findAll("select option")
+        await options.at(1).setSelected()
+        expect(wrapper.vm.$data.changelog.type).toBe("public")
 
-        wrapper.find("#changelogMessage").setValue("New message")
-        expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
+        await wrapper.find("#changelogMessage").setValue("New message")
+        expect(wrapper.vm.$data.changelog.message).toBe("New message")
 
         const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
         const changelogType= wrapper.find(changeLog).find("#changelog-type")
