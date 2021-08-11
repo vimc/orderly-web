@@ -11,11 +11,11 @@
                         <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                             <ul class="nav flex-column list-unstyled mb-0">
                                 <li class="nav-item">
-                                    <a id="run-workflow-link" class="nav-link" :class="{active: selectedTab == 'runWorkflow'}" data-toggle="tab" role="tab" href="#"
+                                    <a id="run-workflow-link" class="nav-link" :class="{active: selectedTab === 'runWorkflow'}" data-toggle="tab" role="tab" href="#"
                                        @click="switchTab('runWorkflow')">Run workflow</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a id="workflow-progress-link" class="nav-link" :class="{active: selectedTab == 'runWorkflowProgress'}" data-toggle="tab" role="tab" href="#"
+                                    <a id="workflow-progress-link" class="nav-link" :class="{active: selectedTab === 'runWorkflowProgress'}" data-toggle="tab" role="tab" href="#"
                                        @click="switchTab('runWorkflowProgress')">Workflow progress</a>
                                 </li>
                             </ul>
@@ -58,8 +58,8 @@ export default Vue.extend({
             this.selectedTab = tab
         },
         viewProgress(workflowKey) {
-            this.switchTab('runWorkflowProgress');
             this.selectedWorkflow = workflowKey;
+            this.switchTab('runWorkflowProgress');
         },
         setSelectedWorkflow(key){
             this.selectedWorkflow = key;
