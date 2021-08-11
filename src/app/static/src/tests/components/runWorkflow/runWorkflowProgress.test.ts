@@ -1,6 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
+import errorInfo from "../../../js/components/errorInfo.vue";
 
 const workflows = {
     "status": "success",
@@ -80,9 +81,6 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
-            // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
-            // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
-            // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
             expect(wrapper.findAll("button").length).toBe(0)
             done();
         })
@@ -149,6 +147,90 @@ describe(`runWorkflowProgress`, () => {
             done();
         })
     })
+
+    it(`can fetch workflow details and emit rerun event`, (done) => {
+        const workflowDetails = {
+            name: "Test Workflow",
+            key: "curious_mongoose",
+            email: "test.user@example.com",
+            date: "2021-08-01",
+            instances: {source: "UAT"},
+            git_branch: "master",
+            git_commit: null,
+            reports: [
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "terrified_ocelot",
+                    report: "report1",
+                    params: {p1: "v1" }
+                },
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "weird_anteater",
+                    report: "report2",
+                    params: {}
+                }
+            ]
+        };
+        mockAxios.onGet("http://app/workflows/test-key/")
+            .reply(200, {data: workflowDetails});
+
+        const wrapper = shallowMount(runWorkflowProgress, {
+            data: () => {
+            return {
+                    selectedWorkflowKey: "test-key",
+                    workflowRunSummaries: []
+                };
+            }
+        });
+
+        const rerunButton = wrapper.find("#rerun");
+        expect(rerunButton.text()).toBe("Re-run workflow");
+        rerunButton.trigger("click");
+
+        const expectedWorkflowMetadata = {
+            name: "Test Workflow",
+            instances: {source: "UAT"},
+            git_branch: "master",
+            git_commit: null,
+            changelog: null,
+            reports: [
+                {
+                    name: "report1",
+                    params: {p1: "v1" }
+                },
+                {
+                    name: "report2",
+                    params: {}
+                }
+            ]
+        };
+        setTimeout(() => {
+            expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(expectedWorkflowMetadata);
+            done();
+        });
+    });
+
+    it(`sets error when fail to fetch workflow details`, (done) => {
+        mockAxios.onGet("http://app/workflows/test-key/")
+            .reply(500, "TEST ERROR");
+        const wrapper = shallowMount(runWorkflowProgress, {
+            data: () => {
+                return {
+                    selectedWorkflowKey: "test-key",
+                    workflowRunSummaries: []
+                };
+            }
+        });
+
+        wrapper.find("#rerun").trigger("click");
+        setTimeout(() => {
+            expect(wrapper.find(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.find(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
+            expect(wrapper.emitted("rerun")).toBeUndefined();
+            done();
+        });
+    });
 
     it(`does start polling when workflow key is selected`, async (done) => {
         const key = "fakeKey";

@@ -237,7 +237,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    fun `can select workflow progress tab, view reports table and re-run workflow in progress`()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
@@ -250,6 +250,7 @@ class RunWorkflowTests : SeleniumTest()
         vSelectInput.sendKeys("My work")
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
+
         assertThat(dropdownMenu[0].text).contains("My workflow")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
@@ -264,6 +265,12 @@ class RunWorkflowTests : SeleniumTest()
 
         wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
         wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+
+        driver.findElement(By.id("rerun")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+        val workflowNameInput = driver.findElement(By.cssSelector("#workflow-name-div input"))
+        assertThat(workflowNameInput.getAttribute("value")).isEqualTo("My workflow")
+        assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
 
 }
