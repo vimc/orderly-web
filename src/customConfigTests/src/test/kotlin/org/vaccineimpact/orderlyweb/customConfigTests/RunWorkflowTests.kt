@@ -314,7 +314,6 @@ class RunWorkflowTests : SeleniumTest()
     @Test
     fun `can select workflow progress tab, view reports table and re-run workflow in progress`()
     {
-        //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
         jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
         val link = driver.findElement(By.id("workflow-progress-link"))
