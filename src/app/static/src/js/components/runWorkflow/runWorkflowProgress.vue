@@ -81,6 +81,7 @@ interface Data {
     workflowRunStatus: null | WorkflowRunStatus;
     error: string;
     defaultMessage: string;
+    pollingTimer: null | number;
 }
 
 interface Methods {
@@ -91,6 +92,8 @@ interface Methods {
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
     rerun: () => void;
+    startPolling: () => void;
+    stopPolling: () => void;
 }
 
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
@@ -108,9 +111,21 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
+            pollingTimer: null
         };
     },
     methods: {
+        startPolling() {
+            if (!this.pollingTimer) {
+                this.pollingTimer = setInterval(() => this.getWorkflowRunStatus(this.selectedWorkflowKey), 1500);
+            }
+        },
+        stopPolling() {
+            if(this.pollingTimer) {
+                clearInterval(this.pollingTimer)
+                this.pollingTimer = null
+            }
+        },
         getWorkflowRunSummaries() {
             api.get("/workflows")
                 .then(({ data }) => {
@@ -180,13 +195,25 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         selectedWorkflowKey() {
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.startPolling();
             } else {
                 this.workflowRunStatus = null;
             }
         },
+        workflowRunStatus: {
+            handler(workflowRun) {
+                const interpretStatus = this.interpretStatus(workflowRun.status)
+                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                    this.stopPolling();
+                }
+            }
+        }
     },
     mounted() {
         this.getWorkflowRunSummaries();
     },
+    beforeDestroy() {
+        this.stopPolling();
+    }
 });
 </script>
