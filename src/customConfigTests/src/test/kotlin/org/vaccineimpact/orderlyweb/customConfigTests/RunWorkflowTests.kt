@@ -309,6 +309,37 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
         wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
         wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+    }
+
+    @Test
+    fun `can select workflow progress tab, view reports table and re-run workflow in progress`()
+    {
+        //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
+        val jse = driver as JavascriptExecutor
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
+        val link = driver.findElement(By.id("workflow-progress-link"))
+        assertThat(link.text).isEqualTo("Workflow progress")
+        link.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val vSelectInput = driver.findElement(By.tagName("input"))
+        vSelectInput.sendKeys("My work")
+        val vSelect = driver.findElement(By.id("workflows"))
+        val dropdownMenu = vSelect.findElements(By.tagName("li"))
+
+        assertThat(dropdownMenu[0].text).contains("My workflow")
+        dropdownMenu[0].click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+        val table = driver.findElement(By.id("workflow-table"))
+        assertThat(table.text).contains("Reports")
+        val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
+        assertThat(rows.count()).isEqualTo(2)
+        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
+        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val globalRow = rows.find{ it.text.startsWith("global") }!!
+        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
+
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
 
         driver.findElement(By.id("rerun")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
