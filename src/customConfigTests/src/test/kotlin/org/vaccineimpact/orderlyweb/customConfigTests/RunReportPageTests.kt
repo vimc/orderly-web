@@ -74,7 +74,7 @@ class RunReportPageTests : SeleniumTest()
     }
 
     @Test
-    fun `can run a report and check status`()
+    fun `can run a report and follow view log link to logs`()
     {
         val typeahead = driver.findElement(By.id("report"))
         val input = typeahead.findElement(By.tagName("input"))
@@ -89,9 +89,10 @@ class RunReportPageTests : SeleniumTest()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-report-status")))
         assertThat(driver.findElement(By.id("run-report-status")).text).startsWith("Run started")
+        assertThat(driver.findElement(By.cssSelector("#run-report-status a")).text).startsWith("View log")
 
         driver.findElement(By.cssSelector("#run-report-status a")).click()
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("run-report-status"), "Running status:"))
+        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h2"), "Running report logs"))
     }
 
     @Test
@@ -112,10 +113,7 @@ class RunReportPageTests : SeleniumTest()
         assertThat(driver.findElement(By.id("run-report-status")).text).startsWith("Run started")
 
         driver.findElement(By.id("logs-link")).click()
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("h2"), "Running report logs"))
-        wait.until(ExpectedConditions.textToBePresentInElementLocated(By.cssSelector("#report-logs textarea"),
-                "[ git        ]  fetch")) //This is always the first log message
-
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#report-status .font-weight-bold"), "running"))
     }
 
     @Test

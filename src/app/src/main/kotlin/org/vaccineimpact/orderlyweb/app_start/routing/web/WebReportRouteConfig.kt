@@ -52,7 +52,7 @@ object WebReportRouteConfig : RouteConfig
                     .secure(runReports)
                     .transform(),
             WebEndpoint(
-                    "/report/:name/parameters/",
+                    "/report/:name/config/parameters/",
                     ReportController::class, "getReportParameters")
                     .json()
                     .secure(runReports)
@@ -81,6 +81,11 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/dependencies/",
                     ReportController::class, "getDependencies")
                     .json()
-                    .secure(readReports)
+                    .secure(readReports),
+            WebEndpoint("/report/run-metadata",
+                    ReportController::class, "getRunMetadata")
+                    .json()
+                    .transform()
+                    .secure(runReports)
     )
 }

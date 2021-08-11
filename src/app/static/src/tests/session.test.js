@@ -6,70 +6,44 @@ describe('session', () => {
         jest.restoreAllMocks()
     });
 
-    it('gets running report status from local storage', () => {
+    it('gets selected tab from local storage', () => {
 
         Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
 
-        const result = session.getRunningReportStatus("report1");
+        const result = session.getSelectedTab();
 
-        expect(result.runningStatus).toBe("value for runningReportStatus_report1_runningStatus");
-        expect(result.runningKey).toBe("value for runningReportStatus_report1_runningKey");
-        expect(result.newVersionFromRun).toBe("value for runningReportStatus_report1_newVersionFromRun");
+        expect(result).toBe("value for selectedRunningReportTab");
     });
 
-    it('sets running report status in local storage', () => {
+    it('sets selected tab in local storage', () => {
+        Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
 
-        const testStatus = {
-            runningStatus: "still going",
-            runningKey: "bewildered_mongoose",
-            newVersionFromRun: "v1"
-        };
 
-        session.setRunningReportStatus("report1", testStatus);
+        session.setSelectedTab("reportLogs");
 
-        expect(spySetStorage.calls[0][0]).toBe("runningReportStatus_report1_runningStatus");
-        expect(spySetStorage.calls[0][1]).toBe("still going");
-
-        expect(spySetStorage.calls[1][0]).toBe("runningReportStatus_report1_runningKey");
-        expect(spySetStorage.calls[1][1]).toBe("bewildered_mongoose");
-
-        expect(spySetStorage.calls[2][0]).toBe("runningReportStatus_report1_newVersionFromRun");
-        expect(spySetStorage.calls[2][1]).toBe("v1");
+        expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportTab");
+        expect(spySetStorage.calls[0][1]).toBe("reportLogs");
 
     });
 
-    it('removes running report status from local storage', () => {
+    it('gets selected running report key from local storage', () => {
 
-        const spyRemoveStorage = jest.spyOn(Storage.prototype, 'removeItem').mock;
+        Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
 
-        session.removeRunningReportStatus("report1");
+        const result = session.getSelectedRunningReportKey();
 
-        expect(spyRemoveStorage.calls[0][0]).toBe("runningReportStatus_report1_runningStatus");
-
-        expect(spyRemoveStorage.calls[1][0]).toBe("runningReportStatus_report1_runningKey");
-
-        expect(spyRemoveStorage.calls[2][0]).toBe("runningReportStatus_report1_newVersionFromRun");
-
+        expect(result).toBe("value for selectedRunningReportKey");
     });
 
-    it('removes item from local storage if value is null', () => {
-
-        const spyRemoveStorage = jest.spyOn(Storage.prototype, 'removeItem').mock;
+    it('sets selected running report key in local storage', () => {
+        Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
 
-        const testStatus = {
-            runningStatus: "error",
-            runningKey: "bewildered_mongoose",
-            newVersionFromRun: null
-        };
+        session.setSelectedRunningReportKey("crazypanda");
 
-        session.setRunningReportStatus("report1", testStatus);
-
-        expect(spySetStorage.calls[0][0]).toBe("runningReportStatus_report1_runningStatus");
-        expect(spySetStorage.calls[1][0]).toBe("runningReportStatus_report1_runningKey");
-        expect(spyRemoveStorage.calls[0][0]).toBe("runningReportStatus_report1_newVersionFromRun");
+        expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportKey");
+        expect(spySetStorage.calls[0][1]).toBe("crazypanda");
 
     });
-
 });

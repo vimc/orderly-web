@@ -97,9 +97,17 @@ class WorkflowRunTests : IntegrationTest()
         val key = "adventurous_aardvark"
         val email = "test.user@example.com"
         val date = Instant.now()
+        val runWorkflowReport = listOf(
+            WorkflowRunReport(
+                "adventurous_aardvark",
+                "preterrestrial_andeancockoftherock",
+                "Report A",
+                emptyMap()
+            )
+        )
 
         val repo = OrderlyWebWorkflowRunRepository()
-        repo.addWorkflowRun(WorkflowRun(name, key, email, date, emptyList(), emptyMap()))
+        repo.addWorkflowRun(WorkflowRun(name, key, email, date, runWorkflowReport, emptyMap()))
 
         val response = webRequestHelper.requestWithSessionCookie(
             "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
@@ -119,29 +127,7 @@ class WorkflowRunTests : IntegrationTest()
     }
 
     @Test
-    fun `runs basic workflow`()
-    {
-        assertThat(
-            runWorkflow(
-                """
-                {
-                  "name": "basic workflow",
-                  "reports": [
-                    {
-                      "name": "minimal"
-                    },
-                    {
-                      "name": "global"
-                    }
-                  ]
-                }
-            """.trimIndent()
-            )
-        ).isTrue()
-    }
-
-    @Test
-    fun `runs full workflow`()
+    fun `runs workflow`()
     {
         val branch = "other"
         val commits = OrderlyServer(AppConfig()).get(
@@ -152,9 +138,7 @@ class WorkflowRunTests : IntegrationTest()
         )
         val commit = commits.listData(GitCommit::class.java).first().id
 
-        assertThat(
-            runWorkflow(
-                """
+        val json = """
                 {
                   "name": "full workflow",
                   "reports": [
@@ -171,10 +155,12 @@ class WorkflowRunTests : IntegrationTest()
                       }
                     },
                     {
-                      "name": "minimal"
+                      "name": "minimal",
+                      "params": {}
                     },
                     {
-                      "name": "global"
+                      "name": "global",
+                      "params": {}
                     }
                   ],
                   "changelog": {
@@ -185,38 +171,8 @@ class WorkflowRunTests : IntegrationTest()
                   "git_commit": "$commit"
                 }
             """.trimIndent()
-            )
-        ).isTrue()
-    }
 
-    private fun addWorkflowRunExample()
-    {
-        insertUser("user@email.com", "user.name")
-
-        val now = Instant.now()
-
-        val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
-        )
-
-        val sut = OrderlyWebWorkflowRunRepository()
-        sut.addWorkflowRun(workflowRun)
-    }
-
-    private fun runWorkflow(json: String): Boolean
-    {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-
         val response = webRequestHelper.requestWithSessionCookie(
             "/workflow",
             sessionCookie,
@@ -237,22 +193,123 @@ class WorkflowRunTests : IntegrationTest()
 
         assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
 
-        var successful = false
+        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
+    }
+
+    @Test
+    fun `gets workflow status`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+
+        val runResponse = OrderlyServer(AppConfig()).post(
+            "/v1/workflow/run/",
+            """{"name": "minimal", "reports": [{"name": "minimal"}]}""",
+            emptyMap()
+        )
+        val workflowRunResponse = runResponse.data(WorkflowRunController.WorkflowRunResponse::class.java)
+        val repo = OrderlyWebWorkflowRunRepository()
+        repo.addWorkflowRun(
+            WorkflowRun(
+                "minimal workflow",
+                workflowRunResponse.key,
+                "test.user@example.com",
+                Instant.now(),
+                listOf(
+                    WorkflowRunReport(
+                        workflowRunResponse.key,
+                        workflowRunResponse.reports.first(),
+                        "minimal",
+                        emptyMap()
+                    )
+                ),
+                emptyMap()
+            )
+        )
+
+        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
+
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows/${workflowRunResponse.key}/status",
+            sessionCookie,
+            ContentTypes.json
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val workflowRunStatus = Serializer.instance.gson.fromJson(
+            JSONValidator.getData(response.text).toString(),
+            WorkflowRunStatus::class.java
+        )
+
+        val orderlyServerResponse =
+            OrderlyServer(AppConfig()).get("/v1/workflow/${workflowRunResponse.key}/status/", emptyMap())
+        val workflowRunStatusResponse =
+            orderlyServerResponse.data(WorkflowRunController.WorkflowRunStatusResponse::class.java)
+        assertThat(workflowRunStatus.status).isEqualTo(workflowRunStatusResponse.status)
+        assertThat(workflowRunStatus.reports[0].name).isEqualTo("minimal")
+        assertThat(workflowRunStatus.reports[0].status).isEqualTo(workflowRunStatusResponse.reports[0].status)
+        assertThat(workflowRunStatus.reports[0].key).isEqualTo(workflowRunStatusResponse.reports[0].key)
+        assertThat(workflowRunStatus.reports[0].version).isEqualTo(workflowRunStatusResponse.reports[0].version)
+    }
+
+    @Test
+    fun `returns error getting status for unknown workflow`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflows/fake/status",
+            sessionCookie,
+            ContentTypes.json
+        )
+        assertThat(response.statusCode).isEqualTo(404)
+    }
+
+    private fun addWorkflowRunExample()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val now = Instant.now()
+
+        val workflowRun = WorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                ),
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param1" to "one", "param2" to "three")
+                )
+            ),
+            mapOf("instanceA" to "pre-staging"),
+            "branch1",
+            "commit1"
+        )
+
+        val sut = OrderlyWebWorkflowRunRepository()
+        sut.addWorkflowRun(workflowRun)
+    }
+
+    private fun workflowStatus(key: String): String
+    {
         for (i in 0..9)
         {
-            successful = workflowRunResponse.reports.all { key ->
-                val status = OrderlyServer(AppConfig()).get(
-                    "/v1/reports/$key/status/",
-                    emptyMap()
-                )
-                JSONValidator.getData(status.text)["status"].textValue() == "success"
-            }
-            if (successful)
+            val response = OrderlyServer(AppConfig()).get("/v1/workflow/$key/status/", emptyMap())
+            val status = JSONValidator.getData(response.text)["status"].textValue()
+            if (status in listOf("success", "error", "cancelled"))
             {
-                break
+                return status
             }
             Thread.sleep(1000)
         }
-        return successful
+        throw Exception("Workflow timeout")
     }
 }

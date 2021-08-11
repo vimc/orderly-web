@@ -358,3 +358,16 @@
 * dependabot/npm_and_yarn/src/app/static/y18n-3.2.2
 * mrc-2303x
 
+# v1.9.0
+
+## Tickets
+* mrc-1925: Slow loading with 7k reports
+* mrc-2150: Add 'View log' link on run report tab
+* mrc-2306: Add endpoint to get status of a workflow
+* mrc-2309: Create container component for workflow wizard
+* mrc-2344: Persist run report tab and selected running report in session
+* mrc-2410: Make Buildkite cleanup hook more verbose/robust
+* mrc-2419: Fix Selenium test for report-running progress
+
+## Other branches merged in this release
+

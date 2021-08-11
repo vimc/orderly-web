@@ -2,18 +2,13 @@ package org.vaccineimpact.orderlyweb.controllers.web
 
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
-import org.vaccineimpact.orderlyweb.ActionContext
-import org.vaccineimpact.orderlyweb.OrderlyServer
-import org.vaccineimpact.orderlyweb.OrderlyServerAPI
-import org.vaccineimpact.orderlyweb.Serializer
+import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
-import org.vaccineimpact.orderlyweb.models.WorkflowRun
-import org.vaccineimpact.orderlyweb.models.WorkflowRunRequest
-import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
+import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
@@ -93,6 +88,7 @@ class WorkflowRunController(
         if (response.statusCode == HTTP_OK)
         {
             val workflowRun = response.data(WorkflowRunResponse::class.java)
+
             workflowRunRepository.addWorkflowRun(
                 WorkflowRun(
                     workflowRunRequest.name,
@@ -100,7 +96,14 @@ class WorkflowRunController(
                     @Suppress("UnsafeCallOnNullableType")
                     context.userProfile!!.id,
                     Instant.now(),
-                    workflowRunRequest.reports,
+                    workflowRunRequest.reports.zip(workflowRun.reports) { report, reportKey ->
+                        WorkflowRunReport(
+                            workflowRun.key,
+                            reportKey,
+                            report.name,
+                            report.params
+                        )
+                    },
                     workflowRunRequest.instances ?: emptyMap(),
                     workflowRunRequest.gitBranch,
                     workflowRunRequest.gitCommit
@@ -108,5 +111,45 @@ class WorkflowRunController(
             )
         }
         return passThroughResponse(response)
+    }
+
+    @NoCoverage
+    internal data class WorkflowRunStatusResponse(
+        @SerializedName(value = "workflow_key")
+        val key: String,
+        val status: String,
+        val reports: List<WorkflowRunStatusResponseReport>
+    )
+    {
+        @NoCoverage
+        data class WorkflowRunStatusResponseReport(
+            val key: String,
+            val status: String,
+            val version: String?
+        )
+    }
+
+    fun getWorkflowRunStatus(): WorkflowRunStatus
+    {
+        val key = context.params(":key")
+        val response = orderlyServerAPI
+            .throwOnError()
+            .get("/v1/workflow/$key/status/", emptyMap())
+        val workflowRunStatusResponse = response.data(WorkflowRunStatusResponse::class.java)
+        workflowRunRepository.updateWorkflowRun(key, workflowRunStatusResponse.status)
+
+        val runWorkflow = workflowRunRepository.getWorkflowRunDetails(key)
+
+        return WorkflowRunStatus(
+            workflowRunStatusResponse.status,
+            workflowRunStatusResponse.reports.map { report ->
+                WorkflowRunStatus.WorkflowRunReportStatus(
+                    @Suppress("UnsafeCallOnNullableType")
+                    runWorkflow.reports.find{it.key == report.key}!!.report,
+                    report.key,
+                    report.status,
+                    report.version
+                )
+            })
     }
 }
