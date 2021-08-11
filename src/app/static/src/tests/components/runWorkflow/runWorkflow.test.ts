@@ -269,7 +269,35 @@ describe(`runWorkflow`, () => {
         });
     })
 
-    it(`error response from workflow endpoint generates error message`, async (done) => {
+    it(`workflow progress link clears when metadata updates`, async (done) => {
+
+        const runWorkflowResponse = {
+            data: {
+                workflow_key: "workflowKey"
+            }
+        }
+        mockAxios.onPost('http://app/workflow')
+        .reply(200, runWorkflowResponse);
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        await workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata[0], name: "new"})
+            setTimeout(() => {
+                expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+                done()
+            });
+        });
+    })
+
+    it(`error response from workflow endpoint generates error message and new metadata clears error`, async (done) => {
         mockAxios.onPost('http://app/workflow')
         .reply(500, "TEST ERROR");
 
@@ -288,7 +316,11 @@ describe(`runWorkflow`, () => {
             const errorMessage = wrapper.find("error-info-stub")
             expect(errorMessage.props("defaultMessage")).toBe("An error occurred while running the workflow")
             expect(errorMessage.props("apiError")).toBeTruthy()
-            done()
+            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata[0], name: "new"})
+            setTimeout(() => {
+                expect(errorMessage.props("apiError")).toBe("")
+                done()
+            });
         });
     })
     
