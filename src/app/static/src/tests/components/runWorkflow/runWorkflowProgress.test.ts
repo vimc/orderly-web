@@ -97,6 +97,15 @@ describe(`runWorkflowProgress`, () => {
         })
     })
 
+    it(`changes to selected workflow are emitted`, async (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test"})
+        setTimeout(() => {
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
+            done();
+        })
+    })
+
     it(`renders get workflows error message`, async (done) => {
         mockAxios.reset();
         mockAxios.onGet('http://app/workflows')

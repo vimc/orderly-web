@@ -91,13 +91,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             this.disableRename = false
         },
         handleComplete: function () {
-            // const { name, reports, changelog } = this.runWorkflowMetadata
-            // const data = { name, reports, changelog }
-            console.log("metadata", this.runWorkflowMetadata)
             api.post(`/workflow`, this.runWorkflowMetadata)
-            // api.post(`/workflow`, data)
                 .then((response) => {
-                console.log("response", response)
                     this.error = null;
                     this.createdWorkflowKey = response.data.data.workflow_key;
                 })
