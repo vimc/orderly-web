@@ -78,4 +78,53 @@ describe(`run report parameter list`, () => {
         const wrapper = shallowMount(ParameterList)
         expect(wrapper.find("table").find("tr").exists()).toBe(false)
     });
+
+    it("updates and emits changed event when params prop changes", async () => {
+        const initialParams = [
+            {name: "p1", value: "v1"},
+            {name: "p2", value: "v2"}
+        ];
+
+        const wrapper = shallowMount(ParameterList,
+            {
+                propsData: {params: initialParams}
+            }
+        );
+        expect(wrapper.emitted("paramsChanged").length).toBe(1);
+
+        const newParams = [
+            {name: "p3", value: "v3"},
+            {name: "p4", value: null}
+        ];
+        await wrapper.setProps({params: newParams});
+
+        expect(wrapper.findAll("label").at(0).text()).toBe("p3");
+        expect((wrapper.find("#param-control-0").element as HTMLInputElement).value).toBe("v3");
+
+        expect(wrapper.findAll("label").at(1).text()).toBe("p4");
+        expect((wrapper.find("#param-control-1").element as HTMLInputElement).value).toBe("");
+
+        expect(wrapper.emitted("paramsChanged").length).toBe(2);
+        expect(wrapper.emitted("paramsChanged")[1][0]).toStrictEqual(newParams);
+        expect(wrapper.emitted("paramsChanged")[1][1]).toBe(false);
+
+    });
+
+    it("does not emit changed event when params prop changes to identical", async () => {
+        const initialParams = [
+            {name: "p1", value: "v1"},
+            {name: "p2", value: "v2"}
+        ];
+
+        const wrapper = shallowMount(ParameterList,
+            {
+                propsData: {params: initialParams}
+            }
+        );
+        expect(wrapper.emitted("paramsChanged").length).toBe(1);
+
+        const newParams = [...initialParams];
+        await wrapper.setProps({params: newParams});
+        expect(wrapper.emitted("paramsChanged").length).toBe(1);
+    });
 });

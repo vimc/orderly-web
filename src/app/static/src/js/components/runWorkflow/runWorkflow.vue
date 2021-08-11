@@ -10,7 +10,8 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
-                         :run-workflow-metadata="runWorkflowMetadata">
+                         :disable-rename="disableRename"
+                         :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
     </div>
 </template>
@@ -21,46 +22,56 @@
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
 
+    interface Props{
+        workflowToRerun: RunWorkflowMetadata | null
+    }
+
     interface Data {
         runWorkflowMetadata: RunWorkflowMetadata | null
         workflowStarted: boolean
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
+        disableRename: boolean
     }
 
     interface Methods {
         handleCancel: () => void
-        handleRerun: () => void
-        handleCreate: () => void
-        handleClone: () => void
+        handleRerun: (data: Event) => void
+        handleCreate: (data: Event) => void
+        handleClone: (data: Event) => void
         handleComplete: () => void
     }
-
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
+    props: {
+        workflowToRerun: null
+    },
     data(): Data {
         return {
             runWorkflowMetadata: null,
             workflowStarted: false,
             stepComponents: [],
-            toggleFinalStepNextTo: "Run workflow"
+            toggleFinalStepNextTo: "Run workflow",
+            disableRename: false
         }
     },
     methods: {
-        handleRerun: function () {
-            // can set metadata require to rerun here
+        handleRerun: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
             this.workflowStarted = true
+            this.disableRename = true
         },
-        handleCreate: function () {
+        handleCreate: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
             this.workflowStarted = true
         },
-        handleClone: function () {
-            //Can set metadata required for clone here
+        handleClone: function (data) {
+            this.runWorkflowMetadata = data
             this.stepComponents = [
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
@@ -69,6 +80,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         },
         handleCancel: function () {
             this.workflowStarted = false
+            this.disableRename = false
         },
         handleComplete: function () {
             //handle submitted report here
@@ -77,6 +89,11 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     components: {
         workflowWizard,
         runWorkflowCreate
+    },
+    mounted() {
+        if (this.workflowToRerun) {
+            this.handleRerun(this.workflowToRerun);
+        }
     }
 })
 </script>

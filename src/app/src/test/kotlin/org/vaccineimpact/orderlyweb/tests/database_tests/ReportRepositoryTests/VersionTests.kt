@@ -11,8 +11,8 @@ import org.vaccineimpact.orderlyweb.db.repositories.ReportRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.test_helpers.*
 import org.vaccineimpact.orderlyweb.tests.insertUser
-import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.REPORT_VERSION_INSTANCE
 
 class VersionTests : CleanDatabaseTests()
 {
@@ -353,21 +353,17 @@ class VersionTests : CleanDatabaseTests()
         insertReport("test2", "version2")
 
         JooqContext().use {
-            val instanceRecord = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
-                    .apply {
-                        this.reportVersion = "version1"
-                        this.instance = "instance1"
-                        this.type = "type1"
-                    }
-            instanceRecord.store()
-            
-            val instanceRecord2 = it.dsl.newRecord(Tables.REPORT_VERSION_INSTANCE)
-                    .apply {
-                        this.reportVersion = "version1"
-                        this.instance = "instance2"
-                        this.type = "type2"
-                    }
-            instanceRecord2.store()
+            it.dsl.insertInto(REPORT_VERSION_INSTANCE)
+                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance1")
+                .set(REPORT_VERSION_INSTANCE.TYPE, "type1")
+                .execute()
+
+            it.dsl.insertInto(REPORT_VERSION_INSTANCE)
+                .set(REPORT_VERSION_INSTANCE.REPORT_VERSION, "version1")
+                .set(REPORT_VERSION_INSTANCE.INSTANCE, "instance2")
+                .set(REPORT_VERSION_INSTANCE.TYPE, "type2")
+                .execute()
         }
 
         val sut = createSut()

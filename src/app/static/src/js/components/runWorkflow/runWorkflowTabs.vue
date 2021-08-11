@@ -11,11 +11,21 @@
                         <div class="d-md-block mt-4 mt-md-0 collapse navbar-collapse" id="sidebar">
                             <ul class="nav flex-column list-unstyled mb-0">
                                 <li class="nav-item">
-                                    <a id="run-workflow-link" class="nav-link active" data-toggle="tab" role="tab" href="#"
+                                    <a id="run-workflow-link"
+                                       class="nav-link"
+                                       :class="{ active: selectedTab === 'runWorkflow' }"
+                                       data-toggle="tab"
+                                       role="tab"
+                                       href="#"
                                        @click="switchTab('runWorkflow')">Run workflow</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a id="workflow-progress-link" class="nav-link" data-toggle="tab" role="tab" href="#"
+                                    <a id="workflow-progress-link"
+                                       class="nav-link"
+                                       :class="{ active: selectedTab === 'runWorkflowProgress' }"
+                                       data-toggle="tab"
+                                       role="tab"
+                                       href="#"
                                        @click="switchTab('runWorkflowProgress')">Workflow progress</a>
                                 </li>
                             </ul>
@@ -24,15 +34,21 @@
                 </div>
             </div>
             <div class="col-12 col-md-8 tab-content">
-                <div v-if="selectedTab === 'runWorkflow'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="run-workflow-tab">
+                <div v-if="selectedTab === 'runWorkflow'"
+                     class="tab-pane active pt-4 pt-md-1"
+                     role="tabpanel"
+                     id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <run-workflow></run-workflow>
+                        <run-workflow :workflowToRerun="workflowToRerun"></run-workflow>
                     </div>
                 </div>
-                <div v-if="selectedTab === 'runWorkflowProgress'" class="tab-pane active pt-4 pt-md-1" role="tabpanel" id="workflow-progress-tab">
+                <div v-if="selectedTab === 'runWorkflowProgress'"
+                     class="tab-pane active pt-4 pt-md-1"
+                     role="tabpanel"
+                     id="workflow-progress-tab">
                     <div id="runWorkflowProgress">
                         <h2>Workflow progress</h2>
-                       <run-workflow-progress></run-workflow-progress>
+                       <run-workflow-progress @rerun="rerunWorkflow"></run-workflow-progress>
                     </div>
                 </div>
             </div>
@@ -49,12 +65,17 @@ export default Vue.extend({
     name: "runWorkflowTabs",
     data() {
         return {
-            selectedTab: "runWorkflow"
+            selectedTab: "runWorkflow",
+            workflowToRerun: null
         }
     },
     methods: {
         switchTab(tab) {
             this.selectedTab = tab
+        },
+        rerunWorkflow(workflow) {
+            this.workflowToRerun = workflow;
+            this.switchTab("runWorkflow");
         }
     },
     components: {

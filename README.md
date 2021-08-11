@@ -102,6 +102,13 @@ works, which is necessary because it is called implicitly during the Docker imag
 
 [settings files]: https://github.com/vimc/orderly-web/tree/master/src/.idea/codeStyles
 
+### Coverage
+
+The `@NoCoverage` annotation defined in [Annotations.kt](src/app/src/main/kotlin/org/vaccineimpact/orderlyweb/Annotations.kt)
+excludes specified classes from processing by JaCoCo in order to avoid the necessity of writing artificial test logic
+simply to satisfy coverage metrics. It is only intended for use with `internal data class`es used to
+(de)serialise orderly.server responses.
+
 ### Regenerate database interface
 ```
 cd src
@@ -231,3 +238,6 @@ Information about a workflow run i.e. a job sent to orderly.server that is expec
 versions. Includes a list of parameterised reports and metadata about the workflow itself (name, owner, invocation
 timestamp etc). Workflows are unique by any of name+timestamp (presented in UI), key (orderly.server's reference) or ID
 (OrderlyWeb's primary identifier).
+
+### orderlyweb_workflow_run_reports
+Stores information relating to workflows and reports. This table references key column of orderlyweb_workflow_run. 

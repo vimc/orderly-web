@@ -9,8 +9,10 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.db.Tables
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import org.vaccineimpact.orderlyweb.models.WorkflowRun
+import org.vaccineimpact.orderlyweb.models.WorkflowRunReport
 import org.vaccineimpact.orderlyweb.models.WorkflowRunSummary
 import org.vaccineimpact.orderlyweb.test_helpers.CleanDatabaseTests
 import org.vaccineimpact.orderlyweb.tests.insertUser
@@ -25,22 +27,33 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val now = Instant.now()
 
-        val sut = OrderlyWebWorkflowRunRepository()
-        sut.addWorkflowRun(
-            WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                    WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                    WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+        val workflowRun = WorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param2" to "two", "param3" to "three")
                 ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
-            )
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param2" to "two", "param3" to "three")
+                )
+            ),
+            mapOf("instanceA" to "pre-staging"),
+            "branch1",
+            "commit1"
         )
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        sut.addWorkflowRun(workflowRun)
         sut.addWorkflowRun(
             WorkflowRun(
                 "Final report",
@@ -48,7 +61,12 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 "user@email.com",
                 now,
                 listOf(
-                    WorkflowReportWithParams("reportC", mapOf("param4" to "four"))
+                    WorkflowRunReport(
+                        "adventurous_aardvark",
+                        "adventurous_key3",
+                        "report three",
+                        mapOf("param1" to "one", "param2" to "two")
+                    )
                 ),
                 emptyMap()
             )
@@ -63,7 +81,6 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.KEY]).isEqualTo("adventurous_aardvark")
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL]).isEqualTo("user@email.com")
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.DATE].toInstant()).isEqualTo(now)
-            assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS]).isEqualTo("""[{"name":"reportA","params":{"param1":"one","param2":"two"}},{"name":"reportB","params":{"param3":"three"}}]""")
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.INSTANCES]).isEqualTo("""{"instanceA":"pre-staging"}""")
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH]).isEqualTo("branch1")
             assertThat(result[0][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]).isEqualTo("commit1")
@@ -73,15 +90,28 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.KEY]).isEqualTo("benevolent_badger")
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.EMAIL]).isEqualTo("user@email.com")
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.DATE].toInstant()).isEqualTo(now)
-            val reports = Gson().fromJson<List<WorkflowReportWithParams>>(
-                result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.REPORTS],
-                TypeToken.getParameterized(List::class.java, WorkflowReportWithParams::class.java).type
-            )
-            assertThat(reports[0].name).isEqualTo("reportC")
-            assertThat(reports[0].params).isEqualTo(mapOf("param4" to "four"))
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.INSTANCES]).isEqualTo(Gson().toJson(emptyMap<String, String>()))
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH]).isNull()
             assertThat(result[1][Tables.ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT]).isNull()
+
+
+            val resultRunReport = it.dsl.selectFrom(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS).fetch()
+            assertThat(resultRunReport.count()).isEqualTo(3)
+
+            assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report one")
+            assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
+            assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key")
+            assertThat(resultRunReport[0][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param1" to "one", "param2" to "two", "param3" to "three")))
+
+            assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report two")
+            assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
+            assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key2")
+            assertThat(resultRunReport[1][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param2" to "two", "param3" to "three")))
+
+            assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("report three")
+            assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY]).isEqualTo("adventurous_aardvark")
+            assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY]).isEqualTo("adventurous_key3")
+            assertThat(resultRunReport[2][Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]).isEqualTo(Gson().toJson(mapOf("param1" to "one", "param2" to "two")))
         }
     }
 
@@ -131,6 +161,40 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
                 )
             )
         }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run.key")
+    }
+
+    @Test
+    fun `cannot add workflow with foreign key violation`()
+    {
+        insertUser("user@email.com", "user.name")
+
+        val sut = OrderlyWebWorkflowRunRepository()
+
+        val workflowRun= WorkflowRun(
+        "Interim report",
+        "adventurous_aardvark",
+        "user@email.com",
+        Instant.now(),
+        listOf(
+            WorkflowRunReport(
+                "adventurous_aardvark",
+                "same_key",
+                "report one",
+                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+            ),
+            WorkflowRunReport(
+                "adventurous_aardvark",
+                "same_key",
+                "report two",
+                mapOf("param1" to "one", "param2" to "three")
+            )
+        ),
+        emptyMap()
+        )
+
+        assertThatThrownBy {
+            sut.addWorkflowRun(workflowRun)
+        }.hasMessageContaining("UNIQUE constraint failed: orderlyweb_workflow_run_reports.key")
     }
 
     @Test
@@ -419,34 +483,34 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
 
         val sut = OrderlyWebWorkflowRunRepository()
 
-        sut.addWorkflowRun(WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+        val workflowRun = WorkflowRun(
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
                 ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
-        ))
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param1" to "one", "param2" to "three")
+                )
+            ),
+            mapOf("instanceA" to "pre-staging"),
+            "branch1",
+            "commit1"
+        )
+
+        sut.addWorkflowRun(workflowRun)
 
         val results = sut.getWorkflowRunDetails("adventurous_aardvark")
-        assertThat(results).isEqualTo(WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
-                ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
-        ))
+        assertThat(results).isEqualTo(workflowRun)
     }
 
     @Test
@@ -459,19 +523,29 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
         val sut = OrderlyWebWorkflowRunRepository()
 
         val workflowRun = WorkflowRun(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                now,
-                listOf(
-                        WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                        WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+            "Interim report",
+            "adventurous_aardvark",
+            "user@email.com",
+            now,
+            listOf(
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
                 ),
-                mapOf("instanceA" to "pre-staging"),
-                "branch1",
-                "commit1"
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param1" to "one", "param2" to "three")
+                )
+            ),
+            emptyMap()
         )
+
         sut.addWorkflowRun(workflowRun)
+
         assertThatThrownBy {
             sut.getWorkflowRunDetails("fake_key")
         }.hasMessageContaining("Unknown workflow : 'fake_key'")
@@ -490,7 +564,18 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             "user@email.com",
             Instant.now(),
             listOf(
-                WorkflowReportWithParams("reportA", emptyMap())
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                ),
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param1" to "one", "param2" to "three")
+                )
             ),
             emptyMap()
         )
@@ -525,4 +610,5 @@ class WorkflowRunRepositoryTests : CleanDatabaseTests()
             .isInstanceOf(UnknownObjectError::class.java)
             .hasMessageContaining("adventurous_aardvark")
     }
+
 }
