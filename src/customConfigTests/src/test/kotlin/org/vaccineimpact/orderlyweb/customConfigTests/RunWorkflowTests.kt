@@ -176,8 +176,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(submitButton.isEnabled).isFalse()
         val changelogTypes = driver.findElements(By.cssSelector("#change-type-control option"))
         assertThat(changelogTypes.count()).isEqualTo(2)
-        assertThat(changelogTypes[0].text).isEqualTo("internal")
-        assertThat(changelogTypes[1].text).isEqualTo("public")
+        assertThat(changelogTypes[0].text).contains("internal")
+        assertThat(changelogTypes[1].text).contains("public")
 
         driver.findElement(By.id("run-workflow-name")).sendKeys("new workflow name")
         wait.until(ExpectedConditions.elementToBeClickable(submitButton))
@@ -242,21 +242,13 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can create a workflow and selecting view progress link navigates to progress tab and generates reports table`()
+    fun `can select workflow progress tab and selecting a workflow option generates reports table, which persists when navigating off tab and back again`()
     {
-        createWorkflow()
-        addReport("minimal")
-        addReport("global")
-        val nextButton = driver.findElement(By.id("next-workflow"))
-        nextButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
-        val submitButton = driver.findElement(By.id("next-workflow"))
-        driver.findElement(By.id("run-workflow-name")).sendKeys("My workflow")
-        wait.until(ExpectedConditions.elementToBeClickable(submitButton))
-        submitButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
-        val progressLink = driver.findElement(By.cssSelector("#view-progress-link a"))
-        progressLink.click()
+        val jse = driver as JavascriptExecutor
+        jse.executeScript("""await fetch("${RequestHelper.webBaseUrl}/workflow", {"method": "POST", "body": "{\"name\":\"My workflow\",\"reports\":[{\"name\":\"minimal\", \"params\": {}},{\"name\":\"global\", \"params\": {}}],\"changelog\":{\"message\":\"message1\",\"type\":\"internal\"}}"});""")
+        val link = driver.findElement(By.id("workflow-progress-link"))
+        assertThat(link.text).isEqualTo("Workflow progress")
+        link.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
         val vSelectInput = driver.findElement(By.tagName("input"))
         vSelectInput.sendKeys("My work")
@@ -273,6 +265,49 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
         assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+
+        val workflowLink = driver.findElement(By.id("run-workflow-link"))
+        workflowLink.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-workflow-tab")))
+        link.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val selectedWorkflow = driver.findElement(By.cssSelector(".vs__selected"))
+        assertThat(selectedWorkflow.text).contains("My workflow")
+    }
+
+    @Test
+    fun `can create a workflow and select the view progress link to navigate to the progress tab with workflow preselected and reports table generated`()
+    {
+        createWorkflow()
+        addReport("minimal")
+        addReport("global")
+        addReport("minimal")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        nextButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
+        val submitButton = driver.findElement(By.id("next-workflow"))
+        driver.findElement(By.id("run-workflow-name")).sendKeys("2My workflow")
+        driver.findElement(By.id("changelogMessage")).sendKeys("changes")
+        wait.until(ExpectedConditions.elementToBeClickable(submitButton))
+        submitButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
+        val progressLink = driver.findElement(By.cssSelector("#view-progress-link a"))
+        progressLink.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-progress-tab")))
+        val selectedWorkflow = driver.findElement(By.cssSelector(".vs__selected"))
+        assertThat(selectedWorkflow.text).contains("2My workflow")
+        val table = driver.findElement(By.id("workflow-table"))
+        assertThat(table.text).contains("Reports")
+        val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
+        assertThat(rows.count()).isEqualTo(3)
+        val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
+        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val globalRow = rows.find{ it.text.startsWith("global") }!!
+        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
     }
 
 }
