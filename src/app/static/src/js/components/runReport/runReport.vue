@@ -32,8 +32,7 @@
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
                         :custom-style="childCustomStyle"
-                        @changelogMessage="handleChangeLogMessageValue"
-                        @changelogType="handleChangeLogTypeValue">
+                        @changelog="handleChangelog">
             </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
@@ -90,8 +89,7 @@
                 runningKey: "",
                 disableRun: false,
                 parameterValues: [],
-                changeLogMessageValue: "",
-                changeLogTypeValue: "",
+                changelog: null,
                 childCustomStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
@@ -116,11 +114,8 @@
             handleInstancesValue: function (instances) {
                 this.selectedInstances = instances
             },
-            handleChangeLogTypeValue: function (type: string) {
-                this.changeLogTypeValue = type
-            },
-            handleChangeLogMessageValue: function (message: string) {
-                this.changeLogMessageValue = message
+            handleChangelog: function (changelog: object | null) {
+                this.changelog = changelog;
             },
             getParameterValues(values, valid) {
                 if (valid) {
@@ -167,18 +162,10 @@
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
 
-                let changelog = null;
-                if (this.changeLogMessageValue) {
-                    changelog = {
-                        message: this.changeLogMessageValue,
-                        type: this.changeLogTypeValue
-                    }
-                }
-
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances,
                     params,
-                    changelog,
+                    changelog: this.changelog,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })
@@ -201,7 +188,7 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
-                this.changeLogMessageValue = ""
+                this.changelog = null;
             }
         },
         mounted() {
