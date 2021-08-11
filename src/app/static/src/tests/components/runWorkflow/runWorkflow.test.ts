@@ -259,13 +259,7 @@ describe(`runWorkflow`, () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
-            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(
-                {
-                    "name": workflowMetadata[0].name,
-                    "reports": workflowMetadata[0].reports,
-                    "changelog": workflowMetadata[0].changelog
-                }
-            ));
+            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(workflowMetadata[0]));
             expect(wrapper.vm.$data.createdWorkflowKey).toBe("workflowKey")
             expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
             wrapper.find("#view-progress-link > a").trigger("click")
