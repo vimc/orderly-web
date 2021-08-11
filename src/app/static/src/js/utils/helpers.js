@@ -27,3 +27,41 @@ function padZero(number) {
     // This always sticks a zero on the front and then takes the last two digits
     return ('0' + number).slice(-2);
 }
+
+function workflowRunDetailsToMetadata(details: WorkflowRun) {
+    return {
+        name: details.name,
+        instances: details.instances,
+        git_branch: details.git_branch,
+        git_commit: details.git_commit,
+        changelog: null,
+        reports: {}
+    }
+}
+
+/*
+export interface WorkflowRun {
+    name: string,
+    key: string,
+    email: string,
+    date: string,
+    reports: WorkflowRunReport[],
+    instances: Record<string, string>,
+    git_branch: string | null,
+    git_commit: string | null
+}
+
+export interface RunWorkflowMetadata {
+    name: string,
+    reports: WorkflowReportWithParams[],
+    instances: Record<string, string>,
+    git_branch: string | null,
+    git_commit: string | null,
+    changelog: {
+        message: string,
+        type: string
+    } | null
+}
+ */
+
+

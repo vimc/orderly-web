@@ -155,6 +155,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         rerun() {
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
+                    console.log("Rerunning with data: " + JSON.stringify(data.data))
                     this.$emit("rerun", data.data);
                 })
                 .catch((error) => {
