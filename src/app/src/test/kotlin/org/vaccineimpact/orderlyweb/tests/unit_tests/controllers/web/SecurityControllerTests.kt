@@ -32,6 +32,19 @@ class SecurityControllerTests : ControllerTest()
     }
 
     @Test
+    fun `HTML encodes requested URL for view model`()
+    {
+        val mockContext = mock<ActionContext> {
+            on { this.queryParams("requestedUrl") } doReturn "<testUrl>"
+        }
+
+        val sut = SecurityController(mockContext)
+
+        val result = sut.weblogin()
+        Assertions.assertThat(result.requestedUrl).isEqualTo("&lt;testUrl&gt;")
+    }
+
+    @Test
     fun `defaults to homepage as requestedUrl when no url is explicitly requested`()
     {
         val sut = SecurityController(mock())

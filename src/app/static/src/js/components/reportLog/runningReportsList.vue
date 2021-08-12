@@ -26,7 +26,7 @@
     import Vue from "vue";
     import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
     import XIcon from "../runReport/xIcon.vue"
-    import {longTimestamp} from "../../utils/helpers";
+    import {longTimestamp} from "../../utils/helpers.ts";
 
     export default Vue.extend({
         name: "runningReportsList",
@@ -61,9 +61,6 @@
             if (this.initialSelectedKey){
                 this.query = this.reports.find(report => report.key === this.initialSelectedKey).name
             }
-        },
-        beforeDestroy() {
-            this.$emit('update:key', "");
         }
     })
 
