@@ -7,6 +7,7 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.test";
+import {WorkflowRunReport} from "../../../js/utils/types";
 
 describe(`runWorkflow`, () => {
 
@@ -16,14 +17,14 @@ describe(`runWorkflow`, () => {
 
     const workflowMetadata = [{
         name: "interim report",
-        date: "2021-05-19T16:28:24Z",
+        key: "fake",
         email: "test@example.com",
-        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"name": "reportB", "params": {"param3": "three"}}],
+        date: "2021-05-19T16:28:24Z",
+        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"report": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
-        git_commit: "commit",
-        changelog: {type: "message", message: "test changelog"}
+        git_commit: "commit"
     }]
 
     beforeEach(() => {
@@ -51,7 +52,7 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).exists()).toBe(false)
     })
 
-    it(`can cancel workflow wizard`, async (done) => {
+    it(`can cancel workflow wizard`, async () => {
         const wrapper = getWrapper()
 
         //Enables rerun and clone buttons
@@ -62,6 +63,7 @@ describe(`runWorkflow`, () => {
             })
 
         await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         await wrapper.find("#confirm-cancel-btn").trigger("click")
         expect(wrapper.vm.$data.workflowStarted).toBe(false)
@@ -190,7 +192,6 @@ describe(`runWorkflow`, () => {
 
         setTimeout(async () => {
             expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
-
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
             expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);

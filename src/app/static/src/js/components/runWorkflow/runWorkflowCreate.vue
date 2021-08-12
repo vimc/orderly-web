@@ -114,7 +114,7 @@
                 }
             },
             rerun: function () {
-                if (this.selectedWorkflow) {
+                if (this.selectedWorkflow && this.runWorkflowMetadata) {
                     const {
                         reports,
                         git_branch,
