@@ -60,10 +60,10 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
-    import {ChildCustomStyle} from "../../utils/types";
+    import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
 
     interface Data {
-        reports: object[]
+        reports: ReportWithDate[]
         selectedBranch: string
         selectedCommitId: string
         selectedReport: string
