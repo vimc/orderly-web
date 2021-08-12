@@ -1,4 +1,4 @@
-import {WorkflowRun} from "./types"
+import {RunWorkflowMetadata, WorkflowRun} from "./types"
 
 export function reportVersionToLongTimestamp(versionId) {
     const regex = /(\d{4})(\d{2})(\d{2})-(\d{2})(\d{2})(\d{2})-([0-9a-f]{8})/;
@@ -30,7 +30,7 @@ function padZero(number) {
     return ('0' + number).slice(-2);
 }
 
-export function workflowRunDetailsToMetadata(details: WorkflowRun) {
+export function workflowRunDetailsToMetadata(details: WorkflowRun): RunWorkflowMetadata {
     return {
         name: details.name,
         instances: details.instances,

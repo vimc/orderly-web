@@ -211,12 +211,10 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 this.workflowRunStatus = null;
             }
         },
-        workflowRunStatus: {
-            handler(workflowRun) {
-                const interpretStatus = this.interpretStatus(workflowRun.status)
-                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
-                    this.stopPolling();
-                }
+        workflowRunStatus(newWorkflowRunStatus) {
+            const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
+            if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                this.stopPolling();
             }
         }
     },

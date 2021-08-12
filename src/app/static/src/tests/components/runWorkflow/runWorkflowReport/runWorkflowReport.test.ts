@@ -14,7 +14,7 @@ export const runReportMetadataResponse = {
         instances_supported: false,
         git_supported: true,
         instances: {"source": []},
-        changelog_types: ["published", "internaal"]
+        changelog_types: ["published", "internal"]
     },
     git_branches: ["master", "dev"]
 };
@@ -179,7 +179,7 @@ describe(`runWorkflowReport`, () => {
             expect(button.attributes("disabled")).toBeUndefined();
             expect(button.text()).toBe("Add report");
             done();
-;        });
+        });
     });
 
     it("add report button is disabled if no selected report", (done) => {
@@ -254,6 +254,7 @@ describe(`runWorkflowReport`, () => {
                         {name: "other", params: {p1: "v1", p2: "v2"}}
                     ]
                 });
+                expect(wrapper.vm.$data.selectedReport).toBe("");
                 expect(wrapper.vm.$data.error).toBe("");
                 expect(wrapper.vm.$data.defaultMessage).toBe("");
                 done();
@@ -275,6 +276,7 @@ describe(`runWorkflowReport`, () => {
             wrapper.find("#add-report-button").trigger("click");
             setTimeout(() => {
                 expect(wrapper.emitted("update")).toBeUndefined();
+                expect(wrapper.vm.$data.selectedReport).toBe("other");
                 const error = wrapper.findComponent(ErrorInfo);
                 expect(error.props("apiError").response.data).toStrictEqual(testError);
                 expect(error.props("defaultMessage")).toBe("An error occurred when getting parameters");
@@ -332,7 +334,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("can remove obsolete reports from worfklow on available reports update", (done) => {
+    it("can remove obsolete reports from workflow on available reports update", (done) => {
         const wrapper = getWrapper({
             workflowMetadata: {
                 ...emptyWorkflowMetadata,

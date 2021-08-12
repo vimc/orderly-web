@@ -46,7 +46,7 @@
     import Vue from "vue"
     import vSelect from 'vue-select'
     import {api} from "../../utils/api";
-    import {RunWorkflowMetadata} from "../../utils/types";
+    import {RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
     import {longTimestamp} from "../../utils/helpers.ts";
     import ErrorInfo from "../errorInfo.vue";
 
@@ -61,7 +61,7 @@
     }
 
     interface Data {
-        workflows: []
+        workflows: WorkflowRunSummary[]
         error: string | null
         defaultMessage: string | null
         selectedWorkflow: string
@@ -81,7 +81,7 @@
         enableButtons: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default Vue.extend<Data, Methods, Computed>({
         name: "runWorkflowCreate",
         data(): Data {
             return {
