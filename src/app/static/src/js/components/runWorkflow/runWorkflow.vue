@@ -108,8 +108,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 });
         },
         updateRunWorkflowMetadata: function (update) {
-            // this.error = "";
-            // this.createdWorkflowKey = "";
+            this.error = "";
+            this.createdWorkflowKey = "";
             this.runWorkflowMetadata = update;
         }
     },
