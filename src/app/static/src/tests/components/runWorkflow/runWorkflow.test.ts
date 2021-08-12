@@ -15,6 +15,8 @@ describe(`runWorkflow`, () => {
     ]
 
     const workflowMetadata = [{
+        name: "interim report",
+        date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
         reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
             {"name": "reportB", "params": {"param3": "three"}}],
@@ -49,7 +51,7 @@ describe(`runWorkflow`, () => {
         expect(wrapper.find(workflowWizard).exists()).toBe(false)
     })
 
-    it(`can cancel workflow wizard`, async () => {
+    it(`can cancel workflow wizard`, async (done) => {
         const wrapper = getWrapper()
 
         //Enables rerun and clone buttons
