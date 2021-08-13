@@ -8,6 +8,11 @@ export interface Step {
     component: string
 }
 
+export interface ReportWithDate {
+    name: string,
+    date: Date | null
+}
+
 export interface ReportLog{
     email: string,
     date: string,
@@ -21,8 +26,28 @@ export interface ReportLog{
     report_version: string | null
 }
 
+export interface RunReportMetadata {
+    instances_supported: boolean,
+    git_supported: boolean,
+    instances: Record<string, string[]>,
+    changelog_types: string[]
+}
+
 export interface RunWorkflowMetadata {
-    placeholder: string
+    name: string,
+    reports: WorkflowReportWithParams[],
+    instances: Record<string, string>,
+    git_branch: string | null,
+    git_commit: string | null,
+    changelog: {
+        message: string,
+        type: string
+    } | null
+}
+
+export interface WorkflowReportWithParams {
+    name: string,
+    params?: Record<string, string>
 }
 
 export interface Error {
@@ -42,4 +67,66 @@ export interface ReportDependency {
 export interface ReportDependencies {
     direction: "upstream" | "downstream",
     dependency_tree: ReportDependency
+}
+
+export interface WorkflowRunSummary {
+    name: string,
+    key: string,
+    email: string,
+    date: string
+}
+
+export interface WorkflowRunStatus {
+    status: "queued" | "running" | "success" | "error" | "cancelled",
+    reports: WorkflowRunReportStatus[]
+}
+
+export interface WorkflowRunReportStatus {
+    name: string,
+    key: string,
+    status: "queued" | "running" | "success" | "error" | "orphan" | "interrupted" | "deferred" | "impossible" | "missing",
+    version: string | null
+    date?: string
+}
+
+export interface WorkflowSummary {
+    date: string,
+    email: string,
+    key: string,
+    name: string
+}
+
+export interface WorkflowRunReport {
+    workflow_key: string,
+    key: string,
+    report: string,
+    params: Record<string, string>
+}
+
+export interface WorkflowRun {
+    name: string,
+    key: string,
+    email: string,
+    date: string,
+    reports: WorkflowRunReport[],
+    instances: Record<string, string>,
+    git_branch: string | null,
+    git_commit: string | null
+}
+
+export interface RunReportMetadata {
+    git_branches: [],
+    metadata: RunReportMetadataDependency
+}
+
+export interface RunReportMetadataDependency {
+    changelog_types: [] | null,
+    git_supported: boolean,
+    instances: {} | null,
+    instances_supported: boolean
+}
+
+export interface ChildCustomStyle {
+    label: string,
+    control: string
 }

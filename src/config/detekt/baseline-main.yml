@@ -10,12 +10,12 @@
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.Helpers.kt:92</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.SparkWrapper.kt:7</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.DocumentController.kt:98</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:12</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:13</ID>
-    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:20</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:14</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:21</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:22</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:23</ID>
+    <ID>CommentSpacing:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:24</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.TokenStore.kt:5</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.AuthorizationRepository.kt:244</ID>
     <ID>CommentSpacing:org.vaccineimpact.orderlyweb.db.repositories.ReportRepository.kt:140</ID>
@@ -374,7 +374,7 @@
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.ResourceController.kt:52</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.api.VersionController.kt:101</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:20</ID>
-    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:27</ID>
+    <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:28</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.Orderly.kt:179</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.SQLiteTokenStore.kt:44</ID>
     <ID>NoBlankLineBeforeRbrace:org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository.kt:20</ID>
@@ -901,7 +901,7 @@
     <ID>SpacingAroundColon:org.vaccineimpact.orderlyweb.viewmodels.PublishReportsViewModel.kt:9</ID>
     <ID>SpacingAroundComma:org.vaccineimpact.orderlyweb.security.authentication.GithubOAuthAuthenticator.kt:15</ID>
     <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.APIEndpoint.kt:41</ID>
-    <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:15</ID>
+    <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:16</ID>
     <ID>SpacingAroundOperators:org.vaccineimpact.orderlyweb.security.providers.GithubApiClientAuthHelper.kt:99</ID>
     <ID>StringTemplate:org.vaccineimpact.orderlyweb.controllers.web.GitController.kt:19</ID>
     <ID>StringTemplate:org.vaccineimpact.orderlyweb.viewmodels.ReportFileViewModelBuilder.kt:14</ID>

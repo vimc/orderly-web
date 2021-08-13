@@ -97,9 +97,17 @@ class WorkflowRunTests : IntegrationTest()
         val key = "adventurous_aardvark"
         val email = "test.user@example.com"
         val date = Instant.now()
+        val runWorkflowReport = listOf(
+            WorkflowRunReport(
+                "adventurous_aardvark",
+                "preterrestrial_andeancockoftherock",
+                "Report A",
+                emptyMap()
+            )
+        )
 
         val repo = OrderlyWebWorkflowRunRepository()
-        repo.addWorkflowRun(WorkflowRun(name, key, email, date, emptyList(), emptyMap()))
+        repo.addWorkflowRun(WorkflowRun(name, key, email, date, runWorkflowReport, emptyMap()))
 
         val response = webRequestHelper.requestWithSessionCookie(
             "/workflows?email=$email&namePrefix=${name.split(" ").first().toLowerCase()}",
@@ -147,10 +155,12 @@ class WorkflowRunTests : IntegrationTest()
                       }
                     },
                     {
-                      "name": "minimal"
+                      "name": "minimal",
+                      "params": {}
                     },
                     {
-                      "name": "global"
+                      "name": "global",
+                      "params": {}
                     }
                   ],
                   "changelog": {
@@ -204,10 +214,18 @@ class WorkflowRunTests : IntegrationTest()
                 workflowRunResponse.key,
                 "test.user@example.com",
                 Instant.now(),
-                listOf(WorkflowReportWithParams("minimal", emptyMap())),
+                listOf(
+                    WorkflowRunReport(
+                        workflowRunResponse.key,
+                        workflowRunResponse.reports.first(),
+                        "minimal",
+                        emptyMap()
+                    )
+                ),
                 emptyMap()
             )
         )
+
         assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
 
         val response = webRequestHelper.requestWithSessionCookie(
@@ -258,8 +276,18 @@ class WorkflowRunTests : IntegrationTest()
             "user@email.com",
             now,
             listOf(
-                WorkflowReportWithParams("reportA", mapOf("param1" to "one", "param2" to "two")),
-                WorkflowReportWithParams("reportB", mapOf("param3" to "three"))
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key",
+                    "report one",
+                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                ),
+                WorkflowRunReport(
+                    "adventurous_aardvark",
+                    "adventurous_key2",
+                    "report two",
+                    mapOf("param1" to "one", "param2" to "three")
+                )
             ),
             mapOf("instanceA" to "pre-staging"),
             "branch1",

@@ -2,31 +2,13 @@
     <div>
         <h2>Run a report</h2>
         <form class="mt-3">
-            <div v-if="metadata.git_supported" id="git-branch-form-group" class="form-group row">
-                <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                        <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
-                    </select>
-                </div>
-                <button @click.prevent="refreshGit"
-                    id="git-refresh-btn"
-                    class="btn col-sm-1"
-                    :disabled="gitRefreshing"
-                    type="submit">
-                    {{refreshGitText}}
-                </button>
-            </div>
-            <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
-                <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
-                <div class="col-sm-6">
-                    <select class="form-control" id="git-commit" v-model="selectedCommitId" @change="changedCommit">
-                        <option v-for="commit in gitCommits" :value="commit.id">
-                            {{ commit.id }} ({{ commit.date_time }})
-                        </option>
-                    </select>
-                </div>
-            </div>
+            <git-update-reports
+                :report-metadata="metadata"
+                :initial-branches="initialGitBranches"
+                @branchSelected="branchSelected"
+                @commitSelected="commitSelected"
+                @reportsUpdate="updateReports"
+            ></git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
@@ -35,42 +17,23 @@
                                  :initial-selected-report="initialReportName"/>
                 </div>
             </div>
-            <template v-if="showInstances">
-                <div v-for="(options, name) in metadata.instances" v-if="options.length > 1" class="form-group row">
-                    <label :for="name" class="col-sm-2 col-form-label text-right">Database "{{ name }}"</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" :id="name" v-model="selectedInstances[name]">
-                            <option v-for="option in options" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </template>
+
+            <div v-if="showInstances">
+                <instances :instances="metadata.instances"
+                           :custom-style="childCustomStyle"
+                           @selectedValues="handleInstancesValue"
+                           @clearRun="clearRun"/>
+            </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
                 <parameter-list id="params-component" @paramsChanged="getParameterValues"
                                 :params="parameterValues"></parameter-list>
             </div>
-            <div v-if="showChangelog">
-                <div v-if="showChangeMessage" id="changelog-message" class="form-group row">
-                    <label for="changelogMessage" class="col-sm-2 col-form-label text-right">Changelog Message</label>
-                    <div class="col-sm-6">
-                        <textarea class="form-control" id="changelogMessage" v-model="changeLogMessageValue"
-                                  rows="2"></textarea>
-                    </div>
-                </div>
-                <div id="changelog-type" class="form-group row">
-                    <label for="changelogType" class="col-sm-2 col-form-label text-right">Changelog Type</label>
-                    <div class="col-sm-6">
-                        <select class="form-control" id="changelogType" v-model="changeLogTypeValue">
-                            <option v-for="option in metadata.changelog_types" :value="option">
-                                {{ option }}
-                            </option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <change-log v-if="showChangelog"
+                        :changelog-type-options="metadata.changelog_types"
+                        :custom-style="childCustomStyle"
+                        @changelog="handleChangelog">
+            </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
@@ -93,25 +56,71 @@
     import ParameterList from "./parameterList.vue"
     import ErrorInfo from "../errorInfo.vue";
     import Vue from "vue";
+    import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
+    import ChangeLog from "./changeLog.vue";
+    import Instances from "./instances.vue";
+    import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
 
-    export default Vue.extend({
+    interface Data {
+        reports: ReportWithDate[]
+        selectedBranch: string
+        selectedCommitId: string
+        selectedReport: string
+        selectedInstances: Record<string, string>
+        error: string
+        defaultMessage: string
+        runningStatus: string
+        runningKey: string
+        disableRun: boolean
+        parameterValues: Record<string, string>[]
+        changelog: object | null
+        childCustomStyle: ChildCustomStyle
+    }
+
+    interface Methods {
+        handleInstancesValue: (instances: Record<string, string>) => void
+        handleChangelog: (changelog: Record<string, string>) => void
+        getParameterValues: (values: Record<string, string>[], valid: boolean) => void
+        branchSelected: (newBranch: string) => void
+        commitSelected: (newCommit: string) => void
+        updateReports: (newReports: object[]) => void
+        setParameters: () => void
+        runReport: () => void
+        clearRun: () => void
+    }
+
+    interface Props {
+        metadata: Record<string, any>
+        initialGitBranches: string[]
+        initialReportName: string
+    }
+
+    interface Computed {
+        showReports: number
+        showInstances: string
+        showRunButton: boolean
+        showParameters: number
+        showChangelog: string[]
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runReport",
-        props: [
-            "metadata",
-            "initialGitBranches",
-            "initialReportName"
-        ],
+        props: {
+            metadata: Object,
+            initialGitBranches: Array,
+            initialReportName: String
+        },
         components: {
             ErrorInfo,
+            GitUpdateReports,
             ReportList,
-            ParameterList
+            ParameterList,
+            ChangeLog,
+            Instances
         },
         data: () => {
             return {
-                gitRefreshing: false,
-                gitBranches: [],
-                gitCommits: [],
                 reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
@@ -123,17 +132,11 @@
                 runningKey: "",
                 disableRun: false,
                 parameterValues: [],
-                changeLogMessageValue: "",
-                changeLogTypeValue: ""
+                changelog: null,
+                childCustomStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
         computed: {
-            refreshGitText(){
-                return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
-            },
-            showCommits() {
-                return this.gitCommits && this.gitCommits.length;
-            },
             showReports() {
                 return this.reports && this.reports.length;
             },
@@ -147,41 +150,15 @@
                 return this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return this.selectedReport
-            },
-            showChangeMessage: function () {
-                return this.metadata.changelog_types
+                return !!this.selectedReport && this.metadata.changelog_types
             }
         },
         methods: {
-            refreshGit: function () {
-                this.gitRefreshing = true
-                api.get('/git/fetch/')
-                    .then(({data}) => {
-                        this.gitRefreshing = false
-                        this.gitBranches = data.data.map(branch => branch.name)
-                    })
-                    .catch((error) => {
-                        this.gitRefreshing = false
-                        this.error = error;
-                        this.defaultMessage = "An error occurred refreshing Git";
-                    });
+            handleInstancesValue: function (instances) {
+                this.selectedInstances = instances
             },
-            changedBranch() {
-                api.get(`/git/branch/${this.selectedBranch}/commits/`)
-                    .then(({data}) => {
-                        this.gitCommits = data.data;
-                        if (this.gitCommits.length) {
-                            this.selectedCommitId = this.gitCommits[0].id;
-                            this.changedCommit();
-                        }
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching Git commits";
-                    });
+            handleChangelog: function (changelog) {
+                this.changelog = changelog;
             },
             getParameterValues(values, valid) {
                 if (valid) {
@@ -189,26 +166,19 @@
                 }
                 this.disableRun = !valid
             },
-            changedCommit() {
-                this.updateReports();
+            branchSelected(newBranch) {
+                this.selectedBranch = newBranch;
             },
-            updateReports() {
-                this.reports = [];
-                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
-                api.get(`/reports/runnable/${query}`)
-                    .then(({data}) => {
-                        this.reports = data.data;
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching reports";
-                    });
+            commitSelected(newCommit) {
+                this.selectedCommitId = newCommit;
+            },
+            updateReports(newReports) {
+                this.reports = newReports;
+                this.selectedReport = "";
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-                api.get(`/report/${this.selectedReport}/parameters/${commit}`)
+                api.get(`/report/${this.selectedReport}/config/parameters/${commit}`)
                     .then(({data}) => {
                         this.parameterValues = data.data
                         this.error = "";
@@ -229,23 +199,16 @@
                 if (this.metadata.instances_supported && this.metadata.instances &&
                     Object.keys(this.metadata.instances).length > 0) {
                     const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
-                    const instance = this.selectedInstances[instanceName];instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    const instance = this.selectedInstances[instanceName];
+                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
 
-                let changelog = null;
-                if (this.changeLogMessageValue) {
-                    changelog = {
-                        message: this.changeLogMessageValue,
-                        type: this.changeLogTypeValue
-                    }
-                }
-
                 api.post(`/report/${this.selectedReport}/actions/run/`, {
                     instances,
                     params,
-                    changelog,
+                    changelog: this.changelog,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })
@@ -268,21 +231,10 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
-                this.changeLogMessageValue = ""
+                this.changelog = null;
             }
         },
         mounted() {
-            if (this.metadata.git_supported) {
-                this.gitBranches = [...this.initialGitBranches]
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.changedBranch();
-            } else {
-                this.updateReports();
-            }
-            if(this.metadata.changelog_types) {
-                this.changeLogTypeValue = this.metadata.changelog_types[0]
-            }
-
             if (this.metadata.instances_supported) {
                 const instances = this.metadata.instances;
                 for (const key in instances) {
@@ -293,25 +245,17 @@
             }
         },
         watch: {
-            gitBranches(){
-                this.gitCommits = [];
-                this.reports = [];
-                this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
-                this.selectedCommitId = "";
-                this.selectedReport = "";
-                this.changedBranch()
-            },
             selectedReport() {
                 this.clearRun();
                 if (this.selectedReport) {
-                    this.setParameters()
+                    this.setParameters();
                 }
                 this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,
                 handler() {
-                    this.clearRun();
+                    this.clearRun()
                 }
             }
         }

@@ -238,3 +238,6 @@ Information about a workflow run i.e. a job sent to orderly.server that is expec
 versions. Includes a list of parameterised reports and metadata about the workflow itself (name, owner, invocation
 timestamp etc). Workflows are unique by any of name+timestamp (presented in UI), key (orderly.server's reference) or ID
 (OrderlyWeb's primary identifier).
+
+### orderlyweb_workflow_run_reports
+Stores information relating to workflows and reports. This table references key column of orderlyweb_workflow_run. 
