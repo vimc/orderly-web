@@ -103,34 +103,17 @@
             },
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
-                    const {reports, git_branch, git_commit} = workflowRunDetailsToMetadata(this.runWorkflowMetadata)
-                    const clonedWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit
+                    const clonedWorkflow = {
+                        ...workflowRunDetailsToMetadata(this.runWorkflowMetadata),
+                        name: "",
+                        instances: {}
                     }
                     this.$emit("clone", clonedWorkflow)
                 }
             },
             rerun: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
-                    const {
-                        reports,
-                        git_branch,
-                        git_commit,
-                        instances,
-                        name
-                    } = workflowRunDetailsToMetadata(this.runWorkflowMetadata)
-
-                    const runnableWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit,
-                        instances,
-                        name
-                    }
+                    const runnableWorkflow = workflowRunDetailsToMetadata(this.runWorkflowMetadata)
                     this.$emit("rerun", runnableWorkflow)
                 }
             },

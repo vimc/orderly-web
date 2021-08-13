@@ -11,11 +11,10 @@ import {WorkflowRunReport} from "../../../js/utils/types";
 
 describe(`runWorkflow`, () => {
 
-    const selectedWorkflow = [
-        {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
-    ]
+    const selectedWorkflow = {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
 
-    const workflowMetadata = [{
+
+    const workflowMetadata = {
         name: "interim report",
         key: "fake",
         email: "test@example.com",
@@ -25,7 +24,7 @@ describe(`runWorkflow`, () => {
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit"
-    }]
+    }
 
     beforeEach(() => {
         mockAxios.reset();
@@ -62,6 +61,7 @@ describe(`runWorkflow`, () => {
                 runWorkflowMetadata: workflowMetadata
             })
 
+        expect(wrapper.find("#rerun").attributes("disabled")).toBeUndefined()
         await wrapper.find("#rerun").trigger("click")
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
@@ -147,13 +147,13 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Cancel")
-            expect(buttons.at(2).text()).toBe("Next")
+            expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
+            expect(wrapper.find("#next-workflow").text()).toBe("Next")
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(2).trigger("click")
+            await wrapper.find("#next-workflow").trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
