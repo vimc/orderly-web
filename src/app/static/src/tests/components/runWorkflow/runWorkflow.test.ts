@@ -7,22 +7,24 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.test";
+import {WorkflowRunReport} from "../../../js/utils/types";
 
 describe(`runWorkflow`, () => {
 
-    const selectedWorkflow = [
-        {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
-    ]
+    const selectedWorkflow = {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
 
-    const workflowMetadata = [{
+
+    const workflowMetadata = {
+        name: "interim report",
+        key: "fake",
         email: "test@example.com",
-        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"name": "reportB", "params": {"param3": "three"}}],
+        date: "2021-05-19T16:28:24Z",
+        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"report": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
-        git_commit: "commit",
-        changelog: {type: "message", message: "test changelog"}
-    }]
+        git_commit: "commit"
+    }
 
     beforeEach(() => {
         mockAxios.reset();
@@ -59,7 +61,9 @@ describe(`runWorkflow`, () => {
                 runWorkflowMetadata: workflowMetadata
             })
 
+        expect(wrapper.find("#rerun").attributes("disabled")).toBeUndefined()
         await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         await wrapper.find("#confirm-cancel-btn").trigger("click")
         expect(wrapper.vm.$data.workflowStarted).toBe(false)
@@ -143,13 +147,13 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Cancel")
-            expect(buttons.at(2).text()).toBe("Next")
+            expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
+            expect(wrapper.find("#next-workflow").text()).toBe("Next")
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(2).trigger("click")
+            await wrapper.find("#next-workflow").trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
@@ -188,7 +192,6 @@ describe(`runWorkflow`, () => {
 
         setTimeout(async () => {
             expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
-
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
             expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
