@@ -4,14 +4,15 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.Select
+import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
-import org.openqa.selenium.JavascriptExecutor
+import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
+
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -236,7 +237,7 @@ class RunWorkflowTests : SeleniumTest()
     }
 
     @Test
-    fun `can select workflow progress tab and selecting a workflow option generates reports table`()
+    fun `can select workflow progress tab, view reports table and re-run workflow in progress`()
     {
         //NB This should be replaced with running a workflow through the UI once workflow submit is implemented
         val jse = driver as JavascriptExecutor
@@ -249,6 +250,7 @@ class RunWorkflowTests : SeleniumTest()
         vSelectInput.sendKeys("My work")
         val vSelect = driver.findElement(By.id("workflows"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
+
         assertThat(dropdownMenu[0].text).contains("My workflow")
         dropdownMenu[0].click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
@@ -260,6 +262,15 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
         assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
+
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+
+        driver.findElement(By.id("rerun")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+        val workflowNameInput = driver.findElement(By.cssSelector("#workflow-name-div input"))
+        assertThat(workflowNameInput.getAttribute("value")).isEqualTo("My workflow")
+        assertThat(workflowNameInput.getAttribute("readonly")).isEqualTo("true")
     }
 
 }

@@ -96,6 +96,24 @@ export interface WorkflowSummary {
     name: string
 }
 
+export interface WorkflowRunReport {
+    workflow_key: string,
+    key: string,
+    report: string,
+    params: Record<string, string>
+}
+
+export interface WorkflowRun {
+    name: string,
+    key: string,
+    email: string,
+    date: string,
+    reports: WorkflowRunReport[],
+    instances: Record<string, string>,
+    git_branch: string | null,
+    git_commit: string | null
+}
+
 export interface RunReportMetadata {
     git_branches: [],
     metadata: RunReportMetadataDependency
