@@ -81,6 +81,7 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
+            expect(wrapper.find("v-select-stub").props("clearable")).toBe(false)
             expect(wrapper.findAll("button").length).toBe(0)
             done();
         })
