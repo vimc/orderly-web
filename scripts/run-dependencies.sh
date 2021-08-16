@@ -4,6 +4,8 @@ here=$(dirname $0)
 echo "using orderly path:"
 echo $MONTAGU_ORDERLY_PATH
 
+git --git-dir=$here/../src/app/git/.git remote set-url origin /orderly/upstream
+
 config_path=$(realpath $here/../config)
 export MONTAGU_ORDERLY_SERVER_VERSION=$(<$config_path/orderly_server_version)
 

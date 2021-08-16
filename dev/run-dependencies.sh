@@ -13,8 +13,6 @@ here=$(dirname $0)
 
 $here/migrate-local-test.sh
 
-git --git-dir=$here/../src/app/git/.git remote set-url origin /orderly/upstream 
-
 export MONTAGU_ORDERLY_PATH=$(realpath $here/../src/app/git)
 
 export ORDERLY_SERVER_USER_ID=$UID
