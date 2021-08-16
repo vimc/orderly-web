@@ -21,6 +21,9 @@ docker build \
 # Generate orderly data and migrate for orderly web tables
 $here/make-db.sh
 
+# Fix up git remote
+git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
+
 # Run all dependencies
 export MONTAGU_ORDERLY_PATH=$PWD/git
 export ORDERLY_SERVER_USER_ID=$UID
