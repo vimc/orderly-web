@@ -14,6 +14,9 @@ docker build --tag orderly-web-custom-config-tests \
 # create the db
 $here/make-db.sh
 
+# Fix up git remote
+git --git-dir=$here/../git/.git remote set-url origin /orderly/upstream
+
 ## Run all dependencies
 $here/../scripts/run-dependencies.sh
 

@@ -2,7 +2,6 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue"
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
-import Vue from "vue";
 
 export const emptyWorkflowMetadata = {
     name: "",
@@ -56,8 +55,8 @@ describe(`runWorkflowCreate`, () => {
         name: "interim report",
         date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
-        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"name": "reportB", "params": {"param3": "three"}}],
+        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"report": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit",
