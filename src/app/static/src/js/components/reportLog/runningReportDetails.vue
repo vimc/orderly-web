@@ -35,14 +35,14 @@
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
+                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto text-left">
                         <span>Parameters:</span>
-                        <span>
-                        <div class="d-md-table-row row" v-for="(value, key) in reportLog.params">
-                            <span class="border border-secondary col-md">{{ key }}</span>
-                            <span class="border border-secondary col-md">{{ value }}</span>
-                        </div>
-                    </span>
+                        <table>
+                            <tr class="d-md-table-row row" v-for="(value, key) in reportLog.params">
+                                <td class="border border-secondary col-md">{{ key }}</td>
+                                <td class="border border-secondary col-md">{{ value }}</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <div id="report-database-instances"  v-if="instanceSize > 0" class="row pt-2">
