@@ -59,7 +59,7 @@ class IndexTests
     }
 
     @Test
-    fun `it does not render run workflow or report link if user does not have permission to see it`()
+    fun `it does not render run workflow and run report links if user does not have permission to see them`()
     {
         val testModel = testModelLink(false)
         val doc = template.jsoupDocFor(testModel)
