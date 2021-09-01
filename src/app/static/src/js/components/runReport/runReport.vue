@@ -60,14 +60,57 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
+    import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
 
-    export default Vue.extend({
+    interface Data {
+        reports: ReportWithDate[]
+        selectedBranch: string
+        selectedCommitId: string
+        selectedReport: string
+        selectedInstances: Record<string, string>
+        error: string
+        defaultMessage: string
+        runningStatus: string
+        runningKey: string
+        disableRun: boolean
+        parameterValues: Record<string, string>[]
+        changelog: object | null
+        childCustomStyle: ChildCustomStyle
+    }
+
+    interface Methods {
+        handleInstancesValue: (instances: Record<string, string>) => void
+        handleChangelog: (changelog: Record<string, string>) => void
+        getParameterValues: (values: Record<string, string>[], valid: boolean) => void
+        branchSelected: (newBranch: string) => void
+        commitSelected: (newCommit: string) => void
+        updateReports: (newReports: object[]) => void
+        setParameters: () => void
+        runReport: () => void
+        clearRun: () => void
+    }
+
+    interface Props {
+        metadata: Record<string, any>
+        initialGitBranches: string[]
+        initialReportName: string
+    }
+
+    interface Computed {
+        showReports: number
+        showInstances: string
+        showRunButton: boolean
+        showParameters: number
+        showChangelog: string[]
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runReport",
-        props: [
-            "metadata",
-            "initialGitBranches",
-            "initialReportName"
-        ],
+        props: {
+            metadata: Object,
+            initialGitBranches: Array,
+            initialReportName: String
+        },
         components: {
             ErrorInfo,
             GitUpdateReports,
@@ -114,7 +157,7 @@
             handleInstancesValue: function (instances) {
                 this.selectedInstances = instances
             },
-            handleChangelog: function (changelog: object | null) {
+            handleChangelog: function (changelog) {
                 this.changelog = changelog;
             },
             getParameterValues(values, valid) {

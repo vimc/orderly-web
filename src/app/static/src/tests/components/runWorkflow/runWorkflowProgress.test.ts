@@ -60,8 +60,8 @@ describe(`runWorkflowProgress`, () => {
         jest.useRealTimers()
     })
 
-    const getWrapper = () => {
-        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
+    const getWrapper = (initialSelectedWorkflow = "") => {
+        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}, initialSelectedWorkflow}})
     }
 
     it(`it can render if no workflows returned`, async (done) => {
@@ -81,7 +81,26 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
+            expect(wrapper.find("v-select-stub").props("clearable")).toBe(false)
             expect(wrapper.findAll("button").length).toBe(0)
+            done();
+        })
+    })
+
+    it(`initial selected workflow is set by props and emitted`, async (done) => {
+        const wrapper = getWrapper("test")
+        setTimeout(() => {
+            expect(wrapper.vm.$data.selectedWorkflowKey).toBe("test")
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
+            done();
+        })
+    })
+
+    it(`changes to selected workflow are emitted`, async (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test"})
+        setTimeout(() => {
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
             done();
         })
     })
@@ -175,60 +194,51 @@ describe(`runWorkflowProgress`, () => {
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(200, {data: workflowDetails});
 
-        const wrapper = shallowMount(runWorkflowProgress, {
-            data: () => {
-            return {
-                    selectedWorkflowKey: "test-key",
-                    workflowRunSummaries: []
-                };
-            }
-        });
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test-key"})
 
-        const rerunButton = wrapper.find("#rerun");
-        expect(rerunButton.text()).toBe("Re-run workflow");
-        rerunButton.trigger("click");
-
-        const expectedWorkflowMetadata = {
-            name: "Test Workflow",
-            instances: {source: "UAT"},
-            git_branch: "master",
-            git_commit: null,
-            changelog: null,
-            reports: [
-                {
-                    name: "report1",
-                    params: {p1: "v1" }
-                },
-                {
-                    name: "report2",
-                    params: {}
-                }
-            ]
-        };
         setTimeout(() => {
-            expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(expectedWorkflowMetadata);
-            done();
+            const rerunButton = wrapper.find("#rerun");
+            expect(rerunButton.text()).toBe("Re-run workflow");
+            rerunButton.trigger("click");
+
+            const expectedWorkflowMetadata = {
+                name: "Test Workflow",
+                instances: {source: "UAT"},
+                git_branch: "master",
+                git_commit: null,
+                changelog: null,
+                reports: [
+                    {
+                        name: "report1",
+                        params: {p1: "v1" }
+                    },
+                    {
+                        name: "report2",
+                        params: {}
+                    }
+                ]
+            };
+            setTimeout(() => {
+                expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(expectedWorkflowMetadata);
+                done();
+            });
         });
     });
 
     it(`sets error when fail to fetch workflow details`, (done) => {
         mockAxios.onGet("http://app/workflows/test-key/")
             .reply(500, "TEST ERROR");
-        const wrapper = shallowMount(runWorkflowProgress, {
-            data: () => {
-                return {
-                    selectedWorkflowKey: "test-key",
-                    workflowRunSummaries: []
-                };
-            }
-        });
-
-        wrapper.find("#rerun").trigger("click");
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test-key"})
         setTimeout(() => {
-            expect(wrapper.find(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.find(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
-            expect(wrapper.emitted("rerun")).toBeUndefined();
-            done();
+            wrapper.find("#rerun").trigger("click");
+            setTimeout(() => {
+                expect(wrapper.find(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
+                expect(wrapper.find(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
+                expect(wrapper.emitted("rerun")).toBeUndefined();
+                done();
+            });
         });
     });
 

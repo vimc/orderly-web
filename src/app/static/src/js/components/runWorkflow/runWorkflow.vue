@@ -10,9 +10,16 @@
                          :submit-label="toggleFinalStepNextTo"
                          @cancel="handleCancel"
                          @complete="handleComplete"
+                         @update-run-workflow-metadata="updateRunWorkflowMetadata"
                          :disable-rename="disableRename"
                          :initial-run-workflow-metadata="runWorkflowMetadata">
         </workflow-wizard>
+        <div v-if="createdWorkflowKey" id="view-progress-link" class="text-secondary mt-2 pl-3">
+            <a @click.prevent="$emit('view-progress', createdWorkflowKey)" href="#">View workflow progress</a>
+        </div>
+        <div class="pt-4 col-sm-6">
+            <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        </div>
     </div>
 </template>
 
@@ -21,6 +28,8 @@
     import workflowWizard from "../workflowWizard/workflowWizard.vue";
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
+    import { api } from "../../utils/api";
+    import ErrorInfo from "../errorInfo.vue";
 
     interface Props{
         workflowToRerun: RunWorkflowMetadata | null
@@ -32,6 +41,8 @@
         stepComponents: Step[]
         toggleFinalStepNextTo: string | null
         disableRename: boolean
+        error: string | null
+        createdWorkflowKey: string
     }
 
     interface Methods {
@@ -40,6 +51,7 @@
         handleCreate: (data: Event) => void
         handleClone: (data: Event) => void
         handleComplete: () => void
+        updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
@@ -52,7 +64,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             workflowStarted: false,
             stepComponents: [],
             toggleFinalStepNextTo: "Run workflow",
-            disableRename: false
+            disableRename: false,
+            error: "",
+            createdWorkflowKey: ""
         }
     },
     methods: {
@@ -83,12 +97,26 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.disableRename = false
         },
         handleComplete: function () {
-            //handle submitted report here
+            api.post(`/workflow`, this.runWorkflowMetadata)
+                .then((response) => {
+                    this.error = null;
+                    this.createdWorkflowKey = response.data.data.workflow_key;
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage = "An error occurred while running the workflow";
+                });
+        },
+        updateRunWorkflowMetadata: function (update) {
+            this.error = "";
+            this.createdWorkflowKey = "";
+            this.runWorkflowMetadata = update;
         }
     },
     components: {
         workflowWizard,
-        runWorkflowCreate
+        runWorkflowCreate,
+        ErrorInfo
     },
     mounted() {
         if (this.workflowToRerun) {

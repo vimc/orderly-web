@@ -240,12 +240,13 @@ describe(`workflowWizard`, () => {
         expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
     })
 
-    it(`handles metadata update event from step component`, async () => {
+    it(`handles metadata update event from step component and emits upwards`, async () => {
         const wrapper = getWrapper();
         await wrapper.setData({activeStep: 0});
 
         wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, newProp: "newVal"});
+        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([{...emptyWorkflowMetadata, newProp: "newVal"}]);
     });
 })
