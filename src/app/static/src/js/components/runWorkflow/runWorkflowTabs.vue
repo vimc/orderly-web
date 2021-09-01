@@ -39,7 +39,7 @@
                      role="tabpanel"
                      id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <run-workflow :workflowToRerun="workflowToRerun"></run-workflow>
+                        <run-workflow @view-progress="viewProgress" :workflowToRerun="workflowToRerun"></run-workflow>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'runWorkflowProgress'"
@@ -48,7 +48,7 @@
                      id="workflow-progress-tab">
                     <div id="runWorkflowProgress">
                         <h2>Workflow progress</h2>
-                       <run-workflow-progress @rerun="rerunWorkflow"></run-workflow-progress>
+                       <run-workflow-progress :initial-selected-workflow="selectedWorkflow" @set-selected-workflow-key="setSelectedWorkflow" @rerun="rerunWorkflow"></run-workflow-progress>
                     </div>
                 </div>
             </div>
@@ -66,12 +66,20 @@ export default Vue.extend({
     data() {
         return {
             selectedTab: "runWorkflow",
+            selectedWorkflow: "",
             workflowToRerun: null
         }
     },
     methods: {
         switchTab(tab) {
             this.selectedTab = tab
+        },
+        viewProgress(workflowKey) {
+            this.selectedWorkflow = workflowKey;
+            this.switchTab('runWorkflowProgress');
+        },
+        setSelectedWorkflow(key){
+            this.selectedWorkflow = key;
         },
         rerunWorkflow(workflow) {
             this.workflowToRerun = workflow;

@@ -97,14 +97,23 @@ interface Methods {
     stopPolling: () => void;
 }
 
+interface Props {
+    initialSelectedWorkflow: string;
+}
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         vSelect,
     },
+    props: {
+            initialSelectedWorkflow: {
+                type: String,
+                required: true
+            },
+        },
     data() {
         return {
             workflowRunSummaries: null,
@@ -195,6 +204,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     watch: {
         selectedWorkflowKey() {
+            this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
                 this.startPolling();
@@ -213,6 +223,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     mounted() {
         this.getWorkflowRunSummaries();
+        this.selectedWorkflowKey = this.initialSelectedWorkflow;
     },
     beforeDestroy() {
         this.stopPolling();

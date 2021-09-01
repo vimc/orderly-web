@@ -147,6 +147,11 @@
                 ...this.initialRunWorkflowMetadata
             };
         },
+        watch: {
+            runWorkflowMetadata(){
+                this.$emit("update-run-workflow-metadata", this.runWorkflowMetadata)
+            }
+        },
         components: {
             runWorkflowReport,
             runWorkflowRun,
