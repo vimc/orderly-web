@@ -267,17 +267,7 @@ class RunWorkflowTests : SeleniumTest()
         val selectedWorkflow2 = driver.findElement(By.cssSelector(".vs__selected"))
         assertThat(selectedWorkflow2.text).contains("My workflow")
 
-        // clears the workflow from the input, manually reselects it, and clicks re-run workflow
-        val clearWorkflowBtn = driver.findElement(By.cssSelector(".vs__clear"))
-        clearWorkflowBtn.click()
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".vs__selected")))
-        val vSelectInput = driver.findElement(By.tagName("input"))
-        vSelectInput.sendKeys("My work")
-        val vSelect = driver.findElement(By.id("workflows"))
-        val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[0].text).contains("My workflow")
-        dropdownMenu[0].click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-table")))
+        // clicks re-run workflow
         driver.findElement(By.id("rerun")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
         val workflowNameInput = driver.findElement(By.cssSelector("#workflow-name-div input"))
