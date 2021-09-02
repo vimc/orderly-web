@@ -191,8 +191,6 @@ class RunWorkflowTests : SeleniumTest()
         addButton.click()
 
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
-        val xButton = driver.findElement(By.cssSelector(".btn-outline-secondary"))
-        xButton.click()
     }
 
     private fun createWorkflow()

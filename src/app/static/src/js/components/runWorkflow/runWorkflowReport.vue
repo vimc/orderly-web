@@ -110,7 +110,7 @@ interface Computed {
 interface Methods {
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
-    getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
+    getParametersApiCall: (report: string) => Promise<AxiosResponse>,
     updateAvailableReportsFromGit: (reports: ReportWithDate[]) =>  void,
     addReport: () => void,
     paramsChanged: (index: number, params: Parameter[], valid: boolean) => void,
@@ -274,6 +274,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     ];
                     this.updateWorkflowReports(newReports);
                     this.reportsValid.push(this.initialValidValue(newReport));
+                    this.selectedReport = "";
                     this.error = "";
                     this.defaultMessage = "";
                 })
