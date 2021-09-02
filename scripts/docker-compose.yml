@@ -18,6 +18,8 @@ services:
       - ${MONTAGU_ORDERLY_PATH}:/orderly
     environment:
       REDIS_URL: redis://redis
+    depends_on:
+      - "redis"
   api:
     image: vimc/montagu-api:master
     ports:
