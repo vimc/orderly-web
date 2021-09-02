@@ -47,7 +47,7 @@
     import vSelect from 'vue-select'
     import {api} from "../../utils/api";
     import {RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
-    import {longTimestamp} from "../../utils/helpers.ts";
+    import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
     import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
@@ -103,27 +103,17 @@
             },
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
-                    const {reports, git_branch, git_commit} = this.runWorkflowMetadata
-                    const clonedWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit
+                    const clonedWorkflow = {
+                        ...workflowRunDetailsToMetadata(this.runWorkflowMetadata),
+                        name: "",
+                        instances: {}
                     }
                     this.$emit("clone", clonedWorkflow)
                 }
             },
             rerun: function () {
-                if (this.selectedWorkflow) {
-                    const {reports, git_branch, git_commit, instances, name} = this.runWorkflowMetadata
-                    const runnableWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit,
-                        instances,
-                        name
-                    }
+                if (this.selectedWorkflow && this.runWorkflowMetadata) {
+                    const runnableWorkflow = workflowRunDetailsToMetadata(this.runWorkflowMetadata)
                     this.$emit("rerun", runnableWorkflow)
                 }
             },

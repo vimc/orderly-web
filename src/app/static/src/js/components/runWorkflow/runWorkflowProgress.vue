@@ -15,6 +15,7 @@
                         name="workflows"
                         id="workflows"
                         v-model="selectedWorkflowKey"
+                        :clearable = "false"
                         placeholder="Select workflow or search by name..."
                     >
                         <template #option="{ name, date }">
