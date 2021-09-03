@@ -39,8 +39,8 @@
                         <span>Parameters:</span>
                         <table>
                             <tr class="d-md-table-row row" v-for="(value, key) in reportLog.params">
-                                <td class="border border-secondary col-md">{{ key }}</td>
-                                <td class="border border-secondary col-md">{{ value }}</td>
+                                <td class="border border-secondary px-2">{{ key }}</td>
+                                <td class="border border-secondary px-2">{{ value }}</td>
                             </tr>
                         </table>
                     </div>
