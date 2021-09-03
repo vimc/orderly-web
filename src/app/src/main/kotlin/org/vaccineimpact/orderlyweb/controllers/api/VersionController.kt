@@ -2,6 +2,7 @@ package org.vaccineimpact.orderlyweb.controllers.api
 
 import org.vaccineimpact.orderlyweb.models.Changelog
 import org.vaccineimpact.orderlyweb.models.ReportVersionWithArtefactsDataDescParamsResources
+import org.vaccineimpact.orderlyweb.models.ReportVersionWithDescLatest
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.*
@@ -46,6 +47,12 @@ class VersionController(context: ActionContext,
     {
         val name = context.params(":name")
         return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
+    }
+
+    fun getLatestReport(): ReportVersionWithDescLatest
+    {
+        val name = context.params(":name")
+        return reportRepository.getLatestVersion(name)
     }
 
     fun getRunMetadata(): Boolean
