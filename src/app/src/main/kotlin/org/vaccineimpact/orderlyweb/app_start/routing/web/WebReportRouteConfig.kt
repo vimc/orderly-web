@@ -28,6 +28,9 @@ object WebReportRouteConfig : RouteConfig
             WebEndpoint("/report/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
+            WebEndpoint("/report/:name/latest/",
+                    ReportRunController::class, "getLatestReport")
+                    .secure(readReports),
             WebEndpoint("/report/:name/actions/run/",
                     ReportRunController::class, "run",
                     method = HttpMethod.post)
