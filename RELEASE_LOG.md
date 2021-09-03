@@ -371,3 +371,37 @@
 
 ## Other branches merged in this release
 
+# v1.10.0
+
+## Tickets
+
+## Other branches merged in this release
+* mrc-2308
+* mrc-2310
+* mrc-2310_git
+* mrc-2310_reports
+* mrc-2311
+* mrc-2311_git
+* mrc-2312
+* mrc-2312_master
+* mrc-2323
+* mrc-2323_merge
+* mrc-2326
+* mrc-2423
+* mrc-2467
+* mrc-2475
+* mrc-2486
+* mrc-2511_emit
+* mrc-2511_types
+* mrc-2513
+* mrc-2516
+* mrc-2557
+* mrc-2558
+* mrc-2559
+* mrc-2560
+* mrc-2562
+* mrc-2592
+* mwoodbri/master
+* path-fix
+* revert-347-mrc-2312
+
