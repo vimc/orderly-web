@@ -31,7 +31,7 @@ object VersionRouteConfig : RouteConfig
                     .transform()
                     .secure(readReports),
 
-            APIEndpoint("/reports/:name/latest/", versionController, "getLatestReport")
+            APIEndpoint("/reports/:name/latest/", versionController, "getLatestReportVersion")
                     .json()
                     .transform()
                     .secure(readReports),

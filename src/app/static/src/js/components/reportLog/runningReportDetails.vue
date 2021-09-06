@@ -193,6 +193,18 @@
             reportKey() {
                 this.stopPolling();
                 this.getLogs();
+            },
+            reportLog(){
+                if (this.reportLog){
+                    api.get(`/reports/${this.reportLog.report}/latest/`)
+                        .then(({data}) => {
+                            console.log("data", data)
+                        })
+                        .catch((error) => {
+                            console.log("error", error)
+                        });
+
+                }
             }
         }
     })

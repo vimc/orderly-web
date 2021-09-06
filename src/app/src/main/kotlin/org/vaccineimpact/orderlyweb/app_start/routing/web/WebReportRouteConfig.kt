@@ -29,7 +29,7 @@ object WebReportRouteConfig : RouteConfig
                     ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
             WebEndpoint("/report/:name/latest/",
-                    ReportRunController::class, "getLatestReport")
+                    ReportRunController::class, "getLatestReportVersion")
                     .secure(readReports),
             WebEndpoint("/report/:name/actions/run/",
                     ReportRunController::class, "run",
