@@ -31,11 +31,6 @@ object VersionRouteConfig : RouteConfig
                     .transform()
                     .secure(readReports),
 
-            APIEndpoint("/reports/:name/latest/", versionController, "getLatestReportVersion")
-                    .json()
-                    .transform()
-                    .secure(readReports),
-
             APIEndpoint("/reports/:name/versions/:version/all/", versionController, "getZippedByNameAndVersion",
                     ContentTypes.zip)
                     .allowParameterAuthentication()
