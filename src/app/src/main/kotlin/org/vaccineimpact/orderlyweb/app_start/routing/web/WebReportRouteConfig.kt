@@ -25,11 +25,11 @@ object WebReportRouteConfig : RouteConfig
                     .json()
                     .secure(configureReports)
                     .transform(),
-            WebEndpoint("/report/:name/:version/",
-                    ReportController::class, "getByNameAndVersion")
-                    .secure(readReports),
             WebEndpoint("/report/:name/latest/",
                     ReportRunController::class, "getLatestReportVersion")
+                    .secure(readReports),
+            WebEndpoint("/report/:name/:version/",
+                    ReportController::class, "getByNameAndVersion")
                     .secure(readReports),
             WebEndpoint("/report/:name/actions/run/",
                     ReportRunController::class, "run",
