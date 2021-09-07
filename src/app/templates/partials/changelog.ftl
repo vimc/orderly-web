@@ -11,7 +11,7 @@
     <#list changelog as item>
     <tr>
         <td class="changelog-date">
-            <a href="/reports/${report.name}/${item.version}">${item.date}</a>
+            <a href="${appUrl}/report/${report.name}/${item.version}">${item.date}</a>
         </td>
         <td>
             <#list item.entries as entry>
