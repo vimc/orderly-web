@@ -45,6 +45,17 @@ class ReportController(
         return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
     }
 
+    @Template("report-page.ftl")
+    fun getLatestReportVersion(): ReportVersionPageViewModel
+    {
+        val reportName = context.params(":name")
+        val version = reportRepository.getLatestVersion(reportName).id
+        val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
+        val versions = reportRepository.getReportsByName(reportName)
+        val changelog = orderly.getChangelogByNameAndVersion(reportName, version)
+        return ReportVersionPageViewModel.build(reportDetails, versions, changelog, context)
+    }
+
     @Template("run-report-page.ftl")
     fun getRunReport(): RunReportViewModel
     {
