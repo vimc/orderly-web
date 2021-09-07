@@ -26,7 +26,7 @@ object WebReportRouteConfig : RouteConfig
                     .secure(configureReports)
                     .transform(),
             WebEndpoint("/report/:name/latest/",
-                    ReportRunController::class, "getLatestReportVersion")
+                    ReportController::class, "getLatestReportVersion")
                     .secure(readReports),
             WebEndpoint("/report/:name/:version/",
                     ReportController::class, "getByNameAndVersion")
