@@ -49,12 +49,6 @@ class VersionController(context: ActionContext,
         return orderly.getDetailsByNameAndVersion(name, context.params(":version"))
     }
 
-    // fun getLatestReportVersion(): ReportVersionWithDescLatest
-    // {
-    //     val name = context.params(":name")
-    //     return reportRepository.getLatestVersion(name)
-    // }
-
     fun getRunMetadata(): Boolean
     {
         val name = context.params(":name")
