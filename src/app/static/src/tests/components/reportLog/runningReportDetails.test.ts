@@ -82,14 +82,15 @@ describe(`runningReportDetails`, () => {
             const spans = wrapper.find("#report-params").findAll("span")
             expect(spans.at(0).text()).toBe("Parameters:")
 
-            const divs = spans.at(1).findAll("div")
-            const keyValSpan1 = divs.at(0).findAll("span")
-            expect(keyValSpan1.at(0).text()).toBe("name")
-            expect(keyValSpan1.at(1).text()).toBe("nmin")
+            const table = wrapper.find("table")
+            const rows = table.findAll("tr")
+            const keyVal1 = rows.at(0).findAll("td")
+            expect(keyVal1.at(0).text()).toBe("name")
+            expect(keyVal1.at(1).text()).toBe("nmin")
 
-            const keyValSpan2 = divs.at(1).findAll("span")
-            expect(keyValSpan2.at(0).text()).toBe("cologne")
-            expect(keyValSpan2.at(1).text()).toBe("ey6")
+            const keyVal2 = rows.at(1).findAll("td")
+            expect(keyVal2.at(0).text()).toBe("cologne")
+            expect(keyVal2.at(1).text()).toBe("ey6")
     })
 
     it(`displays database instances as expected`,  () => {
