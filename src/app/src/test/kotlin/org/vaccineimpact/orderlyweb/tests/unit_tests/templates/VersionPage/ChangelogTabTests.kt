@@ -31,7 +31,7 @@ class ChangelogTabTests: BaseVersionPageTests()
         assertThat(doc.select("#changelog-tab p").count()).isEqualTo(0)
 
         val cells = rows[0].select("td")
-        assertThat(cells[0].selectFirst("a").attr("href")).isEqualTo("/reports/r1/v1")
+        assertThat(cells[0].selectFirst("a").attr("href")).isEqualTo("http://localhost:8888/report/r1/v1")
         assertThat(cells[0].selectFirst("a").text()).isEqualTo("14 Jun 2018")
 
         assertThat(cells[1].select("div")[0].className()).isEqualTo("badge changelog-label badge-public")
