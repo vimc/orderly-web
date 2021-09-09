@@ -39,7 +39,7 @@ class ReportController(
     {
         val reportName = context.params(":name")
         val version: String
-        if (context.params(":version").isNullOrEmpty()) {
+        if (context.params()[":version"].isNullOrEmpty()) {
             version = reportRepository.getLatestVersion(reportName).id
         } else {
             version = context.params(":version")

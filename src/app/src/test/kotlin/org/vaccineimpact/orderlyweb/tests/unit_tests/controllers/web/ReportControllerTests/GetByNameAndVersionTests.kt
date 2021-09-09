@@ -168,6 +168,8 @@ class GetByNameAndVersionTests
         val mockReportRepo = mock<ReportRepository> {
             on { this.getReportsByName("r1") } doReturn
                     listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba", versionId, "20170202-093000-1234dcba")
+
+            on { this.getLatestVersion("r1") } doReturn mockLatestVersion
         }
 
         val sut = ReportController(mockActionContext, mockOrderly, mock(), mockReportRepo, mock())
