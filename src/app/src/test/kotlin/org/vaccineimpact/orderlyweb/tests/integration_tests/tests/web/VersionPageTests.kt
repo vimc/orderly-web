@@ -20,7 +20,15 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `only report readers can see report version page`()
     {
-        val (report, url) = getAnyReportPageUrl()
+        val (report, url) = getAnyReportPageUrl(false)
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
+    }
+
+    @Test
+    fun `only report readers can see report latest version page`()
+    {
+        val (report, url) = getAnyReportPageUrl(true)
         assertWebUrlSecured(url,
                 setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
     }
@@ -29,7 +37,7 @@ class VersionPageTests : IntegrationTest()
     fun `artefacts can be downloaded`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
-        val (report, url) = getAnyReportPageUrl()
+        val (report, url) = getAnyReportPageUrl(false)
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
 
@@ -43,7 +51,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `data can be downloaded`()
     {
-        val (report, url) = getAnyReportPageUrl()
+        val (report, url) = getAnyReportPageUrl(false)
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
@@ -58,7 +66,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `resources can be downloaded`()
     {
-        val (report, url) = getAnyReportPageUrl()
+        val (report, url) = getAnyReportPageUrl(false)
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
@@ -73,7 +81,7 @@ class VersionPageTests : IntegrationTest()
     @Test
     fun `zip file can be downloaded`()
     {
-        val (_, url) = getAnyReportPageUrl()
+        val (_, url) = getAnyReportPageUrl(false)
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
         val response = webRequestHelper.requestWithSessionCookie(url, sessionCookie)
         val page = Jsoup.parse(response.text)
@@ -85,7 +93,7 @@ class VersionPageTests : IntegrationTest()
         Assertions.assertThat(result.statusCode).isEqualTo(200)
     }
 
-    private fun getAnyReportPageUrl(): Pair<String, String>
+    private fun getAnyReportPageUrl(latest: Boolean): Pair<String, String>
     {
         val data = JooqContext().use {
 
@@ -103,6 +111,11 @@ class VersionPageTests : IntegrationTest()
         val report = data[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val version = data[ORDERLYWEB_REPORT_VERSION_FULL.ID]
 
-        return Pair(report, "/report/$report/$version")
+        // return Pair(report, "/report/$report/$version")
+        if (latest == true) {
+            return Pair(report, "/report/$report/latest/")
+        } else {
+            return Pair(report, "/report/$report/$version")
+        }
     }
 }
