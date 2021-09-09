@@ -111,7 +111,6 @@ class VersionPageTests : IntegrationTest()
         val report = data[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val version = data[ORDERLYWEB_REPORT_VERSION_FULL.ID]
 
-        // return Pair(report, "/report/$report/$version")
         if (latest == true) {
             return Pair(report, "/report/$report/latest/")
         } else {
