@@ -207,12 +207,14 @@ describe(`runWorkflowReport`, () => {
 
             const report1Div = workflowReports.find("#workflow-report-0");
             expect(report1Div.find("label").text()).toBe("minimal");
+            expect(report1Div.find("label").attributes("title")).toBe("minimal");
             expect(report1Div.find("parameter-list-stub").exists()).toBe(false);
             expect(report1Div.find(".no-parameters").text()).toBe("No parameters");
             expect(report1Div.find(".remove-report-button").text()).toBe("Remove report");
 
             const report2Div = workflowReports.find("#workflow-report-1");
             expect(report2Div.find("label").text()).toBe("other");
+            expect(report2Div.find("label").attributes("title")).toBe("other");
             expect(report2Div.find("parameter-list-stub").exists()).toBe(true);
             expect(report2Div.find("parameter-list-stub").props("params")).toStrictEqual([
                 {"name": "p1", "value": "v1"},
