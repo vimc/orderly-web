@@ -405,3 +405,12 @@
 * path-fix
 * revert-347-mrc-2312
 
+# v1.11.0
+
+## Tickets
+* mrc-2563: Running report page parameters are not aligned
+* mrc-2599: Fix report link on changelog page
+* mrc-2625: Fix workflow display of long report names
+
+## Other branches merged in this release
+
