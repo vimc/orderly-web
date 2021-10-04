@@ -14,7 +14,7 @@
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
         <div v-if="isReady">
             <div class="pb-4">
-                <h2 id="git-header">Git</h2>
+                <h3 id="git-header">Git</h3>
                 <div>
                     <git-update-reports
                         :report-metadata="runReportMetadata"
@@ -28,14 +28,14 @@
                 </div>
             </div>
             <div class="pb-4" id="workflow-reports">
-                <h2 id="report-sub-header">Reports</h2>
+                <h3 id="report-sub-header">Reports</h3>
                 <div>
                     <div v-for="(report, index) in workflowMetadata.reports"
                          :id="`workflow-report-${index}`"
                          :key="index"
                          class="form-group row">
 
-                        <label class="col-sm-2 col-form-label text-right">{{report.name}}</label>
+                        <label class="col-sm-2 col-form-label text-right text-truncate" :title="report.name">{{report.name}}</label>
                         <parameter-list
                             v-if="reportParameters[index].length > 0"
                             :params="reportParameters[index]"
