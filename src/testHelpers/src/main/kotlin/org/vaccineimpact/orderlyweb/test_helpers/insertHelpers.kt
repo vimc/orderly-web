@@ -151,6 +151,30 @@ fun insertReport(name: String,
     }
 }
 
+fun insertReportWithPublishedAndUnpublishedVersions(name: String){
+    insertReport(name, "v1") // inserts a published report
+
+    JooqContext().use {
+        val reportVersionRecord = it.dsl.newRecord(Tables.REPORT_VERSION)
+                .apply {
+                    this.id = "v2"
+                    this.report = name
+                    this.date = Timestamp(System.currentTimeMillis())
+                    this.displayname = "unpublished version"
+                    this.description = "description $name"
+                    this.requester = ""
+                    this.author = ""
+                    this.published = false
+                    this.connection = false
+                    this.elapsed = 0.0
+                    this.gitBranch = "gitBranch"
+                    this.gitSha = "gitCommit"
+                }
+        reportVersionRecord.store()
+    }
+
+}
+
 fun insertWorkflow(email: String,
                    key: String,
                    name: String,
