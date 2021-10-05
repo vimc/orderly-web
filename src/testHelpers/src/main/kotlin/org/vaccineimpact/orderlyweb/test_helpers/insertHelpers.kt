@@ -151,13 +151,16 @@ fun insertReport(name: String,
     }
 }
 
-fun insertReportWithPublishedAndUnpublishedVersions(name: String){
-    insertReport(name, "v1") // inserts a published report
+fun insertReportWithPublishedAndUnpublishedVersions(name: String, 
+    publishedVersionId: String = "20211001-013233-72d597e9", 
+    unpublishedVersionId: String = "20211002-013233-72d597e9"
+){
+    insertReport(name, publishedVersionId)
 
     JooqContext().use {
         val reportVersionRecord = it.dsl.newRecord(Tables.REPORT_VERSION)
                 .apply {
-                    this.id = "v2"
+                    this.id = unpublishedVersionId
                     this.report = name
                     this.date = Timestamp(System.currentTimeMillis())
                     this.displayname = "unpublished version"
