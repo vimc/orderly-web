@@ -151,33 +151,6 @@ fun insertReport(name: String,
     }
 }
 
-fun insertReportWithPublishedAndUnpublishedVersions(name: String, 
-    publishedVersionId: String = "20211001-013233-72d597e9", 
-    unpublishedVersionId: String = "20211002-013233-72d597e9"
-){
-    insertReport(name, publishedVersionId)
-
-    JooqContext().use {
-        val reportVersionRecord = it.dsl.newRecord(Tables.REPORT_VERSION)
-                .apply {
-                    this.id = unpublishedVersionId
-                    this.report = name
-                    this.date = Timestamp(System.currentTimeMillis())
-                    this.displayname = "unpublished version"
-                    this.description = "description $name"
-                    this.requester = ""
-                    this.author = ""
-                    this.published = false
-                    this.connection = false
-                    this.elapsed = 0.0
-                    this.gitBranch = "gitBranch"
-                    this.gitSha = "gitCommit"
-                }
-        reportVersionRecord.store()
-    }
-
-}
-
 fun insertWorkflow(email: String,
                    key: String,
                    name: String,
