@@ -57,7 +57,6 @@
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.AdminController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.PermissionController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.RoleController.kt:1</ID>
-    <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.SettingsController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.controllers.web.UserController.kt:1</ID>
     <ID>FinalNewline:org.vaccineimpact.orderlyweb.db.AmbiguousRelationBetweenTables.kt:1</ID>
@@ -337,7 +336,6 @@
     <ID>NewLineAtEndOfFile:RouteNotFound.kt$org.vaccineimpact.orderlyweb.errors.RouteNotFound.kt</ID>
     <ID>NewLineAtEndOfFile:RunReportViewModel.kt$org.vaccineimpact.orderlyweb.viewmodels.RunReportViewModel.kt</ID>
     <ID>NewLineAtEndOfFile:Scope.kt$org.vaccineimpact.orderlyweb.models.Scope.kt</ID>
-    <ID>NewLineAtEndOfFile:SecurityController.kt$org.vaccineimpact.orderlyweb.controllers.web.SecurityController.kt</ID>
     <ID>NewLineAtEndOfFile:Serializer.kt$org.vaccineimpact.orderlyweb.Serializer.kt</ID>
     <ID>NewLineAtEndOfFile:SettingsController.kt$org.vaccineimpact.orderlyweb.controllers.web.SettingsController.kt</ID>
     <ID>NewLineAtEndOfFile:SettingsRespository.kt$org.vaccineimpact.orderlyweb.db.repositories.SettingsRespository.kt</ID>
@@ -923,6 +921,7 @@
     <ID>UnsafeCallOnNullableType:OkHttpMontaguAPIClient.kt$OkHttpMontaguAPIClient$response.body!!</ID>
     <ID>UnsafeCallOnNullableType:OnetimeTokenController.kt$OnetimeTokenController$profile!!</ID>
     <ID>UnsafeCallOnNullableType:OrderlyServerAPI.kt$OrderlyServer$response.body!!</ID>
+    <ID>UnsafeCallOnNullableType:ReportController.kt$ReportController$context.params().getOrElse(":version") { reportRepository.getLatestVersion(reportName).id }!!</ID>
     <ID>UnsafeCallOnNullableType:ReportRepository.kt$OrderlyReportRepository$r!!</ID>
     <ID>UnsafeCallOnNullableType:ReportRunController.kt$ReportRunController$context.userProfile!!</ID>
     <ID>UnsafeCallOnNullableType:Scope.kt$Scope.Companion$permissionVM.scopeId!!</ID>

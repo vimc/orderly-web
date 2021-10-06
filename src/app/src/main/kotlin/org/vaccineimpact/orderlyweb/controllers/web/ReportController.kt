@@ -38,7 +38,7 @@ class ReportController(
     fun getByNameAndVersion(): ReportVersionPageViewModel
     {
         val reportName = context.params(":name")
-        val version = context.params(":version")
+        val version = context.params().getOrElse(":version") { reportRepository.getLatestVersion(reportName).id }!!
         val reportDetails = orderly.getDetailsByNameAndVersion(reportName, version)
         val versions = reportRepository.getReportsByName(reportName)
         val changelog = orderly.getChangelogByNameAndVersion(reportName, version)

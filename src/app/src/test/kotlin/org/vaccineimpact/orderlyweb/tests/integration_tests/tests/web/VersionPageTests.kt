@@ -26,6 +26,14 @@ class VersionPageTests : IntegrationTest()
     }
 
     @Test
+    fun `only report readers can see report latest version page`()
+    {
+        val (report, url) = getAnyReportPageUrl(true)
+        assertWebUrlSecured(url,
+                setOf(ReifiedPermission("reports.read", Scope.Specific("report", report))))
+    }
+
+    @Test
     fun `artefacts can be downloaded`()
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(readReports)
@@ -85,7 +93,7 @@ class VersionPageTests : IntegrationTest()
         Assertions.assertThat(result.statusCode).isEqualTo(200)
     }
 
-    private fun getAnyReportPageUrl(): Pair<String, String>
+    private fun getAnyReportPageUrl(latest: Boolean = false): Pair<String, String>
     {
         val data = JooqContext().use {
 
@@ -103,6 +111,6 @@ class VersionPageTests : IntegrationTest()
         val report = data[ORDERLYWEB_REPORT_VERSION_FULL.REPORT]
         val version = data[ORDERLYWEB_REPORT_VERSION_FULL.ID]
 
-        return Pair(report, "/report/$report/$version")
+        return Pair(report, if (latest) "/report/$report/latest/" else "/report/$report/$version")
     }
 }
