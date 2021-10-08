@@ -12,9 +12,7 @@
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
-                    <report-list id="report" :reports="reports"
-                                 :report.sync="selectedReport"
-                                 :initial-selected-report="initialReportName"/>
+                    <report-list id="report" :reports="reports" :selected-report.sync="selectedReport"/>
                 </div>
             </div>
 
@@ -66,7 +64,7 @@
         reports: ReportWithDate[]
         selectedBranch: string
         selectedCommitId: string
-        selectedReport: string
+        selectedReport: ReportWithDate[]
         selectedInstances: Record<string, string>
         error: string
         defaultMessage: string
@@ -124,7 +122,7 @@
                 reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
-                selectedReport: "",
+                selectedReport: null,
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
@@ -174,11 +172,11 @@
             },
             updateReports(newReports) {
                 this.reports = newReports;
-                this.selectedReport = "";
+                this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-                api.get(`/report/${this.selectedReport}/config/parameters/${commit}`)
+                api.get(`/report/${this.selectedReport.name}/config/parameters/${commit}`)
                     .then(({data}) => {
                         this.parameterValues = data.data
                         this.error = "";
@@ -205,7 +203,7 @@
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
 
-                api.post(`/report/${this.selectedReport}/actions/run/`, {
+                api.post(`/report/${this.selectedReport.name}/actions/run/`, {
                     instances,
                     params,
                     changelog: this.changelog,
@@ -243,14 +241,18 @@
                     }
                 }
             }
+            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         watch: {
-            selectedReport() {
-                this.clearRun();
-                if (this.selectedReport) {
-                    this.setParameters();
+            selectedReport: {
+                deep: true,
+                handler() {
+                    this.clearRun();
+                    if (this.selectedReport) {
+                        this.setParameters();
+                    }
+                    this.parameterValues.length = 0
                 }
-                this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,

@@ -13,9 +13,6 @@ module.exports = {
             }
         }
     },
-    "transformIgnorePatterns": [
-        "node_modules/(?!(vue-typeahead-bootstrap)/)",
-    ],
     "moduleFileExtensions": [
         "js",
         "ts",

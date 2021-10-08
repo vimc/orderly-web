@@ -60,8 +60,7 @@
                             Add report
                         </label>
                         <div class="col-sm-6">
-                            <report-list id="workflow-report" :reports="reports"
-                                         :report.sync="selectedReport"/>
+                            <report-list id="workflow-report" :reports="reports" :selected-report.sync="selectedReport"/>
                         </div>
                         <div class="col-sm-2">
                             <button :disabled="!selectedReport"
@@ -124,7 +123,7 @@ interface Data {
     runReportMetadata: RunReportMetadata | null,
     initialBranches:  string[] | null,
     reports: ReportWithDate[],
-    selectedReport: string,
+    selectedReport: ReportWithDate,
     error: string,
     defaultMessage: string,
     workflowRemovals: string[] | null,
@@ -148,7 +147,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             runReportMetadata: null,
             initialBranches: null,
             reports: [],
-            selectedReport: "",
+            selectedReport: null,
             error: "",
             defaultMessage: "",
             workflowRemovals: null,
@@ -255,17 +254,17 @@ export default Vue.extend<Data, Methods, Computed, Props>({
 
             if (this.selectedReport) {
                 const newReportNames = reports.map(report => report.name);
-                if (!newReportNames.includes(this.selectedReport)) {
-                    this.selectedReport = "";
+                if (!newReportNames.includes(this.selectedReport.name)) {
+                    this.selectedReport = null;
                 }
             }
         },
         addReport() {
-            this.getParametersApiCall(this.selectedReport)
+            this.getParametersApiCall(this.selectedReport.name)
                 .then(({data}) => {
                     const parameterValues = mapParameterArrayToRecord(data.data);
                     const newReport = {
-                        name: this.selectedReport,
+                        name: this.selectedReport.name,
                         params: parameterValues
                     };
                     const newReports = [
@@ -274,7 +273,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     ];
                     this.updateWorkflowReports(newReports);
                     this.reportsValid.push(this.initialValidValue(newReport));
-                    this.selectedReport = "";
+                    this.selectedReport = null;
                     this.error = "";
                     this.defaultMessage = "";
                 })
