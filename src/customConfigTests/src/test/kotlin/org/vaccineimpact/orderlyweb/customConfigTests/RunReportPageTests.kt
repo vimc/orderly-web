@@ -114,6 +114,8 @@ class RunReportPageTests : SeleniumTest()
 
         driver.findElement(By.id("logs-link")).click()
         wait.until(ExpectedConditions.textToBe(By.cssSelector("#report-status .font-weight-bold"), "running"))
+        // Ensure that expected report is selected in dropdown
+        assertThat(driver.findElement(By.cssSelector("#logs")).text).startsWith("minimal")
     }
 
     @Test
