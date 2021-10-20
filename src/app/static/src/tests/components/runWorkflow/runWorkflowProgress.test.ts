@@ -2,6 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
 import errorInfo from "../../../js/components/errorInfo.vue";
+import {longTimestamp} from "../../../js/utils/helpers";
 
 const workflows = {
     "status": "success",
@@ -162,7 +163,7 @@ describe(`runWorkflowProgress`, () => {
             expect(runningStatus.classes()).toContain("text-secondary")
 
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
-            expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
+            expect(dateColumns.at(0).text()).toBe(longTimestamp(new Date("2021-06-16T09:51:16Z")))
             done();
         })
     })
