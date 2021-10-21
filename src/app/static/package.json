@@ -7,7 +7,7 @@
     "build": "NODE_ENV=production gulp build",
     "watch": "NODE_ENV=production gulp watch",
     "js": "NODE_ENV=development gulp js",
-    "test": "jest -c jest.config.js"
+    "test": "TZ=utc jest -c jest.config.js"
   },
   "author": "RESIDE-IC",
   "license": "MIT",
