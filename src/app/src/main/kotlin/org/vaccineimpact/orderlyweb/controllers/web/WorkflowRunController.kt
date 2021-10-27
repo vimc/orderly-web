@@ -10,8 +10,13 @@ import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
+import java.io.BufferedReader
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
+import javax.servlet.MultipartConfigElement
+
+
+
 
 class WorkflowRunController(
     context: ActionContext,
@@ -151,5 +156,32 @@ class WorkflowRunController(
                     report.version
                 )
             })
+    }
+
+    fun validateWorkflow(): String
+    {
+        //TODO: Add helper to context: getParts(names: List<String>): Map<String, String> to read all names parts from request
+
+        val request = context.request
+        request.attribute("org.eclipse.jetty.multipartConfig", MultipartConfigElement("/temp"))
+        val stream = request.raw().getPart("file").getInputStream()
+
+        val reader = BufferedReader(stream.reader())
+        var content: String = "not set yet"
+        reader.use { reader ->
+            content = reader.readText()
+        }
+        println("READ FILE FROM REQUEST: " + content)
+
+        val gitstream = request.raw().getPart("git_branch").getInputStream()
+
+        val gitreader = BufferedReader(gitstream.reader())
+        var gitcontent: String = "not set yet"
+        gitreader.use { reader ->
+            gitcontent = reader.readText()
+        }
+        println("git_branch: " + gitcontent)
+
+        return okayResponse()
     }
 }

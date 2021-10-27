@@ -87,9 +87,10 @@ class WebRequestHelper : RequestHelper()
                                  cookies: String,
                                  contentType: String = "text/html",
                                  method: HttpMethod = HttpMethod.get,
-                                 data: String? = null): Response
+                                 data: String? = null,
+                                 additionalHeaders: Map<String, String> = mapOf()): Response
     {
-        val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
+        val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies) + additionalHeaders
         val fullUrl = if (url.contains("http"))
         {
             url

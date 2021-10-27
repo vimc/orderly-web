@@ -23,7 +23,7 @@ open class DirectActionContext(
     private val profileManager: ProfileManager<CommonProfile>? = null
 ) : ActionContext
 {
-    private val request
+    override val request //TODO: revert to private
         get() = context.sparkRequest
     private val response
         get() = context.sparkResponse

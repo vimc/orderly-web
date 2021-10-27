@@ -5,9 +5,11 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Response
+import spark.Request
 
 interface ActionContext
 {
+    val request: Request //TODO: make more restricted access
     val userProfile: CommonProfile?
     val permissions: PermissionSet
     val reportReadingScopes: List<String>

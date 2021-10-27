@@ -264,6 +264,37 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(404)
     }
 
+    @Test
+    fun `can validate workflow`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+        
+        header1,header2
+        value1,value2
+        --XXXX
+        Content-Disposition: form-data; name="git_branch"
+
+        test-branch
+        --XXXX
+        Content-Disposition: form-data; name="git_commit"
+
+        123abc
+        --XXXX--
+        """.trimIndent()
+        webRequestHelper.requestWithSessionCookie(
+            "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+    }
+
     private fun addWorkflowRunExample()
     {
         insertUser("user@email.com", "user.name")
