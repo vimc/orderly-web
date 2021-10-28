@@ -29,6 +29,21 @@
             </div>
             <div class="pb-4" id="workflow-reports">
                 <h3 id="report-sub-header">Reports</h3>
+                <div id="choose-import-from">
+                    <label class="col-sm-2 col-form-label text-right"></label>
+                    <div class="btn-group btn-group-toggle pb-4" data-toggle="buttons">
+                        <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
+                            <input type="radio" id="choose-from-list"
+                                   v-model="reportOrigin" value="list"
+                                   autocomplete="off" checked> Choose from list
+                        </label>
+                        <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
+                            <input type="radio" id="import-from-csv"
+                                   v-model="reportOrigin" value="csv"
+                                   autocomplete="off"> Import from csv
+                        </label>
+                    </div>
+                </div>
                 <div>
                     <div v-for="(report, index) in workflowMetadata.reports"
                          :id="`workflow-report-${index}`"
@@ -93,7 +108,7 @@ import GitUpdateReports from "../runReport/gitUpdateReports.vue";
 import ReportList from "../runReport/reportList.vue";
 import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
-import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
+import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports";
 import {AxiosResponse} from "axios";
 
 interface Props {
@@ -129,6 +144,7 @@ interface Data {
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[]
+    reportOrigin: string
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -152,7 +168,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             error: "",
             defaultMessage: "",
             workflowRemovals: null,
-            reportsValid: []
+            reportsValid: [],
+            reportOrigin: "list"
         }
     },
     computed: {

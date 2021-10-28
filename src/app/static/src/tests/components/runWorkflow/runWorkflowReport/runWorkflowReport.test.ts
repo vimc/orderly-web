@@ -542,4 +542,37 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.workflowRemovals).toStrictEqual(null);
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
+
+    it("renders choose or import from and check default radio button", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const workflowReports = wrapper.find("#workflow-reports");
+            const chooseOrImportFromDiv = workflowReports.find("#choose-import-from");
+
+            const fromListLabel = chooseOrImportFromDiv.find("#choose-from-list-label")
+            expect(fromListLabel.text()).toBe("Choose from list")
+            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect(wrapper.vm.$data.reportOrigin).toBe("list")
+
+            const fromCsvLabel = chooseOrImportFromDiv.find("#import-from-csv-label")
+            expect(fromCsvLabel.text()).toBe("Import from csv")
+            expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+    it("can select import from csv radio button", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const workflowReports = wrapper.find("#workflow-reports");
+            const chooseOrImportFromDiv = workflowReports.find("#choose-import-from");
+
+            const fromCsvLabel = chooseOrImportFromDiv.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportOrigin).toBe("csv")
+            done();
+        });
+    });
 });
