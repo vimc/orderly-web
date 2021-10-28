@@ -5,29 +5,34 @@ import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import java.io.Reader
 
-class WorkflowLogic
+interface WorkflowLogic
 {
     fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
+}
+
+class OrderlyWebWorkflowLogic: WorkflowLogic
+{
+    override fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
     {
         var rows: List<Array<String>> = listOf()
         reader.use {
             CSVReader(it).use { csvReader -> rows = csvReader.readAll() }
         }
 
-        if (rows.count() < 2)
+        if (rows.count() == 0)
         {
             throw BadRequest("File contains no rows")
         }
 
         val headers = rows[0];
-        if (headers.count() < 1)
-        {
-            throw BadRequest("File contains no headers")
-        }
-
         if (headers[0] != "report")
         {
             throw BadRequest("First header must be 'report'")
+        }
+
+        if (rows.count() == 1)
+        {
+            throw BadRequest("File contains no reports")
         }
 
         val columnCount = headers.count()
@@ -36,7 +41,7 @@ class WorkflowLogic
         return rows.drop(1).mapIndexed { rowIdx, row ->
             if (row.count() != columnCount)
             {
-                throw BadRequest("Row ${rowIdx + 1} should contain ${columnCount} values")
+                throw BadRequest("Report row ${rowIdx + 1} should contain ${columnCount} values, ${row.count()} values found")
             }
 
             val reportName = row[0]

@@ -13,10 +13,12 @@ import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
+import java.io.Reader
 import java.time.Instant
 
 class WorkflowRunControllerTests
@@ -546,6 +548,27 @@ class WorkflowRunControllerTests
 
         val sut = WorkflowRunController(context, mock(), apiClientWithError, mock())
         assertThatThrownBy { sut.getWorkflowRunStatus() }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    @Test
+    fun `validates workflow`()
+    {
+        val mockReader = mock<Reader>()
+        val mockContext = mock<ActionContext> {
+            on { getPartReader("file") } doReturn mockReader
+        }
+
+        val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
+        val mockLogic = mock<WorkflowLogic> {
+            on { parseWorkflowCSV(mockReader) } doReturn mockResult
+        }
+
+        val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)
+        val result = sut.validateWorkflow()
+
+        assertThat(result).isSameAs(mockResult)
+        verify(mockContext).getPart("git_branch")
+        verify(mockContext).getPart("git_commit")
     }
 
     private fun getWorkflowRunRequestExample() =

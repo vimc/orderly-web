@@ -8,6 +8,7 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.logic.OrderlyWebWorkflowLogic
 import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
@@ -25,7 +26,7 @@ class WorkflowRunController(
         context,
         OrderlyWebWorkflowRunRepository(),
         OrderlyServer(AppConfig()).throwOnError(),
-        WorkflowLogic()
+        OrderlyWebWorkflowLogic()
     )
 
     @Template("run-workflow-page.ftl")
