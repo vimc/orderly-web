@@ -273,8 +273,9 @@ class WorkflowRunTests : IntegrationTest()
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
         
-        header1,header2
-        value1,value2
+        report,disease,year
+        test1,HepB,2020
+        test2,Rubella,2021
         --XXXX
         Content-Disposition: form-data; name="git_branch"
 
@@ -285,7 +286,7 @@ class WorkflowRunTests : IntegrationTest()
         123abc
         --XXXX--
         """.trimIndent()
-        webRequestHelper.requestWithSessionCookie(
+        val response = webRequestHelper.requestWithSessionCookie(
             "/workflow/validate",
                 sessionCookie,
                 ContentTypes.json,
@@ -293,6 +294,10 @@ class WorkflowRunTests : IntegrationTest()
                 formData,
                 mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
         )
+        assertThat(response.statusCode).isEqualTo(404)
+        // TODO: test values
+        val body = response.text
+        println("RESULT BODY is: " + body)
     }
 
     private fun addWorkflowRunExample()
