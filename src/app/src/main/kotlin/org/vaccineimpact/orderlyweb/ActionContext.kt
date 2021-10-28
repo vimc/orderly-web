@@ -5,7 +5,6 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Response
-import spark.Request
 import java.io.Reader
 
 interface ActionContext

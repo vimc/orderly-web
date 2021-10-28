@@ -33,7 +33,7 @@ class WorkflowLogic
         val columnCount = headers.count()
         val paramNames = headers.drop(1)
 
-        return rows.mapIndexed { rowIdx, row ->
+        return rows.drop(1).mapIndexed { rowIdx, row ->
             if (row.count() != columnCount)
             {
                 throw BadRequest("Row ${rowIdx + 1} should contain ${columnCount} values")
