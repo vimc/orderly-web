@@ -1,6 +1,5 @@
 package org.vaccineimpact.orderlyweb.controllers.web
 
-import com.opencsv.CSVReader
 import com.google.gson.JsonSyntaxException
 import com.google.gson.annotations.SerializedName
 import org.vaccineimpact.orderlyweb.*
@@ -9,24 +8,24 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
-import java.io.BufferedReader
-import java.io.Reader
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
-import javax.servlet.MultipartConfigElement
 
 class WorkflowRunController(
     context: ActionContext,
     private val workflowRunRepository: WorkflowRunRepository,
-    private val orderlyServerAPI: OrderlyServerAPI
+    private val orderlyServerAPI: OrderlyServerAPI,
+    private val workflowLogic: WorkflowLogic
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
         context,
         OrderlyWebWorkflowRunRepository(),
-        OrderlyServer(AppConfig()).throwOnError()
+        OrderlyServer(AppConfig()).throwOnError(),
+        WorkflowLogic()
     )
 
     @Template("run-workflow-page.ftl")
@@ -159,75 +158,13 @@ class WorkflowRunController(
 
     fun validateWorkflow(): List<WorkflowReportWithParams>
     {
-        //TODO: Add helper to context: getParts(names: List<String>): Map<String, String> to read all names parts from request
-        // No, needs to be cleverer than that as just want reader back for csv
+        val reader = context.getPartReader("file")
+        val workflowReports = workflowLogic.parseWorkflowCSV(reader)
 
-        val request = context.request
-        request.attribute("org.eclipse.jetty.multipartConfig", MultipartConfigElement("/temp"))
-        val stream = request.raw().getPart("file").getInputStream()
-
-        val reader = BufferedReader(stream.reader())
-        /*var content: String = "not set yet"
-        reader.use { reader ->
-            content = reader.readText()
-        }
-        println("READ FILE FROM REQUEST: " + content)
-
-        val gitstream = request.raw().getPart("git_branch").getInputStream()
-
-        val gitreader = BufferedReader(gitstream.reader())
-        var gitcontent: String = "not set yet"
-        gitreader.use { reader ->
-            gitcontent = reader.readText()
-        }
-        println("git_branch: " + gitcontent)*/
-
-        val workflowReports = csvToWorkflowReports(reader)
-        // TODO: validate against orderly reports
+        // TODO: These will be used when we validate against orderly reports
+        val gitBranch = context.getPart("git_branch")
+        val gitCommit = context.getPart("git_commit")
 
         return workflowReports
-    }
-
-    //TODO: move this to logic classs - rename parseWorkflowCSV
-    private fun csvToWorkflowReports(reader: Reader): List<WorkflowReportWithParams>
-    {
-        var rows: List<Array<String>> = listOf()
-        reader.use {
-            CSVReader(it).use { csvReader ->
-                rows = csvReader.readAll()
-            }
-        }
-
-        if (rows.count() < 2)
-        {
-            throw BadRequest("File contains no rows")
-        }
-
-        val headers = rows[0];
-        if (headers.count() < 1)
-        {
-           throw BadRequest("File contains no headers")
-        }
-
-        if (headers[0] != "report")
-        {
-            throw BadRequest("First header must be 'report'")
-        }
-
-        val columnCount = headers.count()
-        val paramNames = headers.drop(1)
-
-        return rows.mapIndexed { rowIdx, row ->
-            if (row.count() != columnCount)
-            {
-                throw BadRequest("Row ${rowIdx + 1} should contain ${columnCount} values")
-            }
-
-            val reportName = row[0]
-            val parameters = paramNames.mapIndexed { i, name ->
-                name to row[i + 1]
-            }.filter { it.second.isNotBlank() }.toMap()
-            WorkflowReportWithParams(reportName, parameters)
-        }
     }
 }

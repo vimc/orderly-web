@@ -6,10 +6,10 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Response
 import spark.Request
+import java.io.Reader
 
 interface ActionContext
 {
-    val request: Request //TODO: make more restricted access
     val userProfile: CommonProfile?
     val permissions: PermissionSet
     val reportReadingScopes: List<String>
@@ -36,6 +36,9 @@ interface ActionContext
     fun <T> postData(): Map<String, T>
     fun getRequestBody(): String
     fun getRequestBodyAsBytes(): ByteArray
+
+    fun getPartReader(partName: String): Reader
+    fun getPart(partName: String): String
 
     @Throws(MissingParameterError::class)
     fun <T> postData(key: String): T

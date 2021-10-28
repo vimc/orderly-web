@@ -294,7 +294,7 @@ class WorkflowRunTests : IntegrationTest()
                 formData,
                 mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
         )
-        assertThat(response.statusCode).isEqualTo(404)
+        assertThat(response.statusCode).isEqualTo(200)
         // TODO: test values
         val body = response.text
         println("RESULT BODY is: " + body)
