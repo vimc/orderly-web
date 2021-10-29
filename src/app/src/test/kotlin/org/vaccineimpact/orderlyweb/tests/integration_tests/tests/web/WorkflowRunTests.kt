@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
+import com.fasterxml.jackson.databind.node.ArrayNode
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
@@ -262,6 +263,85 @@ class WorkflowRunTests : IntegrationTest()
             ContentTypes.json
         )
         assertThat(response.statusCode).isEqualTo(404)
+    }
+
+    @Test
+    fun `validates workflow`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+        
+        report,disease,year
+        test1,HepB,2020
+        test2,Rubella,2021
+        --XXXX
+        Content-Disposition: form-data; name="git_branch"
+
+        test-branch
+        --XXXX
+        Content-Disposition: form-data; name="git_commit"
+
+        123abc
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+            "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+
+        val reports = JSONValidator.getData(response.text) as ArrayNode
+        assertThat(reports.count()).isEqualTo(2)
+        val report1 = reports[0]
+        assertThat(report1["name"].asText()).isEqualTo("test1")
+        assertThat(report1["params"]["disease"].asText()).isEqualTo("HepB")
+        assertThat(report1["params"]["year"].asText()).isEqualTo("2020")
+
+        val report2 = reports[1]
+        assertThat(report2["name"].asText()).isEqualTo("test2")
+        assertThat(report2["params"]["disease"].asText()).isEqualTo("Rubella")
+        assertThat(report2["params"]["year"].asText()).isEqualTo("2021")
+    }
+
+    @Test
+    fun `returns workflow validation error`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+        
+        BADHEADER,disease,year
+        test1,HepB,2020
+        --XXXX
+        Content-Disposition: form-data; name="git_branch"
+
+        test-branch
+        --XXXX
+        Content-Disposition: form-data; name="git_commit"
+
+        123abc
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertThat(response.statusCode).isEqualTo(400)
+        JSONValidator.validateError(response.text, "bad-request", "First header must be 'report'")
     }
 
     private fun addWorkflowRunExample()
