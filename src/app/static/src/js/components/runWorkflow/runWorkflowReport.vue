@@ -31,7 +31,7 @@
                 <h3 id="report-sub-header">Reports</h3>
                 <div id="choose-import-from">
                     <label class="col-sm-2 col-form-label text-right"></label>
-                    <div class="btn-group btn-group-toggle pb-4" data-toggle="buttons">
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
                             <input type="radio" id="choose-from-list"
                                    v-model="reportOrigin" value="list"
@@ -44,7 +44,17 @@
                         </label>
                     </div>
                 </div>
-                <div>
+                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                    <span class="col-sm-2 col-form-label text-right"></span>
+                    <div class="custom-file col-sm-6">
+                        <input type="file" class="custom-file-input"
+                               v-on:change="handleImportedFile($event)"
+                               accept="text/csv"
+                               id="import-csv" lang="en">
+                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                    </div>
+                </div>
+                <div v-if="!showImportFromCsv" id="show-report-list" class="pt-4">
                     <div v-for="(report, index) in workflowMetadata.reports"
                          :id="`workflow-report-${index}`"
                          :key="index"
@@ -108,7 +118,7 @@ import GitUpdateReports from "../runReport/gitUpdateReports.vue";
 import ReportList from "../runReport/reportList.vue";
 import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
-import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports";
+import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
 
 interface Props {
@@ -119,7 +129,8 @@ interface Computed {
     isReady: boolean,
     hasReports: boolean,
     reportParameters: Parameter[][],
-    stepIsValid: boolean
+    stepIsValid: boolean,
+    showImportFromCsv: boolean
 }
 
 interface Methods {
@@ -133,6 +144,7 @@ interface Methods {
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
+    handleImportedFile: (event: any) => void
 }
 
 interface Data {
@@ -143,8 +155,9 @@ interface Data {
     error: string,
     defaultMessage: string,
     workflowRemovals: string[] | null,
-    reportsValid: boolean[]
-    reportOrigin: string
+    reportsValid: boolean[],
+    reportOrigin: string,
+    importedFilename: string
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -169,10 +182,14 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             defaultMessage: "",
             workflowRemovals: null,
             reportsValid: [],
-            reportOrigin: "list"
+            reportOrigin: "list",
+            importedFilename: ""
         }
     },
     computed: {
+        showImportFromCsv() {
+            return this.reportOrigin === "csv"
+        },
         isReady: function() {
             return !!this.runReportMetadata && !!this.workflowMetadata;
         },
@@ -187,6 +204,9 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         }
     },
     methods: {
+        handleImportedFile(event) {
+            this.importedFilename = event.target.files.length ? event.target.files[0].name : "";
+        },
         branchSelected(git_branch: string) {
             this.$emit("update", {git_branch});
         },
