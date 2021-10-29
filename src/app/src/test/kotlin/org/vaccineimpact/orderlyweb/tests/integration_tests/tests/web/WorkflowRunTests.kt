@@ -306,7 +306,7 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(report1["params"]["year"].asText()).isEqualTo("2020")
 
         val report2 = reports[1]
-        assertThat(report2["name"].asText()).isEqualTo("test1")
+        assertThat(report2["name"].asText()).isEqualTo("test2")
         assertThat(report2["params"]["disease"].asText()).isEqualTo("Rubella")
         assertThat(report2["params"]["year"].asText()).isEqualTo("2021")
     }
