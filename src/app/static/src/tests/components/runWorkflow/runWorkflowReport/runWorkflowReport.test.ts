@@ -617,7 +617,7 @@ describe(`runWorkflowReport`, () => {
             await Vue.nextTick()
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            const uploadLabel = wrapper.find("#show-import-csv").find("label")
+            const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
             expect(uploadLabel.text()).toBe("upload.csv")
             done();
         });
