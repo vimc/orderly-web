@@ -17,10 +17,7 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Request
 import spark.Response
-import java.io.InputStream
-import java.io.InputStreamReader
 import java.nio.charset.Charset
-import javax.mail.Multipart
 import javax.servlet.MultipartConfigElement
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
