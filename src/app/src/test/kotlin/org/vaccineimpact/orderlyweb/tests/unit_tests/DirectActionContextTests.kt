@@ -303,7 +303,7 @@ class DirectActionContextTests
 
         val configElementArg = ArgumentCaptor.forClass(MultipartConfigElement::class.java)
         verify(mockRequest).attribute(eq("org.eclipse.jetty.multipartConfig"), capture(configElementArg))
-        assertThat(configElementArg.value.location).isEqualTo("/temp")
+        assertThat(configElementArg.value.location).isEqualTo("/tmp")
     }
 
     @Test

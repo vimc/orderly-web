@@ -129,7 +129,8 @@ open class DirectActionContext(
 
     override fun getPartReader(partName: String): Reader
     {
-        request.attribute("org.eclipse.jetty.multipartConfig", MultipartConfigElement("/temp"))
+        request.attribute("org.eclipse.jetty.multipartConfig",
+            MultipartConfigElement(System.getProperty("java.io.tmpdir")))
         val stream = request.raw().getPart(partName).inputStream
         return BufferedReader(stream.reader())
     }
