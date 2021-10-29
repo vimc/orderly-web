@@ -118,6 +118,7 @@ interface Methods {
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
+    validateWorkflow: () => void
 }
 
 interface Data {
@@ -126,9 +127,12 @@ interface Data {
     reports: ReportWithDate[],
     selectedReport: string,
     error: string,
+    validationError: string,
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[]
+    importedFilename: string,
+    importedFile: string
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -150,9 +154,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reports: [],
             selectedReport: "",
             error: "",
+            validationError: "",
             defaultMessage: "",
             workflowRemovals: null,
-            reportsValid: []
+            reportsValid: [],
+            importedFilename: "",
+            importedFile: ""
         }
     },
     computed: {
@@ -317,6 +324,24 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 .catch((error) => {
                     this.error = error;
                     this.defaultMessage = "An error occurred fetching run report metadata";
+                });
+        },
+        validateWorkflow() {
+            const formData = new FormData()
+            formData.append("file", this.importedFile, this.importedFilename)
+            formData.append("git_branch", this.workflowMetadata.git_branch)
+            formData.append("git_commit", this.workflowMetadata.git_commit)
+            api.post(`/workflow/validate`, formData)
+                .then(({data}) => {
+                    const importedReports = [
+                        ...this.workflowMetadata.reports,
+                        data.data
+                    ];
+                    this.updateWorkflowReports(importedReports);
+                    this.validationError = "";
+                })
+                .catch((error) => {
+                    this.validationError = error;
                 });
         }
     },
