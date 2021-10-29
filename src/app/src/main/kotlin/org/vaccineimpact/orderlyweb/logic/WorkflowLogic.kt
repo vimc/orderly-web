@@ -1,18 +1,24 @@
 package org.vaccineimpact.orderlyweb.logic
 
 import com.opencsv.CSVReader
+import org.vaccineimpact.orderlyweb.ActionContext
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.models.Parameter
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
 import java.io.Reader
 
 interface WorkflowLogic
 {
-    fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
+    fun parseAndValidateWorkflowCSV(reader: Reader, context: ActionContext, orderly: OrderlyServerAPI): List<WorkflowReportWithParams>
 }
 
 class OrderlyWebWorkflowLogic : WorkflowLogic
 {
-    override fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
+    override fun parseAndValidateWorkflowCSV(
+            reader: Reader,
+            context: ActionContext,
+            orderly: OrderlyServerAPI): List<WorkflowReportWithParams>
     {
         var rows: List<Array<String>> = listOf()
         reader.use {
@@ -38,7 +44,8 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         val columnCount = headers.count()
         val paramNames = headers.drop(1)
 
-        return rows.drop(1).mapIndexed { rowIdx, row ->
+        var errors: List<String> = listOf()
+        val reports = rows.drop(1).mapIndexed { rowIdx, row ->
             if (row.count() != columnCount)
             {
                 throw BadRequest(
@@ -49,7 +56,27 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             val parameters = paramNames.mapIndexed { i, name ->
                 name to row[i + 1]
             }.filter { it.second.isNotBlank() }.toMap()
+
             WorkflowReportWithParams(reportName, parameters)
         }
+
+        errors+= validateWorkflowReports(reports, orderly, context)
+
+        if (errors.count() > 0)
+        {
+            BadRequest("TODO")
+        }
+
+        return reports
+    }
+
+    private fun validateWorkflowReports(
+        reports: List<WorkflowReportWithParams>,
+        orderly: OrderlyServerAPI,
+        context: ActionContext
+    ): List<String>
+    {
+        val runnableReports = orderly.getRunnableReportNames(context)
+        val knownOrderlyReportParams: Map<String, List<Parameter>> = mapOf()
     }
 }

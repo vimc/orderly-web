@@ -16,6 +16,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
+import org.vaccineimpact.orderlyweb.models.Parameter
 
 interface OrderlyServerAPI
 {
@@ -44,6 +45,12 @@ interface OrderlyServerAPI
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
 
     fun throwOnError(): OrderlyServerAPI
+
+    @Throws(OrderlyServerError::class)
+    fun getRunnableReportNames(context: ActionContext): List<String>
+
+    @Throws(OrderlyServerError::class)
+    fun getReportParameters(reportName: String, context: ActionContext): List<Parameter>
 }
 
 class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
@@ -204,6 +211,13 @@ class OrderlyServer(
         }
         return transformResponse(response.code, response.body!!.string())
     }
+
+    override fun getRunnableReportNames(context: ActionContext): List<String> =
+        get("/reports/source", context).listData(String::class.java)
+
+    override fun getReportParameters(reportName: String, context: ActionContext): List<Parameter> =
+            get("/reports/$reportName/parameters", context)
+                .listData(Parameter::class.java)
 
     private fun transformResponse(code: Int, text: String): OrderlyServerResponse
     {
