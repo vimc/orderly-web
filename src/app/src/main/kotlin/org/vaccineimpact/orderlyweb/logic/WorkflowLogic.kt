@@ -10,7 +10,7 @@ interface WorkflowLogic
     fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
 }
 
-class OrderlyWebWorkflowLogic: WorkflowLogic
+class OrderlyWebWorkflowLogic : WorkflowLogic
 {
     override fun parseWorkflowCSV(reader: Reader): List<WorkflowReportWithParams>
     {
@@ -24,7 +24,7 @@ class OrderlyWebWorkflowLogic: WorkflowLogic
             throw BadRequest("File contains no rows")
         }
 
-        val headers = rows[0];
+        val headers = rows[0]
         if (headers[0] != "report")
         {
             throw BadRequest("First header must be 'report'")
@@ -41,7 +41,8 @@ class OrderlyWebWorkflowLogic: WorkflowLogic
         return rows.drop(1).mapIndexed { rowIdx, row ->
             if (row.count() != columnCount)
             {
-                throw BadRequest("Report row ${rowIdx + 1} should contain ${columnCount} values, ${row.count()} values found")
+                throw BadRequest(
+                        "Report row ${rowIdx + 1} should contain $columnCount values, ${row.count()} values found")
             }
 
             val reportName = row[0]

@@ -162,7 +162,7 @@ class WorkflowRunController(
         val reader = context.getPartReader("file")
         val workflowReports = workflowLogic.parseWorkflowCSV(reader)
 
-        // TODO: These will be used when we validate against orderly reports
+        // These will be used when we validate against orderly reports
         val gitBranch = context.getPart("git_branch")
         val gitCommit = context.getPart("git_commit")
 
