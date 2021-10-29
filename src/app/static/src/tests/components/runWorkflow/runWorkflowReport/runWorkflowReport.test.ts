@@ -604,7 +604,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("can upload and display filename", (done) => {
+    it("can display filename", (done) => {
         const wrapper = getWrapper();
 
         setTimeout(async () => {

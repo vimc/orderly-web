@@ -45,12 +45,13 @@
                     </div>
                 </div>
                 <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
-                    <span class="col-sm-2 col-form-label text-right"></span>
+                    <label class="col-sm-2 col-form-label text-right"></label>
                     <div class="custom-file col-sm-6">
                         <input type="file" class="custom-file-input"
                                v-on:change="handleImportedFile($event)"
                                accept="text/csv"
-                               id="import-csv" lang="en">
+                               id="import-csv"
+                               lang="en">
                         <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
                     </div>
                 </div>
