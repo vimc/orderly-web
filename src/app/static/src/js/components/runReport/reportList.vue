@@ -12,9 +12,9 @@
 
 <script lang="ts">
 import Vue from "vue";
-import vSelect from "vue-select";
 import {longTimestamp} from "../../utils/helpers.ts";
 import {ReportWithDate} from "../../utils/types";
+import vSelect from "../../../js/components/vSelect.vue";
 
 interface Props {
     reports: ReportWithDate[]

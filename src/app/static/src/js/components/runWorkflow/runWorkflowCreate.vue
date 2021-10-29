@@ -44,7 +44,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import vSelect from 'vue-select'
+    import vSelect from "../../../js/components/vSelect.vue";
     import {api} from "../../utils/api";
     import {RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
     import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";

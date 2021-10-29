@@ -10,7 +10,7 @@
 <script lang="ts">
 import Vue from "vue";
 import {longTimestamp} from "../../utils/helpers.ts";
-import vSelect from "vue-select";
+import vSelect from "../../../js/components/vSelect.vue";
 
 export default Vue.extend({
     name: "runningReportsList",
