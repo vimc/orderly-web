@@ -20,12 +20,8 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             context: ActionContext,
             orderly: OrderlyServerAPI): List<WorkflowReportWithParams>
     {
-        var rows: List<Array<String>> = listOf()
-        reader.use {
-            CSVReader(it).use { csvReader -> rows = csvReader.readAll() }
-        }
-
-        if (rows.count() == 0)
+        val rows = CSVReader(reader).use { it.readAll() }
+        if (rows.isEmpty())
         {
             throw BadRequest("File contains no rows")
         }
