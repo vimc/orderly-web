@@ -40,12 +40,11 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         val columnCount = headers.count()
         val paramNames = headers.drop(1)
 
-        var errors: List<String> = listOf()
+        val errors: MutableList<String> = mutableListOf()
         val reports = rows.drop(1).mapIndexed { rowIdx, row ->
             if (row.count() != columnCount)
             {
-                throw BadRequest(
-                        "Report row ${rowIdx + 1} should contain $columnCount values, ${row.count()} values found")
+                errors.add("Report row ${rowIdx + 1} should contain $columnCount values, ${row.count()} values found")
             }
 
             val reportName = row[0]
@@ -56,11 +55,12 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             WorkflowReportWithParams(reportName, parameters)
         }
 
-        errors+= validateWorkflowReports(reports, orderly, context)
+        val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
+        errors+= validateWorkflowReports(reports, orderly, context, errorTemplate)
 
-        if (errors.count() > 0)
+        if (errors.isNotEmpty())
         {
-            BadRequest("TODO")
+            BadRequest(errors)
         }
 
         return reports
@@ -69,10 +69,36 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
     private fun validateWorkflowReports(
         reports: List<WorkflowReportWithParams>,
         orderly: OrderlyServerAPI,
-        context: ActionContext
+        context: ActionContext,
+        errorTemplate: (index: Int, msg: String) -> String
     ): List<String>
     {
         val runnableReports = orderly.getRunnableReportNames(context)
-        val knownOrderlyReportParams: Map<String, List<Parameter>> = mapOf()
+        val knownOrderlyReportParams: MutableMap<String, List<Parameter>> = mutableMapOf()
+        val errors: MutableList<String> = mutableListOf()
+
+        reports.forEachIndexed { index, report ->
+            val reportIdx = index + 1
+            if (!runnableReports.contains(report.name))
+            {
+                errors.add(errorTemplate(reportIdx, "report '${report.name}' not found in Orderly"))
+            }
+            else
+            {
+                if (!knownOrderlyReportParams.containsKey(report.name))
+                {
+                    knownOrderlyReportParams[report.name] = orderly.getReportParameters(report.name, context)
+                }
+
+                val orderlyParams = knownOrderlyReportParams[report.name]!!.associate{ it.name to it }
+                val missingParameters = orderlyParams.values.filter{ it.value == "" && !report.params.keys.contains(it.name) }
+                missingParameters.forEach{ errors.add(reportIdx, "required parameter '${it.name}' was not provided for report '${report.name}'") }
+
+                val unexpectedParameters = report.params.keys.filterNot{ orderlyParams.keys.contains(it) }
+                unexpectedParameters.forEach{ errors.add(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'") }
+            }
+        }
+
+        return errors
     }
 }
