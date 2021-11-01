@@ -29,32 +29,57 @@
             </div>
             <div class="pb-4" id="workflow-reports">
                 <h3 id="report-sub-header">Reports</h3>
-                <div>
-                    <div v-for="(report, index) in workflowMetadata.reports"
-                         :id="`workflow-report-${index}`"
-                         :key="index"
-                         class="form-group row">
+                <div id="choose-import-from">
+                    <label class="col-sm-2 col-form-label text-right"></label>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
+                            <input type="radio" id="choose-from-list"
+                                   v-model="reportsOrigin" value="list"
+                                   autocomplete="off" checked> Choose from list
+                        </label>
+                        <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
+                            <input type="radio" id="import-from-csv"
+                                   v-model="reportsOrigin" value="csv"
+                                   autocomplete="off"> Import from csv
+                        </label>
+                    </div>
+                </div>
+                <div v-for="(report, index) in workflowMetadata.reports "
+                     :id="`workflow-report-${index}`"
+                     :key="index"
+                     class="form-group row pt-4">
 
-                        <label class="col-sm-2 col-form-label text-right text-truncate" :title="report.name">{{report.name}}</label>
-                        <parameter-list
-                            v-if="reportParameters[index].length > 0"
-                            :params="reportParameters[index]"
-                            @paramsChanged="(...eventArgs) => paramsChanged(index, ...eventArgs)"
-                        ></parameter-list>
-                        <div v-if="reportParameters[index].length === 0"
-                             class="col-sm-6 col-form-label text-secondary no-parameters">
-                            <em>No parameters</em>
-                        </div>
-                        <div class="col-sm-2">
-                            <button
+                    <label class="col-sm-2 col-form-label text-right text-truncate" :title="report.name">{{report.name}}</label>
+                    <parameter-list
+                        v-if="reportParameters[index].length > 0"
+                        :params="reportParameters[index]"
+                        @paramsChanged="(...eventArgs) => paramsChanged(index, ...eventArgs)"
+                    ></parameter-list>
+                    <div v-if="reportParameters[index].length === 0"
+                         class="col-sm-6 col-form-label text-secondary no-parameters">
+                        <em>No parameters</em>
+                    </div>
+                    <div class="col-sm-2">
+                        <button
                             type="button"
                             class="remove-report-button btn btn-primary"
                             @click="removeReport(index)"
-                            >Remove report</button>
-                        </div>
-                        <hr/>
+                        >Remove report</button>
                     </div>
-
+                    <hr/>
+                </div>
+                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                    <label class="col-sm-2 col-form-label text-right"></label>
+                    <div class="custom-file col-sm-6">
+                        <input type="file" class="custom-file-input"
+                               v-on:change="handleImportedFile($event)"
+                               accept="text/csv"
+                               id="import-csv"
+                               lang="en">
+                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                    </div>
+                </div>
+                <div v-if="!showImportFromCsv" id="show-report-list" class="pt-4">
                     <div v-if="hasReports" id="add-report-div" class="form-group row">
                         <label for="workflow-report" class="col-sm-2 col-form-label text-right font-weight-bold">
                             Add report
@@ -104,7 +129,8 @@ interface Computed {
     isReady: boolean,
     hasReports: boolean,
     reportParameters: Parameter[][],
-    stepIsValid: boolean
+    stepIsValid: boolean,
+    showImportFromCsv: boolean
 }
 
 interface Methods {
@@ -119,6 +145,7 @@ interface Methods {
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
     validateWorkflow: () => void
+    handleImportedFile: (event: Event) => void
 }
 
 interface Data {
@@ -130,7 +157,8 @@ interface Data {
     validationError: string,
     defaultMessage: string,
     workflowRemovals: string[] | null,
-    reportsValid: boolean[]
+    reportsValid: boolean[],
+    reportsOrigin: "csv" | "list",
     importedFilename: string,
     importedFile: string
 }
@@ -159,10 +187,14 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             workflowRemovals: null,
             reportsValid: [],
             importedFilename: "",
-            importedFile: ""
+            importedFile: "",
+            reportsOrigin: "list",
         }
     },
     computed: {
+        showImportFromCsv() {
+            return this.reportsOrigin === "csv"
+        },
         isReady: function() {
             return !!this.runReportMetadata && !!this.workflowMetadata;
         },
@@ -177,6 +209,15 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         }
     },
     methods: {
+        handleImportedFile(event) {
+            const target = event.target as HTMLInputElement;
+            if (target.files.length) {
+                this.importedFilename = target.files[0].name;
+                this.importedFile = target.files[0];
+
+                this.validateWorkflow()
+            }
+        },
         branchSelected(git_branch: string) {
             this.$emit("update", {git_branch});
         },
@@ -331,13 +372,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             formData.append("file", this.importedFile, this.importedFilename)
             formData.append("git_branch", this.workflowMetadata.git_branch)
             formData.append("git_commit", this.workflowMetadata.git_commit)
+
             api.post(`/workflow/validate`, formData)
                 .then(({data}) => {
-                    const importedReports = [
-                        ...this.workflowMetadata.reports,
-                        data.data
-                    ];
-                    this.updateWorkflowReports(importedReports);
+                    this.updateWorkflowReports(data.data);
                     this.validationError = "";
                 })
                 .catch((error) => {

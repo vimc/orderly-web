@@ -32,8 +32,10 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {"data": runReportMetadataResponse});
     });
 
+    const mockValidation = jest.fn()
+
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
-        return shallowMount(runWorkflowReport, {propsData})
+        return shallowMount(runWorkflowReport, {propsData, methods: {validateWorkflow: mockValidation}})
     };
 
     it("fetches report run metadata and renders gitUpdateReports component", (done) => {
@@ -552,7 +554,7 @@ describe(`runWorkflowReport`, () => {
         formData.append("git_branch", "gitBranch")
         formData.append("git_commit", "gitCommit")
 
-        mockAxios.onPost('http://app/workflow/validate', formData).reply(200, {
+        mockAxios.onPost('http://app/report/workflow/validate', formData).reply(200, {
             data: [
                 {name: "minimal", params: {nmin: "5"}},
                 {name: "global", params: {p1: "v1", p2: "v2"}}
@@ -566,30 +568,110 @@ describe(`runWorkflowReport`, () => {
             }
         });
 
-        const newAvailableReports = [
-            {name: "global", date: new Date()}
-        ];
 
-        setTimeout(() => {
-            expect(mockAxios.history.length).toBe(1)
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+        setTimeout(async() => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
 
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            wrapper.setData({importedFilename: "upload.csv"})
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+
+            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            wrapper.find("#show-import-csv").find("input").trigger("change")
             setTimeout(() => {
-                expect(wrapper.emitted("update").length).toBe(1);
-                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
-                    reports: [
-                        {name: "minimal", params: {nmin: "5"}},
-                        {name: "global", params: {p1: "v1", p2: "v2"}}
-                    ]
-                });
-
-                const alert = wrapper.findComponent(BAlert);
-                expect(alert.props("show")).toBe(true);
-                expect(alert.findAll("li").length).toBe(2);
-                expect(alert.findAll("li").at(0).text()).toBe("Report 'minimal'");
-                expect(alert.findAll("li").at(1).text()).toBe("Parameter 'p1' in report 'global'");
+                expect(mockValidation).toHaveBeenCalled()
                 done();
             });
+
+        });
+    });
+
+    it("renders choose or import from and check default radio button", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const fromListLabel = wrapper.find("#choose-from-list-label")
+            expect(fromListLabel.text()).toBe("Choose from list")
+            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
+
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            expect(fromCsvLabel.text()).toBe("Import from csv")
+            expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+    it("does not show report from list component when import from csv is checked", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-report-list").exists()).toBe(false)
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            done();
+        });
+    });
+
+    it("shows report from list when choose from list is checked", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const fromListLabel = wrapper.find("#choose-from-list-label")
+            fromListLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
+            expect(wrapper.find("#show-import-csv").exists()).toBe(false)
+            expect(wrapper.find("#show-report-list").exists()).toBe(true)
+            done();
+        });
+    });
+
+    it("renders import from csv controls as expected", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            const uploadInput = wrapper.find("#show-import-csv").find("input")
+            expect(uploadInput.attributes("accept")).toBe("text/csv")
+            expect(uploadInput.attributes("lang")).toBe("en")
+            done();
+        });
+    });
+
+    it("can display filename", (done) => {
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            wrapper.setData({importedFilename: "upload.csv"})
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+
+            const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
+            expect(uploadLabel.text()).toBe("upload.csv")
+            done();
         });
     });
 });
