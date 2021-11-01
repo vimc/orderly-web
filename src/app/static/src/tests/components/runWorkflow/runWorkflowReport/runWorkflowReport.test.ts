@@ -542,4 +542,54 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.workflowRemovals).toStrictEqual(null);
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
+
+    it("can validate workflow reports", (done) => {
+        const reportsCSV = '';
+        let fakeFile = new File([reportsCSV], "", { type: 'text/csv' });
+
+        const formData = new FormData()
+        formData.append("file", fakeFile, "anc.csv")
+        formData.append("git_branch", "gitBranch")
+        formData.append("git_commit", "gitCommit")
+
+        mockAxios.onPost('http://app/workflow/validate', formData).reply(200, {
+            data: [
+                {name: "minimal", params: {nmin: "5"}},
+                {name: "global", params: {p1: "v1", p2: "v2"}}
+            ]
+        });
+
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123"
+            }
+        });
+
+        const newAvailableReports = [
+            {name: "global", date: new Date()}
+        ];
+
+        setTimeout(() => {
+            expect(mockAxios.history.length).toBe(1)
+            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(1);
+                expect(wrapper.emitted("update")[0][0]).toStrictEqual({
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ]
+                });
+
+                const alert = wrapper.findComponent(BAlert);
+                expect(alert.props("show")).toBe(true);
+                expect(alert.findAll("li").length).toBe(2);
+                expect(alert.findAll("li").at(0).text()).toBe("Report 'minimal'");
+                expect(alert.findAll("li").at(1).text()).toBe("Parameter 'p1' in report 'global'");
+                done();
+            });
+        });
+    });
 });
