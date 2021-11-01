@@ -10,15 +10,20 @@ import java.io.Reader
 
 interface WorkflowLogic
 {
-    fun parseAndValidateWorkflowCSV(reader: Reader, context: ActionContext, orderly: OrderlyServerAPI): List<WorkflowReportWithParams>
+    fun parseAndValidateWorkflowCSV(
+        reader: Reader,
+        context: ActionContext,
+        orderly: OrderlyServerAPI
+    ): List<WorkflowReportWithParams>
 }
 
 class OrderlyWebWorkflowLogic : WorkflowLogic
 {
     override fun parseAndValidateWorkflowCSV(
-            reader: Reader,
-            context: ActionContext,
-            orderly: OrderlyServerAPI): List<WorkflowReportWithParams>
+        reader: Reader,
+        context: ActionContext,
+        orderly: OrderlyServerAPI
+    ): List<WorkflowReportWithParams>
     {
         val rows = CSVReader(reader).use { it.readAll() }
         if (rows.isEmpty())
@@ -56,7 +61,7 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         }
 
         val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
-        errors+= validateWorkflowReports(reports, orderly, context, errorTemplate)
+        errors += validateWorkflowReports(reports, orderly, context, errorTemplate)
 
         if (errors.isNotEmpty())
         {
@@ -91,11 +96,19 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
                 }
 
                 val orderlyParams = knownOrderlyReportParams[report.name]!!.associate{ it.name to it }
-                val missingParameters = orderlyParams.values.filter{ it.value == "" && !report.params.keys.contains(it.name) }
-                missingParameters.forEach{ errors.add(reportIdx, "required parameter '${it.name}' was not provided for report '${report.name}'") }
+                val missingParameters = orderlyParams.values
+                        .filter{ it.value == "" && !report.params.keys.contains(it.name) }
+                missingParameters.forEach{
+                    errors.add(
+                            reportIdx,
+                            "required parameter '${it.name}' was not provided for report '${report.name}'"
+                    )
+                }
 
                 val unexpectedParameters = report.params.keys.filterNot{ orderlyParams.keys.contains(it) }
-                unexpectedParameters.forEach{ errors.add(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'") }
+                unexpectedParameters.forEach{
+                    errors.add(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'")
+                }
             }
         }
 
