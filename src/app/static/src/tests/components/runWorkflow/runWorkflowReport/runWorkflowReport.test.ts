@@ -612,13 +612,22 @@ describe(`runWorkflowReport`, () => {
             fromCsvLabel.find("input").trigger("click")
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
-            wrapper.setData({importedFilename: "upload.csv"})
-
             await Vue.nextTick()
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+
+            expect(wrapper.vm.$data.importedFilename).toBe("")
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            wrapper.find("#show-import-csv").find("input").trigger("change")
+            await Vue.nextTick()
 
             const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
-            expect(uploadLabel.text()).toBe("upload.csv")
+            expect(uploadLabel.text()).toBe("test.csv")
+            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
             done();
         });
     });
