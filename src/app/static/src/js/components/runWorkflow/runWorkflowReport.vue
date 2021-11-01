@@ -206,7 +206,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     },
     methods: {
         handleImportedFile(event) {
-            this.importedFilename = event.target.files.length ? event.target.files[0].name : "";
+            const target = event.target as HTMLInputElement;
+            this.importedFilename = target.files.length ? target.files[0].name : "";
         },
         branchSelected(git_branch: string) {
             this.$emit("update", {git_branch});
