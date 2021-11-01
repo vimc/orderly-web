@@ -145,7 +145,7 @@ interface Methods {
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
-    handleImportedFile: (event: any) => void
+    handleImportedFile: (event: Event) => void
 }
 
 interface Data {
