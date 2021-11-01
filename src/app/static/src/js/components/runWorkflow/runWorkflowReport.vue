@@ -34,12 +34,12 @@
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
                             <input type="radio" id="choose-from-list"
-                                   v-model="reportOrigin" value="list"
+                                   v-model="reportsOrigin" value="list"
                                    autocomplete="off" checked> Choose from list
                         </label>
                         <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
                             <input type="radio" id="import-from-csv"
-                                   v-model="reportOrigin" value="csv"
+                                   v-model="reportsOrigin" value="csv"
                                    autocomplete="off"> Import from csv
                         </label>
                     </div>
@@ -183,13 +183,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             defaultMessage: "",
             workflowRemovals: null,
             reportsValid: [],
-            reportOrigin: "list",
+            reportsOrigin: "list",
             importedFilename: ""
         }
     },
     computed: {
         showImportFromCsv() {
-            return this.reportOrigin === "csv"
+            return this.reportsOrigin === "csv"
         },
         isReady: function() {
             return !!this.runReportMetadata && !!this.workflowMetadata;

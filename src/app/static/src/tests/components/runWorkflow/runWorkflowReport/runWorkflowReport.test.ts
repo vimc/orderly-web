@@ -550,7 +550,7 @@ describe(`runWorkflowReport`, () => {
             const fromListLabel = wrapper.find("#choose-from-list-label")
             expect(fromListLabel.text()).toBe("Choose from list")
             expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
-            expect(wrapper.vm.$data.reportOrigin).toBe("list")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
 
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             expect(fromCsvLabel.text()).toBe("Import from csv")
@@ -565,7 +565,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(async () => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportOrigin).toBe("csv")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
             await Vue.nextTick()
             expect(wrapper.find("#show-report-list").exists()).toBe(false)
@@ -580,7 +580,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const fromListLabel = wrapper.find("#choose-from-list-label")
             fromListLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportOrigin).toBe("list")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
             expect(wrapper.find("#show-import-csv").exists()).toBe(false)
             expect(wrapper.find("#show-report-list").exists()).toBe(true)
             done();
@@ -593,7 +593,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(async () => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportOrigin).toBe("csv")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
             await Vue.nextTick()
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
@@ -610,7 +610,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(async () => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             fromCsvLabel.find("input").trigger("click")
-            expect(wrapper.vm.$data.reportOrigin).toBe("csv")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
             wrapper.setData({importedFilename: "upload.csv"})
 
