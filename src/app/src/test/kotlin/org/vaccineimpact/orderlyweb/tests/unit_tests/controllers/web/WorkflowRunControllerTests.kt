@@ -560,7 +560,7 @@ class WorkflowRunControllerTests
 
         val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
         val mockLogic = mock<WorkflowLogic> {
-            on { parseWorkflowCSV(mockReader) } doReturn mockResult
+            on { parseAndValidateWorkflowCSV(mockReader, "", "", mock()) } doReturn mockResult
         }
 
         val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)

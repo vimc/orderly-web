@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.logic
 
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
@@ -19,7 +20,7 @@ class WorkflowLogicTests
             test2,,2021
             test3,Rubella,
         """.trimIndent().reader()
-        val result = sut.parseWorkflowCSV(csvReader)
+        val result = sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock())
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf("disease" to "HepB", "year" to "2020"))
@@ -37,7 +38,7 @@ class WorkflowLogicTests
             test1
             test2
         """.trimIndent().reader()
-        val result = sut.parseWorkflowCSV(csvReader)
+        val result = sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock())
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf<String, String>())
@@ -49,7 +50,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV with no rows`()
     {
         val csvReader = "".reader()
-        assertThatThrownBy{ sut.parseWorkflowCSV(csvReader) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "","", mock()) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("File contains no rows")
     }
 
@@ -57,7 +58,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV with no reports`()
     {
         val csvReader = "report,param1".reader()
-        assertThatThrownBy{ sut.parseWorkflowCSV(csvReader) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("File contains no reports")
     }
 
@@ -65,7 +66,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV where incorrect first header`()
     {
         val csvReader = "report1,param1".reader()
-        assertThatThrownBy{ sut.parseWorkflowCSV(csvReader) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("First header must be 'report'")
     }
 
@@ -78,7 +79,7 @@ class WorkflowLogicTests
             test2,,2021,TOO_MANY
             test3,Rubella,
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseWorkflowCSV(csvReader) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 2 should contain 3 values, 4 values found")
     }
 
@@ -91,7 +92,7 @@ class WorkflowLogicTests
             test2,,2021
             test3,Rubella
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseWorkflowCSV(csvReader) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 3 should contain 3 values, 2 values found")
     }
 }

@@ -12,7 +12,8 @@ interface WorkflowLogic
 {
     fun parseAndValidateWorkflowCSV(
         reader: Reader,
-        context: ActionContext,
+        branch: String?,
+        commit: String?,
         orderly: OrderlyServerAPI
     ): List<WorkflowReportWithParams>
 }
@@ -21,7 +22,8 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
 {
     override fun parseAndValidateWorkflowCSV(
         reader: Reader,
-        context: ActionContext,
+        branch: String?,
+        commit: String?,
         orderly: OrderlyServerAPI
     ): List<WorkflowReportWithParams>
     {
@@ -61,11 +63,11 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         }
 
         val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
-        errors += validateWorkflowReports(reports, orderly, context, errorTemplate)
+        errors += validateWorkflowReports(reports, branch, commit, orderly, errorTemplate)
 
         if (errors.isNotEmpty())
         {
-            BadRequest(errors)
+            throw BadRequest(errors)
         }
 
         return reports
@@ -73,12 +75,13 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
 
     private fun validateWorkflowReports(
         reports: List<WorkflowReportWithParams>,
+        branch: String?,
+        commit: String?,
         orderly: OrderlyServerAPI,
-        context: ActionContext,
         errorTemplate: (index: Int, msg: String) -> String
     ): List<String>
     {
-        val runnableReports = orderly.getRunnableReportNames(context)
+        val runnableReports = orderly.getRunnableReportNames(mapOf("branch" to  branch, "commit" to commit))
         val knownOrderlyReportParams: MutableMap<String, List<Parameter>> = mutableMapOf()
         val errors: MutableList<String> = mutableListOf()
 
@@ -92,22 +95,24 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             {
                 if (!knownOrderlyReportParams.containsKey(report.name))
                 {
-                    knownOrderlyReportParams[report.name] = orderly.getReportParameters(report.name, context)
+                    knownOrderlyReportParams[report.name] = orderly.getReportParameters(report.name, mapOf("commit" to commit))
                 }
 
                 val orderlyParams = knownOrderlyReportParams[report.name]!!.associate{ it.name to it }
                 val missingParameters = orderlyParams.values
-                        .filter{ it.value == "" && !report.params.keys.contains(it.name) }
+                        .filter{ it.value == null && !report.params.keys.contains(it.name) }
                 missingParameters.forEach{
                     errors.add(
-                            reportIdx,
-                            "required parameter '${it.name}' was not provided for report '${report.name}'"
+                            errorTemplate(reportIdx,
+                            "required parameter '${it.name}' was not provided for report '${report.name}'")
                     )
                 }
 
                 val unexpectedParameters = report.params.keys.filterNot{ orderlyParams.keys.contains(it) }
                 unexpectedParameters.forEach{
-                    errors.add(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'")
+                    errors.add(
+                            errorTemplate(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'")
+                    )
                 }
             }
         }

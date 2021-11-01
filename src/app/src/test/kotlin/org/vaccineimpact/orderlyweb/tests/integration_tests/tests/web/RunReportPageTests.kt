@@ -57,13 +57,7 @@ class RunReportPageTests : IntegrationTest()
     fun `can return parameter data`()
     {
         val branch = "master"
-        val commits = OrderlyServer(AppConfig()).get(
-                "/git/commits",
-                context = mock {
-                    on { queryString() } doReturn "branch=$branch"
-                }
-        )
-        val commit = commits.listData(GitCommit::class.java).first().id
+        val commit = getGitBranchCommit(branch)
         val url = "/report/minimal/config/parameters/?commit=$commit"
 
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
@@ -114,13 +108,7 @@ class RunReportPageTests : IntegrationTest()
     fun `lists runnable reports`()
     {
         val branch = "master"
-        val commits = OrderlyServer(AppConfig()).get(
-                "/git/commits",
-                context = mock {
-                    on { queryString() } doReturn "branch=$branch"
-                }
-        )
-        val commit = commits.listData(GitCommit::class.java).first().id
+        val commit = getGitBranchCommit(branch)
         val repo = OrderlyReportRepository(true, false)
         val controller = ReportController(
                 mock {

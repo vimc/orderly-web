@@ -160,9 +160,9 @@ class WorkflowRunController(
     fun validateWorkflow(): List<WorkflowReportWithParams>
     {
         val reader = context.getPartReader("file")
+        val branch = context.queryParams("branch")
+        val commit = context.queryParams("commit")
 
-        val workflowReports = workflowLogic.parseAndValidateWorkflowCSV(reader, context, orderlyServerAPI)
-
-        return workflowReports
+        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit, orderlyServerAPI)
     }
 }
