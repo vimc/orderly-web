@@ -5,6 +5,7 @@ import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Response
+import java.io.Reader
 
 interface ActionContext
 {
@@ -34,6 +35,9 @@ interface ActionContext
     fun <T> postData(): Map<String, T>
     fun getRequestBody(): String
     fun getRequestBodyAsBytes(): ByteArray
+
+    fun getPartReader(partName: String): Reader
+    fun getPart(partName: String): String
 
     @Throws(MissingParameterError::class)
     fun <T> postData(key: String): T

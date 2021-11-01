@@ -16,6 +16,9 @@ import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.viewmodels.PermissionViewModel
 import spark.Request
 import spark.Response
+import java.io.BufferedReader
+import java.io.Reader
+import javax.servlet.MultipartConfigElement
 
 open class DirectActionContext(
     private val context: SparkWebContext,
@@ -122,6 +125,20 @@ open class DirectActionContext(
     override fun getRequestBodyAsBytes(): ByteArray
     {
         return request.bodyAsBytes()
+    }
+
+    override fun getPartReader(partName: String): Reader
+    {
+        request.attribute("org.eclipse.jetty.multipartConfig",
+            MultipartConfigElement(System.getProperty("java.io.tmpdir")))
+        val stream = request.raw().getPart(partName).inputStream
+        return BufferedReader(stream.reader())
+    }
+
+    override fun getPart(partName: String): String
+    {
+        val reader = getPartReader(partName)
+        reader.use { return it.readText() }
     }
 }
 
