@@ -157,7 +157,7 @@ interface Data {
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
-    reportOrigin: string,
+    reportsOrigin: "csv" | "list",
     importedFilename: string
 }
 
