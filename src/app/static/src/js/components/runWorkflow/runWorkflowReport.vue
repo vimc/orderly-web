@@ -79,7 +79,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {BAlert} from "bootstrap-vue";
+import {BAlert} from "bootstrap-vue/esm/components/alert";
 import {
     Parameter,
     ReportWithDate,
