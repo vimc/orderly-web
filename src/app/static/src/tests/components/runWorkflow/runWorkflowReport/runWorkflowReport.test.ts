@@ -19,10 +19,8 @@ export const runReportMetadataResponse = {
     git_branches: ["master", "dev"]
 };
 
-const reports = [
-    { name: "minimal", date: null },
-    { name: "other", date: new Date() }
-];
+const minimal = { name: "minimal", date: null };
+const global = { name: "other", date: new Date() };
 
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
@@ -123,10 +121,7 @@ describe(`runWorkflowReport`, () => {
     it("updates reports from git component", (done) => {
         const wrapper = getWrapper();
         setTimeout(async () => {
-            const reports = [
-                { name: "minimal", date: null },
-                { name: "other", date: new Date() }
-            ];
+            const reports = [minimal, global];
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
             await Vue.nextTick();
             expect(wrapper.vm.$data.reports).toBe(reports);
@@ -137,44 +132,37 @@ describe(`runWorkflowReport`, () => {
     it("clears selected report on update reports if it is no longer in the list", (done) => {
         const wrapper = getWrapper();
         setTimeout(async () => {
-            wrapper.setData({selectedReport: "global"});
-            const reports = [
-                { name: "minimal", date: null },
-                { name: "other", date: new Date() }
-            ];
+            wrapper.setData({selectedReport: {name: "global"}});
+            const reports = [minimal, global];
             wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
             await Vue.nextTick();
-            expect(wrapper.vm.$data.selectedReport).toBe("");
+            expect(wrapper.vm.$data.selectedReport).toBeNull();
             done();
         });
     });
 
-    it("does not clear selected report on update reports if it is in the new list", (done) => {
+    it("does not clear selected report on update reports if it is in the new list", async () => {
         const wrapper = getWrapper();
-        setTimeout(async () => {
-            wrapper.setData({selectedReport: "other"});
-            const reports = [
-                { name: "minimal", date: null },
-                { name: "other", date: new Date() }
-            ];
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
-            await Vue.nextTick();
-            expect(wrapper.vm.$data.selectedReport).toBe("other");
-        });
-        done();
+        await wrapper.setData({selectedReport: {name: "other"}});
+        await Vue.nextTick();
+        await Vue.nextTick();
+        const reports = [minimal, global];
+        wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
+        expect(wrapper.vm.$data.selectedReport.name).toBe("other");
     });
 
 
     it("renders add report as expected", (done) => {
         const wrapper = getWrapper();
-        wrapper.setData({reports, selectedReport: "other"});
+        const reports = [minimal, global];
+        wrapper.setData({reports, selectedReport: {name: "other"}});
         setTimeout(() => {
             const addReportContainer = wrapper.find("#add-report-div");
             expect(addReportContainer.exists()).toBe(true);
             expect(addReportContainer.find("label").text()).toBe("Add report");
             const reportList = wrapper.findComponent(ReportList);
             expect(reportList.props("reports")).toBe(reports);
-            expect(reportList.props("report")).toBe("other");
+            expect(reportList.props("selectedReport")).toStrictEqual({name: "other"});
             const button = addReportContainer.find("#add-report-button");
             expect(button.attributes("disabled")).toBeUndefined();
             expect(button.text()).toBe("Add report");
@@ -184,7 +172,7 @@ describe(`runWorkflowReport`, () => {
 
     it("add report button is disabled if no selected report", (done) => {
         const wrapper = getWrapper();
-        wrapper.setData({reports});
+        wrapper.setData({reports: [minimal, global]});
         setTimeout(() => {
             const button = wrapper.find("#add-report-button");
             expect(button.attributes("disabled")).toBe("disabled");
@@ -237,12 +225,12 @@ describe(`runWorkflowReport`, () => {
             workflowMetadata: {
                 ...emptyWorkflowMetadata,
                 git_commit: "abc123",
-                reports: [{name: "minimal"}]
+                reports: [minimal]
             }
         });
         wrapper.setData({
-            reports,
-            selectedReport: "other",
+            reports: [minimal, global],
+            selectedReport: {name: "other"},
             error: "previous error",
             defaultMessage: "previous Message"
         });
@@ -252,11 +240,11 @@ describe(`runWorkflowReport`, () => {
                 expect(wrapper.emitted("update").length).toBe(1);
                 expect(wrapper.emitted("update")[0][0]).toStrictEqual({
                     reports: [
-                        {name: "minimal"},
+                        minimal,
                         {name: "other", params: {p1: "v1", p2: "v2"}}
                     ]
                 });
-                expect(wrapper.vm.$data.selectedReport).toBe("");
+                expect(wrapper.vm.$data.selectedReport).toBe(null);
                 expect(wrapper.vm.$data.error).toBe("");
                 expect(wrapper.vm.$data.defaultMessage).toBe("");
                 done();
@@ -271,14 +259,14 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = getWrapper();
         wrapper.setData({
-            reports,
-            selectedReport: "other"
+            reports: [minimal, global],
+            selectedReport: {name: "other"}
         });
         setTimeout(() => {
             wrapper.find("#add-report-button").trigger("click");
             setTimeout(() => {
                 expect(wrapper.emitted("update")).toBeUndefined();
-                expect(wrapper.vm.$data.selectedReport).toBe("other");
+                expect(wrapper.vm.$data.selectedReport).toStrictEqual({name: "other"});
                 const error = wrapper.findComponent(ErrorInfo);
                 expect(error.props("apiError").response.data).toStrictEqual(testError);
                 expect(error.props("defaultMessage")).toBe("An error occurred when getting parameters");
@@ -296,17 +284,15 @@ describe(`runWorkflowReport`, () => {
             }
         });
         wrapper.setData({
-            reports,
-            selectedReport: "other"
+            reports: [minimal, global],
+            selectedReport: {name: "other"}
         });
         setTimeout(() => {
             wrapper.findAll(".remove-report-button").at(1).trigger("click");
 
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({
-                reports: [
-                    {name: "minimal"}
-                ]
+                reports: [{name: "minimal"}]
             });
             done();
 
