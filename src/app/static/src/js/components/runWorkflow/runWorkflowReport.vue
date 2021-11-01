@@ -369,7 +369,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         validateWorkflow() {
             const formData = new FormData()
-            formData.append("file", this.importedFile, this.importedFilename)
+            formData.append("file", this.importedFile)
             formData.append("git_branch", this.workflowMetadata.git_branch)
             formData.append("git_commit", this.workflowMetadata.git_commit)
 

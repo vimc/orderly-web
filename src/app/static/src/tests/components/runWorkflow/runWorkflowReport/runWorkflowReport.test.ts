@@ -32,10 +32,9 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {"data": runReportMetadataResponse});
     });
 
-    const mockValidation = jest.fn()
 
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
-        return shallowMount(runWorkflowReport, {propsData, methods: {validateWorkflow: mockValidation}})
+        return shallowMount(runWorkflowReport, {propsData})
     };
 
     it("fetches report run metadata and renders gitUpdateReports component", (done) => {
@@ -546,15 +545,15 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can validate workflow reports", (done) => {
-        const reportsCSV = '';
-        let fakeFile = new File([reportsCSV], "", { type: 'text/csv' });
+        const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
 
         const formData = new FormData()
-        formData.append("file", fakeFile, "anc.csv")
+        formData.append("file", fakeFile)
         formData.append("git_branch", "gitBranch")
         formData.append("git_commit", "gitCommit")
 
-        mockAxios.onPost('http://app/report/workflow/validate', formData).reply(200, {
+        const url = "http://app/workflow/validate"
+        mockAxios.onPost(url, formData).reply(200, {
             data: [
                 {name: "minimal", params: {nmin: "5"}},
                 {name: "global", params: {p1: "v1", p2: "v2"}}
@@ -564,10 +563,10 @@ describe(`runWorkflowReport`, () => {
         const wrapper = getWrapper({
             workflowMetadata: {
                 ...emptyWorkflowMetadata,
-                git_commit: "abc123"
+                git_commit: "abc123",
+                git_branch: "branch"
             }
         });
-
 
         setTimeout(async() => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
@@ -587,11 +586,66 @@ describe(`runWorkflowReport`, () => {
             })
 
             wrapper.find("#show-import-csv").find("input").trigger("change")
+
             setTimeout(() => {
-                expect(mockValidation).toHaveBeenCalled()
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
                 done();
             });
+        });
+    });
 
+    it("returns error if formData is empty when validating workflow", (done) => {
+        const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+
+        const formData = new FormData()
+        const url = "http://app/workflow/validate"
+
+        mockAxios.onPost(url, formData).reply(200, {
+            data: [
+                {name: "minimal", params: {nmin: "5"}},
+                {name: "global", params: {p1: "v1", p2: "v2"}}
+            ]
+        });
+
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                git_branch: "branch"
+            }
+        });
+
+        setTimeout(async() => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            wrapper.setData({importedFilename: "upload.csv"})
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+
+            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            wrapper.find("#show-import-csv").find("input").trigger("change")
+
+            setTimeout(() => {
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                //expect(wrapper.vm.$data.validationError).toStrictEqual([{Error: "Request failed with status code 404"}])
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
+                done();
+            });
         });
     });
 
