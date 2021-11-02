@@ -18,7 +18,8 @@ class WorkflowLogicTests
     private val mockParams = listOf(Parameter("disease", "defaultDisuses"), Parameter("year", "2020"))
     private val commitOnlyQs = mapOf("commit" to testCommit)
     private val mockTestOrderlyAPI = mock<OrderlyServerAPI> {
-        on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf("test1", "test2", "test3")
+        on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+                "test1", "test2", "test3")
         on { getReportParameters(eq("test1"), eq(commitOnlyQs)) } doReturn mockParams
         on { getReportParameters(eq("test2"), eq(commitOnlyQs)) } doReturn mockParams
         on { getReportParameters(eq("test3"), eq(commitOnlyQs)) } doReturn mockParams
@@ -53,7 +54,8 @@ class WorkflowLogicTests
             test2
         """.trimIndent().reader()
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
-            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf("test1", "test2", "test3")
+            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+                    "test1", "test2", "test3")
             on { getReportParameters(any(), eq(mapOf("commit" to testCommit))) } doReturn listOf<Parameter>()
         }
         val result = sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockOrderlyAPI)
@@ -98,7 +100,8 @@ class WorkflowLogicTests
             test3,Rubella,
         """.trimIndent().reader()
         assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
-                .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 2 should contain 3 values, 4 values found")
+                .isInstanceOf(BadRequest::class.java).hasMessageContaining(
+                        "Report row 2 should contain 3 values, 4 values found")
     }
 
     @Test
@@ -111,7 +114,8 @@ class WorkflowLogicTests
             test3,Rubella
         """.trimIndent().reader()
         assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
-                .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 3 should contain 3 values, 2 values found")
+                .isInstanceOf(BadRequest::class.java).hasMessageContaining(
+                        "Report row 3 should contain 3 values, 2 values found")
     }
 
     @Test

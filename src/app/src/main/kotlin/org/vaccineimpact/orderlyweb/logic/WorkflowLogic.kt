@@ -1,7 +1,6 @@
 package org.vaccineimpact.orderlyweb.logic
 
 import com.opencsv.CSVReader
-import org.vaccineimpact.orderlyweb.ActionContext
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.Parameter
@@ -81,9 +80,10 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         errorTemplate: (index: Int, msg: String) -> String
     ): List<String>
     {
-        val runnableReports = orderly.getRunnableReportNames(mapOf("branch" to  branch, "commit" to commit))
+        val runnableReports = orderly.getRunnableReportNames(mapOf("branch" to branch, "commit" to commit))
         val knownOrderlyReportParams: MutableMap<String, List<Parameter>> = mutableMapOf()
         val errors: MutableList<String> = mutableListOf()
+        val getParamsQs = mapOf("commit" to commit)
 
         reports.forEachIndexed { index, report ->
             val reportIdx = index + 1
@@ -93,12 +93,14 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             }
             else
             {
-                if (!knownOrderlyReportParams.containsKey(report.name))
+                var orderlyParamsList = knownOrderlyReportParams[report.name]
+                if (orderlyParamsList == null)
                 {
-                    knownOrderlyReportParams[report.name] = orderly.getReportParameters(report.name, mapOf("commit" to commit))
+                    orderlyParamsList = orderly.getReportParameters(report.name, getParamsQs)
+                    knownOrderlyReportParams[report.name] = orderlyParamsList
                 }
 
-                val orderlyParams = knownOrderlyReportParams[report.name]!!.associate{ it.name to it }
+                val orderlyParams = orderlyParamsList.associateBy { it.name }
                 val missingParameters = orderlyParams.values
                         .filter{ it.value == null && !report.params.keys.contains(it.name) }
                 missingParameters.forEach{
