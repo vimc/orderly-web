@@ -1,15 +1,28 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests.logic
 
-import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.*
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.Test
+import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.logic.OrderlyWebWorkflowLogic
+import org.vaccineimpact.orderlyweb.models.Parameter
 
 class WorkflowLogicTests
 {
-    val sut = OrderlyWebWorkflowLogic()
+    private val sut = OrderlyWebWorkflowLogic()
+
+    private val testBranch = "testBranch"
+    private val testCommit = "testCommit"
+    private val mockParams = listOf(Parameter("disease", "defaultDisuses"), Parameter("year", "2020"))
+    private val commitOnlyQs = mapOf("commit" to testCommit)
+    private val mockTestOrderlyAPI = mock<OrderlyServerAPI> {
+        on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf("test1", "test2", "test3")
+        on { getReportParameters(eq("test1"), eq(commitOnlyQs)) } doReturn mockParams
+        on { getReportParameters(eq("test2"), eq(commitOnlyQs)) } doReturn mockParams
+        on { getReportParameters(eq("test3"), eq(commitOnlyQs)) } doReturn mockParams
+    }
 
     @Test
     fun `can parse valid workflow CSV`()
@@ -20,7 +33,8 @@ class WorkflowLogicTests
             test2,,2021
             test3,Rubella,
         """.trimIndent().reader()
-        val result = sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock())
+
+        val result = sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI)
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf("disease" to "HepB", "year" to "2020"))
@@ -38,7 +52,11 @@ class WorkflowLogicTests
             test1
             test2
         """.trimIndent().reader()
-        val result = sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock())
+        val mockOrderlyAPI = mock<OrderlyServerAPI> {
+            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf("test1", "test2", "test3")
+            on { getReportParameters(any(), eq(mapOf("commit" to testCommit))) } doReturn listOf<Parameter>()
+        }
+        val result = sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockOrderlyAPI)
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf<String, String>())
@@ -79,7 +97,7 @@ class WorkflowLogicTests
             test2,,2021,TOO_MANY
             test3,Rubella,
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 2 should contain 3 values, 4 values found")
     }
 
@@ -92,7 +110,60 @@ class WorkflowLogicTests
             test2,,2021
             test3,Rubella
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("Report row 3 should contain 3 values, 2 values found")
+    }
+
+    @Test
+    fun `throws expected errors whe validate CSV which has report which do not exist in Orderly`()
+    {
+        val csvReader = """
+            report,disease,year
+            nonexistent1,,
+            test1,HepB,2020
+            nonexistent2,HepB,2020
+        """.trimIndent().reader()
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
+                .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
+                    Report row 1: report 'nonexistent1' not found in Orderly
+                    Report row 3: report 'nonexistent2' not found in Orderly""".trimIndent())
+    }
+
+    @Test
+    fun `throws expected errors when validate CSV with parameters which do not match Orderly reports`()
+    {
+        val csvReader = """
+            report,disease,year,age
+            SingleDefaultParam,HepB,2020,5 
+            SingleDefaultParam,,,
+            SingleNoDefaultParam,,,
+            TwoParamsOneDefault,,2021,
+            TwoParamsOneDefault,Cholera,,5
+            TwoParamsNoDefault,,,
+        """.trimIndent().reader()
+
+        val mockOrderlyAPI = mock<OrderlyServerAPI> {
+            on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
+                    "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault")
+            on { getReportParameters(eq("SingleDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("disease", "default"))
+            on { getReportParameters(eq("SingleNoDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("disease", null))
+            on { getReportParameters(eq("TwoParamsOneDefault"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("year", null), Parameter("age", "1")
+            )
+            on { getReportParameters(eq("TwoParamsNoDefault"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("year", null), Parameter("age", null)
+            )
+        }
+        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockOrderlyAPI) }
+                .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
+                    Report row 1: unexpected parameter 'year' provided for report 'SingleDefaultParam'
+                    Report row 1: unexpected parameter 'age' provided for report 'SingleDefaultParam'
+                    Report row 3: required parameter 'disease' was not provided for report 'SingleNoDefaultParam'
+                    Report row 5: required parameter 'year' was not provided for report 'TwoParamsOneDefault'
+                    Report row 5: unexpected parameter 'disease' provided for report 'TwoParamsOneDefault'
+                    Report row 6: required parameter 'year' was not provided for report 'TwoParamsNoDefault'
+                    Report row 6: required parameter 'age' was not provided for report 'TwoParamsNoDefault'""".trimIndent())
     }
 }

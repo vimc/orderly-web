@@ -56,8 +56,8 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
 
             val reportName = row[0]
             val parameters = paramNames.mapIndexed { i, name ->
-                name to row[i + 1]
-            }.filter { it.second.isNotBlank() }.toMap()
+                name to if (row.count() > i + 1) row[i + 1] else ""
+            }.filter { it.second.isNotEmpty() }.toMap()
 
             WorkflowReportWithParams(reportName, parameters)
         }
