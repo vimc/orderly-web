@@ -76,6 +76,7 @@ describe("document page", () => {
         expect(mockAxios.history.get[0].url).toBe("http://app/documents/");
 
         await Vue.nextTick();
+        await Vue.nextTick();
 
         expect(wrapper.find(DocumentList).vm.$props.docs).toEqual(getDocs())
     });
@@ -88,7 +89,8 @@ describe("document page", () => {
         expect(mockAxios.history.get.length).toBe(1);
 
         await Vue.nextTick();
-        
+        await Vue.nextTick();
+
         expect(wrapper.find(DocumentList).vm.$props.docs).toEqual(getDocs());
 
         mockAxios.onGet("http://app/documents/")
@@ -102,6 +104,7 @@ describe("document page", () => {
 
         expect(mockAxios.history.get.length).toBe(2);
 
+        await Vue.nextTick();
         await Vue.nextTick();
 
         expect(wrapper.find(DocumentList).vm.$props.docs).toEqual([]);

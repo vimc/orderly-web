@@ -63,12 +63,14 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         await Vue.nextTick(); // once for axios to return
         await Vue.nextTick(); // once for date to update
+        await Vue.nextTick();
         expect(mockAxios.history.get.length).toBe(1);
         expect(rendered.findAll(report).length).toBe(2);
     });
 
     it("displays reports", async () => {
         const rendered = shallowMount(publishReports);
+        await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
         const reports = rendered.findAll(report);
@@ -210,7 +212,7 @@ describe("publishReports", () => {
         expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
 
         const btn = rendered.find("button");
-        btn.trigger("click");
+        await btn.trigger("click");
         expect(btn.text()).toBe("Publish");
         await Vue.nextTick();
 
@@ -232,11 +234,12 @@ describe("publishReports", () => {
 
         const rendered = shallowMount(publishReports);
         const btn = rendered.find("button");
-        btn.trigger("click");
+        await btn.trigger("click");
 
         await Vue.nextTick(); // once to trigger click
         await Vue.nextTick(); // once for api to return
         await Vue.nextTick(); // once for props to update
+        await Vue.nextTick();
 
         expect(rendered.find(errorInfo).props().apiError.response.data).toBe("TEST ERROR")
         expect(rendered.find(errorInfo).props().defaultMessage)

@@ -125,5 +125,5 @@ if __name__ == "__main__":
       ./scripts/release/tag_images.py publish latest
     Tickets have been tagged in YouTrack, so post release do the following:
     * Go to
-      https://vimc.myjetbrains.com/youtrack/issues?q=Fixed%20in%20build:%20{tag}
+      https://mrc-ide.myjetbrains.com/youtrack/issues?q=Fixed%20in%20OrderlyWeb%20build:%20{tag}
     * Select all tickets and type "State: Deployed".""".format(tag=new_tag))
