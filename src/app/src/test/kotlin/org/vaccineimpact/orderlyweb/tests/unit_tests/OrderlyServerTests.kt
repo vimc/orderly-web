@@ -63,12 +63,13 @@ class OrderlyServerTests
     {
         val client = getHttpClient()
         val key = "report"
-        val queryParams: Map<String, String> = mapOf(key to "minimal")
+        val nullKey = "nullVal"
+        val queryParams: Map<String, String?> = mapOf(key to "minimal", nullKey to null)
         OrderlyServer(mockConfig, client).get("/some/path/", queryParams )
 
         verify(client).newCall(
                 check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?report=minimal")
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?report=minimal&nullVal")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
                 }
         )
