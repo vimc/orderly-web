@@ -30,7 +30,7 @@
             <div class="pb-4" id="workflow-reports">
                 <h3 id="report-sub-header">Reports</h3>
                 <div id="choose-import-from">
-                    <label class="col-sm-2 col-form-label text-right"></label>
+                    <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
                             <input type="radio" id="choose-from-list"
@@ -69,7 +69,7 @@
                     <hr/>
                 </div>
                 <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
-                    <label class="col-sm-2 col-form-label text-right"></label>
+                    <div class="col-sm-2 d-inline-block"></div>
                     <div class="custom-file col-sm-6">
                         <input type="file" class="custom-file-input"
                                v-on:change="handleImportedFile($event)"
