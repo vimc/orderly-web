@@ -29,7 +29,7 @@
             </div>
             <div class="pb-4" id="workflow-reports">
                 <h3 id="report-sub-header">Reports</h3>
-                <div id="choose-import-from">
+                <div v-if="!importFromCsvIsEnabled" id="choose-import-from">
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
@@ -121,6 +121,7 @@ import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
+import {switches} from '../../featureSwitches.ts';
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata
@@ -158,7 +159,8 @@ interface Data {
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
     reportsOrigin: "csv" | "list",
-    importedFilename: string
+    importedFilename: string,
+    importFromCsvIsEnabled: boolean
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -184,7 +186,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             workflowRemovals: null,
             reportsValid: [],
             reportsOrigin: "list",
-            importedFilename: ""
+            importedFilename: "",
+            importFromCsvIsEnabled: switches.workFlowReport
         }
     },
     computed: {
