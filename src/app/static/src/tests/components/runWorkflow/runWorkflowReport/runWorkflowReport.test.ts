@@ -545,7 +545,9 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can validate workflow reports", (done) => {
-        const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+        const blob = new Blob(["report"], {type: 'text/csv'});
+        blob['name'] = "test.csv";
+        const fakeFile = <File>blob;
 
         const formData = new FormData()
         formData.append("file", fakeFile)
@@ -572,11 +574,11 @@ describe(`runWorkflowReport`, () => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
 
             fromCsvLabel.find("input").trigger("click")
+
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
-            wrapper.setData({importedFilename: "upload.csv"})
-
             await Vue.nextTick()
+
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
             const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
@@ -589,7 +591,7 @@ describe(`runWorkflowReport`, () => {
 
             setTimeout(() => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(wrapper.vm.$data.importedFile).toMatchObject({}) // to fix incorrect assertion
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
@@ -599,9 +601,12 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("returns error if formData is empty when validating workflow", (done) => {
-        const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+        const blob = new Blob([""], {type: 'text/csv'});
+        blob['name'] = "test.csv";
+        const fakeFile = <File>blob
 
         const formData = new FormData()
+
         const url = "http://app/workflow/validate"
 
         mockAxios.onPost(url, formData).reply(200, {
@@ -623,11 +628,11 @@ describe(`runWorkflowReport`, () => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
 
             fromCsvLabel.find("input").trigger("click")
+
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
-            wrapper.setData({importedFilename: "upload.csv"})
-
             await Vue.nextTick()
+
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
             const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
