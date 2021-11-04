@@ -287,11 +287,11 @@ class WorkflowRunTests : IntegrationTest()
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
             url,
-                sessionCookie,
-                ContentTypes.json,
-                HttpMethod.post,
-                formData,
-                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.post,
+            formData,
+            mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
         )
         assertSuccessful(response)
         assertJsonContentType(response)
