@@ -10,6 +10,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -319,6 +320,22 @@ class DirectActionContextTests
         assertThat(result).isEqualTo("MOCK")
     }
 
+    @Test
+    fun `getPartReader throws BadRequest when content is empty`()
+    {
+        val mockRequest = mock<Request>{
+            on { contentLength() } doReturn 0
+        }
+        val mockContext = mock<SparkWebContext> {
+            on { sparkRequest } doReturn mockRequest
+        }
+
+        val sut = DirectActionContext(mockContext)
+        assertThatThrownBy{ sut.getPartReader("file") }
+                .isInstanceOf(BadRequest::class.java)
+                .hasMessageContaining("No data provided")
+    }
+
     private fun getMockRequestForPart(): Request
     {
         val mockStream = IOUtils.toInputStream("MOCK", Charset.defaultCharset())
@@ -333,6 +350,7 @@ class DirectActionContextTests
 
         return mock<Request> {
             on { raw() } doReturn mockRaw
+            on { contentLength() } doReturn 10
         }
     }
 }
