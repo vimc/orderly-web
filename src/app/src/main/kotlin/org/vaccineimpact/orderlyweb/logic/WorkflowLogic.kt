@@ -56,7 +56,7 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
             val numCells = row.count()
             if (numCells != numCols)
             {
-                errors.add(errorTemplate(rowIdx + 1, "row should contain $numCols values, ${numCells} values found"))
+                errors.add(errorTemplate(rowIdx + 1, "row should contain $numCols values, $numCells values found"))
             }
 
             val reportName = row[0]
