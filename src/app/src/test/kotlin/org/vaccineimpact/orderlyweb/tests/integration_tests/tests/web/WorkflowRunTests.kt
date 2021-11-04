@@ -261,7 +261,18 @@ class WorkflowRunTests : IntegrationTest()
     }
 
     @Test
-    fun `validates workflow for default git branch and commit`()
+    fun `validates workflow with missing branch and commit parameters`()
+    {
+        validateWorkflowWithDefaultBranchAncCommit("/workflow/validate")
+    }
+
+    @Test
+    fun `validates workflow with empty branch and commit parameters`()
+    {
+        validateWorkflowWithDefaultBranchAncCommit("/workflow/validate?branch&commit")
+    }
+
+    fun validateWorkflowWithDefaultBranchAncCommit(url: String)
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
@@ -275,7 +286,7 @@ class WorkflowRunTests : IntegrationTest()
         --XXXX--
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflow/validate",
+            url,
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,

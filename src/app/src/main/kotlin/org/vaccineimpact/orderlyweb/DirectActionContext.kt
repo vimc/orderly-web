@@ -35,7 +35,7 @@ open class DirectActionContext(
     constructor(request: Request, response: Response) : this(SparkWebContext(request, response))
 
     override fun contentType(): String = request.contentType()
-    override fun queryParams(): Map<String, String?> = request.queryParams().associateWith { request.queryParams(it) }
+    override fun queryParams(): Map<String, String> = request.queryParams().associateWith { request.queryParams(it) }
     override fun queryParams(key: String): String? = request.queryParams(key)
     override fun queryString(): String? = request.queryString()
     override fun params(): Map<String, String?> = request.params()
