@@ -163,6 +163,6 @@ class WorkflowRunController(
         val branch = context.queryParams("branch")
         val commit = context.queryParams("commit")
 
-        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit, orderlyServerAPI)
+        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit)
     }
 }

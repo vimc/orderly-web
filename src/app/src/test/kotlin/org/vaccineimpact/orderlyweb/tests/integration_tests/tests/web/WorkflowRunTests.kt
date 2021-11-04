@@ -392,12 +392,57 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(400)
         val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(3)
-        assertThat(errors[0]["message"].asText()).isEqualTo("Report row 3 should contain 2 values, 3 values found")
+        assertThat(errors[0]["message"].asText()).isEqualTo("Report row 3: row should contain 2 values, 3 values found")
         assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
         assertThat(errors[1]["message"].asText()).isEqualTo("Report row 2: required parameter 'nmin' was not provided for report 'other'")
         assertThat(errors[1]["code"].asText()).isEqualTo("bad-request")
         assertThat(errors[2]["message"].asText()).isEqualTo("Report row 4: report 'nonexistent' not found in Orderly")
         assertThat(errors[2]["code"].asText()).isEqualTo("bad-request")
+    }
+
+    @Test
+    fun `returns expected error when empty file data passed`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertThat(response.statusCode).isEqualTo(400)
+        val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
+        assertThat(errors.count()).isEqualTo(1)
+        assertThat(errors[0]["message"].asText()).isEqualTo("File contains no rows")
+        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+    }
+
+    @Test
+    fun `returns expected error when empty form data passed`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                "",
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertThat(response.statusCode).isEqualTo(400)
+        val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
+        assertThat(errors.count()).isEqualTo(1)
+        assertThat(errors[0]["message"].asText()).isEqualTo("No data provided")
+        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
     }
 
     private fun addWorkflowRunExample()

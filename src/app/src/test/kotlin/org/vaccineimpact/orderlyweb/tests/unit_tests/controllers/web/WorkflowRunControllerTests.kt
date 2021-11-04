@@ -561,12 +561,11 @@ class WorkflowRunControllerTests
         }
 
         val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
-        val mockAPI = mock<OrderlyServerAPI>()
         val mockLogic = mock<WorkflowLogic> {
-            on { parseAndValidateWorkflowCSV(mockReader, "testBranch", "testCommit", mockAPI) } doReturn mockResult
+            on { parseAndValidateWorkflowCSV(mockReader, "testBranch", "testCommit") } doReturn mockResult
         }
 
-        val sut = WorkflowRunController(mockContext, mock(), mockAPI, mockLogic)
+        val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)
         val result = sut.validateWorkflow()
 
         assertThat(result).isSameAs(mockResult)
