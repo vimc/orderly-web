@@ -555,6 +555,7 @@ describe(`runWorkflowReport`, () => {
         formData.append("git_commit", "gitCommit")
 
         const url = "http://app/workflow/validate"
+
         mockAxios.onPost(url, formData).reply(200, {
             data: [
                 {name: "minimal", params: {nmin: "5"}},
@@ -598,7 +599,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can return error if workflow validation fails", () => {
-        const blob = new Blob(["Test"], {type: 'text/csv'});
+        const blob = new Blob(["invalid content"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob
 

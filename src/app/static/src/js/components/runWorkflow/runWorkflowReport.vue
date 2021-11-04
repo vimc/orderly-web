@@ -160,7 +160,7 @@ interface Data {
     reportsValid: boolean[],
     reportsOrigin: "csv" | "list",
     importedFilename: string,
-    importedFile: string
+    importedFile: object | null
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -187,7 +187,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             workflowRemovals: null,
             reportsValid: [],
             importedFilename: "",
-            importedFile: "",
+            importedFile: null,
             reportsOrigin: "list",
         }
     },
