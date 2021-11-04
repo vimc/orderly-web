@@ -34,4 +34,20 @@ class ExceptionTests
                 "It should have the form 'scope/name' where scope is either the global scope '*' " +
                 "or a specific scope identifier in the form 'prefix:id'")
     }
+
+    @Test
+    fun `can create BadRequest with list of errors`()
+    {
+        val sut = BadRequest(listOf("error1", "error2"))
+        Assertions.assertThat(sut.httpStatus).isEqualTo(400)
+        Assertions.assertThat(sut.message).isEqualTo("the following problems occurred:\nerror1\nerror2")
+    }
+
+    @Test
+    fun `can create BadRequest with single error`()
+    {
+        val sut = BadRequest("only error")
+        Assertions.assertThat(sut.httpStatus).isEqualTo(400)
+        Assertions.assertThat(sut.message).isEqualTo("the following problems occurred:\nonly error")
+    }
 }

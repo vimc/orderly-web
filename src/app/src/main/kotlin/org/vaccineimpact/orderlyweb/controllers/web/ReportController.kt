@@ -66,7 +66,7 @@ class ReportController(
 
     fun getRunnableReports(): List<ReportWithDate>
     {
-        val reports = orderlyServerAPI.get("/reports/source", context).listData(String::class.java)
+        val reports = orderlyServerAPI.getRunnableReportNames(context.queryParams())
         val versionedReports = reportRepository.getLatestReportVersions(reports)
         return reports.map { name -> ReportWithDate(name, versionedReports.find { it.name == name }?.date) }
     }
@@ -74,9 +74,7 @@ class ReportController(
     fun getReportParameters(): List<Parameter>
     {
         val name = context.params(":name")
-        return orderlyServerAPI
-                .get("/reports/$name/parameters", context)
-                .listData(Parameter::class.java)
+        return orderlyServerAPI.getReportParameters(name, context.queryParams())
     }
 
     fun tagVersion(): String

@@ -16,6 +16,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServerResponse
 import org.vaccineimpact.orderlyweb.db.Config
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.models.GitCommit
+import org.vaccineimpact.orderlyweb.models.Parameter
 
 class OrderlyServerTests
 {
@@ -62,12 +63,13 @@ class OrderlyServerTests
     {
         val client = getHttpClient()
         val key = "report"
-        val queryParams: Map<String, String> = mapOf(key to "minimal")
+        val nullKey = "nullVal"
+        val queryParams: Map<String, String?> = mapOf(key to "minimal", nullKey to null)
         OrderlyServer(mockConfig, client).get("/some/path/", queryParams )
 
         verify(client).newCall(
                 check {
-                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?report=minimal")
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/some/path/?report=minimal&nullVal")
                     assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
                 }
         )
@@ -391,6 +393,48 @@ class OrderlyServerTests
                 emptyMap()
             )
         }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    @Test
+    fun `getRunnableReportNames does expected get`()
+    {
+        val mockResponse = """{"data": ["report1", "report2"], "errors": null, "status": "success"}"""
+        val mockQueryParams = mapOf("branch" to "testBranch", "commit" to "testCommit")
+        val client = getHttpClient(mockResponse)
+        val result = OrderlyServer(mockConfig, client).getRunnableReportNames(mockQueryParams)
+        assertThat(result).hasSameElementsAs(listOf("report1", "report2"))
+
+        verify(client).newCall(
+            check {
+                assertThat(it.url.toString()).isEqualTo("http://orderly/reports/source?branch=testBranch&commit=testCommit")
+                assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+            }
+        )
+    }
+
+    @Test
+    fun `getReportParameters does expected get`()
+    {
+        val mockResponse = """{"data": [
+                {"name": "param1", "value": "1"},
+                {"name": "param2", "value": "2"}
+            ], 
+            "errors": null, "status": "success"}""".trimMargin()
+
+        val mockQueryParams = mapOf("commit" to "testCommit")
+        val client = getHttpClient(mockResponse)
+        val result = OrderlyServer(mockConfig, client).getReportParameters("report1", mockQueryParams)
+        assertThat(result).hasSameElementsAs(listOf(
+            Parameter("param1", "1"),
+            Parameter("param2", "2")
+        ))
+
+        verify(client).newCall(
+                check {
+                    assertThat(it.url.toString()).isEqualTo("http://orderly/reports/report1/parameters?commit=testCommit")
+                    assertThat(it.headers).isEqualTo(standardHeaders.toHeaders())
+                }
+        )
     }
 
     private fun getHttpClient(

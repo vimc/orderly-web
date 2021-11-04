@@ -160,12 +160,9 @@ class WorkflowRunController(
     fun validateWorkflow(): List<WorkflowReportWithParams>
     {
         val reader = context.getPartReader("file")
-        val workflowReports = workflowLogic.parseWorkflowCSV(reader)
+        val branch = context.queryParams("branch")
+        val commit = context.queryParams("commit")
 
-        // These will be used when we validate against orderly reports in mrc-2720
-        val gitBranch = context.getPart("git_branch")
-        val gitCommit = context.getPart("git_commit")
-
-        return workflowReports
+        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit, orderlyServerAPI)
     }
 }
