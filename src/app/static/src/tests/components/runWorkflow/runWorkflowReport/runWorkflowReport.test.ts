@@ -544,7 +544,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate workflow reports", (done) => {
+    it("can validate workflow reports", async(done) => {
         const blob = new Blob(["report"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob;
@@ -573,11 +573,9 @@ describe(`runWorkflowReport`, () => {
         setTimeout(async() => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
 
-            fromCsvLabel.find("input").trigger("click")
+            await fromCsvLabel.find("input").trigger("click")
 
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
-
-            await Vue.nextTick()
 
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
@@ -587,34 +585,29 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
-            wrapper.find("#show-import-csv").find("input").trigger("change")
+            await wrapper.find("#show-import-csv").find("input").trigger("change")
 
-            setTimeout(() => {
-                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-                expect(wrapper.vm.$data.importedFile).toMatchObject({}) // to fix incorrect assertion
-                expect(mockAxios.history.post.length).toBe(1)
-                expect(mockAxios.history.post[0].url).toBe(url)
-                expect(mockAxios.history.post[0].data).toMatchObject({})
-                done();
-            });
+            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+            expect(wrapper.vm.$data.importedFile).toMatchObject({})
+            expect(wrapper.vm.$data.validationError).toBe("")
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0].url).toBe(url)
+            expect(mockAxios.history.post[0].data).toMatchObject({})
+            done()
         });
     });
 
-    it("returns error if formData is empty when validating workflow", (done) => {
-        const blob = new Blob([""], {type: 'text/csv'});
+    it("can return error if workflow validation fails", () => {
+        const blob = new Blob(["Test"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob
 
         const formData = new FormData()
+        formData.append("file", fakeFile)
 
         const url = "http://app/workflow/validate"
 
-        mockAxios.onPost(url, formData).reply(200, {
-            data: [
-                {name: "minimal", params: {nmin: "5"}},
-                {name: "global", params: {p1: "v1", p2: "v2"}}
-            ]
-        });
+        mockAxios.onPost(url, formData).reply(500, "ERROR");
 
         const wrapper = getWrapper({
             workflowMetadata: {
@@ -627,11 +620,9 @@ describe(`runWorkflowReport`, () => {
         setTimeout(async() => {
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
 
-            fromCsvLabel.find("input").trigger("click")
+            await fromCsvLabel.find("input").trigger("click")
 
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
-
-            await Vue.nextTick()
 
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
@@ -641,16 +632,14 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
-            wrapper.find("#show-import-csv").find("input").trigger("change")
+            await wrapper.find("#show-import-csv").find("input").trigger("change")
 
-            setTimeout(() => {
-                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-                //expect(wrapper.vm.$data.validationError).toStrictEqual([{Error: "Request failed with status code 404"}])
-                expect(mockAxios.history.post.length).toBe(1)
-                expect(mockAxios.history.post[0].url).toBe(url)
-                expect(mockAxios.history.post[0].data).toMatchObject({})
-                done();
-            });
+            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+            expect(wrapper.vm.$data.importedFile).toMatchObject({})
+            expect(wrapper.vm.$data.validationError).toBe("")
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0].url).toBe(url)
+            expect(mockAxios.history.post[0].data).toMatchObject({})
         });
     });
 
