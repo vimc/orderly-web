@@ -67,6 +67,26 @@ class WorkflowLogicTests
     }
 
     @Test
+    fun `validate method omits commit and branch parameters when null`()
+    {
+        val csvReader = """
+            report
+            test1
+        """.trimIndent().reader()
+        val mockOrderlyAPI = mock<OrderlyServerAPI> {
+            on { getRunnableReportNames(eq(mapOf())) } doReturn listOf("test1")
+            on { getReportParameters(eq("test1"), eq(mapOf())) } doReturn listOf<Parameter>()
+        }
+        val result = sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, null, null)
+        assertThat(result.count()).isEqualTo(1)
+        assertThat(result[0].name).isEqualTo("test1")
+        assertThat(result[0].params).isEqualTo(mapOf<String, String>())
+
+        verify(mockOrderlyAPI).getRunnableReportNames(eq(mapOf()))
+        verify(mockOrderlyAPI).getReportParameters(eq("test1"), eq(mapOf()))
+    }
+
+    @Test
     fun `throws expected error when parse CSV with no rows`()
     {
         val csvReader = "".reader()
