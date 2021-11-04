@@ -11,7 +11,7 @@ import org.vaccineimpact.orderlyweb.models.Parameter
 
 class WorkflowLogicTests
 {
-    private val sut = OrderlyWebWorkflowLogic()
+    private fun sut(orderly: OrderlyServerAPI) = OrderlyWebWorkflowLogic(orderly)
 
     private val testBranch = "testBranch"
     private val testCommit = "testCommit"
@@ -35,7 +35,7 @@ class WorkflowLogicTests
             test3,Rubella,
         """.trimIndent().reader()
 
-        val result = sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI)
+        val result = sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit)
         assertThat(result.count()).isEqualTo(3)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf("disease" to "HepB", "year" to "2020"))
@@ -58,7 +58,7 @@ class WorkflowLogicTests
                     "test1", "test2", "test3")
             on { getReportParameters(any(), eq(mapOf("commit" to testCommit))) } doReturn listOf<Parameter>()
         }
-        val result = sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockOrderlyAPI)
+        val result = sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit)
         assertThat(result.count()).isEqualTo(2)
         assertThat(result[0].name).isEqualTo("test1")
         assertThat(result[0].params).isEqualTo(mapOf<String, String>())
@@ -70,7 +70,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV with no rows`()
     {
         val csvReader = "".reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "","", mock()) }
+        assertThatThrownBy{ sut(mock()).parseAndValidateWorkflowCSV(csvReader, "","") }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("File contains no rows")
     }
 
@@ -78,7 +78,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV with no reports`()
     {
         val csvReader = "report,param1".reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
+        assertThatThrownBy{ sut(mock()).parseAndValidateWorkflowCSV(csvReader, "", "") }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("File contains no reports")
     }
 
@@ -86,7 +86,7 @@ class WorkflowLogicTests
     fun `throws expected error when parse CSV where incorrect first header`()
     {
         val csvReader = "report1,param1".reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, "", "", mock()) }
+        assertThatThrownBy{ sut(mock()).parseAndValidateWorkflowCSV(csvReader, "", "") }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("First header must be 'report'")
     }
 
@@ -99,9 +99,9 @@ class WorkflowLogicTests
             test2,,2021,TOO_MANY
             test3,Rubella,
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
+        assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining(
-                        "Report row 2 should contain 3 values, 4 values found")
+                        "Report row 2: row should contain 3 values, 4 values found")
     }
 
     @Test
@@ -113,9 +113,9 @@ class WorkflowLogicTests
             test2,,2021
             test3,Rubella
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
+        assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining(
-                        "Report row 3 should contain 3 values, 2 values found")
+                        "Report row 3: row should contain 3 values, 2 values found")
     }
 
     @Test
@@ -127,7 +127,7 @@ class WorkflowLogicTests
             test1,HepB,2020
             nonexistent2,HepB,2020
         """.trimIndent().reader()
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockTestOrderlyAPI) }
+        assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
                     Report row 1: report 'nonexistent1' not found in Orderly
                     Report row 3: report 'nonexistent2' not found in Orderly""".trimIndent())
@@ -160,7 +160,7 @@ class WorkflowLogicTests
                     Parameter("year", null), Parameter("age", null)
             )
         }
-        assertThatThrownBy{ sut.parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit, mockOrderlyAPI) }
+        assertThatThrownBy{ sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
                     Report row 1: unexpected parameter 'year' provided for report 'SingleDefaultParam'
                     Report row 1: unexpected parameter 'age' provided for report 'SingleDefaultParam'

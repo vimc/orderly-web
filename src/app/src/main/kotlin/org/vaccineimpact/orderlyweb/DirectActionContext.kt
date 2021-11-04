@@ -7,6 +7,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -129,6 +130,10 @@ open class DirectActionContext(
 
     override fun getPartReader(partName: String): Reader
     {
+        if (request.contentLength() == 0) {
+            throw BadRequest("No data provided")
+        }
+
         request.attribute("org.eclipse.jetty.multipartConfig",
             MultipartConfigElement(System.getProperty("java.io.tmpdir")))
         val stream = request.raw().getPart(partName).inputStream

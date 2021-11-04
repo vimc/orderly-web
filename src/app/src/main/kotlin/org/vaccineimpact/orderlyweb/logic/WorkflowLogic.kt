@@ -1,7 +1,9 @@
 package org.vaccineimpact.orderlyweb.logic
 
 import com.opencsv.CSVReader
+import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
+import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.models.Parameter
 import org.vaccineimpact.orderlyweb.models.WorkflowReportWithParams
@@ -12,18 +14,18 @@ interface WorkflowLogic
     fun parseAndValidateWorkflowCSV(
         reader: Reader,
         branch: String?,
-        commit: String?,
-        orderly: OrderlyServerAPI
+        commit: String?
     ): List<WorkflowReportWithParams>
 }
 
-class OrderlyWebWorkflowLogic : WorkflowLogic
+class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowLogic
 {
+    constructor() : this(OrderlyServer(AppConfig()).throwOnError())
+
     override fun parseAndValidateWorkflowCSV(
         reader: Reader,
         branch: String?,
-        commit: String?,
-        orderly: OrderlyServerAPI
+        commit: String?
     ): List<WorkflowReportWithParams>
     {
         val rows = CSVReader(reader).use { it.readAll() }
@@ -43,14 +45,18 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             throw BadRequest("File contains no reports")
         }
 
-        val columnCount = headers.count()
+        val numCols = headers.count()
+
+        // We expect the headers to be "report", param1, param2,...paramN
         val paramNames = headers.drop(1)
 
         val errors: MutableList<String> = mutableListOf()
+        val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
         val reports = rows.drop(1).mapIndexed { rowIdx, row ->
-            if (row.count() != columnCount)
+            val numCells = row.count()
+            if (numCells != numCols)
             {
-                errors.add("Report row ${rowIdx + 1} should contain $columnCount values, ${row.count()} values found")
+                errors.add(errorTemplate(rowIdx + 1, "row should contain $numCols values, $numCells values found"))
             }
 
             val reportName = row[0]
@@ -61,8 +67,7 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
             WorkflowReportWithParams(reportName, parameters)
         }
 
-        val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
-        errors += validateWorkflowReports(reports, branch, commit, orderly, errorTemplate)
+        errors += validateWorkflowReports(reports, branch, commit, errorTemplate)
 
         if (errors.isNotEmpty())
         {
@@ -76,7 +81,6 @@ class OrderlyWebWorkflowLogic : WorkflowLogic
         reports: List<WorkflowReportWithParams>,
         branch: String?,
         commit: String?,
-        orderly: OrderlyServerAPI,
         errorTemplate: (index: Int, msg: String) -> String
     ): List<String>
     {
