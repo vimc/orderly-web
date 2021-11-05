@@ -29,7 +29,11 @@
             </div>
             <div class="pb-4" id="workflow-reports">
                 <h3 id="report-sub-header">Reports</h3>
+<<<<<<< HEAD
                 <div id="choose-import-from">
+=======
+                <div v-if="!importFromCsvIsEnabled" id="choose-import-from">
+>>>>>>> 78d30e9660bb0df0d71a0903289a7367f663cffa
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
                         <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
@@ -121,6 +125,7 @@ import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
+import {switches} from '../../featureSwitches.ts';
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata
@@ -161,7 +166,11 @@ interface Data {
     reportsValid: boolean[],
     reportsOrigin: "csv" | "list",
     importedFilename: string,
+<<<<<<< HEAD
     importedFile: object | null
+=======
+    importFromCsvIsEnabled: boolean
+>>>>>>> 78d30e9660bb0df0d71a0903289a7367f663cffa
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -190,6 +199,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             importedFilename: "",
             importedFile: null,
             reportsOrigin: "list",
+            importedFilename: "",
+            importFromCsvIsEnabled: switches.workFlowReport
         }
     },
     computed: {
