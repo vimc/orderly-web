@@ -49,6 +49,14 @@ class WorkflowRunController(
         )
     }
 
+    fun getMissingDependencies(): String
+    {
+        getWorkflowRunStatus()
+        val reports = {}
+        val response = orderlyServerAPI.get("/v1/workflow/missing-dependencies/", reports)
+        return passThroughResponse(response)
+    }
+
     internal data class WorkflowRunResponse(
         @SerializedName(value = "workflow_key")
         val key: String,

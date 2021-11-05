@@ -84,7 +84,6 @@ interface Data {
     defaultMessage: string;
     pollingTimer: null | number;
 }
-// test
 
 interface Methods {
     getWorkflowRunSummaries: () => void;
