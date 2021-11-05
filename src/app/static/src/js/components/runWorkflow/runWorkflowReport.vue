@@ -370,14 +370,14 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         validateWorkflow() {
             const formData = new FormData()
             formData.append("file", this.importedFile)
-            const params = `branch=${this.workflowMetadata.git_branch}&commit=${this.workflowMetadata.git_commit}`
+            const params = `?branch=${this.workflowMetadata.git_branch}&commit=${this.workflowMetadata.git_commit}`
 
-            api.post(`/workflow/validate/?${params}`,
+            api.post(`/workflow/validate/${params}`,
                 formData, {
-                headers: {
-                    'content-type': 'multipart/form-data'
-                }
-            })
+                    headers: {
+                        'content-type': 'multipart/form-data'
+                    }
+                })
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
                     this.validationError = "";
