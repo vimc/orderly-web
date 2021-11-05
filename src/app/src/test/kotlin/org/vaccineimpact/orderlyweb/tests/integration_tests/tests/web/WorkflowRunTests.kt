@@ -2,8 +2,6 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.fge.jackson.JsonLoader
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
