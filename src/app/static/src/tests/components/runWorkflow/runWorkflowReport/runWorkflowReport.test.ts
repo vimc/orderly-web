@@ -557,7 +557,8 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate workflow reports", async(done) => {
+    it("can validate workflow reports", (done) => {
+        switches.workFlowReport = false
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
         const blob = new Blob(["report"], {type: 'text/csv'});
@@ -579,20 +580,20 @@ describe(`runWorkflowReport`, () => {
             }
         });
 
-        setTimeout(async() => {
+        setTimeout(async () => {
             await wrapper.find("input#import-from-csv").trigger("click")
 
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
 
             Object.defineProperty(input, "files", {
                 value: [fakeFile]
             })
 
-            wrapper.find("#show-import-csv").find("input").trigger("change")
+            wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
             setTimeout(() => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
@@ -612,7 +613,8 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("can return error if workflow validation fails", async (done) => {
+    it("can return error if workflow validation fails",  (done) => {
+        switches.workFlowReport = false
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
         const blob = new Blob(["invalid content"], {type: 'text/csv'});
@@ -641,13 +643,13 @@ describe(`runWorkflowReport`, () => {
 
             expect(wrapper.find("#show-import-csv").exists()).toBe(true)
 
-            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
 
             Object.defineProperty(input, "files", {
                 value: [fakeFile]
             })
 
-            await wrapper.find("#show-import-csv").find("input").trigger("change")
+            await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
             setTimeout(() => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
