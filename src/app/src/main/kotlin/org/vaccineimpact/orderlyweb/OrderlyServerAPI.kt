@@ -39,7 +39,7 @@ interface OrderlyServerAPI
     fun get(url: String, context: ActionContext): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
-    fun get(url: String, queryParams: Map<String, String?>): OrderlyServerResponse
+    fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
 
     @Throws(OrderlyServerError::class)
     fun delete(url: String, context: ActionContext): OrderlyServerResponse
@@ -47,10 +47,10 @@ interface OrderlyServerAPI
     fun throwOnError(): OrderlyServerAPI
 
     @Throws(OrderlyServerError::class)
-    fun getRunnableReportNames(queryParams: Map<String, String?>): List<String>
+    fun getRunnableReportNames(queryParams: Map<String, String>): List<String>
 
     @Throws(OrderlyServerError::class)
-    fun getReportParameters(reportName: String, queryParams: Map<String, String?>): List<Parameter>
+    fun getReportParameters(reportName: String, queryParams: Map<String, String>): List<Parameter>
 }
 
 class OrderlyServerResponse(val bytes: ByteArray, val statusCode: Int)
@@ -112,7 +112,7 @@ class OrderlyServer(
         return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun get(url: String, queryParams: Map<String, String?>): OrderlyServerResponse
+    override fun get(url: String, queryParams: Map<String, String>): OrderlyServerResponse
     {
         val buildUrl = urlBase.toHttpUrl().newBuilder()
                 .addPathSegments(url.trimStart('/'))
@@ -212,12 +212,12 @@ class OrderlyServer(
         return transformResponse(response.code, response.body!!.string())
     }
 
-    override fun getRunnableReportNames(queryParams: Map<String, String?>): List<String>
+    override fun getRunnableReportNames(queryParams: Map<String, String>): List<String>
     {
         return get("/reports/source", queryParams).listData(String::class.java)
     }
 
-    override fun getReportParameters(reportName: String, queryParams: Map<String, String?>): List<Parameter>
+    override fun getReportParameters(reportName: String, queryParams: Map<String, String>): List<Parameter>
     {
         return get("/reports/$reportName/parameters", queryParams).listData(Parameter::class.java)
     }

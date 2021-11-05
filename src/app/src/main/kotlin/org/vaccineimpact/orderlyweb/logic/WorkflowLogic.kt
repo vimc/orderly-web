@@ -84,10 +84,21 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         errorTemplate: (index: Int, msg: String) -> String
     ): List<String>
     {
-        val runnableReports = orderly.getRunnableReportNames(mapOf("branch" to branch, "commit" to commit))
+        val reportsQsParams: MutableMap<String, String> = mutableMapOf()
+        val parametersQsParams: MutableMap<String, String> = mutableMapOf()
+        if (commit != null)
+        {
+            reportsQsParams["commit"] = commit
+            parametersQsParams["commit"] = commit
+        }
+        if (branch != null)
+        {
+            reportsQsParams["branch"] = branch
+        }
+
+        val runnableReports = orderly.getRunnableReportNames(reportsQsParams)
         val knownOrderlyReportParams: MutableMap<String, List<Parameter>> = mutableMapOf()
         val errors: MutableList<String> = mutableListOf()
-        val getParamsQs = mapOf("commit" to commit)
 
         reports.forEachIndexed { index, report ->
             val reportIdx = index + 1
@@ -100,7 +111,7 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
                 var orderlyParamsList = knownOrderlyReportParams[report.name]
                 if (orderlyParamsList == null)
                 {
-                    orderlyParamsList = orderly.getReportParameters(report.name, getParamsQs)
+                    orderlyParamsList = orderly.getReportParameters(report.name, parametersQsParams)
                     knownOrderlyReportParams[report.name] = orderlyParamsList
                 }
 
