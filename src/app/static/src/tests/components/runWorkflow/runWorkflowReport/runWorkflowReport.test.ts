@@ -24,14 +24,26 @@ const reports = [
     { name: "other", date: new Date() }
 ];
 
+const workflowValidationResponse = {
+    data: [
+        {name: "minimal", params: {nmin: "5"}},
+        {name: "global", params: {p1: "v1", p2: "v2"}}
+    ]
+}
+
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
             .reply(200, {"data": runReportMetadataResponse});
-    });
 
+        const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
+        mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
+
+        mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
+            .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
+    });
 
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
         return shallowMount(runWorkflowReport, {propsData})
@@ -545,36 +557,29 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can validate workflow reports", async(done) => {
+        const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
+
         const blob = new Blob(["report"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob;
 
-        const formData = new FormData()
-        formData.append("file", fakeFile)
-        formData.append("git_branch", "gitBranch")
-        formData.append("git_commit", "gitCommit")
+        const mockUpdateWorkflowReports = jest.fn()
 
-        const url = "http://app/workflow/validate"
-
-        mockAxios.onPost(url, formData).reply(200, {
-            data: [
-                {name: "minimal", params: {nmin: "5"}},
-                {name: "global", params: {p1: "v1", p2: "v2"}}
-            ]
-        });
-
-        const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                git_branch: "branch"
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: {
+                    ...emptyWorkflowMetadata,
+                    git_commit: "abc123",
+                    git_branch: "branch"
+                }
+            },
+            methods: {
+                updateWorkflowReports: mockUpdateWorkflowReports
             }
         });
 
         setTimeout(async() => {
-            const fromCsvLabel = wrapper.find("#import-from-csv-label")
-
-            await fromCsvLabel.find("input").trigger("click")
+            await wrapper.find("input#import-from-csv").trigger("click")
 
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
@@ -586,42 +591,50 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
-            await wrapper.find("#show-import-csv").find("input").trigger("change")
+            wrapper.find("#show-import-csv").find("input").trigger("change")
 
-            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-            expect(wrapper.vm.$data.importedFile).toMatchObject({})
-            expect(wrapper.vm.$data.validationError).toBe("")
-            expect(mockAxios.history.post.length).toBe(1)
-            expect(mockAxios.history.post[0].url).toBe(url)
-            expect(mockAxios.history.post[0].data).toMatchObject({})
-            done()
+            setTimeout(() => {
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
+                expect(wrapper.vm.$data.validationError).toBe(null)
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
+                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
+                    [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ])
+                done()
+            })
         });
     });
 
-    it("can return error if workflow validation fails", () => {
+    it("can return error if workflow validation fails", async (done) => {
+        const url = "http://app/workflow/validate/?branch=test&commit=test"
+
         const blob = new Blob(["invalid content"], {type: 'text/csv'});
         blob['name'] = "test.csv";
         const fakeFile = <File>blob
 
-        const formData = new FormData()
-        formData.append("file", fakeFile)
+        const mockUpdateWorkflowReports = jest.fn()
 
-        const url = "http://app/workflow/validate"
-
-        mockAxios.onPost(url, formData).reply(500, "ERROR");
-
-        const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                git_branch: "branch"
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: {
+                    ...emptyWorkflowMetadata,
+                    git_commit: "test",
+                    git_branch: "test"
+                }
+            },
+            methods: {
+                updateWorkflowReports: mockUpdateWorkflowReports
             }
         });
 
-        setTimeout(async() => {
-            const fromCsvLabel = wrapper.find("#import-from-csv-label")
-
-            await fromCsvLabel.find("input").trigger("click")
+        setTimeout(async () => {
+            await wrapper.find("input#import-from-csv").trigger("click")
 
             expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
 
@@ -635,12 +648,16 @@ describe(`runWorkflowReport`, () => {
 
             await wrapper.find("#show-import-csv").find("input").trigger("change")
 
-            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
-            expect(wrapper.vm.$data.importedFile).toMatchObject({})
-            expect(wrapper.vm.$data.validationError).toBe("")
-            expect(mockAxios.history.post.length).toBe(1)
-            expect(mockAxios.history.post[0].url).toBe(url)
-            expect(mockAxios.history.post[0].data).toMatchObject({})
+            setTimeout(() => {
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
+                expect(wrapper.vm.$data.validationError).toEqual([{code: "bad-request", message: "ERROR RESPONSE"}])
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(0)
+                done()
+            })
         });
     });
 

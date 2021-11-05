@@ -107,6 +107,7 @@
 import Vue from "vue";
 import {BAlert} from "bootstrap-vue";
 import {
+    Error,
     Parameter,
     ReportWithDate,
     RunReportMetadata,
@@ -154,7 +155,7 @@ interface Data {
     reports: ReportWithDate[],
     selectedReport: string,
     error: string,
-    validationError: string,
+    validationError: Error[] | null | undefined,
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
@@ -182,7 +183,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reports: [],
             selectedReport: "",
             error: "",
-            validationError: "",
+            validationError: null,
             defaultMessage: "",
             workflowRemovals: null,
             reportsValid: [],
@@ -373,17 +374,18 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             const params = `?branch=${this.workflowMetadata.git_branch}&commit=${this.workflowMetadata.git_commit}`
 
             api.post(`/workflow/validate/${params}`,
-                formData, {
+                formData,
+                {
                     headers: {
-                        'content-type': 'multipart/form-data'
+                        "Content-Type": "multipart/form-data"
                     }
                 })
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
-                    this.validationError = "";
+                    this.validationError = null;
                 })
                 .catch((error) => {
-                    this.validationError = error;
+                    this.validationError = error.response.data?.errors;
                 });
         }
     },
