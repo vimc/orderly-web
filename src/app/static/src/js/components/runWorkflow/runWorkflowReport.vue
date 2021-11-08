@@ -161,11 +161,8 @@ interface Data {
     reportsValid: boolean[],
     reportsOrigin: "csv" | "list",
     importedFilename: string,
-<<<<<<< HEAD
     importedFile: object | null
-=======
     importFromCsvIsEnabled: boolean
->>>>>>> 78d30e9660bb0df0d71a0903289a7367f663cffa
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -194,7 +191,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             importedFilename: "",
             importedFile: null,
             reportsOrigin: "list",
-            importedFilename: "",
             importFromCsvIsEnabled: switches.workFlowReport
         }
     },
