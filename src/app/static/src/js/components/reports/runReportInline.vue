@@ -11,6 +11,7 @@
 <script>
     import {buildFullUrl} from "../../utils/api";
     import {session} from "./../../utils/session.js"
+    import {SELECTED_RUNNING_REPORT_TAB} from "../../utils/session";
 
     export default {
         name: 'runReport',
@@ -23,7 +24,7 @@
         },
         methods: {
             clearRunReportSession(){
-                session.setSelectedTab("runReport");
+                session.setSelectedTab(SELECTED_RUNNING_REPORT_TAB, "runReport");
             }
         }
     }
