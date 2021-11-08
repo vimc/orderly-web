@@ -558,7 +558,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can validate workflow reports", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
         const blob = new Blob(["report"], {type: 'text/csv'});
@@ -614,7 +614,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can return error if workflow validation fails",  (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
         const blob = new Blob(["invalid content"], {type: 'text/csv'});
@@ -665,7 +665,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("renders choose or import from and check default radio button", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const wrapper = getWrapper();
 
         setTimeout(() => {
@@ -682,7 +682,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("does not show report from list component when import from csv is checked", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const wrapper = getWrapper();
 
         setTimeout(async () => {
@@ -698,7 +698,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("shows report from list when choose from list is checked", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const wrapper = getWrapper();
 
         setTimeout(() => {
@@ -712,7 +712,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("renders import from csv controls as expected", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const wrapper = getWrapper();
 
         setTimeout(async () => {
@@ -730,7 +730,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can display filename", (done) => {
-        switches.workFlowReport = false
+        switches.workFlowReport = true
         const wrapper = getWrapper();
 
         setTimeout(async () => {
