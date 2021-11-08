@@ -42,7 +42,13 @@ const workflowStatus1 = {
           "name": "report three a",
           "status": "running",
           "date": null
-        }
+        },
+        {
+            "key": "non_hygienic_mammoth",
+            "name": "report four a",
+            "status": "impossible",
+            "date": "2021-06-16T09:51:16Z"
+          },
       ]
     }
   }
@@ -142,7 +148,7 @@ describe(`runWorkflowProgress`, () => {
 
         setTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
-            expect(wrapper.findAll("tr").length).toBe(3)
+            expect(wrapper.findAll("tr").length).toBe(4)
             const reportLinks = wrapper.findAll("td > a")
             expect(reportLinks.length).toBe(1)
 
@@ -160,6 +166,10 @@ describe(`runWorkflowProgress`, () => {
             const runningStatus = wrapper.findAll("tr > td:nth-child(2)").at(2)
             expect(runningStatus.text()).toBe("Running")
             expect(runningStatus.classes()).toContain("text-secondary")
+
+            const dependencyErrorStatus = wrapper.findAll("tr > td:nth-child(2)").at(3)
+            expect(dependencyErrorStatus.text()).toBe("Dependency failed")
+            expect(dependencyErrorStatus.classes()).toContain("text-danger")
 
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
             expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")

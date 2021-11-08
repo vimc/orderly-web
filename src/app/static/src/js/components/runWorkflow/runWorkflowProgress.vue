@@ -193,6 +193,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         interpretStatus(status) {
             if (status === "success") {
                 return "Complete";
+            } else if (status === "impossible") {
+                return "Dependency failed"
             } else if (
                 failStates.includes(status)
             ) {

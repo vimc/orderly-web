@@ -7,15 +7,12 @@ module.exports = {
     "globals": {
         "appUrl": "http://app",
         "ts-jest": {
-            tsConfig: 'tsconfig.json',
+            "tsconfig": 'tsconfig.json',
             "diagnosis": {
                 "warmOnly": false
             }
         }
     },
-    "transformIgnorePatterns": [
-        "node_modules/(?!(vue-typeahead-bootstrap)/)",
-    ],
     "moduleFileExtensions": [
         "js",
         "ts",
@@ -28,6 +25,7 @@ module.exports = {
         "^.+\\.ts?$": "ts-jest",
         "^.+\\.js$": "<rootDir>/node_modules/babel-jest"
     },
+    "transformIgnorePatterns": ["node_modules/(?!@bootstrap-vue)/"],
     "coverageDirectory": "./coverage/",
     "collectCoverage": true,
     "coveragePathIgnorePatterns": [

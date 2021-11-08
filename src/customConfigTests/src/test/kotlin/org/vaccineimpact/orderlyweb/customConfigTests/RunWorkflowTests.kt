@@ -4,7 +4,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.JavascriptExecutor
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
 import org.openqa.selenium.support.ui.Select
@@ -184,8 +183,8 @@ class RunWorkflowTests : SeleniumTest()
     private fun addReport(reportName: String)
     {
         driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report a")))
-        driver.findElement(By.cssSelector("#workflow-report a")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report li")))
+        driver.findElement(By.cssSelector("#workflow-report li")).click()
         val addButton = driver.findElement(By.id("add-report-button"))
         wait.until(ExpectedConditions.elementToBeClickable(addButton))
         addButton.click()
