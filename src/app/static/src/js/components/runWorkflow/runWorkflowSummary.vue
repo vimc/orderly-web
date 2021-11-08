@@ -39,6 +39,10 @@
                     return `${num} reports`
                 }
             }
+        },
+        mounted() {
+            // the summary page is "valid" by default
+            this.$emit("valid", true)
         }
     })
 </script>
