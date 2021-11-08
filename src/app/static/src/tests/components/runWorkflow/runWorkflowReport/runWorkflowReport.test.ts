@@ -8,6 +8,7 @@ import ParameterList from "../../../../js/components/runReport/parameterList.vue
 import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
 import {BAlert} from "bootstrap-vue";
+import {switches} from "../../../../js/featureSwitches";
 
 export const runReportMetadataResponse = {
     metadata: {
@@ -528,4 +529,99 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.workflowRemovals).toStrictEqual(null);
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
+
+    it("renders choose or import from and check default radio button", (done) => {
+        switches.workFlowReport = true
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const fromListLabel = wrapper.find("#choose-from-list-label")
+            expect(fromListLabel.text()).toBe("Choose from list")
+            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
+
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            expect(fromCsvLabel.text()).toBe("Import from csv")
+            expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+    it("does not show report from list component when import from csv is checked", (done) => {
+        switches.workFlowReport = true
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-report-list").exists()).toBe(false)
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            done();
+        });
+    });
+
+    it("shows report from list when choose from list is checked", (done) => {
+        switches.workFlowReport = true
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            const fromListLabel = wrapper.find("#choose-from-list-label")
+            fromListLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list")
+            expect(wrapper.find("#show-import-csv").exists()).toBe(false)
+            expect(wrapper.find("#show-report-list").exists()).toBe(true)
+            done();
+        });
+    });
+
+    it("renders import from csv controls as expected", (done) => {
+        switches.workFlowReport = true
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            const uploadInput = wrapper.find("#show-import-csv").find("input")
+            expect(uploadInput.attributes("accept")).toBe("text/csv")
+            expect(uploadInput.attributes("lang")).toBe("en")
+            done();
+        });
+    });
+
+    it("can display filename", (done) => {
+        switches.workFlowReport = true
+        const wrapper = getWrapper();
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label")
+            fromCsvLabel.find("input").trigger("click")
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            await Vue.nextTick()
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+            const fakeFile = new File(["report"],  "test.csv", { type: 'text/csv'});
+            const input = wrapper.find("#show-import-csv").find("input").element as HTMLInputElement
+
+            expect(wrapper.vm.$data.importedFilename).toBe("")
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            wrapper.find("#show-import-csv").find("input").trigger("change")
+            await Vue.nextTick()
+
+            const uploadLabel = wrapper.find("#show-import-csv").find(".custom-file-label")
+            expect(uploadLabel.text()).toBe("test.csv")
+            expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+            done();
+        });
+    });
+
 });
