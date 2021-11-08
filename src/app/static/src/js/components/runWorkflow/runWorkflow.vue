@@ -28,10 +28,10 @@
     import workflowWizard from "../workflowWizard/workflowWizard.vue";
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowCreate from "./runWorkflowCreate.vue";
-    import { api } from "../../utils/api";
+    import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
 
-    interface Props{
+    interface Props {
         workflowToRerun: RunWorkflowMetadata | null
     }
 
@@ -53,75 +53,80 @@
         handleComplete: () => void
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
     }
-export default Vue.extend<Data, Methods, unknown, Props>({
-    name: "runWorkflow",
-    props: {
-        workflowToRerun: null
-    },
-    data(): Data {
-        return {
-            runWorkflowMetadata: null,
-            workflowStarted: false,
-            stepComponents: [],
-            toggleFinalStepNextTo: "Run workflow",
-            disableRename: false,
-            error: "",
-            createdWorkflowKey: ""
+
+    export default Vue.extend<Data, Methods, unknown, Props>({
+        name: "runWorkflow",
+        props: {
+            workflowToRerun: null
+        },
+        data(): Data {
+            return {
+                runWorkflowMetadata: null,
+                workflowStarted: false,
+                stepComponents: [],
+                toggleFinalStepNextTo: "Run workflow",
+                disableRename: false,
+                error: "",
+                createdWorkflowKey: ""
+            }
+        },
+        methods: {
+            handleRerun: function (data) {
+                this.runWorkflowMetadata = data
+                this.stepComponents = [
+                    {name: "summary", component: "runWorkflowSummary"},
+                    {name: "run", component: "runWorkflowRun"}]
+                this.workflowStarted = true
+                this.disableRename = true
+            },
+            handleCreate: function (data) {
+                this.runWorkflowMetadata = data
+                this.stepComponents = [
+                    {name: "report", component: "runWorkflowReport"},
+                    {name: "summary", component: "runWorkflowSummary"},
+                    {name: "run", component: "runWorkflowRun"},
+                ]
+                this.workflowStarted = true
+            },
+            handleClone: function (data) {
+                this.runWorkflowMetadata = data
+                this.stepComponents = [
+                    {name: "report", component: "runWorkflowReport"},
+                    {name: "summary", component: "runWorkflowSummary"},
+                    {name: "run", component: "runWorkflowRun"},
+                ]
+                this.workflowStarted = true
+            },
+            handleCancel: function () {
+                this.workflowStarted = false
+                this.disableRename = false
+            },
+            handleComplete: function () {
+                api.post(`/workflow`, this.runWorkflowMetadata)
+                    .then((response) => {
+                        this.error = null;
+                        this.createdWorkflowKey = response.data.data.workflow_key;
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                        this.defaultMessage = "An error occurred while running the workflow";
+                    });
+            },
+            updateRunWorkflowMetadata: function (update) {
+                this.error = "";
+                this.createdWorkflowKey = "";
+                this.runWorkflowMetadata = update;
+            }
+        },
+        components: {
+            workflowWizard,
+            runWorkflowCreate,
+            ErrorInfo
+        },
+        mounted() {
+            if (this.workflowToRerun) {
+                this.handleRerun(this.workflowToRerun);
+            }
         }
-    },
-    methods: {
-        handleRerun: function (data) {
-            this.runWorkflowMetadata = data
-            this.stepComponents = [{name: "run", component: "runWorkflowRun"}]
-            this.workflowStarted = true
-            this.disableRename = true
-        },
-        handleCreate: function (data) {
-            this.runWorkflowMetadata = data
-            this.stepComponents = [
-                {name: "report", component: "runWorkflowReport"},
-                {name: "run", component: "runWorkflowRun"},
-            ]
-            this.workflowStarted = true
-        },
-        handleClone: function (data) {
-            this.runWorkflowMetadata = data
-            this.stepComponents = [
-                {name: "report", component: "runWorkflowReport"},
-                {name: "run", component: "runWorkflowRun"},
-            ]
-            this.workflowStarted = true
-        },
-        handleCancel: function () {
-            this.workflowStarted = false
-            this.disableRename = false
-        },
-        handleComplete: function () {
-            api.post(`/workflow`, this.runWorkflowMetadata)
-                .then((response) => {
-                    this.error = null;
-                    this.createdWorkflowKey = response.data.data.workflow_key;
-                })
-                .catch((error) => {
-                    this.error = error;
-                    this.defaultMessage = "An error occurred while running the workflow";
-                });
-        },
-        updateRunWorkflowMetadata: function (update) {
-            this.error = "";
-            this.createdWorkflowKey = "";
-            this.runWorkflowMetadata = update;
-        }
-    },
-    components: {
-        workflowWizard,
-        runWorkflowCreate,
-        ErrorInfo
-    },
-    mounted() {
-        if (this.workflowToRerun) {
-            this.handleRerun(this.workflowToRerun);
-        }
-    }
-})
+    })
 </script>
