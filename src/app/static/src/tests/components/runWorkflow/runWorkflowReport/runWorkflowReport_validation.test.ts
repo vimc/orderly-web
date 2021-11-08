@@ -116,7 +116,7 @@ describe("runWorkflowReport validation", () => {
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
             expect(wrapper.emitted("valid")).toBeUndefined();
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 
@@ -133,7 +133,7 @@ describe("runWorkflowReport validation", () => {
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
             expect(wrapper.emitted("valid")).toBeUndefined();
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 
@@ -157,7 +157,7 @@ describe("runWorkflowReport validation", () => {
         });
         setTimeout(async () => {
             expectEmittedValid(wrapper);
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 

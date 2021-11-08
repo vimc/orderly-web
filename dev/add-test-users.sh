@@ -12,3 +12,4 @@ $here/cli.sh add-members Admin test.user@example.com
 $here/cli.sh grant Funders */reports.read
 $here/cli.sh grant Science report:minimal/reports.read
 
+echo

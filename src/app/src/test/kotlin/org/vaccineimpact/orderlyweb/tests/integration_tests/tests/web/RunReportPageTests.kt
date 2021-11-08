@@ -2,21 +2,16 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.*
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.*
 import org.vaccineimpact.orderlyweb.controllers.web.ReportController
-import org.vaccineimpact.orderlyweb.controllers.web.ReportRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebTagRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.models.GitCommit
-import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportWithDate
 import org.vaccineimpact.orderlyweb.models.Scope
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -57,13 +52,7 @@ class RunReportPageTests : IntegrationTest()
     fun `can return parameter data`()
     {
         val branch = "master"
-        val commits = OrderlyServer(AppConfig()).get(
-                "/git/commits",
-                context = mock {
-                    on { queryString() } doReturn "branch=$branch"
-                }
-        )
-        val commit = commits.listData(GitCommit::class.java).first().id
+        val commit = getGitBranchCommit(branch)
         val url = "/report/minimal/config/parameters/?commit=$commit"
 
         val response = webRequestHelper.loginWithMontaguAndMakeRequest(url,
@@ -114,13 +103,7 @@ class RunReportPageTests : IntegrationTest()
     fun `lists runnable reports`()
     {
         val branch = "master"
-        val commits = OrderlyServer(AppConfig()).get(
-                "/git/commits",
-                context = mock {
-                    on { queryString() } doReturn "branch=$branch"
-                }
-        )
-        val commit = commits.listData(GitCommit::class.java).first().id
+        val commit = getGitBranchCommit(branch)
         val repo = OrderlyReportRepository(true, false)
         val controller = ReportController(
                 mock {

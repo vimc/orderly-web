@@ -15,6 +15,7 @@
                         name="workflows"
                         id="workflows"
                         v-model="selectedWorkflowKey"
+                        :clearable = "false"
                         placeholder="Select workflow or search by name..."
                     >
                         <template #option="{ name, date }">
@@ -97,14 +98,23 @@ interface Methods {
     stopPolling: () => void;
 }
 
+interface Props {
+    initialSelectedWorkflow: string;
+}
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         vSelect,
     },
+    props: {
+            initialSelectedWorkflow: {
+                type: String,
+                required: true
+            },
+        },
     data() {
         return {
             workflowRunSummaries: null,
@@ -184,6 +194,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         interpretStatus(status) {
             if (status === "success") {
                 return "Complete";
+            } else if (status === "impossible") {
+                return "Dependency failed"
             } else if (
                 failStates.includes(status)
             ) {
@@ -195,6 +207,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     watch: {
         selectedWorkflowKey() {
+            this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
                 this.startPolling();
@@ -202,17 +215,16 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 this.workflowRunStatus = null;
             }
         },
-        workflowRunStatus: {
-            handler(workflowRun) {
-                const interpretStatus = this.interpretStatus(workflowRun.status)
-                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
-                    this.stopPolling();
-                }
+        workflowRunStatus(newWorkflowRunStatus) {
+            const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
+            if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                this.stopPolling();
             }
         }
     },
     mounted() {
         this.getWorkflowRunSummaries();
+        this.selectedWorkflowKey = this.initialSelectedWorkflow;
     },
     beforeDestroy() {
         this.stopPolling();

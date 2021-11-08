@@ -14,7 +14,7 @@
         <h2 id="add-report-header" class="pb-2">Add reports</h2>
         <div v-if="isReady">
             <div class="pb-4">
-                <h2 id="git-header">Git</h2>
+                <h3 id="git-header">Git</h3>
                 <div>
                     <git-update-reports
                         :report-metadata="runReportMetadata"
@@ -28,14 +28,40 @@
                 </div>
             </div>
             <div class="pb-4" id="workflow-reports">
-                <h2 id="report-sub-header">Reports</h2>
-                <div>
+                <h3 id="report-sub-header">Reports</h3>
+                <div v-if="importFromCsvIsEnabled" id="choose-import-from">
+                    <div class="col-sm-2 d-inline-block"></div>
+                    <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                        <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
+                            <input type="radio" id="choose-from-list"
+                                   v-model="reportsOrigin" value="list"
+                                   autocomplete="off" checked> Choose from list
+                        </label>
+                        <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
+                            <input type="radio" id="import-from-csv"
+                                   v-model="reportsOrigin" value="csv"
+                                   autocomplete="off"> Import from csv
+                        </label>
+                    </div>
+                </div>
+                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                    <div class="col-sm-2 d-inline-block"></div>
+                    <div class="custom-file col-sm-6">
+                        <input type="file" class="custom-file-input"
+                               v-on:change="handleImportedFile($event)"
+                               accept="text/csv"
+                               id="import-csv"
+                               lang="en">
+                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                    </div>
+                </div>
+                <div v-if="!showImportFromCsv" id="show-report-list" class="pt-4">
                     <div v-for="(report, index) in workflowMetadata.reports"
                          :id="`workflow-report-${index}`"
                          :key="index"
                          class="form-group row">
 
-                        <label class="col-sm-2 col-form-label text-right">{{report.name}}</label>
+                        <label class="col-sm-2 col-form-label text-right text-truncate" :title="report.name">{{report.name}}</label>
                         <parameter-list
                             v-if="reportParameters[index].length > 0"
                             :params="reportParameters[index]"
@@ -60,8 +86,7 @@
                             Add report
                         </label>
                         <div class="col-sm-6">
-                            <report-list id="workflow-report" :reports="reports"
-                                         :report.sync="selectedReport"/>
+                            <report-list id="workflow-report" :reports="reports" :selected-report.sync="selectedReport"/>
                         </div>
                         <div class="col-sm-2">
                             <button :disabled="!selectedReport"
@@ -80,7 +105,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import {BAlert} from "bootstrap-vue";
+import {BAlert} from "bootstrap-vue/esm/components/alert";
 import {
     Parameter,
     ReportWithDate,
@@ -95,6 +120,7 @@ import ParameterList from "../runReport/parameterList.vue";
 import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
+import {switches} from '../../featureSwitches.ts';
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata
@@ -104,13 +130,14 @@ interface Computed {
     isReady: boolean,
     hasReports: boolean,
     reportParameters: Parameter[][],
-    stepIsValid: boolean
+    stepIsValid: boolean,
+    showImportFromCsv: boolean
 }
 
 interface Methods {
     branchSelected: (git_branch: string) => void,
     commitSelected: (git_commit: string) => void,
-    getParametersApiCall: (report: string) => Promise<AxiosResponse<any>>,
+    getParametersApiCall: (report: string) => Promise<AxiosResponse>,
     updateAvailableReportsFromGit: (reports: ReportWithDate[]) =>  void,
     addReport: () => void,
     paramsChanged: (index: number, params: Parameter[], valid: boolean) => void,
@@ -118,17 +145,21 @@ interface Methods {
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
+    handleImportedFile: (event: Event) => void
 }
 
 interface Data {
     runReportMetadata: RunReportMetadata | null,
     initialBranches:  string[] | null,
     reports: ReportWithDate[],
-    selectedReport: string,
+    selectedReport: ReportWithDate,
     error: string,
     defaultMessage: string,
     workflowRemovals: string[] | null,
-    reportsValid: boolean[]
+    reportsValid: boolean[],
+    reportsOrigin: "csv" | "list",
+    importedFilename: string,
+    importFromCsvIsEnabled: boolean
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -148,14 +179,20 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             runReportMetadata: null,
             initialBranches: null,
             reports: [],
-            selectedReport: "",
+            selectedReport: null,
             error: "",
             defaultMessage: "",
             workflowRemovals: null,
-            reportsValid: []
+            reportsValid: [],
+            reportsOrigin: "list",
+            importedFilename: "",
+            importFromCsvIsEnabled: switches.workFlowReport
         }
     },
     computed: {
+        showImportFromCsv() {
+            return this.reportsOrigin === "csv"
+        },
         isReady: function() {
             return !!this.runReportMetadata && !!this.workflowMetadata;
         },
@@ -170,6 +207,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         }
     },
     methods: {
+        handleImportedFile(event) {
+            const target = event.target as HTMLInputElement;
+            this.importedFilename = target.files.length ? target.files[0].name : "";
+        },
         branchSelected(git_branch: string) {
             this.$emit("update", {git_branch});
         },
@@ -255,17 +296,17 @@ export default Vue.extend<Data, Methods, Computed, Props>({
 
             if (this.selectedReport) {
                 const newReportNames = reports.map(report => report.name);
-                if (!newReportNames.includes(this.selectedReport)) {
-                    this.selectedReport = "";
+                if (!newReportNames.includes(this.selectedReport.name)) {
+                    this.selectedReport = null;
                 }
             }
         },
         addReport() {
-            this.getParametersApiCall(this.selectedReport)
+            this.getParametersApiCall(this.selectedReport.name)
                 .then(({data}) => {
                     const parameterValues = mapParameterArrayToRecord(data.data);
                     const newReport = {
-                        name: this.selectedReport,
+                        name: this.selectedReport.name,
                         params: parameterValues
                     };
                     const newReports = [
@@ -274,6 +315,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     ];
                     this.updateWorkflowReports(newReports);
                     this.reportsValid.push(this.initialValidValue(newReport));
+                    this.selectedReport = null;
                     this.error = "";
                     this.defaultMessage = "";
                 })

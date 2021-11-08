@@ -1,10 +1,6 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.helpers
 
-import com.beust.klaxon.JsonObject
-import com.beust.klaxon.json
-import com.github.salomonbrys.kotson.fromJson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonElement
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyAuthorizationRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyUserRepository
@@ -87,9 +83,10 @@ class WebRequestHelper : RequestHelper()
                                  cookies: String,
                                  contentType: String = "text/html",
                                  method: HttpMethod = HttpMethod.get,
-                                 data: String? = null): Response
+                                 data: String? = null,
+                                 additionalHeaders: Map<String, String> = mapOf()): Response
     {
-        val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies)
+        val headers = standardHeaders(contentType) + mapOf("Cookie" to cookies) + additionalHeaders
         val fullUrl = if (url.contains("http"))
         {
             url

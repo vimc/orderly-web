@@ -10,19 +10,20 @@ import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.t
 
 describe(`runWorkflow`, () => {
 
-    const selectedWorkflow = [
-        {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
-    ]
+    const selectedWorkflow = {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
 
-    const workflowMetadata = [{
+
+    const workflowMetadata = {
+        name: "interim report",
+        key: "fake",
         email: "test@example.com",
-        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"name": "reportB", "params": {"param3": "three"}}],
+        date: "2021-05-19T16:28:24Z",
+        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"report": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
-        git_commit: "commit",
-        changelog: {type: "message", message: "test changelog"}
-    }]
+        git_commit: "commit"
+    }
 
     beforeEach(() => {
         mockAxios.reset();
@@ -59,7 +60,9 @@ describe(`runWorkflow`, () => {
                 runWorkflowMetadata: workflowMetadata
             })
 
+        expect(wrapper.find("#rerun").attributes("disabled")).toBeUndefined()
         await wrapper.find("#rerun").trigger("click")
+        expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.find(workflowWizard).exists()).toBe(true)
         await wrapper.find("#confirm-cancel-btn").trigger("click")
         expect(wrapper.vm.$data.workflowStarted).toBe(false)
@@ -143,13 +146,13 @@ describe(`runWorkflow`, () => {
 
             const buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Refresh git")
-            expect(buttons.at(1).text()).toBe("Cancel")
-            expect(buttons.at(2).text()).toBe("Next")
+            expect(wrapper.find("#cancel-workflow").text()).toBe("Cancel")
+            expect(wrapper.find("#next-workflow").text()).toBe("Next")
 
         //cancel workflow
         expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             await wrapper.find(runWorkflowReport).vm.$emit("valid", true);
-            await buttons.at(2).trigger("click")
+            await wrapper.find("#next-workflow").trigger("click")
             expect(wrapper.find("#run-header").text()).toBe("Run workflow")
             const runButtons = wrapper.findAll("button")
 
@@ -187,11 +190,11 @@ describe(`runWorkflow`, () => {
         wrapper.find("#create-workflow").trigger("click")
 
         setTimeout(async () => {
-            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
+            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, git_branch: "master"});
 
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
-            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(emptyWorkflowMetadata);
+            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject({...emptyWorkflowMetadata, git_branch: "master"});
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
@@ -233,6 +236,96 @@ describe(`runWorkflow`, () => {
         });
     })
 
+    it(`can call workflow endpoint when on final step and generate link that emits key to workflow`, async (done) => {
+
+        const runWorkflowResponse = {
+            data: {
+                workflow_key: "workflowKey"
+            }
+        }
+        mockAxios.onPost('http://app/workflow')
+        .reply(200, runWorkflowResponse);
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        expect(workflowWizard.exists()).toBe(true)
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        expect(wrapper.vm.$data.runWorkflowMetadata).toBe(workflowMetadata[0])
+        expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+        await workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe("http://app/workflow");
+            expect(mockAxios.history.post[0].data).toBe(JSON.stringify(workflowMetadata[0]));
+            expect(wrapper.vm.$data.createdWorkflowKey).toBe("workflowKey")
+            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+            wrapper.find("#view-progress-link > a").trigger("click")
+            setTimeout(() => {
+                expect(wrapper.emitted("view-progress")).toStrictEqual([["workflowKey"]])
+                done()
+            });
+        });
+    })
+
+    it(`workflow progress link clears when metadata updates`, async (done) => {
+
+        const runWorkflowResponse = {
+            data: {
+                workflow_key: "workflowKey"
+            }
+        }
+        mockAxios.onPost('http://app/workflow')
+        .reply(200, runWorkflowResponse);
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        await workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            expect(wrapper.find("#view-progress-link").text()).toBe("View workflow progress")
+            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata[0], name: "new"})
+            setTimeout(() => {
+                expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+                done()
+            });
+        });
+    })
+
+    it(`error response from workflow endpoint generates error message and new metadata clears error`, async (done) => {
+        mockAxios.onPost('http://app/workflow')
+        .reply(500, "TEST ERROR");
+
+        const getShallowWrapper = () => {
+            return shallowMount(runWorkflow)
+        }
+        const wrapper = getShallowWrapper()
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create")
+        const workflowWizard = wrapper.find("workflow-wizard-stub")
+        workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata[0])
+        await workflowWizard.vm.$emit("complete")
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(wrapper.vm.$data.createdWorkflowKey).toBe("")
+            expect(wrapper.find("#view-progress-link").exists()).toBe(false)
+            const errorMessage = wrapper.find("error-info-stub")
+            expect(errorMessage.props("defaultMessage")).toBe("An error occurred while running the workflow")
+            expect(errorMessage.props("apiError")).toBeTruthy()
+            workflowWizard.vm.$emit("update-run-workflow-metadata", {...workflowMetadata[0], name: "new"})
+            setTimeout(() => {
+                expect(errorMessage.props("apiError")).toBe("")
+                done()
+            });
+        });
+    })
+    
     it(`handles rerun if workflowToRun is set`, async () => {
         const workflowToRerun = {name: "TEST WORKFLOW"};
         const wrapper = shallowMount(runWorkflow, {propsData: {workflowToRerun}});

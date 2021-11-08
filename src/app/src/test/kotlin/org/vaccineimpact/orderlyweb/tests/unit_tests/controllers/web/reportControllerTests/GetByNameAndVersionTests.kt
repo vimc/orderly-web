@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportControllerTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -17,6 +17,14 @@ import java.time.Instant
 class GetByNameAndVersionTests
 {
     private val versionId = "20170103-143015-1234abcd"
+    private val mockLatestVersion = ReportVersionWithDescLatest("r1",
+        "a fake report",
+        versionId,
+        true,
+        Instant.now(),
+        "latest v",
+        "a fake report"
+    )
     private val mockReportDetails = ReportVersionWithArtefactsDataDescParamsResources(
             ReportVersionWithDescLatestElapsed("r1",
                 "a fake report",
@@ -54,6 +62,20 @@ class GetByNameAndVersionTests
     private val mockReportRepo = mock<ReportRepository> {
         on { this.getReportsByName("r1") } doReturn
                 listOf(versionId, "20170104-091500-1234dcba")
+
+        on { this.getLatestVersion("r1") } doReturn mockLatestVersion
+    }
+
+    @Test
+    fun `getByNameAndVersion gets latest version if version param is empty`()
+    {
+        val mockActionContextAlt = mock<ActionContext> {
+            on { this.params(":name") } doReturn "r1"
+        }
+        val sut = ReportController(mockActionContextAlt, mockOrderly, mock(), mockReportRepo, mock())
+        val result = sut.getByNameAndVersion()
+
+        assertThat(result.report.id).isEqualTo(versionId)
     }
 
     @Test
@@ -146,6 +168,8 @@ class GetByNameAndVersionTests
         val mockReportRepo = mock<ReportRepository> {
             on { this.getReportsByName("r1") } doReturn
                     listOf("20170104-091500-1234dcba", "20170204-093000-1234dcba", versionId, "20170202-093000-1234dcba")
+
+            on { this.getLatestVersion("r1") } doReturn mockLatestVersion
         }
 
         val sut = ReportController(mockActionContext, mockOrderly, mock(), mockReportRepo, mock())
