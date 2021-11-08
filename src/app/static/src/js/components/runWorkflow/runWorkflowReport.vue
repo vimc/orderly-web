@@ -44,7 +44,7 @@
                         </label>
                     </div>
                 </div>
-                <div v-for="(report, index) in workflowMetadata.reports "
+                <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
                      :key="index"
                      class="form-group row pt-4">
@@ -147,6 +147,7 @@ interface Methods {
     getRunReportMetadata: () => void
     validateWorkflow: () => void
     handleImportedFile: (event: Event) => void
+    removeImportedFile: () => void
 }
 
 interface Data {
@@ -163,6 +164,7 @@ interface Data {
     importedFilename: string,
     importedFile: object | null
     importFromCsvIsEnabled: boolean
+    isImportedReports: boolean
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -191,7 +193,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             importedFilename: "",
             importedFile: null,
             reportsOrigin: "list",
-            importFromCsvIsEnabled: switches.workFlowReport
+            importFromCsvIsEnabled: switches.workFlowReport,
+            isImportedReports: false
         }
     },
     computed: {
@@ -212,6 +215,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         }
     },
     methods: {
+        removeImportedFile: function () {
+            if (this.isImportedReports) {
+                this.importedFile = null
+                this.importedFilename = ""
+                this.isImportedReports = false
+            }
+        },
         handleImportedFile(event) {
             const target = event.target as HTMLInputElement;
             if (target.files.length) {
@@ -325,6 +335,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     ];
                     this.updateWorkflowReports(newReports);
                     this.reportsValid.push(this.initialValidValue(newReport));
+                    this.removeImportedFile()
                     this.selectedReport = null;
                     this.error = "";
                     this.defaultMessage = "";
@@ -339,6 +350,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             newReports.splice(index, 1);
             this.reportsValid.splice(index, 1);
             this.updateWorkflowReports(newReports);
+            this.removeImportedFile()
         },
         paramsChanged(index: number, params: Parameter[], valid: boolean) {
             const newReports = [
@@ -385,6 +397,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
                     this.validationError = null;
+                    this.isImportedReports = true
                 })
                 .catch((error) => {
                     this.validationError = error.response.data?.errors;
