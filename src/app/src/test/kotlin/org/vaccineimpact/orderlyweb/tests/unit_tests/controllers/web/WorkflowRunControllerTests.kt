@@ -556,19 +556,19 @@ class WorkflowRunControllerTests
         val mockReader = mock<Reader>()
         val mockContext = mock<ActionContext> {
             on { getPartReader("file") } doReturn mockReader
+            on { queryParams("branch") } doReturn "testBranch"
+            on { queryParams("commit") } doReturn "testCommit"
         }
 
         val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
         val mockLogic = mock<WorkflowLogic> {
-            on { parseWorkflowCSV(mockReader) } doReturn mockResult
+            on { parseAndValidateWorkflowCSV(mockReader, "testBranch", "testCommit") } doReturn mockResult
         }
 
         val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)
         val result = sut.validateWorkflow()
 
         assertThat(result).isSameAs(mockResult)
-        verify(mockContext).getPart("git_branch")
-        verify(mockContext).getPart("git_commit")
     }
 
     private fun getWorkflowRunRequestExample() =

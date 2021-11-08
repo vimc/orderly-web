@@ -1,8 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
+import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
@@ -131,13 +130,7 @@ class WorkflowRunTests : IntegrationTest()
     fun `runs workflow`()
     {
         val branch = "other"
-        val commits = OrderlyServer(AppConfig()).get(
-            "/git/commits",
-            context = mock {
-                on { queryString() } doReturn "branch=$branch"
-            }
-        )
-        val commit = commits.listData(GitCommit::class.java).first().id
+        val commit = getGitBranchCommit("other")
 
         val json = """
                 {
@@ -266,7 +259,18 @@ class WorkflowRunTests : IntegrationTest()
     }
 
     @Test
-    fun `validates workflow`()
+    fun `validates workflow with missing branch and commit parameters`()
+    {
+        validateWorkflowWithDefaultBranchAncCommit("/workflow/validate")
+    }
+
+    @Test
+    fun `validates workflow with empty branch and commit parameters`()
+    {
+        validateWorkflowWithDefaultBranchAncCommit("/workflow/validate?branch&commit")
+    }
+
+    fun validateWorkflowWithDefaultBranchAncCommit(url: String)
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
@@ -274,21 +278,53 @@ class WorkflowRunTests : IntegrationTest()
         Content-Disposition: form-data; name="file"; filename="test.csv"
         Content-Type: text/csv
         
-        report,disease,year
-        test1,HepB,2020
-        test2,Rubella,2021
-        --XXXX
-        Content-Disposition: form-data; name="git_branch"
-
-        test-branch
-        --XXXX
-        Content-Disposition: form-data; name="git_commit"
-
-        123abc
+        report
+        global
+        minimal
         --XXXX--
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
-            "/workflow/validate",
+            url,
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.post,
+            formData,
+            mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertSuccessful(response)
+        assertJsonContentType(response)
+
+        val reports = JSONValidator.getData(response.text) as ArrayNode
+        assertThat(reports.count()).isEqualTo(2)
+        val report1 = reports[0]
+        assertThat(report1["name"].asText()).isEqualTo("global")
+        assertThat(report1["params"].isEmpty(null)).isTrue()
+
+
+        val report2 = reports[1]
+        assertThat(report2["name"].asText()).isEqualTo("minimal")
+        assertThat(report2["params"].isEmpty(null)).isTrue()
+    }
+
+    @Test
+    fun `validates workflow for non-default git branch and commit`()
+    {
+        val branch = "other"
+        val commit = getGitBranchCommit(branch)
+
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+        
+        report,nmin
+        other,1
+        other,2
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate?branch=$branch&commit=$commit",
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,
@@ -301,20 +337,18 @@ class WorkflowRunTests : IntegrationTest()
         val reports = JSONValidator.getData(response.text) as ArrayNode
         assertThat(reports.count()).isEqualTo(2)
         val report1 = reports[0]
-        assertThat(report1["name"].asText()).isEqualTo("test1")
-        assertThat(report1["params"]["disease"].asText()).isEqualTo("HepB")
-        assertThat(report1["params"]["year"].asText()).isEqualTo("2020")
+        assertThat(report1["name"].asText()).isEqualTo("other")
+        assertThat(report1["params"]["nmin"].asText()).isEqualTo("1")
 
         val report2 = reports[1]
-        assertThat(report2["name"].asText()).isEqualTo("test2")
-        assertThat(report2["params"]["disease"].asText()).isEqualTo("Rubella")
-        assertThat(report2["params"]["year"].asText()).isEqualTo("2021")
+        assertThat(report2["name"].asText()).isEqualTo("other")
+        assertThat(report2["params"]["nmin"].asText()).isEqualTo("2")
     }
 
     @Test
-    fun `returns workflow validation error`()
+    fun `returns workflow header validation error`()
     {
-        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+       val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
         --XXXX
         Content-Disposition: form-data; name="file"; filename="test.csv"
@@ -322,14 +356,6 @@ class WorkflowRunTests : IntegrationTest()
         
         BADHEADER,disease,year
         test1,HepB,2020
-        --XXXX
-        Content-Disposition: form-data; name="git_branch"
-
-        test-branch
-        --XXXX
-        Content-Disposition: form-data; name="git_commit"
-
-        123abc
         --XXXX--
         """.trimIndent()
         val response = webRequestHelper.requestWithSessionCookie(
@@ -342,6 +368,90 @@ class WorkflowRunTests : IntegrationTest()
         )
         assertThat(response.statusCode).isEqualTo(400)
         JSONValidator.validateError(response.text, "bad-request", "First header must be 'report'")
+    }
+
+    @Test
+    fun `returns workflow report validation errors`()
+    {
+        val branch = "other"
+        val commit = getGitBranchCommit(branch)
+
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+        
+        report,nmin
+        other,1
+        other,
+        other,3,4
+        nonexistent,5
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate?branch=$branch&commit=$commit",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+
+        assertThat(response.statusCode).isEqualTo(400)
+        val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
+        assertThat(errors.count()).isEqualTo(3)
+        assertThat(errors[0]["message"].asText()).isEqualTo("Report row 3: row should contain 2 values, 3 values found")
+        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+        assertThat(errors[1]["message"].asText()).isEqualTo("Report row 2: required parameter 'nmin' was not provided for report 'other'")
+        assertThat(errors[1]["code"].asText()).isEqualTo("bad-request")
+        assertThat(errors[2]["message"].asText()).isEqualTo("Report row 4: report 'nonexistent' not found in Orderly")
+        assertThat(errors[2]["code"].asText()).isEqualTo("bad-request")
+    }
+
+    @Test
+    fun `returns expected error when empty file data passed`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val formData = """
+        --XXXX
+        Content-Disposition: form-data; name="file"; filename="test.csv"
+        Content-Type: text/csv
+
+        --XXXX--
+        """.trimIndent()
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                formData,
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertThat(response.statusCode).isEqualTo(400)
+        val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
+        assertThat(errors.count()).isEqualTo(1)
+        assertThat(errors[0]["message"].asText()).isEqualTo("File contains no rows")
+        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+    }
+
+    @Test
+    fun `returns expected error when empty form data passed`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow/validate",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                "",
+                mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+        assertThat(response.statusCode).isEqualTo(400)
+        val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
+        assertThat(errors.count()).isEqualTo(1)
+        assertThat(errors[0]["message"].asText()).isEqualTo("No data provided")
+        assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
     }
 
     private fun addWorkflowRunExample()
