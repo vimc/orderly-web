@@ -83,7 +83,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(rerunButton.text).isEqualTo("Re-run workflow")
         rerunButton.click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
     }
 
     @Test
@@ -221,9 +221,16 @@ class RunWorkflowTests : SeleniumTest()
         createWorkflow()
         addReport("minimal")
         addReport("global")
-        val nextButton = driver.findElement(By.id("next-workflow"))
+        var nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
+
+        // should now be on summary page
+        nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        // should now be on run page
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
         val submitButton = driver.findElement(By.id("next-workflow"))
         assertThat(submitButton.isEnabled).isFalse()
@@ -266,6 +273,12 @@ class RunWorkflowTests : SeleniumTest()
 
         // clicks re-run workflow
         driver.findElement(By.id("rerun")).click()
+
+        // on summary page
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        driver.findElement(By.id("next-workflow")).click()
+
+        // on run page
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("run-header")))
         val workflowNameInput = driver.findElement(By.cssSelector("#workflow-name-div input"))
         assertThat(workflowNameInput.getAttribute("value")).isEqualTo("My workflow")
