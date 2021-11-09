@@ -599,6 +599,65 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
+
+    it("remove imported file when a report is manually removed from imported reports", async () => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+            }
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.setData({
+            reports: [minimal, global],
+            selectedReport: {name: "other"},
+            isImportedReports: true,
+            importedFilename: "test Filename",
+            importedFile: {test: "test blob"}
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.findAll(".remove-report-button").at(1).trigger("click");
+        expect(wrapper.vm.$data.importedFilename).toBe("")
+        expect(wrapper.vm.$data.importedFile).toBe(null)
+        expect(wrapper.vm.$data.isImportedReports).toBe(false)
+    });
+
+    it("remove imported file when a report is manually added to imported reports", async () => {
+        mockAxios.onGet('http://app/report/other/config/parameters/?commit=abc123')
+            .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
+
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [minimal]
+            }
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.setData({
+            reports: [minimal, global],
+            selectedReport: {name: "other"},
+            isImportedReports: true,
+            importedFilename: "test Filename",
+            importedFile: {test: "test blob"}
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.find("#add-report-button").trigger("click");
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.importedFilename).toBe("")
+        expect(wrapper.vm.$data.importedFile).toBe(null)
+        expect(wrapper.vm.$data.isImportedReports).toBe(false)
+    });
+
     it("can return error if workflow validation fails",  (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
