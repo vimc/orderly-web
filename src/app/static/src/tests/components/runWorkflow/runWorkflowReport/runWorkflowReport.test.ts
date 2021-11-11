@@ -23,12 +23,25 @@ export const runReportMetadataResponse = {
 const minimal = { name: "minimal", date: null };
 const global = { name: "other", date: new Date() };
 
+const workflowValidationResponse = {
+    data: [
+        {name: "minimal", params: {nmin: "5"}},
+        {name: "global", params: {p1: "v1", p2: "v2"}}
+    ]
+}
+
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
             .reply(200, {"data": runReportMetadataResponse});
+
+        const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
+        mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
+
+        mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
+            .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
     });
 
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
@@ -530,6 +543,172 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
+    it("can validate workflow reports", (done) => {
+        switches.workFlowReport = true
+        const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
+
+        const blob = new Blob(["report"], {type: 'text/csv'});
+        blob['name'] = "test.csv";
+        const fakeFile = <File>blob;
+
+        const mockUpdateWorkflowReports = jest.fn()
+
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: {
+                    ...emptyWorkflowMetadata,
+                    git_commit: "abc123",
+                    git_branch: "branch"
+                }
+            },
+            methods: {
+                updateWorkflowReports: mockUpdateWorkflowReports
+            }
+        });
+
+        setTimeout(async () => {
+            await wrapper.find("input#import-from-csv").trigger("click")
+
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+
+            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
+
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+            setTimeout(() => {
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
+                expect(wrapper.vm.$data.validationError).toBe(null)
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
+                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
+                    [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ])
+                done()
+            })
+        });
+    });
+
+
+    it("remove imported file when a report is manually removed from imported reports", async () => {
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+            }
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.setData({
+            reports: [minimal, global],
+            selectedReport: {name: "other"},
+            isImportedReports: true,
+            importedFilename: "test Filename",
+            importedFile: {test: "test blob"}
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.findAll(".remove-report-button").at(1).trigger("click");
+        expect(wrapper.vm.$data.importedFilename).toBe("")
+        expect(wrapper.vm.$data.importedFile).toBe(null)
+        expect(wrapper.vm.$data.isImportedReports).toBe(false)
+    });
+
+    it("remove imported file when a report is manually added to imported reports", async () => {
+        mockAxios.onGet('http://app/report/other/config/parameters/?commit=abc123')
+            .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
+
+        const wrapper = getWrapper({
+            workflowMetadata: {
+                ...emptyWorkflowMetadata,
+                git_commit: "abc123",
+                reports: [minimal]
+            }
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.setData({
+            reports: [minimal, global],
+            selectedReport: {name: "other"},
+            isImportedReports: true,
+            importedFilename: "test Filename",
+            importedFile: {test: "test blob"}
+        });
+
+        await Vue.nextTick()
+
+        await wrapper.find("#add-report-button").trigger("click");
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.importedFilename).toBe("")
+        expect(wrapper.vm.$data.importedFile).toBe(null)
+        expect(wrapper.vm.$data.isImportedReports).toBe(false)
+    });
+
+    it("can return error if workflow validation fails",  (done) => {
+        switches.workFlowReport = true
+        const url = "http://app/workflow/validate/?branch=test&commit=test"
+
+        const blob = new Blob(["invalid content"], {type: 'text/csv'});
+        blob['name'] = "test.csv";
+        const fakeFile = <File>blob
+
+        const mockUpdateWorkflowReports = jest.fn()
+
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: {
+                    ...emptyWorkflowMetadata,
+                    git_commit: "test",
+                    git_branch: "test"
+                }
+            },
+            methods: {
+                updateWorkflowReports: mockUpdateWorkflowReports
+            }
+        });
+
+        setTimeout(async () => {
+            await wrapper.find("input#import-from-csv").trigger("click")
+
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv")
+
+            expect(wrapper.find("#show-import-csv").exists()).toBe(true)
+
+            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement
+
+            Object.defineProperty(input, "files", {
+                value: [fakeFile]
+            })
+
+            await wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+            setTimeout(() => {
+                expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
+                expect(wrapper.vm.$data.importedFile).toMatchObject({})
+                expect(mockAxios.history.post.length).toBe(1)
+                expect(mockAxios.history.post[0].url).toBe(url)
+                expect(mockAxios.history.post[0].data).toMatchObject({})
+                expect(wrapper.vm.$data.validationError).toEqual([{code: "bad-request", message: "ERROR RESPONSE"}])
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(0)
+                done()
+            })
+        });
+    });
+
     it("renders choose or import from and check default radio button", (done) => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
@@ -623,5 +802,4 @@ describe(`runWorkflowReport`, () => {
             done();
         });
     });
-
 });
