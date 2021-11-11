@@ -29,4 +29,11 @@ describe(`runWorkflowSummary`, () => {
         expect(wrapper.findAll("li").at(0).text()).toBe("r1");
     });
 
+    it(`emits valid event on mount`, () => {
+        const wrapper = getWrapper({
+            reports: [{name: "r1"}]
+        });
+        expect(wrapper.emitted().valid[0][0]).toBe(true);
+    });
+
 })
