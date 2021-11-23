@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-ORDERLY_IMAGE=vimc/orderly:master
+ORDERLY_IMAGE=vimc/orderly:vimc-4977
 
 rm demo -rf
 rm git -rf

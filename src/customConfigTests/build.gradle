@@ -36,14 +36,5 @@ task copyDemo(type: Copy) {
     outputs.upToDateWhen { false }
 }
 
-task copyGitDemo(type: Copy) {
-    from '../app/git'
-    include '*/**'
-    into 'git'
-    outputs.upToDateWhen { false }
-}
-
-copyDemo.dependsOn 'copyGitDemo'
-
 test.dependsOn 'copyTemplates'
 test.dependsOn 'copyStatic'

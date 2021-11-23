@@ -18,7 +18,7 @@ else
       -u ${UID} \
       -v ${PWD}:/orderly \
       -w /orderly \
-      vimc/orderly:master \
+      vimc/orderly:vimc-4977 \
       "./src/app/"
 fi
 
