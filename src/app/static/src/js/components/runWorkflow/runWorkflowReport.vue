@@ -44,6 +44,23 @@
                         </label>
                     </div>
                 </div>
+                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                        <div class="col-sm-2 d-inline-block"></div>
+                        <div class="custom-file col-sm-6">
+                            <input type="file" class="custom-file-input"
+                                   v-on:change="handleImportedFile($event)"
+                                   accept="text/csv"
+                                   id="import-csv"
+                                   lang="en">
+                            <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                            <div v-if="validationErrors.length" class="text-danger small error-message mt-2">
+                                Unable to import from csv:
+                                <div v-for="error in validationErrors" class="ml-2">
+                                    {{error.message}}
+                                </div>
+                            </div>
+                        </div>
+                </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
                      :key="index"
@@ -67,17 +84,6 @@
                         >Remove report</button>
                     </div>
                     <hr/>
-                </div>
-                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
-                    <div class="col-sm-2 d-inline-block"></div>
-                    <div class="custom-file col-sm-6">
-                        <input type="file" class="custom-file-input"
-                               v-on:change="handleImportedFile($event)"
-                               accept="text/csv"
-                               id="import-csv"
-                               lang="en">
-                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
-                    </div>
                 </div>
                 <div v-if="!showImportFromCsv" id="show-report-list" class="pt-4">
                     <div v-if="hasReports" id="add-report-div" class="form-group row">
@@ -156,7 +162,7 @@ interface Data {
     reports: ReportWithDate[],
     selectedReport: ReportWithDate,
     error: string,
-    validationError: Error[] | null | undefined,
+    validationErrors: Error[],
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
@@ -186,7 +192,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reports: [],
             selectedReport: null,
             error: "",
-            validationError: null,
+            validationErrors: [],
             defaultMessage: "",
             workflowRemovals: null,
             reportsValid: [],
@@ -396,11 +402,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 })
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
-                    this.validationError = null;
+                    this.validationErrors = [];
                     this.isImportedReports = true
                 })
                 .catch((error) => {
-                    this.validationError = error.response.data?.errors;
+                    this.updateWorkflowReports([]);
+                    this.validationErrors = error.response.data?.errors;
                 });
         }
     },
