@@ -543,7 +543,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate workflow reports", (done) => {
+    it("can validate imported workflow reports", (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
@@ -594,6 +594,10 @@ describe(`runWorkflowReport`, () => {
                         {name: "minimal", params: {nmin: "5"}},
                         {name: "global", params: {p1: "v1", p2: "v2"}}
                     ])
+
+                expect(wrapper.emitted("valid").length).toBe(1);
+                expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
                 done()
             })
         });
