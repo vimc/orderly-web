@@ -420,7 +420,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 .catch((error) => {
                     this.updateWorkflowReports([]);
                     this.reportsValid = [];
-                    this.validationErrors = error.response.data?.errors;
+                    this.validationErrors = error.response.data?.errors || [];
                 });
         }
     },
