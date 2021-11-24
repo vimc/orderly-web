@@ -48,18 +48,23 @@
                         <div class="col-sm-2 d-inline-block"></div>
                         <div class="custom-file col-sm-6">
                             <input type="file" class="custom-file-input"
-                                   v-on:change="handleImportedFile($event)"
+                                   @change="handleImportedFile($event)"
+                                   @click="handleClickImport($event)"
                                    accept="text/csv"
                                    id="import-csv"
                                    lang="en">
                             <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
-                            <div v-if="validationErrors.length" class="text-danger small error-message mt-2">
+                        </div>
+                        <div v-if="validationErrors.length" class="text-danger small error-message mt-2 ">
+                            <div class="col-sm-2 d-inline-block"></div>
+                            <div class="col-sm-6 d-inline-block pl-0">
                                 Unable to import from csv:
                                 <div v-for="error in validationErrors" class="ml-2">
                                     {{error.message}}
                                 </div>
                             </div>
                         </div>
+                    </div>
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
@@ -153,6 +158,7 @@ interface Methods {
     getRunReportMetadata: () => void
     validateWorkflow: () => void
     handleImportedFile: (event: Event) => void
+    handleClickImport: (event: Event) => void
     removeImportedFile: () => void
 }
 
@@ -227,6 +233,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 this.importedFilename = ""
                 this.isImportedReports = false
             }
+        },
+        handleClickImport: function(event: Event) {
+            // Clear import value to allow successive imports of same file
+            (event.target as HTMLInputElement).value = null;
         },
         handleImportedFile(event) {
             const target = event.target as HTMLInputElement;
@@ -402,11 +412,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 })
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
+                    this.reportsValid = Array(data.data.length).fill(true);
                     this.validationErrors = [];
                     this.isImportedReports = true
                 })
                 .catch((error) => {
                     this.updateWorkflowReports([]);
+                    this.reportsValid = [];
                     this.validationErrors = error.response.data?.errors;
                 });
         }
