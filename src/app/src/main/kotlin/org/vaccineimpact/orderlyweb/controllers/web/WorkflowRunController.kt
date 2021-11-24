@@ -51,8 +51,12 @@ class WorkflowRunController(
 
     fun getMissingDependencies(): String
     {
-        // val reports = getWorkflowRunStatus().reports
-        val response = orderlyServerAPI.get("/v1/workflow/missing-dependencies/", context)
+        val key = context.params(":key")
+        val details = workflowRunRepository.getWorkflowRunDetails(key)
+        val reports = details.reports
+        val ref = details.gitCommit
+        val response = orderlyServerAPI.get("/v1/workflow/missing-dependencies/", 
+        mapOf("reports" to reports, "ref" to ref))
         return passThroughResponse(response)
     }
 
