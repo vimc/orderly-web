@@ -743,7 +743,7 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("clears file input value when clicked", () => {
+    it("clears file input value when clicked", (done) => {
         const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
                 workflowMetadata: {
@@ -755,10 +755,16 @@ describe(`runWorkflowReport`, () => {
         });
 
         setTimeout(async () => {
-            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement;
-            input.value = "test.csv";
-            await wrapper.find("input#import-from-csv").trigger("click");
-            expect(input.value).toBe(null);
+            await wrapper.find("#import-from-csv").trigger("click")
+
+            const input = wrapper.find("input#import-csv.custom-file-input");
+            const inputEl = input.element as HTMLInputElement;
+
+            const spy = jest.spyOn(inputEl, 'value', 'set');
+
+            await input.trigger("click");
+            expect(spy).toHaveBeenCalledWith(null);
+            done();
         });
     });
 
