@@ -41,7 +41,10 @@ describe(`runWorkflowReport`, () => {
         mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
 
         mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
-            .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
+            .replyOnce(500, {errors: [
+                {code: "bad-request", message: "ERROR 1"},
+                {code: "bad-request", message: "ERROR 2"}
+            ]});
     });
 
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
@@ -566,6 +569,7 @@ describe(`runWorkflowReport`, () => {
             }
         });
 
+        wrapper.setData({validationErrors: [{message: "old error", code: "TEST"}]});
         setTimeout(async () => {
             await wrapper.find("input#import-from-csv").trigger("click")
 
@@ -587,7 +591,10 @@ describe(`runWorkflowReport`, () => {
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toBe(null)
+
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+                expect(wrapper.find("#import-validation-errors").exists()).toBe(false);
+
                 expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
                 expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
                     [
@@ -662,7 +669,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.isImportedReports).toBe(false)
     });
 
-    it("can return error if workflow validation fails",  (done) => {
+    it("can display errors if workflow validation fails",  (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
@@ -677,12 +684,18 @@ describe(`runWorkflowReport`, () => {
                 workflowMetadata: {
                     ...emptyWorkflowMetadata,
                     git_commit: "test",
-                    git_branch: "test"
+                    git_branch: "test",
+                    reports: [
+                        {name: "test report"} as any
+                    ]
                 }
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports
             }
+        });
+        wrapper.setData({
+            reportsValid: [true]
         });
 
         setTimeout(async () => {
@@ -698,6 +711,9 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
             setTimeout(() => {
@@ -706,10 +722,43 @@ describe(`runWorkflowReport`, () => {
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toEqual([{code: "bad-request", message: "ERROR RESPONSE"}])
-                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(0)
-                done()
+                expect(wrapper.vm.$data.validationErrors).toEqual([
+                    {code: "bad-request", message: "ERROR 1"},
+                    {code: "bad-request", message: "ERROR 2"}
+                ]);
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1);
+                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
+
+                expect(wrapper.emitted("valid").length).toBe(2);
+                expect(wrapper.emitted("valid")[1][0]).toBe(false);
+
+                expect(wrapper.find("#import-validation-errors").text().startsWith("Unable to import from csv:")).toBe(true);
+                const errors = wrapper.findAll(".import-validation-error");
+                expect(errors.length).toBe(2);
+                expect(errors.at(0).text()).toBe("ERROR 1");
+                expect(errors.at(1).text()).toBe("ERROR 2");
+
+                done();
             })
+        });
+    });
+
+    it("clears file input value when clicked", () => {
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: {
+                    ...emptyWorkflowMetadata,
+                    git_commit: "test",
+                    git_branch: "test"
+                }
+            }
+        });
+
+        setTimeout(async () => {
+            const input = wrapper.find("input#import-csv.custom-file-input").element as HTMLInputElement;
+            input.value = "test.csv";
+            await wrapper.find("input#import-from-csv").trigger("click");
+            expect(input.value).toBe(null);
         });
     });
 

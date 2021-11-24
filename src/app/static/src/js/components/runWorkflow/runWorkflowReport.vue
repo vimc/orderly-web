@@ -45,23 +45,24 @@
                     </div>
                 </div>
                 <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                    <div class="col-sm-2 d-inline-block"></div>
+                    <div class="custom-file col-sm-6">
+                        <input type="file" class="custom-file-input"
+                               @change="handleImportedFile($event)"
+                               @click="handleClickImport($event)"
+                               accept="text/csv"
+                               id="import-csv"
+                               lang="en">
+                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                    </div>
+                    <div v-if="validationErrors.length"
+                         id="import-validation-errors"
+                         class="text-danger small error-message mt-2 ">
                         <div class="col-sm-2 d-inline-block"></div>
-                        <div class="custom-file col-sm-6">
-                            <input type="file" class="custom-file-input"
-                                   @change="handleImportedFile($event)"
-                                   @click="handleClickImport($event)"
-                                   accept="text/csv"
-                                   id="import-csv"
-                                   lang="en">
-                            <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
-                        </div>
-                        <div v-if="validationErrors.length" class="text-danger small error-message mt-2 ">
-                            <div class="col-sm-2 d-inline-block"></div>
-                            <div class="col-sm-6 d-inline-block pl-0">
-                                Unable to import from csv:
-                                <div v-for="error in validationErrors" class="ml-2">
-                                    {{error.message}}
-                                </div>
+                        <div class="col-sm-6 d-inline-block pl-0">
+                            Unable to import from csv:
+                            <div v-for="error in validationErrors" class="import-validation-error ml-2">
+                                {{error.message}}
                             </div>
                         </div>
                     </div>
