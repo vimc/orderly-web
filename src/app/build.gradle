@@ -109,6 +109,9 @@ task generateTestData() {
         exec {
             commandLine 'docker', 'run', '--rm', '-v', "$projectDir/demo:/orderly", owMigrateImage
         }
+        exec {
+            commandLine 'docker', 'run', '--rm', '-v', "$projectDir/git:/orderly", owMigrateImage
+        }
     }
 }
 
