@@ -52,6 +52,19 @@ data class WorkflowRunSummary(
     val date: Instant
 )
 
+data class WorkflowRunSummaryPage(
+    val reports: List<WorkflowRunSummaryPageReport>,
+    val missing_dependencies: Map<String, List<String>>,
+    val ref: String
+)
+
+data class WorkflowRunSummaryPageReport(
+    val name: String,
+    val instance: String,
+    val params: Map<String, String>,
+    val depends_on: List<String>
+)
+
 data class WorkflowRunReport(
     val workflowKey: String,
     val key: String,
