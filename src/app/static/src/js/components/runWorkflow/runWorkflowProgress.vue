@@ -225,6 +225,14 @@ export default Vue.extend<Data, Methods, unknown, Props>({
     mounted() {
         this.getWorkflowRunSummaries();
         this.selectedWorkflowKey = this.initialSelectedWorkflow;
+        api.get("/workflows/1/summary")
+                    .then((data) => {
+                        console.log("data", data)
+                        console.log("data", JSON.parse(data.data))
+                    })
+                    .catch((error) => {
+                        console.log("error", error)
+                    });
     },
     beforeDestroy() {
         this.stopPolling();

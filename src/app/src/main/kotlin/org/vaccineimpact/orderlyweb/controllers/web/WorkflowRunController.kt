@@ -14,6 +14,7 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
+import com.google.gson.Gson
 
 class WorkflowRunController(
     context: ActionContext,
@@ -47,6 +48,15 @@ class WorkflowRunController(
             context.queryParams("email"),
             context.queryParams("namePrefix")
         )
+    }
+
+    fun getWorkflowRunSummary(): String
+    {
+        val key = context.params(":key")
+        val report = mapOf("name" to "example", "instance" to "production", "params" to mapOf("nmin" to 1), "depends_on" to listOf("missing"))
+        val response = mapOf("reports" to listOf(report), "ref" to "18f6c5267c08bf017b521a21493771c6d3e774a5", "missing_dependencies" to mapOf("example" to listOf("missing")))
+        // val response = mapOf("status" to "success", "errors" to null, "data" to data)
+        return Gson().toJson(response)
     }
 
     internal data class WorkflowRunResponse(
