@@ -50,7 +50,6 @@ describe(`runWorkflowReport`, () => {
                 {code: "bad-request", message: "ERROR 2"}
             ]});
 
-
         session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
         session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
 
