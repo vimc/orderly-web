@@ -17,9 +17,9 @@
                           v-model="selectedWorkflow"
                           placeholder="Search by name or user...">
                     <template id="optionTemplate" #option="{ name, email, date }">
-                        <div class="overflow-hidden">{{ name }}
-                            <div style="opacity: 0.5; float: right;">
-                            {{ email }} | {{ getLongTimestamp(date) }}</div>
+                        <div>{{ name }}
+                            <span class="text-muted">
+                            {{ email }} | {{ getLongTimestamp(date) }}</span>
                         </div>
                     </template>
                 </v-select>
