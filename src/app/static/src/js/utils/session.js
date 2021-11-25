@@ -16,6 +16,8 @@ export const session = function () {
         window.sessionStorage.removeItem(key);
     }
 
+    const SELECTED_WORKFLOW_REPORTS_SOURCE = "selectedWorkflowReportsSource";
+
     return {
         getSelectedTab: function (key) {
             return getItem(key);
@@ -28,6 +30,12 @@ export const session = function () {
         },
         setSelectedKey: function (key, value) {
             setItem(key , value);
+        },
+        getSelectedWorkflowReportSource() {
+            return getItem(SELECTED_WORKFLOW_REPORTS_SOURCE);
+        },
+        setSelectedWorkflowReportSource(value) {
+            setItem(SELECTED_WORKFLOW_REPORTS_SOURCE, value);
         }
     };
 }();

@@ -32,12 +32,16 @@
                 <div v-if="importFromCsvIsEnabled" id="choose-import-from">
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
+                        <label id="choose-from-list-label"
+                               class="btn btn-outline-primary btn-toggle shadow-none"
+                               :class="reportsOrigin === 'list' ? 'active' : ''">
                             <input type="radio" id="choose-from-list"
                                    v-model="reportsOrigin" value="list"
                                    autocomplete="off" checked> Choose from list
                         </label>
-                        <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
+                        <label id="import-from-csv-label"
+                               class="btn btn-outline-primary btn-toggle shadow-none"
+                               :class="reportsOrigin === 'csv' ? 'active' : ''">
                             <input type="radio" id="import-from-csv"
                                    v-model="reportsOrigin" value="csv"
                                    autocomplete="off"> Import from csv
@@ -133,6 +137,7 @@ import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
 import {switches} from '../../featureSwitches.ts';
+import {session} from "../../utils/session";
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata
@@ -173,7 +178,7 @@ interface Data {
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
-    reportsOrigin: "csv" | "list",
+    reportsOrigin: string,
     importedFilename: string,
     importedFile: object | null
     importFromCsvIsEnabled: boolean
@@ -205,7 +210,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reportsValid: [],
             importedFilename: "",
             importedFile: null,
-            reportsOrigin: "list",
+            reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
             isImportedReports: false
         }
@@ -431,6 +436,9 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     watch: {
         stepIsValid(newVal) {
             this.$emit("valid", newVal);
+        },
+        reportsOrigin(newVal) {
+            session.setSelectedWorkflowReportSource(newVal);
         }
     }
 })
