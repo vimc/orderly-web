@@ -37,7 +37,7 @@
                                :class="reportsOrigin === 'list' ? 'active' : ''">
                             <input type="radio" id="choose-from-list"
                                    v-model="reportsOrigin" value="list"
-                                   autocomplete="off" checked> Choose from list
+                                   autocomplete="off"> Choose from list
                         </label>
                         <label id="import-from-csv-label"
                                class="btn btn-outline-primary btn-toggle shadow-none"

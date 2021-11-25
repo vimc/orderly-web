@@ -9,6 +9,7 @@ import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
+import {session} from "../../../../js/utils/session";
 
 export const runReportMetadataResponse = {
     metadata: {
@@ -28,7 +29,10 @@ const workflowValidationResponse = {
         {name: "minimal", params: {nmin: "5"}},
         {name: "global", params: {p1: "v1", p2: "v2"}}
     ]
-}
+};
+
+const mockSessionSetSelectedWorkflowReportSource = jest.fn();
+const mockSessionGetSelectedWorkflowReportSource = jest.fn();
 
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
@@ -45,6 +49,12 @@ describe(`runWorkflowReport`, () => {
                 {code: "bad-request", message: "ERROR 1"},
                 {code: "bad-request", message: "ERROR 2"}
             ]});
+
+
+        session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
+        session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
+
+        jest.resetAllMocks();
     });
 
     const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
@@ -775,12 +785,48 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const fromListLabel = wrapper.find("#choose-from-list-label")
             expect(fromListLabel.text()).toBe("Choose from list")
-            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect((fromListLabel.find("input").element as HTMLInputElement).checked).toBe(true)
             expect(wrapper.vm.$data.reportsOrigin).toBe("list")
 
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             expect(fromCsvLabel.text()).toBe("Import from csv")
             expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+   it("loads with import csv checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("csv");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#choose-from-list-label").classes()).not.toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#import-from-csv-label").classes()).toContain("active");
+            done();
+        });
+    });
+
+    it("loads with choose from list checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("list");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#choose-from-list-label").classes()).toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#import-from-csv-label").classes()).not.toContain("active");
             done();
         });
     });
@@ -829,6 +875,10 @@ describe(`runWorkflowReport`, () => {
             const uploadInput = wrapper.find("#show-import-csv").find("input")
             expect(uploadInput.attributes("accept")).toBe("text/csv")
             expect(uploadInput.attributes("lang")).toBe("en")
+
+            // Should have updated session too
+            expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
+
             done();
         });
     });
