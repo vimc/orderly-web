@@ -114,6 +114,7 @@
                         this.runMetadata = data.data
                         this.error = "";
                         this.defaultMessage = "";
+                    console.log("run workflow metadata", this.runMetadata)
                     })
                     .catch((error) => {
                         this.error = error;
@@ -147,6 +148,21 @@
                     this.workflowNameError = "Workflow name already exists, please rename your workflow."
                 }
                 this.$emit("valid", valid);
+            }
+        },
+        watch: {
+            workflowMetadata(){
+                console.log("workflow metadata", this.workflowMetadata)
+                api.post(`/workflows/summary`, {
+                        reports: this.workflowMetadata.reports,
+                        ref: null
+                    })
+                    .then((data) => {
+                        console.log("data", data)
+                    })
+                    .catch((error) => {
+                        console.log("error", error)
+                    });
             }
         },
         mounted() {
