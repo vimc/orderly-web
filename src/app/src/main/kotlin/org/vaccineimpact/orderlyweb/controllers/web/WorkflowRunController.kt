@@ -14,7 +14,6 @@ import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
 import java.time.Instant
-import com.google.gson.Gson
 
 class WorkflowRunController(
     context: ActionContext,
@@ -52,14 +51,8 @@ class WorkflowRunController(
 
     fun getWorkflowRunSummary(): WorkflowRunSummaryPage
     {
-        val key = context.params(":key")
-        val report = mapOf("name" to "example", "instance" to "production", "params" to mapOf("nmin" to 1), "depends_on" to listOf("missing"))
-        val response = mapOf("reports" to listOf(report), "ref" to "18f6c5267c08bf017b521a21493771c6d3e774a5", "missing_dependencies" to mapOf("example" to listOf("missing")))
-        // val response = mapOf("status" to "success", "errors" to null, "data" to data)
-        // return Gson().toJson(response)
-        val report1 = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
-        // return Serializer.instance.gson.toJson(WorkflowRunSummaryPage(listOf(report1), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5"))
-        return WorkflowRunSummaryPage(listOf(report1), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
+        val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
+        return WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
     }
 
     internal data class WorkflowRunResponse(

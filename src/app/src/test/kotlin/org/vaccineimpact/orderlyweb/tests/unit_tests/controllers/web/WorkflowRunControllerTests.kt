@@ -58,6 +58,18 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `can get workflow run summary dummy endpoint`()
+    {
+        val context = mock<ActionContext> {
+            on { params(":key") } doReturn "fakeKey"
+        }
+        val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
+        val workFlowSummary = WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
+        val sut = WorkflowRunController(context)
+        assertThat(sut.getWorkflowRunSummary()).isEqualTo(workFlowSummary)
+    }
+
+    @Test
     fun `can get workflow details`()
     {
         val now = Instant.now()
