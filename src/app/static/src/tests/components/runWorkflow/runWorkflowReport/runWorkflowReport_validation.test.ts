@@ -1,10 +1,9 @@
-import {runReportMetadataResponse} from "./runWorkflowReport.test";
 import {mockAxios} from "../../../mockAxios";
 import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
+import {mockEmptyRunWorkflowMetadata, mockRunReportMetadataResponse} from "../../../mocks";
 
 const gitCommits = [
     {id: "abcdef", date_time: "Mon Jun 08, 12:01"},
@@ -21,7 +20,7 @@ describe("runWorkflowReport validation", () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadataResponse()});
 
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": gitCommits});
@@ -32,7 +31,7 @@ describe("runWorkflowReport validation", () => {
     const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
         const propsData = {
             workflowMetadata: {
-                ...emptyWorkflowMetadata,
+                ...mockEmptyRunWorkflowMetadata(),
                 ...workflowMetadata
             }
         };

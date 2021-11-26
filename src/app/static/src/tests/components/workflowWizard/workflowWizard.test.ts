@@ -5,8 +5,7 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
-import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport/runWorkflowReport.test";
-import {emptyWorkflowMetadata} from "../runWorkflow/runWorkflowCreate.test";
+import {mockEmptyRunWorkflowMetadata, mockRunReportMetadataResponse} from "../../mocks";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -17,7 +16,7 @@ describe(`workflowWizard`, () => {
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    initialRunWorkflowMetadata: {...emptyWorkflowMetadata},
+                    initialRunWorkflowMetadata: {...mockEmptyRunWorkflowMetadata()},
                     steps: mockStep
                 },
                 data() {
@@ -34,12 +33,12 @@ describe(`workflowWizard`, () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadataResponse()});
     });
 
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockEmptyRunWorkflowMetadata());
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
@@ -246,7 +245,7 @@ describe(`workflowWizard`, () => {
 
         wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, newProp: "newVal"});
-        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([{...emptyWorkflowMetadata, newProp: "newVal"}]);
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...mockEmptyRunWorkflowMetadata(), newProp: "newVal"});
+        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([{...mockEmptyRunWorkflowMetadata(), newProp: "newVal"}]);
     });
 })

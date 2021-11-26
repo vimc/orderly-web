@@ -4,14 +4,14 @@ import {mockAxios} from "../../mockAxios";
 import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
-import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
-import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.test";
+import {mockEmptyRunWorkflowMetadata, mockRunReportMetadataResponse} from "../../mocks";
 
 describe(`runWorkflow`, () => {
 
     const selectedWorkflow = {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
 
+    const runWorkflowMetadata = mockEmptyRunWorkflowMetadata({git_branch: "master"})
 
     const workflowMetadata = {
         name: "interim report",
@@ -29,7 +29,7 @@ describe(`runWorkflow`, () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadataResponse()});
     });
 
     const getWrapper = () => {
@@ -190,11 +190,11 @@ describe(`runWorkflow`, () => {
         wrapper.find("#create-workflow").trigger("click")
 
         setTimeout(async () => {
-            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, git_branch: "master"});
+            expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
-            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject({...emptyWorkflowMetadata, git_branch: "master"});
+            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(runWorkflowMetadata);
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")

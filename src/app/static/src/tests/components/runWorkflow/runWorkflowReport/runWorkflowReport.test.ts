@@ -6,19 +6,9 @@ import GitUpdateReports from "../../../../js/components/runReport/gitUpdateRepor
 import ReportList from "../../../../js/components/runReport/reportList.vue";
 import ParameterList from "../../../../js/components/runReport/parameterList.vue";
 import ErrorInfo from "../../../../js/components/errorInfo.vue";
-import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
-
-export const runReportMetadataResponse = {
-    metadata: {
-        instances_supported: false,
-        git_supported: true,
-        instances: {"source": []},
-        changelog_types: ["published", "internal"]
-    },
-    git_branches: ["master", "dev"]
-};
+import {mockEmptyRunWorkflowMetadata, mockRunReportMetadataResponse} from "../../../mocks";
 
 const minimal = { name: "minimal", date: null };
 const global = { name: "other", date: new Date() };
@@ -35,7 +25,7 @@ describe(`runWorkflowReport`, () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadataResponse()});
 
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
         mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
@@ -44,25 +34,21 @@ describe(`runWorkflowReport`, () => {
             .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
     });
 
-    const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
+    const getWrapper = (propsData = {workflowMetadata: mockEmptyRunWorkflowMetadata()}) => {
         return shallowMount(runWorkflowReport, {propsData})
     };
 
     it("fetches report run metadata and renders gitUpdateReports component", (done) => {
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadataResponse()});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_branch: "master",
-                git_commit: "abc123"
-            }
+            workflowMetadata: mockEmptyRunWorkflowMetadata({git_branch: "master", git_commit: "abc123"})
         });
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.props("reportMetadata")).toStrictEqual(runReportMetadataResponse.metadata);
-            expect(git.props("initialBranches")).toStrictEqual(runReportMetadataResponse.git_branches);
+            expect(git.props("reportMetadata")).toStrictEqual(mockRunReportMetadataResponse().metadata);
+            expect(git.props("initialBranches")).toStrictEqual("master");
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
 
@@ -196,13 +182,13 @@ describe(`runWorkflowReport`, () => {
 
     it("renders workflow reports as expected", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                reports: [
-                    {"name": "minimal"},
-                    {"name": "other", "params": {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    reports: [
+                        {"name": "minimal"},
+                        {"name": "other", "params": {p1: "v1", p2: "v2"}}
+                    ]
+                })
         });
         setTimeout(() => {
             const workflowReports = wrapper.find("#workflow-reports");
@@ -236,11 +222,10 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
+            workflowMetadata: mockEmptyRunWorkflowMetadata({
                 git_commit: "abc123",
                 reports: [minimal]
-            }
+            }),
         });
         wrapper.setData({
             reports: [minimal, global],
@@ -291,11 +276,11 @@ describe(`runWorkflowReport`, () => {
 
     it("Clicking remove report emits expected workflow metadata update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+                }),
         });
         wrapper.setData({
             reports: [minimal, global],
@@ -315,13 +300,13 @@ describe(`runWorkflowReport`, () => {
 
     it("updating parameter values emits expected workflow metadata update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                reports: [
-                    {name: "minimal", params: {nmin: "8"}},
-                    {name: "other", params: {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    reports: [
+                        {name: "minimal", params: {nmin: "8"}},
+                        {name: "other", params: {p1: "v1", p2: "v2"}}
+                    ]
+                }),
         });
         setTimeout(() => {
             wrapper.findAllComponents(ParameterList).at(0).vm.$emit("paramsChanged", [{name: "nmin", value: "10"}]);
@@ -338,15 +323,15 @@ describe(`runWorkflowReport`, () => {
 
     it("can remove obsolete reports from workflow on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal"},
-                    {name: "nonexistent"},
-                    {name: "global"}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal"},
+                        {name: "nonexistent"},
+                        {name: "global"}
+                    ]
+                }),
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -380,14 +365,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can remove obsolete parameters from workflow reports on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global", params: {p1: "v1", p2: "v2", p3: "v3"}}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2", p3: "v3"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -423,14 +408,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can add new parameters to workflow reports on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global"}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global"}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -465,14 +450,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can combine workflow changes on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global", params: {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "global", date: new Date()}
@@ -505,13 +490,13 @@ describe(`runWorkflowReport`, () => {
 
     it("renders error received when checking parameters on update available reports", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}}
-                ]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: new Date()}
@@ -532,7 +517,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can dismiss workflow removals alert", async () => {
-        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: {...emptyWorkflowMetadata}}});
+        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: mockEmptyRunWorkflowMetadata()}});
         wrapper.setData({workflowRemovals: ["Test removal"], runReportMetadata: {}});
         await Vue.nextTick();
 
@@ -555,11 +540,11 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
-                workflowMetadata: {
-                    ...emptyWorkflowMetadata,
-                    git_commit: "abc123",
-                    git_branch: "branch"
-                }
+                workflowMetadata:
+                    mockEmptyRunWorkflowMetadata({
+                        git_commit: "abc123",
+                        git_branch: "branch"
+                    }),
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports
@@ -602,11 +587,11 @@ describe(`runWorkflowReport`, () => {
 
     it("remove imported file when a report is manually removed from imported reports", async () => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+                })
         });
 
         await Vue.nextTick()
@@ -632,11 +617,11 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [minimal]
-            }
+            workflowMetadata:
+                mockEmptyRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [minimal]
+                })
         });
 
         await Vue.nextTick()
@@ -670,11 +655,11 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
-                workflowMetadata: {
-                    ...emptyWorkflowMetadata,
-                    git_commit: "test",
-                    git_branch: "test"
-                }
+                workflowMetadata:
+                    mockEmptyRunWorkflowMetadata({
+                        git_commit: "test",
+                        git_branch: "test"
+                    })
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports

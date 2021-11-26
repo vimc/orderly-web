@@ -4,7 +4,7 @@ import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import Changelog from "../../../js/components/runReport/changeLog.vue";
-import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
+import {mockEmptyRunWorkflowMetadata} from "../../mocks";
 
 describe(`runWorkflowRun`, () => {
 
@@ -40,8 +40,7 @@ describe(`runWorkflowRun`, () => {
         return mount(runWorkflowRun,
             {
                 propsData: {
-                    workflowMetadata: {...emptyWorkflowMetadata},
-                    ...propsData
+                    workflowMetadata: mockEmptyRunWorkflowMetadata(propsData),
                 },
                 data() {
                     return {
@@ -70,10 +69,7 @@ describe(`runWorkflowRun`, () => {
 
     it("emits initial valid event when workflow name matches existing workflow", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                name: "Interim report"
-            }
+            workflowMetadata: mockEmptyRunWorkflowMetadata({name: "Interim report"})
         });
         setTimeout(() => {
             expect(wrapper.emitted("valid").length).toBe(1);
@@ -84,10 +80,7 @@ describe(`runWorkflowRun`, () => {
 
     it("emits initial valid event when workflow name is valid", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                name: "Interim report3"
-            }
+            workflowMetadata: mockEmptyRunWorkflowMetadata({name: "Interim report3"})
         });
         setTimeout(() => {
             expect(wrapper.emitted("valid").length).toBe(1);
