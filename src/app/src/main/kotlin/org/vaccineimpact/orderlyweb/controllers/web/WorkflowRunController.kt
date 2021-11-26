@@ -50,7 +50,7 @@ class WorkflowRunController(
         )
     }
 
-    fun getWorkflowRunSummary(): String
+    fun getWorkflowRunSummary(): WorkflowRunSummaryPage
     {
         val key = context.params(":key")
         val report = mapOf("name" to "example", "instance" to "production", "params" to mapOf("nmin" to 1), "depends_on" to listOf("missing"))
@@ -58,7 +58,8 @@ class WorkflowRunController(
         // val response = mapOf("status" to "success", "errors" to null, "data" to data)
         // return Gson().toJson(response)
         val report1 = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
-        return Serializer.instance.gson.toJson(WorkflowRunSummaryPage(listOf(report1), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5"))
+        // return Serializer.instance.gson.toJson(WorkflowRunSummaryPage(listOf(report1), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5"))
+        return WorkflowRunSummaryPage(listOf(report1), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
     }
 
     internal data class WorkflowRunResponse(

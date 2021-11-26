@@ -228,7 +228,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         api.get("/workflows/1/summary")
                     .then((data) => {
                         console.log("data", data)
-                        console.log("data", JSON.parse(data.data))
+                        // console.log("data", JSON.parse(data.data))
                     })
                     .catch((error) => {
                         console.log("error", error)
