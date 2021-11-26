@@ -49,7 +49,7 @@ class WorkflowRunController(
         )
     }
 
-    fun getMissingDependencies(): String
+    fun getWorkflowRunSummary(): String
     {
         val key = context.params(":key")
         val details = workflowRunRepository.getWorkflowRunDetails(key)

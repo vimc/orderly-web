@@ -17,7 +17,7 @@ object WebWorkflowRouteConfig : RouteConfig
             .json()
             .secure(runReports)
             .transform(),
-        WebEndpoint("/workflows/:key/missing-dependencies", WorkflowRunController::class, "getMissingDependencies")
+        WebEndpoint("/workflows/:key/summary", WorkflowRunController::class, "getWorkflowRunSummary")
             .json()
             .secure(runReports)
             .transform(),
