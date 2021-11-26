@@ -247,10 +247,10 @@ describe(`workflowWizard`, () => {
         wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
 
-        expect(wrapper.vm.$data.runWorkflowMetadata)
-            .toStrictEqual({...mockEmptyRunWorkflowMetadata({git_branch: "master"}), newProp: "newVal"});
+        const runWorkflowMetadata = {...mockEmptyRunWorkflowMetadata(), newProp: "newVal"}
 
-        expect(wrapper.emitted("update-run-workflow-metadata")[1])
-            .toStrictEqual([{...mockEmptyRunWorkflowMetadata(), newProp: "newVal"}]);
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
+
+        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([runWorkflowMetadata]);
     });
 })

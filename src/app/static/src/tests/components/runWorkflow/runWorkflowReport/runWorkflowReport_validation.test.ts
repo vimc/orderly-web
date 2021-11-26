@@ -38,7 +38,7 @@ describe("runWorkflowReport validation", () => {
         return mount(runWorkflowReport, {propsData});
     };
 
-    const expectEmittedValid = (wrapper: Wrapper<runWorkflowReport>) => {
+    const expectEmittedValid = (wrapper: Wrapper<any>) => {
         expect(wrapper.emitted("valid").length).toBe(1);
         expect(wrapper.emitted("valid")[0][0]).toBe(true);
 
@@ -46,7 +46,7 @@ describe("runWorkflowReport validation", () => {
         expect(wrapper.vm.$data.defaultMessage).toBe("");
     };
 
-    const updateComponentMetadataFromLastEmitted = (wrapper: Wrapper<runWorkflowReport>) => {
+    const updateComponentMetadataFromLastEmitted = (wrapper: Wrapper<any>) => {
         // simulate the workflow wizard managing the metadata object by feeding the last update patch back to
         // the component
         const oldMetadata = wrapper.vm.$data.workflowMetadata;
