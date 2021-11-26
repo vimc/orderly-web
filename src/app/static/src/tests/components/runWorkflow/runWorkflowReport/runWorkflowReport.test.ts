@@ -602,7 +602,9 @@ describe(`runWorkflowReport`, () => {
                 expect(mockAxios.history.post[0].data).toMatchObject({})
 
                 expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
-                expect(wrapper.find("#import-validation-errors").exists()).toBe(false);
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(false);
 
                 expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
                 expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
@@ -688,7 +690,7 @@ describe(`runWorkflowReport`, () => {
 
         const mockUpdateWorkflowReports = jest.fn()
 
-        const wrapper = shallowMount(runWorkflowReport, {
+        const wrapper = mount(runWorkflowReport, {
             propsData: {
                 workflowMetadata: {
                     ...emptyWorkflowMetadata,
@@ -725,7 +727,7 @@ describe(`runWorkflowReport`, () => {
 
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
                 expect(wrapper.vm.$data.importedFile).toMatchObject({})
                 expect(mockAxios.history.post.length).toBe(1)
@@ -741,11 +743,22 @@ describe(`runWorkflowReport`, () => {
                 expect(wrapper.emitted("valid").length).toBe(2);
                 expect(wrapper.emitted("valid")[1][0]).toBe(false);
 
-                expect(wrapper.find("#import-validation-errors").text().startsWith("Unable to import from csv:")).toBe(true);
-                const errors = wrapper.findAll(".import-validation-error");
+
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(true);
+                expect(errorAlert.text()).toContain("Failed to import from csv. The following issues were found:");
+                const errors = wrapper.findAll("li.import-validation-error");
                 expect(errors.length).toBe(2);
                 expect(errors.at(0).text()).toBe("ERROR 1");
                 expect(errors.at(1).text()).toBe("ERROR 2");
+
+                //Test dismissing BAlert clears validation errors
+                errorAlert.vm.$emit("dismissed");
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+
+                await Vue.nextTick();
+                expect(errorAlert.props("show")).toBe(false);
 
                 done();
             })

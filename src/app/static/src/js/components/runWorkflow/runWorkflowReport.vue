@@ -59,17 +59,19 @@
                                lang="en">
                         <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
                     </div>
-                    <div v-if="validationErrors.length"
-                         id="import-validation-errors"
-                         class="text-danger small error-message mt-2 ">
-                        <div class="col-sm-2 d-inline-block"></div>
-                        <div class="col-sm-6 d-inline-block pl-0">
-                            Unable to import from csv:
-                            <div v-for="error in validationErrors" class="import-validation-error ml-2">
+                    <b-alert :show="!!validationErrors.length"
+                             id="import-validation-errors"
+                             dismissible
+                             variant="danger"
+                             class="col-sm-10 mt-4"
+                             @dismissed="validationErrors=[]">
+                        Failed to import from csv. The following issues were found:
+                        <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
+                            <li v-for="error in validationErrors" class="import-validation-error">
                                 {{error.message}}
-                            </div>
-                        </div>
-                    </div>
+                            </li>
+                        </ul>
+                    </b-alert>
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
