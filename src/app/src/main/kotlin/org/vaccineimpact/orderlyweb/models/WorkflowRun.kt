@@ -54,7 +54,7 @@ data class WorkflowRunSummary(
 
 data class WorkflowRunSummaryPage(
     val reports: List<WorkflowRunSummaryPageReport>,
-    val missing_dependencies: Map<String, List<String>>,
+    val missingDependencies: Map<String, List<String>>,
     val ref: String
 )
 
@@ -62,7 +62,7 @@ data class WorkflowRunSummaryPageReport(
     val name: String,
     val instance: String,
     val params: Map<String, String>,
-    val depends_on: List<String>
+    val dependsOn: List<String>
 )
 
 data class WorkflowRunReport(

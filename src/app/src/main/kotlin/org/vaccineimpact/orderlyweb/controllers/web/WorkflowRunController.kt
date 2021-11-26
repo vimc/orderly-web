@@ -51,8 +51,10 @@ class WorkflowRunController(
 
     fun getWorkflowRunSummary(): WorkflowRunSummaryPage
     {
-        val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
-        return WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
+        val report = WorkflowRunSummaryPageReport("example", "production", mapOf("nmin" to "1"),
+            listOf("missing"))
+        return WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")),
+            "18f6c5267c08bf017b521a21493771c6d3e774a5")
     }
 
     internal data class WorkflowRunResponse(
