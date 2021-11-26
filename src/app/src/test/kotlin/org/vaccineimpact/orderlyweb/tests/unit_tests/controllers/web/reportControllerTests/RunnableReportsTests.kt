@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportControllerTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
@@ -15,14 +15,16 @@ class RunnableReportsTests
     @Test
     fun `can list all reports`()
     {
-        val mockContext: ActionContext = mock()
+        val mockQueryParams: Map<String, String> = mapOf()
+        val mockContext: ActionContext = mock<ActionContext>{
+            on { queryParams() } doReturn mockQueryParams
+        }
         val reports = listOf(
             "report1",
             "report2"
         )
         val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/source", mockContext) } doReturn
-                OrderlyServerResponse(Serializer.instance.toResult(reports), 200)
+            on { getRunnableReportNames(mockQueryParams) } doReturn reports
         }
         val date1 = Instant.now()
         val date2 = date1.minusSeconds(60)
@@ -46,17 +48,16 @@ class RunnableReportsTests
     @Test
     fun `can list reports for branch and commit`()
     {
+        val mockQueryParams = mapOf("branch" to "branch1", "commit" to "abcdef1")
         val mockContext: ActionContext = mock {
-            on { queryParams("branch") } doReturn "branch1"
-            on { queryParams("commit") } doReturn "abcdef1"
+            on { queryParams() } doReturn mockQueryParams
         }
         val reports = listOf(
             "report_that_has_been_run",
             "report_that_has_not_been_run"
         )
         val mockOrderlyServer: OrderlyServerAPI = mock {
-            on { get("/reports/source", mockContext) } doReturn
-                OrderlyServerResponse(Serializer.instance.toResult(reports), 200)
+            on { getRunnableReportNames(mockQueryParams) } doReturn reports
         }
         val now = Instant.now()
         val mockReportRepo: ReportRepository = mock {

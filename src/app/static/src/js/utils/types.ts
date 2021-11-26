@@ -130,3 +130,8 @@ export interface ChildCustomStyle {
     label: string,
     control: string
 }
+
+export interface Error {
+    code: string;
+    message: string | null;
+}

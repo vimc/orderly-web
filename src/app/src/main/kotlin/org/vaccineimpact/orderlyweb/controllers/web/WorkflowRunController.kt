@@ -49,7 +49,7 @@ class WorkflowRunController(
         )
     }
 
-    fun getWorkflowRunSummary(): String
+    fun getWorkflowRunSummary(): WorkflowRunSummaryPage
     {
         val key = context.params(":key")
         val details = workflowRunRepository.getWorkflowRunDetails(key)
@@ -57,7 +57,11 @@ class WorkflowRunController(
         val ref = details.gitCommit
         val response = orderlyServerAPI.get("/v1/workflow/missing-dependencies/", 
         mapOf("reports" to reports, "ref" to ref))
-        return passThroughResponse(response)
+        // return passThroughResponse(response)
+        val report = WorkflowRunSummaryPageReport("example", "production", mapOf("nmin" to "1"),
+            listOf("missing"))
+        return WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")),
+            "18f6c5267c08bf017b521a21493771c6d3e774a5")
     }
 
     internal data class WorkflowRunResponse(
@@ -171,12 +175,9 @@ class WorkflowRunController(
     fun validateWorkflow(): List<WorkflowReportWithParams>
     {
         val reader = context.getPartReader("file")
-        val workflowReports = workflowLogic.parseWorkflowCSV(reader)
+        val branch = context.queryParams("branch")
+        val commit = context.queryParams("commit")
 
-        // These will be used when we validate against orderly reports in mrc-2720
-        val gitBranch = context.getPart("git_branch")
-        val gitCommit = context.getPart("git_commit")
-
-        return workflowReports
+        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit)
     }
 }

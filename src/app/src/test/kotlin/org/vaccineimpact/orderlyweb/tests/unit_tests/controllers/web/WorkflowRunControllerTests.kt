@@ -58,6 +58,18 @@ class WorkflowRunControllerTests
     }
 
     @Test
+    fun `can get workflow run summary dummy endpoint`()
+    {
+        val context = mock<ActionContext> {
+            on { params(":key") } doReturn "fakeKey"
+        }
+        val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
+        val workFlowSummary = WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
+        val sut = WorkflowRunController(context)
+        assertThat(sut.getWorkflowRunSummary()).isEqualTo(workFlowSummary)
+    }
+
+    @Test
     fun `can get workflow details`()
     {
         val now = Instant.now()
@@ -556,19 +568,19 @@ class WorkflowRunControllerTests
         val mockReader = mock<Reader>()
         val mockContext = mock<ActionContext> {
             on { getPartReader("file") } doReturn mockReader
+            on { queryParams("branch") } doReturn "testBranch"
+            on { queryParams("commit") } doReturn "testCommit"
         }
 
         val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
         val mockLogic = mock<WorkflowLogic> {
-            on { parseWorkflowCSV(mockReader) } doReturn mockResult
+            on { parseAndValidateWorkflowCSV(mockReader, "testBranch", "testCommit") } doReturn mockResult
         }
 
         val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)
         val result = sut.validateWorkflow()
 
         assertThat(result).isSameAs(mockResult)
-        verify(mockContext).getPart("git_branch")
-        verify(mockContext).getPart("git_commit")
     }
 
     private fun getWorkflowRunRequestExample() =

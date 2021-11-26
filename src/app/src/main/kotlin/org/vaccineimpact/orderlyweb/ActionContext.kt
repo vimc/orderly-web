@@ -16,7 +16,7 @@ interface ActionContext
     fun contentType(): String
 
     fun queryString(): String?
-    fun queryParams(): Map<String, String?>
+    fun queryParams(): Map<String, String>
     fun queryParams(key: String): String?
     fun params(): Map<String, String?>
     fun params(key: String): String

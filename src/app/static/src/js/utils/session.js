@@ -1,6 +1,4 @@
 export const session = function () {
-    const SELECTED_RUNNING_REPORT_TAB = "selectedRunningReportTab";
-    const SELECTED_RUNNING_REPORT_KEY = "selectedRunningReportKey";
 
     function getItem(key) {
         return window.sessionStorage.getItem(key);
@@ -19,17 +17,22 @@ export const session = function () {
     }
 
     return {
-        getSelectedTab: function () {
-            return getItem(SELECTED_RUNNING_REPORT_TAB);
+        getSelectedTab: function (key) {
+            return getItem(key);
         },
-        setSelectedTab: function (tab) {
-            setItem(SELECTED_RUNNING_REPORT_TAB, tab);
+        setSelectedTab: function (key, value) {
+            setItem(key, value);
         },
-        getSelectedRunningReportKey: function () {
-            return getItem(SELECTED_RUNNING_REPORT_KEY);
+        getSelectedKey: function (key) {
+            return getItem(key);
         },
-        setSelectedRunningReportKey: function (key) {
-            setItem(SELECTED_RUNNING_REPORT_KEY, key);
+        setSelectedKey: function (key, value) {
+            setItem(key , value);
         }
     };
 }();
+
+export const SELECTED_RUNNING_REPORT_TAB = "selectedRunningReportTab";
+export const SELECTED_RUNNING_REPORT_KEY = "selectedRunningReportKey";
+export const SELECTED_RUNNING_WORKFLOW_TAB = "selectedRunningWorkflowTab";
+export const SELECTED_RUNNING_WORKFLOW_KEY = "selectedRunningWorkflowKey";
