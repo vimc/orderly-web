@@ -16,7 +16,7 @@ describe(`workflowWizard`, () => {
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    initialRunWorkflowMetadata: {...mockEmptyRunWorkflowMetadata()},
+                    initialRunWorkflowMetadata: mockEmptyRunWorkflowMetadata(),
                     steps: mockStep
                 },
                 data() {
@@ -144,9 +144,10 @@ describe(`workflowWizard`, () => {
         await wrapper.find(runWorkflowReport).vm.$emit("valid", true)
         const buttons = wrapper.findAll("button")
 
-        expect(buttons.at(1).text()).toBe("Next")
+        expect(buttons.length).toBe(5)
+        expect(buttons.at(2).text()).toBe("Next")
 
-        await buttons.at(1).trigger("click")
+        await buttons.at(2).trigger("click")
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
@@ -245,7 +246,11 @@ describe(`workflowWizard`, () => {
 
         wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...mockEmptyRunWorkflowMetadata(), newProp: "newVal"});
-        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([{...mockEmptyRunWorkflowMetadata(), newProp: "newVal"}]);
+
+        expect(wrapper.vm.$data.runWorkflowMetadata)
+            .toStrictEqual({...mockEmptyRunWorkflowMetadata({git_branch: "master"}), newProp: "newVal"});
+
+        expect(wrapper.emitted("update-run-workflow-metadata")[1])
+            .toStrictEqual([{...mockEmptyRunWorkflowMetadata(), newProp: "newVal"}]);
     });
 })
