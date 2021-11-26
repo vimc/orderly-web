@@ -49,19 +49,22 @@ class WorkflowRunController(
         )
     }
 
-    fun getWorkflowRunSummary(): WorkflowRunSummaryPage
+    fun getWorkflowRunSummary(): String
     {
         val key = context.params(":key")
         val details = workflowRunRepository.getWorkflowRunDetails(key)
-        val reports = details.reports
+        val reports: MutableList<WorkflowRunSummaryPageReport> = mutableListOf()
+        for (report in details.reports) {
+            reports.add(WorkflowRunSummaryPageReport(report.report, null, report.params, null))
+        }
         val ref = details.gitCommit
-        val response = orderlyServerAPI.get("/v1/workflow/missing-dependencies/", 
-        mapOf("reports" to reports, "ref" to ref))
-        // return passThroughResponse(response)
-        val report = WorkflowRunSummaryPageReport("example", "production", mapOf("nmin" to "1"),
-            listOf("missing"))
-        return WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")),
-            "18f6c5267c08bf017b521a21493771c6d3e774a5")
+        val body = Serializer.instance.gson.toJson(WorkflowRunSummaryPageRequest(reports, ref))
+        val response = orderlyServerAPI.post(
+            "/v1/workflow/summary/",
+            body,
+            emptyMap()
+        )
+        return passThroughResponse(response)
     }
 
     internal data class WorkflowRunResponse(
