@@ -122,24 +122,32 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("emits update on branch selected", (done) => {
+    it("emits update and clears validation errors on branch selected ", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("branchSelected", "dev");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_branch: "dev"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
 
-    it("emits update on commit selected", (done) => {
+    it("emits update and clears validation errors on commit selected", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("commitSelected", "xyz987");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_commit: "xyz987"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
@@ -690,7 +698,7 @@ describe(`runWorkflowReport`, () => {
 
         const mockUpdateWorkflowReports = jest.fn()
 
-        const wrapper = mount(runWorkflowReport, {
+        const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
                 workflowMetadata: {
                     ...emptyWorkflowMetadata,

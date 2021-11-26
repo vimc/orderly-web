@@ -256,9 +256,11 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
         },
         branchSelected(git_branch: string) {
+            this.validationErrors = [];
             this.$emit("update", {git_branch});
         },
         commitSelected(git_commit: string) {
+            this.validationErrors = [];
             this.$emit("update", {git_commit})
         },
         getParametersApiCall(report: string) {
