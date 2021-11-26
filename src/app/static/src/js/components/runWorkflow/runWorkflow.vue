@@ -30,6 +30,7 @@
     import runWorkflowCreate from "./runWorkflowCreate.vue";
     import { api } from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
+    import {session} from "../../utils/session";
 
     interface Props{
         workflowToRerun: RunWorkflowMetadata | null
@@ -52,7 +53,9 @@
         handleClone: (data: Event) => void
         handleComplete: () => void
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
+        resetSelectedWorkflowReportSource: () => void
     }
+
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflow",
     props: {
@@ -82,6 +85,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
+            this.resetSelectedWorkflowReportSource();
             this.workflowStarted = true
         },
         handleClone: function (data) {
@@ -90,6 +94,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
+            this.resetSelectedWorkflowReportSource();
             this.workflowStarted = true
         },
         handleCancel: function () {
@@ -111,6 +116,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.error = "";
             this.createdWorkflowKey = "";
             this.runWorkflowMetadata = update;
+        },
+        resetSelectedWorkflowReportSource() {
+            session.setSelectedWorkflowReportSource(null);
         }
     },
     components: {
