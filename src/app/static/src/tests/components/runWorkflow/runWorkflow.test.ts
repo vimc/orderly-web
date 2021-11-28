@@ -7,6 +7,7 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {runReportMetadataResponse} from "./runWorkflowReport/runWorkflowReport.test";
+import {session} from "../../../js/utils/session";
 
 describe(`runWorkflow`, () => {
 
@@ -127,6 +128,9 @@ describe(`runWorkflow`, () => {
     })
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from clone`, async (done) => {
+        const mockSetReportsSource = jest.fn();
+        session.setSelectedWorkflowReportSource = mockSetReportsSource;
+
         const wrapper = getWrapper()
         //Enables rerun and clone buttons
         await wrapper.find(runWorkflowCreate).setData(
@@ -141,6 +145,10 @@ describe(`runWorkflow`, () => {
         setTimeout(async () => {
             expect(wrapper.vm.$data.workflowStarted).toBe(true)
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
+
+            // expect session workflow report mode to have been reset
+            expect(mockSetReportsSource.mock.calls.length).toBe(1);
+            expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
 
             expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
@@ -186,6 +194,9 @@ describe(`runWorkflow`, () => {
     })
 
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`,  (done) => {
+        const mockSetReportsSource = jest.fn();
+        session.setSelectedWorkflowReportSource = mockSetReportsSource;
+
         const wrapper = getWrapper()
         wrapper.find("#create-workflow").trigger("click")
 
@@ -196,6 +207,10 @@ describe(`runWorkflow`, () => {
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
             expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject({...emptyWorkflowMetadata, git_branch: "master"});
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
+
+            // expect session workflow report mode to have been reset
+            expect(mockSetReportsSource.mock.calls.length).toBe(1);
+            expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
 
