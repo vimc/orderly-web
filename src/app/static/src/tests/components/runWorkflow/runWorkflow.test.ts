@@ -5,13 +5,13 @@ import runWorkflow from '../../../js/components/runWorkflow/runWorkflow.vue'
 import workflowWizard from "../../../js/components/workflowWizard/workflowWizard.vue";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
-import {mockEmptyRunWorkflowMetadata, mockRunReportMetadataResponse} from "../../mocks";
+import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
 
 describe(`runWorkflow`, () => {
 
     const selectedWorkflow = {name: "interim report", date: "2021-05-19T16:28:24Z", email: "test@example.com", key: "fake"}
 
-    const runWorkflowMetadata = mockEmptyRunWorkflowMetadata({git_branch: "master"})
+    const runWorkflowMetadata = mockRunWorkflowMetadata({git_branch: "master"})
 
     const workflowMetadata = {
         name: "interim report",
@@ -29,7 +29,7 @@ describe(`runWorkflow`, () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": mockRunReportMetadataResponse()});
+            .reply(200, {"data": mockRunReportMetadata()});
     });
 
     const getWrapper = () => {

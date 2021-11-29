@@ -2,7 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue"
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
-import {mockEmptyRunWorkflowMetadata} from "../../mocks";
+import {mockRunWorkflowMetadata} from "../../mocks";
 
 describe(`runWorkflowCreate`, () => {
 
@@ -87,7 +87,7 @@ describe(`runWorkflowCreate`, () => {
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#create-workflow").trigger("click")
         expect(wrapper.emitted("create").length).toBe(1)
-        expect(wrapper.emitted("create")[0][0]).toStrictEqual(mockEmptyRunWorkflowMetadata());
+        expect(wrapper.emitted("create")[0][0]).toStrictEqual(mockRunWorkflowMetadata());
     })
 
     it(`can emit re-run navigation step`, async (done) => {

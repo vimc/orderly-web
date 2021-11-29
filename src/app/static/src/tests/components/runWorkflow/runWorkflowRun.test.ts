@@ -4,7 +4,7 @@ import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import Changelog from "../../../js/components/runReport/changeLog.vue";
-import {mockEmptyRunWorkflowMetadata} from "../../mocks";
+import {mockRunWorkflowMetadata} from "../../mocks";
 import {RunWorkflowMetadata} from "../../../js/utils/types";
 
 describe(`runWorkflowRun`, () => {
@@ -37,11 +37,11 @@ describe(`runWorkflowRun`, () => {
             .reply(200, {"data": workflowSummaryMetadata});
     })
 
-    const getWrapper = (propsData: Partial<RunWorkflowMetadata> = {}) => {
+    const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
         return mount(runWorkflowRun,
             {
                 propsData: {
-                    workflowMetadata: mockEmptyRunWorkflowMetadata(propsData),
+                    workflowMetadata: mockRunWorkflowMetadata(workflowMetadata),
                 },
                 data() {
                     return {

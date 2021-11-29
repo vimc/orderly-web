@@ -1,6 +1,6 @@
 import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
 
-export const mockRunReportMetadataResponse = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {
+export const mockRunReportMetadata = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {
     return {
         metadata: {
             instances_supported: false,
@@ -13,7 +13,7 @@ export const mockRunReportMetadataResponse = (props: Partial<RunReportMetadata> 
     }
 };
 
-export const mockEmptyRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}): RunWorkflowMetadata => {
+export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}): RunWorkflowMetadata => {
     return {
         name: "",
         reports: [],
