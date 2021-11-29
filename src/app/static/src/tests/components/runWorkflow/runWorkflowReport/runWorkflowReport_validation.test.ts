@@ -28,12 +28,9 @@ describe("runWorkflowReport validation", () => {
             .reply(200, {"data": reports});
     });
 
-    const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
+    const getWrapper = (props: Partial<RunWorkflowMetadata> = {}) => {
         const propsData = {
-            workflowMetadata: {
-                ...mockEmptyRunWorkflowMetadata(),
-                ...workflowMetadata
-            }
+            workflowMetadata: mockEmptyRunWorkflowMetadata(props)
         };
         return mount(runWorkflowReport, {propsData});
     };
