@@ -1,4 +1,4 @@
-import {mount, shallowMount} from "@vue/test-utils";
+import {mount} from "@vue/test-utils";
 import cancelDialog from "../../../js/components/runWorkflow/cancelDialog.vue"
 
 describe(`cancelDialog`, () => {

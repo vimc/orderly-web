@@ -1,6 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
 import step from "../../../js/components/workflowWizard/step.vue"
-import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue"
 
 describe(`step`, () => {
 
