@@ -185,6 +185,7 @@ interface Data {
     importedFile: object | null
     importFromCsvIsEnabled: boolean
     isImportedReports: boolean
+    inactiveOriginWorkflowReports: WorkflowReportWithParams[]
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -214,7 +215,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             importedFile: null,
             reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
-            isImportedReports: false
+            isImportedReports: false,
+            inactiveOriginWorkflowReports: []
         }
     },
     computed: {
@@ -443,6 +445,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         reportsOrigin(newVal) {
             session.setSelectedWorkflowReportSource(newVal);
+
+            const newlyActiveReports = this.inactiveOriginWorkflowReports;
+            this.inactiveOriginWorkflowReports = [...this.workflowMetadata.reports];
+            this.updateWorkflowReports(newlyActiveReports);
         }
     }
 })
