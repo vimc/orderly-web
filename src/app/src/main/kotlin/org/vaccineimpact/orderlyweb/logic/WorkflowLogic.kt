@@ -65,7 +65,8 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
             val numCells = row.count()
             if (numCells != numCols)
             {
-                errors.add(errorTemplate(rowIdx + 2, null,  "row should contain $numCols values, $numCells values found"))
+                errors.add(errorTemplate(rowIdx + 2, null,
+                        "row should contain $numCols values, $numCells values found"))
             }
 
             val reportName = row[0]
@@ -113,7 +114,7 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         val parameterHeaders = headers.drop(1)
 
         reports.forEachIndexed { index, report ->
-            val rowIdx = index + 2  // Row numbers in errors should be 1-indexed and include initial header column
+            val rowIdx = index + 2 // Row numbers in errors should be 1-indexed and include initial header column
             if (!runnableReports.contains(report.name))
             {
                 errors.add(errorTemplate(rowIdx, 1, "report '${report.name}' not found in Orderly"))

@@ -164,11 +164,14 @@ class WorkflowLogicTests
             TwoParamsOneDefault,,2021,
             TwoParamsOneDefault,Cholera,,5
             TwoParamsNoDefault,,,
+            ParamNotInFile,,,
         """.trimIndent().reader()
 
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
             on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
-                    "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault")
+                    "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault",
+                    "ParamNotInFile"
+            )
             on { getReportParameters(eq("SingleDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
                     Parameter("disease", "default"))
             on { getReportParameters(eq("SingleNoDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
@@ -179,6 +182,9 @@ class WorkflowLogicTests
             on { getReportParameters(eq("TwoParamsNoDefault"), eq(commitOnlyQs)) } doReturn listOf(
                     Parameter("year", null), Parameter("age", null)
             )
+            on { getReportParameters(eq("ParamNotInFile"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("notinfile", null)
+            )
         }
         assertThatThrownBy{ sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
@@ -188,6 +194,7 @@ class WorkflowLogicTests
                     Row 6, column 3: required parameter 'year' was not provided for report 'TwoParamsOneDefault'
                     Row 6, column 2: unexpected parameter 'disease' provided for report 'TwoParamsOneDefault'
                     Row 7, column 3: required parameter 'year' was not provided for report 'TwoParamsNoDefault'
-                    Row 7, column 4: required parameter 'age' was not provided for report 'TwoParamsNoDefault'""".trimIndent())
+                    Row 7, column 4: required parameter 'age' was not provided for report 'TwoParamsNoDefault'
+                    Row 8: required parameter 'notinfile' was not provided for report 'ParamNotInFile'""".trimIndent())
     }
 }
