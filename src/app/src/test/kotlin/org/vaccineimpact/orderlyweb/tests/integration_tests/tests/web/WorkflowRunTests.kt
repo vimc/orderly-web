@@ -470,7 +470,9 @@ class WorkflowRunTests : IntegrationTest()
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
+        // JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
+        assertThat(Serializer.instance.gson.fromJson(response.text, WorkflowRunSummaryPage::class.java)).isEqualTo(WorkflowRunSummaryPage())
+        // assertThat(response.text.data).isEqualTo(WorkflowRunSummaryPage)
     }
 
     private fun addWorkflowRunExample()
