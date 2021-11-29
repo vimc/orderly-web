@@ -454,6 +454,25 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
     }
 
+    @Test
+    fun `can get workflow summary`()
+    {
+
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflows/summary",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+                // mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
+        )
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
+    }
+
     private fun addWorkflowRunExample()
     {
         insertUser("user@email.com", "user.name")

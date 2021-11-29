@@ -61,8 +61,8 @@ class WorkflowRunControllerTests
     fun `can get workflow run summary dummy endpoint`()
     {
         val context = mock<ActionContext> {
-            on { params(":key") } doReturn "fakeKey"
-        }
+            on { getRequestBody() } doReturn """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+        } // this is not being referenced by the dummy endpoint so it does not matter what this contains
         val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
         val workFlowSummary = WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
         val sut = WorkflowRunController(context)
