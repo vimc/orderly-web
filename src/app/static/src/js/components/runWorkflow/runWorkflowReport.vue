@@ -32,16 +32,48 @@
                 <div v-if="importFromCsvIsEnabled" id="choose-import-from">
                     <div class="col-sm-2 d-inline-block"></div>
                     <div class="btn-group btn-group-toggle" data-toggle="buttons">
-                        <label id="choose-from-list-label" class="btn btn-outline-primary btn-toggle shadow-none active">
+                        <label id="choose-from-list-label"
+                               class="btn btn-outline-primary btn-toggle shadow-none"
+                               :class="reportsOrigin === 'list' ? 'active' : ''">
                             <input type="radio" id="choose-from-list"
                                    v-model="reportsOrigin" value="list"
-                                   autocomplete="off" checked> Choose from list
+                                   autocomplete="off"> Choose from list
                         </label>
-                        <label id="import-from-csv-label" class="btn btn-outline-primary btn-toggle shadow-none">
+                        <label id="import-from-csv-label"
+                               class="btn btn-outline-primary btn-toggle shadow-none"
+                               :class="reportsOrigin === 'csv' ? 'active' : ''">
                             <input type="radio" id="import-from-csv"
                                    v-model="reportsOrigin" value="csv"
                                    autocomplete="off"> Import from csv
                         </label>
+                    </div>
+                </div>
+                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
+                    <div class="col-sm-2 d-inline-block"></div>
+                    <div class="custom-file col-sm-6">
+                        <input type="file" class="custom-file-input"
+                               @change="handleImportedFile($event)"
+                               @click="handleClickImport($event)"
+                               accept="text/csv"
+                               id="import-csv"
+                               lang="en">
+                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
+                    </div>
+                    <div>
+                        <div class="col-sm-2 d-inline-block"></div>
+                        <b-alert :show="!!validationErrors.length"
+                                 id="import-validation-errors"
+                                 dismissible
+                                 variant="danger"
+                                 class="col-sm-6 mt-4 d-inline-block"
+                                 @dismissed="validationErrors=[]">
+                            Failed to import from csv. The following issues were found:
+                            <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
+                                <li v-for="error in validationErrors" class="import-validation-error">
+                                    {{error.message}}
+                                </li>
+                            </ul>
+                        </b-alert>
                     </div>
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
@@ -67,17 +99,6 @@
                         >Remove report</button>
                     </div>
                     <hr/>
-                </div>
-                <div v-if="showImportFromCsv" id="show-import-csv" class="pt-4">
-                    <div class="col-sm-2 d-inline-block"></div>
-                    <div class="custom-file col-sm-6">
-                        <input type="file" class="custom-file-input"
-                               v-on:change="handleImportedFile($event)"
-                               accept="text/csv"
-                               id="import-csv"
-                               lang="en">
-                        <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
-                    </div>
                 </div>
                 <div v-if="!showImportFromCsv" id="show-report-list" class="pt-4">
                     <div v-if="hasReports" id="add-report-div" class="form-group row">
@@ -121,6 +142,7 @@ import ErrorInfo from "../errorInfo.vue";
 import {mapParameterArrayToRecord, mapRecordToParameterArray} from "../../utils/reports.ts";
 import {AxiosResponse} from "axios";
 import {switches} from '../../featureSwitches.ts';
+import {session} from "../../utils/session";
 
 interface Props {
     workflowMetadata: RunWorkflowMetadata
@@ -147,6 +169,7 @@ interface Methods {
     getRunReportMetadata: () => void
     validateWorkflow: () => void
     handleImportedFile: (event: Event) => void
+    handleClickImport: (event: Event) => void
     removeImportedFile: () => void
 }
 
@@ -156,11 +179,11 @@ interface Data {
     reports: ReportWithDate[],
     selectedReport: ReportWithDate,
     error: string,
-    validationError: Error[] | null | undefined,
+    validationErrors: Error[],
     defaultMessage: string,
     workflowRemovals: string[] | null,
     reportsValid: boolean[],
-    reportsOrigin: "csv" | "list",
+    reportsOrigin: string,
     importedFilename: string,
     importedFile: object | null
     importFromCsvIsEnabled: boolean
@@ -186,13 +209,13 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reports: [],
             selectedReport: null,
             error: "",
-            validationError: null,
+            validationErrors: [],
             defaultMessage: "",
             workflowRemovals: null,
             reportsValid: [],
             importedFilename: "",
             importedFile: null,
-            reportsOrigin: "list",
+            reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
             isImportedReports: false
         }
@@ -222,6 +245,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 this.isImportedReports = false
             }
         },
+        handleClickImport: function(event: Event) {
+            // Clear import value to allow successive imports of same file
+            (event.target as HTMLInputElement).value = null;
+        },
         handleImportedFile(event) {
             const target = event.target as HTMLInputElement;
             if (target.files.length) {
@@ -232,9 +259,11 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
         },
         branchSelected(git_branch: string) {
+            this.validationErrors = [];
             this.$emit("update", {git_branch});
         },
         commitSelected(git_commit: string) {
+            this.validationErrors = [];
             this.$emit("update", {git_commit})
         },
         getParametersApiCall(report: string) {
@@ -396,11 +425,14 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 })
                 .then(({data}) => {
                     this.updateWorkflowReports(data.data);
-                    this.validationError = null;
+                    this.reportsValid = Array(data.data.length).fill(true);
+                    this.validationErrors = [];
                     this.isImportedReports = true
                 })
                 .catch((error) => {
-                    this.validationError = error.response.data?.errors;
+                    this.updateWorkflowReports([]);
+                    this.reportsValid = [];
+                    this.validationErrors = error.response.data?.errors || [];
                 });
         }
     },
@@ -411,6 +443,9 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     watch: {
         stepIsValid(newVal) {
             this.$emit("valid", newVal);
+        },
+        reportsOrigin(newVal) {
+            session.setSelectedWorkflowReportSource(newVal);
         }
     }
 })
