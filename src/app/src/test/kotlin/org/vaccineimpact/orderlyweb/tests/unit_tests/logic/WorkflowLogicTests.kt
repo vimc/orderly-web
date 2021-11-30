@@ -121,7 +121,7 @@ class WorkflowLogicTests
         """.trimIndent().reader()
         assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining(
-                        "Report row 2: row should contain 3 values, 4 values found")
+                        "Row 3: row should contain 3 values, 4 values found")
     }
 
     @Test
@@ -135,7 +135,7 @@ class WorkflowLogicTests
         """.trimIndent().reader()
         assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining(
-                        "Report row 3: row should contain 3 values, 2 values found")
+                        "Row 4: row should contain 3 values, 2 values found")
     }
 
     @Test
@@ -149,8 +149,8 @@ class WorkflowLogicTests
         """.trimIndent().reader()
         assertThatThrownBy{ sut(mockTestOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
-                    Report row 1: report 'nonexistent1' not found in Orderly
-                    Report row 3: report 'nonexistent2' not found in Orderly""".trimIndent())
+                    Row 2, column 1: report 'nonexistent1' not found in Orderly
+                    Row 4, column 1: report 'nonexistent2' not found in Orderly""".trimIndent())
     }
 
     @Test
@@ -164,11 +164,14 @@ class WorkflowLogicTests
             TwoParamsOneDefault,,2021,
             TwoParamsOneDefault,Cholera,,5
             TwoParamsNoDefault,,,
+            ParamNotInFile,,,
         """.trimIndent().reader()
 
         val mockOrderlyAPI = mock<OrderlyServerAPI> {
             on { getRunnableReportNames(eq(mapOf("branch" to testBranch, "commit" to testCommit))) } doReturn listOf(
-                    "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault")
+                    "SingleDefaultParam", "SingleNoDefaultParam", "TwoParamsOneDefault", "TwoParamsNoDefault",
+                    "ParamNotInFile"
+            )
             on { getReportParameters(eq("SingleDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
                     Parameter("disease", "default"))
             on { getReportParameters(eq("SingleNoDefaultParam"), eq(commitOnlyQs)) } doReturn listOf(
@@ -179,15 +182,19 @@ class WorkflowLogicTests
             on { getReportParameters(eq("TwoParamsNoDefault"), eq(commitOnlyQs)) } doReturn listOf(
                     Parameter("year", null), Parameter("age", null)
             )
+            on { getReportParameters(eq("ParamNotInFile"), eq(commitOnlyQs)) } doReturn listOf(
+                    Parameter("notinfile", null)
+            )
         }
         assertThatThrownBy{ sut(mockOrderlyAPI).parseAndValidateWorkflowCSV(csvReader, testBranch, testCommit) }
                 .isInstanceOf(BadRequest::class.java).hasMessageContaining("""
-                    Report row 1: unexpected parameter 'year' provided for report 'SingleDefaultParam'
-                    Report row 1: unexpected parameter 'age' provided for report 'SingleDefaultParam'
-                    Report row 3: required parameter 'disease' was not provided for report 'SingleNoDefaultParam'
-                    Report row 5: required parameter 'year' was not provided for report 'TwoParamsOneDefault'
-                    Report row 5: unexpected parameter 'disease' provided for report 'TwoParamsOneDefault'
-                    Report row 6: required parameter 'year' was not provided for report 'TwoParamsNoDefault'
-                    Report row 6: required parameter 'age' was not provided for report 'TwoParamsNoDefault'""".trimIndent())
+                    Row 2, column 3: unexpected parameter 'year' provided for report 'SingleDefaultParam'
+                    Row 2, column 4: unexpected parameter 'age' provided for report 'SingleDefaultParam'
+                    Row 4, column 2: required parameter 'disease' was not provided for report 'SingleNoDefaultParam'
+                    Row 6, column 3: required parameter 'year' was not provided for report 'TwoParamsOneDefault'
+                    Row 6, column 2: unexpected parameter 'disease' provided for report 'TwoParamsOneDefault'
+                    Row 7, column 3: required parameter 'year' was not provided for report 'TwoParamsNoDefault'
+                    Row 7, column 4: required parameter 'age' was not provided for report 'TwoParamsNoDefault'
+                    Row 8: required parameter 'notinfile' was not provided for report 'ParamNotInFile'""".trimIndent())
     }
 }
