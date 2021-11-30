@@ -74,8 +74,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-                "test.user@example.com | Tue Jun 15 2021, 14:50")
+        assertThat(dropdownMenu[0].text).contains("workflow1 test.user@example.com | Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
 
         val rerunButton = page.findElement(By.id("rerun"))
@@ -96,8 +95,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val vSelect = driver.findElement(By.id("v-select"))
         val dropdownMenu = vSelect.findElements(By.tagName("li"))
-        assertThat(dropdownMenu[0].text).contains("workflow1\n" +
-                "test.user@example.com | Tue Jun 15 2021, 14:50")
+        assertThat(dropdownMenu[0].text).contains("workflow1 test.user@example.com | Tue Jun 15 2021, 14:50")
         dropdownMenu[0].click()
 
         val cloneButton = page.findElement(By.id("clone"))
