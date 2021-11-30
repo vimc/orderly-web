@@ -51,28 +51,9 @@ class WorkflowRunController(
 
     fun getWorkflowRunSummary(): String
     {
-        // val key = context.params(":key")
-        val workflowRunSummaryRequestJson = context.getRequestBody()
-
-        val workflowRunSummaryRequest = try
-        {
-            Serializer.instance.gson.fromJson(workflowRunSummaryRequestJson, WorkflowRunSummaryPageRequest::class.java)
-        }
-        catch (e: JsonSyntaxException)
-        {
-            throw BadRequest("Invalid workflow description: ${e.message}")
-        }
-        // val requestBody = context.getRequestBody()
-        // val details = workflowRunRepository.getWorkflowRunDetails(key)
-        val reports: MutableList<WorkflowRunSummaryPageReport> = mutableListOf()
-        for (report in workflowRunSummaryRequest.reports) {
-            reports.add(WorkflowRunSummaryPageReport(report.name, null, report.params, null))
-        }
-        // val ref = details.gitCommit
-        val body = Serializer.instance.gson.toJson(WorkflowRunSummaryPageRequest(reports, null))
         val response = orderlyServerAPI.post(
             "/v1/workflow/summary/",
-            body,
+            context.getRequestBody(),
             emptyMap()
         )
         return passThroughResponse(response)

@@ -155,7 +155,7 @@
                 console.log("workflow metadata", this.workflowMetadata)
                 api.post(`/workflows/summary`, {
                         reports: this.workflowMetadata.reports,
-                        ref: null
+                        ref: this.workflowMetadata.git_commit
                     })
                     .then((data) => {
                         console.log("data", data)
