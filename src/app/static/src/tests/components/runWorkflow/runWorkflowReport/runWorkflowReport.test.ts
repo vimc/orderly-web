@@ -978,10 +978,13 @@ describe(`runWorkflowReport`, () => {
             ]});
 
             // Test that validation was triggered too, but note that validation here is done on old report list since
-            // there is not parent component to update the prop on emit (to be tested in integration test)
+            // there is no parent component to update the prop on emit (to be tested in Selenium test)
             setTimeout(() => {
                 expect(wrapper.emitted("update").length).toBe(2);
                 expect(wrapper.emitted("update")[1][0]).toStrictEqual({reports: []});
+                const warnings = wrapper.findAll("b-alert-stub li");
+                expect(warnings.at(0).text()).toBe("Report 'active1'");
+                expect(warnings.at(1).text()).toBe("Report 'active2'");
                 done();
             });
         });
