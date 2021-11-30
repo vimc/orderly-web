@@ -130,6 +130,8 @@ describe(`runWorkflow`, () => {
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from clone`, async (done) => {
         const mockSetReportsSource = jest.fn();
         session.setSelectedWorkflowReportSource = mockSetReportsSource;
+        const mockSetInactiveOriginWorkflowReports = jest.fn();
+        session.setInactiveOriginWorkflowReports = mockSetInactiveOriginWorkflowReports;
 
         const wrapper = getWrapper()
         //Enables rerun and clone buttons
@@ -146,9 +148,11 @@ describe(`runWorkflow`, () => {
             expect(wrapper.vm.$data.workflowStarted).toBe(true)
             expect(wrapper.find(workflowWizard).exists()).toBe(true)
 
-            // expect session workflow report mode to have been reset
+            // expect session workflow report mode and inactive origin reports to have been reset
             expect(mockSetReportsSource.mock.calls.length).toBe(1);
             expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
+            expect(mockSetInactiveOriginWorkflowReports.mock.calls.length).toBe(1);
+            expect(mockSetInactiveOriginWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
 
             expect(wrapper.find("#add-report-header").text()).toBe("Add reports")
 
@@ -196,6 +200,8 @@ describe(`runWorkflow`, () => {
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from create`,  (done) => {
         const mockSetReportsSource = jest.fn();
         session.setSelectedWorkflowReportSource = mockSetReportsSource;
+        const mockSetInactiveOriginWorkflowReports = jest.fn();
+        session.setInactiveOriginWorkflowReports = mockSetInactiveOriginWorkflowReports;
 
         const wrapper = getWrapper()
         wrapper.find("#create-workflow").trigger("click")
@@ -211,6 +217,8 @@ describe(`runWorkflow`, () => {
             // expect session workflow report mode to have been reset
             expect(mockSetReportsSource.mock.calls.length).toBe(1);
             expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
+            expect(mockSetInactiveOriginWorkflowReports.mock.calls.length).toBe(1);
+            expect(mockSetInactiveOriginWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
 
             const buttons = wrapper.find(workflowWizard).findAll("button")
 

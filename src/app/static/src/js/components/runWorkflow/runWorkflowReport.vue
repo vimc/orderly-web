@@ -217,7 +217,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
             isImportedReports: false,
-            inactiveOriginWorkflowReports: session.getInactiveOriginWorkflowReports()
+            inactiveOriginWorkflowReports: session.getInactiveOriginWorkflowReports() || []
         }
     },
     computed: {
