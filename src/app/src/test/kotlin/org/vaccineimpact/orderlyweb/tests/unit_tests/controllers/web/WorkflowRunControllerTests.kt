@@ -20,6 +20,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
 import java.io.Reader
 import java.time.Instant
+// import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class WorkflowRunControllerTests
 {
@@ -58,15 +59,28 @@ class WorkflowRunControllerTests
     }
 
     @Test
-    fun `can get workflow run summary dummy endpoint`()
+    fun `can get workflow run summary`()
     {
+        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
         val context = mock<ActionContext> {
-            on { params(":key") } doReturn "fakeKey"
+            on { getRequestBody() } doReturn requestBody
         }
-        val report = WorkflowRunSummaryPageReport("example","production", mapOf("nmin" to "1"), listOf("missing"))
-        val workFlowSummary = WorkflowRunSummaryPage(listOf(report), mapOf("example" to listOf("missing")), "18f6c5267c08bf017b521a21493771c6d3e774a5")
-        val sut = WorkflowRunController(context)
-        assertThat(sut.getWorkflowRunSummary()).isEqualTo(workFlowSummary)
+
+        val mockAPIResponse = OrderlyServerResponse("mockAPIResponseText", 200)
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
+        }
+
+        val repo = mock<WorkflowRunRepository>()
+        val sut = WorkflowRunController(context, repo, apiClient, mock())
+        sut.getWorkflowRunSummary()
+
+        verify(apiClient).post(
+            "/v1/workflow/summary/",
+            requestBody,
+            emptyMap()
+        )
     }
 
     @Test
