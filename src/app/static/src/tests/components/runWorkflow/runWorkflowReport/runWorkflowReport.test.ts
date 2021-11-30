@@ -602,7 +602,9 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
-            wrapper.find("input#import-csv.custom-file-input").trigger("change")
+            await wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+            mockUpdateWorkflowReports.mockReset();
 
             setTimeout(() => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
@@ -736,6 +738,8 @@ describe(`runWorkflowReport`, () => {
             expect(wrapper.emitted("valid")[0][0]).toBe(true);
 
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+            mockUpdateWorkflowReports.mockClear();
 
             setTimeout(async () => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
