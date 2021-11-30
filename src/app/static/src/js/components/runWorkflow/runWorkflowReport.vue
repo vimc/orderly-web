@@ -59,19 +59,22 @@
                                lang="en">
                         <label class="custom-file-label" for="import-csv">{{ importedFilename }}</label>
                     </div>
-                    <b-alert :show="!!validationErrors.length"
-                             id="import-validation-errors"
-                             dismissible
-                             variant="danger"
-                             class="col-sm-10 mt-4"
-                             @dismissed="validationErrors=[]">
-                        Failed to import from csv. The following issues were found:
-                        <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                            <li v-for="error in validationErrors" class="import-validation-error">
-                                {{error.message}}
-                            </li>
-                        </ul>
-                    </b-alert>
+                    <div>
+                        <div class="col-sm-2 d-inline-block"></div>
+                        <b-alert :show="!!validationErrors.length"
+                                 id="import-validation-errors"
+                                 dismissible
+                                 variant="danger"
+                                 class="col-sm-6 mt-4 d-inline-block"
+                                 @dismissed="validationErrors=[]">
+                            Failed to import from csv. The following issues were found:
+                            <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
+                                <li v-for="error in validationErrors" class="import-validation-error">
+                                    {{error.message}}
+                                </li>
+                            </ul>
+                        </b-alert>
+                    </div>
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
