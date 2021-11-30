@@ -8,7 +8,18 @@ import ParameterList from "../../../../js/components/runReport/parameterList.vue
 import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
+import {session} from "../../../../js/utils/session";
 import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../../mocks";
+
+export const runReportMetadataResponse = {
+    metadata: {
+        instances_supported: false,
+        git_supported: true,
+        instances: {"source": []},
+        changelog_types: ["published", "internal"]
+    },
+    git_branches: ["master", "dev"]
+};
 
 const minimal = { name: "minimal", date: null };
 const global = { name: "other", date: new Date() };
@@ -18,7 +29,10 @@ const workflowValidationResponse = {
         {name: "minimal", params: {nmin: "5"}},
         {name: "global", params: {p1: "v1", p2: "v2"}}
     ]
-}
+};
+
+const mockSessionSetSelectedWorkflowReportSource = jest.fn();
+const mockSessionGetSelectedWorkflowReportSource = jest.fn();
 
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
@@ -31,7 +45,15 @@ describe(`runWorkflowReport`, () => {
         mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
 
         mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
-            .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
+            .replyOnce(500, {errors: [
+                {code: "bad-request", message: "ERROR 1"},
+                {code: "bad-request", message: "ERROR 2"}
+            ]});
+
+        session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
+        session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
+
+        jest.resetAllMocks();
     });
 
     const getWrapper = (propsData = {workflowMetadata: mockRunWorkflowMetadata()}) => {
@@ -96,24 +118,32 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("emits update on branch selected", (done) => {
+    it("emits update and clears validation errors on branch selected ", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("branchSelected", "dev");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_branch: "dev"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
 
-    it("emits update on commit selected", (done) => {
+    it("emits update and clears validation errors on commit selected", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("commitSelected", "xyz987");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_commit: "xyz987"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
@@ -528,7 +558,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate workflow reports", (done) => {
+    it("can validate imported workflow reports", (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
@@ -551,6 +581,7 @@ describe(`runWorkflowReport`, () => {
             }
         });
 
+        wrapper.setData({validationErrors: [{message: "old error", code: "TEST"}]});
         setTimeout(async () => {
             await wrapper.find("input#import-from-csv").trigger("click")
 
@@ -572,13 +603,22 @@ describe(`runWorkflowReport`, () => {
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toBe(null)
+
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(false);
+
                 expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
                 expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
                     [
                         {name: "minimal", params: {nmin: "5"}},
                         {name: "global", params: {p1: "v1", p2: "v2"}}
                     ])
+
+                expect(wrapper.emitted("valid").length).toBe(1);
+                expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
                 done()
             })
         });
@@ -643,7 +683,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.isImportedReports).toBe(false)
     });
 
-    it("can return error if workflow validation fails",  (done) => {
+    it("can display errors if workflow validation fails",  (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
@@ -658,12 +698,18 @@ describe(`runWorkflowReport`, () => {
                 workflowMetadata:
                     mockRunWorkflowMetadata({
                         git_commit: "test",
-                        git_branch: "test"
+                        git_branch: "test",
+                        reports: [
+                            {name: "test report"} as any
+                        ]
                     })
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports
             }
+        });
+        wrapper.setData({
+            reportsValid: [true]
         });
 
         setTimeout(async () => {
@@ -679,18 +725,70 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
                 expect(wrapper.vm.$data.importedFile).toMatchObject({})
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toEqual([{code: "bad-request", message: "ERROR RESPONSE"}])
-                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(0)
-                done()
+                expect(wrapper.vm.$data.validationErrors).toEqual([
+                    {code: "bad-request", message: "ERROR 1"},
+                    {code: "bad-request", message: "ERROR 2"}
+                ]);
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1);
+                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
+
+                expect(wrapper.emitted("valid").length).toBe(2);
+                expect(wrapper.emitted("valid")[1][0]).toBe(false);
+
+
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(true);
+                expect(errorAlert.text()).toContain("Failed to import from csv. The following issues were found:");
+                const errors = wrapper.findAll("li.import-validation-error");
+                expect(errors.length).toBe(2);
+                expect(errors.at(0).text()).toBe("ERROR 1");
+                expect(errors.at(1).text()).toBe("ERROR 2");
+
+                //Test dismissing BAlert clears validation errors
+                errorAlert.vm.$emit("dismissed");
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+
+                await Vue.nextTick();
+                expect(errorAlert.props("show")).toBe(false);
+
+                done();
             })
+        });
+    });
+
+    it("clears file input value when clicked", (done) => {
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: mockRunWorkflowMetadata({
+                    git_commit: "test",
+                    git_branch: "test"
+                })
+            }
+        });
+
+        setTimeout(async () => {
+            await wrapper.find("#import-from-csv").trigger("click")
+
+            const input = wrapper.find("input#import-csv.custom-file-input");
+            const inputEl = input.element as HTMLInputElement;
+
+            const spy = jest.spyOn(inputEl, 'value', 'set');
+
+            await input.trigger("click");
+            expect(spy).toHaveBeenCalledWith(null);
+            done();
         });
     });
 
@@ -701,12 +799,48 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const fromListLabel = wrapper.find("#choose-from-list-label")
             expect(fromListLabel.text()).toBe("Choose from list")
-            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect((fromListLabel.find("input").element as HTMLInputElement).checked).toBe(true)
             expect(wrapper.vm.$data.reportsOrigin).toBe("list")
 
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             expect(fromCsvLabel.text()).toBe("Import from csv")
             expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+   it("loads with import csv checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("csv");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#choose-from-list-label").classes()).not.toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#import-from-csv-label").classes()).toContain("active");
+            done();
+        });
+    });
+
+    it("loads with choose from list checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("list");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#choose-from-list-label").classes()).toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#import-from-csv-label").classes()).not.toContain("active");
             done();
         });
     });
@@ -755,6 +889,10 @@ describe(`runWorkflowReport`, () => {
             const uploadInput = wrapper.find("#show-import-csv").find("input")
             expect(uploadInput.attributes("accept")).toBe("text/csv")
             expect(uploadInput.attributes("lang")).toBe("en")
+
+            // Should have updated session too
+            expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
+
             done();
         });
     });
