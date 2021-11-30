@@ -276,6 +276,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             await this.validateWorkflowReportsWithGit();
         },
         async validateWorkflowReportsWithGit() {
+            console.log("validating...")
             // After git or report origin change, we may have an invalid workflow - it may contain reports or parameters
             // not in the selected commit - remove obsolete reports or params and notify user
             // 1. Check reports
