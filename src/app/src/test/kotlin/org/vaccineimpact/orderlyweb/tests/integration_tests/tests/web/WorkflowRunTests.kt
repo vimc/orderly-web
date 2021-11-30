@@ -149,11 +149,7 @@ class WorkflowRunTests : IntegrationTest()
                       }
                     },
                     {
-                      "name": "minimal",
-                      "params": {}
-                    },
-                    {
-                      "name": "global",
+                      "name": "connection",
                       "params": {}
                     }
                   ],
