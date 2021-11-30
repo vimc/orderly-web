@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.AssertionsForClassTypes
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
@@ -465,14 +466,14 @@ class WorkflowRunTests : IntegrationTest()
                 ContentTypes.json,
                 HttpMethod.post,
                 """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
-                // mapOf("Content-Type" to ContentTypes.multipart + ";boundary=XXXX")
         )
 
         assertSuccessful(response)
         assertJsonContentType(response)
-        // JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
-        assertThat(Serializer.instance.gson.fromJson(response.text, WorkflowRunSummaryPage::class.java)).isEqualTo(WorkflowRunSummaryPage())
-        // assertThat(response.text.data).isEqualTo(WorkflowRunSummaryPage)
+        val json = JsonLoader.fromString(response.text)
+        val data =  json["data"].toString()
+        AssertionsForClassTypes.assertThat("missing_dependencies" in data)
+                .isEqualTo(true)
     }
 
     private fun addWorkflowRunExample()
