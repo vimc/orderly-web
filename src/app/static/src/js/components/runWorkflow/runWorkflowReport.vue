@@ -216,7 +216,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
             isImportedReports: false,
-            inactiveOriginWorkflowReports: []
+            inactiveOriginWorkflowReports: session.getInactiveOriginWorkflowReports()
         }
     },
     computed: {
@@ -449,6 +449,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             const newlyActiveReports = this.inactiveOriginWorkflowReports;
             this.inactiveOriginWorkflowReports = [...this.workflowMetadata.reports];
             this.updateWorkflowReports(newlyActiveReports);
+            session.setInactiveOriginWorkflowReports(this.inactiveOriginWorkflowReports);
         }
     }
 })

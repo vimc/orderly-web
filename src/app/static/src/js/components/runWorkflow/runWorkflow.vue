@@ -53,7 +53,7 @@
         handleClone: (data: Event) => void
         handleComplete: () => void
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
-        resetSelectedWorkflowReportSource: () => void
+        resetSessionWorkflowReports: () => void
     }
 
 export default Vue.extend<Data, Methods, unknown, Props>({
@@ -85,7 +85,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
-            this.resetSelectedWorkflowReportSource();
+            this.resetSessionWorkflowReports();
             this.workflowStarted = true
         },
         handleClone: function (data) {
@@ -94,7 +94,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 {name: "report", component: "runWorkflowReport"},
                 {name: "run", component: "runWorkflowRun"},
             ]
-            this.resetSelectedWorkflowReportSource();
+            this.resetSessionWorkflowReports();
             this.workflowStarted = true
         },
         handleCancel: function () {
@@ -117,8 +117,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.createdWorkflowKey = "";
             this.runWorkflowMetadata = update;
         },
-        resetSelectedWorkflowReportSource() {
+        resetSessionWorkflowReports() {
             session.setSelectedWorkflowReportSource(null);
+            session.setInactiveOriginWorkflowReports([]);
         }
     },
     components: {

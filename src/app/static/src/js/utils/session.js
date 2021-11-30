@@ -17,6 +17,7 @@ export const session = function () {
     }
 
     const SELECTED_WORKFLOW_REPORTS_SOURCE = "selectedWorkflowReportsSource";
+    const INACTIVE_ORIGIN_WORKFLOW_REPORTS= "inactiveOriginWorkflowReports";
 
     return {
         getSelectedTab: function (key) {
@@ -36,6 +37,12 @@ export const session = function () {
         },
         setSelectedWorkflowReportSource(value) {
             setItem(SELECTED_WORKFLOW_REPORTS_SOURCE, value);
+        },
+        getInactiveOriginWorkflowReports() {
+            return JSON.parse(getItem(INACTIVE_ORIGIN_WORKFLOW_REPORTS));
+        },
+        setInactiveOriginWorkflowReports(value) {
+            setItem(INACTIVE_ORIGIN_WORKFLOW_REPORTS, JSON.stringify(value));
         }
     };
 }();
