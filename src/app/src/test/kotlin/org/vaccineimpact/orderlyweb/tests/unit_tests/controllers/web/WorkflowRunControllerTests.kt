@@ -20,7 +20,6 @@ import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
 import java.io.Reader
 import java.time.Instant
-// import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class WorkflowRunControllerTests
 {

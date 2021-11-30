@@ -474,15 +474,6 @@ class WorkflowRunTests : IntegrationTest()
         val data =  json["data"].toString()
         AssertionsForClassTypes.assertThat("missing_dependencies" in data)
                 .isEqualTo(true)
-
-        // assertThat(
-        //     Serializer.instance.gson.fromJson(
-        //         data,
-        //         WorkflowRunController.WorkflowRunResponse::class.java
-        //     )
-        // ).isEqualTo(
-        //     WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1", "report_key2"))
-        // )
     }
 
     private fun addWorkflowRunExample()
