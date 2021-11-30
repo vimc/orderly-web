@@ -8,13 +8,11 @@ import {
 describe('session', () => {
 
     beforeEach(() => {
-        jest.restoreAllMocks()
+        jest.restoreAllMocks();
+        Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
     });
 
     it('gets selected tab from local storage', () => {
-
-        Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
-
         const result = session.getSelectedTab(SELECTED_RUNNING_REPORT_TAB);
         expect(result).toBe("value for selectedRunningReportTab");
 
@@ -33,13 +31,9 @@ describe('session', () => {
         expect(spySetStorage.calls[0][1]).toBe("reportLogs");
         expect(spySetStorage.calls[1][0]).toBe("selectedRunningWorkflowTab");
         expect(spySetStorage.calls[1][1]).toBe("workflowProgress");
-
     });
 
     it('gets selected running report key from local storage', () => {
-
-        Storage.prototype.getItem = jest.fn((x) => `value for ${x}`);
-
         const result = session.getSelectedKey(SELECTED_RUNNING_REPORT_KEY);
 
         expect(result).toBe("value for selectedRunningReportKey");
@@ -54,5 +48,16 @@ describe('session', () => {
         expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportKey");
         expect(spySetStorage.calls[0][1]).toBe("crazypanda");
 
+    });
+
+    it("gets selected workflow report source", () => {
+        const result = session.getSelectedWorkflowReportSource();
+        expect(result).toBe("value for selectedWorkflowReportsSource");
+    });
+
+    it("sets selected workflow report source", () => {
+        const spySetStorage = jest.spyOn(Storage.prototype, "setItem");
+        session.setSelectedWorkflowReportSource("csv");
+        expect(spySetStorage).toHaveBeenCalledWith("selectedWorkflowReportsSource", "csv");
     });
 });

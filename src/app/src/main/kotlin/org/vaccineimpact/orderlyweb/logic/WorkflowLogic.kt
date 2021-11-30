@@ -51,12 +51,22 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         val paramNames = headers.drop(1)
 
         val errors: MutableList<String> = mutableListOf()
-        val errorTemplate = { index: Int, msg: String -> "Report row $index: $msg" }
+        val errorTemplate = { row: Int, col: Int?, msg: String ->
+            if (col == null)
+            {
+                "Row $row: $msg"
+            }
+            else
+            {
+                "Row $row, column $col: $msg"
+            }
+        }
         val reports = rows.drop(1).mapIndexed { rowIdx, row ->
             val numCells = row.count()
             if (numCells != numCols)
             {
-                errors.add(errorTemplate(rowIdx + 1, "row should contain $numCols values, $numCells values found"))
+                errors.add(errorTemplate(rowIdx + 2, null,
+                        "row should contain $numCols values, $numCells values found"))
             }
 
             val reportName = row[0]
@@ -67,7 +77,7 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
             WorkflowReportWithParams(reportName, parameters)
         }
 
-        errors += validateWorkflowReports(reports, branch, commit, errorTemplate)
+        errors += validateWorkflowReports(reports, branch, commit, rows[0].toList(), errorTemplate)
 
         if (errors.isNotEmpty())
         {
@@ -81,7 +91,8 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         reports: List<WorkflowReportWithParams>,
         branch: String?,
         commit: String?,
-        errorTemplate: (index: Int, msg: String) -> String
+        headers: List<String>,
+        errorTemplate: (row: Int, col: Int?, msg: String) -> String
     ): List<String>
     {
         val reportsQsParams: MutableMap<String, String> = mutableMapOf()
@@ -100,11 +111,13 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
         val knownOrderlyReportParams: MutableMap<String, List<Parameter>> = mutableMapOf()
         val errors: MutableList<String> = mutableListOf()
 
+        val parameterHeaders = headers.drop(1)
+
         reports.forEachIndexed { index, report ->
-            val reportIdx = index + 1
+            val rowIdx = index + 2 // Row numbers in errors should be 1-indexed and include initial header column
             if (!runnableReports.contains(report.name))
             {
-                errors.add(errorTemplate(reportIdx, "report '${report.name}' not found in Orderly"))
+                errors.add(errorTemplate(rowIdx, 1, "report '${report.name}' not found in Orderly"))
             }
             else
             {
@@ -119,16 +132,29 @@ class OrderlyWebWorkflowLogic(private val orderly: OrderlyServerAPI) : WorkflowL
                 val missingParameters = orderlyParams.values
                         .filter{ it.value == null && !report.params.keys.contains(it.name) }
                 missingParameters.forEach{
+                    // The missing parameter may or may not have a column in the file
+                    val paramIdx = parameterHeaders.indexOf(it.name)
+                    val col = if (paramIdx == -1)
+                    {
+                        null
+                    }
+                    else
+                    {
+                        paramIdx + 2 // Columns in errors should be 1-indexed and include initial report column
+                    }
+
                     errors.add(
-                            errorTemplate(reportIdx,
+                            errorTemplate(rowIdx, col,
                             "required parameter '${it.name}' was not provided for report '${report.name}'")
                     )
                 }
 
                 val unexpectedParameters = report.params.keys.filterNot{ orderlyParams.keys.contains(it) }
                 unexpectedParameters.forEach{
+                    val col = parameterHeaders.indexOf(it) + 2
                     errors.add(
-                            errorTemplate(reportIdx, "unexpected parameter '$it' provided for report '${report.name}'")
+                            errorTemplate(rowIdx, col,
+                                    "unexpected parameter '$it' provided for report '${report.name}'")
                     )
                 }
             }
