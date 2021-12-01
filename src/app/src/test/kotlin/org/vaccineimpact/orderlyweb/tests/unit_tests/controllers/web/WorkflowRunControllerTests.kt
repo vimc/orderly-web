@@ -73,13 +73,14 @@ class WorkflowRunControllerTests
 
         val repo = mock<WorkflowRunRepository>()
         val sut = WorkflowRunController(context, repo, apiClient, mock())
-        sut.getWorkflowRunSummary()
+        val result = sut.getWorkflowRunSummary()
 
         verify(apiClient).post(
             "/v1/workflow/summary/",
             requestBody,
             emptyMap()
         )
+        assertThat(result).isEqualTo(mockAPIResponse.text)
     }
 
     @Test
