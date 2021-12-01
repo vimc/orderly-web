@@ -1,4 +1,4 @@
-package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.ReportControllerTests
+package org.vaccineimpact.orderlyweb.tests.unit_tests.controllers.web.reportControllerTests
 
 import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.eq

@@ -1,5 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
+import java.nio.file.Files;
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -178,6 +179,24 @@ class RunWorkflowTests : SeleniumTest()
         refreshButton.click()
         assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector("#git-commit option"), 2))
+    }
+
+    @Test
+    fun `can import csv file`()
+    {
+        val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
+        tmpFile.writeText("report\nminimal")
+
+        createWorkflow();
+        driver.findElement(By.id("import-from-csv-label")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
+
+        val fileInput = driver.findElement(By.id("import-csv"))
+        fileInput.sendKeys(tmpFile.absolutePath)
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
+
+        tmpFile.delete()
     }
 
     private fun addReport(reportName: String)

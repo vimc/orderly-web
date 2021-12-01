@@ -75,6 +75,7 @@ import {
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
+import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];

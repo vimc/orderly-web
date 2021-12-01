@@ -30,6 +30,7 @@
     import runWorkflowCreate from "./runWorkflowCreate.vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
+    import {session} from "../../utils/session";
 
     interface Props {
         workflowToRerun: RunWorkflowMetadata | null
@@ -52,6 +53,7 @@
         handleClone: (data: Event) => void
         handleComplete: () => void
         updateRunWorkflowMetadata: (data: RunWorkflowMetadata) => void
+        resetSelectedWorkflowReportSource: () => void
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
@@ -68,7 +70,6 @@
                 disableRename: false,
                 error: "",
                 createdWorkflowKey: ""
-            }
         },
         methods: {
             handleRerun: function (data) {
@@ -116,6 +117,9 @@
                 this.error = "";
                 this.createdWorkflowKey = "";
                 this.runWorkflowMetadata = update;
+            },
+            resetSelectedWorkflowReportSource() {
+                session.setSelectedWorkflowReportSource(null);
             }
         },
         components: {
