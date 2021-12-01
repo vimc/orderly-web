@@ -291,8 +291,14 @@ class RunWorkflowTests : SeleniumTest()
         createWorkflow()
         addReport("minimal")
         addReport("global")
-        val nextButton = driver.findElement(By.id("next-workflow"))
+        var nextButton = driver.findElement(By.id("next-workflow"))
         nextButton.click()
+
+        // should now be on summary page
+        nextButton = driver.findElement(By.id("next-workflow"))
+        nextButton.click()
+
+        // now on run page
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("change-type-control")))
         val submitButton = driver.findElement(By.id("next-workflow"))
         driver.findElement(By.id("run-workflow-name")).sendKeys("My workflow")
