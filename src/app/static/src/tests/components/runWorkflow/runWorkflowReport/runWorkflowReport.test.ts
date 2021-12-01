@@ -6,9 +6,10 @@ import GitUpdateReports from "../../../../js/components/runReport/gitUpdateRepor
 import ReportList from "../../../../js/components/runReport/reportList.vue";
 import ParameterList from "../../../../js/components/runReport/parameterList.vue";
 import ErrorInfo from "../../../../js/components/errorInfo.vue";
-import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
+import {session} from "../../../../js/utils/session";
+import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../../mocks";
 
 export const runReportMetadataResponse = {
     metadata: {
@@ -28,41 +29,48 @@ const workflowValidationResponse = {
         {name: "minimal", params: {nmin: "5"}},
         {name: "global", params: {p1: "v1", p2: "v2"}}
     ]
-}
+};
+
+const mockSessionSetSelectedWorkflowReportSource = jest.fn();
+const mockSessionGetSelectedWorkflowReportSource = jest.fn();
 
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadata()});
 
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
         mockAxios.onPost(url).replyOnce(200, workflowValidationResponse);
 
         mockAxios.onPost("http://app/workflow/validate/?branch=test&commit=test")
-            .replyOnce(500, {errors: [{code: "bad-request", message: "ERROR RESPONSE"}]});
+            .replyOnce(500, {errors: [
+                {code: "bad-request", message: "ERROR 1"},
+                {code: "bad-request", message: "ERROR 2"}
+            ]});
+
+        session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
+        session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
+
+        jest.resetAllMocks();
     });
 
-    const getWrapper = (propsData = {workflowMetadata: {...emptyWorkflowMetadata}}) => {
+    const getWrapper = (propsData = {workflowMetadata: mockRunWorkflowMetadata()}) => {
         return shallowMount(runWorkflowReport, {propsData})
     };
 
     it("fetches report run metadata and renders gitUpdateReports component", (done) => {
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadata()});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_branch: "master",
-                git_commit: "abc123"
-            }
+            workflowMetadata: mockRunWorkflowMetadata({git_branch: "master", git_commit: "abc123"})
         });
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.props("reportMetadata")).toStrictEqual(runReportMetadataResponse.metadata);
-            expect(git.props("initialBranches")).toStrictEqual(runReportMetadataResponse.git_branches);
+            expect(git.props("reportMetadata")).toStrictEqual(mockRunReportMetadata().metadata);
+            expect(git.props("initialBranches")).toStrictEqual(mockRunReportMetadata().git_branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
 
@@ -110,24 +118,32 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("emits update on branch selected", (done) => {
+    it("emits update and clears validation errors on branch selected ", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("branchSelected", "dev");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_branch: "dev"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
 
-    it("emits update on commit selected", (done) => {
+    it("emits update and clears validation errors on commit selected", (done) => {
         const wrapper = getWrapper();
+        wrapper.setData({
+            validationErrors: [{message: "TEST ERROR", code: "error"}]
+        });
         setTimeout(async () => {
             wrapper.findComponent(GitUpdateReports).vm.$emit("commitSelected", "xyz987");
             await Vue.nextTick();
             expect(wrapper.emitted("update").length).toBe(1);
             expect(wrapper.emitted("update")[0][0]).toStrictEqual({git_commit: "xyz987"});
+            expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
             done();
         });
     });
@@ -196,13 +212,13 @@ describe(`runWorkflowReport`, () => {
 
     it("renders workflow reports as expected", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                reports: [
-                    {"name": "minimal"},
-                    {"name": "other", "params": {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    reports: [
+                        {"name": "minimal"},
+                        {"name": "other", "params": {p1: "v1", p2: "v2"}}
+                    ]
+                })
         });
         setTimeout(() => {
             const workflowReports = wrapper.find("#workflow-reports");
@@ -236,11 +252,10 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
+            workflowMetadata: mockRunWorkflowMetadata({
                 git_commit: "abc123",
                 reports: [minimal]
-            }
+            }),
         });
         wrapper.setData({
             reports: [minimal, global],
@@ -291,11 +306,11 @@ describe(`runWorkflowReport`, () => {
 
     it("Clicking remove report emits expected workflow metadata update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+                }),
         });
         wrapper.setData({
             reports: [minimal, global],
@@ -315,13 +330,13 @@ describe(`runWorkflowReport`, () => {
 
     it("updating parameter values emits expected workflow metadata update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                reports: [
-                    {name: "minimal", params: {nmin: "8"}},
-                    {name: "other", params: {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    reports: [
+                        {name: "minimal", params: {nmin: "8"}},
+                        {name: "other", params: {p1: "v1", p2: "v2"}}
+                    ]
+                }),
         });
         setTimeout(() => {
             wrapper.findAllComponents(ParameterList).at(0).vm.$emit("paramsChanged", [{name: "nmin", value: "10"}]);
@@ -338,15 +353,15 @@ describe(`runWorkflowReport`, () => {
 
     it("can remove obsolete reports from workflow on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal"},
-                    {name: "nonexistent"},
-                    {name: "global"}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal"},
+                        {name: "nonexistent"},
+                        {name: "global"}
+                    ]
+                }),
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -380,14 +395,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can remove obsolete parameters from workflow reports on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global", params: {p1: "v1", p2: "v2", p3: "v3"}}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2", p3: "v3"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -423,14 +438,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can add new parameters to workflow reports on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global"}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global"}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: null},
@@ -465,14 +480,14 @@ describe(`runWorkflowReport`, () => {
 
     it("can combine workflow changes on available reports update", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}},
-                    {name: "global", params: {p1: "v1", p2: "v2"}}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}},
+                        {name: "global", params: {p1: "v1", p2: "v2"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "global", date: new Date()}
@@ -505,13 +520,13 @@ describe(`runWorkflowReport`, () => {
 
     it("renders error received when checking parameters on update available reports", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [
-                    {name: "minimal", params: {nmin: "5"}}
-                ]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [
+                        {name: "minimal", params: {nmin: "5"}}
+                    ]
+                })
         });
         const newAvailableReports = [
             {name: "minimal", date: new Date()}
@@ -532,7 +547,7 @@ describe(`runWorkflowReport`, () => {
     });
 
     it("can dismiss workflow removals alert", async () => {
-        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: {...emptyWorkflowMetadata}}});
+        const wrapper = mount(runWorkflowReport, {propsData: {workflowMetadata: mockRunWorkflowMetadata()}});
         wrapper.setData({workflowRemovals: ["Test removal"], runReportMetadata: {}});
         await Vue.nextTick();
 
@@ -543,7 +558,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.findComponent(BAlert).props("show")).toBe(false);
     });
 
-    it("can validate workflow reports", (done) => {
+    it("can validate imported workflow reports", (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=branch&commit=abc123"
 
@@ -555,17 +570,18 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
-                workflowMetadata: {
-                    ...emptyWorkflowMetadata,
-                    git_commit: "abc123",
-                    git_branch: "branch"
-                }
+                workflowMetadata:
+                    mockRunWorkflowMetadata({
+                        git_commit: "abc123",
+                        git_branch: "branch"
+                    }),
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports
             }
         });
 
+        wrapper.setData({validationErrors: [{message: "old error", code: "TEST"}]});
         setTimeout(async () => {
             await wrapper.find("input#import-from-csv").trigger("click")
 
@@ -587,13 +603,22 @@ describe(`runWorkflowReport`, () => {
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toBe(null)
+
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(false);
+
                 expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1)
                 expect(mockUpdateWorkflowReports.mock.calls[0][0]).toEqual(
                     [
                         {name: "minimal", params: {nmin: "5"}},
                         {name: "global", params: {p1: "v1", p2: "v2"}}
                     ])
+
+                expect(wrapper.emitted("valid").length).toBe(1);
+                expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
                 done()
             })
         });
@@ -602,11 +627,11 @@ describe(`runWorkflowReport`, () => {
 
     it("remove imported file when a report is manually removed from imported reports", async () => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [{name: "minimal"}, {name: "other", params: {p1: "v1"}}]
+                })
         });
 
         await Vue.nextTick()
@@ -632,11 +657,11 @@ describe(`runWorkflowReport`, () => {
             .reply(200, {data: [{name: "p1", value: "v1"}, {name: "p2", value: "v2"}]});
 
         const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                git_commit: "abc123",
-                reports: [minimal]
-            }
+            workflowMetadata:
+                mockRunWorkflowMetadata({
+                    git_commit: "abc123",
+                    reports: [minimal]
+                })
         });
 
         await Vue.nextTick()
@@ -658,7 +683,7 @@ describe(`runWorkflowReport`, () => {
         expect(wrapper.vm.$data.isImportedReports).toBe(false)
     });
 
-    it("can return error if workflow validation fails",  (done) => {
+    it("can display errors if workflow validation fails",  (done) => {
         switches.workFlowReport = true
         const url = "http://app/workflow/validate/?branch=test&commit=test"
 
@@ -670,15 +695,21 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = shallowMount(runWorkflowReport, {
             propsData: {
-                workflowMetadata: {
-                    ...emptyWorkflowMetadata,
-                    git_commit: "test",
-                    git_branch: "test"
-                }
+                workflowMetadata:
+                    mockRunWorkflowMetadata({
+                        git_commit: "test",
+                        git_branch: "test",
+                        reports: [
+                            {name: "test report"} as any
+                        ]
+                    })
             },
             methods: {
                 updateWorkflowReports: mockUpdateWorkflowReports
             }
+        });
+        wrapper.setData({
+            reportsValid: [true]
         });
 
         setTimeout(async () => {
@@ -694,18 +725,70 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
+            expect(wrapper.emitted("valid").length).toBe(1);
+            expect(wrapper.emitted("valid")[0][0]).toBe(true);
+
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
-            setTimeout(() => {
+            setTimeout(async () => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
                 expect(wrapper.vm.$data.importedFile).toMatchObject({})
                 expect(mockAxios.history.post.length).toBe(1)
                 expect(mockAxios.history.post[0].url).toBe(url)
                 expect(mockAxios.history.post[0].data).toMatchObject({})
-                expect(wrapper.vm.$data.validationError).toEqual([{code: "bad-request", message: "ERROR RESPONSE"}])
-                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(0)
-                done()
+                expect(wrapper.vm.$data.validationErrors).toEqual([
+                    {code: "bad-request", message: "ERROR 1"},
+                    {code: "bad-request", message: "ERROR 2"}
+                ]);
+                expect(mockUpdateWorkflowReports.mock.calls.length).toBe(1);
+                expect(mockUpdateWorkflowReports.mock.calls[0][0]).toStrictEqual([]);
+
+                expect(wrapper.emitted("valid").length).toBe(2);
+                expect(wrapper.emitted("valid")[1][0]).toBe(false);
+
+
+                const errorAlert = wrapper.findAllComponents(BAlert).at(1);
+                expect(errorAlert.attributes("id")).toBe("import-validation-errors");
+                expect(errorAlert.props("show")).toBe(true);
+                expect(errorAlert.text()).toContain("Failed to import from csv. The following issues were found:");
+                const errors = wrapper.findAll("li.import-validation-error");
+                expect(errors.length).toBe(2);
+                expect(errors.at(0).text()).toBe("ERROR 1");
+                expect(errors.at(1).text()).toBe("ERROR 2");
+
+                //Test dismissing BAlert clears validation errors
+                errorAlert.vm.$emit("dismissed");
+                expect(wrapper.vm.$data.validationErrors).toStrictEqual([]);
+
+                await Vue.nextTick();
+                expect(errorAlert.props("show")).toBe(false);
+
+                done();
             })
+        });
+    });
+
+    it("clears file input value when clicked", (done) => {
+        const wrapper = shallowMount(runWorkflowReport, {
+            propsData: {
+                workflowMetadata: mockRunWorkflowMetadata({
+                    git_commit: "test",
+                    git_branch: "test"
+                })
+            }
+        });
+
+        setTimeout(async () => {
+            await wrapper.find("#import-from-csv").trigger("click")
+
+            const input = wrapper.find("input#import-csv.custom-file-input");
+            const inputEl = input.element as HTMLInputElement;
+
+            const spy = jest.spyOn(inputEl, 'value', 'set');
+
+            await input.trigger("click");
+            expect(spy).toHaveBeenCalledWith(null);
+            done();
         });
     });
 
@@ -716,12 +799,48 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const fromListLabel = wrapper.find("#choose-from-list-label")
             expect(fromListLabel.text()).toBe("Choose from list")
-            expect(fromListLabel.find("input").attributes("checked")).toBe("checked")
+            expect((fromListLabel.find("input").element as HTMLInputElement).checked).toBe(true)
             expect(wrapper.vm.$data.reportsOrigin).toBe("list")
 
             const fromCsvLabel = wrapper.find("#import-from-csv-label")
             expect(fromCsvLabel.text()).toBe("Import from csv")
             expect(fromCsvLabel.find("input").attributes("checked")).toBeUndefined()
+            done();
+        });
+    });
+
+   it("loads with import csv checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("csv");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#choose-from-list-label").classes()).not.toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#import-from-csv-label").classes()).toContain("active");
+            done();
+        });
+    });
+
+    it("loads with choose from list checked when set in session storage", (done) =>{
+        const mockGetReportsSource = jest.fn();
+        mockGetReportsSource.mockReturnValue("list");
+        session.getSelectedWorkflowReportSource = mockGetReportsSource;
+        const wrapper = getWrapper();
+
+        setTimeout(() => {
+            expect(wrapper.vm.$data.reportsOrigin).toBe("list");
+
+            expect((wrapper.find("#choose-from-list").element as HTMLInputElement).checked).toBe(true);
+            expect(wrapper.find("#choose-from-list-label").classes()).toContain("active");
+
+            expect((wrapper.find("#import-from-csv").element as HTMLInputElement).checked).toBe(false);
+            expect(wrapper.find("#import-from-csv-label").classes()).not.toContain("active");
             done();
         });
     });
@@ -770,6 +889,10 @@ describe(`runWorkflowReport`, () => {
             const uploadInput = wrapper.find("#show-import-csv").find("input")
             expect(uploadInput.attributes("accept")).toBe("text/csv")
             expect(uploadInput.attributes("lang")).toBe("en")
+
+            // Should have updated session too
+            expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
+
             done();
         });
     });

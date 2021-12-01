@@ -402,11 +402,11 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(response.statusCode).isEqualTo(400)
         val errors = JsonLoader.fromString(response.text)["errors"] as ArrayNode
         assertThat(errors.count()).isEqualTo(3)
-        assertThat(errors[0]["message"].asText()).isEqualTo("Report row 3: row should contain 2 values, 3 values found")
+        assertThat(errors[0]["message"].asText()).isEqualTo("Row 4: row should contain 2 values, 3 values found")
         assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
-        assertThat(errors[1]["message"].asText()).isEqualTo("Report row 2: required parameter 'nmin' was not provided for report 'other'")
+        assertThat(errors[1]["message"].asText()).isEqualTo("Row 3, column 2: required parameter 'nmin' was not provided for report 'other'")
         assertThat(errors[1]["code"].asText()).isEqualTo("bad-request")
-        assertThat(errors[2]["message"].asText()).isEqualTo("Report row 4: report 'nonexistent' not found in Orderly")
+        assertThat(errors[2]["message"].asText()).isEqualTo("Row 5, column 1: report 'nonexistent' not found in Orderly")
         assertThat(errors[2]["code"].asText()).isEqualTo("bad-request")
     }
 

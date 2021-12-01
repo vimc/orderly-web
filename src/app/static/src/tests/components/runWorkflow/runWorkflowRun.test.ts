@@ -4,7 +4,8 @@ import {mockAxios} from "../../mockAxios";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import Changelog from "../../../js/components/runReport/changeLog.vue";
-import {emptyWorkflowMetadata} from "./runWorkflowCreate.test";
+import {mockRunWorkflowMetadata} from "../../mocks";
+import {RunWorkflowMetadata} from "../../../js/utils/types";
 
 describe(`runWorkflowRun`, () => {
 
@@ -36,12 +37,11 @@ describe(`runWorkflowRun`, () => {
             .reply(200, {"data": workflowSummaryMetadata});
     })
 
-    const getWrapper = (propsData: any = {}) => {
+    const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
         return mount(runWorkflowRun,
             {
                 propsData: {
-                    workflowMetadata: {...emptyWorkflowMetadata},
-                    ...propsData
+                    workflowMetadata: mockRunWorkflowMetadata(workflowMetadata),
                 },
                 data() {
                     return {
@@ -69,12 +69,7 @@ describe(`runWorkflowRun`, () => {
     });
 
     it("emits initial valid event when workflow name matches existing workflow", (done) => {
-        const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                name: "Interim report"
-            }
-        });
+        const wrapper = getWrapper({name: "Interim report"});
         setTimeout(() => {
             expect(wrapper.emitted("valid").length).toBe(1);
             expect(wrapper.emitted("valid")[0][0]).toBe(false);
@@ -83,12 +78,8 @@ describe(`runWorkflowRun`, () => {
     });
 
     it("emits initial valid event when workflow name is valid", (done) => {
-        const wrapper = getWrapper({
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                name: "Interim report3"
-            }
-        });
+        const wrapper = getWrapper({name: "Interim report3"});
+
         setTimeout(() => {
             expect(wrapper.emitted("valid").length).toBe(1);
             expect(wrapper.emitted("valid")[0][0]).toBe(true);
@@ -117,9 +108,7 @@ describe(`runWorkflowRun`, () => {
     })
 
     it(`emits valid false on workflow name change to empty string`, (done) => {
-        const wrapper = getWrapper({
-            workflowMetadata: {name: "interim report3"}
-        });
+        const wrapper = getWrapper({name: "interim report3"});
         setTimeout(async () => {
             const workflowNameInput = wrapper.find("input#run-workflow-name");
             await workflowNameInput.setValue("");
@@ -131,9 +120,7 @@ describe(`runWorkflowRun`, () => {
     });
 
     it(`emits valid false on workflow name change to name of existing workflow`, (done) => {
-        const wrapper = getWrapper({
-            workflowMetadata: {name: "interim report3"}
-        });
+        const wrapper = getWrapper({name: "interim report3"});
         setTimeout(async () => {
             const workflowNameInput = wrapper.find("input#run-workflow-name");
             await workflowNameInput.setValue("interim report");
@@ -145,9 +132,7 @@ describe(`runWorkflowRun`, () => {
     });
 
     it("can display workflow name from metadata", () => {
-        const wrapper = getWrapper({
-            workflowMetadata: {name: "Test Workflow"}
-        });
+        const wrapper = getWrapper({name: "Test Workflow"});
         expect((wrapper.find("#run-workflow-name").element as HTMLInputElement).value).toBe("Test Workflow");
     });
 
@@ -213,9 +198,7 @@ describe(`runWorkflowRun`, () => {
 
     it("initialises instances from workflow metadata", (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                instances: {source: "uat"}
-            }
+            instances: {source: "uat"}
         });
 
         setTimeout(() => {
@@ -270,9 +253,7 @@ describe(`runWorkflowRun`, () => {
 
     it(`changelog message change updates with existing changelog type`, (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                changelog: {message: "", type: "public"}
-            }
+            changelog: {message: "", type: "public"}
         });
 
         setTimeout(async () => {
@@ -333,9 +314,7 @@ describe(`runWorkflowRun`, () => {
 
     it(`changelog type change updates with existing changelog message`, (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                changelog: {message: "existing message", type: "internal"}
-            }
+            changelog: {message: "existing message", type: "internal"}
         });
 
         setTimeout(async () => {
@@ -355,11 +334,9 @@ describe(`runWorkflowRun`, () => {
 
     it(`initialises changelog type and value from workflow metadata`, (done) => {
         const wrapper = getWrapper({
-            workflowMetadata: {
-                changelog: {
-                    message: "Workflow message",
-                    type: "public"
-                }
+            changelog: {
+                message: "Workflow message",
+                type: "public"
             }
         });
         setTimeout(() => {
