@@ -17,27 +17,16 @@ describe(`runWorkflow`, () => {
         key: "fake"
     }
 
-    const emptyWorkflowMetadata = {
-        name: "",
-        reports: [],
-        instances: {},
-        git_branch: null,
-        git_commit: null,
-        changelog: null
-    }
     const runWorkflowMetadata = mockRunWorkflowMetadata({git_branch: "master"})
 
-    const workflowMetadata = {
+    const workflowMetadata = mockRunWorkflowMetadata({
         name: "interim report",
-        key: "fake",
-        email: "test@example.com",
-        date: "2021-05-19T16:28:24Z",
-        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"report": "reportB", "params": {"param3": "three"}}],
+        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"name": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit"
-    }
+    })
 
     beforeEach(() => {
         mockAxios.reset();
@@ -178,7 +167,8 @@ describe(`runWorkflow`, () => {
                 runWorkflowMetadata: workflowMetadata
             })
 
-        expect(wrapper.findComponent(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
+        expect(wrapper.findComponent(runWorkflowCreate).vm.$data.runWorkflowMetadata)
+            .toMatchObject(workflowMetadata)
         wrapper.find("#clone").trigger("click")
 
         setTimeout(async () => {
@@ -248,15 +238,15 @@ describe(`runWorkflow`, () => {
             expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
-            expect(wrapper.find(workflowWizard).exists()).toBe(true)
-            expect(wrapper.find(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(runWorkflowMetadata);
+            expect(wrapper.findComponent(workflowWizard).exists()).toBe(true)
+            expect(wrapper.findComponent(workflowWizard).props("initialRunWorkflowMetadata")).toMatchObject(runWorkflowMetadata);
             expect(wrapper.vm.$data.workflowStarted).toBe(true);
 
             // expect session workflow report mode to have been reset
             expect(mockSetReportsSource.mock.calls.length).toBe(1);
             expect(mockSetReportsSource.mock.calls[0][0]).toBe(null);
 
-            let buttons = wrapper.find(workflowWizard).findAll("button")
+            let buttons = wrapper.findComponent(workflowWizard).findAll("button")
 
             expect(buttons.at(0).text()).toBe("Refresh git")
             expect(buttons.at(1).text()).toBe("Cancel")
@@ -313,7 +303,7 @@ describe(`runWorkflow`, () => {
             .reply(200, runWorkflowResponse);
 
         const wrapper = getShallowWrapper()
-        await wrapper.find("run-workflow-create-stub").vm.$emit("create", emptyWorkflowMetadata)
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create", mockRunWorkflowMetadata())
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         expect(workflowWizard.exists()).toBe(true)
         workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
@@ -345,7 +335,7 @@ describe(`runWorkflow`, () => {
             .reply(200, runWorkflowResponse);
 
         const wrapper = getShallowWrapper()
-        await wrapper.find("run-workflow-create-stub").vm.$emit("create", emptyWorkflowMetadata)
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create", mockRunWorkflowMetadata())
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
         await workflowWizard.vm.$emit("complete")
@@ -364,7 +354,7 @@ describe(`runWorkflow`, () => {
             .reply(500, "TEST ERROR");
 
         const wrapper = getShallowWrapper()
-        await wrapper.find("run-workflow-create-stub").vm.$emit("create", emptyWorkflowMetadata)
+        await wrapper.find("run-workflow-create-stub").vm.$emit("create", mockRunWorkflowMetadata())
         const workflowWizard = wrapper.find("workflow-wizard-stub")
         workflowWizard.vm.$emit("update-run-workflow-metadata", workflowMetadata)
         await workflowWizard.vm.$emit("complete")

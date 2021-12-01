@@ -70,6 +70,7 @@
                 disableRename: false,
                 error: "",
                 createdWorkflowKey: ""
+            }
         },
         methods: {
             handleRerun: function (data) {
@@ -87,6 +88,7 @@
                     {name: "summary", component: "runWorkflowSummary"},
                     {name: "run", component: "runWorkflowRun"},
                 ]
+                this.resetSelectedWorkflowReportSource();
                 this.workflowStarted = true
             },
             handleClone: function (data) {
@@ -96,6 +98,7 @@
                     {name: "summary", component: "runWorkflowSummary"},
                     {name: "run", component: "runWorkflowRun"},
                 ]
+                this.resetSelectedWorkflowReportSource();
                 this.workflowStarted = true
             },
             handleCancel: function () {
