@@ -1,0 +1,100 @@
+.summary {
+  body {
+    margin-top: 20px;
+  }
+
+  .timeline_area {
+    position: relative;
+    z-index: 1;
+  }
+
+  .single-timeline-area {
+    position: relative;
+    z-index: 1;
+    padding-left: 80px;
+  }
+
+  @media only screen and (max-width: 575px) {
+    .single-timeline-area {
+      padding-left: 100px;
+    }
+  }
+
+  .single-timeline-area .timeline-date {
+    position: absolute;
+    width: 0;
+    height: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+    -ms-flex-align: center;
+    -ms-grid-row-align: center;
+    align-items: center;
+    -webkit-box-pack: end;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    padding-right: 60px;
+  }
+
+  @media only screen and (max-width: 575px) {
+    .single-timeline-area .timeline-date {
+      width: 100px;
+    }
+  }
+
+  .single-timeline-area .timeline-date::after {
+    position: absolute;
+    width: 2px;
+    height: 100%;
+    content: "";
+    background-color: #f1c40f;
+    top: 0;
+    right: 30px;
+    z-index: 1;
+  }
+
+  .single-timeline-area .timeline-date::before {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #f1c40f;
+    content: "";
+    top: 10px;
+    right: 22px;
+    z-index: 5;
+    margin-top: -5.5px;
+  }
+
+  .single-timeline-area .single-timeline-content {
+    position: relative;
+    z-index: 1;
+    padding: 20px 30px 20px;
+    border-radius: 6px;
+    margin-bottom: 15px;
+    margin-top: 15px;
+    -webkit-box-shadow: 0 0.25rem 1rem 0 rgba(47, 91, 234, 0.125);
+    box-shadow: 0 0.25rem 1rem 0 rgba(47, 91, 234, 0.125);
+    border: 1px solid #ebebeb;
+  }
+
+  .single-timeline-area .parameters-bg-color {
+    background: #f3f3f3ff;
+  }
+
+  @media only screen and (max-width: 575px) {
+    .single-timeline-area .single-timeline-content {
+      padding: 20px;
+    }
+  }
+
+  .single-timeline-area .single-timeline-content .timeline-text p {
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+
+}
