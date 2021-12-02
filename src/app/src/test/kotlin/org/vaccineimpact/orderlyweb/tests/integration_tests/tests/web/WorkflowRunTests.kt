@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
@@ -470,11 +471,12 @@ class WorkflowRunTests : IntegrationTest()
         assertSuccessful(response)
         assertJsonContentType(response)
         val json = JsonLoader.fromString(response.text)
-        val data =  json["data"].toString()
-        assertThat("missing_dependencies" in data).isEqualTo(true)
-        // global should appear twice: once under reports and once under missing_dependencies
-        // therefore splitting the string in two places should produce three fragments
-        assertThat(data.split("global").count()).isEqualTo(3)
+        val data = json["data"]
+        val reports = data["reports"] as ArrayNode
+        assertThat(reports.count()).isEqualTo(1)
+        assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
+
     }
 
     private fun addWorkflowRunExample()

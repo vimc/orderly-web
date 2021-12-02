@@ -68,18 +68,13 @@ class WorkflowRunControllerTests
         val mockAPIResponse = OrderlyServerResponse("mockAPIResponseText", 200)
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
         }
 
         val repo = mock<WorkflowRunRepository>()
         val sut = WorkflowRunController(context, repo, apiClient, mock())
         val result = sut.getWorkflowRunSummary()
-
-        verify(apiClient).post(
-            "/v1/workflow/summary/",
-            requestBody,
-            emptyMap()
-        )
+        
         assertThat(result).isEqualTo(mockAPIResponse.text)
     }
 
