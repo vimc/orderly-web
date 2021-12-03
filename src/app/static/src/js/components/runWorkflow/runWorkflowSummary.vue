@@ -31,8 +31,8 @@
                                          style="visibility: visible; animation-delay: 0.3s; animation-name: fadeInLeft;">
                                         <div class="timeline-text">
                                             <span class="text-muted d-inline-block">Parameters</span>
-                                            <div v-if="report.params.length">
-                                                <p v-for="param in report.params">{{ param }}</p>
+                                            <div v-if="hasParameters(report)">
+                                                <p v-for="(value, key) in report.params">{{ key +" "+ value }}</p>
                                                 <a href="#" class="pt-2 d-inline-block small">Show default...</a>
                                             </div>
                                             <div v-else><p>There are no parameters</p></div>
@@ -66,17 +66,22 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata} from "../../utils/types";
+    import {RunWorkflowMetadata, WorkflowReportWithParams} from "../../utils/types";
 
     interface Props {
-        workflowMetadata: RunWorkflowMetadata
+        workflowMetadata: RunWorkflowMetadata;
     }
 
     interface Computed {
-        validateStep: void
+        //validateStep: void;
+        reportCount: string;
     }
 
-    export default Vue.extend<unknown, Computed, unknown, Props>({
+    interface Methods {
+        hasParameters: (report: WorkflowReportWithParams) => boolean;
+    }
+
+    export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "runWorkflowSummary",
         props: {
             workflowMetadata: {
@@ -94,8 +99,12 @@
                 }
             }
         },
+        methods: {
+            hasParameters(report) {
+                return !!Object.keys(report.params).length
+            }
+        },
         mounted() {
-            // the summary page is "valid" by default
             this.$emit("valid", true)
         }
     })
