@@ -60,7 +60,7 @@ class WorkflowRunControllerTests
     @Test
     fun `can get workflow run summary`()
     {
-        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}""".trimIndent()
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn requestBody
         }
