@@ -465,7 +465,7 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
+                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}""".trimIndent()
         )
 
         assertSuccessful(response)
