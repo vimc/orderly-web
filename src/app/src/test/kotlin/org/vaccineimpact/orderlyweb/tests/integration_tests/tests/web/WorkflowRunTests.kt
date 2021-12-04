@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
+import org.jooq.JSON
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
@@ -465,7 +466,7 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}""".trimIndent()
+                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
         )
 
         assertSuccessful(response)
@@ -476,6 +477,8 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(reports.count()).isEqualTo(1)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
+
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
     }
 
     private fun addWorkflowRunExample()
