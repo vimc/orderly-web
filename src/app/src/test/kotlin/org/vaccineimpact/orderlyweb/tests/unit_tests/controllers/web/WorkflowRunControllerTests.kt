@@ -60,7 +60,7 @@ class WorkflowRunControllerTests
     @Test
     fun `can get workflow run summary`()
     {
-        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}""".trimIndent()
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn requestBody
         }
@@ -68,18 +68,14 @@ class WorkflowRunControllerTests
         val mockAPIResponse = OrderlyServerResponse("mockAPIResponseText", 200)
 
         val apiClient = mock<OrderlyServerAPI> {
-            on { post(any(), any<String>(), any()) } doReturn mockAPIResponse
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
         }
 
         val repo = mock<WorkflowRunRepository>()
         val sut = WorkflowRunController(context, repo, apiClient, mock())
-        sut.getWorkflowRunSummary()
-
-        verify(apiClient).post(
-            "/v1/workflow/summary/",
-            requestBody,
-            emptyMap()
-        )
+        val result = sut.getWorkflowRunSummary()
+        
+        assertThat(result).isEqualTo(mockAPIResponse.text)
     }
 
     @Test

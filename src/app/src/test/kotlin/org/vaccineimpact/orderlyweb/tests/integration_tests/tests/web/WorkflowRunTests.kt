@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.TextNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.AssertionsForClassTypes
 import org.eclipse.jetty.http.HttpStatus
 import org.jsoup.Jsoup
 import org.junit.Test
@@ -466,25 +465,17 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
+                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}""".trimIndent()
         )
 
         assertSuccessful(response)
         assertJsonContentType(response)
-
-        val test = """{ "data": {  "reports": [{"name": "report1", "instance": "instance1"}], "missing_dependencies": {}, "ref": "123"  }, "errors": [], "status": "success"}"""
-        JSONValidator.validateAgainstOrderlySchema(test, "WorkflowSummaryResponse")
-
-        //val json = JsonLoader.fromString(response.text)
-        //val data = json["data"]
-        //val reports = data["reports"] as ArrayNode
-        //assertThat(reports.count()).isEqualTo(1)
-        //assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
-        //assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
-
-        //val data =  json["data"].toString()
-        //AssertionsForClassTypes.assertThat("missing_dependencies" in data)
-         //       .isEqualTo(true)
+        val json = JsonLoader.fromString(response.text)
+        val data = json["data"]
+        val reports = data["reports"] as ArrayNode
+        assertThat(reports.count()).isEqualTo(1)
+        assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
     }
 
     private fun addWorkflowRunExample()
