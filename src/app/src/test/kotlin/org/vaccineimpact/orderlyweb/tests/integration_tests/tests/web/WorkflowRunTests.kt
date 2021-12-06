@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.TextNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
-import org.jooq.JSON
 import org.jsoup.Jsoup
 import org.junit.Test
 import org.vaccineimpact.orderlyweb.ContentTypes
