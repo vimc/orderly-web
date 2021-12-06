@@ -172,6 +172,7 @@ interface Methods {
     handleImportedFile: (event: Event) => void
     handleClickImport: (event: Event) => void
     removeImportedFile: () => void
+    switchActiveReports: () => void
 }
 
 interface Data {
@@ -439,6 +440,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     this.reportsValid = [];
                     this.validationErrors = error.response.data?.errors || [];
                 });
+        },
+        async switchActiveReports() {
+            const newlyActiveReports = this.inactiveOriginWorkflowReports;
+            this.inactiveOriginWorkflowReports = [...this.workflowMetadata.reports];
+            await this.updateWorkflowReports(newlyActiveReports);
+            session.setInactiveOriginWorkflowReports(this.inactiveOriginWorkflowReports);
         }
     },
     mounted() {
@@ -451,14 +458,10 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         },
         reportsOrigin: async function (newVal) {
             session.setSelectedWorkflowReportSource(newVal);
-
-            const newlyActiveReports = this.inactiveOriginWorkflowReports;
-            this.inactiveOriginWorkflowReports = [...this.workflowMetadata.reports];
-            await this.updateWorkflowReports(newlyActiveReports);
-            session.setInactiveOriginWorkflowReports(this.inactiveOriginWorkflowReports);
+            await this.switchActiveReports();
 
             // Revalidate reports as branch may have changed while other origin was active
-            this.validateWorkflowReportsWithGit()
+            await this.validateWorkflowReportsWithGit();
         }
     }
 })
