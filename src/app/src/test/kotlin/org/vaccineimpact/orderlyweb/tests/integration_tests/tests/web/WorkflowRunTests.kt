@@ -1,6 +1,7 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests.web
 
 import com.fasterxml.jackson.databind.node.ArrayNode
+import com.fasterxml.jackson.databind.node.TextNode
 import com.github.fge.jackson.JsonLoader
 import org.assertj.core.api.Assertions.assertThat
 import org.eclipse.jetty.http.HttpStatus
@@ -452,6 +453,30 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(errors.count()).isEqualTo(1)
         assertThat(errors[0]["message"].asText()).isEqualTo("No data provided")
         assertThat(errors[0]["code"].asText()).isEqualTo("bad-request")
+    }
+
+    @Test
+    fun `can get workflow summary`()
+    {
+        val ref = getGitBranchCommit("master")
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflows/summary",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
+        )
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        val json = JsonLoader.fromString(response.text)
+        val data = json["data"]
+        val reports = data["reports"] as ArrayNode
+        assertThat(reports.count()).isEqualTo(1)
+        assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
+
     }
 
     private fun addWorkflowRunExample()
