@@ -49,6 +49,16 @@ class WorkflowRunController(
         )
     }
 
+    fun getWorkflowRunSummary(): String
+    {
+        val response = orderlyServerAPI.post(
+            "/v1/workflow/summary/",
+            context.getRequestBody(),
+            emptyMap()
+        )
+        return passThroughResponse(response)
+    }
+
     internal data class WorkflowRunResponse(
         @SerializedName(value = "workflow_key")
         val key: String,
