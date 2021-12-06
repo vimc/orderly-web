@@ -3,7 +3,7 @@
         <h2 id="summary-header">Summary</h2>
         <div id="summary-warning" class="mt-3">
             <div class="row">
-                <div class="col-auto">icon</div>
+                <div class="col-auto"><alert-triangle-icon size="2x" stroke="red" class="custom-class"/></div>
                 <div class="col-auto">
                     <span class="d-inline-block pb-2"> Some reports depend on the latest version of other reports that are not included in your workflow:</span>
                     <div>
@@ -32,7 +32,7 @@
                                         <div class="timeline-text">
                                             <span class="text-muted d-inline-block">Parameters</span>
                                             <div v-if="hasParameters(report)">
-                                                <p v-for="(value, key) in report.params">{{ key +" "+ value }}</p>
+                                                <p v-for="(value, key) in report.params">{{ key }} {{ value }}</p>
                                                 <a href="#" class="pt-2 d-inline-block small">Show default...</a>
                                             </div>
                                             <div v-else><p>There are no parameters</p></div>
@@ -67,13 +67,13 @@
 <script lang="ts">
     import Vue from "vue"
     import {RunWorkflowMetadata, WorkflowReportWithParams} from "../../utils/types";
+    import {AlertTriangleIcon} from "vue-feather-icons"
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata;
     }
 
     interface Computed {
-        //validateStep: void;
         reportCount: string;
     }
 
@@ -83,6 +83,9 @@
 
     export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "runWorkflowSummary",
+        components: {
+            AlertTriangleIcon
+        },
         props: {
             workflowMetadata: {
                 required: true,
