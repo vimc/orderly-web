@@ -477,6 +477,7 @@ class WorkflowRunTests : IntegrationTest()
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
     }
 
     private fun addWorkflowRunExample()
