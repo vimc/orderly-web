@@ -60,4 +60,23 @@ describe('session', () => {
         session.setSelectedWorkflowReportSource("csv");
         expect(spySetStorage).toHaveBeenCalledWith("selectedWorkflowReportsSource", "csv");
     });
+
+    it("gets inactive origin workflow reports", () => {
+        Storage.prototype.getItem = jest.fn((x) => `[{"name": "${x}"}]`);
+        const result = session.getInactiveOriginWorkflowReports();
+        expect(result).toStrictEqual([{name: "inactiveOriginWorkflowReports"}]);
+    });
+
+    it("gets null inactive origin workflow reports if no value", () => {
+        Storage.prototype.getItem = jest.fn((x) => null);
+        const result = session.getInactiveOriginWorkflowReports();
+        expect(result).toBeNull();
+    });
+
+    it("sets inactive origin worklow reports", () => {
+        const spySetStorage = jest.spyOn(Storage.prototype, "setItem");
+        session.setInactiveOriginWorkflowReports([{name: "report1"}, {name: "report2"}]);
+        expect(spySetStorage).toHaveBeenCalledWith("inactiveOriginWorkflowReports",
+            `[{"name":"report1"},{"name":"report2"}]`);
+    });
 });

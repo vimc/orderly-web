@@ -165,12 +165,14 @@ interface Methods {
     paramsChanged: (index: number, params: Parameter[], valid: boolean) => void,
     removeReport: (index: number) => void,
     updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
+    validateWorkflowReportsWithGit: () => void,
     initialValidValue: (report: WorkflowReportWithParams) => boolean,
     getRunReportMetadata: () => void
-    validateWorkflow: () => void
+    importWorkflowFromCSV: () => void
     handleImportedFile: (event: Event) => void
     handleClickImport: (event: Event) => void
     removeImportedFile: () => void
+    switchActiveReports: () => void
 }
 
 interface Data {
@@ -188,6 +190,7 @@ interface Data {
     importedFile: object | null
     importFromCsvIsEnabled: boolean
     isImportedReports: boolean
+    inactiveOriginWorkflowReports: WorkflowReportWithParams[]
 }
 
 export default Vue.extend<Data, Methods, Computed, Props>({
@@ -217,7 +220,8 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             importedFile: null,
             reportsOrigin: session.getSelectedWorkflowReportSource() || "list",
             importFromCsvIsEnabled: switches.workFlowReport,
-            isImportedReports: false
+            isImportedReports: false,
+            inactiveOriginWorkflowReports: session.getInactiveOriginWorkflowReports() || []
         }
     },
     computed: {
@@ -255,7 +259,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 this.importedFilename = target.files[0].name;
                 this.importedFile = target.files[0];
 
-                this.validateWorkflow()
+                this.importWorkflowFromCSV()
             }
         },
         branchSelected(git_branch: string) {
@@ -273,8 +277,11 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         async updateAvailableReportsFromGit(reports: ReportWithDate[]) {
             this.reports = reports;
 
-            // We may now have an invalid workflow - it may contain reports or parameters not in the newly selected commit
-            // - remove obsolete reports or params and notify user
+            await this.validateWorkflowReportsWithGit();
+        },
+        async validateWorkflowReportsWithGit() {
+            // After git or report origin change, we may have an invalid workflow - it may contain reports or parameters
+            // not in the selected commit - remove obsolete reports or params and notify user
             // 1. Check reports
             const removals: string[] = [];
             let newParamsAdded = false;
@@ -286,7 +293,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             };
 
             const newReports = [];
-            const availableReportNames = reports.map(report => report.name);
+            const availableReportNames = this.reports.map(report => report.name);
             const validityIndexRemovals = [];
             this.workflowMetadata.reports.forEach((report: WorkflowReportWithParams, index: number) => {
                 if (availableReportNames.includes(report.name)) {
@@ -344,8 +351,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             }
 
             if (this.selectedReport) {
-                const newReportNames = reports.map(report => report.name);
-                if (!newReportNames.includes(this.selectedReport.name)) {
+                if (!availableReportNames.includes(this.selectedReport.name)) {
                     this.selectedReport = null;
                 }
             }
@@ -391,7 +397,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.$set(this.reportsValid, index, valid);
 
         },
-        updateWorkflowReports(reports: WorkflowReportWithParams[]) {
+        async updateWorkflowReports(reports: WorkflowReportWithParams[]) {
             this.$emit("update", {reports: reports});
         },
         initialValidValue(report: WorkflowReportWithParams) {
@@ -411,7 +417,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     this.defaultMessage = "An error occurred fetching run report metadata";
                 });
         },
-        validateWorkflow() {
+        importWorkflowFromCSV() {
             const formData = new FormData()
             formData.append("file", this.importedFile)
             const params = `?branch=${this.workflowMetadata.git_branch}&commit=${this.workflowMetadata.git_commit}`
@@ -434,6 +440,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                     this.reportsValid = [];
                     this.validationErrors = error.response.data?.errors || [];
                 });
+        },
+        async switchActiveReports() {
+            const newlyActiveReports = this.inactiveOriginWorkflowReports;
+            this.inactiveOriginWorkflowReports = [...this.workflowMetadata.reports];
+            await this.updateWorkflowReports(newlyActiveReports);
+            session.setInactiveOriginWorkflowReports(this.inactiveOriginWorkflowReports);
         }
     },
     mounted() {
@@ -444,8 +456,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
         stepIsValid(newVal) {
             this.$emit("valid", newVal);
         },
-        reportsOrigin(newVal) {
+        reportsOrigin: async function (newVal) {
             session.setSelectedWorkflowReportSource(newVal);
+            await this.switchActiveReports();
+
+            // Revalidate reports as branch may have changed while other origin was active
+            await this.validateWorkflowReportsWithGit();
         }
     }
 })

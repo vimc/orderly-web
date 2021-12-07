@@ -34,6 +34,9 @@ const workflowValidationResponse = {
 const mockSessionSetSelectedWorkflowReportSource = jest.fn();
 const mockSessionGetSelectedWorkflowReportSource = jest.fn();
 
+const mockSessionSetInactiveOriginWorkflowReports = jest.fn();
+const mockSessionGetInactiveOriginWorkflowReports = jest.fn();
+
 describe(`runWorkflowReport`, () => {
     beforeEach(() => {
         mockAxios.reset();
@@ -53,6 +56,9 @@ describe(`runWorkflowReport`, () => {
         session.setSelectedWorkflowReportSource = mockSessionSetSelectedWorkflowReportSource;
         session.getSelectedWorkflowReportSource = mockSessionGetSelectedWorkflowReportSource;
 
+        session.setInactiveOriginWorkflowReports = mockSessionSetInactiveOriginWorkflowReports;
+        session.getInactiveOriginWorkflowReports = mockSessionGetInactiveOriginWorkflowReports;
+
         jest.resetAllMocks();
     });
 
@@ -67,6 +73,7 @@ describe(`runWorkflowReport`, () => {
         const wrapper = getWrapper({
             workflowMetadata: mockRunWorkflowMetadata({git_branch: "master", git_commit: "abc123"})
         });
+
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
             expect(git.props("reportMetadata")).toStrictEqual(mockRunReportMetadata().metadata);
@@ -595,7 +602,9 @@ describe(`runWorkflowReport`, () => {
                 value: [fakeFile]
             })
 
-            wrapper.find("input#import-csv.custom-file-input").trigger("change")
+            await wrapper.find("input#import-csv.custom-file-input").trigger("change")
+
+            mockUpdateWorkflowReports.mockReset();
 
             setTimeout(() => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
@@ -730,6 +739,8 @@ describe(`runWorkflowReport`, () => {
 
             await wrapper.find("input#import-csv.custom-file-input").trigger("change")
 
+            mockUpdateWorkflowReports.mockClear();
+
             setTimeout(async () => {
                 expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
                 expect(wrapper.vm.$data.importedFile).toMatchObject({})
@@ -845,6 +856,18 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
+    it("loads with inactive origin reports set in session storage", () => {
+        const mockGetInactiveOriginReports = jest.fn();
+        const reports = [
+            {name: "report1", params:{p1: "val1"}},
+            {name: "report2"}
+        ];
+        mockGetInactiveOriginReports.mockReturnValue(reports);
+        session.getInactiveOriginWorkflowReports = mockGetInactiveOriginReports;
+        const wrapper = getWrapper();
+        expect(wrapper.vm.$data.inactiveOriginWorkflowReports).toStrictEqual(reports);
+    });
+
     it("does not show report from list component when import from csv is checked", (done) => {
         switches.workFlowReport = true
         const wrapper = getWrapper();
@@ -923,6 +946,51 @@ describe(`runWorkflowReport`, () => {
             expect(uploadLabel.text()).toBe("test.csv")
             expect(wrapper.vm.$data.importedFilename).toBe("test.csv")
             done();
+        });
+    });
+
+    it("swaps inactive and active report lists, and revalidates reports when report origin changes", (done) => {
+        const wrapper = getWrapper({
+            workflowMetadata: mockRunWorkflowMetadata({
+                reports: [
+                    {name: "active1"},
+                    {name: "active2"}
+                ]
+            })
+        });
+        wrapper.setData({
+            inactiveOriginWorkflowReports: [
+            {name: "inactive1"},
+            {name: "inactive2"}
+        ]});
+
+        setTimeout(async () => {
+            const fromCsvLabel = wrapper.find("#import-from-csv-label");
+            await fromCsvLabel.find("input").trigger("click");
+            expect(wrapper.vm.$data.reportsOrigin).toBe("csv");
+
+            expect(mockSessionSetSelectedWorkflowReportSource).toHaveBeenCalledWith("csv");
+            expect(mockSessionSetInactiveOriginWorkflowReports).toHaveBeenCalledWith([
+                {name: "active1"},
+                {name: "active2"}
+            ]);
+
+            expect(wrapper.emitted("update").length).toBe(1);
+            expect(wrapper.emitted("update")[0][0]).toStrictEqual({reports: [
+                {name: "inactive1"},
+                {name: "inactive2"}
+            ]});
+
+            // Test that validation was triggered too, but note that validation here is done on old report list since
+            // there is no parent component to update the prop on emit (to be tested in Selenium test)
+            setTimeout(() => {
+                expect(wrapper.emitted("update").length).toBe(2);
+                expect(wrapper.emitted("update")[1][0]).toStrictEqual({reports: []});
+                const warnings = wrapper.findAll("b-alert-stub li");
+                expect(warnings.at(0).text()).toBe("Report 'active1'");
+                expect(warnings.at(1).text()).toBe("Report 'active2'");
+                done();
+            });
         });
     });
 });

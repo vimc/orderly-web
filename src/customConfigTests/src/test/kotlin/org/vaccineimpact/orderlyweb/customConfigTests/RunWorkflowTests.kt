@@ -5,6 +5,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.WebElement
 import org.openqa.selenium.support.ui.ExpectedConditions
 import org.openqa.selenium.support.ui.ExpectedConditions.not
 import org.openqa.selenium.support.ui.Select
@@ -184,53 +185,10 @@ class RunWorkflowTests : SeleniumTest()
     @Test
     fun `can import csv file`()
     {
-        val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
-        tmpFile.writeText("report\nminimal")
-
-        createWorkflow();
-        driver.findElement(By.id("import-from-csv-label")).click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
-
-        val fileInput = driver.findElement(By.id("import-csv"))
-        fileInput.sendKeys(tmpFile.absolutePath)
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
-
-        tmpFile.delete()
-    }
-
-    private fun addReport(reportName: String)
-    {
-        driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report li")))
-        driver.findElement(By.cssSelector("#workflow-report li")).click()
-        val addButton = driver.findElement(By.id("add-report-button"))
-        wait.until(ExpectedConditions.elementToBeClickable(addButton))
-        addButton.click()
-
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
-    }
-
-    private fun createWorkflow()
-    {
-        val createButton = driver.findElement(By.id("create-workflow"))
-        createButton.click()
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
-    }
-
-    private fun changeToOtherBranch()
-    {
-        val branchSelect = driver.findElement(By.id("git-branch"))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
-        val commitSelect = driver.findElement(By.id("git-commit"))
-        val commitValue = commitSelect.getAttribute("value")
-        assertThat(commitValue).isNotBlank()
-
-        //Select a git branch
-        Select(branchSelect).selectByIndex(1)
-        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
-        assertThat(commitSelect.getAttribute("value")).isNotBlank()
+        createWorkflow()
+        selectImportFromCSV()
+        importMinimalCSVFile()
+        assertThat(getReportAt(0).findElement(By.cssSelector("label")).text).isEqualTo("minimal")
     }
 
     @Test
@@ -310,4 +268,129 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-progress-link")))
     }
 
+    @Test
+    fun `workflow report lists for import from CSV and choose from list are separate and persisted`()
+    {
+        createWorkflow()
+        // Start in Choose from list
+        addReport("global")
+
+        // Switch to Import from CSV
+        selectImportFromCSV()
+        assertThat(getReportCount()).isEqualTo(0)
+        importMinimalCSVFile()
+
+        // Switch back to Choose from List to see previously added report
+        selectChooseFromList()
+        assertThat(getReportCount()).isEqualTo(1)
+        assertThat(getReportAt(0).findElement(By.cssSelector("label")).text).isEqualTo("global")
+
+        // Switch back to Import from CSV to see previously added report
+        selectImportFromCSV()
+        assertThat(getReportCount()).isEqualTo(1)
+        assertThat(getReportAt(0).findElement(By.cssSelector("label")).text).isEqualTo("minimal")
+
+        // cancel and create new workflow - both lists should have been removed
+        driver.findElement(By.id("cancel-workflow")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("confirm-cancel-btn")))
+        driver.findElement(By.id("confirm-cancel-btn")).click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("create-workflow")))
+        createWorkflow()
+        assertThat(getReportCount()).isEqualTo(0)
+        selectImportFromCSV()
+        assertThat(getReportCount()).isEqualTo(0)
+    }
+
+    @Test
+    fun `inactive origin workflow report list is revalidated when change origin`()
+    {
+        createWorkflow()
+        // Start in Choose from list
+        addReport("minimal")
+
+        selectImportFromCSV()
+
+        changeToOtherBranch()
+
+        // Switch back to Choose from list - previously added report should have been removed as not in new branch
+        selectChooseFromList()
+        assertThat(getReportCount()).isEqualTo(0)
+        val alert = driver.findElement(By.className("alert-warning"))
+        assertThat(alert.text).contains(
+                "The following items are not present in this git commit and have been removed from the workflow:")
+        val warningItems = alert.findElements(By.cssSelector("li"))
+        assertThat(warningItems.count()).isEqualTo(1)
+        assertThat(warningItems[0].text).isEqualTo("Report 'minimal'")
+    }
+
+    private fun addReport(reportName: String)
+    {
+        driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#workflow-report li")))
+        driver.findElement(By.cssSelector("#workflow-report li")).click()
+        val addButton = driver.findElement(By.id("add-report-button"))
+        wait.until(ExpectedConditions.elementToBeClickable(addButton))
+        addButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
+    }
+
+    private fun createWorkflow()
+    {
+        val createButton = driver.findElement(By.id("create-workflow"))
+        createButton.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
+    }
+
+    private fun changeToOtherBranch()
+    {
+        val branchSelect = driver.findElement(By.id("git-branch"))
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        val commitSelect = driver.findElement(By.id("git-commit"))
+        val commitValue = commitSelect.getAttribute("value")
+        assertThat(commitValue).isNotBlank()
+
+        //Select a git branch
+        Select(branchSelect).selectByIndex(1)
+        wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
+        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        assertThat(commitSelect.getAttribute("value")).isNotBlank()
+    }
+
+    private fun getReportCount(): Int
+    {
+        return driver.findElements(By.className("remove-report-button")).count()
+    }
+
+    private fun getReportAt(index: Int): WebElement
+    {
+        return driver.findElement(By.id("workflow-report-${index}"))
+    }
+
+    private fun selectImportFromCSV()
+    {
+        val importFromCsv = driver.findElement(By.id("import-from-csv-label"))
+        importFromCsv.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
+    }
+
+    private fun selectChooseFromList()
+    {
+        val chooseFromList = driver.findElement(By.id("choose-from-list-label"))
+        chooseFromList.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report")))
+    }
+
+    private fun importMinimalCSVFile()
+    {
+        val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
+        tmpFile.writeText("report\nminimal")
+
+        val fileInput = driver.findElement(By.id("import-csv"))
+        fileInput.sendKeys(tmpFile.absolutePath)
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-0")))
+
+        tmpFile.delete()
+    }
 }
