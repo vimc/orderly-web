@@ -129,3 +129,9 @@ export interface Error {
     code: string;
     message: string | null;
 }
+
+export interface Dependency {
+    missing_dependencies: Record<string, string[]>,
+    reports: { name: string[] },
+    refs: string
+}
