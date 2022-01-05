@@ -65,7 +65,7 @@ describe("publishReports", () => {
         await Vue.nextTick(); // once for date to update
         await Vue.nextTick();
         expect(mockAxios.history.get.length).toBe(1);
-        expect(rendered.findAll(report).length).toBe(2);
+        expect(rendered.findAllComponents(report).length).toBe(2);
     });
 
     it("displays reports", async () => {
@@ -73,7 +73,7 @@ describe("publishReports", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
-        const reports = rendered.findAll(report);
+        const reports = rendered.findAllComponents(report);
         expect(reports.length).toBe(2);
         expect(reports.at(0).props()).toEqual({
             report: testReportsWithDrafts[0],
@@ -128,13 +128,13 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        let reports = rendered.findAll(report);
+        let reports = rendered.findAllComponents(report);
         expect(reports.length).toBe(2);
         rendered.find("input").setChecked(true);
 
         await Vue.nextTick();
 
-        reports = rendered.findAll(report);
+        reports = rendered.findAllComponents(report);
         expect(reports.length).toBe(1);
         expect(reports.at(0).props("report")).toEqual(testReportsWithDrafts[0]);
     });
@@ -144,9 +144,9 @@ describe("publishReports", () => {
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
 
-        rendered.find(report).vm.$emit("select-draft", {id: "20190824-161244-6e9b57d4", value: true});
+        rendered.findComponent(report).vm.$emit("select-draft", {id: "20190824-161244-6e9b57d4", value: true});
         expect(rendered.vm.$data["selectedIds"]["20190824-161244-6e9b57d4"]).toBe(true);
-        rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
+        rendered.findComponent(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
 
         rendered.find("input").setChecked(true);
@@ -161,7 +161,7 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        rendered.find(report).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
+        rendered.findComponent(report).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
         expect(rendered.vm.$data["selectedIds"]["20190727-123215-97e39008"]).toBe(true);
     });
 
@@ -169,7 +169,7 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        rendered.find(report).vm.$emit("select-draft",
+        rendered.findComponent(report).vm.$emit("select-draft",
             {
                 ids: ["20190727-123215-97e39008", "20190727-201131-d320fa9e"],
                 value: true
@@ -182,7 +182,7 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        rendered.find(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
+        rendered.findComponent(report).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
         expect(rendered.vm.$data["selectedDates"]["Sat Jul 27 2019"]).toBe(true);
     });
 
@@ -190,7 +190,7 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        rendered.find(report).vm.$emit("select-group",
+        rendered.findComponent(report).vm.$emit("select-group",
             {
                 dates: ["Sat Jul 27 2019", "Sun Jul 28 2019"],
                 value: true
@@ -203,7 +203,7 @@ describe("publishReports", () => {
         const rendered = shallowMount(publishReports);
         rendered.setData({reportsWithDrafts: testReportsWithDrafts});
         await Vue.nextTick();
-        rendered.find(report).vm.$emit("select-draft",
+        rendered.findComponent(report).vm.$emit("select-draft",
             {
                 id: "20190824-161244-6e9b57d4",
                 value: true
@@ -241,8 +241,8 @@ describe("publishReports", () => {
         await Vue.nextTick(); // once for props to update
         await Vue.nextTick();
 
-        expect(rendered.find(errorInfo).props().apiError.response.data).toBe("TEST ERROR")
-        expect(rendered.find(errorInfo).props().defaultMessage)
+        expect(rendered.findComponent(errorInfo).props().apiError.response.data).toBe("TEST ERROR")
+        expect(rendered.findComponent(errorInfo).props().defaultMessage)
             .toBe("Something went wrong. Please try again or contact support.");
 
         // error should be cleared after a successful publish
@@ -255,7 +255,7 @@ describe("publishReports", () => {
         await Vue.nextTick();
         await Vue.nextTick();
 
-        expect(rendered.find(errorInfo).props()).toEqual({
+        expect(rendered.findComponent(errorInfo).props()).toEqual({
             apiError: null,
             defaultMessage: "Something went wrong. Please try again or contact support."
         });

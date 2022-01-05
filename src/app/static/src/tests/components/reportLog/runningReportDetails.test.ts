@@ -183,8 +183,8 @@ describe(`runningReportDetails`, () => {
             .reply(500, "Error");
 
         realSetTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("Error")
-            expect(wrapper.find(ErrorInfo).props("defaultMessage"))
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("Error")
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage"))
                 .toBe("An error occurred when fetching logs")
             done()
         })

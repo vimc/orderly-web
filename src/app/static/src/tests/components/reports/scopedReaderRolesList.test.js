@@ -63,10 +63,10 @@ describe("scopedReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-        expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(true);
-        expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(false);
-        expect(wrapper.find(RoleList).props().permission).toStrictEqual({
+        expect(wrapper.findComponent(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
+        expect(wrapper.findComponent(RoleList).props().canRemoveRoles).toBe(true);
+        expect(wrapper.findComponent(RoleList).props().canRemoveMembers).toBe(false);
+        expect(wrapper.findComponent(RoleList).props().permission).toStrictEqual({
             name: "reports.read",
             scope_id : "report1",
             scope_prefix: "report"
@@ -90,8 +90,8 @@ describe("scopedReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test-error");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("test-default");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test-error");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("test-default");
     });
 
     it('renders add report reader component', async () => {
@@ -105,10 +105,10 @@ describe("scopedReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(AddReportReader).props().type).toBe("role");
-        expect(wrapper.find(AddReportReader).props().reportName).toBe("report1");
-        expect(wrapper.find(AddReportReader).props().availableUserGroups.length).toBe(2);
-        expect(wrapper.find(AddReportReader).props().availableUserGroups)
+        expect(wrapper.findComponent(AddReportReader).props().type).toBe("role");
+        expect(wrapper.findComponent(AddReportReader).props().reportName).toBe("report1");
+        expect(wrapper.findComponent(AddReportReader).props().availableUserGroups.length).toBe(2);
+        expect(wrapper.findComponent(AddReportReader).props().availableUserGroups)
             .toEqual(expect.arrayContaining(["Tech", "Admin"]));
 
     });
@@ -149,8 +149,8 @@ describe("scopedReaderRolesList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-            expect(wrapper.find(AddReportReader).props().availableUserGroups)
+            expect(wrapper.findComponent(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
+            expect(wrapper.findComponent(AddReportReader).props().availableUserGroups)
                 .toEqual(expect.arrayContaining(["Tech", "Admin"]));
 
             done();
@@ -169,7 +169,7 @@ describe("scopedReaderRolesList", () => {
 
         expect(mockAxios.history.get.length).toBe(2);
 
-        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+        wrapper.findComponent(RoleList).vm.$emit("removed", "Funders");
 
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
@@ -189,7 +189,7 @@ describe("scopedReaderRolesList", () => {
 
         const wrapper = getSut();
 
-        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+        wrapper.findComponent(RoleList).vm.$emit("removed", "Funders");
 
         setTimeout(() => {
 

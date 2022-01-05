@@ -40,7 +40,7 @@ describe("file", () => {
             }
         });
 
-        expect(rendered.findAll(fileIcon).length).toBe(1);
+        expect(rendered.findAllComponents(fileIcon).length).toBe(1);
     });
 
     it("does not render open link when can_open is false", () => {

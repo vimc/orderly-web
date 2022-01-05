@@ -24,7 +24,7 @@ describe('VueBootstrapTypeahead', () => {
     })
 
     it('Should mount and render a hidden typeahead list', () => {
-        let child = wrapper.find(VueBootstrapTypeaheadList)
+        let child = wrapper.findComponent(VueBootstrapTypeaheadList)
         expect(child).toBeTruthy()
         expect(child.isVisible()).toBe(false)
     })
@@ -51,7 +51,7 @@ describe('VueBootstrapTypeahead', () => {
     })
 
     it('Show the list when given a query and focused', async () => {
-        let child = wrapper.find(VueBootstrapTypeaheadList)
+        let child = wrapper.findComponent(VueBootstrapTypeaheadList)
         wrapper.find('input').setValue('Can')
         await Vue.nextTick();
         expect(child.isVisible()).toBe(false)
@@ -61,7 +61,7 @@ describe('VueBootstrapTypeahead', () => {
     })
 
     it('Hides the list when blurred', async () => {
-        let child = wrapper.find(VueBootstrapTypeaheadList)
+        let child = wrapper.findComponent(VueBootstrapTypeaheadList)
         wrapper.setData({inputValue: 'Can'})
         await Vue.nextTick();
         wrapper.find('input').trigger('focus')
