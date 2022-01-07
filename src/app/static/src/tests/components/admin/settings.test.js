@@ -18,8 +18,8 @@ describe("settings", () => {
             expect(mockAxios.history.get.length).toBe(1);
             expect(mockAxios.history.get[0].url).toBe(url);
             expect(wrapper.find("input").attr("checked")).toBe(true);
-            expect(wrapper.find(ErrorInfo).props().error).toBe(null);
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
+            expect(wrapper.findComponent(ErrorInfo).props().error).toBe(null);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
             done();
         });
     });
@@ -34,8 +34,8 @@ describe("settings", () => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
             expect(mockAxios.history.post[0].data).toBe(false);
-            expect(wrapper.find(ErrorInfo).props().error).toBe(null);
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
+            expect(wrapper.findComponent(ErrorInfo).props().error).toBe(null);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
             done();
         });
     });
@@ -45,8 +45,8 @@ describe("settings", () => {
             .reply(500, "TEST ERROR");
         const wrapper = shallowMount(Settings);
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props().error.response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not get allow guest user");
+            expect(wrapper.findComponent(ErrorInfo).props().error.response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not get allow guest user");
             done();
         });
     });
@@ -57,8 +57,8 @@ describe("settings", () => {
         const wrapper = shallowMount(Settings);
         wrapper.vm.setAuthAllowGuest();
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props().error.response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not get allow guest user");
+            expect(wrapper.findComponent(ErrorInfo).props().error.response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not get allow guest user");
             done();
         });
     });

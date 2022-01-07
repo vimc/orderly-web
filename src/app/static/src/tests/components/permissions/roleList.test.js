@@ -49,7 +49,7 @@ describe("roleList", () => {
                 }
             });
 
-        const userLists = wrapper.findAll(UserList);
+        const userLists = wrapper.findAllComponents(UserList);
         expect(userLists.length).toBe(1);
 
         expect(userLists.at(0).props().users).toEqual(expect.arrayContaining(mockRoles[0].members));
@@ -65,7 +65,7 @@ describe("roleList", () => {
             }
         });
 
-        const userLists = wrapper.findAll(UserList);
+        const userLists = wrapper.findAllComponents(UserList);
 
         expect(userLists.length).toBe(1);
         expect(userLists.at(0).props().canRemove).toBe(true);
@@ -82,13 +82,13 @@ describe("roleList", () => {
         });
 
         //don't expect the add user control to appear unless a role is epanded
-        expect(wrapper.findAll(AddUserToRole).length).toBe(0);
+        expect(wrapper.findAllComponents(AddUserToRole).length).toBe(0);
 
         wrapper.find('.expander').trigger("click");
         await Vue.nextTick();
 
-        expect(wrapper.findAll(AddUserToRole).length).toBe(1);
-        const addUser = wrapper.find(AddUserToRole);
+        expect(wrapper.findAllComponents(AddUserToRole).length).toBe(1);
+        const addUser = wrapper.findComponent(AddUserToRole);
         expect(addUser.props().role).toBe("Funders");
         //should have filtered to available users not already in role
         expect(addUser.props().availableUsers).toStrictEqual(["user2@example.com", "user3@example.com"]);
@@ -106,7 +106,7 @@ describe("roleList", () => {
         wrapper.find('.expander').trigger("click");
         await Vue.nextTick();
 
-        expect(wrapper.findAll(AddUserToRole).length).toBe(0);
+        expect(wrapper.findAllComponents(AddUserToRole).length).toBe(0);
     });
 
     it('renders removable roles', () => {
@@ -150,7 +150,7 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.find(UserList).vm.$emit("removed", "bob");
+        wrapper.findComponent(UserList).vm.$emit("removed", "bob");
 
         setTimeout(() => {
             expect(wrapper.emitted().removedMember[0]).toStrictEqual(["Funders", "bob"]);
@@ -171,11 +171,11 @@ describe("roleList", () => {
             }
         });
 
-        wrapper.find(UserList).vm.$emit("removed", "bob");
+        wrapper.findComponent(UserList).vm.$emit("removed", "bob");
 
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove bob from Funders");
+            expect(wrapper.findComponent(ErrorInfo).props("apiError")).toBeDefined();
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("could not remove bob from Funders");
             done();
         });
 
@@ -195,7 +195,7 @@ describe("roleList", () => {
         wrapper.find('.expander').trigger("click");
         await Vue.nextTick();
 
-        const addUser = wrapper.find(AddUserToRole);
+        const addUser = wrapper.findComponent(AddUserToRole);
         addUser.vm.$emit("added");
 
         expect(wrapper.emitted()["added"].length).toBe(1);
@@ -229,7 +229,7 @@ describe("roleList", () => {
         const roleWithMembers = roles.at(0);
         expect(roleWithMembers.classes("has-children")).toBe(true);
 
-        const membersList = roleWithMembers.find(UserList);
+        const membersList = wrapper.findAllComponents(UserList).at(0);
 
         expect(membersList.isVisible()).toBe(false);
         expect(roleWithMembers.classes("open")).toBe(false);
@@ -259,7 +259,7 @@ describe("roleList", () => {
 
         const roles = wrapper.findAll("ul.roles > li");
         const roleWithoutMembers = roles.at(1);
-        expect(roleWithoutMembers.findAll(UserList).length).toBe(0);
+        expect(roleWithoutMembers.findAll("user-list").length).toBe(0);
         expect(roleWithoutMembers.classes("has-children")).toBe(false);
     });
 

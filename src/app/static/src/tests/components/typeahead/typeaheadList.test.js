@@ -38,7 +38,7 @@ describe('VueBootstrapTypeaheadList', () => {
     })
 
     it('Mounts and renders a list-group div', () => {
-        expect(wrapper.is('div')).toBe(true)
+        expect(wrapper.element.tagName).toBe("DIV")
         expect(wrapper.classes()).toContain('list-group')
     })
 
@@ -49,13 +49,13 @@ describe('VueBootstrapTypeaheadList', () => {
         })
         await Vue.nextTick();
         expect(wrapper.vm.matchedItems.length).toBe(2)
-        expect(wrapper.findAll(VueBootstrapTypeaheadListItem).length).toBe(2)
+        expect(wrapper.findAllComponents(VueBootstrapTypeaheadListItem).length).toBe(2)
         wrapper.setProps({
             query: 'Canada'
         })
         await Vue.nextTick();
         expect(wrapper.vm.matchedItems.length).toBe(1)
-        expect(wrapper.findAll(VueBootstrapTypeaheadListItem).length).toBe(1)
+        expect(wrapper.findAllComponents(VueBootstrapTypeaheadListItem).length).toBe(1)
     })
 
     it('Limits the number of matches with maxMatches', async () => {
@@ -77,7 +77,7 @@ describe('VueBootstrapTypeaheadList', () => {
             minMatchingChars: 1
         })
         await Vue.nextTick();
-        expect(wrapper.findAll(VueBootstrapTypeaheadListItem).length).toBe(3)
+        expect(wrapper.findAllComponents(VueBootstrapTypeaheadListItem).length).toBe(3)
     })
 
     it('Highlights text matches properly', async () => {
@@ -85,7 +85,7 @@ describe('VueBootstrapTypeaheadList', () => {
             query: 'Canada'
         })
         await Vue.nextTick();
-        expect(wrapper.find(VueBootstrapTypeaheadListItem).vm.htmlText).toBe('<strong>Canada</strong>')
+        expect(wrapper.findComponent(VueBootstrapTypeaheadListItem).vm.htmlText).toBe('<strong>Canada</strong>')
     })
 
     it('Resets the active list item', async () => {

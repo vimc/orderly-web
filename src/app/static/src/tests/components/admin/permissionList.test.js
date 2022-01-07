@@ -96,7 +96,7 @@ describe("permission list", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.find(AddPermission).props().availablePermissions)
+        expect(rendered.findComponent(AddPermission).props().availablePermissions)
             .toStrictEqual(["reports.read", "users.manage"])
     });
 
@@ -208,6 +208,6 @@ describe("permission list", () => {
 
     it("permissions cannot be added if canEdit is false", () => {
         const rendered = getWrapper({canEdit: false});
-        expect(rendered.findAll(AddPermission).length).toBe(0);
+        expect(rendered.findAllComponents(AddPermission).length).toBe(0);
     });
 });

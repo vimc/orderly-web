@@ -68,12 +68,12 @@ describe("setGlobalPinnedReports", () => {
         expect(li.at(1).find(".name").text()).toBe("r2 display");
         expect(li.at(1).find(".name").attributes().id).toBe("r2");
 
-        expect(wrapper.find(Typeahead).props().data).toStrictEqual(["r3 display"]);
+        expect(wrapper.findComponent(Typeahead).props().data).toStrictEqual(["r3 display"]);
         expect(wrapper.find("#pinned-report-buttons button[type='submit']").text()).toBe("Save changes");
         expect(wrapper.find(".btn-default").text()).toBe("Cancel");
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe(null);
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe(null);
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
     });
 
     it("can remove pinned report", async () => {
@@ -125,8 +125,8 @@ describe("setGlobalPinnedReports", () => {
 
             expect(mockReload.mock.calls.length).toBe(1);
 
-            expect(wrapper.find(ErrorInfo).props().apiError).toBe(null);
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe(null);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
 
             done();
         });
@@ -148,8 +148,8 @@ describe("setGlobalPinnedReports", () => {
 
             expect(mockReload.mock.calls.length).toBe(0);
 
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not save pinned reports");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not save pinned reports");
 
             done();
         });

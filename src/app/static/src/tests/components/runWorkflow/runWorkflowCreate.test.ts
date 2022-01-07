@@ -101,7 +101,7 @@ describe(`runWorkflowCreate`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const vueSelect = wrapper.find(VueSelect)
+            const vueSelect = wrapper.findComponent(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
@@ -123,7 +123,7 @@ describe(`runWorkflowCreate`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const vueSelect = wrapper.find(VueSelect)
+            const vueSelect = wrapper.findComponent(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})

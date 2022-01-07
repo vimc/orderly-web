@@ -102,10 +102,10 @@ describe("runReport", () => {
 
         await Vue.nextTick();
 
-        await wrapper.find(ReportList).find("li").trigger("mousedown");
+        await wrapper.findComponent(ReportList).find("li").trigger("mousedown");
         expect(wrapper.vm.$data["selectedReport"]).toBe(global);
 
-        await wrapper.find(ReportList).find("button").trigger("click");
+        await wrapper.findComponent(ReportList).find("button").trigger("click");
         expect(wrapper.vm.$data["selectedReport"]).toBe(null);
     });
 
@@ -118,7 +118,7 @@ describe("runReport", () => {
         await Vue.nextTick();
         await Vue.nextTick();
         await Vue.nextTick();
-        expect(wrapper.find(ReportList).props("selectedReport")).toBe(minimal);
+        expect(wrapper.findComponent(ReportList).props("selectedReport")).toBe(minimal);
     });
 
     it("shows instances if instances supported", async() => {
@@ -195,11 +195,11 @@ describe("runReport", () => {
         });
 
         expect(wrapper.find("#parameters").exists()).toBe(true);
-        const labels = wrapper.find(ParameterList).findAll("label")
+        const labels = wrapper.findComponent(ParameterList).findAll("label")
         expect(labels.at(0).text()).toBe("global");
         expect(labels.at(1).text()).toBe("minimal");
 
-        const inputs = wrapper.find(ParameterList).findAll("input")
+        const inputs = wrapper.findComponent(ParameterList).findAll("input")
         inputs.at(0).setValue("Set new value");
         inputs.at(1).setValue("Set new value 2");
 
@@ -223,7 +223,7 @@ describe("runReport", () => {
             }
         });
         expect(wrapper.find("#parameters").exists()).toBe(false);
-        expect(wrapper.find(ParameterList).exists()).toBe(false);
+        expect(wrapper.findComponent(ParameterList).exists()).toBe(false);
     });
 
     it("parameters endpoint can get data successfully", (done) => {
@@ -292,7 +292,7 @@ describe("runReport", () => {
             }
         });
         expect(wrapper.find("#parameters").exists()).toBe(false);
-        expect(wrapper.find(ParameterList).exists()).toBe(false);
+        expect(wrapper.findComponent(ParameterList).exists()).toBe(false);
     });
 
     it("renders run button group if there is a selected report", async () => {
@@ -342,8 +342,8 @@ describe("runReport", () => {
             }
         });
 
-        expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
-        expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
+        expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: {name: "test-report"},
@@ -352,9 +352,9 @@ describe("runReport", () => {
                 defaultMessage: "test-msg"
             });
             await Vue.nextTick()
-            wrapper.find(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
-            expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
+            wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+            expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
+            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
             wrapper.setData({
                 parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
             })
@@ -625,8 +625,8 @@ describe("runReport", () => {
         await wrapper.find("#changelogMessage").setValue("New message")
         expect(wrapper.vm.$data.changelog.message).toBe("New message")
 
-        const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
-        const changelogType= wrapper.find(changeLog).find("#changelog-type")
+        const changelogMessage = wrapper.findComponent(changeLog).find("#changelog-message")
+        const changelogType= wrapper.findComponent(changeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)

@@ -37,15 +37,16 @@ describe("manageRolePermissions", () => {
         const wrapper = getWrapper();
 
         const listItems = wrapper.findAll("li");
+        const permissionLists = wrapper.findAllComponents(PermissionList);
         expect(listItems.length).toBe(2);
+        expect(permissionLists.length).toBe(2);
         expect(listItems.at(0).find('span').text()).toBe("Funders");
-        expect(listItems.at(0).find(PermissionList).props().permissions).toBe(mockRoles[0].permissions);
-        expect(listItems.at(0).find(PermissionList).props().userGroup).toBe("Funders");
+        expect(permissionLists.at(0).props().permissions).toBe(mockRoles[0].permissions);
+        expect(permissionLists.at(0).props().userGroup).toBe("Funders");
 
         expect(listItems.at(1).find('span').text()).toBe("Science");
-        expect(listItems.at(1).findAll(PermissionList).length).toBe(1);
-        expect(listItems.at(1).find(PermissionList).props().permissions.length).toBe(0);
-        expect(listItems.at(1).find(PermissionList).props().canEdit).toBe(true);
+        expect(permissionLists.at(1).props().permissions.length).toBe(0);
+        expect(permissionLists.at(1).props().canEdit).toBe(true);
 
     });
 
@@ -58,9 +59,9 @@ describe("manageRolePermissions", () => {
             }
         });
 
-        const listItems = wrapper.findAll("li");
+        const listItems = wrapper.findAllComponents(PermissionList);
         expect(listItems.length).toBe(1);
-        expect(listItems.at(0).find(PermissionList).props().canEdit).toBe(false);
+        expect(listItems.at(0).props().canEdit).toBe(false);
     });
 
     it('renders with error', async () => {
@@ -72,8 +73,8 @@ describe("manageRolePermissions", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("TEST ERROR");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("TEST DEFAULT")
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("TEST ERROR");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("TEST DEFAULT")
     });
 
     it('toggles list item', async () => {
@@ -101,7 +102,7 @@ describe("manageRolePermissions", () => {
         mockAxios.onDelete(url)
             .reply(200);
 
-        wrapper.find(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
+        wrapper.findComponent(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
             expect(mockAxios.history.delete[0].url).toBe(url);
@@ -123,7 +124,7 @@ describe("manageRolePermissions", () => {
         mockAxios.onDelete(url)
             .reply(500, "TEST API ERROR");
 
-        wrapper.find(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
+        wrapper.findComponent(PermissionList).vm.$emit("removed", mockRoles[0].permissions[0], "Funders");
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
             expect(mockAxios.history.delete[0].url).toBe(url);
@@ -147,7 +148,7 @@ describe("manageRolePermissions", () => {
             propsData: {roles: [scopedRole]}
         });
 
-        wrapper.find(PermissionList).vm.$emit("removed", scopedRole.permissions[0], "ScopedRole");
+        wrapper.findComponent(PermissionList).vm.$emit("removed", scopedRole.permissions[0], "ScopedRole");
         setTimeout(() => {
             expect(mockAxios.history.delete.length).toBe(1);
             const url = "http://app/roles/ScopedRole/permissions/test.perm/?scopePrefix=report&scopeId=r1";
@@ -169,12 +170,12 @@ describe("manageRolePermissions", () => {
         mockAxios.onPost(url)
             .reply(200);
 
-        wrapper.find(PermissionList).vm.$emit("added", "reports.review");
+        wrapper.findComponent(PermissionList).vm.$emit("added", "reports.review");
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
 
-            expect(wrapper.find(ErrorInfo).props().apiError).toBeNull();
+            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBeNull();
             expect(wrapper.emitted().changed.length).toBe(1);
             done();
         });
@@ -193,15 +194,15 @@ describe("manageRolePermissions", () => {
         mockAxios.onPost(url)
             .reply(500);
 
-        wrapper.find(PermissionList).vm.$emit("added", "reports.review");
+        wrapper.findComponent(PermissionList).vm.$emit("added", "reports.review");
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe(url);
 
             expect(wrapper.emitted().changed).toBeUndefined();
-            expect(wrapper.find(ErrorInfo).props().apiError).not.toBeNull();
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");            done();
+            expect(wrapper.findComponent(ErrorInfo).props().apiError).not.toBeNull();
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add reports.review to Funders");            done();
         });
     });
 });

@@ -62,14 +62,14 @@ describe(`runWorkflow`, () => {
 
     it(`does not start workflow wizard when run workflow is rendered`, async () => {
         const wrapper = getWrapper()
-        expect(wrapper.find(workflowWizard).exists()).toBe(false)
+        expect(wrapper.findComponent(workflowWizard).exists()).toBe(false)
     })
 
     it(`can cancel workflow wizard`, async () => {
         const wrapper = getWrapper()
 
         //Enables rerun and clone buttons
-        await wrapper.find(runWorkflowCreate).setData(
+        await wrapper.findComponent(runWorkflowCreate).setData(
             {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata
@@ -116,7 +116,7 @@ describe(`runWorkflow`, () => {
     it(`can start and cancel workflow wizard correctly when starting a workflow wizard from re-run`, async () => {
         const wrapper = getWrapper()
         //Enables rerun button
-        await wrapper.find(runWorkflowCreate).setData(
+        await wrapper.findComponent(runWorkflowCreate).setData(
             {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata

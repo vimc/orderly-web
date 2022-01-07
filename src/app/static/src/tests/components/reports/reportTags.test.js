@@ -128,7 +128,7 @@ describe("reportTags", () => {
         const modal = wrapper.find("#edit-tags");
         expect(modal.classes().indexOf("modal-show")).toBeGreaterThan(-1);
 
-        const tagLists = modal.findAll(TagList);
+        const tagLists = wrapper.findAllComponents(TagList);
         expect(tagLists.length).toBe(3);
         const versionTags = tagLists.at(0);
         expect(versionTags.props().header).toBe("Report Version Tags");
@@ -238,8 +238,8 @@ describe("reportTags", () => {
             expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred updating tags");
             expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
 
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("An error occurred updating tags");
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("An error occurred updating tags");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
 
             done();
         });
@@ -270,8 +270,8 @@ describe("reportTags", () => {
             expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred fetching tags");
             expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
 
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("An error occurred fetching tags");
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("An error occurred fetching tags");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toBe("TEST ERROR");
 
             done();
         });
