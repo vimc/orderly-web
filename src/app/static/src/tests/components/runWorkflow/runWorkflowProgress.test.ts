@@ -1,6 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
 import {mockAxios} from "../../mockAxios";
+import errorInfo from "../../../js/components/errorInfo.vue";
 
 const workflows = {
     "status": "success",
@@ -41,7 +42,13 @@ const workflowStatus1 = {
           "name": "report three a",
           "status": "running",
           "date": null
-        }
+        },
+        {
+            "key": "non_hygienic_mammoth",
+            "name": "report four a",
+            "status": "impossible",
+            "date": "2021-06-16T09:51:16Z"
+          },
       ]
     }
   }
@@ -59,8 +66,8 @@ describe(`runWorkflowProgress`, () => {
         jest.useRealTimers()
     })
 
-    const getWrapper = () => {
-        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}}})
+    const getWrapper = (initialSelectedWorkflow = "") => {
+        return shallowMount(runWorkflowProgress, {propsData: {workflowMetadata: {}, initialSelectedWorkflow}})
     }
 
     it(`it can render if no workflows returned`, async (done) => {
@@ -80,10 +87,26 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("label").text()).toBe("Workflow")
             expect(wrapper.find("v-select-stub").attributes("placeholder")).toBe("Select workflow or search by name...")
-            // Tests to be reinstated once buttons are unhidden and made active by mrc-2513
-            // expect(wrapper.findAll("button").at(0).text()).toBe("Clone workflow")
-            // expect(wrapper.findAll("button").at(1).text()).toBe("Cancel workflow")
+            expect(wrapper.find("v-select-stub").props("clearable")).toBe(false)
             expect(wrapper.findAll("button").length).toBe(0)
+            done();
+        })
+    })
+
+    it(`initial selected workflow is set by props and emitted`, async (done) => {
+        const wrapper = getWrapper("test")
+        setTimeout(() => {
+            expect(wrapper.vm.$data.selectedWorkflowKey).toBe("test")
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
+            done();
+        })
+    })
+
+    it(`changes to selected workflow are emitted`, async (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test"})
+        setTimeout(() => {
+            expect(wrapper.emitted("set-selected-workflow-key")).toStrictEqual([["test"]])
             done();
         })
     })
@@ -125,7 +148,7 @@ describe(`runWorkflowProgress`, () => {
 
         setTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
-            expect(wrapper.findAll("tr").length).toBe(3)
+            expect(wrapper.findAll("tr").length).toBe(4)
             const reportLinks = wrapper.findAll("td > a")
             expect(reportLinks.length).toBe(1)
 
@@ -144,11 +167,90 @@ describe(`runWorkflowProgress`, () => {
             expect(runningStatus.text()).toBe("Running")
             expect(runningStatus.classes()).toContain("text-secondary")
 
+            const dependencyErrorStatus = wrapper.findAll("tr > td:nth-child(2)").at(3)
+            expect(dependencyErrorStatus.text()).toBe("Dependency failed")
+            expect(dependencyErrorStatus.classes()).toContain("text-danger")
+
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
             expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
             done();
         })
     })
+
+    it(`can fetch workflow details and emit rerun event`, (done) => {
+        const workflowDetails = {
+            name: "Test Workflow",
+            key: "curious_mongoose",
+            email: "test.user@example.com",
+            date: "2021-08-01",
+            instances: {source: "UAT"},
+            git_branch: "master",
+            git_commit: null,
+            reports: [
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "terrified_ocelot",
+                    report: "report1",
+                    params: {p1: "v1" }
+                },
+                {
+                    workflow_key: "curious_mongoose",
+                    key: "weird_anteater",
+                    report: "report2",
+                    params: {}
+                }
+            ]
+        };
+        mockAxios.onGet("http://app/workflows/test-key/")
+            .reply(200, {data: workflowDetails});
+
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test-key"})
+
+        setTimeout(() => {
+            const rerunButton = wrapper.find("#rerun");
+            expect(rerunButton.text()).toBe("Re-run workflow");
+            rerunButton.trigger("click");
+
+            const expectedWorkflowMetadata = {
+                name: "Test Workflow",
+                instances: {source: "UAT"},
+                git_branch: "master",
+                git_commit: null,
+                changelog: null,
+                reports: [
+                    {
+                        name: "report1",
+                        params: {p1: "v1" }
+                    },
+                    {
+                        name: "report2",
+                        params: {}
+                    }
+                ]
+            };
+            setTimeout(() => {
+                expect(wrapper.emitted("rerun")[0][0]).toStrictEqual(expectedWorkflowMetadata);
+                done();
+            });
+        });
+    });
+
+    it(`sets error when fail to fetch workflow details`, (done) => {
+        mockAxios.onGet("http://app/workflows/test-key/")
+            .reply(500, "TEST ERROR");
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "test-key"})
+        setTimeout(() => {
+            wrapper.find("#rerun").trigger("click");
+            setTimeout(() => {
+                expect(wrapper.findComponent(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
+                expect(wrapper.findComponent(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
+                expect(wrapper.emitted("rerun")).toBeUndefined();
+                done();
+            });
+        });
+    });
 
     it(`does start polling when workflow key is selected`, async (done) => {
         const key = "fakeKey";

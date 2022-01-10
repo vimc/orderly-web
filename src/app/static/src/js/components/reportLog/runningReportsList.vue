@@ -1,67 +1,45 @@
 <template>
-    <vue-typeahead-bootstrap
-        :data="sortedReports"
-        :serializer="e => e.name"
-        v-model="query"
-        showOnFocus
-        maxMatches="50"
-        placeholder="Choose a report"
-        @hit="$emit('update:key', $event.key)"
-    >
-        <template slot="append">
-            <button class="btn btn-outline-secondary" v-on:click.prevent="clear" v-if="query">
-                <x-icon/>
-            </button>
+    <v-select :options="sortedReports" label="name" :reduce="(label) => label.key" v-model="selectedKey"
+              :clearable="false" placeholder="Choose a report">
+        <template #option="{ name, date }">
+            {{ name }} <span class="text-muted pl-3">Run started: {{ formatDate(date) }}</span>
         </template>
-        <template slot="suggestion" slot-scope="{ data, htmlText }">
-            <div>
-                <span class="listOption" v-html="htmlText"></span>
-                <span class="text-muted pl-3">Run started: {{ formatDate(data.date) }}</span>
-            </div>
-        </template>
-    </vue-typeahead-bootstrap>
+    </v-select>
 </template>
 
 <script lang="ts">
-    import Vue from "vue";
-    import VueTypeaheadBootstrap from "vue-typeahead-bootstrap"
-    import XIcon from "../runReport/xIcon.vue"
-    import {longTimestamp} from "../../utils/helpers";
+import Vue from "vue";
+import {longTimestamp} from "../../utils/helpers.ts";
+import vSelect from "vue-select";
 
-    export default Vue.extend({
-        name: "runningReportsList",
-        props: {
-            "reports": Array,
-            "initialSelectedKey": String
-        },
-        components: {
-            VueTypeaheadBootstrap,
-            XIcon
-        },
-        methods: {
-            clear() {
-                this.query = "";
-                this.$emit('update:key', "");
-            },
-            formatDate(date) {
-                return longTimestamp(new Date(date));
-            }
-        },
-        data() {
-            return {
-                query: ""
-            }
-        },
-        computed: {
-            sortedReports() {
-                return this.reports.sort((a, b) => a.date.localeCompare(b.date)).reverse();
-            }
-        },
-        mounted(){
-            if (this.initialSelectedKey){
-                this.query = this.reports.find(report => report.key === this.initialSelectedKey).name
-            }
+export default Vue.extend({
+    name: "runningReportsList",
+    props: {
+        "reports": Array,
+        "initialSelectedKey": String
+    },
+    components: {
+        vSelect
+    },
+    methods: {
+        formatDate(date) {
+            return longTimestamp(new Date(date));
         }
-    })
-
+    },
+    data() {
+        return {
+            selectedKey: this.initialSelectedKey
+        };
+    },
+    computed: {
+        sortedReports() {
+            return [...this.reports].sort((a, b) => a.date.localeCompare(b.date)).reverse();
+        }
+    },
+    watch: {
+        selectedKey(val) {
+            this.$emit('update:key', val);
+        }
+    }
+})
 </script>

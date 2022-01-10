@@ -33,7 +33,7 @@ describe("report component", () => {
 
     it("displays date groups", async () => {
         const rendered = shallowMount(report, {propsData: {report: testReport}});
-        const groups = rendered.findAll(dateGroup);
+        const groups = rendered.findAllComponents(dateGroup);
 
         expect(groups.length).toBe(2);
         expect(groups.at(0).props("date")).toBe("Sat Jul 27 2019");
@@ -80,7 +80,7 @@ describe("report component", () => {
         const rendered = shallowMount(report, {propsData: {report: testReport}});
         rendered.find("input").setChecked(true);
 
-        rendered.find(dateGroup).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: false});
+        rendered.findComponent(dateGroup).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: false});
 
         expect(rendered.emitted("select-draft")[1][0])
             .toEqual({id: "20190727-123215-97e39008", value: false});
@@ -91,7 +91,7 @@ describe("report component", () => {
     it("passes select-draft event on if any child is selected", () => {
         const rendered = shallowMount(report, {propsData: {report: testReport}});
 
-        rendered.find(dateGroup).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
+        rendered.findComponent(dateGroup).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
         expect(rendered.emitted("select-group")).toBeUndefined();
         expect(rendered.emitted("select-draft")[0][0])
             .toEqual({id: "20190727-123215-97e39008", value: true});
@@ -100,7 +100,7 @@ describe("report component", () => {
     it("passes select-group event on if any child is selected", () => {
         const rendered = shallowMount(report, {propsData: {report: testReport}});
 
-        rendered.find(dateGroup).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
+        rendered.findComponent(dateGroup).vm.$emit("select-group", {date: "Sat Jul 27 2019", value: true});
         expect(rendered.emitted("select-group")[0][0])
             .toEqual({date: "Sat Jul 27 2019", value: true});
     });

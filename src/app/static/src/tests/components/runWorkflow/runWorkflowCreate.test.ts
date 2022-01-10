@@ -2,16 +2,7 @@ import {mount, shallowMount} from "@vue/test-utils";
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue"
 import {mockAxios} from "../../mockAxios";
 import VueSelect from "vue-select";
-import Vue from "vue";
-
-export const emptyWorkflowMetadata = {
-    name: "",
-    reports: [],
-    instances: {},
-    git_branch: null,
-    git_commit: null,
-    changelog: null
-};
+import {mockRunWorkflowMetadata} from "../../mocks";
 
 describe(`runWorkflowCreate`, () => {
 
@@ -56,8 +47,8 @@ describe(`runWorkflowCreate`, () => {
         name: "interim report",
         date: "2021-05-19T16:28:24Z",
         email: "test@example.com",
-        reports: [{"name": "reportA", "params": {"param1": "one", "param2": "two"}},
-            {"name": "reportB", "params": {"param3": "three"}}],
+        reports: [{"report": "reportA", "params": {"param1": "one", "param2": "two"}},
+            {"report": "reportB", "params": {"param3": "three"}}],
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit",
@@ -96,7 +87,7 @@ describe(`runWorkflowCreate`, () => {
         expect(wrapper.find("h2").text()).toBe("Run workflow")
         await wrapper.find("#create-workflow").trigger("click")
         expect(wrapper.emitted("create").length).toBe(1)
-        expect(wrapper.emitted("create")[0][0]).toStrictEqual(emptyWorkflowMetadata);
+        expect(wrapper.emitted("create")[0][0]).toStrictEqual(mockRunWorkflowMetadata());
     })
 
     it(`can emit re-run navigation step`, async (done) => {
@@ -110,7 +101,7 @@ describe(`runWorkflowCreate`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const vueSelect = wrapper.find(VueSelect)
+            const vueSelect = wrapper.findComponent(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})
@@ -132,7 +123,7 @@ describe(`runWorkflowCreate`, () => {
             expect(wrapper.vm.$data.defaultMessage).toStrictEqual("")
             expect(wrapper.vm.$data.workflows).toStrictEqual(workflowSummaryMetadata)
 
-            const vueSelect = wrapper.find(VueSelect)
+            const vueSelect = wrapper.findComponent(VueSelect)
             vueSelect.vm.$emit("input", selectedWorkflow)
             expect(vueSelect.find("input").attributes("placeholder")).toBe("Search by name or user...")
             await wrapper.setData({runWorkflowMetadata: workflowMetadata})

@@ -40,8 +40,8 @@ describe("webLink", () => {
             }
         });
 
-        expect(rendered.findAll(fileIcon).length).toBe(0);
-        expect(rendered.findAll(webIcon).length).toBe(1);
+        expect(rendered.findAllComponents(fileIcon).length).toBe(0);
+        expect(rendered.findAllComponents(webIcon).length).toBe(1);
     });
 
 });

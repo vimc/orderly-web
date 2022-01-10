@@ -59,7 +59,7 @@ class IndexTests
     }
 
     @Test
-    fun `it does not render run report link if user does not have permission to see it`()
+    fun `it does not render run workflow and run report links if user does not have permission to see them`()
     {
         val testModel = testModelLink(false)
         val doc = template.jsoupDocFor(testModel)
@@ -259,5 +259,17 @@ class IndexTests
         assertThat(filterSelect.select("option").count()).isEqualTo(2)
         assertThat(filterSelect.select("option").map { it.attr("value") }).containsExactly("a", "b")
         assertThat(filterSelect.select("option").map { it.text() }).containsExactly("a", "b")
+    }
+
+    @Test
+    fun `it renders run workflow link if user has permission to see it`()
+    {
+        val testModel = testModelLink(true)
+        val doc = template.jsoupDocFor(testModel)
+        val docsLink = doc.select(".btn-link")
+        assertThat(docsLink.count()).isEqualTo(2)
+
+        assertThat(docsLink[1].selectFirst("a").text()).isEqualTo("Run a workflow")
+        assertThat(docsLink[1].selectFirst("a").attr("href")).isEqualTo("http://localhost:8888/run-workflow")
     }
 }

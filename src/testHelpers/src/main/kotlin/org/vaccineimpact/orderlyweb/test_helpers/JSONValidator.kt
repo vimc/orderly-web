@@ -3,8 +3,9 @@ package org.vaccineimpact.orderlyweb.test_helpers
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.JsonNode
 import com.github.fge.jackson.JsonLoader
+import com.github.fge.jsonschema.core.load.Dereferencing
+import com.github.fge.jsonschema.core.load.configuration.LoadingConfiguration
 import com.github.fge.jsonschema.main.JsonSchemaFactory
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.fail
 import java.io.File
@@ -95,7 +96,12 @@ class JSONValidator
 
     private fun makeSchemaFactory(): JsonSchemaFactory
     {
-        return JsonSchemaFactory.byDefault()
+        val loadingConfig = LoadingConfiguration.newBuilder()
+                .dereferencing(Dereferencing.INLINE)
+                .freeze()
+        return JsonSchemaFactory.newBuilder()
+                .setLoadingConfiguration(loadingConfig)
+                .freeze()
     }
 
     private fun parseJson(jsonAsString: String): JsonNode

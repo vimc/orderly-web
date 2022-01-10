@@ -39,9 +39,9 @@ describe("globalReaderRolesList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-        expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(false);
-        expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(false);
+        expect(wrapper.findComponent(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
+        expect(wrapper.findComponent(RoleList).props().canRemoveRoles).toBe(false);
+        expect(wrapper.findComponent(RoleList).props().canRemoveMembers).toBe(false);
 
     });
 
@@ -51,7 +51,7 @@ describe("globalReaderRolesList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(1);
-            expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
+            expect(wrapper.findComponent(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
             done();
         });
     });

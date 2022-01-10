@@ -10,7 +10,7 @@ describe('VueBootstrapTypeaheadListItem.vue', () => {
 
     it('Mounts and renders an <a> tag', () => {
         expect(wrapper.exists()).toBe(true)
-        expect(wrapper.contains('a')).toBe(true)
+        expect(wrapper.find('a').exists()).toBe(true)
     })
 
     it('Renders textVariant classes properly', async () => {

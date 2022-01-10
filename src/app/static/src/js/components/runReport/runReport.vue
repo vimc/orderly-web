@@ -12,9 +12,7 @@
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
-                    <report-list id="report" :reports="reports"
-                                 :report.sync="selectedReport"
-                                 :initial-selected-report="initialReportName"/>
+                    <report-list id="report" :reports="reports" :selected-report.sync="selectedReport"/>
                 </div>
             </div>
 
@@ -32,8 +30,7 @@
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
                         :custom-style="childCustomStyle"
-                        @changelogMessage="handleChangeLogMessageValue"
-                        @changelogType="handleChangeLogTypeValue">
+                        @changelog="handleChangelog">
             </change-log>
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
@@ -61,14 +58,57 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
+    import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
 
-    export default Vue.extend({
+    interface Data {
+        reports: ReportWithDate[]
+        selectedBranch: string
+        selectedCommitId: string
+        selectedReport: ReportWithDate[]
+        selectedInstances: Record<string, string>
+        error: string
+        defaultMessage: string
+        runningStatus: string
+        runningKey: string
+        disableRun: boolean
+        parameterValues: Record<string, string>[]
+        changelog: object | null
+        childCustomStyle: ChildCustomStyle
+    }
+
+    interface Methods {
+        handleInstancesValue: (instances: Record<string, string>) => void
+        handleChangelog: (changelog: Record<string, string>) => void
+        getParameterValues: (values: Record<string, string>[], valid: boolean) => void
+        branchSelected: (newBranch: string) => void
+        commitSelected: (newCommit: string) => void
+        updateReports: (newReports: object[]) => void
+        setParameters: () => void
+        runReport: () => void
+        clearRun: () => void
+    }
+
+    interface Props {
+        metadata: Record<string, any>
+        initialGitBranches: string[]
+        initialReportName: string
+    }
+
+    interface Computed {
+        showReports: number
+        showInstances: string
+        showRunButton: boolean
+        showParameters: number
+        showChangelog: string[]
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runReport",
-        props: [
-            "metadata",
-            "initialGitBranches",
-            "initialReportName"
-        ],
+        props: {
+            metadata: Object,
+            initialGitBranches: Array,
+            initialReportName: String
+        },
         components: {
             ErrorInfo,
             GitUpdateReports,
@@ -82,7 +122,7 @@
                 reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
-                selectedReport: "",
+                selectedReport: null,
                 selectedInstances: {},
                 error: "",
                 defaultMessage: "",
@@ -90,8 +130,7 @@
                 runningKey: "",
                 disableRun: false,
                 parameterValues: [],
-                changeLogMessageValue: "",
-                changeLogTypeValue: "",
+                changelog: null,
                 childCustomStyle: {label: "col-sm-2 text-right", control: "col-sm-6"}
             }
         },
@@ -116,11 +155,8 @@
             handleInstancesValue: function (instances) {
                 this.selectedInstances = instances
             },
-            handleChangeLogTypeValue: function (type: string) {
-                this.changeLogTypeValue = type
-            },
-            handleChangeLogMessageValue: function (message: string) {
-                this.changeLogMessageValue = message
+            handleChangelog: function (changelog) {
+                this.changelog = changelog;
             },
             getParameterValues(values, valid) {
                 if (valid) {
@@ -136,11 +172,11 @@
             },
             updateReports(newReports) {
                 this.reports = newReports;
-                this.selectedReport = "";
+                this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
-                api.get(`/report/${this.selectedReport}/config/parameters/${commit}`)
+                api.get(`/report/${this.selectedReport.name}/config/parameters/${commit}`)
                     .then(({data}) => {
                         this.parameterValues = data.data
                         this.error = "";
@@ -167,18 +203,10 @@
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
 
-                let changelog = null;
-                if (this.changeLogMessageValue) {
-                    changelog = {
-                        message: this.changeLogMessageValue,
-                        type: this.changeLogTypeValue
-                    }
-                }
-
-                api.post(`/report/${this.selectedReport}/actions/run/`, {
+                api.post(`/report/${this.selectedReport.name}/actions/run/`, {
                     instances,
                     params,
-                    changelog,
+                    changelog: this.changelog,
                     gitBranch: this.selectedBranch,
                     gitCommit: this.selectedCommitId,
                 })
@@ -201,7 +229,7 @@
                 this.runningStatus = "";
                 this.runningKey = "";
                 this.disableRun = false;
-                this.changeLogMessageValue = ""
+                this.changelog = null;
             }
         },
         mounted() {
@@ -213,14 +241,18 @@
                     }
                 }
             }
+            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         watch: {
-            selectedReport() {
-                this.clearRun();
-                if (this.selectedReport) {
-                    this.setParameters();
+            selectedReport: {
+                deep: true,
+                handler() {
+                    this.clearRun();
+                    if (this.selectedReport) {
+                        this.setParameters();
+                    }
+                    this.parameterValues.length = 0
                 }
-                this.parameterValues.length = 0
             },
             selectedInstances: {
                 deep: true,

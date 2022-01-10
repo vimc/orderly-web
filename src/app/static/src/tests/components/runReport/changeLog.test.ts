@@ -28,34 +28,34 @@ describe(`changeLog`, () => {
             })
     })
 
-    it(`emits changelogType first index when component gets mounted`, () => {
+    it(`emits null changelog when component gets mounted`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.emitted().changelogType.length).toBe(1)
-        expect(wrapper.emitted().changelogType[0][0]).toBe("internal")
+        expect(wrapper.emitted().changelog.length).toBe(1)
+        expect(wrapper.emitted().changelog[0][0]).toBe(null)
     })
 
-    it(`can set and get changelog message`, () => {
+    it(`can set and get changelog message`, async () => {
         const wrapper = getWrapper();
         const message = wrapper.find("#changelogMessage")
-        message.setValue("new message")
+        await message.setValue("new message")
         expect(wrapper.vm.$data.changeLogMessageValue).toBe("new message")
 
-        expect(wrapper.emitted().changelogMessage.length).toBe(1)
-        expect(wrapper.emitted().changelogMessage[0][0]).toEqual("new message")
+        expect(wrapper.emitted().changelog.length).toBe(2)
+        expect(wrapper.emitted().changelog[1][0].message).toEqual("new message")
 
         const messageValue = message.element as HTMLTextAreaElement
         expect(messageValue.value).toBe("new message")
     })
 
-    it(`can select and get changelog type`, () => {
+    it(`can select and get changelog type`, async () => {
         const wrapper = getWrapper();
-        const options = wrapper.find("#changelogType")
-            .find("select").findAll("option")
-        options.at(1).setSelected()
+        await wrapper.find("#changelogMessage").setValue("new message")
 
-        expect(wrapper.emitted().changelogType.length).toBe(2)
-        expect(wrapper.emitted().changelogType[0][0]).toEqual(changelogTypeOptions[0]) //on mount initial selection
-        expect(wrapper.emitted().changelogType[1][0]).toEqual(changelogTypeOptions[1])  // selected value
+        wrapper.find("#changelogType").findAll("option").at(1).setSelected()
+        expect(wrapper.emitted().changelog.length).toBe(3)
+        expect(wrapper.emitted().changelog[0][0]).toBeNull() // on mount
+        expect(wrapper.emitted().changelog[1][0]["type"]).toEqual(changelogTypeOptions[0]) // message set
+        expect(wrapper.emitted().changelog[2][0]["type"]).toEqual(changelogTypeOptions[1]) // type updated
 
         expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
         const typeValue = wrapper.find("#changelogType").element as HTMLSelectElement
@@ -68,8 +68,8 @@ describe(`changeLog`, () => {
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
-        const changelogMessage = wrapper.find(ChangeLog).find("#changelog-message")
-        const changelogType= wrapper.find(ChangeLog).find("#changelog-type")
+        const changelogMessage = wrapper.findComponent(ChangeLog).find("#changelog-message")
+        const changelogType= wrapper.findComponent(ChangeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)

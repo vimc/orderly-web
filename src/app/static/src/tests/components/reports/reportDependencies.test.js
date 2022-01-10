@@ -90,7 +90,7 @@ describe("reportDependencies", () => {
             expect(errorInfo.props("defaultMessage")).toBe("Could not load report dependencies");
             expect(wrapper.find("hr").exists()).toBe(true);
             expect(wrapper.find("h4").exists()).toBe(false);
-            expect(wrapper.find(ReportDependencyList).exists()).toBe(false);
+            expect(wrapper.findComponent(ReportDependencyList).exists()).toBe(false);
             done();
         });
     });

@@ -8,4 +8,5 @@ object ContentTypes
     val zip = "application/zip"
     val html = "text/html"
     val text = "text/plain"
+    val multipart = "multipart/form-data"
 }

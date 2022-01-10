@@ -15,6 +15,7 @@
                         name="workflows"
                         id="workflows"
                         v-model="selectedWorkflowKey"
+                        :clearable = "false"
                         placeholder="Select workflow or search by name..."
                     >
                         <template #option="{ name, date }">
@@ -45,12 +46,12 @@
                     </tr>
                 </table>
             </div>
-            <!-- Buttons to be unhidden and made active by mrc-2513 -->
-            <div class="row justify-content-end mt-3" v-if="false">
-                <button class="button mr-3" type="button">
-                    Clone workflow
+            <div v-if="selectedWorkflowKey" class="row justify-content-end mt-3">
+                <button id="rerun" class="button mr-3" type="button" @click="rerun">
+                    Re-run workflow
                 </button>
-                <button class="btn btn-secondary" type="button">
+                <!-- Cancel button to be implemented in mrc-2549 -->
+                <button class="btn btn-secondary" type="button" v-if="false">
                     Cancel workflow
                 </button>
             </div>
@@ -67,13 +68,14 @@
 import Vue from "vue";
 import vSelect from "vue-select";
 import { api } from "../../utils/api";
-import { longTimestamp } from "../../utils/helpers";
+import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
 import ErrorInfo from "../errorInfo.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
+import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -91,18 +93,28 @@ interface Methods {
     reportVersionHref: (name: string, version: string) => string;
     statusColour: (status: string) => string;
     interpretStatus: (status: string) => string;
+    rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
 }
 
+interface Props {
+    initialSelectedWorkflow: string;
+}
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
-export default Vue.extend<Data, Methods, unknown, unknown>({
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
         vSelect,
     },
+    props: {
+            initialSelectedWorkflow: {
+                type: String,
+                required: true
+            },
+        },
     data() {
         return {
             workflowRunSummaries: null,
@@ -151,6 +163,18 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                         "An error occurred fetching the workflow reports";
                 });
         },
+        rerun() {
+            api.get(`/workflows/${this.selectedWorkflowKey}/`)
+                .then(({data}) => {
+                    const reportMetadata = workflowRunDetailsToMetadata(data.data)
+                    this.$emit("rerun", reportMetadata);
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage =
+                        "An error occurred fetching workflow details";
+                });
+        },
         formatDate(date) {
             return longTimestamp(new Date(date));
         },
@@ -170,6 +194,8 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
         interpretStatus(status) {
             if (status === "success") {
                 return "Complete";
+            } else if (status === "impossible") {
+                return "Dependency failed"
             } else if (
                 failStates.includes(status)
             ) {
@@ -181,6 +207,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     },
     watch: {
         selectedWorkflowKey() {
+            this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
                 this.startPolling();
@@ -188,17 +215,16 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                 this.workflowRunStatus = null;
             }
         },
-        workflowRunStatus: {
-            handler(workflowRun) {
-                const interpretStatus = this.interpretStatus(workflowRun.status)
-                if (interpretStatus === "Failed" || interpretStatus === "Complete") {
-                    this.stopPolling();
-                }
+        workflowRunStatus(newWorkflowRunStatus) {
+            const interpretStatus = this.interpretStatus(newWorkflowRunStatus.status)
+            if (interpretStatus === "Failed" || interpretStatus === "Complete") {
+                this.stopPolling();
             }
         }
     },
     mounted() {
         this.getWorkflowRunSummaries();
+        this.selectedWorkflowKey = this.initialSelectedWorkflow;
     },
     beforeDestroy() {
         this.stopPolling();

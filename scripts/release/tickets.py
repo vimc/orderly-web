@@ -1,6 +1,7 @@
 import os
 import re
 import requests
+
 from branch_diff import Difference
 
 branch_pattern = re.compile(r"^(.+-\d+)($|[_-])")
@@ -13,6 +14,7 @@ def get_token():
         print("""Please set your YouTrack token as follows:
     export YOUTRACK_TOKEN=xxx
 You may wish to add this line to your Bash ~/.profile
+
 You can obtain a new token by following the instructions at
 https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html
 """)
@@ -22,23 +24,28 @@ https://www.jetbrains.com/help/youtrack/standalone/Manage-Permanent-Token.html
 
 class Ticket:
     def __init__(self, data):
-        self.id = data["id"]
-        self.fields = {}
-        for field in data["field"]:
-            self.fields[field["name"]] = field["value"]
+        self.id = data["idReadable"]
+        self.fields = dict(
+            (
+                customField["projectCustomField"]["field"]["name"],
+                customField["value"]["name"] if isinstance(customField["value"], dict) else customField["value"],
+            )
+            for customField in data["customFields"]
+        )
+        self.fields["summary"] = data["summary"]
 
     def get(self, field):
         return self.fields[field]
 
     def state(self):
-        return ", ".join(self.get("State"))
+        return self.get("State")
 
     def okay_to_release(self):
         return "Ready to deploy" in self.get("State")
 
 
 class YouTrackHelper:
-    base_url = "https://mrc-ide.myjetbrains.com/youtrack/rest/"
+    base_url = "https://mrc-ide.myjetbrains.com/youtrack/api/"
 
     def __init__(self):
         self.token = get_token()
@@ -53,36 +60,42 @@ class YouTrackHelper:
                 yield branch, NOT_FOUND
 
     def get_ticket(self, branch, full_id):
-        r = self.request("issue/" + full_id)
+        template = "issues/{full_id}?fields=idReadable,summary,customFields(projectCustomField(field(name)),value(name))"
+        r = self.request(template.format(full_id=full_id))
         if r.status_code == 200:
             return branch, Ticket(r.json())
         else:
             return branch, NOT_FOUND
 
     def add_build_tag(self, tag):
-        template = "admin/customfield/versionBundle/MRC Centre: Fixed in OrderlyWeb builds/{tag}"
-        r = self.request(template.format(tag=tag), method="put")
-        # 409 means already exists
-        return r.status_code in [201, 409], r
+        data = {"name": tag, "type": "VersionBundleElement"}
+        # 79-25 is "Fixed in OrderlyWeb build" field for mrc project (78-1)
+        # See https://www.jetbrains.com/help/youtrack/devportal/api-usecase-add-value-to-bundle.html
+        r = self.request("admin/projects/78-1/customFields/79-25/bundle/values?fields=id,name", data)
+        # 400 implies already exists
+        return r.status_code in [200, 400], r
 
     def modify_ticket(self, full_id, command):
-        template = "issue/{issue}/execute?command={command}"
-        fragment = template.format(issue=full_id, command=command)
-        r = self.request(fragment, method="post")
+        data = {"issues": [{"idReadable": full_id}], "query": command}
+        r = self.request("commands", data)
         return r.status_code == 200, r
 
-    def request(self, url_fragment, method="get"):
+    def request(self, url_fragment, json=None):
         headers = {
             "Authorization": "Bearer " + self.token,
             "Accept": "application/json"
         }
+        if json is None:
+            method = "get"
+        else:
+            method = "post"
+            headers["Content-Type"] = "application/json"
         url = self.base_url + url_fragment
-        response = requests.request(method, url, headers=headers)
+        response = requests.request(method, url, headers=headers, json=json)
         if response.status_code == 401:
             raise Exception("Failed to authorize against YouTrack")
 
         return response
-
 
 def check_ticket(branch, ticket):
     problem = False
@@ -105,7 +118,6 @@ def check_ticket(branch, ticket):
 
 def check_tickets(latest_tag):
     diff = Difference(latest_tag)
-
     yt = YouTrackHelper()
     pairs = list(yt.get_tickets(diff.branches))
     problems = False

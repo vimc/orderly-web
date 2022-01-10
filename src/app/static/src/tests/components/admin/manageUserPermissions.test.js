@@ -103,9 +103,9 @@ describe("manage users", () => {
         await Vue.nextTick();
 
         expect(rendered.findAll("li").length).toBe(2);
-        expect(rendered.findAll(PermissionList).length).toBe(2);
+        expect(rendered.findAllComponents(PermissionList).length).toBe(2);
 
-        expect(rendered.find(PermissionList).props().canEdit).toBe(true);
+        expect(rendered.findComponent(PermissionList).props().canEdit).toBe(true);
 
         expect(rendered.findAll("li").at(0).classes("has-children")).toBe(true);
         expect(rendered.findAll("li").at(1).classes("has-children")).toBe(true);
@@ -118,8 +118,8 @@ describe("manage users", () => {
 
         await Vue.nextTick();
 
-        expect(rendered.findAll(PermissionList).at(0).props("permissions")).toStrictEqual([]);
-        expect(rendered.findAll(PermissionList).at(1).props("permissions")).toStrictEqual(
+        expect(rendered.findAllComponents(PermissionList).at(0).props("permissions")).toStrictEqual([]);
+        expect(rendered.findAllComponents(PermissionList).at(1).props("permissions")).toStrictEqual(
             [{
                 name: "reports.read",
                 scope_id: "",
@@ -141,13 +141,13 @@ describe("manage users", () => {
         await Vue.nextTick();
 
         expect(rendered.find("li").classes()).not.toContain("open");
-        expect(rendered.find(PermissionList).isVisible()).toBe(false);
+        expect(rendered.findComponent(PermissionList).isVisible()).toBe(false);
         rendered.find(".expander").trigger("click");
 
         await Vue.nextTick();
 
         expect(rendered.find("li").classes()).toContain("open");
-        expect(rendered.find(PermissionList).isVisible()).toBe(true);
+        expect(rendered.findComponent(PermissionList).isVisible()).toBe(true);
     });
 
     it("can remove permission", async (done) => {

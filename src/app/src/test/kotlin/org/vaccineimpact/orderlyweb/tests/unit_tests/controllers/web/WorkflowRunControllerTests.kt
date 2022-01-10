@@ -13,10 +13,12 @@ import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.OrderlyServerError
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
+import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.Breadcrumb
 import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
+import java.io.Reader
 import java.time.Instant
 
 class WorkflowRunControllerTests
@@ -24,7 +26,7 @@ class WorkflowRunControllerTests
     @Test
     fun `can getRunWorkflow breadcrumbs`()
     {
-        val sut = WorkflowRunController(mock(), mock(), mock())
+        val sut = WorkflowRunController(mock(), mock(), mock(), mock())
         val model = sut.getRunWorkflow()
 
         assertThat(model.breadcrumbs).containsExactly(
@@ -51,8 +53,29 @@ class WorkflowRunControllerTests
         val repo = mock<WorkflowRunRepository> {
             on { getWorkflowRunSummaries("user@email.com", "Interim") } doReturn workflowRunSummaries
         }
-        val sut = WorkflowRunController(context, repo, mock())
+        val sut = WorkflowRunController(context, repo, mock(), mock())
         assertThat(sut.getWorkflowRunSummaries()).isEqualTo(workflowRunSummaries)
+    }
+
+    @Test
+    fun `can get workflow run summary`()
+    {
+        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+        val context = mock<ActionContext> {
+            on { getRequestBody() } doReturn requestBody
+        }
+
+        val mockAPIResponse = OrderlyServerResponse("mockAPIResponseText", 200)
+
+        val apiClient = mock<OrderlyServerAPI> {
+            on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
+        }
+
+        val repo = mock<WorkflowRunRepository>()
+        val sut = WorkflowRunController(context, repo, apiClient, mock())
+        val result = sut.getWorkflowRunSummary()
+        
+        assertThat(result).isEqualTo(mockAPIResponse.text)
     }
 
     @Test
@@ -91,7 +114,7 @@ class WorkflowRunControllerTests
             on { getWorkflowRunDetails("adventurous_aardvark") } doReturn workflowRun
         }
 
-        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+        val sut = WorkflowRunController(mockContext, mockRepo, mock(), mock())
 
         val results = sut.getWorkflowRunDetails()
         assertThat(results).isEqualTo(workflowRun)
@@ -108,7 +131,7 @@ class WorkflowRunControllerTests
             on { getWorkflowRunDetails("fakeKey") } doThrow UnknownObjectError("key", "workflow")
         }
 
-        val sut = WorkflowRunController(mockContext, mockRepo, mock())
+        val sut = WorkflowRunController(mockContext, mockRepo, mock(), mock())
 
         assertThatThrownBy { sut.getWorkflowRunDetails() }
             .isInstanceOf(UnknownObjectError::class.java)
@@ -172,7 +195,7 @@ class WorkflowRunControllerTests
         }
 
         val repo = mock<WorkflowRunRepository>()
-        val sut = WorkflowRunController(context, repo, apiClient)
+        val sut = WorkflowRunController(context, repo, apiClient, mock())
         val result = sut.createWorkflowRun()
 
         verify(apiClient).post(
@@ -253,7 +276,7 @@ class WorkflowRunControllerTests
             on { userProfile } doReturn CommonProfile().apply { id = "test@user.com" }
         }
 
-        val sut = WorkflowRunController(context, mock(), mock())
+        val sut = WorkflowRunController(context, mock(), mock(), mock())
         assertThatThrownBy { sut.createWorkflowRun() }
             .isInstanceOf(BadRequest::class.java)
             .hasMessageContaining("Invalid workflow description")
@@ -285,7 +308,7 @@ class WorkflowRunControllerTests
             )
         }
 
-        val sut = WorkflowRunController(context, mock(), apiClient)
+        val sut = WorkflowRunController(context, mock(), apiClient, mock())
         val response = sut.createWorkflowRun()
         verify(context).setStatusCode(400)
         assertThat(response).isEqualTo(mockResponse)
@@ -315,7 +338,7 @@ class WorkflowRunControllerTests
             )
         }
 
-        val sut = WorkflowRunController(context, mock(), apiClient)
+        val sut = WorkflowRunController(context, mock(), apiClient, mock())
         sut.createWorkflowRun()
 
         verify(apiClient).post(
@@ -403,7 +426,7 @@ class WorkflowRunControllerTests
             on { getWorkflowRunDetails("workflow_key1") } doReturn workflowRun
         }
 
-        val sut = WorkflowRunController(context, repo, apiClientWithError)
+        val sut = WorkflowRunController(context, repo, apiClientWithError, mock())
         val result = sut.getWorkflowRunStatus()
         assertThat(result).isEqualTo(
             WorkflowRunStatus(
@@ -501,7 +524,7 @@ class WorkflowRunControllerTests
             on { getWorkflowRunDetails("workflow_key1") } doReturn workflowRun
         }
 
-        val sut = WorkflowRunController(context, repo, apiClientWithError)
+        val sut = WorkflowRunController(context, repo, apiClientWithError, mock())
         val result = sut.getWorkflowRunStatus()
         assertThat(result).isEqualTo(
             WorkflowRunStatus(
@@ -544,8 +567,29 @@ class WorkflowRunControllerTests
             on { throwOnError() } doReturn apiClient
         }
 
-        val sut = WorkflowRunController(context, mock(), apiClientWithError)
+        val sut = WorkflowRunController(context, mock(), apiClientWithError, mock())
         assertThatThrownBy { sut.getWorkflowRunStatus() }.isInstanceOf(OrderlyServerError::class.java)
+    }
+
+    @Test
+    fun `validates workflow`()
+    {
+        val mockReader = mock<Reader>()
+        val mockContext = mock<ActionContext> {
+            on { getPartReader("file") } doReturn mockReader
+            on { queryParams("branch") } doReturn "testBranch"
+            on { queryParams("commit") } doReturn "testCommit"
+        }
+
+        val mockResult = listOf(WorkflowReportWithParams("test", mapOf()))
+        val mockLogic = mock<WorkflowLogic> {
+            on { parseAndValidateWorkflowCSV(mockReader, "testBranch", "testCommit") } doReturn mockResult
+        }
+
+        val sut = WorkflowRunController(mockContext, mock(), mock(), mockLogic)
+        val result = sut.validateWorkflow()
+
+        assertThat(result).isSameAs(mockResult)
     }
 
     private fun getWorkflowRunRequestExample() =

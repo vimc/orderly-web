@@ -1,12 +1,16 @@
 package org.vaccineimpact.orderlyweb.tests.integration_tests.tests
 
+import com.nhaarman.mockito_kotlin.doReturn
+import com.nhaarman.mockito_kotlin.mock
 import org.assertj.core.api.Assertions
 import org.junit.After
 import org.junit.Before
 import org.junit.BeforeClass
 import org.vaccineimpact.orderlyweb.ContentTypes
+import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.app_start.main
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.models.GitCommit
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.test_helpers.JSONValidator
 import org.vaccineimpact.orderlyweb.test_helpers.http.Response
@@ -123,5 +127,16 @@ abstract class IntegrationTest
         {
             checker.checkPermissionIsRequired(permission)
         }
+    }
+
+    protected fun getGitBranchCommit(branch: String): String
+    {
+        val commits = OrderlyServer(AppConfig()).get(
+                "/git/commits",
+                context = mock {
+                    on { queryString() } doReturn "branch=$branch"
+                }
+        )
+        return commits.listData(GitCommit::class.java).first().id
     }
 }

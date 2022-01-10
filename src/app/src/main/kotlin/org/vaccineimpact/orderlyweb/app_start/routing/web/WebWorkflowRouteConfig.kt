@@ -17,11 +17,18 @@ object WebWorkflowRouteConfig : RouteConfig
             .json()
             .secure(runReports)
             .transform(),
+        WebEndpoint("/workflows/summary", WorkflowRunController::class, "getWorkflowRunSummary", HttpMethod.post)
+            .json()
+            .secure(runReports),
         WebEndpoint("/workflows/:key", WorkflowRunController::class, "getWorkflowRunDetails")
             .json()
             .secure(runReports)
             .transform(),
         WebEndpoint("/workflows/:key/status", WorkflowRunController::class, "getWorkflowRunStatus")
+            .json()
+            .secure(runReports)
+            .transform(),
+        WebEndpoint("/workflow/validate", WorkflowRunController::class, "validateWorkflow", HttpMethod.post)
             .json()
             .secure(runReports)
             .transform()

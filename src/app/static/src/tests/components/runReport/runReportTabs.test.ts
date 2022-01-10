@@ -78,7 +78,7 @@ describe("runReportTabs", () => {
         Storage.prototype.setItem = jest.fn();
         const spySetStorage = jest.spyOn(Storage.prototype, 'setItem').mock;
         const wrapper = getWrapper();
-        const runReport = wrapper.find(RunReport);
+        const runReport = wrapper.findComponent(RunReport);
         runReport.vm.$emit("update:key", "emittedKey");
         expect(wrapper.vm.$data.selectedRunningReportKey).toBe("emittedKey");
         expect(spySetStorage.calls[0][0]).toBe("selectedRunningReportKey");
@@ -87,7 +87,7 @@ describe("runReportTabs", () => {
 
     it("switches to the reportLogs tab when reportRun emits change tab event", async () => {
         const wrapper = getWrapper();
-        const runReport = wrapper.find(RunReport);
+        const runReport = wrapper.findComponent(RunReport);
         runReport.vm.$emit("update:key", "emittedKey");
         runReport.vm.$emit("changeTab");
         await Vue.nextTick();

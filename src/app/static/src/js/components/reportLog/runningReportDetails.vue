@@ -35,14 +35,14 @@
                     </div>
                 </div>
                 <div class="row pt-2">
-                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto">
+                    <div id="report-params" v-if="paramSize > 0" class="col-sm-auto text-left">
                         <span>Parameters:</span>
-                        <span>
-                        <div class="d-md-table-row row" v-for="(value, key) in reportLog.params">
-                            <span class="border border-secondary col-md">{{ key }}</span>
-                            <span class="border border-secondary col-md">{{ value }}</span>
-                        </div>
-                    </span>
+                        <table>
+                            <tr class="d-md-table-row row" v-for="(value, key) in reportLog.params">
+                                <td class="border border-secondary px-2">{{ key }}</td>
+                                <td class="border border-secondary px-2">{{ value }}</td>
+                            </tr>
+                        </table>
                     </div>
                 </div>
                 <div id="report-database-instances"  v-if="instanceSize > 0" class="row pt-2">
@@ -86,7 +86,7 @@
     import {ReportLog} from "../../utils/types";
     import {api, buildFullUrl} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {longTimestamp} from "../../utils/helpers";
+    import {longTimestamp} from "../../utils/helpers.ts";
 
     interface Methods {
         getLogs: () => void,

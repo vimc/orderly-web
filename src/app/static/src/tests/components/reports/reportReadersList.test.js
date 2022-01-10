@@ -34,7 +34,7 @@ describe("reportReadersList", () => {
     ];
 
     function expectWrapperToHaveRenderedReaders(wrapper) {
-        const listItems = wrapper.find(UserList);
+        const listItems = wrapper.findComponent(UserList);
         expect(listItems.props().users).toEqual(expect.arrayContaining(reportReaders));
     }
 
@@ -63,10 +63,10 @@ describe("reportReadersList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(AddReportReader).props().type).toBe("user");
-        expect(wrapper.find(UserList).props().canRemove).toBe(true);
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
+        expect(wrapper.findComponent(AddReportReader).props().type).toBe("user");
+        expect(wrapper.findComponent(UserList).props().canRemove).toBe(true);
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test error");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("default error");
 
         expectWrapperToHaveRenderedReaders(wrapper);
     });
@@ -85,7 +85,7 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find(AddReportReader).props().availableUserGroups)
+            expect(wrapper.findComponent(AddReportReader).props().availableUserGroups)
                 .toEqual(expect.arrayContaining(userEmails));
 
             expectWrapperToHaveRenderedReaders(wrapper);
@@ -110,9 +110,9 @@ describe("reportReadersList", () => {
 
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
-            expect(wrapper.find(UserList).props().users.length).toBe(0);
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not fetch list of users");
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
+            expect(wrapper.findComponent(UserList).props().users.length).toBe(0);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not fetch list of users");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
 
             done();
         });
@@ -172,7 +172,7 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find(UserList).vm.$emit("removed", "bob");
+            wrapper.findComponent(UserList).vm.$emit("removed", "bob");
 
             setTimeout(() => {
 
@@ -203,11 +203,11 @@ describe("reportReadersList", () => {
         });
 
         setTimeout(() => {
-            wrapper.find(UserList).vm.$emit("removed", "bob");
+            wrapper.findComponent(UserList).vm.$emit("removed", "bob");
 
             setTimeout(() => {
-                expect(wrapper.find(ErrorInfo).props("apiError")).toBeDefined();
-                expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("could not remove bob");
+                expect(wrapper.findComponent(ErrorInfo).props("apiError")).toBeDefined();
+                expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("could not remove bob");
                 done();
             });
         });
@@ -241,8 +241,8 @@ describe("reportReadersList", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(AddReportReader).props().availableUserGroups.length).toBe(1);
-        expect(wrapper.find(AddReportReader).props().availableUserGroups[0]).toBe("another.user@example.com");
+        expect(wrapper.findComponent(AddReportReader).props().availableUserGroups.length).toBe(1);
+        expect(wrapper.findComponent(AddReportReader).props().availableUserGroups[0]).toBe("another.user@example.com");
     });
 
 });

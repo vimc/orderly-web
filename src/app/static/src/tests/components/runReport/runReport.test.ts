@@ -7,6 +7,7 @@ import {mockAxios} from "../../mockAxios";
 import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import changeLog from "../../../js/components/runReport/changeLog.vue";
+import VueSelect from "vue-select";
 
 describe("runReport", () => {
     const mockParams = [
@@ -25,17 +26,15 @@ describe("runReport", () => {
         initialReportName: ""
     };
 
-    const reports = [
-        {name: "report1", date: new Date().toISOString()},
-        {name: "report2", date: null}
-    ];
+    const minimal = {name: "minimal", date: new Date().toISOString()};
+    const global = {name: "global", date: null};
 
     const getWrapper = (propsData = props) => {
         return shallowMount(RunReport, {
             propsData,
             data() {
                 return {
-                    reports
+                    reports: [minimal, global]
                 }
             }
         });
@@ -94,24 +93,32 @@ describe("runReport", () => {
             propsData: props,
             data() {
                 return {
-                    reports
+                    reports: [minimal, global]
                 }
             }
         });
-        wrapper.find(ReportList).find("a:last-of-type").trigger("click");
-        expect(wrapper.vm.$data["selectedReport"]).toBe("report2");
+
+        (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
+
         await Vue.nextTick();
-        wrapper.find(ReportList).find("button").trigger("click");
-        expect(wrapper.vm.$data["selectedReport"]).toBe("");
+
+        await wrapper.findComponent(ReportList).find("li").trigger("mousedown");
+        expect(wrapper.vm.$data["selectedReport"]).toBe(global);
+
+        await wrapper.findComponent(ReportList).find("button").trigger("click");
+        expect(wrapper.vm.$data["selectedReport"]).toBe(null);
     });
 
-    it("report list shows initialReportName prop", () => {
+    it("report list shows initialReportName prop", async () => {
 
         const wrapper = getWrapper({
             ...props,
             initialReportName: "minimal"
         });
-        expect(wrapper.find(ReportList).props("initialSelectedReport")).toBe("minimal")
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(wrapper.findComponent(ReportList).props("selectedReport")).toBe(minimal);
     });
 
     it("shows instances if instances supported", async() => {
@@ -130,7 +137,7 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    selectedReport: "report1"
+                    selectedReport: minimal
                 }
             }
         });
@@ -182,17 +189,17 @@ describe("runReport", () => {
             data() {
                 return {
                     parameterValues: mockParams,
-                    selectedReport: "reports"
+                    selectedReport: {name: "minimal"}
                 }
             }
         });
 
         expect(wrapper.find("#parameters").exists()).toBe(true);
-        const labels = wrapper.find(ParameterList).findAll("label")
+        const labels = wrapper.findComponent(ParameterList).findAll("label")
         expect(labels.at(0).text()).toBe("global");
         expect(labels.at(1).text()).toBe("minimal");
 
-        const inputs = wrapper.find(ParameterList).findAll("input")
+        const inputs = wrapper.findComponent(ParameterList).findAll("input")
         inputs.at(0).setValue("Set new value");
         inputs.at(1).setValue("Set new value 2");
 
@@ -211,12 +218,12 @@ describe("runReport", () => {
             data() {
                 return {
                     parameterValues: [],
-                    selectedReport: "reports"
+                    selectedReport: null
                 }
             }
         });
         expect(wrapper.find("#parameters").exists()).toBe(false);
-        expect(wrapper.find(ParameterList).exists()).toBe(false);
+        expect(wrapper.findComponent(ParameterList).exists()).toBe(false);
     });
 
     it("parameters endpoint can get data successfully", (done) => {
@@ -228,7 +235,7 @@ describe("runReport", () => {
 
         const wrapper = getWrapper();
         wrapper.setData({
-            selectedReport: "minimal",
+            selectedReport: minimal,
             selectedCommitId: "abcdef",
             error: "test-error",
             defaultMessage: "test-msg",
@@ -254,7 +261,7 @@ describe("runReport", () => {
 
         const wrapper = getWrapper();
         wrapper.setData({
-            selectedReport: "minimal",
+            selectedReport: minimal,
             selectedCommitId: "test-commit",
             error: "",
             defaultMessage: ""
@@ -280,18 +287,18 @@ describe("runReport", () => {
             data() {
                 return {
                     parameterValues: [],
-                    selectedReport: ""
+                    selectedReport: null
                 }
             }
         });
         expect(wrapper.find("#parameters").exists()).toBe(false);
-        expect(wrapper.find(ParameterList).exists()).toBe(false);
+        expect(wrapper.findComponent(ParameterList).exists()).toBe(false);
     });
 
     it("renders run button group if there is a selected report", async () => {
         const wrapper = getWrapper();
         await Vue.nextTick();
-        wrapper.setData({selectedReport: "test-report"});
+        wrapper.setData({selectedReport: minimal});
         await Vue.nextTick();
         const runGroup = wrapper.find("#run-form-group");
         expect(runGroup.exists()).toBe(true);
@@ -329,25 +336,25 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    selectedReport: "report",
+                    selectedReport: {name: "report"},
                     parameterValues: [{name: "minimal", value: "oldValue"}, {name: "global", value: "oldValue"}]
                 }
             }
         });
 
-        expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
-        expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
+        expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: "test-report",
+                selectedReport: {name: "test-report"},
                 selectedCommitId: "test-commit",
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
             await Vue.nextTick()
-            wrapper.find(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
-            expect(wrapper.find(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.find(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
+            wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
+            expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
+            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
             wrapper.setData({
                 parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
             })
@@ -405,19 +412,22 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    selectedReport: "report",
+                    selectedReport: {name: "report"},
                     parameterValues: []
                 }
             }
         });
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: "test-report"
+                selectedReport: {name: "test-report"}
             });
             await Vue.nextTick();
 
             wrapper.setData({
-                changeLogMessageValue: "test changelog"
+                changelog: {
+                    message: "test changelog",
+                    type: "internal"
+                }
             });
 
             wrapper.find("#run-form-group button").trigger("click");
@@ -443,14 +453,14 @@ describe("runReport", () => {
     });
 
     it("clicking run button sends run request and sets error", async (done) => {
-        const url = 'http://app/report/test-report/actions/run/';
+        const url = 'http://app/report/minimal/actions/run/';
         mockAxios.onPost(url)
             .reply(500, "TEST ERROR");
         const wrapper = getWrapper();
 
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: "test-report",
+                selectedReport: minimal,
                 selectedCommitId: "test-commit",
                 error: "",
                 defaultMessage: ""
@@ -478,7 +488,7 @@ describe("runReport", () => {
 
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
-                selectedReport: "test-report",
+                selectedReport: minimal,
                 error: "test-error",
                 defaultMessage: "test-msg"
             });
@@ -503,17 +513,13 @@ describe("runReport", () => {
 
     it("changing selectedReport resets runningStatus and enables run", async () => {
         const wrapper = getWrapper();
-        await Vue.nextTick();
-        wrapper.setData({selectedReport: "previous-report"});
-        await Vue.nextTick();
+        await wrapper.setData({selectedReport: minimal});
 
-        wrapper.setData({runningStatus: "test-status", disableRun: true});
-        await Vue.nextTick();
+        await wrapper.setData({runningStatus: "test-status", disableRun: true});
         expect(wrapper.vm.$data.runningStatus).toBe("test-status");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBe("disabled");
 
-        wrapper.setData({selectedReport: "test-report"});
-        await Vue.nextTick();
+        await wrapper.setData({selectedReport: global});
         expect(wrapper.vm.$data.runningStatus).toBe("");
         expect(wrapper.find("#run-form-group button").attributes("disabled")).toBeUndefined();
     });
@@ -532,7 +538,7 @@ describe("runReport", () => {
             }
         });
         await Vue.nextTick();
-        wrapper.setData({selectedReport: "test-report"});
+        wrapper.setData({selectedReport: {name: "test-report"}});
         await Vue.nextTick();
         wrapper.setData({runningStatus: "test-status", disableRun: true});
         await Vue.nextTick();
@@ -561,7 +567,7 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    selectedReport: "report"
+                    selectedReport: {name: "report"}
                 }
             }
         });
@@ -588,7 +594,7 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
-    it("it can accepts changelog  and type log message values", () => {
+    it("it can accepts changelog and type log message values", async () => {
         const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
             propsData: {
@@ -596,30 +602,31 @@ describe("runReport", () => {
                     git_supported: true,
                     changelog_types: changelogTypes,
                 },
-                initialGitBranches
+                initialGitBranches,
+                initialReportName: "global"
             },
             data() {
-            return {
-                selectedReport: "report",
-                changeLogMessageValue: "Text area message",
-                changeLogTypeValue: "selectedType"
+                return {
+                    reports: [minimal, global]
+                }
             }
-        }
         });
 
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
-        const options = wrapper.find("#changelogType")
-            .find("select").findAll("option")
-        options.at(1).setSelected()
-        expect(wrapper.vm.$data.changeLogTypeValue).toBe("public")
+        await Vue.nextTick()
 
-        wrapper.find("#changelogMessage").setValue("New message")
-        expect(wrapper.vm.$data.changeLogMessageValue).toBe("New message")
+        await wrapper.find("#changelogMessage").setValue("Message")
+        const options = wrapper.find("#changelogType").findAll("select option")
+        await options.at(1).setSelected()
+        expect(wrapper.vm.$data.changelog.type).toBe("public")
 
-        const changelogMessage = wrapper.find(changeLog).find("#changelog-message")
-        const changelogType= wrapper.find(changeLog).find("#changelog-type")
+        await wrapper.find("#changelogMessage").setValue("New message")
+        expect(wrapper.vm.$data.changelog.message).toBe("New message")
+
+        const changelogMessage = wrapper.findComponent(changeLog).find("#changelog-message")
+        const changelogType= wrapper.findComponent(changeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)
@@ -642,7 +649,7 @@ describe("runReport", () => {
             data() {
                 return {
                     parameterValues: localParam,
-                    selectedReport: "reports"
+                    selectedReport: {name: "reports"}
                 }
             }
         });
@@ -665,7 +672,7 @@ describe("runReport", () => {
             },
             data() {
                 return {
-                    selectedReport: "reports",
+                    selectedReport: {name: "reports"},
                     parameterValues: localParam
                 }
             }

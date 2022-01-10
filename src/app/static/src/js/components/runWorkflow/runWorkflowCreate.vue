@@ -17,9 +17,9 @@
                           v-model="selectedWorkflow"
                           placeholder="Search by name or user...">
                     <template id="optionTemplate" #option="{ name, email, date }">
-                        <div>{{ name }}
-                            <span style="opacity: 0.5; float:right;">
-                            {{ email }} | {{ getLongTimestamp(date) }}</span>
+                        <div>
+                            <span>{{ name }}</span>
+                            <span class="text-muted pl-3">{{ email }} | {{ getLongTimestamp(date) }}</span>
                         </div>
                     </template>
                 </v-select>
@@ -46,8 +46,8 @@
     import Vue from "vue"
     import vSelect from 'vue-select'
     import {api} from "../../utils/api";
-    import {RunWorkflowMetadata} from "../../utils/types";
-    import {longTimestamp} from "../../utils/helpers";
+    import {RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
+    import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
     import ErrorInfo from "../errorInfo.vue";
 
     interface Methods {
@@ -61,7 +61,7 @@
     }
 
     interface Data {
-        workflows: []
+        workflows: WorkflowRunSummary[]
         error: string | null
         defaultMessage: string | null
         selectedWorkflow: string
@@ -81,7 +81,7 @@
         enableButtons: boolean
     }
 
-    export default Vue.extend<Data, Methods, Computed, unknown>({
+    export default Vue.extend<Data, Methods, Computed>({
         name: "runWorkflowCreate",
         data(): Data {
             return {
@@ -103,27 +103,17 @@
             },
             clone: function () {
                 if (this.selectedWorkflow && this.runWorkflowMetadata) {
-                    const {reports, git_branch, git_commit} = this.runWorkflowMetadata
-                    const clonedWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit
+                    const clonedWorkflow = {
+                        ...workflowRunDetailsToMetadata(this.runWorkflowMetadata),
+                        name: "",
+                        instances: {}
                     }
                     this.$emit("clone", clonedWorkflow)
                 }
             },
             rerun: function () {
-                if (this.selectedWorkflow) {
-                    const {reports, git_branch, git_commit, instances, name} = this.runWorkflowMetadata
-                    const runnableWorkflow: RunWorkflowMetadata = {
-                        ...emptyWorkflowMetadata,
-                        reports,
-                        git_branch,
-                        git_commit,
-                        instances,
-                        name
-                    }
+                if (this.selectedWorkflow && this.runWorkflowMetadata) {
+                    const runnableWorkflow = workflowRunDetailsToMetadata(this.runWorkflowMetadata)
                     this.$emit("rerun", runnableWorkflow)
                 }
             },
