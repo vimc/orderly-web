@@ -26,12 +26,6 @@ export interface ReportLog{
     report_version: string | null
 }
 
-export interface RunReportMetadata {
-    instances_supported: boolean,
-    git_supported: boolean,
-    instances: Record<string, string[]>,
-    changelog_types: string[]
-}
 
 export interface RunWorkflowMetadata {
     name: string,
@@ -115,18 +109,23 @@ export interface WorkflowRun {
 }
 
 export interface RunReportMetadata {
-    git_branches: [],
+    git_branches: string[],
     metadata: RunReportMetadataDependency
 }
 
 export interface RunReportMetadataDependency {
-    changelog_types: [] | null,
+    changelog_types: string[],
     git_supported: boolean,
-    instances: {} | null,
+    instances: Record<string, string[]>,
     instances_supported: boolean
 }
 
 export interface ChildCustomStyle {
     label: string,
     control: string
+}
+
+export interface Error {
+    code: string;
+    message: string | null;
 }

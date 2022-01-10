@@ -66,20 +66,15 @@ describe("refresh documents", () => {
             .reply(500);
 
         const wrapper = mount(refreshDocuments);
-        wrapper.find("input").setValue("something");
-
-        await Vue.nextTick();
-
-        wrapper.find("button").trigger("click");
-
-        await Vue.nextTick();
+        await wrapper.find("input").setValue("something");
+        await wrapper.find("button").trigger("click");
 
         expectButtonRunningState(wrapper);
-
-        await Vue.nextTick();
-
         expect(mockAxios.history.post.length).toBe(1);
 
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
         await Vue.nextTick();
 
         expect(wrapper.find(".text-danger").text()).toBe("Error: could not update documents");

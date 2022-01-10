@@ -64,10 +64,10 @@ describe("adminApp", () => {
         });
 
         await Vue.nextTick();
-        expect(wrapper.find(ManageRoles).props().roles).toBe(mockRoles);
-        expect(wrapper.find(ManageUserPermissions).props().allUsers).toBe(mockUsers);
-        expect(wrapper.find(ManageRolePermissions).props().roles).toBe(mockRoles);
-        expect(wrapper.findAll(Settings).length).toBe(1);
+        expect(wrapper.findComponent(ManageRoles).props().roles).toBe(mockRoles);
+        expect(wrapper.findComponent(ManageUserPermissions).props().allUsers).toBe(mockUsers);
+        expect(wrapper.findComponent(ManageRolePermissions).props().roles).toBe(mockRoles);
+        expect(wrapper.findAllComponents(Settings).length).toBe(1);
     });
 
     it('fetches roles and users on mount', async (done) => {
@@ -86,7 +86,7 @@ describe("adminApp", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
 
-            wrapper.find(ManageRolePermissions).vm.$emit("changed");
+            wrapper.findComponent(ManageRolePermissions).vm.$emit("changed");
 
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(4);
@@ -102,7 +102,7 @@ describe("adminApp", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
 
-            wrapper.find(ManageRoles).vm.$emit("changed");
+            wrapper.findComponent(ManageRoles).vm.$emit("changed");
 
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(4);
@@ -118,7 +118,7 @@ describe("adminApp", () => {
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(2);
 
-            wrapper.find(ManageUserPermissions).vm.$emit("changed");
+            wrapper.findComponent(ManageUserPermissions).vm.$emit("changed");
 
             setTimeout(() => {
                 expect(mockAxios.history.get.length).toBe(3);
@@ -131,6 +131,6 @@ describe("adminApp", () => {
     it('does not render settings if cannot allow guest', () => {
         window.canAllowGuest = false;
         const wrapper = shallowMount(AdminApp);
-        expect(wrapper.findAll(Settings).length).toBe(0);
+        expect(wrapper.findAllComponents(Settings).length).toBe(0);
     });
 });

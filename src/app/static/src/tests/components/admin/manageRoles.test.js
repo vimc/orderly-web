@@ -40,10 +40,10 @@ describe("manageRoles", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
-        expect(wrapper.find(RoleList).props().canRemoveRoles).toBe(true);
-        expect(wrapper.find(RoleList).props().canRemoveMembers).toBe(true);
-        expect(wrapper.find(RoleList).props().canAddMembers).toBe(true);
+        expect(wrapper.findComponent(RoleList).props().roles).toEqual(expect.arrayContaining(mockRoles));
+        expect(wrapper.findComponent(RoleList).props().canRemoveRoles).toBe(true);
+        expect(wrapper.findComponent(RoleList).props().canRemoveMembers).toBe(true);
+        expect(wrapper.findComponent(RoleList).props().canAddMembers).toBe(true);
 
     });
 
@@ -51,7 +51,7 @@ describe("manageRoles", () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        expect(wrapper.findAll(AddRole).length).toBe(1);
+        expect(wrapper.findAllComponents(AddRole).length).toBe(1);
     });
 
     it('renders errorInfo', async () => {
@@ -63,8 +63,8 @@ describe("manageRoles", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test-error");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("test-default");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test-error");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("test-default");
     });
 
     it(`shows modal if showModal is true`, async () => {
@@ -103,7 +103,7 @@ describe("manageRoles", () => {
         });
         setTimeout(() => {
             expect(mockAxios.history.get.length).toBe(1);
-            expect(wrapper.find(RoleList).props().availableUsers).toEqual(expect.arrayContaining(mockEmails));
+            expect(wrapper.findComponent(RoleList).props().availableUsers).toEqual(expect.arrayContaining(mockEmails));
             done();
         });
     });
@@ -112,7 +112,7 @@ describe("manageRoles", () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        wrapper.find(RoleList).vm.$emit("removedMember");
+        wrapper.findComponent(RoleList).vm.$emit("removedMember");
         expect(wrapper.emitted().changed.length).toBe(1);
     });
 
@@ -120,7 +120,7 @@ describe("manageRoles", () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        wrapper.find(RoleList).vm.$emit("removed", "Funders");
+        wrapper.findComponent(RoleList).vm.$emit("removed", "Funders");
 
         await Vue.nextTick();
 
@@ -134,7 +134,7 @@ describe("manageRoles", () => {
         const wrapper = mount(ManageRoles, {
             propsData: {roles: mockRoles}
         });
-        wrapper.find(RoleList).vm.$emit("added");
+        wrapper.findComponent(RoleList).vm.$emit("added");
         expect(wrapper.emitted().changed.length).toBe(1);
     });
 
@@ -225,7 +225,7 @@ describe("manageRoles", () => {
             propsData: {roles: mockRoles}
         });
         setTimeout(() => {
-            wrapper.find(AddRole).vm.$emit("added", "NewRole");
+            wrapper.findComponent(AddRole).vm.$emit("added", "NewRole");
             setTimeout(() => {
                 expect(mockAxios.history.post.length).toBe(1);
                 expect(mockAxios.history.post[0].url).toBe("http://app/roles/");
@@ -252,7 +252,7 @@ describe("manageRoles", () => {
             propsData: {roles: mockRoles}
         });
         setTimeout(() => {
-            wrapper.find(AddRole).vm.$emit("added", "NewRole");
+            wrapper.findComponent(AddRole).vm.$emit("added", "NewRole");
             setTimeout(() => {
                 expect(wrapper.emitted().changed).toBeUndefined();
 

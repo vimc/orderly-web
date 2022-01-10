@@ -8,6 +8,8 @@ import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunRepository
 import org.vaccineimpact.orderlyweb.errors.BadRequest
+import org.vaccineimpact.orderlyweb.logic.OrderlyWebWorkflowLogic
+import org.vaccineimpact.orderlyweb.logic.WorkflowLogic
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.viewmodels.WorkflowRunViewModel
 import java.net.HttpURLConnection.HTTP_OK
@@ -16,13 +18,15 @@ import java.time.Instant
 class WorkflowRunController(
     context: ActionContext,
     private val workflowRunRepository: WorkflowRunRepository,
-    private val orderlyServerAPI: OrderlyServerAPI
+    private val orderlyServerAPI: OrderlyServerAPI,
+    private val workflowLogic: WorkflowLogic
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
         context,
         OrderlyWebWorkflowRunRepository(),
-        OrderlyServer(AppConfig()).throwOnError()
+        OrderlyServer(AppConfig()).throwOnError(),
+        OrderlyWebWorkflowLogic()
     )
 
     @Template("run-workflow-page.ftl")
@@ -43,6 +47,16 @@ class WorkflowRunController(
             context.queryParams("email"),
             context.queryParams("namePrefix")
         )
+    }
+
+    fun getWorkflowRunSummary(): String
+    {
+        val response = orderlyServerAPI.post(
+            "/v1/workflow/summary/",
+            context.getRequestBody(),
+            emptyMap()
+        )
+        return passThroughResponse(response)
     }
 
     internal data class WorkflowRunResponse(
@@ -151,5 +165,14 @@ class WorkflowRunController(
                     report.version
                 )
             })
+    }
+
+    fun validateWorkflow(): List<WorkflowReportWithParams>
+    {
+        val reader = context.getPartReader("file")
+        val branch = context.queryParams("branch")
+        val commit = context.queryParams("commit")
+
+        return workflowLogic.parseAndValidateWorkflowCSV(reader, branch, commit)
     }
 }

@@ -25,8 +25,8 @@ describe("addUserToRole", () => {
         expect(wrapper.find('input').attributes("type")).toBe("search");
         expect(wrapper.find('button').text()).toBe("Add user");
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("");
     });
 
     it('renders as expected with error', async () => {
@@ -39,8 +39,8 @@ describe("addUserToRole", () => {
 
         await Vue.nextTick();
 
-        expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
-        expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
+        expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test error");
+        expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("default error");
 
     });
 
@@ -60,8 +60,8 @@ describe("addUserToRole", () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
 
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add user");
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add user");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
             expect(wrapper.emitted().added).toBeUndefined();
             done();
         });

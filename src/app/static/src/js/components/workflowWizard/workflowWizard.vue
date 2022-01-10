@@ -26,6 +26,7 @@
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue"
     import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue"
+    import runWorkflowSummary from "../runWorkflow/runWorkflowSummary.vue"
     import cancelDialog from "../runWorkflow/cancelDialog.vue"
 
     interface Data {
@@ -147,9 +148,15 @@
                 ...this.initialRunWorkflowMetadata
             };
         },
+        watch: {
+            runWorkflowMetadata(){
+                this.$emit("update-run-workflow-metadata", this.runWorkflowMetadata)
+            }
+        },
         components: {
             runWorkflowReport,
             runWorkflowRun,
+            runWorkflowSummary,
             step,
             cancelDialog
         }

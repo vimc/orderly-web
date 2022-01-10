@@ -1,15 +1,16 @@
 package org.vaccineimpact.orderlyweb.tests.unit_tests
 
+import com.nhaarman.mockito_kotlin.*
+import org.apache.commons.io.IOUtils
 import org.assertj.core.api.Assertions.*
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
 import org.junit.Test
+import org.mockito.ArgumentCaptor
 import org.pac4j.core.profile.CommonProfile
 import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.DirectActionContext
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -17,7 +18,11 @@ import org.vaccineimpact.orderlyweb.models.permissions.PermissionSet
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import spark.Request
 import spark.Response
+import java.nio.charset.Charset
+import javax.servlet.MultipartConfigElement
+import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
+import javax.servlet.http.Part
 
 class DirectActionContextTests
 {
@@ -281,5 +286,71 @@ class DirectActionContextTests
             "a" to "b",
             "c" to null
         ))
+    }
+
+    @Test
+    fun `can get part reader`()
+    {
+        val mockRequest = getMockRequestForPart()
+        val mockContext = mock<SparkWebContext> {
+            on { sparkRequest } doReturn mockRequest
+        }
+
+        val sut = DirectActionContext(mockContext)
+        val result = sut.getPartReader("testPartName")
+        result.use {
+            assertThat(it.readText()).isEqualTo("MOCK")
+        }
+
+        val configElementArg = ArgumentCaptor.forClass(MultipartConfigElement::class.java)
+        verify(mockRequest).attribute(eq("org.eclipse.jetty.multipartConfig"), capture(configElementArg))
+        assertThat(configElementArg.value.location).isEqualTo("/tmp")
+    }
+
+    @Test
+    fun `can get part`()
+    {
+        val mockRequest = getMockRequestForPart()
+        val mockContext = mock<SparkWebContext> {
+            on { sparkRequest } doReturn mockRequest
+        }
+
+        val sut = DirectActionContext(mockContext)
+        val result = sut.getPart("testPartName")
+        assertThat(result).isEqualTo("MOCK")
+    }
+
+    @Test
+    fun `getPartReader throws BadRequest when content is empty`()
+    {
+        val mockRequest = mock<Request>{
+            on { contentLength() } doReturn 0
+        }
+        val mockContext = mock<SparkWebContext> {
+            on { sparkRequest } doReturn mockRequest
+        }
+
+        val sut = DirectActionContext(mockContext)
+        assertThatThrownBy{ sut.getPartReader("file") }
+                .isInstanceOf(BadRequest::class.java)
+                .hasMessageContaining("No data provided")
+    }
+
+    private fun getMockRequestForPart(): Request
+    {
+        val mockStream = IOUtils.toInputStream("MOCK", Charset.defaultCharset())
+
+        val mockPart = mock<Part> {
+            on { inputStream } doReturn mockStream
+        }
+
+        val mockRaw = mock<HttpServletRequest> {
+            on { getPart("testPartName") } doReturn mockPart
+        }
+
+        return mock<Request> {
+            on { raw() } doReturn mockRaw
+            on { contentLength() } doReturn 10
+        }
     }
 }

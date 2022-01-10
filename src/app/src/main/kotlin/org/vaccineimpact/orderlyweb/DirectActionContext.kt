@@ -7,6 +7,7 @@ import org.pac4j.core.profile.ProfileManager
 import org.pac4j.sparkjava.SparkWebContext
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.db.Config
+import org.vaccineimpact.orderlyweb.errors.BadRequest
 import org.vaccineimpact.orderlyweb.errors.MissingParameterError
 import org.vaccineimpact.orderlyweb.errors.MissingRequiredPermissionError
 import org.vaccineimpact.orderlyweb.models.Scope
@@ -16,6 +17,9 @@ import org.vaccineimpact.orderlyweb.security.authorization.orderlyWebPermissions
 import org.vaccineimpact.orderlyweb.viewmodels.PermissionViewModel
 import spark.Request
 import spark.Response
+import java.io.BufferedReader
+import java.io.Reader
+import javax.servlet.MultipartConfigElement
 
 open class DirectActionContext(
     private val context: SparkWebContext,
@@ -31,7 +35,7 @@ open class DirectActionContext(
     constructor(request: Request, response: Response) : this(SparkWebContext(request, response))
 
     override fun contentType(): String = request.contentType()
-    override fun queryParams(): Map<String, String?> = request.queryParams().associateWith { request.queryParams(it) }
+    override fun queryParams(): Map<String, String> = request.queryParams().associateWith { request.queryParams(it) }
     override fun queryParams(key: String): String? = request.queryParams(key)
     override fun queryString(): String? = request.queryString()
     override fun params(): Map<String, String?> = request.params()
@@ -122,6 +126,24 @@ open class DirectActionContext(
     override fun getRequestBodyAsBytes(): ByteArray
     {
         return request.bodyAsBytes()
+    }
+
+    override fun getPartReader(partName: String): Reader
+    {
+        if (request.contentLength() == 0) {
+            throw BadRequest("No data provided")
+        }
+
+        request.attribute("org.eclipse.jetty.multipartConfig",
+            MultipartConfigElement(System.getProperty("java.io.tmpdir")))
+        val stream = request.raw().getPart(partName).inputStream
+        return BufferedReader(stream.reader())
+    }
+
+    override fun getPart(partName: String): String
+    {
+        val reader = getPartReader(partName)
+        reader.use { return it.readText() }
     }
 }
 

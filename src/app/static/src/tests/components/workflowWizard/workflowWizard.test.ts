@@ -5,8 +5,7 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
-import {runReportMetadataResponse} from "../runWorkflow/runWorkflowReport/runWorkflowReport.test";
-import {emptyWorkflowMetadata} from "../runWorkflow/runWorkflowCreate.test";
+import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -17,7 +16,7 @@ describe(`workflowWizard`, () => {
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
                 propsData: {
-                    initialRunWorkflowMetadata: {...emptyWorkflowMetadata},
+                    initialRunWorkflowMetadata: mockRunWorkflowMetadata(),
                     steps: mockStep
                 },
                 data() {
@@ -34,26 +33,26 @@ describe(`workflowWizard`, () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadata()});
     });
 
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(emptyWorkflowMetadata);
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata());
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
-        const getSteps = wrapper.findAll(step)
+        const getSteps = wrapper.findAllComponents(step)
         const mockButtonVisibility = {back: false}
-        expect(getSteps.at(0).find(runWorkflowReport).exists()).toBe(true)
+        expect(getSteps.at(0).findComponent(runWorkflowReport).exists()).toBe(true)
         expect(getSteps.at(0).props("buttonOptions")).toMatchObject(mockButtonVisibility)
     });
 
     it(`can render final step component and buttons correctly`, async () => {
         const wrapper = getWrapper()
-        const finalStepIndex = steps.length-1
+        const finalStepIndex = steps.length - 1
         await wrapper.setData({activeStep: finalStepIndex})
 
         const buttons = wrapper.findAll("button")
@@ -62,8 +61,8 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(1).text()).toBe("Back")
         expect(buttons.at(2).text()).toBe("Submit")
 
-        const getSteps = wrapper.findAll(step)
-        expect(getSteps.at(finalStepIndex).find(runWorkflowRun).exists()).toBe(true)
+        const getSteps = wrapper.findAllComponents(step)
+        expect(getSteps.at(finalStepIndex).findComponent(runWorkflowRun).exists()).toBe(true)
     })
 
     it(`can render final step, component and buttons correctly when re-running a workflow`, async () => {
@@ -76,13 +75,13 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Submit")
 
-        const getSteps = wrapper.findAll(step)
-        expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
+        const getSteps = wrapper.findAllComponents(step)
+        expect(getSteps.at(mockStep.length - 1).findComponent(runWorkflowRun).exists()).toBe(true)
     })
 
     it(`can render default propsData on steps correctly`, async () => {
 
-        const wrapper =  shallowMount(workflowWizard, {
+        const wrapper = shallowMount(workflowWizard, {
             propsData: {
                 initialRunWorkflowMetadata: {placeholder: "testdata"},
                 steps: steps
@@ -94,19 +93,19 @@ describe(`workflowWizard`, () => {
             }
         })
 
-        const getSteps = wrapper.findAll(step)
+        const getSteps = wrapper.findAllComponents(step)
         expect(getSteps.length).toBe(2)
 
         await Vue.nextTick()
 
         //first step
         expect(getSteps.at(0).props().buttonOptions).toMatchObject({back: false})
-        expect(getSteps.at(0).find(runWorkflowReport).props().workflowMetadata)
+        expect(getSteps.at(0).findComponent(runWorkflowReport).props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
 
         //Final step
         expect(getSteps.at(1).props().buttonOptions).toMatchObject({back: true})
-        expect(getSteps.at(1).find(runWorkflowRun).props().workflowMetadata)
+        expect(getSteps.at(1).findComponent(runWorkflowRun).props().workflowMetadata)
             .toMatchObject({"placeholder": "testdata"})
     })
 
@@ -124,11 +123,11 @@ describe(`workflowWizard`, () => {
         });
     })
 
-    it(`can render run component`, async() => {
+    it(`can render run component`, async () => {
         const wrapper = getWrapper()
 
         //run step is usually the final step
-        const finalStepIndex = steps.length-1
+        const finalStepIndex = steps.length - 1
         await wrapper.setData({activeStep: finalStepIndex})
 
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
@@ -142,9 +141,10 @@ describe(`workflowWizard`, () => {
     it(`can go to the next step`, async () => {
         const wrapper = getWrapper()
         await wrapper.setData({activeStep: 0})
-        await wrapper.find(runWorkflowReport).vm.$emit("valid", true)
+        await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true)
         const buttons = wrapper.findAll("button")
 
+        expect(buttons.length).toBe(4)
         expect(buttons.at(1).text()).toBe("Next")
 
         await buttons.at(1).trigger("click")
@@ -204,11 +204,13 @@ describe(`workflowWizard`, () => {
         ]
 
         const mockHasVisibility = {back: true}
-        const wrapper =  shallowMount(workflowWizard, {
+        const wrapper = shallowMount(workflowWizard, {
             propsData: {
+                initialRunWorkflowMetadata: mockRunWorkflowMetadata(),
                 runWorkflowMetadata: {placeholder: "testdata"},
                 steps: newSteps,
             },
+            stubs: {"testComponent": {template: "<div id='test'></div>"}},
             data() {
                 return {
                     activeStep: 0,
@@ -217,12 +219,12 @@ describe(`workflowWizard`, () => {
             }
         })
 
-        const getSteps = wrapper.findAll(step)
+        const getSteps = wrapper.findAllComponents(step)
         expect(getSteps.length).toBe(3)
 
         //newly added step
         expect(getSteps.at(1).props().buttonOptions).toMatchObject(mockHasVisibility)
-        expect(getSteps.at(1).find("testComponent").exists()).toBe(true)
+        expect(getSteps.at(1).find("#test").exists()).toBe(true)
     })
 
     it(`can toggle final step button`, async () => {
@@ -236,16 +238,21 @@ describe(`workflowWizard`, () => {
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Any name")
 
-        const getSteps = wrapper.findAll(step)
-        expect(getSteps.at(mockStep.length-1).find(runWorkflowRun).exists()).toBe(true)
+        const getSteps = wrapper.findAllComponents(step)
+        expect(getSteps.at(mockStep.length - 1).findComponent(runWorkflowRun).exists()).toBe(true)
     })
 
-    it(`handles metadata update event from step component`, async () => {
+    it(`handles metadata update event from step component and emits upwards`, async () => {
         const wrapper = getWrapper();
         await wrapper.setData({activeStep: 0});
 
-        wrapper.find(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
+        wrapper.findComponent(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual({...emptyWorkflowMetadata, newProp: "newVal"});
+
+        const runWorkflowMetadata = {...mockRunWorkflowMetadata(), newProp: "newVal"}
+
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
+
+        expect(wrapper.emitted("update-run-workflow-metadata")[1]).toStrictEqual([runWorkflowMetadata]);
     });
 })

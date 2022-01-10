@@ -39,7 +39,7 @@
                      role="tabpanel"
                      id="run-workflow-tab">
                     <div id="runWorkflow">
-                        <run-workflow :workflowToRerun="workflowToRerun"></run-workflow>
+                        <run-workflow @view-progress="viewProgress" :workflowToRerun="workflowToRerun"></run-workflow>
                     </div>
                 </div>
                 <div v-if="selectedTab === 'runWorkflowProgress'"
@@ -48,7 +48,7 @@
                      id="workflow-progress-tab">
                     <div id="runWorkflowProgress">
                         <h2>Workflow progress</h2>
-                       <run-workflow-progress @rerun="rerunWorkflow"></run-workflow-progress>
+                       <run-workflow-progress :initial-selected-workflow="selectedWorkflow" @set-selected-workflow-key="setSelectedWorkflow" @rerun="rerunWorkflow"></run-workflow-progress>
                     </div>
                 </div>
             </div>
@@ -60,18 +60,33 @@
 import Vue from "vue";
 import runWorkflow from './runWorkflow.vue'
 import runWorkflowProgress from './runWorkflowProgress.vue'
+import {
+    SELECTED_RUNNING_WORKFLOW_KEY,
+    SELECTED_RUNNING_WORKFLOW_TAB,
+    session
+} from "../../utils/session";
 
 export default Vue.extend({
     name: "runWorkflowTabs",
     data() {
         return {
-            selectedTab: "runWorkflow",
+            selectedTab: session.getSelectedTab(SELECTED_RUNNING_WORKFLOW_TAB) || "runWorkflow",
+            selectedWorkflow: session.getSelectedKey(SELECTED_RUNNING_WORKFLOW_KEY) || "",
             workflowToRerun: null
         }
     },
     methods: {
         switchTab(tab) {
             this.selectedTab = tab
+            session.setSelectedTab(SELECTED_RUNNING_WORKFLOW_TAB, tab);
+        },
+        viewProgress(workflowKey) {
+            this.selectedWorkflow = workflowKey;
+            this.switchTab('runWorkflowProgress');
+        },
+        setSelectedWorkflow(key){
+            this.selectedWorkflow = key;
+            session.setSelectedKey(SELECTED_RUNNING_WORKFLOW_KEY, key)
         },
         rerunWorkflow(workflow) {
             this.workflowToRerun = workflow;

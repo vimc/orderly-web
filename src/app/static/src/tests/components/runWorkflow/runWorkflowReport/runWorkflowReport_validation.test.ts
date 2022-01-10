@@ -1,10 +1,9 @@
-import {runReportMetadataResponse} from "./runWorkflowReport.test";
 import {mockAxios} from "../../../mockAxios";
 import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {emptyWorkflowMetadata} from "../runWorkflowCreate.test";
+import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../../mocks";
 
 const gitCommits = [
     {id: "abcdef", date_time: "Mon Jun 08, 12:01"},
@@ -21,7 +20,7 @@ describe("runWorkflowReport validation", () => {
         mockAxios.reset();
 
         mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": runReportMetadataResponse});
+            .reply(200, {"data": mockRunReportMetadata()});
 
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": gitCommits});
@@ -31,15 +30,12 @@ describe("runWorkflowReport validation", () => {
 
     const getWrapper = (workflowMetadata: Partial<RunWorkflowMetadata> = {}) => {
         const propsData = {
-            workflowMetadata: {
-                ...emptyWorkflowMetadata,
-                ...workflowMetadata
-            }
+            workflowMetadata: mockRunWorkflowMetadata(workflowMetadata)
         };
         return mount(runWorkflowReport, {propsData});
     };
 
-    const expectEmittedValid = (wrapper: Wrapper<runWorkflowReport>) => {
+    const expectEmittedValid = (wrapper: Wrapper<any>) => {
         expect(wrapper.emitted("valid").length).toBe(1);
         expect(wrapper.emitted("valid")[0][0]).toBe(true);
 
@@ -47,7 +43,7 @@ describe("runWorkflowReport validation", () => {
         expect(wrapper.vm.$data.defaultMessage).toBe("");
     };
 
-    const updateComponentMetadataFromLastEmitted = (wrapper: Wrapper<runWorkflowReport>) => {
+    const updateComponentMetadataFromLastEmitted = (wrapper: Wrapper<any>) => {
         // simulate the workflow wizard managing the metadata object by feeding the last update patch back to
         // the component
         const oldMetadata = wrapper.vm.$data.workflowMetadata;
@@ -116,7 +112,7 @@ describe("runWorkflowReport validation", () => {
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
             expect(wrapper.emitted("valid")).toBeUndefined();
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 
@@ -133,7 +129,7 @@ describe("runWorkflowReport validation", () => {
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
             expect(wrapper.emitted("valid")).toBeUndefined();
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 
@@ -157,7 +153,7 @@ describe("runWorkflowReport validation", () => {
         });
         setTimeout(async () => {
             expectEmittedValid(wrapper);
-            wrapper.setData({selectedReport: "minimal"});
+            wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 

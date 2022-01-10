@@ -35,13 +35,13 @@ describe("userList", () => {
 
         expect(wrapper.classes()).toContain("removable-users-list");
 
-        const firstUserProps = wrapper.findAll(User).at(0).props();
+        const firstUserProps = wrapper.findAllComponents(User).at(0).props();
 
         expect(firstUserProps.displayName).toBe("Test User");
         expect(firstUserProps.email).toBe("test.user@example.com");
         expect(firstUserProps.canRemove).toBe(true);
 
-        const secondUserProps = wrapper.findAll(User).at(1).props();
+        const secondUserProps = wrapper.findAllComponents(User).at(1).props();
 
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
@@ -75,13 +75,13 @@ describe("userList", () => {
 
         expect(wrapper.classes()).toContain("removable-users-list");
 
-        const firstUserProps = wrapper.findAll(User).at(0).props();
+        const firstUserProps = wrapper.findAllComponents(User).at(0).props();
 
         expect(firstUserProps.displayName).toBe("Test User");
         expect(firstUserProps.email).toBe("test.user@example.com");
         expect(firstUserProps.canRemove).toBe(false);
 
-        const secondUserProps = wrapper.findAll(User).at(1).props();
+        const secondUserProps = wrapper.findAllComponents(User).at(1).props();
 
         expect(secondUserProps.displayName).toBe("Another User");
         expect(secondUserProps.email).toBe("another.user@example.com");
@@ -98,7 +98,7 @@ describe("userList", () => {
             }
         });
 
-        wrapper.findAll(User).at(0).vm.$emit("removed", "bob");
+        wrapper.findAllComponents(User).at(0).vm.$emit("removed", "bob");
         expect(wrapper.emitted().removed[0]).toStrictEqual(["bob"])
     });
 

@@ -4,16 +4,12 @@
             <slot></slot>
         </div>
         <div class="pt-4">
-            <button id="cancel-workflow" type="button" class="btn btn-sm btn-secondary"
-                    @click="cancel">Cancel
-            </button>
-            <button id="previous-workflow" v-if="buttonOptions.back" type="button"
-                    class="btn btn-sm btn-primary"
+            <button id="cancel-workflow" type="button" class="btn btn-secondary" @click="cancel">Cancel</button>
+            <button id="previous-workflow" v-if="buttonOptions.back" type="button" class="btn btn-primary"
                     @click="back">Back
             </button>
-            <button id="next-workflow" type="button" class="btn btn-sm btn-success"
-                    :disabled="handleValid"
-                    @click="next">{{ buttonOptions.hasCustomSubmitLabel ? handleToggledLabel : "Next" }}
+            <button id="next-workflow" type="button" class="btn btn-success" :disabled="handleValid" @click="next">
+                {{ buttonOptions.hasCustomSubmitLabel ? handleToggledLabel : "Next" }}
             </button>
         </div>
     </div>
