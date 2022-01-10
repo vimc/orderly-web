@@ -49,8 +49,8 @@ describe("addReportReader", () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
 
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("could not add user");
-            expect(wrapper.find(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("could not add user");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError.response.data).toStrictEqual(testError);
             expect(wrapper.emitted().added).toBeUndefined();
             done();
         });
@@ -94,8 +94,8 @@ describe("addReportReader", () => {
             expect(wrapper.find('input').attributes("placeholder")).toBe("email");
             expect(wrapper.find('button').text()).toBe("Add user");
 
-            expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test error");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("default error");
 
         });
 
@@ -132,8 +132,8 @@ describe("addReportReader", () => {
             expect(wrapper.find('input').attributes("placeholder")).toBe("role name");
             expect(wrapper.find('button').text()).toBe("Add role");
 
-            expect(wrapper.find(ErrorInfo).props().apiError).toBe("test error");
-            expect(wrapper.find(ErrorInfo).props().defaultMessage).toBe("default error");
+            expect(wrapper.findComponent(ErrorInfo).props().apiError).toBe("test error");
+            expect(wrapper.findComponent(ErrorInfo).props().defaultMessage).toBe("default error");
 
         });
 

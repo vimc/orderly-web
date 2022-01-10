@@ -41,7 +41,7 @@ describe("dateGroup", () => {
                 selectedDates: {}
             }
         });
-        const drafts = rendered.findAll(reportDraft);
+        const drafts = rendered.findAllComponents(reportDraft);
         expect(drafts.length).toBe(2);
         expect(drafts.at(0).props("draft")).toEqual(testDateGroup.drafts[0]);
         expect(drafts.at(1).props("draft")).toEqual(testDateGroup.drafts[1]);
@@ -107,7 +107,7 @@ describe("dateGroup", () => {
             }
         });
 
-        rendered.find(reportDraft).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: false});
+        rendered.findComponent(reportDraft).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: false});
         expect(rendered.emitted("select-group")[0][0])
             .toEqual({date: "Sat Jul 27 2019", value: false});
         expect(rendered.emitted("select-draft")[0][0])
@@ -124,7 +124,7 @@ describe("dateGroup", () => {
             }
         });
 
-        rendered.find(reportDraft).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
+        rendered.findComponent(reportDraft).vm.$emit("select-draft", {id: "20190727-123215-97e39008", value: true});
         expect(rendered.emitted("select-group")).toBeUndefined();
         expect(rendered.emitted("select-draft")[0][0])
             .toEqual({id: "20190727-123215-97e39008", value: true});

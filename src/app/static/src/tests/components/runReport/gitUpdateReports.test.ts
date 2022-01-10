@@ -177,8 +177,8 @@ describe("gitUpdateReports", () => {
 
                 expect(wrapper.vm.$data.selectedCommitId).toBe("bcdefg");
 
-                expect(wrapper.find(ErrorInfo).props("apiError")).toBe("");
-                expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("");
+                expect(wrapper.findComponent(ErrorInfo).props("apiError")).toBe("");
+                expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("");
 
                 expect(wrapper.emitted("branchSelected")![1][0]).toBe("dev");
                 expect(wrapper.emitted("commitSelected")![1][0]).toBe("bcdefg");
@@ -220,8 +220,8 @@ describe("gitUpdateReports", () => {
         });
 
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching Git commits");
             done();
         })
     });
@@ -238,8 +238,8 @@ describe("gitUpdateReports", () => {
         });
 
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching reports");
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred fetching reports");
             done();
         });
     });
@@ -318,8 +318,8 @@ describe("gitUpdateReports", () => {
                 expect(button.attributes("disabled")).toBeUndefined();
                 expect(wrapper.vm.$data.error.response.data).toBe("TEST ERROR");
                 expect(wrapper.vm.$data.defaultMessage).toBe("An error occurred refreshing Git");
-                expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-                expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred refreshing Git");
+                expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+                expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred refreshing Git");
                 done();
             })
         })

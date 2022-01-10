@@ -101,9 +101,9 @@ describe(`runWorkflowReport`, () => {
 
     it("does not render content until run report metadata is set", (done) => {
         const wrapper = getWrapper();
-        expect(wrapper.find(GitUpdateReports).exists()).toBe(false);
+        expect(wrapper.findComponent(GitUpdateReports).exists()).toBe(false);
         setTimeout(async () => {
-            expect(wrapper.find(GitUpdateReports).exists()).toBe(true);
+            expect(wrapper.findComponent(GitUpdateReports).exists()).toBe(true);
             done();
         });
     });

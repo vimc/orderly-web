@@ -244,8 +244,8 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             wrapper.find("#rerun").trigger("click");
             setTimeout(() => {
-                expect(wrapper.find(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
-                expect(wrapper.find(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
+                expect(wrapper.findComponent(errorInfo).props("apiError").response.data).toBe("TEST ERROR");
+                expect(wrapper.findComponent(errorInfo).props("defaultMessage")).toBe("An error occurred fetching workflow details");
                 expect(wrapper.emitted("rerun")).toBeUndefined();
                 done();
             });

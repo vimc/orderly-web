@@ -68,8 +68,8 @@ describe(`changeLog`, () => {
         const label = ["col-form-label", "col-sm-2", "text-right"]
         const control = ["col-sm-6"]
 
-        const changelogMessage = wrapper.find(ChangeLog).find("#changelog-message")
-        const changelogType= wrapper.find(ChangeLog).find("#changelog-type")
+        const changelogMessage = wrapper.findComponent(ChangeLog).find("#changelog-message")
+        const changelogType= wrapper.findComponent(ChangeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)

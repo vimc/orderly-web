@@ -370,8 +370,8 @@ describe(`runWorkflowRun`, () => {
         });
 
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred while retrieving previously run workflows");
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred while retrieving previously run workflows");
             done();
         })
     });
@@ -387,8 +387,8 @@ describe(`runWorkflowRun`, () => {
         });
 
         setTimeout(() => {
-            expect(wrapper.find(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
-            expect(wrapper.find(ErrorInfo).props("defaultMessage")).toBe("An error occurred while retrieving data");
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").response.data).toBe("TEST ERROR");
+            expect(wrapper.findComponent(ErrorInfo).props("defaultMessage")).toBe("An error occurred while retrieving data");
             done();
         })
     });
