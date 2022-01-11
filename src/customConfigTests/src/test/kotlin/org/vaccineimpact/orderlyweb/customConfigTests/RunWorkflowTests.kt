@@ -150,14 +150,15 @@ class RunWorkflowTests : SeleniumTest()
     fun `can change branch and see resulting workflow change`()
     {
         createWorkflow()
-        addReport("minimal")
+        changeToOtherBranch()
+        addReport("other")
 
         //Expect report to be removed from workflow when change to a branch where report does not exist
-        changeToOtherBranch()
+        changeToMasterBranch()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
         assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
                 "The following items are not present in this git commit and have been removed from the workflow:\n" +
-                "Report 'minimal'")
+                "Report 'other'")
     }
 
     @Test
@@ -216,18 +217,28 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
     }
 
+    private fun changeToMasterBranch()
+    {
+        changeToBranch(0, "master", "other")
+    }
+
     private fun changeToOtherBranch()
     {
+        changeToBranch(1, "other", "master")
+    }
+
+    private fun changeToBranch(newBranchIndex: Int, newBranch: String, expectedCurrentBranch: String)
+    {
         val branchSelect = driver.findElement(By.id("git-branch"))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo(expectedCurrentBranch)
         val commitSelect = driver.findElement(By.id("git-commit"))
         val commitValue = commitSelect.getAttribute("value")
         assertThat(commitValue).isNotBlank()
 
         //Select a git branch
-        Select(branchSelect).selectByIndex(1)
+        Select(branchSelect).selectByIndex(newBranchIndex)
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo(newBranch)
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
