@@ -21,6 +21,7 @@
                         :initial-branch="workflowMetadata.git_branch"
                         :initial-commit-id="workflowMetadata.git_commit"
                         :initial-branches="initialBranches"
+                        :show-all-reports="true"
                         @branchSelected="branchSelected"
                         @commitSelected="commitSelected"
                         @reportsUpdate="updateAvailableReportsFromGit"

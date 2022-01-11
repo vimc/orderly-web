@@ -24,7 +24,7 @@ describe("runWorkflowReport validation", () => {
 
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": gitCommits});
-        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef')
+        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abcdef&show_all=true')
             .reply(200, {"data": reports});
     });
 
@@ -244,7 +244,7 @@ describe("runWorkflowReport validation", () => {
     });
 
     it("emits valid true when commit change removes report which was invalid", (done) => {
-        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123')
+        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
             .reply(200, {"data": [{ name: "minimal", date: null }]});
 
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
@@ -279,7 +279,7 @@ describe("runWorkflowReport validation", () => {
             .reply(200, {data: [{name: "p1", value: null}]});
 
         //Responses for newly selected commit
-        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123')
+        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
             .reply(200, {"data": [
                 { name: "minimal", date: null },
                 { name: "global", date: null }
@@ -322,7 +322,7 @@ describe("runWorkflowReport validation", () => {
 
 
         //Responses for newly selected commit
-        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123')
+        mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
             .reply(200, {"data": [
                     { name: "minimal", date: null },
                     { name: "global", date: null }

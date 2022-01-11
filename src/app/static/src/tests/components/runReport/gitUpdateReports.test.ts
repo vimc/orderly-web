@@ -26,6 +26,7 @@ describe("gitUpdateReports", () => {
     const initialBranches = ["master", "dev"];
     const initialBranch = "master";
     const initialCommitId = "abc123";
+    const showAllReports = false;
 
     const props = {
         reportMetadata: {
@@ -34,7 +35,8 @@ describe("gitUpdateReports", () => {
         },
         initialBranches,
         initialBranch,
-        initialCommitId
+        initialCommitId,
+        showAllReports
     };
 
     const getWrapper = (report = reports, propsData = props) => {
@@ -323,5 +325,45 @@ describe("gitUpdateReports", () => {
                 done();
             })
         })
+    });
+
+    it("gets reports with show_all flag when showAllReports prop is true", (done) => {
+        const url = 'http://app/reports/runnable/?branch=master&commit=abc123&show_all=true';
+        mockAxios.onGet(url)
+            .reply(200, {"data": [ reports[0] ]});
+        const wrapper = shallowMount(GitUpdateReports, {
+            propsData: {
+                reportMetadata: {git_supported: true, instances_supported: false},
+                initialBranches,
+                initialBranch,
+                initialCommitId,
+                showAllReports: true
+            }
+        });
+        setTimeout(() => {
+            const getHistory = mockAxios.history.get;
+            expect(getHistory[getHistory.length - 1].url).toBe(url);
+            expect(wrapper.emitted("reportsUpdate")![0][0]).toStrictEqual([reports[0]]);
+            done();
+        });
+    });
+
+    it("gets reports without show_all flag when showAllReports prop is true but git_supported is false", (done) => {
+        const url = 'http://app/reports/runnable/';
+        mockAxios.onGet(url)
+            .reply(200, {"data": [ reports[0] ]});
+        const wrapper = shallowMount(GitUpdateReports, {
+            propsData: {
+                reportMetadata: {git_supported: false, instances_supported: false},
+                initiatBranches: null,
+                showAllReports: true
+            }
+        });
+        setTimeout(() => {
+            const getHistory = mockAxios.history.get;
+            expect(getHistory[getHistory.length - 1].url).toBe(url);
+            expect(wrapper.emitted("reportsUpdate")![0][0]).toStrictEqual([reports[0]]);
+            done();
+        });
     });
 });

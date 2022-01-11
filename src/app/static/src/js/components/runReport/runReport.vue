@@ -5,6 +5,7 @@
             <git-update-reports
                 :report-metadata="metadata"
                 :initial-branches="initialGitBranches"
+                :show-all-reports="false"
                 @branchSelected="branchSelected"
                 @commitSelected="commitSelected"
                 @reportsUpdate="updateReports"
