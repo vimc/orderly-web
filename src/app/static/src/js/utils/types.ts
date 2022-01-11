@@ -132,6 +132,11 @@ export interface Error {
 
 export interface Dependency {
     missing_dependencies: Record<string, string[]>,
-    reports: { name: string[] },
+    reports: {
+        name: string[],
+        instance?: string
+        params?: Record<string, string>,
+        depends_on?: string[]
+    },
     refs: string
 }

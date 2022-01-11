@@ -38,22 +38,35 @@
                                          style="visibility: visible; animation-delay: 0.3s; animation-name: fadeInLeft;">
                                         <div class="timeline-text">
                                             <span class="text-muted d-inline-block">Parameters</span>
-                                            <div v-if="hasParameters(report)">
-                                                <p v-for="(value, key) in report.params">{{ key }} {{ value }}</p>
-                                                <a href="#" class="pt-2 d-inline-block small">Show default...</a>
+                                            <div v-if="!!paramSize(report)">
+                                                <p v-for="(value, key) in report.params">{{ key }}: {{ value }}</p>
+                                                <div v-if="paramSize(report) > 3">
+                                                    <a href="#collapseSummary"
+                                                       class="pt-2 d-inline-block small"
+                                                       data-toggle="collapse"
+                                                       aria-expanded="false"
+                                                       aria-controls="collapseSummary"
+                                                    >Show default...</a>
+                                                    <div class="collapse" id="collapseSummary">
+                                                        <p v-for="(value, key) in showDetails(report.params)">{{ key }}:
+                                                            {{ value }}</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div v-else><p>There are no parameters</p></div>
                                         </div>
                                     </div>
                                 </div>
                                 <span class="d-inline-block"></span>
-                                <div class="col-12 col-md-6 col-lg-4">
+                                <div class="col-12 col-md-6 col-lg-4" v-if="hasDependencies(report.name)">
                                     <div class="single-timeline-content d-flex wow fadeInLeft" data-wow-delay="0.5s"
                                          style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInLeft;">
                                         <div class="timeline-text">
-                                            <div class="pb-2">
+                                            <div class="pb-2" v-if="reportDependsOn(report.name).length">
                                                 <span class="text-muted d-inline-block">Depends on</span>
-                                                <p>Burden-report</p>
+                                                <div v-for="report in reportDependsOn(report.name)">
+                                                    <p>{{ report }}</p>
+                                                </div>
                                             </div>
                                             <div class="text-danger" v-if="missingDependencies(report.name).length">
                                                 <span class="d-inline-block">Missing dependencies</span>
@@ -90,10 +103,13 @@
     }
 
     interface Methods {
-        hasParameters: (report: WorkflowReportWithParams) => boolean;
-        getReportDependencies: () => void
+        paramSize: (report: WorkflowReportWithParams) => number;
+        showDetails: (params: Record<string, string>) => Record<string, string>;
+        getReportDependencies: () => void;
         missingDependencies: (reportName: string) => string[]
         reportInfo: (report: WorkflowReportWithParams) => string;
+        reportDependsOn: (reportName: string) => string[];
+        hasDependencies: (reportName: string) => boolean
     }
 
     interface Data {
@@ -127,10 +143,16 @@
         },
         methods: {
             reportInfo(report) {
-                return `${report.name} runs ${(Object.keys(report.params).length)} times`
+                return `'${report.name}' runs ${(Object.keys(report.params).length)} times`
             },
-            hasParameters(report) {
-                return !!Object.keys(report.params).length;
+            paramSize(report) {
+                return Object.keys(report.params).length;
+            },
+            showDetails(params) {
+                return Object.keys(params).slice(3).reduce((entireParams, key) => {
+                    entireParams[key] = params[key]
+                    return entireParams
+                }, {});
             },
             getReportDependencies() {
                 api.post(`/workflows/summary`, {
@@ -148,13 +170,17 @@
             missingDependencies(reportName) {
                 return this.dependencies?.missing_dependencies[reportName] || [];
             },
+            reportDependsOn(reportName) {
+                return this.dependencies?.reports.find(report => report.name === reportName)!.depends_on || [];
+            },
+            hasDependencies(reportName) {
+                return this.missingDependencies(reportName).length || this.reportDependsOn(reportName).length
+            }
         },
         mounted() {
             this.getReportDependencies();
             this.$emit("valid", true)
         },
-        directives: {
-            "tooltip": VTooltip
-        }
+        directives: {tooltip: VTooltip},
     })
 </script>
