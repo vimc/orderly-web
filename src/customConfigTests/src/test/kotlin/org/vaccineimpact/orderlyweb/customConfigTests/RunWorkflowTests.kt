@@ -198,6 +198,18 @@ class RunWorkflowTests : SeleniumTest()
         tmpFile.delete()
     }
 
+    @Test
+    fun `can see all reports in non-master branch`()
+    {
+        // Available reports should include those which are unchanged from master branch i.e. 'minimal' and 'global', as
+        // well as branch-only reports e.g. 'other'
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("minimal")
+        addReport("global")
+        addReport("other")
+    }
+
     private fun addReport(reportName: String)
     {
         driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
