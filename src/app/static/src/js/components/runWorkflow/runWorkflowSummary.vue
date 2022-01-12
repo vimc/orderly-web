@@ -16,27 +16,27 @@
             </div>
             <hr>
         </div>
-        <div id="summary-timeline" class="mt-3">
+        <div id="workflow-summary" class="mt-3">
             <div class="row">
                 <div class="col-12">
                     <div class="summary">
-                        <div v-for="report in workflowMetadata.reports" class="single-timeline-area">
-                            <div class="timeline-date wow fadeInLeft" data-wow-delay="0.1s"
-                                 style="visibility: visible; animation-delay: 0.1s; animation-name: fadeInLeft;">
+                        <div v-if="workflowMetadata" v-for="report in workflowMetadata.reports" class="single-workflow-summary-area">
+                            <div class="workflow-summary-report wow fadeInLeft">
                             </div>
-                            <div class="d-inline-block" v-tooltip="reportInfo(report)">
+                            <div class="d-inline-block">
                                 <h5>{{ report.name }}
                                     <span>
-                                        <info-icon size="1.2x" stroke="grey" class="custom-class"/>
+                                        <info-icon size="1.2x"
+                                                   stroke="grey"
+                                                   v-tooltip="reportInfo(report)"
+                                                   class="custom-class"/>
                                     </span>
                                 </h5>
                             </div>
                             <div class="row">
                                 <div class="col-12 col-md-6 col-lg-4">
-                                    <div class="single-timeline-content parameters-bg-color d-flex wow fadeInLeft"
-                                         data-wow-delay="0.3s"
-                                         style="visibility: visible; animation-delay: 0.3s; animation-name: fadeInLeft;">
-                                        <div class="timeline-text">
+                                    <div class="single-workflow-summary-content parameters-bg-color d-flex wow fadeInLeft">
+                                        <div class="workflow-summary-text">
                                             <span class="text-muted d-inline-block">Parameters</span>
                                             <div v-if="!!paramSize(report)">
                                                 <p v-for="(value, key) in report.params">{{ key }}: {{ value }}</p>
@@ -59,9 +59,8 @@
                                 </div>
                                 <span class="d-inline-block"></span>
                                 <div class="col-12 col-md-6 col-lg-4" v-if="hasDependencies(report.name)">
-                                    <div class="single-timeline-content d-flex wow fadeInLeft" data-wow-delay="0.5s"
-                                         style="visibility: visible; animation-delay: 0.5s; animation-name: fadeInLeft;">
-                                        <div class="timeline-text">
+                                    <div class="single-workflow-summary-content d-flex wow fadeInLeft">
+                                        <div class="workflow-summary-text">
                                             <div class="pb-2" v-if="reportDependsOn(report.name).length">
                                                 <span class="text-muted d-inline-block">Depends on</span>
                                                 <div v-for="report in reportDependsOn(report.name)">
