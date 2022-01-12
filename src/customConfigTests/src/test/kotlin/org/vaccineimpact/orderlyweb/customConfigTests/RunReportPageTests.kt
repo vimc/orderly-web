@@ -10,6 +10,7 @@ import org.openqa.selenium.support.ui.Select
 import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
+import java.time.Duration
 
 class RunReportPageTests : SeleniumTest()
 {
@@ -72,6 +73,26 @@ class RunReportPageTests : SeleniumTest()
         val matches = typeahead.findElements(By.tagName("li"))
         assertThat(matches.size).isEqualTo(1)
         assertThat(matches[0].text).startsWith("minimal")
+    }
+
+    @Test
+    fun `can change git branch to non-master and see changed reports only`()
+    {
+        val gitBranch = driver.findElement(By.id("git-branch"))
+        val gitCommit = driver.findElement(By.id("git-commit"))
+        val oldCommit = gitCommit.getAttribute("value")
+
+        Select(gitBranch).selectByIndex(1)
+        wait.until(ExpectedConditions.not(ExpectedConditions.attributeToBe(gitCommit, "value", oldCommit)))
+        assertThat(gitBranch.getAttribute("value")).isEqualTo("other")
+        val commitValue = gitCommit.getAttribute("value")
+        assertThat(commitValue).isNotBlank()
+
+        // 'minimal' and 'global' reports from master should not be included, 'other' and 'view' should be
+        assertThat(reportIsAvailable("minimal")).isFalse()
+        assertThat(reportIsAvailable("global")).isFalse()
+        assertThat(reportIsAvailable("other")).isTrue()
+        assertThat(reportIsAvailable("view")).isTrue()
     }
 
     @Test
@@ -174,5 +195,24 @@ class RunReportPageTests : SeleniumTest()
         val changelogType = Select(driver.findElement(By.id("changelogType")))
         changelogType.selectByValue("public")
         assertThat(changelogType.firstSelectedOption.getAttribute("value")).isEqualTo("public")
+    }
+
+    private fun reportIsAvailable(reportName: String): Boolean
+    {
+        val typeahead = driver.findElement(By.id("report"))
+        val input = typeahead.findElement(By.tagName("input"))
+        input.clear()
+        input.sendKeys(reportName)
+
+        val listItem = typeahead.findElements(By.tagName("li"))[0]
+        val foundReportName = if (listItem.getAttribute("role") == "option")
+        {
+            listItem.findElements(By.tagName("span"))[0].getAttribute("innerHTML")
+        }
+        else
+        {
+            null
+        }
+        return foundReportName == reportName
     }
 }
