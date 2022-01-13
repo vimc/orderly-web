@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="hasDependenciesLength">
         <h2 id="summary-header">Summary</h2>
         <div id="summary-warning" class="row mt-3" v-if="hasMissingDependencies">
             <div class="col-auto">
@@ -20,7 +20,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="summary">
-                        <div v-if="workflowMetadata" v-for="report in workflowMetadata.reports" class="single-workflow-summary-area">
+                        <div v-for="report in dependencies.reports" class="single-workflow-summary-area">
                             <div class="workflow-summary-report wow fadeInLeft">
                             </div>
                             <div class="d-inline-block">
@@ -28,7 +28,7 @@
                                     <span>
                                         <info-icon size="1.2x"
                                                    stroke="grey"
-                                                   v-tooltip="reportInfo(report)"
+                                                   v-tooltip="reportInfo(report.name)"
                                                    class="custom-class"/>
                                     </span>
                                 </h5>
@@ -38,7 +38,7 @@
                                     <div class="single-workflow-summary-content parameters-bg-color d-flex wow fadeInLeft">
                                         <div class="workflow-summary-text">
                                             <span class="text-muted d-inline-block">Parameters</span>
-                                            <div v-if="!!paramSize(report)">
+                                            <div v-if="paramSize(report)">
                                                 <p v-for="(value, key) in report.params">{{ key }}: {{ value }}</p>
                                                 <div v-if="paramSize(report) > 3">
                                                     <a href="#collapseSummary"
@@ -58,12 +58,12 @@
                                     </div>
                                 </div>
                                 <span class="d-inline-block"></span>
-                                <div class="col-12 col-md-6 col-lg-4" v-if="hasDependencies(report.name)">
+                                <div class="col-12 col-md-6 col-lg-4" v-if="showDependencies(report)">
                                     <div class="single-workflow-summary-content d-flex wow fadeInLeft">
                                         <div class="workflow-summary-text">
-                                            <div class="pb-2" v-if="reportDependsOn(report.name).length">
+                                            <div class="pb-2" v-if="reportDependsOn(report).length">
                                                 <span class="text-muted d-inline-block">Depends on</span>
-                                                <div v-for="report in reportDependsOn(report.name)">
+                                                <div v-for="report in reportDependsOn(report)">
                                                     <p>{{ report }}</p>
                                                 </div>
                                             </div>
@@ -88,7 +88,11 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, WorkflowReportWithParams, Dependency} from "../../utils/types";
+    import {
+        RunWorkflowMetadata,
+        Dependency,
+        WorkflowReportWithDependency
+    } from "../../utils/types";
     import {AlertTriangleIcon, InfoIcon} from "vue-feather-icons"
     import {api} from "../../utils/api";
     import {VTooltip} from 'v-tooltip';
@@ -99,16 +103,17 @@
 
     interface Computed {
         hasMissingDependencies: boolean;
+        hasDependenciesLength: boolean;
     }
 
     interface Methods {
-        paramSize: (report: WorkflowReportWithParams) => number;
+        paramSize: (report: WorkflowReportWithDependency) => number;
         showDetails: (params: Record<string, string>) => Record<string, string>;
         getReportDependencies: () => void;
         missingDependencies: (reportName: string) => string[]
-        reportInfo: (report: WorkflowReportWithParams) => string;
-        reportDependsOn: (reportName: string) => string[];
-        hasDependencies: (reportName: string) => boolean
+        reportInfo: (reportName: string) => string;
+        reportDependsOn: (report: WorkflowReportWithDependency) => string[];
+        showDependencies: (report: WorkflowReportWithDependency) => boolean
     }
 
     interface Data {
@@ -136,16 +141,20 @@
         },
         computed: {
             hasMissingDependencies() {
-                return this.dependencies && !!Object.keys(this.dependencies.missing_dependencies)
+                return !!Object.keys(this.dependencies.missing_dependencies)
                     .some(reportName => this.dependencies.missing_dependencies[reportName].length > 0);
+            },
+            hasDependenciesLength() {
+                return !!this.dependencies
             }
         },
         methods: {
-            reportInfo(report) {
-                return `'${report.name}' runs ${(Object.keys(report.params).length)} times`
+            reportInfo(reportName) {
+                const reportNum = this.workflowMetadata?.reports.filter(report => report.name === reportName).length
+                return `${reportName} runs ${reportNum} times`;
             },
             paramSize(report) {
-                return Object.keys(report.params).length;
+                return report.params? Object.keys(report.params).length : 0
             },
             showDetails(params) {
                 return Object.keys(params).slice(3).reduce((entireParams, key) => {
@@ -169,11 +178,11 @@
             missingDependencies(reportName) {
                 return this.dependencies?.missing_dependencies[reportName] || [];
             },
-            reportDependsOn(reportName) {
-                return this.dependencies?.reports.find(report => report.name === reportName)!.depends_on || [];
+            reportDependsOn(report) {
+                return report!.depends_on || [];
             },
-            hasDependencies(reportName) {
-                return this.missingDependencies(reportName).length || this.reportDependsOn(reportName).length
+            showDependencies(report) {
+                return this.missingDependencies(report.name).length || this.reportDependsOn(report).length
             }
         },
         mounted() {
