@@ -61,6 +61,7 @@ describe("runReport", () => {
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         expect(gitUpdateReports.props("reportMetadata")).toBe(props.metadata);
         expect(gitUpdateReports.props("initialBranches")).toBe(initialGitBranches);
+        expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 
     it("selects branch when event emitted from gitUpdateReports", async () => {
