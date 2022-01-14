@@ -108,7 +108,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                     ORDERLYWEB_REPORT_RUN.DATE
             )
                     .from(ORDERLYWEB_REPORT_RUN)
-                    .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user))
+                    .where(ORDERLYWEB_REPORT_RUN.EMAIL.eq(user).and(ORDERLYWEB_REPORT_RUN.WORKFLOW_RUN_KEY.isNull))
 
             return result.fetchInto(ReportRunWithDate::class.java)
         }
