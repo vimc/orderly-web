@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row12;
+import org.jooq.Row13;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportRunRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
-    private static final long serialVersionUID = -729066364;
+    private static final long serialVersionUID = 1123766686;
 
     /**
      * The reference instance of <code>orderlyweb_report_run</code>
@@ -105,6 +105,11 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
      * The column <code>orderlyweb_report_run.report_version</code>.
      */
     public final TableField<OrderlywebReportRunRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_report_run.workflow_run_key</code>.
+     */
+    public final TableField<OrderlywebReportRunRecord, String> WORKFLOW_RUN_KEY = createField(DSL.name("workflow_run_key"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>orderlyweb_report_run</code> table reference
@@ -194,11 +199,11 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row12 type methods
+    // Row13 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row12<Integer, String, String, Timestamp, String, String, String, String, String, String, String, String> fieldsRow() {
-        return (Row12) super.fieldsRow();
+    public Row13<Integer, String, String, Timestamp, String, String, String, String, String, String, String, String, String> fieldsRow() {
+        return (Row13) super.fieldsRow();
     }
 }
