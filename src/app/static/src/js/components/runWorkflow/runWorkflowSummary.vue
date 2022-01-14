@@ -1,29 +1,44 @@
 <template>
-    <div>
-        <h2 id="summary-header">Summary</h2>
-        <span>Your workflow contains {{ reportCount }}:</span>
-        <ul class="styled">
-            <li v-for="report in workflowMetadata.reports">
-                {{ report.name }}
-            </li>
-        </ul>
+    <div v-if="hasDependenciesLength">
+        <report-parameter :dependencies="dependencies"/>
+        <div v-if="error"><p class="row mt-3 justify-content-center col-8 text-danger">{{ error }}</p></div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata} from "../../utils/types";
+    import {RunWorkflowMetadata, Dependency} from "../../utils/types";
+    import {api} from "../../utils/api";
+    import ReportParameter from "../workflowSummary/reportParameter.vue"
 
     interface Props {
-        workflowMetadata: RunWorkflowMetadata
+        workflowMetadata: RunWorkflowMetadata;
     }
 
     interface Computed {
-        validateStep: void
+        hasDependenciesLength: boolean;
     }
 
-    export default Vue.extend<unknown, Computed, unknown, Props>({
+    interface Methods {
+        getReportDependencies: () => void;
+    }
+
+    interface Data {
+        dependencies: Dependency | null
+        error: string
+    }
+
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runWorkflowSummary",
+        components: {
+            ReportParameter
+        },
+        data() {
+            return {
+                dependencies: null,
+                error: ""
+            }
+        },
         props: {
             workflowMetadata: {
                 required: true,
@@ -31,17 +46,27 @@
             }
         },
         computed: {
-            reportCount() {
-                const num = this.workflowMetadata?.reports?.length;
-                if (num == 1) {
-                    return "1 report"
-                } else {
-                    return `${num} reports`
-                }
+            hasDependenciesLength() {
+                return !!this.dependencies
+            }
+        },
+        methods: {
+            getReportDependencies() {
+                api.post(`/workflows/summary`, {
+                    reports: this.workflowMetadata.reports,
+                    ref: this.workflowMetadata.git_commit
+                })
+                    .then(({data}) => {
+                        this.dependencies = data.data;
+                        this.error = "";
+                    })
+                    .catch((error) => {
+                        this.error = error;
+                    })
             }
         },
         mounted() {
-            // the summary page is "valid" by default
+            this.getReportDependencies();
             this.$emit("valid", true)
         }
     })
