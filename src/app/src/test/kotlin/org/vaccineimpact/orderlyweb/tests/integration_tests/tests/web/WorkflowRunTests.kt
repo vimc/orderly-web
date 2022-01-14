@@ -461,11 +461,16 @@ class WorkflowRunTests : IntegrationTest()
         val ref = getGitBranchCommit("master")
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie(
-                "/workflows/summary",
-                sessionCookie,
-                ContentTypes.json,
-                HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {"nmin", "20"}}]}"""
+            "/workflows/summary",
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.post,
+            """{
+                "ref": "$ref", 
+                "reports": [
+                {"name": "global", "params": {"nmin", "20"}},
+                {"name": "global", "params": {"nmin", "10"}}
+                ]}""".trimIndent()
         )
 
         assertSuccessful(response)
@@ -475,7 +480,9 @@ class WorkflowRunTests : IntegrationTest()
         val reports = data["reports"] as ArrayNode
         assertThat(reports.count()).isEqualTo(1)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
-        assertThat(reports[0]["params"]["nmin"].asText()).isEqualTo("20")
+        assertThat(reports[0]["params"].count()).isEqualTo(2)
+        assertThat(reports[0]["params"][0]["nmin"].asText()).isEqualTo("20")
+        assertThat(reports[0]["params"][1]["nmin"].asText()).isEqualTo("10")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
         JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
