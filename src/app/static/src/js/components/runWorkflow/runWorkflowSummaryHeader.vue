@@ -39,8 +39,7 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
     },
     computed: {
         hasMissingDependencies() {
-            console.log("has missing dependencies", )
-            return this.workflowSummary?.length && !!Object.keys(this.workflowSummary.missing_dependencies)
+            return this.workflowSummary && !!Object.keys(this.workflowSummary.missing_dependencies)
                 .some(reportName => this.workflowSummary.missing_dependencies[reportName].length > 0);
         },
     }

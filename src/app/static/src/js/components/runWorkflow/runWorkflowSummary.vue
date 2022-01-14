@@ -1,12 +1,6 @@
 <template>
     <div>
         <runWorflowSummaryHeader :workflow-summary="workflowSummary"></runWorflowSummaryHeader>
-        <!-- <span>Your workflow contains {{ reportCount }}:</span>
-        <ul class="styled">
-            <li v-for="report in workflowMetadata.reports">
-                {{ report.name }}
-            </li>
-        </ul> -->
     </div>
 </template>
 
