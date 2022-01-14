@@ -468,8 +468,8 @@ class WorkflowRunTests : IntegrationTest()
             """{
                 "ref": "$ref", 
                 "reports": [
-                {"name": "global", "params": {"nmin", "20"}},
-                {"name": "global", "params": {"nmin", "10"}}
+                {"name": "global", "params": {"nmin": "20"}},
+                {"name": "global", "params": {"nmin": "10"}}
                 ]}""".trimIndent()
         )
 
