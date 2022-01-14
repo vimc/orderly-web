@@ -7,7 +7,7 @@
         </div>
         <div class="col-auto">
             <span class="d-inline-block pb-2"> Some reports depend on the latest version of other reports that are not included in your workflow:</span>
-            <div v-for="(missing_dependencies, report) in dependencies.missing_dependencies" :key="report">
+            <div v-for="(missing_dependencies, report) in workflowSummary.missing_dependencies" :key="report">
                 <span v-if="missing_dependencies.length" class="font-weight-bold"> {{ report }}</span>
                 <ul v-for="missing_dependency in missing_dependencies" class="styled"  :key="missing_dependency">
                     <li>{{ missing_dependency }}</li>
@@ -21,10 +21,10 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {Dependency} from "../../utils/types";
+import {WorkflowSummary} from "../../utils/types";
 
 interface Props {
-    dependencies: Dependency[]
+    workflowSummary: WorkflowSummary[]
 }
 
 interface Computed {
@@ -32,17 +32,16 @@ interface Computed {
 }
 export default Vue.extend<unknown, Computed, unknown, Props>({
     props: {
-        dependencies: {
+        workflowSummary: {
             type: Object,
             required: true
         }
     },
     computed: {
         hasMissingDependencies() {
-            console.log("has missing dependencies", this.dependencies?.length && !!Object.keys(this.dependencies.missing_dependencies)
-                .some(reportName => this.dependencies.missing_dependencies[reportName].length > 0))
-            return this.dependencies?.length && !!Object.keys(this.dependencies.missing_dependencies)
-                .some(reportName => this.dependencies.missing_dependencies[reportName].length > 0);
+            console.log("has missing dependencies", )
+            return this.workflowSummary?.length && !!Object.keys(this.workflowSummary.missing_dependencies)
+                .some(reportName => this.workflowSummary.missing_dependencies[reportName].length > 0);
         },
     }
     

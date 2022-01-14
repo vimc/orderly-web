@@ -1,6 +1,6 @@
 <template>
     <div>
-        <runWorflowSummaryHeader :dependencies="dependencies"></runWorflowSummaryHeader>
+        <runWorflowSummaryHeader :workflow-summary="workflowSummary"></runWorflowSummaryHeader>
         <!-- <span>Your workflow contains {{ reportCount }}:</span>
         <ul class="styled">
             <li v-for="report in workflowMetadata.reports">
@@ -14,7 +14,7 @@
     import Vue from "vue"
     import {RunWorkflowMetadata} from "../../utils/types";
     import runWorflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
-    import {Dependency} from "../../utils/types";
+    import {WorkflowSummary} from "../../utils/types";
     import {api} from "../../utils/api";
 
     interface Props {
@@ -22,7 +22,7 @@
     }
 
     interface Data {
-        dependencies: Dependency | null
+        workflowSummary: WorkflowSummary | null
     }
 
     interface Computed {
@@ -30,7 +30,7 @@
     }
 
     interface Methods {
-        getReportDependencies: () => void;
+        getReportWorkflowSummary: () => void;
     }
 
     export default Vue.extend<unknown, Methods, Computed, Props>({
@@ -43,7 +43,7 @@
         },
         data() {
             return {
-                dependencies: null
+                workflowSummary: null
             }
         },
         computed: {
@@ -57,13 +57,13 @@
             // }
         },
         methods: {
-            getReportDependencies() {
+            getReportWorkflowSummary() {
                 api.post(`/workflows/summary`, {
                     reports: this.workflowMetadata.reports,
                     ref: this.workflowMetadata.git_commit
                 })
                     .then(({data}) => {
-                        this.dependencies = data.data;
+                        this.workflowSummary = data.data;
                         this.error = "";
                     })
                     .catch((error) => {
@@ -73,12 +73,12 @@
         },
         mounted() {
             // the summary page is "valid" by default
-            this.getReportDependencies();
+            this.getReportWorkflowSummary();
             this.$emit("valid", true)
         },
         watch: {
-            dependencies(){
-                console.log("dependencies", this.dependencies)
+            workflowSummary(){
+                console.log("workflowSummary", this.workflowSummary)
             }
         },
         components: {
