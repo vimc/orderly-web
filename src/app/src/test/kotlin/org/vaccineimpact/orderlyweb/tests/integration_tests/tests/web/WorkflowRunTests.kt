@@ -478,11 +478,11 @@ class WorkflowRunTests : IntegrationTest()
         val json = JsonLoader.fromString(response.text)
         val data = json["data"]
         val reports = data["reports"] as ArrayNode
-        assertThat(reports.count()).isEqualTo(1)
+        assertThat(reports.count()).isEqualTo(2)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
-        assertThat(reports[0]["params"].count()).isEqualTo(2)
-        assertThat(reports[0]["params"][0]["nmin"].asText()).isEqualTo("20")
-        assertThat(reports[0]["params"][1]["nmin"].asText()).isEqualTo("10")
+        assertThat(reports[0]["params"]["nmin"].asText()).isEqualTo("20")
+        assertThat((reports[1]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat(reports[1]["params"]["nmin"].asText()).isEqualTo("10")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
         JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
