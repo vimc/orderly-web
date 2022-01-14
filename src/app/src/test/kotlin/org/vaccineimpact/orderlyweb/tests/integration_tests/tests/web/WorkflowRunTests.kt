@@ -271,7 +271,7 @@ class WorkflowRunTests : IntegrationTest()
         validateWorkflowWithDefaultBranchAncCommit("/workflow/validate?branch&commit")
     }
 
-    fun validateWorkflowWithDefaultBranchAncCommit(url: String)
+    private fun validateWorkflowWithDefaultBranchAncCommit(url: String)
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
@@ -465,7 +465,7 @@ class WorkflowRunTests : IntegrationTest()
                 sessionCookie,
                 ContentTypes.json,
                 HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
+                """{"ref": "$ref", "reports": [{"name": "global", "params": {"nmin", "20"}}]}"""
         )
 
         assertSuccessful(response)
@@ -475,6 +475,7 @@ class WorkflowRunTests : IntegrationTest()
         val reports = data["reports"] as ArrayNode
         assertThat(reports.count()).isEqualTo(1)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat(reports[0]["params"]["nmin"].asText()).isEqualTo("20")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
         JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
