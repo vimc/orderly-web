@@ -174,7 +174,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 null))
     }
 
-    fun `can get all running reports for current user only`()
+    fun `can get all non-workflow running reports for current user only`()
     {
          insertUser("user@email.com", "user.name")
          insertUser("user2@email.com", "user2.name")
@@ -203,6 +203,18 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             mapOf("parameter2" to "value2"),
             "branch1",
             "commit2"
+        )
+
+        sut.addReportRun(
+            "cantankerous_capybara",
+            "user2@email.com",
+            now,
+            "report3",
+            mapOf("instance3" to "post-staging"),
+            mapOf("parameter3" to "value2"),
+            "branch3",
+            "commit3",
+            "workflow1"
         )
 
         val result = sut.getAllReportRunsForUser("user@email.com")

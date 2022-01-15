@@ -20,7 +20,8 @@ interface ReportRunRepository
         instances: Map<String, String>,
         params: Map<String, String>,
         gitBranch: String?,
-        gitCommit: String?
+        gitCommit: String?,
+        workflowRunKey: String? = null
     )
 
     @Throws(UnknownObjectError::class)
@@ -50,7 +51,8 @@ class OrderlyWebReportRunRepository : ReportRunRepository
         instances: Map<String, String>,
         params: Map<String, String>,
         gitBranch: String?,
-        gitCommit: String?
+        gitCommit: String?,
+        workflowRunKey: String?
     )
     {
         JooqContext().use {
@@ -63,6 +65,7 @@ class OrderlyWebReportRunRepository : ReportRunRepository
                 .set(ORDERLYWEB_REPORT_RUN.PARAMS, Gson().toJson(params))
                 .set(ORDERLYWEB_REPORT_RUN.GIT_BRANCH, gitBranch)
                 .set(ORDERLYWEB_REPORT_RUN.GIT_COMMIT, gitCommit)
+                .set(ORDERLYWEB_REPORT_RUN.WORKFLOW_RUN_KEY, workflowRunKey)
                 .execute()
         }
     }
