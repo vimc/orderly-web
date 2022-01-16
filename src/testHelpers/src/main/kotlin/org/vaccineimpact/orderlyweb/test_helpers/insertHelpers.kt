@@ -151,31 +151,6 @@ fun insertReport(name: String,
     }
 }
 
-fun insertWorkflow(email: String,
-                   key: String,
-                   name: String,
-                   date: Timestamp = Timestamp.valueOf("2021-06-15 14:50:41.047"),
-                   instances: Map<String, String> = mapOf("name" to "value"),
-                   git_branch: String? = "branch",
-                   git_commit: String? = "commit")
-{
-    JooqContext().use {
-        val workflowRunRecord = it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN)
-                .apply {
-                    this.id = getNewCustomFieldId(it)
-                    this.name = name
-                    this.email = email
-                    this.key = key
-                    this.date = date
-                    this.instances = Gson().toJson(instances)
-                    this.gitBranch = git_branch
-                    this.gitCommit = git_commit
-                    this.status = "pending"
-                }
-        workflowRunRecord.store()
-    }
-}
-
 fun insertVersionParameterValues(version: String,
                                  parameterValues: Map<String, String>)
 {
@@ -358,6 +333,31 @@ fun insertUserAndGroup(db: JooqContext, email: String)
             }.store()
 
     addUserToGroup(db, email, email)
+}
+
+fun insertWorkflow(email: String,
+                   key: String,
+                   name: String,
+                   date: Timestamp = Timestamp.valueOf("2021-06-15 14:50:41.047"),
+                   instances: Map<String, String> = mapOf("name" to "value"),
+                   git_branch: String? = "branch",
+                   git_commit: String? = "commit")
+{
+    JooqContext().use {
+        val workflowRunRecord = it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN)
+                .apply {
+                    this.id = getNewCustomFieldId(it)
+                    this.name = name
+                    this.email = email
+                    this.key = key
+                    this.date = date
+                    this.instances = Gson().toJson(instances)
+                    this.gitBranch = git_branch
+                    this.gitCommit = git_commit
+                    this.status = "pending"
+                }
+        workflowRunRecord.store()
+    }
 }
 
 fun insertRole(db: JooqContext, roleName: String, vararg userEmails: String)

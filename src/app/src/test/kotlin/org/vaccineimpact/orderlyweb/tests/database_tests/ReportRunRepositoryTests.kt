@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import java.time.Instant
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
+import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
 
 class ReportRunRepositoryTests : CleanDatabaseTests()
 {
@@ -174,10 +175,12 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
                 null))
     }
 
+    @Test
     fun `can get all non-workflow running reports for current user only`()
     {
          insertUser("user@email.com", "user.name")
          insertUser("user2@email.com", "user2.name")
+         insertWorkflow("user@email.com", "workflow1", "workflow1")
 
         val now = Instant.now()
 
@@ -204,6 +207,7 @@ class ReportRunRepositoryTests : CleanDatabaseTests()
             "branch1",
             "commit2"
         )
+
 
         sut.addReportRun(
             "cantankerous_capybara",
