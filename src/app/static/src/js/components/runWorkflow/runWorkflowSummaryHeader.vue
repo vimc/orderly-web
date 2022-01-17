@@ -24,7 +24,7 @@ import {WorkflowSummary} from "../../utils/types";
 import {AlertTriangleIcon} from "vue-feather-icons"
 
 interface Props {
-    workflowSummary: WorkflowSummary[]
+    workflowSummary: WorkflowSummary[] | null
 }
 
 interface Computed {
@@ -37,13 +37,8 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
         },
     props: {
         workflowSummary: {
-            type: Object,
+            type: Object || null,
             required: true
-        }
-    },
-    watch: {
-        workflowSummary(){
-            console.log("workflowsummary", this.workflowSummary)
         }
     },
     computed: {

@@ -1,32 +1,50 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../js/components/runWorkflow/runWorkflowSummary.vue"
+import runWorkflowSummaryHeader from "../../../js/components/runWorkflow/runWorkflowSummaryHeader.vue"
 import {RunWorkflowMetadata} from "../../../js/utils/types";
+import {mockAxios} from "../../mockAxios";
 
 describe(`runWorkflowSummary`, () => {
+
+    const summaryData = {
+        missing_dependencies: {
+            step2: ["step1"]
+        },
+        ref: "refNum",
+        reports: [
+            {
+                name: "step2",
+                params: {}
+            }
+        ]
+    }
+
+    const metaData = {
+        reports: [{name: "r1"}],
+        git_commit: "gitCommit"
+    }
+
+    beforeEach(() => {
+        mockAxios.reset();
+        mockAxios.onPost('http://app/workflows/summary')
+            .reply(200, {"data": summaryData});
+    })
 
     const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
         return shallowMount(runWorkflowSummary, {propsData: {workflowMetadata: meta}})
     }
 
-    it(`it renders workflow summary page with multiple reports`, () => {
-        const wrapper = getWrapper({
-            reports: [{name: "r1"}, {name: "r2"}]
+    it(`it posts to workflow summary endpoint and renders workflow summary header`, (done) => {
+        const wrapper = getWrapper(metaData);
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            const data = JSON.parse(mockAxios.history.post[0].data);
+            expect(data.reports).toStrictEqual(metaData.reports);
+            expect(data.ref).toStrictEqual(metaData.git_commit);
+            expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(summaryData);
+            done();
         });
-        expect(wrapper.find("#summary-header").text()).toBe("Summary");
-        expect(wrapper.find("span").text()).toBe("Your workflow contains 2 reports:");
-        expect(wrapper.findAll("li").length).toBe(2);
-        expect(wrapper.findAll("li").at(0).text()).toBe("r1");
-        expect(wrapper.findAll("li").at(1).text()).toBe("r2");
-    });
-
-    it(`it renders workflow summary page with single report`, () => {
-        const wrapper = getWrapper({
-            reports: [{name: "r1"}]
-        });
-        expect(wrapper.find("#summary-header").text()).toBe("Summary");
-        expect(wrapper.find("span").text()).toBe("Your workflow contains 1 report:");
-        expect(wrapper.findAll("li").length).toBe(1);
-        expect(wrapper.findAll("li").at(0).text()).toBe("r1");
     });
 
     it(`emits valid event on mount`, () => {

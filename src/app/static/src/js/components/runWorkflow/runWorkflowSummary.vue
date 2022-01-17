@@ -19,15 +19,11 @@
         workflowSummary: WorkflowSummary | null
     }
 
-    interface Computed {
-        // validateStep: void
-    }
-
     interface Methods {
         getReportWorkflowSummary: () => void;
     }
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default Vue.extend<unknown, Methods, unknown, Props>({
         name: "runWorkflowSummary",
         props: {
             workflowMetadata: {
@@ -39,16 +35,6 @@
             return {
                 workflowSummary: null
             }
-        },
-        computed: {
-            // reportCount() {
-            //     const num = this.workflowMetadata?.reports?.length;
-            //     if (num == 1) {
-            //         return "1 report"
-            //     } else {
-            //         return `${num} reports`
-            //     }
-            // }
         },
         methods: {
             getReportWorkflowSummary() {
@@ -69,11 +55,6 @@
             // the summary page is "valid" by default
             this.getReportWorkflowSummary();
             this.$emit("valid", true)
-        },
-        watch: {
-            workflowSummary(){
-                console.log("workflowSummary", this.workflowSummary)
-            }
         },
         components: {
             runWorflowSummaryHeader
