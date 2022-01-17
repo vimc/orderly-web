@@ -14,7 +14,6 @@
                 </ul>
             </div>
         </div>
-        <hr>
     </div>
 </header>
 </template>
@@ -22,6 +21,7 @@
 <script lang="ts">
 import Vue from 'vue'
 import {WorkflowSummary} from "../../utils/types";
+import {AlertTriangleIcon} from "vue-feather-icons"
 
 interface Props {
     workflowSummary: WorkflowSummary[]
@@ -31,6 +31,10 @@ interface Computed {
     hasMissingDependencies: boolean;
 }
 export default Vue.extend<unknown, Computed, unknown, Props>({
+    name: "runWorkflowSummaryHeader",
+        components: {
+            AlertTriangleIcon
+        },
     props: {
         workflowSummary: {
             type: Object,
