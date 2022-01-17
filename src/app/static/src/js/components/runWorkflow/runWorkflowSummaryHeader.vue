@@ -6,8 +6,8 @@
             <alert-triangle-icon size="2x" stroke="red" class="custom-class"/>
         </div>
         <div class="col-auto">
-            <span class="d-inline-block pb-2"> Some reports depend on the latest version of other reports that are not included in your workflow:</span>
-            <div v-for="(missing_dependencies, report) in workflowSummary.missing_dependencies" :key="report">
+            <span class="d-inline-block pb-2">Some reports depend on the latest version of other reports that are not included in your workflow:</span>
+            <div class="missingDependency" v-for="(missing_dependencies, report) in workflowSummary.missing_dependencies" :key="report">
                 <span v-if="missing_dependencies.length" class="font-weight-bold"> {{ report }}</span>
                 <ul v-for="missing_dependency in missing_dependencies" class="styled"  :key="missing_dependency">
                     <li>{{ missing_dependency }}</li>
@@ -39,6 +39,11 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
         workflowSummary: {
             type: Object,
             required: true
+        }
+    },
+    watch: {
+        workflowSummary(){
+            console.log("workflowsummary", this.workflowSummary)
         }
     },
     computed: {
