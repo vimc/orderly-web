@@ -1,7 +1,9 @@
 <template>
-    <div v-if="hasDependenciesLength">
-        <report-parameter :dependencies="dependencies"/>
-        <div v-if="error"><p class="row mt-3 justify-content-center col-8 text-danger">{{ error }}</p></div>
+    <div id="summary-header">
+        <div v-if="hasDependenciesLength">
+            <report-parameter :dependencies="dependencies" :git-commit="workflowMetadata.git_commit"/>
+            <div v-if="error"><p class="row mt-3 justify-content-center col-8 text-danger">{{ error }}</p></div>
+        </div>
     </div>
 </template>
 

@@ -23,6 +23,7 @@
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="paramSize(report)">
                                             <p v-for="(value, key) in report.params">{{ key }}: {{ value }}</p>
+                                            {{getDefaultParams(report.name)}}
                                             <div v-if="paramSize(report) > 3">
                                                 <a href="#collapseSummary"
                                                    class="pt-2 d-inline-block small"
@@ -56,15 +57,18 @@ import Vue from "vue"
 import {InfoIcon} from "vue-feather-icons";
 import {Dependency, WorkflowReportWithDependency} from "../../utils/types";
 import {VTooltip} from "v-tooltip";
+import {api} from "../../utils/api";
 
 interface Props {
     dependencies: Dependency;
+    gitCommit: string;
 }
 
 interface Methods {
     paramSize: (report: WorkflowReportWithDependency) => number;
     showDetails: (params: Record<string, string>) => Record<string, string>;
     reportInfo: (reportName: string) => string;
+    getDefaultParams: (reportName: string) => void
 }
 
 export default Vue.extend<unknown, Methods, unknown, Props>({
@@ -73,6 +77,10 @@ export default Vue.extend<unknown, Methods, unknown, Props>({
         dependencies: {
             required: true,
             type: Object
+        },
+        gitCommit: {
+            required: true,
+            type: String
         }
     },
     methods: {
@@ -88,6 +96,17 @@ export default Vue.extend<unknown, Methods, unknown, Props>({
                 remainingParams[key] = params[key]
                 return remainingParams
             }, {});
+        },
+        getDefaultParams(reportName) {
+            console.log(reportName)
+            const commit = this.gitCommit ? `?commit=${this.gitCommit}` : '';
+            api.post(`/report/${reportName}/config/parameters/${commit}`)
+                .then(({data}) => {
+                    console.log(data.data)
+                })
+                .catch((error) => {
+                    console.log(error)
+                })
         }
     },
     components: {

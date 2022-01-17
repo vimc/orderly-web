@@ -1,32 +1,47 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../js/components/runWorkflow/runWorkflowSummary.vue"
 import {RunWorkflowMetadata} from "../../../js/utils/types";
+import {mockAxios} from "../../mockAxios";
+import reportParameter from "../../../js/components/workflowSummary/reportParameter.vue";
 
 describe(`runWorkflowSummary`, () => {
 
-    const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
-        return shallowMount(runWorkflowSummary, {propsData: {workflowMetadata: meta}})
+    const dependency = {
+        refs: "test",
+        missing_dependencies: {},
+        reports: [{name: "test", params: {"key": "value"}}]
     }
 
-    it(`it renders workflow summary page with multiple reports`, () => {
-        const wrapper = getWrapper({
-            reports: [{name: "r1"}, {name: "r2"}]
-        });
-        expect(wrapper.find("#summary-header").text()).toBe("Summary");
-        expect(wrapper.find("span").text()).toBe("Your workflow contains 2 reports:");
-        expect(wrapper.findAll("li").length).toBe(2);
-        expect(wrapper.findAll("li").at(0).text()).toBe("r1");
-        expect(wrapper.findAll("li").at(1).text()).toBe("r2");
-    });
+    const metadata = {
+        reports: [{name: "r1", params: {"key": "value"}}, {name: "r2"}],
+        git_commit: "gitCommit"
+    }
 
-    it(`it renders workflow summary page with single report`, () => {
-        const wrapper = getWrapper({
-            reports: [{name: "r1"}]
-        });
-        expect(wrapper.find("#summary-header").text()).toBe("Summary");
-        expect(wrapper.find("span").text()).toBe("Your workflow contains 1 report:");
-        expect(wrapper.findAll("li").length).toBe(1);
-        expect(wrapper.findAll("li").at(0).text()).toBe("r1");
+    beforeEach(() => {
+        mockAxios.reset();
+        mockAxios.onPost('http://app/workflows/summary')
+            .reply(200, {"data": dependency});
+    })
+
+    const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
+        return shallowMount(runWorkflowSummary,
+            {
+                propsData: {workflowMetadata: meta}
+            })
+    }
+
+    it(`it can post workflow summary with dependencies as response`,  (done) => {
+        const wrapper = getWrapper(metadata);
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            const data = JSON.parse(mockAxios.history.post[0].data);
+            expect(data.ref).toEqual("gitCommit")
+            expect(data.reports).toEqual(metadata.reports)
+            expect(wrapper.findComponent(reportParameter).props("dependencies")).toEqual(dependency)
+            done()
+        })
     });
 
     it(`emits valid event on mount`, () => {
