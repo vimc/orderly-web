@@ -39,6 +39,12 @@
                             </a>
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
+                        <td>
+                            <tr>Parameters</tr>
+                            <tr>param 1: name 1</tr>
+                            <tr>param 2: name 2</tr>
+                            <tr>show default...</tr>
+                        </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
                         </td>
