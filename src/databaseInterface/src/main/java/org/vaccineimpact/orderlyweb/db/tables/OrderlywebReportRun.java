@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row13;
+import org.jooq.Row12;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebReportRunRecord;
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
-    private static final long serialVersionUID = 1549334849;
+    private static final long serialVersionUID = -729066364;
 
     /**
      * The reference instance of <code>orderlyweb_report_run</code>
@@ -107,11 +107,6 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     public final TableField<OrderlywebReportRunRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
-     * The column <code>orderlyweb_report_run.workflow_run_key</code>.
-     */
-    public final TableField<OrderlywebReportRunRecord, String> WORKFLOW_RUN_KEY = createField(DSL.name("workflow_run_key"), org.jooq.impl.SQLDataType.CLOB, this, "");
-
-    /**
      * Create a <code>orderlyweb_report_run</code> table reference
      */
     public OrderlywebReportRun() {
@@ -161,7 +156,7 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
     @Override
     public List<ForeignKey<OrderlywebReportRunRecord, ?>> getReferences() {
-        return Arrays.<ForeignKey<OrderlywebReportRunRecord, ?>>asList(Keys.FK_ORDERLYWEB_REPORT_RUN_ORDERLYWEB_USER_1, Keys.FK_ORDERLYWEB_REPORT_RUN_REPORT_VERSION_1, Keys.FK_ORDERLYWEB_REPORT_RUN_ORDERLYWEB_WORKFLOW_RUN_1);
+        return Arrays.<ForeignKey<OrderlywebReportRunRecord, ?>>asList(Keys.FK_ORDERLYWEB_REPORT_RUN_ORDERLYWEB_USER_1, Keys.FK_ORDERLYWEB_REPORT_RUN_REPORT_VERSION_1);
     }
 
     public OrderlywebUser orderlywebUser() {
@@ -170,10 +165,6 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
 
     public ReportVersion reportVersion() {
         return new ReportVersion(this, Keys.FK_ORDERLYWEB_REPORT_RUN_REPORT_VERSION_1);
-    }
-
-    public OrderlywebWorkflowRun orderlywebWorkflowRun() {
-        return new OrderlywebWorkflowRun(this, Keys.FK_ORDERLYWEB_REPORT_RUN_ORDERLYWEB_WORKFLOW_RUN_1);
     }
 
     @Override
@@ -203,11 +194,11 @@ public class OrderlywebReportRun extends TableImpl<OrderlywebReportRunRecord> {
     }
 
     // -------------------------------------------------------------------------
-    // Row13 type methods
+    // Row12 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row13<Integer, String, String, Timestamp, String, String, String, String, String, String, String, String, String> fieldsRow() {
-        return (Row13) super.fieldsRow();
+    public Row12<Integer, String, String, Timestamp, String, String, String, String, String, String, String, String> fieldsRow() {
+        return (Row12) super.fieldsRow();
     }
 }

@@ -4,6 +4,7 @@
 package org.vaccineimpact.orderlyweb.db.tables;
 
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row5;
+import org.jooq.Row8;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -30,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRepor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRunReportsRecord> {
 
-    private static final long serialVersionUID = -1369221971;
+    private static final long serialVersionUID = 1237829644;
 
     /**
      * The reference instance of <code>orderlyweb_workflow_run_reports</code>
@@ -69,6 +70,21 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
      * The column <code>orderlyweb_workflow_run_reports.params</code>.
      */
     public final TableField<OrderlywebWorkflowRunReportsRecord, String> PARAMS = createField(DSL.name("params"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_workflow_run_reports.logs</code>.
+     */
+    public final TableField<OrderlywebWorkflowRunReportsRecord, String> LOGS = createField(DSL.name("logs"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_workflow_run_reports.status</code>.
+     */
+    public final TableField<OrderlywebWorkflowRunReportsRecord, String> STATUS = createField(DSL.name("status"), org.jooq.impl.SQLDataType.CLOB, this, "");
+
+    /**
+     * The column <code>orderlyweb_workflow_run_reports.date</code>.
+     */
+    public final TableField<OrderlywebWorkflowRunReportsRecord, Timestamp> DATE = createField(DSL.name("date"), org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
 
     /**
      * Create a <code>orderlyweb_workflow_run_reports</code> table reference
@@ -154,11 +170,11 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
     }
 
     // -------------------------------------------------------------------------
-    // Row5 type methods
+    // Row8 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row5<Integer, String, String, String, String> fieldsRow() {
-        return (Row5) super.fieldsRow();
+    public Row8<Integer, String, String, String, String, String, String, Timestamp> fieldsRow() {
+        return (Row8) super.fieldsRow();
     }
 }
