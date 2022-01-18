@@ -7,7 +7,7 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {session} from "../../../js/utils/session";
 import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
-import runWorkflowSummary from "../../../js/components/runWorkflow/runWorkflowSummary.vue";
+import runWorkflowSummary from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue";
 
 describe(`runWorkflow`, () => {
 

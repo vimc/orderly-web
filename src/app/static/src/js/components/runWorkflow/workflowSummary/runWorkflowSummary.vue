@@ -1,7 +1,7 @@
 <template>
     <div id="summary-header">
         <div v-if="hasDependenciesLength">
-            <report-parameter :dependencies="dependencies" :git-commit="workflowMetadata.git_commit"/>
+            <report-parameter :dependencies="dependencies" :git-commit.sync="workflowMetadata.git_commit"/>
             <div v-if="error"><p class="row mt-3 justify-content-center col-8 text-danger">{{ error }}</p></div>
         </div>
     </div>
@@ -9,9 +9,9 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, Dependency} from "../../utils/types";
-    import {api} from "../../utils/api";
-    import ReportParameter from "../workflowSummary/reportParameter.vue"
+    import {RunWorkflowMetadata, Dependency} from "../../../utils/types";
+    import {api} from "../../../utils/api";
+    import ReportParameter from "./reportParameter.vue"
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata;
