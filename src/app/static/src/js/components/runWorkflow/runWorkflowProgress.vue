@@ -79,6 +79,7 @@ import ErrorInfo from "../errorInfo.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
+    RunWorkflowMetadata
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
@@ -90,6 +91,7 @@ interface Data {
     error: string;
     defaultMessage: string;
     pollingTimer: null | number;
+    runWorkflowMetadata: RunWorkflowMetadata | null
 }
 
 interface Methods {
@@ -102,6 +104,8 @@ interface Methods {
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
+    // getReportWorkflowSummary: () => void;
+    getWorkflowDetails: () => void
 }
 
 interface Props {
@@ -128,7 +132,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
-            pollingTimer: null
+            pollingTimer: null,
+            workflowSummary: null,
+            runWorkflowMetadata: null
         };
     },
     methods: {
@@ -169,6 +175,31 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                         "An error occurred fetching the workflow reports";
                 });
         },
+        getWorkflowDetails() {
+            api.get(`/workflows/${this.selectedWorkflowKey}/`)
+                .then(({data}) => {
+                    this.runWorkflowMetadata = data.data
+                    this.error = "";
+                    this.defaultMessage = "";
+                })
+                .catch((error) => {
+                    this.error = error
+                    this.defaultMessage = "An error occurred while retrieving workflow details";
+                })
+        },
+        // getReportWorkflowSummary() {
+        //     api.post(`/workflows/summary`, {
+        //         reports: this.workflowRunStatus.reports,
+        //         // ref: this.workflowMetadata.git_commit
+        //     })
+        //         .then(({data}) => {
+        //             this.workflowSummary = data.data;
+        //             this.error = "";
+        //         })
+        //         .catch((error) => {
+        //             this.error = error;
+        //         })
+        // },
         rerun() {
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
@@ -216,9 +247,11 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.getWorkflowDetails();
                 this.startPolling();
             } else {
                 this.workflowRunStatus = null;
+                this.runWorkflowMetadata = null;
             }
         },
         workflowRunStatus(newWorkflowRunStatus) {
@@ -226,10 +259,18 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             if (interpretStatus === "Failed" || interpretStatus === "Complete") {
                 this.stopPolling();
             }
+            // console.log("workflowRunStatus", this.workflowRunStatus)
+            // if (this.workflowRunStatus){
+            //     this.getReportWorkflowSummary();
+            // }
+        },
+        runWorkflowMetadata(){
+            console.log("runWorkflowMetadata", this.runWorkflowMetadata)
         }
     },
     mounted() {
         this.getWorkflowRunSummaries();
+        // this.getReportWorkflowSummary();
         this.selectedWorkflowKey = this.initialSelectedWorkflow;
     },
     beforeDestroy() {
