@@ -1,6 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
 import {Dependency} from "../../../../js/utils/types";
-import {mockAxios} from "../../../mockAxios";
 import reportParameter from "../../../../js/components/runWorkflow/workflowSummary/reportParameter.vue";
 
 describe(`reportParameter`, () => {
@@ -13,17 +12,6 @@ describe(`reportParameter`, () => {
             {name: "testReport2", params: {"nmin": "2"}}
         ]
     }
-
-    const defaultParameters = [{"name": "nmin", "value": "default"},{"name": "nmin", "value": "123"}]
-    const defaultParameters2 = [{"name": "nmin2", "value": "default2"},{"name": "nmin2", "value": "123"}]
-
-    beforeEach(() => {
-        mockAxios.reset();
-        mockAxios.onGet('http://app/report/testReport/config/parameters/?commit=commit123')
-            .reply(200, {"data": defaultParameters});
-        mockAxios.onGet('http://app/report/testReport2/config/parameters/?commit=commit123')
-            .reply(200, {"data": defaultParameters2});
-    })
 
     const getWrapper = (dependency: Partial<Dependency> = {}) => {
         return shallowMount(reportParameter,
@@ -79,57 +67,13 @@ describe(`reportParameter`, () => {
         expect(wrapper.find("#report-params p").text()).toBe("There are no parameters")
     });
 
-    it(`it can get default parameters`,  (done) => {
+
+    it(`it can render default parameters`, () => {
         const wrapper = getWrapper(dependency);
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2)
-            expect(mockAxios.history.get[0].url).toBe('http://app/report/testReport/config/parameters/?commit=commit123');
-            expect(mockAxios.history.get[1].url).toBe('http://app/report/testReport2/config/parameters/?commit=commit123');
-            expect(wrapper.vm.$data.defaultParamsError).toStrictEqual([])
-            expect(wrapper.vm.$data.defaultParams.length).toBe(2)
-            expect(wrapper.vm.$data.defaultParams[0]).toEqual(
-                {
-                    "params": [{"name": "nmin", "value": "default"}, {"name": "nmin", "value": "123"}],
-                    "reportName": "testReport"
-                })
-            expect(wrapper.vm.$data.defaultParams[1]).toEqual(
-                {
-                    "params": [{"name": "nmin2", "value": "default2"}, {"name": "nmin2", "value": "123"}],
-                    "reportName": "testReport2"
-                })
-            done()
-        })
-    });
-
-    it(`it can render default parameters error`, (done) => {
-        mockAxios.onGet('http://app/report/testReport/config/parameters/?commit=commit123')
-            .reply(404, "ERROR");
-
-        const wrapper = getWrapper(dependency);
-
-        setTimeout(() => {
-            expect(wrapper.vm.$data.defaultParamsError.length).toBe(1)
-            expect(wrapper.vm.$data.defaultParamsError[0].reportName).toBe("testReport")
-            expect(wrapper.vm.$data.defaultParamsError[0].error.message).toStrictEqual("Request failed with status code 404")
-            done()
-        })
-    });
-
-    it(`it can render default parameters`, (done) => {
-        const wrapper = getWrapper(dependency);
-
-        setTimeout(() => {
-            expect(mockAxios.history.get.length).toBe(2)
-            expect(wrapper.vm.$data.defaultParams.length).toBe(2)
-            const defaultParams = wrapper.findAll("#default-params-collapse")
-            expect(defaultParams.length).toBe(4)
-            expect(defaultParams.at(0).text()).toBe("nmin: default")
-            expect(defaultParams.at(1).text()).toBe("nmin: 123")
-            expect(defaultParams.at(2).text()).toBe("nmin2: default2")
-            expect(defaultParams.at(3).text()).toBe("nmin2: 123")
-            done()
-        })
+        const defaultParams = wrapper.findAll("#default-params-collapse")
+        expect(defaultParams.length).toBe(2)
+        expect(defaultParams.at(0).text()).toBe("nmin: 1")
+        expect(defaultParams.at(1).text()).toBe("nmin: 2")
     });
 
 })

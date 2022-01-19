@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="summary">
-                    <div v-for="(report, index) in dependencies.reports" class="single-workflow-summary-area">
+                    <div v-for="(report, index) in dependencies.reports" :key="index" class="single-workflow-summary-area">
                         <div class="workflow-summary-report wow fadeInLeft">
                         </div>
                         <div id="report-name-icon" class="d-inline-block">
@@ -22,8 +22,8 @@
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="paramSize(report)">
-                                            <p id="params" v-for="(value, key) in report.params">{{ key }}: {{ value }}</p>
-                                            <div id="default-params" v-if="showDefaultParameters(report.name)" :key="index">
+                                            <p id="params" v-for="(value, key, index) in report.params" :key="index">{{ key }}: {{ value }}</p>
+                                            <div id="default-params" v-if="paramSize(report) > 0">
                                                 <a href="#collapseSummary"
                                                    class="pt-2 d-inline-block small"
                                                    data-toggle="collapse"
@@ -31,7 +31,7 @@
                                                    aria-controls="collapseSummary"
                                                 >Show default...</a>
                                                 <div id="collapseSummary" class="collapse">
-                                                    <p id="default-params-collapse"v-for="(param, index) in showDefaultParameters(report.name)">{{ param.name }}: {{ param.value }}</p>
+                                                    <p id="default-params-collapse" v-for="(value, key) in showDetails(report.params)">{{ key }}: {{ value }}</p>
                                                 </div>
                                             </div>
                                         </div>
@@ -53,10 +53,8 @@
 <script lang="ts">
 import Vue from "vue"
 import {InfoIcon} from "vue-feather-icons";
-import {Dependency, Error, Parameter, WorkflowReportWithDependency} from "../../../utils/types";
+import {Dependency, WorkflowReportWithDependency} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
-import {api} from "../../../utils/api";
-import {AxiosResponse} from "axios";
 
 interface Props {
     dependencies: Dependency;
@@ -66,17 +64,10 @@ interface Props {
 interface Methods {
     paramSize: (report: WorkflowReportWithDependency) => number;
     reportInfo: (reportName: string) => string;
-    getParametersApiCall: (reportName: string) => Promise<AxiosResponse>
-    getDefaultParameters: () => void
-    showDefaultParameters: (reportName: string) => Parameter | null;
+    showDetails: (params: Record<string, string>) => Record<string, string>;
 }
 
-interface Data {
-    defaultParams: Record<string, Parameter[]>[]
-    defaultParamsError: Error[],
-}
-
-export default Vue.extend<Data, Methods, unknown, Props>({
+export default Vue.extend<unknown, Methods, unknown, Props>({
     name: "reportParameter",
     props: {
         dependencies: {
@@ -88,12 +79,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             type: String
         }
     },
-    data() {
-        return {
-            defaultParams: [],
-            defaultParamsError: []
-        }
-    },
     methods: {
         reportInfo(reportName) {
             const reportNum = this.dependencies.reports.filter(report => report.name === reportName).length
@@ -102,27 +87,12 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         paramSize(report) {
             return report.params ? Object.keys(report.params).length : 0
         },
-        getParametersApiCall(reportName) {
-            const commit = this.gitCommit ? `?commit=${this.gitCommit}` : '';
-            return api.get(`/report/${reportName}/config/parameters/${commit}`)
+        showDetails(params) {
+            return Object.keys(params).slice(0).reduce((entireParams, key) => {
+                entireParams[key] = params[key]
+                return entireParams
+            }, {});
         },
-        getDefaultParameters() {
-            this.dependencies?.reports.map(report => {
-                this.getParametersApiCall(report.name)
-                    .then(({data}) => {
-                        this.defaultParams.push({reportName: report.name, params: data.data})
-                    })
-                    .catch((error) => {
-                        this.defaultParamsError.push({reportName: report.name, error: error})
-                    })
-            })
-        },
-        showDefaultParameters(reportName) {
-            return this.defaultParams?.find(data => data.reportName === reportName)?.params || null
-        }
-    },
-    mounted() {
-        this.getDefaultParameters()
     },
     components: {
         InfoIcon
