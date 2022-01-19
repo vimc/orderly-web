@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import java.nio.file.Files;
+import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -117,11 +117,11 @@ class RunWorkflowTests : SeleniumTest()
         addReport("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text).isEqualTo("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text).isEqualTo("No parameters")
-        assertThat(nextButton.isEnabled()).isTrue()
+        assertThat(nextButton.isEnabled).isTrue()
 
         driver.findElement(By.cssSelector(".remove-report-button")).click()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
-        assertThat(nextButton.isEnabled()).isFalse()
+        assertThat(nextButton.isEnabled).isFalse()
     }
 
     @Test
@@ -186,7 +186,7 @@ class RunWorkflowTests : SeleniumTest()
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
         tmpFile.writeText("report\nminimal")
 
-        createWorkflow();
+        createWorkflow()
         driver.findElement(By.id("import-from-csv-label")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
 
@@ -380,7 +380,7 @@ class RunWorkflowTests : SeleniumTest()
         val params = driver.findElement(By.id("params"))
         assertThat(params.text).contains("nmin: 1")
 
-        val showDefault = driver.findElement(By.cssSelector("#default-params a"))
+        val showDefault = driver.findElement(By.cssSelector("#default-params-0 a"))
         assertThat(showDefault.text).isEqualTo("Show default...")
     }
 
@@ -408,7 +408,7 @@ class RunWorkflowTests : SeleniumTest()
         val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val showDefault = driver.findElement(By.cssSelector("#default-params a"))
+        val showDefault = driver.findElement(By.cssSelector("#default-params-0 a"))
         assertThat(showDefault.text).isEqualTo("Show default...")
 
         val defaultParamsOne = driver.findElement(By.id("default-params-0"))
