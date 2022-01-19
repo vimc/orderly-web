@@ -3,7 +3,7 @@
         <div class="row">
             <div class="col-12">
                 <div class="summary">
-                    <div v-for="(report, index) in dependencies.reports" :key="index" class="single-workflow-summary-area">
+                    <div v-for="(report, index) in workflowSummary.reports" :key="index" class="single-workflow-summary-area">
                         <div class="workflow-summary-report wow fadeInLeft">
                         </div>
                         <div id="report-name-icon" class="d-inline-block">
@@ -22,8 +22,10 @@
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="paramSize(report)">
-                                            <p id="params" v-for="(value, key, index) in report.params" :key="index">{{ key }}: {{ value }}</p>
-                                            <div id="default-params" v-if="paramSize(report) > 0">
+                                            <p id="params"
+                                               v-for="(value, key, index) in report.params"
+                                               :key="index">{{ key }}: {{ value }}</p>
+                                            <div :id="`default-params-${index}`" >
                                                 <a href="#collapseSummary"
                                                    class="pt-2 d-inline-block small"
                                                    data-toggle="collapse"
@@ -31,7 +33,13 @@
                                                    aria-controls="collapseSummary"
                                                 >Show default...</a>
                                                 <div id="collapseSummary" class="collapse">
-                                                    <p id="default-params-collapse" v-for="(value, key) in showDetails(report.params)">{{ key }}: {{ value }}</p>
+                                                    <p id="default-params-collapse"
+                                                       v-for="(param, index) in showDefaultParameters(report.name)"
+                                                       :key="index">{{ param.name }}: {{ param.value }}</p>
+                                                    <error-info v-if="getDefaultParametersError(report.name)"
+                                                                :default-message="defaultMessage"
+                                                                :api-error="getDefaultParametersError(report.name)">
+                                                    </error-info>
                                                 </div>
                                             </div>
                                         </div>
@@ -51,26 +59,38 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue"
+import Vue from "vue";
 import {InfoIcon} from "vue-feather-icons";
-import {Dependency, WorkflowReportWithDependency} from "../../../utils/types";
+import {WorkflowSummary, Parameter, WorkflowReportWithDependency} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
+import runWorkflowMixin from "../runWorkflowMixin.ts";
+import ErrorInfo from "../../errorInfo.vue";
 
 interface Props {
-    dependencies: Dependency;
+    workflowSummary: WorkflowSummary;
     gitCommit: string;
 }
 
 interface Methods {
     paramSize: (report: WorkflowReportWithDependency) => number;
     reportInfo: (reportName: string) => string;
-    showDetails: (params: Record<string, string>) => Record<string, string>;
+    showDefaultParameters: (reportName: string) => Parameter | null;
+    getDefaultParametersError: (reportName: string) => string
 }
 
-export default Vue.extend<unknown, Methods, unknown, Props>({
+interface Data {
+    defaultMessage: string
+}
+
+export default Vue.extend<Data, Methods, unknown, Props>({
     name: "reportParameter",
+    data() {
+        return {
+            defaultMessage: "An error occurred while retrieving default params"
+        }
+    },
     props: {
-        dependencies: {
+        workflowSummary: {
             required: true,
             type: Object
         },
@@ -81,21 +101,26 @@ export default Vue.extend<unknown, Methods, unknown, Props>({
     },
     methods: {
         reportInfo(reportName) {
-            const reportNum = this.dependencies.reports.filter(report => report.name === reportName).length
+            const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
             return `${reportName} runs ${reportNum} times`;
         },
         paramSize(report) {
             return report.params ? Object.keys(report.params).length : 0
         },
-        showDetails(params) {
-            return Object.keys(params).slice(0).reduce((entireParams, key) => {
-                entireParams[key] = params[key]
-                return entireParams
-            }, {});
+        showDefaultParameters(reportName) {
+            return this.defaultParams?.find(data => data.reportName === reportName)?.params || null
         },
+        getDefaultParametersError(reportName) {
+            return this.defaultParamsErrors?.find(error => error.reportName === reportName) || ""
+        }
+    },
+    mixins: [runWorkflowMixin],
+    mounted() {
+        this.getDefaultParameters(this.workflowSummary, this.gitCommit)
     },
     components: {
-        InfoIcon
+        InfoIcon,
+        ErrorInfo
     },
     directives: {tooltip: VTooltip}
 

@@ -6,7 +6,7 @@ import reportParameter from "../../../../js/components/runWorkflow/workflowSumma
 
 describe(`runWorkflowSummary`, () => {
 
-    const dependency = {
+    const workflowSummary = {
         refs: "test",
         missing_dependencies: {},
         reports: [{name: "test", params: {"key": "value"}}]
@@ -20,7 +20,7 @@ describe(`runWorkflowSummary`, () => {
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onPost('http://app/workflows/summary')
-            .reply(200, {"data": dependency});
+            .reply(200, {"data": workflowSummary});
     })
 
     const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
@@ -39,7 +39,7 @@ describe(`runWorkflowSummary`, () => {
             const data = JSON.parse(mockAxios.history.post[0].data);
             expect(data.ref).toEqual("gitCommit")
             expect(data.reports).toEqual(metadata.reports)
-            expect(wrapper.findComponent(reportParameter).props("dependencies")).toEqual(dependency)
+            expect(wrapper.findComponent(reportParameter).props("workflowSummary")).toEqual(workflowSummary)
             done()
         })
     });

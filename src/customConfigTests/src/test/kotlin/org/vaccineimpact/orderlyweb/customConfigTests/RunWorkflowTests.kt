@@ -384,4 +384,38 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(showDefault.text).isEqualTo("Show default...")
     }
 
+    @Test
+    fun `can display workflow summary with default params`()
+    {
+        createWorkflow()
+
+        //Change branch to find report with parameter
+        changeToOtherBranch()
+
+        //Add the report - Next button should be disabled until we set the parameter value
+        addReport("default-param")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isFalse()
+
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
+        assertThat(summaryReportNameDiv.text).isEqualTo("default-param")
+
+        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        assertThat(parameterHeading.text).isEqualTo("Parameters")
+
+        val showDefault = driver.findElement(By.cssSelector("#default-params a"))
+        assertThat(showDefault.text).isEqualTo("Show default...")
+
+        val defaultParamsOne = driver.findElement(By.id("default-params-0"))
+        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.id("default-params-collapse"))
+        assertThat(defaultParamsCollapsibleOne.size).isEqualTo(2)
+        assertThat(defaultParamsCollapsibleOne[0].text).contains("nmin: 0.5")
+        assertThat(defaultParamsCollapsibleOne[1].text).contains("disease: HepB")
+    }
+
 }
