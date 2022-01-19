@@ -10,7 +10,7 @@ import java.time.Instant
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
-interface ReportRunRepository
+interface ReportRunRepository: ReportRunLogRepository
 {
     fun addReportRun(
         key: String,
@@ -23,17 +23,7 @@ interface ReportRunRepository
         gitCommit: String?
     )
 
-    @Throws(UnknownObjectError::class)
-    fun getReportRun(key: String): ReportRunLog
-
     fun getAllReportRunsForUser(user: String): List<ReportRunWithDate>
-
-    fun updateReportRun(
-        key: String,
-        status: String,
-        version: String?,
-        logs: List<String>?
-    )
 }
 
 class OrderlyWebReportRunRepository : ReportRunRepository
