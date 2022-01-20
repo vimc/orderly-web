@@ -379,9 +379,6 @@ class RunWorkflowTests : SeleniumTest()
 
         val params = driver.findElement(By.id("params"))
         assertThat(params.text).contains("nmin: 1")
-
-        val showDefault = driver.findElement(By.cssSelector("#default-params a"))
-        assertThat(showDefault.text).isEqualTo("Show default...")
     }
 
 }

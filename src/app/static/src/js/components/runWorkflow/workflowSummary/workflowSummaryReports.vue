@@ -42,7 +42,7 @@
 <script lang="ts">
 import Vue from "vue"
 import {InfoIcon} from "vue-feather-icons";
-import {WorkflowSummary, WorkflowReportWithDependency} from "../../../utils/types";
+import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
 
 interface Props {
@@ -50,7 +50,7 @@ interface Props {
 }
 
 interface Methods {
-    paramSize: (report: WorkflowReportWithDependency) => number;
+    paramSize: (report: WorkflowReportWithDependencies) => number;
     reportInfo: (reportName: string) => string;
 }
 
