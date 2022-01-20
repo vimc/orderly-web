@@ -2,7 +2,7 @@ import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
-import reportParameter from "../../../../js/components/runWorkflow/workflowSummary/reportParameter.vue";
+import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`runWorkflowSummary`, () => {
 
@@ -39,7 +39,7 @@ describe(`runWorkflowSummary`, () => {
             const data = JSON.parse(mockAxios.history.post[0].data);
             expect(data.ref).toEqual("gitCommit")
             expect(data.reports).toEqual(metadata.reports)
-            expect(wrapper.findComponent(reportParameter).props("workflowSummary")).toEqual(workflowSummary)
+            expect(wrapper.findComponent(workflowSummaryReports).props("workflowSummary")).toEqual(workflowSummary)
             done()
         })
     });

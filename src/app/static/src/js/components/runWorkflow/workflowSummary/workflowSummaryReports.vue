@@ -4,7 +4,7 @@
             <div class="col-12">
                 <div class="summary">
                     <div v-for="(report, index) in workflowSummary.reports" :key="index" class="single-workflow-summary-area">
-                        <div class="workflow-summary-report wow fadeInLeft">
+                        <div class="workflow-summary-report">
                         </div>
                         <div id="report-name-icon" class="d-inline-block">
                             <h5>{{ report.name }}
@@ -18,7 +18,7 @@
                         </div>
                         <div class="row">
                             <div id="report-params" class="col-12 col-md-6 col-lg-4">
-                                <div class="single-workflow-summary-content parameters-bg-color d-flex wow fadeInLeft">
+                                <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="paramSize(report)">
@@ -83,12 +83,12 @@ interface Data {
 }
 
 export default Vue.extend<Data, Methods, unknown, Props>({
-    name: "reportParameter",
-    data() {
-        return {
-            defaultMessage: "An error occurred while retrieving default params"
-        }
-    },
+    name: "workflowSummaryReports",
+        data() {
+            return {
+                defaultMessage: "An error occurred while retrieving default params"
+            }
+        },
     props: {
         workflowSummary: {
             required: true,
@@ -97,12 +97,12 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         gitCommit: {
             required: true,
             type: String
-        }
+        },
     },
     methods: {
         reportInfo(reportName) {
             const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
-            return `${reportName} runs ${reportNum} times`;
+            return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
         },
         paramSize(report) {
             return report.params ? Object.keys(report.params).length : 0
@@ -123,6 +123,5 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         ErrorInfo
     },
     directives: {tooltip: VTooltip}
-
 });
 </script>

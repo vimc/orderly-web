@@ -1,7 +1,8 @@
 <template>
     <div id="summary-header">
         <div v-if="hasDependenciesLength">
-            <report-parameter :workflow-summary="workflowSummary" :git-commit.sync="workflowMetadata.git_commit"/>
+            <workflow-summary-reports :workflow-summary="workflowSummary"
+                                      :git-commit.sync="workflowMetadata.git_commit"/>
         </div>
     </div>
 </template>
@@ -10,7 +11,7 @@
     import Vue from "vue"
     import {RunWorkflowMetadata, WorkflowSummary} from "../../../utils/types";
     import {api} from "../../../utils/api";
-    import ReportParameter from "./reportParameter.vue"
+    import WorkflowSummaryReports from "./workflowSummaryReports.vue"
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata;
@@ -32,7 +33,7 @@
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runWorkflowSummary",
         components: {
-            ReportParameter
+            WorkflowSummaryReports
         },
         data() {
             return {
