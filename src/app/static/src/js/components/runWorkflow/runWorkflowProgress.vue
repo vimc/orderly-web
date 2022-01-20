@@ -92,6 +92,7 @@ interface Data {
     defaultMessage: string;
     pollingTimer: null | number;
     runWorkflowMetadata: RunWorkflowMetadata | null
+    workflowSummary: WorkflowSummary | null
 }
 
 interface Methods {
@@ -104,13 +105,27 @@ interface Methods {
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
-    // getReportWorkflowSummary: () => void;
+    getReportWorkflowSummary: () => void;
     getWorkflowDetails: () => void
 }
 
 interface Props {
     initialSelectedWorkflow: string;
 }
+
+interface WorkflowReportWithDependency {
+    name: string,
+    instance?: string
+    params?: Record<string, string>,
+    depends_on?: string[]
+}
+
+export interface WorkflowSummary {
+    missing_dependencies: Record<string, string[]>,
+    reports: WorkflowReportWithDependency[],
+    refs: string
+}
+
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
 export default Vue.extend<Data, Methods, unknown, Props>({
@@ -181,25 +196,27 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                     this.runWorkflowMetadata = data.data
                     this.error = "";
                     this.defaultMessage = "";
+                    this.getReportWorkflowSummary()
                 })
                 .catch((error) => {
                     this.error = error
                     this.defaultMessage = "An error occurred while retrieving workflow details";
                 })
         },
-        // getReportWorkflowSummary() {
-        //     api.post(`/workflows/summary`, {
-        //         reports: this.workflowRunStatus.reports,
-        //         // ref: this.workflowMetadata.git_commit
-        //     })
-        //         .then(({data}) => {
-        //             this.workflowSummary = data.data;
-        //             this.error = "";
-        //         })
-        //         .catch((error) => {
-        //             this.error = error;
-        //         })
-        // },
+        getReportWorkflowSummary() {
+            api.post(`/workflows/summary`, {
+                reports: this.runWorkflowMetadata.reports,
+                ref: this.runWorkflowMetadata.git_commit
+            })
+                .then(({data}) => {
+                    this.workflowSummary = data.data;
+                    this.error = "";
+                    console.log("workflowsummary", this.workflowSummary)
+                })
+                .catch((error) => {
+                    this.error = error;
+                })
+        },
         rerun() {
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
@@ -266,6 +283,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         },
         runWorkflowMetadata(){
             console.log("runWorkflowMetadata", this.runWorkflowMetadata)
+            // this.getReportWorkflowSummary()
         }
     },
     mounted() {
