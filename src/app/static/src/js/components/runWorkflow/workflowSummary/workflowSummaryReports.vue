@@ -21,7 +21,7 @@
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
-                                        <div v-if="paramSize(report)">
+                                        <div v-if="hasParams(report)">
                                             <p id="params" v-for="(value, key, index) in report.params" :key="index">{{ key }}: {{ value }}</p>
                                         </div>
                                         <div v-else><p>There are no parameters</p></div>
@@ -50,7 +50,7 @@ interface Props {
 }
 
 interface Methods {
-    paramSize: (report: WorkflowReportWithDependencies) => number;
+    hasParams: (report: WorkflowReportWithDependencies) => boolean;
     reportInfo: (reportName: string) => string;
 }
 
@@ -67,8 +67,8 @@ export default Vue.extend<unknown, Methods, unknown, Props>({
             const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
             return `${reportName} runs ${reportNum} ${reportNum <= 1? 'time': 'times'}`;
         },
-        paramSize(report) {
-            return report.params ? Object.keys(report.params).length : 0
+        hasParams(report) {
+            return report.params ? !!Object.keys(report.params).length : false
         }
     },
     components: {
