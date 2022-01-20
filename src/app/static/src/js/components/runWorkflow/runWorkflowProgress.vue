@@ -83,6 +83,8 @@ import {
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
+import runWorkflowMixin from "./runWorkflowMixin.ts";
+import {WorkflowSummary, Parameter} from "../../utils/types";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -107,24 +109,26 @@ interface Methods {
     stopPolling: () => void;
     getReportWorkflowSummary: () => void;
     getWorkflowDetails: () => void
+    showDefaultParameters: (reportName: string) => Parameter | null;
+    getDefaultParametersError: (reportName: string) => string
 }
 
 interface Props {
     initialSelectedWorkflow: string;
 }
 
-interface WorkflowReportWithDependency {
-    name: string,
-    instance?: string
-    params?: Record<string, string>,
-    depends_on?: string[]
-}
+// interface WorkflowReportWithDependency {
+//     name: string,
+//     instance?: string
+//     params?: Record<string, string>,
+//     depends_on?: string[]
+// }
 
-export interface WorkflowSummary {
-    missing_dependencies: Record<string, string[]>,
-    reports: WorkflowReportWithDependency[],
-    refs: string
-}
+// export interface WorkflowSummary {
+//     missing_dependencies: Record<string, string[]>,
+//     reports: WorkflowReportWithDependency[],
+//     refs: string
+// }
 
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
 
@@ -134,6 +138,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         ErrorInfo,
         vSelect,
     },
+    mixins: [runWorkflowMixin],
     props: {
             initialSelectedWorkflow: {
                 type: String,
@@ -196,7 +201,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                     this.runWorkflowMetadata = data.data
                     this.error = "";
                     this.defaultMessage = "";
-                    this.getReportWorkflowSummary()
+                    // this.getReportWorkflowSummary()
+                    console.log("before mixin called")
+                    this.getDefaultParameters(this.workflowSummary, this.runWorkflowMetadata.git_commit)
                 })
                 .catch((error) => {
                     this.error = error
@@ -258,6 +265,13 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 return status.charAt(0).toUpperCase() + status.slice(1);
             }
         },
+        showDefaultParameters(reportName) {
+            console.log("default params 1", this.defaultParams?.find(data => data.reportName === reportName)?.params || null)
+            return this.defaultParams?.find(data => data.reportName === reportName)?.params || null
+        },
+        getDefaultParametersError(reportName) {
+            return this.defaultParamsErrors?.find(error => error.reportName === reportName) || ""
+        }
     },
     watch: {
         selectedWorkflowKey() {
@@ -284,6 +298,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         runWorkflowMetadata(){
             console.log("runWorkflowMetadata", this.runWorkflowMetadata)
             // this.getReportWorkflowSummary()
+        },
+        defaultParams(){
+            console.log("defaultParams", this.defaultParams)
         }
     },
     mounted() {
