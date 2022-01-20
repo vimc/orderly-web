@@ -63,7 +63,7 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE, // NB This will always be null until mrc-2898 is done
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE,
                     ORDERLYWEB_WORKFLOW_RUN.EMAIL,
                     ORDERLYWEB_WORKFLOW_RUN.INSTANCES,
                     ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH,
