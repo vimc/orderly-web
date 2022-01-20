@@ -12,7 +12,7 @@ import org.jooq.Field;
 import org.jooq.ForeignKey;
 import org.jooq.Name;
 import org.jooq.Record;
-import org.jooq.Row8;
+import org.jooq.Row9;
 import org.jooq.Schema;
 import org.jooq.Table;
 import org.jooq.TableField;
@@ -31,7 +31,7 @@ import org.vaccineimpact.orderlyweb.db.tables.records.OrderlywebWorkflowRunRepor
 @SuppressWarnings({ "all", "unchecked", "rawtypes" })
 public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRunReportsRecord> {
 
-    private static final long serialVersionUID = 1237829644;
+    private static final long serialVersionUID = -1637282095;
 
     /**
      * The reference instance of <code>orderlyweb_workflow_run_reports</code>
@@ -85,6 +85,11 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
      * The column <code>orderlyweb_workflow_run_reports.date</code>.
      */
     public final TableField<OrderlywebWorkflowRunReportsRecord, Timestamp> DATE = createField(DSL.name("date"), org.jooq.impl.SQLDataType.TIMESTAMP, this, "");
+
+    /**
+     * The column <code>orderlyweb_workflow_run_reports.report_version</code>.
+     */
+    public final TableField<OrderlywebWorkflowRunReportsRecord, String> REPORT_VERSION = createField(DSL.name("report_version"), org.jooq.impl.SQLDataType.CLOB, this, "");
 
     /**
      * Create a <code>orderlyweb_workflow_run_reports</code> table reference
@@ -170,11 +175,11 @@ public class OrderlywebWorkflowRunReports extends TableImpl<OrderlywebWorkflowRu
     }
 
     // -------------------------------------------------------------------------
-    // Row8 type methods
+    // Row9 type methods
     // -------------------------------------------------------------------------
 
     @Override
-    public Row8<Integer, String, String, String, String, String, String, Timestamp> fieldsRow() {
-        return (Row8) super.fieldsRow();
+    public Row9<Integer, String, String, String, String, String, String, Timestamp, String> fieldsRow() {
+        return (Row9) super.fieldsRow();
     }
 }
