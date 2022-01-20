@@ -33,9 +33,9 @@
                                                    aria-controls="collapseSummary"
                                                 >Show default...</a>
                                                 <div :id="`collapseSummary-${index}`" class="collapse">
-                                                    <p id="default-params-collapse"
-                                                       v-for="(param, index) in showDefaultParameters(report.name)"
-                                                       :key="index">{{ param.name }}: {{ param.value }}</p>
+                                                    <p :id="`default-params-collapse-${key}`"
+                                                       v-for="(param, key) in showDefaultParameters(report.name)"
+                                                       :key="key">{{ param.name }}: {{ param.value }}</p>
                                                     <error-info v-if="getDefaultParametersError(report.name)"
                                                                 :default-message="defaultMessage"
                                                                 :api-error="getDefaultParametersError(report.name)">

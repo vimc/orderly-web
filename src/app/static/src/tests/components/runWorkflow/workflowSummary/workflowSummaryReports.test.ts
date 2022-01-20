@@ -151,17 +151,13 @@ describe(`workflowSummaryReports`, () => {
 
             //row1
             const defaultParamOne = wrapper.find("#default-params-0")
-            const defaultParamsCollapseOne = defaultParamOne.findAll("#default-params-collapse")
-            expect(defaultParamsCollapseOne.length).toBe(2)
-            expect(defaultParamsCollapseOne.at(0).text()).toBe("nmin: default")
-            expect(defaultParamsCollapseOne.at(1).text()).toBe("nmin: 123")
+            expect(defaultParamOne.find("#default-params-collapse-0").text()).toEqual("nmin: default")
+            expect(defaultParamOne.find("#default-params-collapse-1").text()).toEqual("nmin: 123")
 
             //row2
             const defaultParamTwo = wrapper.find("#default-params-1")
-            const defaultParamsCollapseTwo = defaultParamTwo.findAll("#default-params-collapse")
-            expect(defaultParamsCollapseTwo.length).toBe(2)
-            expect(defaultParamsCollapseTwo.at(0).text()).toBe("nmin2: default2")
-            expect(defaultParamsCollapseTwo.at(1).text()).toBe("nmin2: 123")
+            expect(defaultParamTwo.find("#default-params-collapse-0").text()).toEqual("nmin2: default2")
+            expect(defaultParamTwo.find("#default-params-collapse-1").text()).toEqual("nmin2: 123")
             done()
         })
     });

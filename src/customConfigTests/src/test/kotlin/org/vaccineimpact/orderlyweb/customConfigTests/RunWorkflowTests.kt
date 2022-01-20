@@ -407,8 +407,8 @@ class RunWorkflowTests : SeleniumTest()
         showDefault.click()
 
         val defaultParamsOne = driver.findElement(By.id("default-params-0"))
-        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.id("default-params-collapse"))
-        assertThat(defaultParamsCollapsibleOne[0].text).isEqualTo("nmin: 0.5")
+        assertThat(defaultParamsOne.findElement(By.id("default-params-collapse-0")).text).contains("nmin: 0.5")
+        assertThat(defaultParamsOne.findElement(By.id("default-params-collapse-1")).text).contains("disease: HepB")
     }
 
 }
