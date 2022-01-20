@@ -5,10 +5,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRunLogRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
-import org.vaccineimpact.orderlyweb.db.repositories.WorkflowRunReportRepository
+import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
@@ -23,6 +20,7 @@ class ReportRunController(
     constructor(context: ActionContext) : this(
             context,
             OrderlyWebReportRunRepository(),
+            OrderlyWebWorkflowRunReportRepository(),
             OrderlyServer(AppConfig()).throwOnError()
     )
 
@@ -31,12 +29,13 @@ class ReportRunController(
         val key = context.params(":key")
         val workflow = context.queryParams("workflow")
 
-        if (workflow == null)
+        if (workflow != null)
         {
             this.workflowRunReportRepository.checkReportIsInWorkflow(key, workflow)
         }
 
-        val reportRunLogRepository: ReportRunLogRepository = if (workflow == null) {
+        val reportRunLogRepository: ReportRunLogRepository = if (workflow == null)
+        {
             reportRunRepository
         }
         else

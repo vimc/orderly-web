@@ -33,7 +33,7 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
 
     override fun updateReportRun(key: String, status: String, version: String?, logs: List<String>?)
     {
-        val logsString = logs?.joinToString(separator = "\n") //TODO: DO this in caller?
+        val logsString = logs?.joinToString(separator = "\n")
 
         val reportVersion = if (status == OrderlyWebReportRunRepository.SUCCESS_STATUS)
         {
@@ -46,8 +46,7 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
                     .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
-                    //TODO: REPORT VERSION NEEDS TO BE ADDED TO THE TABLE
-                    //.set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
+                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
                     .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
                     .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
                     .execute()
@@ -56,7 +55,6 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
 
     override fun getReportRun(key: String): ReportRunLog
     {
-        //TODO: get report version as well
         JooqContext().use {
             val result = it.dsl.select(
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
@@ -64,10 +62,11 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
                     ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE,
+                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
                     ORDERLYWEB_WORKFLOW_RUN.EMAIL,
                     ORDERLYWEB_WORKFLOW_RUN.INSTANCES,
                     ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH,
-                    ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT,)
+                    ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT)
                     .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
                     .join(ORDERLYWEB_WORKFLOW_RUN)
                     .on(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY))
@@ -84,7 +83,7 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
                     result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
                     result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS],
                     result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS],
-                    null //TODO: get report version from workflow run report table
+                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]
             )
         }
     }
