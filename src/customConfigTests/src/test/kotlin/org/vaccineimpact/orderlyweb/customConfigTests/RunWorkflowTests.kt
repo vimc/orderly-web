@@ -410,7 +410,7 @@ class RunWorkflowTests : SeleniumTest()
         val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.id("default-params-collapse"))
         assertThat(defaultParamsCollapsibleOne.size).isEqualTo(2)
         assertThat(defaultParamsCollapsibleOne[0].text).isEqualTo("nmin: 0.5")
-        assertThat(defaultParamsCollapsibleOne[1].text).isEqualTo("disease: HepB") I am not sure why this is empty.
+        assertThat(defaultParamsCollapsibleOne[1].text).isEqualTo("disease: HepB")
     }
 
 }
