@@ -2,11 +2,11 @@ import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
-import reportParameter from "../../../../js/components/runWorkflow/workflowSummary/reportParameter.vue";
+import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`runWorkflowSummary`, () => {
 
-    const dependency = {
+    const workflowSummary = {
         refs: "test",
         missing_dependencies: {},
         reports: [{name: "test", params: {"key": "value"}}]
@@ -20,7 +20,7 @@ describe(`runWorkflowSummary`, () => {
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onPost('http://app/workflows/summary')
-            .reply(200, {"data": dependency});
+            .reply(200, {"data": workflowSummary});
     })
 
     const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
@@ -39,7 +39,7 @@ describe(`runWorkflowSummary`, () => {
             const data = JSON.parse(mockAxios.history.post[0].data);
             expect(data.ref).toEqual("gitCommit")
             expect(data.reports).toEqual(metadata.reports)
-            expect(wrapper.findComponent(reportParameter).props("dependencies")).toEqual(dependency)
+            expect(wrapper.findComponent(workflowSummaryReports).props("workflowSummary")).toEqual(workflowSummary)
             done()
         })
     });
