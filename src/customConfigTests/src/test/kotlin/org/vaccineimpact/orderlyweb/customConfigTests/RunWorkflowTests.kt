@@ -408,7 +408,7 @@ class RunWorkflowTests : SeleniumTest()
 
         val defaultParamsOne = driver.findElement(By.id("default-params-0"))
         assertThat(defaultParamsOne.findElement(By.id("default-params-collapse-0")).text).contains("nmin: 0.5")
-        assertThat(defaultParamsOne.findElement(By.id("default-params-collapse-1")).text).contains("disease: HepB")
+        wait.until(ExpectedConditions.textToBe(By.id("default-params-collapse-1"), "disease: HepB"))
     }
 
 }

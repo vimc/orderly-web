@@ -41,9 +41,9 @@ describe(`workflowSummaryReports`, () => {
             })
     }
 
-    it(`it can render tooltip text for reports that run single and multiple times`,  () => {
+    it(`it can render tooltip text for reports that run single and multiple times`, () => {
         const sameReports = [{name: "testReport"}, {name: "testReport"}, {name: "testReport2"}]
-        const wrapper = getWrapper( {reports:sameReports});
+        const wrapper = getWrapper({reports: sameReports});
 
         expect(wrapper.find("#workflow-summary").exists()).toBe(true)
         const reports = wrapper.findAll("#report-name-icon")
@@ -56,7 +56,7 @@ describe(`workflowSummaryReports`, () => {
         expect(mockTooltip.mock.calls[2][1].value).toEqual("testReport2 runs 1 time")
     });
 
-    it(`it can render report name and info icon`,  () => {
+    it(`it can render report name and info icon`, () => {
         const wrapper = getWrapper(workflowSummary);
 
         expect(wrapper.find("#workflow-summary").exists()).toBe(true)
@@ -80,7 +80,7 @@ describe(`workflowSummaryReports`, () => {
         })
     });
 
-    it(`it can render report parameters`,  () => {
+    it(`it can render non-default parameters`, () => {
         const wrapper = getWrapper(workflowSummary);
         const parametersHeading = wrapper.find("#report-params span")
         expect(parametersHeading.text()).toBe("Parameters")
@@ -91,7 +91,7 @@ describe(`workflowSummaryReports`, () => {
         expect(params.at(1).text()).toBe("nmin: 2")
     });
 
-    it(`it can render placeholder text when no parameters to display`,  () => {
+    it(`it can render placeholder text when no parameters to display`, () => {
         const wrapper = getWrapper({reports: [{name: "new report"}]});
         const params = wrapper.findAll("#params")
         expect(params.length).toBe(0)
