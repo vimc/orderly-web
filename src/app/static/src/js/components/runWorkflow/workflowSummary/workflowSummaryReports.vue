@@ -21,18 +21,18 @@
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
-                                        <div v-if="paramSize(report)">
+                                        <div v-if="hasParams(report)">
                                             <p id="params"
                                                v-for="(value, key, index) in report.params"
                                                :key="index">{{ key }}: {{ value }}</p>
-                                            <div :id="`default-params-${index}`" >
-                                                <a href="#collapseSummary"
+                                            <div :id="`default-params-${index}`">
+                                                <a :href="`#collapseSummary-${index}`"
                                                    class="pt-2 d-inline-block small"
                                                    data-toggle="collapse"
                                                    aria-expanded="false"
                                                    aria-controls="collapseSummary"
                                                 >Show default...</a>
-                                                <div id="collapseSummary" class="collapse">
+                                                <div :id="`collapseSummary-${index}`" class="collapse">
                                                     <p id="default-params-collapse"
                                                        v-for="(param, index) in showDefaultParameters(report.name)"
                                                        :key="index">{{ param.name }}: {{ param.value }}</p>
@@ -72,7 +72,7 @@ interface Props {
 }
 
 interface Methods {
-    paramSize: (report: WorkflowReportWithDependencies) => number;
+    hasParams: (report: WorkflowReportWithDependencies) => boolean;
     reportInfo: (reportName: string) => string;
     showDefaultParameters: (reportName: string) => Parameter | null;
     getDefaultParametersError: (reportName: string) => string
@@ -104,8 +104,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
             return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
         },
-        paramSize(report) {
-            return report.params ? Object.keys(report.params).length : 0
+        hasParams(report) {
+            return report.params ? !!Object.keys(report.params).length : false
         },
         showDefaultParameters(reportName) {
             return this.defaultParams?.find(data => data.reportName === reportName)?.params || null

@@ -407,10 +407,10 @@ class RunWorkflowTests : SeleniumTest()
         showDefault.click()
 
         val defaultParamsOne = driver.findElement(By.id("default-params-0"))
-        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.cssSelector("#collapseSummary p"))
+        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.id("default-params-collapse"))
         assertThat(defaultParamsCollapsibleOne.size).isEqualTo(2)
         assertThat(defaultParamsCollapsibleOne[0].text).isEqualTo("nmin: 0.5")
-        assertThat(defaultParamsCollapsibleOne[1].text).isEqualTo("disease: HepB")
+        assertThat(defaultParamsCollapsibleOne[1].text).isEqualTo("disease: HepB") I am not sure why this is empty.
     }
 
 }
