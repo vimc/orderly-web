@@ -13,7 +13,6 @@ import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
 
-
 class RunWorkflowTests : SeleniumTest()
 {
     @Before
@@ -378,26 +377,17 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
         val params = driver.findElement(By.id("params"))
-        assertThat(params.text).contains("nmin: 1")
-
-        val showDefault = driver.findElement(By.cssSelector("#default-params-0 a"))
-        assertThat(showDefault.text).isEqualTo("Show default...")
+        assertThat(params.text).isEqualTo("nmin: 1")
     }
 
     @Test
     fun `can display workflow summary with default params`()
     {
         createWorkflow()
-
-        //Change branch to find report with parameter
         changeToOtherBranch()
-
-        //Add the report - Next button should be disabled until we set the parameter value
         addReport("default-param")
-        val nextButton = driver.findElement(By.id("next-workflow"))
-        assertThat(nextButton.isEnabled).isFalse()
 
-        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
+        val nextButton = driver.findElement(By.id("next-workflow"))
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
 
@@ -408,14 +398,19 @@ class RunWorkflowTests : SeleniumTest()
         val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
+        val params = driver.findElements(By.id("params"))
+        assertThat(params[0].text).isEqualTo("disease: HepB")
+        assertThat(params[1].text).isEqualTo("nmin: 0.5")
+
         val showDefault = driver.findElement(By.cssSelector("#default-params-0 a"))
         assertThat(showDefault.text).isEqualTo("Show default...")
+        showDefault.click()
 
         val defaultParamsOne = driver.findElement(By.id("default-params-0"))
-        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.id("default-params-collapse"))
+        val defaultParamsCollapsibleOne = defaultParamsOne.findElements(By.cssSelector("#collapseSummary p"))
         assertThat(defaultParamsCollapsibleOne.size).isEqualTo(2)
-        assertThat(defaultParamsCollapsibleOne[0].text).contains("nmin: 0.5")
-        assertThat(defaultParamsCollapsibleOne[1].text).contains("disease: HepB")
+        assertThat(defaultParamsCollapsibleOne[0].text).isEqualTo("nmin: 0.5")
+        assertThat(defaultParamsCollapsibleOne[1].text).isEqualTo("disease: HepB")
     }
 
 }

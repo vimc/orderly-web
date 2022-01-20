@@ -61,7 +61,7 @@
 <script lang="ts">
 import Vue from "vue";
 import {InfoIcon} from "vue-feather-icons";
-import {WorkflowSummary, Parameter, WorkflowReportWithDependency} from "../../../utils/types";
+import {WorkflowSummary, WorkflowReportWithDependencies, Parameter} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
 import runWorkflowMixin from "../runWorkflowMixin.ts";
 import ErrorInfo from "../../errorInfo.vue";
@@ -72,7 +72,7 @@ interface Props {
 }
 
 interface Methods {
-    paramSize: (report: WorkflowReportWithDependency) => number;
+    paramSize: (report: WorkflowReportWithDependencies) => number;
     reportInfo: (reportName: string) => string;
     showDefaultParameters: (reportName: string) => Parameter | null;
     getDefaultParametersError: (reportName: string) => string

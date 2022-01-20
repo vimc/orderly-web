@@ -46,7 +46,7 @@
     }
   }
 
-  .single-workflow-summary-area .workflow-summary-report::after {
+  .single-workflow-summary-area:not(:last-child) .workflow-summary-report::after {
     position: absolute;
     width: 2px;
     height: 100%;
