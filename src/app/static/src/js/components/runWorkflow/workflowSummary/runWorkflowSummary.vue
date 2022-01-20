@@ -1,17 +1,16 @@
 <template>
     <div id="summary-header">
         <div v-if="hasDependenciesLength">
-            <report-parameter :dependencies="dependencies" :git-commit.sync="workflowMetadata.git_commit"/>
-            <div v-if="error"><p class="row mt-3 justify-content-center col-8 text-danger">{{ error }}</p></div>
+            <workflow-summary-reports :workflow-summary="workflowSummary"/>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, Dependency} from "../../../utils/types";
+    import {RunWorkflowMetadata, WorkflowSummary} from "../../../utils/types";
     import {api} from "../../../utils/api";
-    import ReportParameter from "./reportParameter.vue"
+    import WorkflowSummaryReports from "./workflowSummaryReports.vue"
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata;
@@ -26,18 +25,18 @@
     }
 
     interface Data {
-        dependencies: Dependency | null
+        workflowSummary: WorkflowSummary | null
         error: string
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runWorkflowSummary",
         components: {
-            ReportParameter
+            WorkflowSummaryReports
         },
         data() {
             return {
-                dependencies: null,
+                workflowSummary: null,
                 error: ""
             }
         },
@@ -49,7 +48,7 @@
         },
         computed: {
             hasDependenciesLength() {
-                return !!this.dependencies
+                return !!this.workflowSummary
             }
         },
         methods: {
@@ -59,7 +58,7 @@
                     ref: this.workflowMetadata.git_commit
                 })
                     .then(({data}) => {
-                        this.dependencies = data.data;
+                        this.workflowSummary = data.data;
                         this.error = "";
                     })
                     .catch((error) => {

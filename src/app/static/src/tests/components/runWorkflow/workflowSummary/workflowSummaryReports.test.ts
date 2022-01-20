@@ -1,11 +1,11 @@
 import {shallowMount} from "@vue/test-utils";
-import {Dependency} from "../../../../js/utils/types";
-import reportParameter from "../../../../js/components/runWorkflow/workflowSummary/reportParameter.vue";
+import {WorkflowSummary} from "../../../../js/utils/types";
+import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
-describe(`reportParameter`, () => {
+describe(`workflowSummaryReports`, () => {
 
-    const dependency = {
-        refs: "commit123",
+    const workflowSummary = {
+        ref: "commit123",
         missing_dependencies: {},
         reports: [
             {name: "testReport", params: {"nmin": "1"}},
@@ -13,18 +13,35 @@ describe(`reportParameter`, () => {
         ]
     }
 
-    const getWrapper = (dependency: Partial<Dependency> = {}) => {
-        return shallowMount(reportParameter,
+    const mockTooltip = jest.fn();
+
+    const getWrapper = (summary: Partial<WorkflowSummary> = {}) => {
+        return shallowMount(workflowSummaryReports,
             {
                 propsData: {
-                    dependencies: dependency,
-                    gitCommit: "commit123"
-                }
+                    workflowSummary: summary
+                },
+                directives: {"tooltip": mockTooltip}
             })
     }
 
-    it(`it can render report name and icon`,  () => {
-        const wrapper = getWrapper(dependency);
+    it(`it can render tooltip text for reports that run single and multiple times`,  () => {
+        const sameReports = [{name: "testReport"}, {name: "testReport"}, {name: "testReport2"}]
+        const wrapper = getWrapper( {reports:sameReports});
+
+        expect(wrapper.find("#workflow-summary").exists()).toBe(true)
+        const reports = wrapper.findAll("#report-name-icon")
+        expect(reports.length).toBe(3)
+
+        expect(reports.at(0).find("h5").text()).toBe("testReport")
+        expect(mockTooltip.mock.calls[0][1].value).toEqual("testReport runs 2 times")
+
+        expect(reports.at(2).find("h5").text()).toBe("testReport2")
+        expect(mockTooltip.mock.calls[2][1].value).toEqual("testReport2 runs 1 time")
+    });
+
+    it(`it can render report name and info icon`,  () => {
+        const wrapper = getWrapper(workflowSummary);
 
         expect(wrapper.find("#workflow-summary").exists()).toBe(true)
         const reports = wrapper.findAll("#report-name-icon")
@@ -33,8 +50,7 @@ describe(`reportParameter`, () => {
         expect(reports.at(0).find("h5").text()).toBe("testReport")
         expect(reports.at(0).find("info-icon-stub").exists()).toBeTruthy()
         expect(reports.at(1).find("info-icon-stub").attributes()).toEqual({
-            class: "custom-class has-tooltip",
-            "data-original-title": "null",
+            class: "custom-class",
             size: "1.2x",
             stroke: "grey"
         })
@@ -42,15 +58,14 @@ describe(`reportParameter`, () => {
         expect(reports.at(1).find("h5").text()).toBe("testReport2")
         expect(reports.at(1).find("info-icon-stub").exists()).toBeTruthy()
         expect(reports.at(1).find("info-icon-stub").attributes()).toEqual({
-            class: "custom-class has-tooltip",
-            "data-original-title": "null",
+            class: "custom-class",
             size: "1.2x",
             stroke: "grey"
         })
     });
 
     it(`it can render report parameters`,  () => {
-        const wrapper = getWrapper(dependency);
+        const wrapper = getWrapper(workflowSummary);
         const parametersHeading = wrapper.find("#report-params span")
         expect(parametersHeading.text()).toBe("Parameters")
 
@@ -60,20 +75,11 @@ describe(`reportParameter`, () => {
         expect(params.at(1).text()).toBe("nmin: 2")
     });
 
-    it(`it can render default text when no parameters`,  () => {
+    it(`it can render placeholder text when no parameters to display`,  () => {
         const wrapper = getWrapper({reports: [{name: "new report"}]});
         const params = wrapper.findAll("#params")
         expect(params.length).toBe(0)
         expect(wrapper.find("#report-params p").text()).toBe("There are no parameters")
-    });
-
-
-    it(`it can render default parameters`, () => {
-        const wrapper = getWrapper(dependency);
-        const defaultParams = wrapper.findAll("#default-params-collapse")
-        expect(defaultParams.length).toBe(2)
-        expect(defaultParams.at(0).text()).toBe("nmin: 1")
-        expect(defaultParams.at(1).text()).toBe("nmin: 2")
     });
 
 })

@@ -137,8 +137,8 @@ export interface WorkflowReportWithDependency {
     depends_on?: string[]
 }
 
-export interface Dependency {
+export interface WorkflowSummary {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependency[],
-    refs: string
+    ref: string
 }
