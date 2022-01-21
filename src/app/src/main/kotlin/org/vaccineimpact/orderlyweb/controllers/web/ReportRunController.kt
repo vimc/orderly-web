@@ -11,17 +11,17 @@ import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 
 class ReportRunController(
-        context: ActionContext,
-        private val reportRunRepository: ReportRunRepository,
-        private val workflowRunReportRepository: WorkflowRunReportRepository,
-        private val orderlyServerAPI: OrderlyServerAPI
+    context: ActionContext,
+    private val reportRunRepository: ReportRunRepository,
+    private val workflowRunReportRepository: WorkflowRunReportRepository,
+    private val orderlyServerAPI: OrderlyServerAPI
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
-            context,
-            OrderlyWebReportRunRepository(),
-            OrderlyWebWorkflowRunReportRepository(),
-            OrderlyServer(AppConfig()).throwOnError()
+        context,
+        OrderlyWebReportRunRepository(),
+        OrderlyWebWorkflowRunReportRepository(),
+        OrderlyServer(AppConfig()).throwOnError()
     )
 
     fun getRunningReportLogs(): ReportRunLog

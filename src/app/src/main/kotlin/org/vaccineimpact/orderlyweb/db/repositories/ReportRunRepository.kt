@@ -10,7 +10,7 @@ import java.time.Instant
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
-interface ReportRunRepository: ReportRunLogRepository
+interface ReportRunRepository : ReportRunLogRepository
 {
     fun addReportRun(
         key: String,

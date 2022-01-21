@@ -8,14 +8,13 @@ import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
 import org.vaccineimpact.orderlyweb.jsonToStringMap
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 
-interface  WorkflowRunReportRepository: ReportRunLogRepository
+interface WorkflowRunReportRepository : ReportRunLogRepository
 {
     @Throws(BadRequest::class)
     fun checkReportIsInWorkflow(reportKey: String, workflowKey: String)
 }
 
-
-class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
+class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
 {
     override fun checkReportIsInWorkflow(reportKey: String, workflowKey: String)
     {
