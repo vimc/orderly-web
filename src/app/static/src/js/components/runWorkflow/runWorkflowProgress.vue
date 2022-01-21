@@ -44,7 +44,7 @@
                         </td>
                         <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
                         <td class="p-2">
-                            <a href="#" @click="showLog(report.key)">View log</a>
+                            <a href="#" @click="showReportLog(report.key)">View log</a>
                         </td>
                     </tr>
                 </table>
@@ -64,6 +64,11 @@
             :default-message="defaultMessage"
             :api-error="error"
         ></error-info>
+        <workflow-report-log-dialog
+            :report-key=showLogForReportKey
+            :workflow-key=selectedWorkflowKey
+            @close="closeReportLogDialog"
+        ></workflow-report-log-dialog>
     </div>
 </template>
 
@@ -73,12 +78,12 @@ import vSelect from "vue-select";
 import { api } from "../../utils/api";
 import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
 import ErrorInfo from "../errorInfo.vue";
+import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
-import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -87,6 +92,7 @@ interface Data {
     error: string;
     defaultMessage: string;
     pollingTimer: null | number;
+    showLogForReportKey: string | null;
 }
 
 interface Methods {
@@ -99,7 +105,8 @@ interface Methods {
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
-    showLog: (reportKey: string) => void;
+    showReportLog: (reportKey: string) => void;
+    closeReportLogDialog
 }
 
 interface Props {
@@ -111,6 +118,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
+        WorkflowReportLogDialog,
         vSelect,
     },
     props: {
@@ -126,7 +134,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             workflowRunStatus: null,
             error: "",
             defaultMessage: "",
-            pollingTimer: null
+            pollingTimer: null,
+            showLogForReportKey: null
         };
     },
     methods: {
@@ -208,8 +217,11 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 return status.charAt(0).toUpperCase() + status.slice(1);
             }
         },
-        showLog(reportKey) {
-            alert(`Showing log for ${reportKey}`);
+        showReportLog(reportKey) {
+            this.showLogForReportKey = reportKey;
+        },
+        closeReportLogDialog() {
+            this.showLogForReportKey = null;
         }
     },
     watch: {
