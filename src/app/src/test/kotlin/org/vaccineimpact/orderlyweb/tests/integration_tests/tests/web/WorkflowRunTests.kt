@@ -12,6 +12,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunReportRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -233,8 +234,47 @@ class WorkflowRunTests : IntegrationTest()
         )
         assertSuccessful(logsResponse)
         val logsResponseJson = JSONValidator.getData(logsResponse.text)
+        assertThat(logsResponseJson["email"].textValue()).isEqualTo("test.user@example.com")
+        assertThat(logsResponseJson["date"].isNull).isTrue()
+        assertThat(logsResponseJson["report"].textValue()).isEqualTo("other")
+        assertThat(logsResponseJson["params"]["nmin"].textValue()).isEqualTo("0.25")
+        assertThat(logsResponseJson["git_branch"].textValue()).isEqualTo("other")
+        assertThat(logsResponseJson["logs"].textValue()).startsWith("[ git")
+        assertThat(logsResponseJson["status"].textValue()).isIn("running", "success", "queued")
 
-        //TODO: Check response and check saved to db
+        // check status was persisted
+        val repo = OrderlyWebWorkflowRunReportRepository()
+        val reportLog = repo.getReportRun(reportKey)
+        assertThat(reportLog.email).isEqualTo("test.user@example.com")
+        assertThat(reportLog.date).isNull()
+        assertThat(reportLog.report).isEqualTo("other")
+        assertThat(reportLog.params["nmin"]).isEqualTo("0.25")
+        assertThat(reportLog.gitBranch).isEqualTo("other")
+        assertThat(reportLog.logs).isEqualTo(logsResponseJson["logs"].textValue())
+        assertThat(reportLog.status).isEqualTo(logsResponseJson["status"].textValue())
+        assertThat(reportLog.reportVersion).isEqualTo(logsResponseJson["report_version"].textValue())
+        assertThat(reportLog.gitCommit).isEqualTo(logsResponseJson["git_commit"].textValue())
+    }
+
+    @Test
+    fun `returns error if report logs requested with incorrect workflow key`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val runResponse = runExampleWorkflow(sessionCookie)
+        val runResponseJson = JSONValidator.getData(runResponse.text)
+        val reportKey = runResponseJson["reports"][0].textValue()
+
+        val url = "/running/$reportKey/logs?workflow=wrongWorkflowKey"
+        val logsResponse = webRequestHelper.requestWithSessionCookie(
+                url,
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.get
+        )
+        assertThat(logsResponse.statusCode).isEqualTo(400)
+        JSONValidator.validateError(logsResponse.text, "bad-request",
+            "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey")
+
     }
 
     fun validateWorkflowWithDefaultBranchAncCommit(url: String)

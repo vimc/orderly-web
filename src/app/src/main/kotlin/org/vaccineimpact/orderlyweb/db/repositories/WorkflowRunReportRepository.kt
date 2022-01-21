@@ -21,10 +21,12 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
     {
         JooqContext().use {
             val result = it.dsl.selectCount()
-                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey)
-                        .and(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY.eq(workflowKey)))
-            if (result.count() != 1)
+                .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey)
+                    .and(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY.eq(workflowKey)))
+                .fetchOne(0, Int::class.java)
+
+            if (result == 0)
             {
                 throw BadRequest("Report with key $reportKey does not belong to workflow with key $workflowKey")
             }
