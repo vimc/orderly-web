@@ -12,7 +12,8 @@ import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunReportRepository
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
@@ -243,17 +244,22 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(logsResponseJson["status"].textValue()).isIn("running", "success", "queued")
 
         // check status was persisted
-        val repo = OrderlyWebWorkflowRunReportRepository()
-        val reportLog = repo.getReportRun(reportKey)
-        assertThat(reportLog.email).isEqualTo("test.user@example.com")
-        assertThat(reportLog.date).isNull()
-        assertThat(reportLog.report).isEqualTo("other")
-        assertThat(reportLog.params["nmin"]).isEqualTo("0.25")
-        assertThat(reportLog.gitBranch).isEqualTo("other")
-        assertThat(reportLog.logs).isEqualTo(logsResponseJson["logs"].textValue())
-        assertThat(reportLog.status).isEqualTo(logsResponseJson["status"].textValue())
-        assertThat(reportLog.reportVersion).isEqualTo(logsResponseJson["report_version"].textValue())
-        assertThat(reportLog.gitCommit).isEqualTo(logsResponseJson["git_commit"].textValue())
+        JooqContext().use {
+            val result = it.dsl.select(
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+            )
+            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey))
+            .fetchOne()
+
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("other")
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo(logsResponseJson["status"].textValue())
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]).isEqualTo(logsResponseJson["report_version"].textValue())
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS]).isEqualTo(logsResponseJson["logs"].textValue())
+        }
     }
 
     @Test
