@@ -201,9 +201,6 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                     this.runWorkflowMetadata = data.data
                     this.error = "";
                     this.defaultMessage = "";
-                    // this.getReportWorkflowSummary()
-                    console.log("before mixin called")
-                    this.getDefaultParameters(this.workflowSummary, this.runWorkflowMetadata.git_commit)
                 })
                 .catch((error) => {
                     this.error = error
@@ -211,6 +208,10 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 })
         },
         getReportWorkflowSummary() {
+            console.log("before workflow called", {
+                    reports: this.runWorkflowMetadata.reports,
+                    ref: this.runWorkflowMetadata.git_commit
+                })
             api.post(`/workflows/summary`, {
                 reports: this.runWorkflowMetadata.reports,
                 ref: this.runWorkflowMetadata.git_commit
@@ -296,8 +297,11 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             // }
         },
         runWorkflowMetadata(){
-            console.log("runWorkflowMetadata", this.runWorkflowMetadata)
-            // this.getReportWorkflowSummary()
+            if (this.runWorkflowMetadata){
+                console.log("runWorkflowMetadata", this.runWorkflowMetadata)
+                this.getReportWorkflowSummary()
+                // this.getDefaultParameters(this.workflowSummary, this.workflowSummary.git_commit)
+            }
         },
         defaultParams(){
             console.log("defaultParams", this.defaultParams)

@@ -23,10 +23,11 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     methods: {
         getParametersApiCall(reportName, gitCommit) {
             const commit = gitCommit ? `?commit=${gitCommit}` : '';
+            console.log("commit", commit)
             return api.get(`/report/${reportName}/config/parameters/${commit}`);
         },
         getDefaultParameters(workflowSummary, gitCommit) {
-            console.log("mixin called")
+            console.log("mixin called", workflowSummary, gitCommit)
             workflowSummary?.reports.map(report => {
                 this.getParametersApiCall(report.name, gitCommit)
                     .then(({data}) => {
@@ -35,6 +36,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                     })
                     .catch((error) => {
                         this.defaultParamsErrors.push({reportName: report.name, error: error});
+                        console.log("defaultParams in mixin error", error)
                     })
             })
         }
