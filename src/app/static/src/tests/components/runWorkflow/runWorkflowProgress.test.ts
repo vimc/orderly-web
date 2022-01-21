@@ -1,5 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
+import WorkflowReportLogDialog from "../../../js/components/runWorkflow/workflowReportLogDialog.vue";
 import {mockAxios} from "../../mockAxios";
 import errorInfo from "../../../js/components/errorInfo.vue";
 
@@ -149,7 +150,7 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
             expect(wrapper.findAll("tr").length).toBe(4)
-            const reportLinks = wrapper.findAll("td > a")
+            const reportLinks = wrapper.findAll("td > a.report-version-link")
             expect(reportLinks.length).toBe(1)
 
             const completedReportLink = reportLinks.at(0)
@@ -173,9 +174,56 @@ describe(`runWorkflowProgress`, () => {
 
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
             expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
+
+            const logCells = wrapper.findAll("tr > td:nth-child(4)");
+            logCells.wrappers.forEach(td => {
+                const link = td.find("a.report-log-link");
+                expect(link.text()).toBe("View log");
+                expect(link.attributes("href")).toBe("#");
+            });
             done();
         })
-    })
+    });
+
+    it("renders report log dialog", async () => {
+        const wrapper = getWrapper();
+        await wrapper.setData({selectedWorkflowKey: "key1"});
+        const dialog = wrapper.find(WorkflowReportLogDialog);
+        expect(dialog.props("reportKey")).toBe(null);
+        expect(dialog.props("workflowKey")).toBe("key1");
+    });
+
+    it(`sets report log dialog report key on click View log link`, (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+
+        setTimeout(async () => {
+            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
+            await link.trigger("click");
+
+            const dialog = wrapper.find(WorkflowReportLogDialog);
+            expect(dialog.props("reportKey")).toBe("preterrestrial_andeancockoftherock");
+
+            done();
+        })
+    });
+
+    it("resets report log dialog report key when dialog emits close event", (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+
+        setTimeout(async () => {
+            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
+            await link.trigger("click");
+
+            const dialog = wrapper.find(WorkflowReportLogDialog);
+            await dialog.vm.$emit("close");
+
+            expect(dialog.props("reportKey")).toBeNull();
+
+            done();
+        })
+    });
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
         const workflowDetails = {

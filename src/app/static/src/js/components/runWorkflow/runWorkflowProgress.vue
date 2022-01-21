@@ -34,7 +34,7 @@
                 <table class="table-bordered col-10">
                     <tr v-for="report in workflowRunStatus.reports">
                         <td v-if="report.status === 'success'" class="p-2">
-                            <a :href="reportVersionHref(report.name, report.version)">
+                            <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                                 {{ report.name }}
                             </a>
                         </td>
@@ -44,7 +44,7 @@
                         </td>
                         <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
                         <td class="p-2">
-                            <a href="#" @click="showReportLog(report.key)">View log</a>
+                            <a class="report-log-link" href="#" @click="showReportLog(report.key)">View log</a>
                         </td>
                     </tr>
                 </table>
