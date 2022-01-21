@@ -43,6 +43,9 @@
                             {{ interpretStatus(report.status) }}
                         </td>
                         <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
+                        <td class="p-2">
+                            <a href="#" @click="showLog(report.key)">View log</a>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -96,6 +99,7 @@ interface Methods {
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
+    showLog: (reportKey: string) => void;
 }
 
 interface Props {
@@ -204,6 +208,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 return status.charAt(0).toUpperCase() + status.slice(1);
             }
         },
+        showLog(reportKey) {
+            alert(`Showing log for ${reportKey}`);
+        }
     },
     watch: {
         selectedWorkflowKey() {
