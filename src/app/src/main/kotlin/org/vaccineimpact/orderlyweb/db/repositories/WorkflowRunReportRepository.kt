@@ -46,11 +46,11 @@ class OrderlyWebWorkflowRunReportRepository : WorkflowRunReportRepository
         }
         JooqContext().use {
             it.dsl.update(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
-                    .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
-                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
-                    .execute()
+                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS, status)
+                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION, reportVersion)
+                .set(ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS, logsString)
+                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
+                .execute()
         }
     }
 

@@ -55,9 +55,9 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
                 ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
             )
-                .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
-                .fetchOne()
+            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+            .fetchOne()
 
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("test_report_name")
             assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("success")
