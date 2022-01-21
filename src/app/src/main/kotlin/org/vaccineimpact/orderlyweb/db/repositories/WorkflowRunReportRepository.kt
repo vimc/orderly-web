@@ -59,33 +59,33 @@ class OrderlyWebWorkflowRunReportRepository: WorkflowRunReportRepository
     {
         JooqContext().use {
             val result = it.dsl.select(
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE,
-                    ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
-                    ORDERLYWEB_WORKFLOW_RUN.EMAIL,
-                    ORDERLYWEB_WORKFLOW_RUN.INSTANCES,
-                    ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH,
-                    ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT)
-                    .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
-                    .join(ORDERLYWEB_WORKFLOW_RUN)
-                    .on(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY))
-                    .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
-                    .singleOrNull()
-                    ?: throw UnknownObjectError("key", "getReportRun")
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                ORDERLYWEB_WORKFLOW_RUN.EMAIL,
+                ORDERLYWEB_WORKFLOW_RUN.INSTANCES,
+                ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH,
+                ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT)
+                .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                .join(ORDERLYWEB_WORKFLOW_RUN)
+                .on(ORDERLYWEB_WORKFLOW_RUN.KEY.eq(ORDERLYWEB_WORKFLOW_RUN_REPORTS.WORKFLOW_KEY))
+                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(key))
+                .singleOrNull()
+                ?: throw UnknownObjectError("key", "getReportRun")
 
             return ReportRunLog(result[ORDERLYWEB_WORKFLOW_RUN.EMAIL],
-                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE]?.toInstant(),
-                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT],
-                    jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN.INSTANCES]),
-                    jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]),
-                    result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],
-                    result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
-                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS],
-                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS],
-                    result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.DATE]?.toInstant(),
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT],
+                jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN.INSTANCES]),
+                jsonToStringMap(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.PARAMS]),
+                result[ORDERLYWEB_WORKFLOW_RUN.GIT_BRANCH],
+                result[ORDERLYWEB_WORKFLOW_RUN.GIT_COMMIT],
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS],
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS],
+                result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]
             )
         }
     }
