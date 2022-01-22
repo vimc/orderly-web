@@ -201,7 +201,7 @@ describe(`runWorkflowProgress`, () => {
             const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
             await link.trigger("click");
 
-            const dialog = wrapper.find(WorkflowReportLogDialog);
+            const dialog = wrapper.findComponent(WorkflowReportLogDialog);
             expect(dialog.props("reportKey")).toBe("preterrestrial_andeancockoftherock");
 
             done();
@@ -216,7 +216,7 @@ describe(`runWorkflowProgress`, () => {
             const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
             await link.trigger("click");
 
-            const dialog = wrapper.find(WorkflowReportLogDialog);
+            const dialog = wrapper.findComponent(WorkflowReportLogDialog);
             await dialog.vm.$emit("close");
 
             expect(dialog.props("reportKey")).toBeNull();
