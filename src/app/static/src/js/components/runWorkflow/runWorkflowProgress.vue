@@ -65,6 +65,7 @@
             :api-error="error"
         ></error-info>
         <workflow-report-log-dialog
+            id="report-log-dialog"
             :report-key=showLogForReportKey
             :workflow-key=selectedWorkflowKey
             @close="closeReportLogDialog"
