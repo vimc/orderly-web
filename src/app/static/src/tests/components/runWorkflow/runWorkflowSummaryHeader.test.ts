@@ -18,7 +18,7 @@ describe(`runWorkflowSummaryHeader`, () => {
     }
 
     const getWrapper = (workflowSummary = summaryData) => {
-        return shallowMount(runWorkflowSummaryHeader, {propsData: {workflowSummary}})
+        return shallowMount(runWorkflowSummaryHeader, {propsData: {workflowSummary: workflowSummary}})
     }
 
     it(`it renders workflow summary header including reports that are missing dependencies`, () => {
@@ -35,7 +35,7 @@ describe(`runWorkflowSummaryHeader`, () => {
     });
 
     it(`it renders workflow summary header but no missing dependencies if none`, () => {
-        const wrapper = getWrapper({...summaryData, missing_dependencies: { step2: []}});
+        const wrapper = getWrapper(null);
         expect(wrapper.find("#summary-header").text()).toBe("Summary");
         const summaryWarning = wrapper.find("#summary-warning")
         expect(summaryWarning.exists()).toBe(false);

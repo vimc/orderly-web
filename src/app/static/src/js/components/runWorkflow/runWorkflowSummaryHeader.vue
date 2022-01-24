@@ -1,5 +1,5 @@
 <template>
-<header>
+<section>
     <h2 id="summary-header">Summary</h2>
     <div id="summary-warning" class="row mt-3" v-if="hasMissingDependencies">
         <div class="col-auto">
@@ -15,16 +15,16 @@
             </div>
         </div>
     </div>
-</header>
+</section>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
-import {WorkflowSummary} from "../../utils/types";
+import {WorkflowSummaryEndpoint} from "../../utils/types";
 import {AlertTriangleIcon} from "vue-feather-icons"
 
 interface Props {
-    workflowSummary: WorkflowSummary[] | null
+    workflowSummary: WorkflowSummaryEndpoint | null
 }
 
 interface Computed {
@@ -38,13 +38,12 @@ export default Vue.extend<unknown, Computed, unknown, Props>({
     props: {
         workflowSummary: {
             type: Object || null,
-            required: true
+            default: null
         }
     },
     computed: {
         hasMissingDependencies() {
-            return this.workflowSummary && !!Object.keys(this.workflowSummary.missing_dependencies)
-                .some(reportName => this.workflowSummary.missing_dependencies[reportName].length > 0);
+            return this.workflowSummary && Object.keys(this.workflowSummary.missing_dependencies).length;
         },
     }
     

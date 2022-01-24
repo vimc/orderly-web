@@ -131,14 +131,14 @@ export interface Error {
 }
 
 export interface WorkflowReportWithDependency {
-    name: string[],
+    name: string,
     instance?: string
     params?: Record<string, string>,
     depends_on?: string[]
 }
 
-export interface WorkflowSummary {
+export interface WorkflowSummaryEndpoint {
     missing_dependencies: Record<string, string[]>,
-    reports: WorkflowReportWithDependency,
+    reports: WorkflowReportWithDependency[],
     refs: string
 }

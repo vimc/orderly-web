@@ -39,9 +39,6 @@ describe(`runWorkflowSummary`, () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
-            const data = JSON.parse(mockAxios.history.post[0].data);
-            expect(data.reports).toStrictEqual(metaData.reports);
-            expect(data.ref).toStrictEqual(metaData.git_commit);
             expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(summaryData);
             done();
         });
@@ -53,5 +50,19 @@ describe(`runWorkflowSummary`, () => {
         });
         expect(wrapper.emitted().valid[0][0]).toBe(true);
     });
+
+    it(`error response from workflow summary endpoint generates error message`, async (done) => {
+        mockAxios.onPost('http://app/workflows/summary')
+            .reply(500, "TEST ERROR");
+
+        const wrapper = getWrapper(metaData)
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1);
+            const errorMessage = wrapper.find("error-info-stub")
+            expect(errorMessage.props("defaultMessage")).toBe("An error occurred while retrieving the workflow summary")
+            expect(errorMessage.props("apiError")).toBeTruthy()
+            done()
+        });
+    })
 
 })

@@ -1,6 +1,7 @@
 <template>
     <div>
         <runWorflowSummaryHeader :workflow-summary="workflowSummary"></runWorflowSummaryHeader>
+        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
 </template>
 
@@ -8,7 +9,8 @@
     import Vue from "vue"
     import {RunWorkflowMetadata} from "../../utils/types";
     import runWorflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
-    import {WorkflowSummary} from "../../utils/types";
+    import ErrorInfo from "../../../js/components/errorInfo.vue";
+    import {WorkflowSummaryEndpoint} from "../../utils/types";
     import {api} from "../../utils/api";
 
     interface Props {
@@ -16,7 +18,9 @@
     }
 
     interface Data {
-        workflowSummary: WorkflowSummary | null
+        workflowSummary: WorkflowSummaryEndpoint | null,
+        error: string,
+        defaultMessage: string,
     }
 
     interface Methods {
@@ -33,7 +37,9 @@
         },
         data() {
             return {
-                workflowSummary: null
+                workflowSummary: null,
+                error: "",
+                defaultMessage: "",
             }
         },
         methods: {
@@ -45,9 +51,11 @@
                     .then(({data}) => {
                         this.workflowSummary = data.data;
                         this.error = "";
+                        this.defaultMessage = "";
                     })
                     .catch((error) => {
-                        this.error = error;
+                        this.error = error
+                        this.defaultMessage = "An error occurred while retrieving the workflow summary";
                     })
             },
         },
@@ -57,7 +65,8 @@
             this.$emit("valid", true)
         },
         components: {
-            runWorflowSummaryHeader
+            runWorflowSummaryHeader,
+            ErrorInfo
         }
     })
 </script>
