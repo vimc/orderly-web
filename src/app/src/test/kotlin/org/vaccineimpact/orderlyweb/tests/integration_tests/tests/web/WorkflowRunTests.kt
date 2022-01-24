@@ -12,11 +12,14 @@ import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.Serializer
 import org.vaccineimpact.orderlyweb.controllers.web.WorkflowRunController
 import org.vaccineimpact.orderlyweb.db.AppConfig
+import org.vaccineimpact.orderlyweb.db.JooqContext
+import org.vaccineimpact.orderlyweb.db.Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebWorkflowRunRepository
 import org.vaccineimpact.orderlyweb.models.*
 import org.vaccineimpact.orderlyweb.models.permissions.ReifiedPermission
 import org.vaccineimpact.orderlyweb.tests.insertUser
 import org.vaccineimpact.orderlyweb.tests.integration_tests.tests.IntegrationTest
+import org.vaccineimpact.orderlyweb.test_helpers.http.Response
 import spark.route.HttpMethod
 import java.time.Instant
 
@@ -130,65 +133,8 @@ class WorkflowRunTests : IntegrationTest()
     @Test
     fun `runs workflow`()
     {
-        val branch = "other"
-        val commit = getGitBranchCommit("other")
-
-        val json = """
-                {
-                  "name": "full workflow",
-                  "reports": [
-                    {
-                      "name": "other",
-                      "params": {
-                        "nmin": "0.25"
-                      }
-                    },
-                    {
-                      "name": "other",
-                      "params": {
-                        "nmin": "0.75"
-                      }
-                    },
-                    {
-                      "name": "minimal",
-                      "params": {}
-                    },
-                    {
-                      "name": "global",
-                      "params": {}
-                    }
-                  ],
-                  "changelog": {
-                    "message": "message1",
-                    "type": "internal"
-                  },
-                  "git_branch": "$branch",
-                  "git_commit": "$commit"
-                }
-            """.trimIndent()
-
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
-        val response = webRequestHelper.requestWithSessionCookie(
-            "/workflow",
-            sessionCookie,
-            ContentTypes.json,
-            HttpMethod.post,
-            json
-        )
-        assertSuccessful(response)
-        assertJsonContentType(response)
-        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
-
-        val workflowRunResponse = Serializer.instance.gson.fromJson(
-            JSONValidator.getData(response.text).toString(),
-            WorkflowRunController.WorkflowRunResponse::class.java
-        )
-
-        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
-
-        assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
-
-        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
+        runExampleWorkflow(sessionCookie)
     }
 
     @Test
@@ -269,6 +215,72 @@ class WorkflowRunTests : IntegrationTest()
     fun `validates workflow with empty branch and commit parameters`()
     {
         validateWorkflowWithDefaultBranchAncCommit("/workflow/validate?branch&commit")
+    }
+
+    @Test
+    fun `fetches and saves logs for workflow report`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val runResponse = runExampleWorkflow(sessionCookie)
+        val runResponseJson = JSONValidator.getData(runResponse.text)
+        val workflowKey = runResponseJson["workflow_key"].textValue()
+        val reportKey = runResponseJson["reports"][0].textValue()
+
+        val url = "/running/$reportKey/logs?workflow=$workflowKey"
+        val logsResponse = webRequestHelper.requestWithSessionCookie(
+            url,
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.get
+        )
+        assertSuccessful(logsResponse)
+        val logsResponseJson = JSONValidator.getData(logsResponse.text)
+        assertThat(logsResponseJson["email"].textValue()).isEqualTo("test.user@example.com")
+        assertThat(logsResponseJson["date"].isNull).isTrue()
+        assertThat(logsResponseJson["report"].textValue()).isEqualTo("other")
+        assertThat(logsResponseJson["params"]["nmin"].textValue()).isEqualTo("0.25")
+        assertThat(logsResponseJson["git_branch"].textValue()).isEqualTo("other")
+        assertThat(logsResponseJson["logs"].textValue()).startsWith("[ git")
+        assertThat(logsResponseJson["status"].textValue()).isIn("running", "success", "queued")
+
+        // check status was persisted
+        JooqContext().use {
+            val result = it.dsl.select(
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+            )
+            .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+            .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq(reportKey))
+            .fetchOne()
+
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("other")
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo(logsResponseJson["status"].textValue())
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]).isEqualTo(logsResponseJson["report_version"].textValue())
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS]).isEqualTo(logsResponseJson["logs"].textValue())
+        }
+    }
+
+    @Test
+    fun `returns error if report logs requested with incorrect workflow key`()
+    {
+        val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
+        val runResponse = runExampleWorkflow(sessionCookie)
+        val runResponseJson = JSONValidator.getData(runResponse.text)
+        val reportKey = runResponseJson["reports"][0].textValue()
+
+        val url = "/running/$reportKey/logs?workflow=wrongWorkflowKey"
+        val logsResponse = webRequestHelper.requestWithSessionCookie(
+                url,
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.get
+        )
+        assertThat(logsResponse.statusCode).isEqualTo(400)
+        JSONValidator.validateError(logsResponse.text, "bad-request",
+            "Report with key $reportKey does not belong to workflow with key wrongWorkflowKey")
+
     }
 
     fun validateWorkflowWithDefaultBranchAncCommit(url: String)
@@ -478,6 +490,71 @@ class WorkflowRunTests : IntegrationTest()
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
         JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
+    }
+
+    private fun runExampleWorkflow(sessionCookie: String): Response
+    {
+        val branch = "other"
+        val commit = getGitBranchCommit("other")
+
+        val json = """
+                {
+                  "name": "full workflow",
+                  "reports": [
+                    {
+                      "name": "other",
+                      "params": {
+                        "nmin": "0.25"
+                      }
+                    },
+                    {
+                      "name": "other",
+                      "params": {
+                        "nmin": "0.75"
+                      }
+                    },
+                    {
+                      "name": "minimal",
+                      "params": {}
+                    },
+                    {
+                      "name": "global",
+                      "params": {}
+                    }
+                  ],
+                  "changelog": {
+                    "message": "message1",
+                    "type": "internal"
+                  },
+                  "git_branch": "$branch",
+                  "git_commit": "$commit"
+                }
+            """.trimIndent()
+
+        val response = webRequestHelper.requestWithSessionCookie(
+                "/workflow",
+                sessionCookie,
+                ContentTypes.json,
+                HttpMethod.post,
+                json
+        )
+
+        assertSuccessful(response)
+        assertJsonContentType(response)
+        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowRunResponse")
+
+        val workflowRunResponse = Serializer.instance.gson.fromJson(
+                JSONValidator.getData(response.text).toString(),
+                WorkflowRunController.WorkflowRunResponse::class.java
+        )
+
+        val workflowRunRequest = Serializer.instance.gson.fromJson(json, WorkflowRunRequest::class.java)
+
+        assertThat(workflowRunResponse.reports.size).isEqualTo(workflowRunRequest.reports.size)
+
+        assertThat(workflowStatus(workflowRunResponse.key)).isEqualTo("success")
+
+        return response
     }
 
     private fun addWorkflowRunExample()
