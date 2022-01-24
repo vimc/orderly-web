@@ -44,7 +44,12 @@
                         </td>
                         <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
                         <td class="p-2">
-                            <a class="report-log-link" href="#" @click="showReportLog(report.key)">View log</a>
+                            <a v-if="viewLogLinkVisible(report.status)"
+                               class="report-log-link"
+                               href="#"
+                               @click="showReportLog(report.key)">
+                                View log
+                            </a>
                         </td>
                     </tr>
                 </table>
@@ -106,6 +111,7 @@ interface Methods {
     rerun: () => void;
     startPolling: () => void;
     stopPolling: () => void;
+    viewLogLinkVisible: (status: string) => boolean;
     showReportLog: (reportKey: string) => void;
     closeReportLogDialog
 }
@@ -113,7 +119,8 @@ interface Methods {
 interface Props {
     initialSelectedWorkflow: string;
 }
-const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
+const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
+const notStartedStates = ["queued", "deferred", "impossible", "missing"];
 
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
@@ -210,6 +217,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 return "Complete";
             } else if (status === "impossible") {
                 return "Dependency failed"
+            } else if (status === "deferred") {
+                return "Waiting for dependency"
             } else if (
                 failStates.includes(status)
             ) {
@@ -217,6 +226,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             } else {
                 return status.charAt(0).toUpperCase() + status.slice(1);
             }
+        },
+        viewLogLinkVisible(status) {
+            return !notStartedStates.includes(status);
         },
         showReportLog(reportKey) {
             this.showLogForReportKey = reportKey;

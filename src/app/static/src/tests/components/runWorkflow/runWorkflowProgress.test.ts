@@ -185,6 +185,107 @@ describe(`runWorkflowProgress`, () => {
         })
     });
 
+    it(`renders View Log links only for started reports`, (done) => {
+        const allStatusWorkflow = {
+            "status": "success",
+            "errors": null,
+            "data": {
+                "status": "running",
+                "reports": [
+                    {
+                        "key": "happy_tiger",
+                        "name": "report1",
+                        "status": "queued",
+                        "date": null
+                    },
+                    {
+                        "key": "sad_marmot",
+                        "name": "report2",
+                        "status": "deferred",
+                        "date": null
+                    },
+                    {
+                        "key": "pensive_goldfinch",
+                        "name": "report3",
+                        "status": "impossible",
+                        "date": null
+                    },
+                    {
+                        "key": "sarcastic_beetle",
+                        "name": "report4",
+                        "status": "missing",
+                        "date": null
+                    },
+                    {
+                        "key": "charismatic_baboon",
+                        "name": "report5",
+                        "status": "success",
+                        "version": "20210510-100458-8f1a9624",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "compassionate_piranha",
+                        "name": "report6",
+                        "status": "error",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "stubborn_zebra",
+                        "name": "report7",
+                        "status": "running",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "grumpy_centipede",
+                        "name": "report8",
+                        "status": "interrupted",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "philosophical_mussel",
+                        "name": "report9",
+                        "status": "orphan",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                ]
+            }
+        };
+        mockAxios.onGet('http://app/workflows/key1/status')
+            .reply(200, allStatusWorkflow);
+        const wrapper = getWrapper();
+        wrapper.setData({selectedWorkflowKey: "key1"});
+
+        setTimeout(() => {
+            const reportRows = wrapper.findAll("table tr");
+            expect(reportRows.length).toBe(9);
+
+            const statusSelector = "td:nth-child(2)";
+            const viewLogSelector = "a.report-log-link";
+
+            expect(reportRows.at(0).find(statusSelector).text()).toBe("Queued");
+            expect(reportRows.at(0).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(1).find(statusSelector).text()).toBe("Waiting for dependency");
+            expect(reportRows.at(1).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(2).find(statusSelector).text()).toBe("Dependency failed");
+            expect(reportRows.at(2).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(3).find(statusSelector).text()).toBe("Failed"); // missing
+            expect(reportRows.at(3).find(viewLogSelector).exists()).toBe(false);
+
+            expect(reportRows.at(4).find(statusSelector).text()).toBe("Complete");
+            expect(reportRows.at(4).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(5).find(statusSelector).text()).toBe("Failed"); // error
+            expect(reportRows.at(5).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(6).find(statusSelector).text()).toBe("Running");
+            expect(reportRows.at(6).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(7).find(statusSelector).text()).toBe("Failed"); // interrupted
+            expect(reportRows.at(7).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(8).find(statusSelector).text()).toBe("Failed"); // orphan
+            expect(reportRows.at(8).find(viewLogSelector).text()).toBe("View log");
+
+            done();
+        });
+    });
+
     it("renders report log dialog", async () => {
         const wrapper = getWrapper();
         await wrapper.setData({selectedWorkflowKey: "key1"});
