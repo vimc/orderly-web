@@ -474,9 +474,19 @@ fun insertWorkflowRunReport(
     workflowKey: String,
     reportKey: String,
     report: String,
-    params: Map<String, String>
+    params: Map<String, String>,
+    date: Instant? = null
 )
 {
+    val timestamp = if (date == null)
+    {
+        null
+    }
+    else
+    {
+        Timestamp.from(date)
+    }
+
     JooqContext().use {
         it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS)
             .apply{
@@ -485,6 +495,7 @@ fun insertWorkflowRunReport(
                 this.key = reportKey
                 this.report = report
                 this.params = Gson().toJson(params)
+                this.date = timestamp
             }.insert()
     }
 }

@@ -67,6 +67,29 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
     }
 
     @Test
+    fun `can update report run with null logs and version`()
+    {
+        val sut = OrderlyWebWorkflowRunReportRepository()
+        sut.updateReportRun("test_report_key", "error", null, null)
+        JooqContext().use {
+            val result = it.dsl.select(
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION,
+                ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS
+            )
+                .from(ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+                .where(ORDERLYWEB_WORKFLOW_RUN_REPORTS.KEY.eq("test_report_key"))
+                .fetchOne()
+
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT]).isEqualTo("test_report_name")
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.STATUS]).isEqualTo("error")
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.REPORT_VERSION]).isNull()
+            assertThat(result[ORDERLYWEB_WORKFLOW_RUN_REPORTS.LOGS]).isNull()
+        }
+    }
+
+    @Test
     fun `does not update report version if status is not success`()
     {
         val sut = OrderlyWebWorkflowRunReportRepository()
@@ -104,6 +127,17 @@ class WorkflowRunReportRepositoryTests : CleanDatabaseTests()
         assertThat(result.report).isEqualTo("test_report_name")
         assertThat(result.reportVersion).isEqualTo("report_version_1")
         assertThat(result.status).isEqualTo("success")
+    }
+
+    @Test
+    fun `can get report run when date is not null`()
+    {
+        val now = Instant.now()
+        val sut = OrderlyWebWorkflowRunReportRepository()
+        insertWorkflowRunReport("test_wf_key", "report_with_date_key", "report_with_date_name",
+            mapOf(), now)
+        val result = sut.getReportRun("report_with_date_key")
+        assertThat(result.date).isEqualTo(now)
     }
 
     @Test
