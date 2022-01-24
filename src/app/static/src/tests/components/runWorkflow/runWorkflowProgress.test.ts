@@ -175,12 +175,11 @@ describe(`runWorkflowProgress`, () => {
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
             expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
 
-            const logCells = wrapper.findAll("tr > td:nth-child(4)");
-            logCells.wrappers.forEach(td => {
-                const link = td.find("a.report-log-link");
-                expect(link.text()).toBe("View log");
-                expect(link.attributes("href")).toBe("#");
-            });
+            const logCell = wrapper.findAll("tr > td:nth-child(4)").at(0);
+            const link = logCell.find("a.report-log-link");
+            expect(link.text()).toBe("View log");
+            expect(link.attributes("href")).toBe("#");
+
             done();
         })
     });
