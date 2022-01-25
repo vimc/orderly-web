@@ -7,11 +7,11 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata} from "../../utils/types";
+    import {RunWorkflowMetadata} from "../../../utils/types";
     import runWorflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
-    import ErrorInfo from "../../../js/components/errorInfo.vue";
-    import {WorkflowSummaryEndpoint} from "../../utils/types";
-    import {api} from "../../utils/api";
+    import ErrorInfo from "../../../../js/components/errorInfo.vue";
+    import {WorkflowSummaryEndpoint} from "../../../utils/types";
+    import {api} from "../../../utils/api";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata

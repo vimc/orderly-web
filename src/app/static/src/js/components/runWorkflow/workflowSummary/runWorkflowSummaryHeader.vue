@@ -20,7 +20,7 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {WorkflowSummaryEndpoint} from "../../utils/types";
+import {WorkflowSummaryEndpoint} from "../../../utils/types";
 import {AlertTriangleIcon} from "vue-feather-icons"
 
 interface Props {

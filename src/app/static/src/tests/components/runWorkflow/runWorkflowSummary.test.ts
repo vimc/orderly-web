@@ -1,6 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
-import runWorkflowSummary from "../../../js/components/runWorkflow/runWorkflowSummary.vue"
-import runWorkflowSummaryHeader from "../../../js/components/runWorkflow/runWorkflowSummaryHeader.vue"
+import runWorkflowSummary from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
+import runWorkflowSummaryHeader from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummaryHeader.vue"
 import {RunWorkflowMetadata} from "../../../js/utils/types";
 import {mockAxios} from "../../mockAxios";
 
