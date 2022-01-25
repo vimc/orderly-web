@@ -175,7 +175,7 @@ class RunReportTests
             on { params(":key") } doReturn "fakeKey"
         }
 
-        val sut = ReportRunController(mockContext, mockRepo, mock())
+        val sut = ReportRunController(mockContext, mockRepo, mock(), mock())
         val result = sut.getRunningReportLogs()
         verify(mockRepo, times(1)).getReportRun("fakeKey")
         assertThat(result.email).isEqualTo("test@example.com")
@@ -228,7 +228,7 @@ class RunReportTests
             on { get("/v1/reports/fakeKey/status/", mapOf("output" to "true")) } doReturn  mockOrderlyResponse
         }
 
-        val sut = ReportRunController(mockContext, mockRepo, mockAPI)
+        val sut = ReportRunController(mockContext, mockRepo, mock(), mockAPI)
         val result = sut.getRunningReportLogs()
         verify(mockRepo, times(2)).getReportRun("fakeKey")
         assertThat(result).isSameAs(incompleteLog)
@@ -264,7 +264,7 @@ class RunReportTests
             on { getReportRun("fakeKey") } doThrow UnknownObjectError("key", "getReportRun")
         }
 
-        val sut = ReportRunController(mockContext, mockRepo, mock())
+        val sut = ReportRunController(mockContext, mockRepo, mock(), mock())
         Assertions.assertThatThrownBy { sut.getRunningReportLogs() }
                 .isInstanceOf(UnknownObjectError::class.java)
     }

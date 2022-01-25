@@ -94,6 +94,22 @@ private fun getNewReportVersionTagId(ctx: JooqContext): Int
     return (maxFieldId ?: 0) + 1
 }
 
+private fun getNewWorkflowRunId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.ORDERLYWEB_WORKFLOW_RUN.ID.max())
+        .from(Tables.ORDERLYWEB_WORKFLOW_RUN)
+        .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
+private fun getNewWorkflowRunReportId(ctx: JooqContext): Int
+{
+    val maxFieldId = ctx.dsl.select(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS.ID.max())
+        .from(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+        .fetchAny()[0] as Int?
+    return (maxFieldId ?: 0) + 1
+}
+
 fun insertReportWithCustomFields(name: String,
                                  version: String,
                                  customFields: Map<String, String>,
@@ -162,7 +178,7 @@ fun insertWorkflow(email: String,
     JooqContext().use {
         val workflowRunRecord = it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN)
                 .apply {
-                    this.id = getNewCustomFieldId(it)
+                    this.id = getNewWorkflowRunId(it)
                     this.name = name
                     this.email = email
                     this.key = key
@@ -451,5 +467,35 @@ fun insertReportRun(
                     this.reportVersion = reportVersion
 
                 }.insert()
+    }
+}
+
+fun insertWorkflowRunReport(
+    workflowKey: String,
+    reportKey: String,
+    report: String,
+    params: Map<String, String>,
+    date: Instant? = null
+)
+{
+    val timestamp = if (date == null)
+    {
+        null
+    }
+    else
+    {
+        Timestamp.from(date)
+    }
+
+    JooqContext().use {
+        it.dsl.newRecord(Tables.ORDERLYWEB_WORKFLOW_RUN_REPORTS)
+            .apply{
+                this.id = getNewWorkflowRunReportId(it)
+                this.workflowKey = workflowKey
+                this.key = reportKey
+                this.report = report
+                this.params = Gson().toJson(params)
+                this.date = timestamp
+            }.insert()
     }
 }

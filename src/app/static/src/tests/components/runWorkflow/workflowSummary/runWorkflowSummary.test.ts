@@ -3,20 +3,20 @@ import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSu
 import runWorkflowSummaryHeader from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummaryHeader.vue"
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
+import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`runWorkflowSummary`, () => {
 
-    const summaryData = {
-        missing_dependencies: {
-            step2: ["step1"]
-        },
+    const workflowSummary = {
         ref: "refNum",
-        reports: [
-            {
-                name: "step2",
-                params: {}
-            }
-        ]
+        missing_dependencies: {step2: ["step1"]},
+        reports: [{name: "step2", params: {} }]
+    }
+
+    const workflowSummary2 = {
+        refs: "test",
+        missing_dependencies: {},
+        reports: [{name: "test", params: {"key": "value"}}]
     }
 
     const metaData = {
@@ -24,10 +24,15 @@ describe(`runWorkflowSummary`, () => {
         git_commit: "gitCommit"
     }
 
+    const metaData2 = {
+        reports: [{name: "r1", params: {"key": "value"}}, {name: "r2"}],
+        git_commit: "gitCommit"
+    }
+
     beforeEach(() => {
         mockAxios.reset();
         mockAxios.onPost('http://app/workflows/summary')
-            .reply(200, {"data": summaryData});
+            .reply(200, {"data": workflowSummary});
     })
 
     const getWrapper = (meta: Partial<RunWorkflowMetadata> = {reports: []}) => {
@@ -39,9 +44,26 @@ describe(`runWorkflowSummary`, () => {
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
             expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
-            expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(summaryData);
+            expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(workflowSummary);
             done();
         });
+    });
+
+    it(`it can post workflow summary with dependencies as response`,  (done) => {
+        mockAxios.onPost('http://app/workflows/summary')
+            .reply(200, {"data": workflowSummary2});
+            
+        const wrapper = getWrapper(metaData2);
+
+        setTimeout(() => {
+            expect(mockAxios.history.post.length).toBe(1)
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            const data = JSON.parse(mockAxios.history.post[0].data);
+            expect(data.ref).toEqual("gitCommit")
+            expect(data.reports).toEqual(metaData2.reports)
+            expect(wrapper.findComponent(workflowSummaryReports).props("workflowSummary")).toEqual(workflowSummary2)
+            done()
+        })
     });
 
     it(`emits valid event on mount`, () => {

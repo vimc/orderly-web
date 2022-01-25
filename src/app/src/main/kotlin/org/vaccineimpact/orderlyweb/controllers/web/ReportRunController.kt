@@ -5,8 +5,7 @@ import org.vaccineimpact.orderlyweb.OrderlyServer
 import org.vaccineimpact.orderlyweb.OrderlyServerAPI
 import org.vaccineimpact.orderlyweb.controllers.Controller
 import org.vaccineimpact.orderlyweb.db.AppConfig
-import org.vaccineimpact.orderlyweb.db.repositories.OrderlyWebReportRunRepository
-import org.vaccineimpact.orderlyweb.db.repositories.ReportRunRepository
+import org.vaccineimpact.orderlyweb.db.repositories.*
 import org.vaccineimpact.orderlyweb.models.ReportRunLog
 import org.vaccineimpact.orderlyweb.models.ReportStatus
 import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
@@ -14,27 +13,45 @@ import org.vaccineimpact.orderlyweb.models.ReportRunWithDate
 class ReportRunController(
     context: ActionContext,
     private val reportRunRepository: ReportRunRepository,
+    private val workflowRunReportRepository: WorkflowRunReportRepository,
     private val orderlyServerAPI: OrderlyServerAPI
 ) : Controller(context)
 {
     constructor(context: ActionContext) : this(
-            context,
-            OrderlyWebReportRunRepository(),
-            OrderlyServer(AppConfig()).throwOnError()
+        context,
+        OrderlyWebReportRunRepository(),
+        OrderlyWebWorkflowRunReportRepository(),
+        OrderlyServer(AppConfig()).throwOnError()
     )
 
     fun getRunningReportLogs(): ReportRunLog
     {
         val key = context.params(":key")
-        var log = reportRunRepository.getReportRun(key)
+        val workflow = context.queryParams("workflow")
+
+        if (workflow != null)
+        {
+            this.workflowRunReportRepository.checkReportIsInWorkflow(key, workflow)
+        }
+
+        val reportRunLogRepository: ReportRunLogRepository = if (workflow == null)
+        {
+            reportRunRepository
+        }
+        else
+        {
+           workflowRunReportRepository
+        }
+
+        var log = reportRunLogRepository.getReportRun(key)
         if (log.status in listOf(null, "queued", "running"))
         {
             val statusResponse = orderlyServerAPI.get(
                     "/v1/reports/$key/status/",
                     mapOf("output" to "true"))
             val latestStatus = statusResponse.data(ReportStatus::class.java)
-            reportRunRepository.updateReportRun(key, latestStatus.status, latestStatus.version, latestStatus.output)
-            log = reportRunRepository.getReportRun(key)
+            reportRunLogRepository.updateReportRun(key, latestStatus.status, latestStatus.version, latestStatus.output)
+            log = reportRunLogRepository.getReportRun(key)
         }
         return log
     }
