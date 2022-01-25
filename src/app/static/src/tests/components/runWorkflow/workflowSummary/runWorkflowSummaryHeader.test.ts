@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
-import runWorkflowSummaryHeader from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummaryHeader.vue"
+import runWorkflowSummaryHeader from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummaryHeader.vue"
 import {AlertTriangleIcon} from "vue-feather-icons"
 
 describe(`runWorkflowSummaryHeader`, () => {
