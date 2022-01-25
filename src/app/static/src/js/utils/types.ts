@@ -140,5 +140,5 @@ export interface WorkflowReportWithDependencies {
 export interface WorkflowSummaryEndpoint {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
-    refs: string
+    ref: string
 }

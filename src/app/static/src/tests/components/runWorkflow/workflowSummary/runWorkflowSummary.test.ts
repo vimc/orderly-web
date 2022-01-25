@@ -14,7 +14,7 @@ describe(`runWorkflowSummary`, () => {
     }
 
     const workflowSummary2 = {
-        refs: "test",
+        ref: "test",
         missing_dependencies: {},
         reports: [{name: "test", params: {"key": "value"}}]
     }
