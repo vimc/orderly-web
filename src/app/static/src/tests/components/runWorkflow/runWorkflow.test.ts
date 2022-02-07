@@ -7,6 +7,7 @@ import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCre
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {session} from "../../../js/utils/session";
 import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
+import runWorkflowSummary from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue";
 
 describe(`runWorkflow`, () => {
 
@@ -129,7 +130,7 @@ describe(`runWorkflow`, () => {
         expect(wrapper.vm.$data.workflowStarted).toBe(true)
         expect(wrapper.findComponent(workflowWizard).props("disableRename")).toBe(true)
 
-        expect(wrapper.find("#summary-header").text()).toBe("Summary")
+        expect(wrapper.find("#summary-header").exists()).toBe(true)
         let buttons = wrapper.findAll("button")
         expect(buttons.at(0).text()).toBe("Cancel")
         expect(buttons.at(1).text()).toBe("Next")
@@ -190,7 +191,7 @@ describe(`runWorkflow`, () => {
             expect(wrapper.find("#confirm-cancel-container").classes()).toContain("modal-hide")
             await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
             await wrapper.find("#next-workflow").trigger("click")
-            expect(wrapper.find("#summary-header").text()).toBe("Summary")
+            expect(wrapper.find("#summary-header").exists()).toBe(true)
 
             buttons = wrapper.findAll("button")
             expect(buttons.at(0).text()).toBe("Cancel")
@@ -254,7 +255,7 @@ describe(`runWorkflow`, () => {
 
             await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true);
             await buttons.at(2).trigger("click")
-            expect(wrapper.find("#summary-header").text()).toBe("Summary")
+            expect(wrapper.find("#summary-header").exists()).toBe(true)
 
             buttons = wrapper.findComponent(workflowWizard).findAll("button")
 

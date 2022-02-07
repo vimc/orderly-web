@@ -73,6 +73,7 @@ describe(`runWorkflowReport`, () => {
             expect(git.props("initialBranches")).toStrictEqual(mockRunReportMetadata().git_branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
+            expect(git.props("showAllReports")).toBe(true);
 
             const error = wrapper.findComponent(ErrorInfo);
             expect(error.props("apiError")).toBe("");

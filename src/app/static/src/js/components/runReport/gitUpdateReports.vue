@@ -40,7 +40,8 @@
             "reportMetadata",
             "initialBranches",
             "initialBranch",
-            "initialCommitId"
+            "initialCommitId",
+            "showAllReports"
         ],
         components: {
             ErrorInfo
@@ -109,7 +110,8 @@
             },
             updateReports() {
                 this.reports = [];
-                const query = this.reportMetadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}` : '';
+                const showAllParam = this.showAllReports ? "&show_all=true" : "";
+                const query = this.reportMetadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;

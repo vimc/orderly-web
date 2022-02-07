@@ -150,14 +150,15 @@ class RunWorkflowTests : SeleniumTest()
     fun `can change branch and see resulting workflow change`()
     {
         createWorkflow()
-        addReport("minimal")
+        changeToOtherBranch()
+        addReport("other")
 
         //Expect report to be removed from workflow when change to a branch where report does not exist
-        changeToOtherBranch()
+        changeToMasterBranch()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
         assertThat(driver.findElement(By.cssSelector(".alert")).text).contains(
                 "The following items are not present in this git commit and have been removed from the workflow:\n" +
-                "Report 'minimal'")
+                "Report 'other'")
     }
 
     @Test
@@ -197,6 +198,18 @@ class RunWorkflowTests : SeleniumTest()
         tmpFile.delete()
     }
 
+    @Test
+    fun `can see all reports in non-master branch`()
+    {
+        // Available reports should include those which are unchanged from master branch i.e. 'minimal' and 'global', as
+        // well as branch-only reports e.g. 'other'
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("minimal")
+        addReport("global")
+        addReport("other")
+    }
+
     private fun addReport(reportName: String)
     {
         driver.findElement(By.cssSelector("#workflow-report input")).sendKeys(reportName)
@@ -216,18 +229,28 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("git-branch")))
     }
 
+    private fun changeToMasterBranch()
+    {
+        changeToBranch(0, "master", "other")
+    }
+
     private fun changeToOtherBranch()
     {
+        changeToBranch(1, "other", "master")
+    }
+
+    private fun changeToBranch(newBranchIndex: Int, newBranch: String, expectedCurrentBranch: String)
+    {
         val branchSelect = driver.findElement(By.id("git-branch"))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("master")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo(expectedCurrentBranch)
         val commitSelect = driver.findElement(By.id("git-commit"))
         val commitValue = commitSelect.getAttribute("value")
         assertThat(commitValue).isNotBlank()
 
         //Select a git branch
-        Select(branchSelect).selectByIndex(1)
+        Select(branchSelect).selectByIndex(newBranchIndex)
         wait.until(not(ExpectedConditions.attributeToBe(commitSelect, "value", commitValue)))
-        assertThat(branchSelect.getAttribute("value")).isEqualTo("other")
+        assertThat(branchSelect.getAttribute("value")).isEqualTo(newBranch)
         assertThat(commitSelect.getAttribute("value")).isNotBlank()
     }
 
@@ -325,6 +348,37 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("view-progress-link")))
         driver.findElement(By.id("run-workflow-name")).sendKeys("more text")
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-progress-link")))
+    }
+
+    @Test
+    fun `can display workflow summary`()
+    {
+        createWorkflow()
+
+        //Change branch to find report with parameter
+        changeToOtherBranch()
+
+        //Add the report - Next button should be disabled until we set the parameter value
+        addReport("other")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isFalse()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("param-control-0")))
+        driver.findElement(By.id("param-control-0")).sendKeys("1")
+
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
+        assertThat(summaryReportNameDiv.text).isEqualTo("other")
+
+        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        assertThat(parameterHeading.text).isEqualTo("Parameters")
+
+        val params = driver.findElement(By.id("params"))
+        assertThat(params.text).contains("nmin: 1")
     }
 
 }

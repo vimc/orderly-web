@@ -26,7 +26,7 @@
     import {RunWorkflowMetadata, Step} from "../../utils/types"
     import runWorkflowReport from "../runWorkflow/runWorkflowReport.vue"
     import runWorkflowRun from "../runWorkflow/runWorkflowRun.vue"
-    import runWorkflowSummary from "../runWorkflow/runWorkflowSummary.vue"
+    import runWorkflowSummary from "../runWorkflow/workflowSummary/runWorkflowSummary.vue"
     import cancelDialog from "../runWorkflow/cancelDialog.vue"
 
     interface Data {

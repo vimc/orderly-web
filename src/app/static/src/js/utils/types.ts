@@ -129,3 +129,16 @@ export interface Error {
     code: string;
     message: string | null;
 }
+
+export interface WorkflowReportWithDependencies {
+    name: string,
+    instance?: string
+    params?: Record<string, string>,
+    depends_on?: string[]
+}
+
+export interface WorkflowSummary {
+    missing_dependencies: Record<string, string[]>,
+    reports: WorkflowReportWithDependencies[],
+    ref: string
+}
