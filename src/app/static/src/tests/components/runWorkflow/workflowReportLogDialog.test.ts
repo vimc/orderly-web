@@ -23,7 +23,7 @@ describe("workflowReportLogDialog", () => {
         expect(details.props("reportKey")).toBe("test-report");
         expect(details.props("workflowKey")).toBe("test-workflow");
 
-        expect(wrapper.find("button#workflow-report-log-close").text()).toBe("OK");
+        expect(wrapper.find("button#workflow-report-log-close").text()).toBe("Close");
     });
 
     const expectRendersHidden = (wrapper: Wrapper<any>) => {
@@ -42,9 +42,21 @@ describe("workflowReportLogDialog", () => {
         expectRendersHidden(wrapper)
     });
 
-    it("emits close event when OK button clicked", () => {
+    it("emits close event when Close button clicked", () => {
         const wrapper = getWrapper("test-workflow", "test-report");
         wrapper.find("button#workflow-report-log-close").trigger("click");
         expect(wrapper.emitted().close.length).toBe(1);
     });
+
+    it("emits close event when background clicked", () => {
+        const wrapper = getWrapper("test-workflow", "test-report");
+        wrapper.find("#workflow-report-log-container").trigger("click");
+        expect(wrapper.emitted().close.length).toBe(1);
+    });
+
+    it("does not emit close event when main modal area clicked", () => {
+        const wrapper = getWrapper("test-workflow", "test-report");
+        wrapper.find(".modal-main").trigger("click");
+        expect(wrapper.emitted().close).toBeUndefined();
+    })
 });

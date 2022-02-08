@@ -1,5 +1,5 @@
 <template>
-    <div id="workflow-report-log-container"
+    <div id="workflow-report-log-container" @click="backgroundClick"
          v-bind:class="['modal-background', {'modal-hide':!show}, {'modal-show':show}]">
         <div class="modal-main px-3" style="min-width: 50em;">
             <div class="modal-header">
@@ -11,12 +11,14 @@
                     :workflow-key="workflowKey"
                     class="px-3"
             ></running-report-details>
-            <button
-                @click="$emit('close')"
-                id="workflow-report-log-close"
-                type="submit"
-                class="modal-buttons btn m-3 px-4"
-            >OK</button>
+            <div class="modal-footer mt-4">
+                <button
+                    @click="$emit('close')"
+                    id="workflow-report-log-close"
+                    type="submit"
+                    class="modal-buttons btn px-4"
+            >Close</button>
+            </div>
         </div>
     </div>
 </template>
@@ -34,7 +36,11 @@
         show: boolean
     }
 
-    export default Vue.extend<unknown, unknown, Computed, Props>({
+    interface Methods {
+        backgroundClick: (e: Event) => void
+    }
+
+    export default Vue.extend<unknown, Methods, Computed, Props>({
         name: "workflowReportLogDialog",
         props: {
             workflowKey: {
@@ -50,6 +56,14 @@
             show() {
                 return !!this.workflowKey && !!this.reportKey;
             }
+        },
+        methods: {
+          backgroundClick(e: Event) {
+              // Close only if click on background div
+              if (e.target === e.currentTarget) {
+                  this.$emit("close");
+              }
+          }
         },
         components: {
             RunningReportDetails
