@@ -5,19 +5,18 @@
             <div class="modal-header">
                 <h5 class="modal-title">Report Log</h5>
             </div>
-            <running-report-details
-                    v-if="show"
-                    :report-key="reportKey"
-                    :workflow-key="workflowKey"
-                    class="px-3"
-            ></running-report-details>
+            <running-report-details v-if="show"
+                                    :report-key="reportKey"
+                                    :workflow-key="workflowKey"
+                                    class="px-3">
+            </running-report-details>
             <div class="modal-footer mt-4">
-                <button
-                    @click="$emit('close')"
-                    id="workflow-report-log-close"
-                    type="submit"
-                    class="modal-buttons btn px-4"
-            >Close</button>
+                <button @click="$emit('close')"
+                        id="workflow-report-log-close"
+                        type="submit"
+                        class="modal-buttons btn px-4">
+                    Close
+                </button>
             </div>
         </div>
     </div>

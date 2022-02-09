@@ -3,21 +3,18 @@
         <div
             class="container mt-3"
             id="workflow-progress-container"
-            v-if="workflowRunSummaries"
-        >
+            v-if="workflowRunSummaries">
             <div class="row mb-3">
                 <label for="workflows" class="form-label col">Workflow</label>
                 <div class="col-10 px-0">
-                    <v-select
-                        :options="workflowRunSummaries"
-                        label="name"
-                        :reduce="(label) => label.key"
-                        name="workflows"
-                        id="workflows"
-                        v-model="selectedWorkflowKey"
-                        :clearable = "false"
-                        placeholder="Select workflow or search by name..."
-                    >
+                    <v-select :options="workflowRunSummaries"
+                              label="name"
+                              :reduce="(label) => label.key"
+                              name="workflows"
+                              id="workflows"
+                              v-model="selectedWorkflowKey"
+                              :clearable = "false"
+                              placeholder="Select workflow or search by name...">
                         <template #option="{ name, date }">
                             <div>
                                 {{ name }}
@@ -65,16 +62,14 @@
             </div>
         </div>
         <p v-else>No workflows to show</p>
-        <error-info
-            :default-message="defaultMessage"
-            :api-error="error"
-        ></error-info>
-        <workflow-report-log-dialog
-            id="report-log-dialog"
-            :report-key=showLogForReportKey
-            :workflow-key=selectedWorkflowKey
-            @close="closeReportLogDialog"
-        ></workflow-report-log-dialog>
+        <error-info :default-message="defaultMessage"
+                    :api-error="error">
+        </error-info>
+        <workflow-report-log-dialog id="report-log-dialog"
+                                    :report-key=showLogForReportKey
+                                    :workflow-key=selectedWorkflowKey
+                                    @close="closeReportLogDialog">
+        </workflow-report-log-dialog>
     </div>
 </template>
 
@@ -113,7 +108,7 @@ interface Methods {
     stopPolling: () => void;
     viewLogLinkVisible: (status: string) => boolean;
     showReportLog: (reportKey: string) => void;
-    closeReportLogDialog
+    closeReportLogDialog: () => void;
 }
 
 interface Props {
