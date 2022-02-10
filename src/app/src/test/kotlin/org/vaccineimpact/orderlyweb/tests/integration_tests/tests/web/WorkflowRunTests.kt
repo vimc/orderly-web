@@ -283,7 +283,7 @@ class WorkflowRunTests : IntegrationTest()
 
     }
 
-    fun validateWorkflowWithDefaultBranchAncCommit(url: String)
+    private fun validateWorkflowWithDefaultBranchAncCommit(url: String)
     {
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val formData = """
@@ -473,11 +473,16 @@ class WorkflowRunTests : IntegrationTest()
         val ref = getGitBranchCommit("master")
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie(
-                "/workflows/summary",
-                sessionCookie,
-                ContentTypes.json,
-                HttpMethod.post,
-                """{"ref": "$ref", "reports": [{"name": "global", "params": {}}]}"""
+            "/workflows/summary",
+            sessionCookie,
+            ContentTypes.json,
+            HttpMethod.post,
+            """{
+                "ref": "$ref", 
+                "reports": [
+                {"name": "global", "params": {"nmin": "20"}},
+                {"name": "global", "params": {"nmin": "10"}}
+                ]}""".trimIndent()
         )
 
         assertSuccessful(response)
@@ -485,8 +490,11 @@ class WorkflowRunTests : IntegrationTest()
         val json = JsonLoader.fromString(response.text)
         val data = json["data"]
         val reports = data["reports"] as ArrayNode
-        assertThat(reports.count()).isEqualTo(1)
+        assertThat(reports.count()).isEqualTo(2)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat(reports[0]["params"]["nmin"].asText()).isEqualTo("20")
+        assertThat((reports[1]["name"] as TextNode).textValue()).isEqualTo("global")
+        assertThat(reports[1]["params"]["nmin"].asText()).isEqualTo("10")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
 
         JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")

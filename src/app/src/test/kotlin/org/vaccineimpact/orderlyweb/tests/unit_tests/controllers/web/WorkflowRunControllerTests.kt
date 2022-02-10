@@ -60,7 +60,7 @@ class WorkflowRunControllerTests
     @Test
     fun `can get workflow run summary`()
     {
-        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing"}]}"""
+        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing", "params":{"key": "value"} }]}"""
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn requestBody
         }
@@ -74,7 +74,6 @@ class WorkflowRunControllerTests
         val repo = mock<WorkflowRunRepository>()
         val sut = WorkflowRunController(context, repo, apiClient, mock())
         val result = sut.getWorkflowRunSummary()
-        
         assertThat(result).isEqualTo(mockAPIResponse.text)
     }
 
