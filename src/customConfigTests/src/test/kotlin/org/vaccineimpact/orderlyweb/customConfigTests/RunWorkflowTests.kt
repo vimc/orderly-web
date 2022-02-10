@@ -376,7 +376,9 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
 
         assertThat(driver.findElement(By.cssSelector("#summary-warning .d-inline-block")).text).isEqualTo("Some reports depend on the latest version of other reports that are not included in your workflow:")
+        assertThat(driver.findElements(By.cssSelector("#summary-warning .font-weight-bold")).count()).isEqualTo(1)
         assertThat(driver.findElement(By.cssSelector("#summary-warning .font-weight-bold")).text).isEqualTo("use_dependency_2")
+        assertThat(driver.findElements(By.cssSelector("#summary-warning li")).count()).isEqualTo(1)
         assertThat(driver.findElement(By.cssSelector("#summary-warning li")).text).isEqualTo("use_dependency")
 
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
@@ -387,6 +389,8 @@ class RunWorkflowTests : SeleniumTest()
 
         val params = driver.findElement(By.id("params"))
         assertThat(params.text).contains("nmin: 1")
+
+        assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
     }
 
 }
