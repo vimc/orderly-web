@@ -366,11 +366,19 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("param-control-0")))
         driver.findElement(By.id("param-control-0")).sendKeys("1")
 
+        addReport("use_dependency_2")
+
         wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
 
+        // now on summary page
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+
+        assertThat(driver.findElement(By.cssSelector("#summary-warning .d-inline-block")).text).isEqualTo("Some reports depend on the latest version of other reports that are not included in your workflow:")
+        assertThat(driver.findElement(By.cssSelector("#summary-warning .font-weight-bold")).text).isEqualTo("use_dependency_2")
+        assertThat(driver.findElement(By.cssSelector("#summary-warning li")).text).isEqualTo("use_dependency")
+
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
         assertThat(summaryReportNameDiv.text).isEqualTo("other")
 
