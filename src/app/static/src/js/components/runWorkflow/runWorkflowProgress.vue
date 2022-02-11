@@ -116,6 +116,11 @@ interface Props {
 }
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
 const notStartedStates = ["queued", "deferred", "impossible", "missing"];
+const nonFailStateMessages = {
+    "success": "Complete",
+    "impossible": "Dependency failed",
+    "deferred": "Waiting for dependency"
+};
 
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
@@ -208,12 +213,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             }
         },
         interpretStatus(status) {
-            if (status === "success") {
-                return "Complete";
-            } else if (status === "impossible") {
-                return "Dependency failed"
-            } else if (status === "deferred") {
-                return "Waiting for dependency"
+            if (Object.keys(nonFailStateMessages).includes(status)) {
+                return nonFailStateMessages[status]
             } else if (
                 failStates.includes(status)
             ) {

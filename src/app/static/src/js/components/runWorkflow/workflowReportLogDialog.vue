@@ -1,6 +1,6 @@
 <template>
     <div id="workflow-report-log-container" @click="backgroundClick"
-         v-bind:class="['modal-background', {'modal-hide':!show}, {'modal-show':show}]">
+         :class="['modal-background', {'modal-hide':!show}, {'modal-show':show}]">
         <div class="modal-main px-3" style="min-width: 50em;">
             <div class="modal-header">
                 <h5 class="modal-title">Report Log</h5>
