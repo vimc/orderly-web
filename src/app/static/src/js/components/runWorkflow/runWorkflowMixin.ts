@@ -1,6 +1,6 @@
 import Vue from "vue";
 import {api} from "../../utils/api";
-import {WorkflowSummary, Parameter} from "../../utils/types";
+import {WorkflowSummaryResponse, Parameter} from "../../utils/types";
 import {AxiosResponse} from "axios";
 
 interface Data {
@@ -10,7 +10,7 @@ interface Data {
 
 interface Methods {
     getParametersApiCall: (reportName: string, gitCommit: string) => Promise<AxiosResponse>;
-    getDefaultParameters: (workflowSummary: WorkflowSummary, gitCommit: string) => void;
+    getDefaultParameters: (workflowSummary: WorkflowSummaryResponse, gitCommit: string) => void;
 }
 
 export default Vue.extend<Data, Methods, unknown, unknown>({

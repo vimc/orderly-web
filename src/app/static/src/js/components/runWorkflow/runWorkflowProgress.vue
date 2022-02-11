@@ -84,7 +84,7 @@ import {
 import { buildFullUrl } from "../../utils/api";
 import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
 import runWorkflowMixin from "./runWorkflowMixin.ts";
-import {WorkflowSummary, Parameter} from "../../utils/types";
+import {WorkflowSummaryResponse, Parameter} from "../../utils/types";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -94,7 +94,7 @@ interface Data {
     defaultMessage: string;
     pollingTimer: null | number;
     runWorkflowMetadata: RunWorkflowMetadata | null
-    workflowSummary: WorkflowSummary | null
+    workflowSummary: WorkflowSummaryResponse | null
 }
 
 interface Methods {
