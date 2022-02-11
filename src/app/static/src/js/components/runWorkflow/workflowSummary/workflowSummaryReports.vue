@@ -24,7 +24,7 @@
                                         <div v-if="hasParams(report)">
                                             <p class="non-default-param"
                                                v-for="param in nonDefaultParams(index)"
-                                               :key="index">{{ param.name }}: {{ param.value }}</p>
+                                               :key="param.name">{{ param.name }}: {{ param.value }}</p>
                                             <div v-if="defaultParams(index).length" :id="`default-params-${index}`">
                                                 <a :href="`#collapseSummary-${index}`"
                                                    class="show-defaults pt-2 d-inline-block small"
