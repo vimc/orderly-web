@@ -24,7 +24,7 @@
                                         <div v-if="hasParams(report)">
                                             <p id="params" v-for="(value, key, index) in report.params" :key="index">{{ key }}: {{ value }}</p>
                                         </div>
-                                        <div v-else><p>There are no parameters</p></div>
+                                        <div v-else class="noParams"><p>There are no parameters</p></div>
                                     </div>
                                 </div>
                             </div>

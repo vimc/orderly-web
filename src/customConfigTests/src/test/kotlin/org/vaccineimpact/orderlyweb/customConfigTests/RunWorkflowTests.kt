@@ -381,16 +381,39 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(driver.findElements(By.cssSelector("#summary-warning li")).count()).isEqualTo(1)
         assertThat(driver.findElement(By.cssSelector("#summary-warning li")).text).isEqualTo("use_dependency")
 
-        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
-        assertThat(summaryReportNameDiv.text).isEqualTo("other")
+        val summaryReportNameDivs = driver.findElements(By.id("report-name-icon"))
+        assertThat(summaryReportNameDivs.count()).isEqualTo(2)
+        assertThat(summaryReportNameDivs[0].text).isEqualTo("other")
+        assertThat(summaryReportNameDivs[1].text).isEqualTo("use_dependency_2")
 
         val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElement(By.id("params"))
-        assertThat(params.text).contains("nmin: 1")
+        val params = driver.findElements(By.id("params"))
+        assertThat(params.count()).isEqualTo(1)
+        assertThat(params[0].text).contains("nmin: 1")
+
+        val noParams = driver.findElements(By.cssSelector(".noParams"))
+        assertThat(noParams.count()).isEqualTo(1)
+        assertThat(noParams[0].text).isEqualTo("There are no parameters")
 
         assertThat(driver.findElements(By.cssSelector(".error-message")).count()).isEqualTo(0)
+
+        // go back to previous page and remove second report
+
+        val backButton = driver.findElement(By.id("previous-workflow"))
+        backButton.click()
+        
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("workflow-report-1")))
+        val removeReportBtns = driver.findElements(By.cssSelector(".remove-report-button"))
+        removeReportBtns[1].click()
+
+        // return to summary page and see that missing dependencies warnings are no longer in the summary header
+
+        val nextButton2 = driver.findElement(By.id("next-workflow"))
+        nextButton2.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        assertThat(driver.findElements(By.id("summary-warning")).count()).isEqualTo(0)
     }
 
 }
