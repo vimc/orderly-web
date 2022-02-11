@@ -3,42 +3,70 @@ import {api} from "../../utils/api";
 import {WorkflowSummaryResponse, Parameter} from "../../utils/types";
 import {AxiosResponse} from "axios";
 
+interface WorkflowReportParams {
+    defaultParams: Parameter[],
+    nonDefaultParams: Parameter[]
+}
+
 interface Data {
-    defaultParams: Record<string, Parameter[]>[];
+    workflowReportParams: WorkflowReportParams[] | null;
     defaultParamsErrors: [];
 }
 
 interface Methods {
     getParametersApiCall: (reportName: string, gitCommit: string) => Promise<AxiosResponse>;
-    getDefaultParameters: (workflowSummary: WorkflowSummaryResponse, gitCommit: string) => void;
+    getWorkflowReportParams: (workflowSummary: WorkflowSummaryResponse, gitCommit: string) => void
 }
 
 export default Vue.extend<Data, Methods, unknown, unknown>({
     data() {
         return {
-            defaultParams: [],
+            workflowReportParams: null,
             defaultParamsErrors: []
         }
     },
     methods: {
         getParametersApiCall(reportName, gitCommit) {
             const commit = gitCommit ? `?commit=${gitCommit}` : '';
-            console.log("commit", commit)
-            return api.get(`/report/${reportName}/config/parameters/${commit}`);
+            return api.get(`/report/${reportName}/config/parametersX/${commit}`);
         },
-        getDefaultParameters(workflowSummary, gitCommit) {
-            console.log("mixin called", workflowSummary, gitCommit)
-            workflowSummary?.reports.map(report => {
-                this.getParametersApiCall(report.name, gitCommit)
-                    .then(({data}) => {
-                        this.defaultParams.push({reportName: report.name, params: data.data});
-                        console.log("defaultParams in mixin", this.defaultParams)
-                    })
-                    .catch((error) => {
-                        this.defaultParamsErrors.push({reportName: report.name, error: error});
-                        console.log("defaultParams in mixin error", error)
-                    })
-            })
+        // For each report in workflowSummary, map to an object which contains both defaultParams and nonDefaultParams
+        getWorkflowReportParams: async function (workflowSummary: WorkflowSummaryResponse, gitCommit: string) {
+            const workflowReportParams = [];
+            const defaultParamsPerReport: Record<string, Parameter[]> = {};
+
+            for (let report of workflowSummary.reports) {
+                //1. Fetch default params for this report if we don't already have them
+                if (!Object.keys(defaultParamsPerReport).includes(report.name)) {
+                    await this.getParametersApiCall(report.name, gitCommit)
+                        .then(({data}) => {
+                            defaultParamsPerReport[report.name] = data.data;
+                        })
+                        .catch((error) => {
+                            this.defaultParamsErrors.push({reportName: report.name, error: error});
+                            //Push empty to defaults - couldn't retrieve - all parameters will show as non-default
+                            defaultParamsPerReport[report.name] = [];
+                        })
+                }
+
+                //2. Sort report params into default and non-default
+                const defaultParams = defaultParamsPerReport[report.name];
+                const reportParams: WorkflowReportParams = {
+                    defaultParams: [],
+                    nonDefaultParams: []
+                };
+                Object.keys(report.params).forEach(paramName => {
+                    const defaultValue = defaultParams.find(defaultParam => defaultParam.name === paramName)?.value;
+                    const param = {name: paramName, value: report.params[paramName]};
+                    if (defaultValue === param.value) {
+                        reportParams.defaultParams.push(param);
+                    } else {
+                        reportParams.nonDefaultParams.push(param);
+                    }
+                });
+                workflowReportParams.push(reportParams);
+            }
+            this.workflowReportParams = workflowReportParams;
         }
     }
-}) 
+})
