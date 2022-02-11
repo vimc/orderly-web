@@ -3,21 +3,18 @@
         <div
             class="container mt-3"
             id="workflow-progress-container"
-            v-if="workflowRunSummaries"
-        >
+            v-if="workflowRunSummaries">
             <div class="row mb-3">
                 <label for="workflows" class="form-label col">Workflow</label>
                 <div class="col-10 px-0">
-                    <v-select
-                        :options="workflowRunSummaries"
-                        label="name"
-                        :reduce="(label) => label.key"
-                        name="workflows"
-                        id="workflows"
-                        v-model="selectedWorkflowKey"
-                        :clearable = "false"
-                        placeholder="Select workflow or search by name..."
-                    >
+                    <v-select :options="workflowRunSummaries"
+                              label="name"
+                              :reduce="(label) => label.key"
+                              name="workflows"
+                              id="workflows"
+                              v-model="selectedWorkflowKey"
+                              :clearable = "false"
+                              placeholder="Select workflow or search by name...">
                         <template #option="{ name, date }">
                             <div>
                                 {{ name }}
@@ -34,7 +31,7 @@
                 <table class="table-bordered col-10">
                     <tr v-for="report in workflowRunStatus.reports">
                         <td v-if="report.status === 'success'" class="p-2">
-                            <a :href="reportVersionHref(report.name, report.version)">
+                            <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                                 {{ report.name }}
                             </a>
                         </td>
@@ -49,6 +46,14 @@
                             {{ interpretStatus(report.status) }}
                         </td>
                         <td v-if="report.date" class="p-2">{{ formatDate(report.date) }}</td>
+                        <td class="p-2">
+                            <a v-if="viewLogLinkVisible(report.status)"
+                               class="report-log-link"
+                               href="#"
+                               @click="showReportLog(report.key)">
+                                View log
+                            </a>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -63,10 +68,14 @@
             </div>
         </div>
         <p v-else>No workflows to show</p>
-        <error-info
-            :default-message="defaultMessage"
-            :api-error="error"
-        ></error-info>
+        <error-info :default-message="defaultMessage"
+                    :api-error="error">
+        </error-info>
+        <workflow-report-log-dialog id="report-log-dialog"
+                                    :report-key=showLogForReportKey
+                                    :workflow-key=selectedWorkflowKey
+                                    @close="closeReportLogDialog">
+        </workflow-report-log-dialog>
     </div>
 </template>
 
@@ -76,6 +85,7 @@ import vSelect from "vue-select";
 import { api } from "../../utils/api";
 import {longTimestamp, workflowRunDetailsToMetadata} from "../../utils/helpers.ts";
 import ErrorInfo from "../errorInfo.vue";
+import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
@@ -95,6 +105,7 @@ interface Data {
     pollingTimer: null | number;
     runWorkflowMetadata: RunWorkflowMetadata | null
     workflowSummary: WorkflowSummaryResponse | null
+    showLogForReportKey: string | null;
 }
 
 interface Methods {
@@ -111,6 +122,9 @@ interface Methods {
     getWorkflowDetails: () => void
     showDefaultParameters: (reportName: string) => Parameter | null;
     getDefaultParametersError: (reportName: string) => string
+    viewLogLinkVisible: (status: string) => boolean;
+    showReportLog: (reportKey: string) => void;
+    closeReportLogDialog: () => void;
 }
 
 interface Props {
@@ -130,12 +144,19 @@ interface Props {
 //     refs: string
 // }
 
-const failStates = ["error", "orphan", "impossible", "missing", "interrupted"]
+const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
+const notStartedStates = ["queued", "deferred", "impossible", "missing"];
+const nonFailStateMessages = {
+    "success": "Complete",
+    "impossible": "Dependency failed",
+    "deferred": "Waiting for dependency"
+};
 
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
         ErrorInfo,
+        WorkflowReportLogDialog,
         vSelect,
     },
     mixins: [runWorkflowMixin],
@@ -154,7 +175,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             defaultMessage: "",
             pollingTimer: null,
             workflowSummary: null,
-            runWorkflowMetadata: null
+            runWorkflowMetadata: null,
+            showLogForReportKey: null
         };
     },
     methods: {
@@ -254,10 +276,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             }
         },
         interpretStatus(status) {
-            if (status === "success") {
-                return "Complete";
-            } else if (status === "impossible") {
-                return "Dependency failed"
+            if (Object.keys(nonFailStateMessages).includes(status)) {
+                return nonFailStateMessages[status]
             } else if (
                 failStates.includes(status)
             ) {
@@ -272,6 +292,15 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         },
         getDefaultParametersError(reportName) {
             return this.defaultParamsErrors?.find(error => error.reportName === reportName) || ""
+        },
+        viewLogLinkVisible(status) {
+            return !notStartedStates.includes(status);
+        },
+        showReportLog(reportKey) {
+            this.showLogForReportKey = reportKey;
+        },
+        closeReportLogDialog() {
+            this.showLogForReportKey = null;
         }
     },
     watch: {

@@ -1,5 +1,6 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowProgress from '../../../js/components/runWorkflow/runWorkflowProgress.vue'
+import WorkflowReportLogDialog from "../../../js/components/runWorkflow/workflowReportLogDialog.vue";
 import {mockAxios} from "../../mockAxios";
 import errorInfo from "../../../js/components/errorInfo.vue";
 
@@ -149,7 +150,7 @@ describe(`runWorkflowProgress`, () => {
         setTimeout(() => {
             expect(wrapper.find("table").exists()).toBe(true)
             expect(wrapper.findAll("tr").length).toBe(4)
-            const reportLinks = wrapper.findAll("td > a")
+            const reportLinks = wrapper.findAll("td > a.report-version-link")
             expect(reportLinks.length).toBe(1)
 
             const completedReportLink = reportLinks.at(0)
@@ -173,9 +174,156 @@ describe(`runWorkflowProgress`, () => {
 
             const dateColumns = wrapper.findAll("tr > td:nth-child(3)")
             expect(dateColumns.at(0).text()).toBe("Wed Jun 16 2021, 09:51")
+
+            const logCell = wrapper.findAll("tr > td:nth-child(4)").at(0);
+            const link = logCell.find("a.report-log-link");
+            expect(link.text()).toBe("View log");
+            expect(link.attributes("href")).toBe("#");
+
             done();
         })
-    })
+    });
+
+    it(`renders View Log links only for started reports`, (done) => {
+        const allStatusWorkflow = {
+            "status": "success",
+            "errors": null,
+            "data": {
+                "status": "running",
+                "reports": [
+                    {
+                        "key": "happy_tiger",
+                        "name": "report1",
+                        "status": "queued",
+                        "date": null
+                    },
+                    {
+                        "key": "sad_marmot",
+                        "name": "report2",
+                        "status": "deferred",
+                        "date": null
+                    },
+                    {
+                        "key": "pensive_goldfinch",
+                        "name": "report3",
+                        "status": "impossible",
+                        "date": null
+                    },
+                    {
+                        "key": "sarcastic_beetle",
+                        "name": "report4",
+                        "status": "missing",
+                        "date": null
+                    },
+                    {
+                        "key": "charismatic_baboon",
+                        "name": "report5",
+                        "status": "success",
+                        "version": "20210510-100458-8f1a9624",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "compassionate_piranha",
+                        "name": "report6",
+                        "status": "error",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "stubborn_zebra",
+                        "name": "report7",
+                        "status": "running",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "grumpy_centipede",
+                        "name": "report8",
+                        "status": "interrupted",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                    {
+                        "key": "philosophical_mussel",
+                        "name": "report9",
+                        "status": "orphan",
+                        "date": "2021-06-16T09:51:16Z"
+                    },
+                ]
+            }
+        };
+        mockAxios.onGet('http://app/workflows/key1/status')
+            .reply(200, allStatusWorkflow);
+        const wrapper = getWrapper();
+        wrapper.setData({selectedWorkflowKey: "key1"});
+
+        setTimeout(() => {
+            const reportRows = wrapper.findAll("table tr");
+            expect(reportRows.length).toBe(9);
+
+            const statusSelector = "td:nth-child(2)";
+            const viewLogSelector = "a.report-log-link";
+
+            expect(reportRows.at(0).find(statusSelector).text()).toBe("Queued");
+            expect(reportRows.at(0).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(1).find(statusSelector).text()).toBe("Waiting for dependency");
+            expect(reportRows.at(1).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(2).find(statusSelector).text()).toBe("Dependency failed");
+            expect(reportRows.at(2).find(viewLogSelector).exists()).toBe(false);
+            expect(reportRows.at(3).find(statusSelector).text()).toBe("Failed"); // missing
+            expect(reportRows.at(3).find(viewLogSelector).exists()).toBe(false);
+
+            expect(reportRows.at(4).find(statusSelector).text()).toBe("Complete");
+            expect(reportRows.at(4).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(5).find(statusSelector).text()).toBe("Failed"); // error
+            expect(reportRows.at(5).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(6).find(statusSelector).text()).toBe("Running");
+            expect(reportRows.at(6).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(7).find(statusSelector).text()).toBe("Failed"); // interrupted
+            expect(reportRows.at(7).find(viewLogSelector).text()).toBe("View log");
+            expect(reportRows.at(8).find(statusSelector).text()).toBe("Failed"); // orphan
+            expect(reportRows.at(8).find(viewLogSelector).text()).toBe("View log");
+
+            done();
+        });
+    });
+
+    it("renders report log dialog", async () => {
+        const wrapper = getWrapper();
+        await wrapper.setData({selectedWorkflowKey: "key1"});
+        const dialog = wrapper.find(WorkflowReportLogDialog);
+        expect(dialog.props("reportKey")).toBe(null);
+        expect(dialog.props("workflowKey")).toBe("key1");
+    });
+
+    it(`sets report log dialog report key on click View log link`, (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+
+        setTimeout(async () => {
+            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
+            await link.trigger("click");
+
+            const dialog = wrapper.findComponent(WorkflowReportLogDialog);
+            expect(dialog.props("reportKey")).toBe("preterrestrial_andeancockoftherock");
+
+            done();
+        })
+    });
+
+    it("resets report log dialog report key when dialog emits close event", (done) => {
+        const wrapper = getWrapper()
+        wrapper.setData({selectedWorkflowKey: "key1"})
+
+        setTimeout(async () => {
+            const link = wrapper.findAll("tr").at(0).find("a.report-log-link");
+            await link.trigger("click");
+
+            const dialog = wrapper.findComponent(WorkflowReportLogDialog);
+            await dialog.vm.$emit("close");
+
+            expect(dialog.props("reportKey")).toBeNull();
+
+            done();
+        })
+    });
 
     it(`can fetch workflow details and emit rerun event`, (done) => {
         const workflowDetails = {
