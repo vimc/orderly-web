@@ -93,7 +93,7 @@ import {
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
-import runWorkflowMixin from "./runWorkflowMixin.ts";
+import defaultParametersMixin from "./defaultParametersMixin.ts";
 import {WorkflowSummaryResponse, Parameter} from "../../utils/types";
 
 interface Data {
@@ -159,7 +159,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         WorkflowReportLogDialog,
         vSelect,
     },
-    mixins: [runWorkflowMixin],
+    mixins: [defaultParametersMixin],
     props: {
             initialSelectedWorkflow: {
                 type: String,
