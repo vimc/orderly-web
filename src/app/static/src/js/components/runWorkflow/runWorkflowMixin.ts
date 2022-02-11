@@ -28,7 +28,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     methods: {
         getParametersApiCall(reportName, gitCommit) {
             const commit = gitCommit ? `?commit=${gitCommit}` : '';
-            return api.get(`/report/${reportName}/config/parametersX/${commit}`);
+            return api.get(`/report/${reportName}/config/parameters/${commit}`);
         },
         // For each report in workflowSummary, map to an object which contains both defaultParams and nonDefaultParams
         getWorkflowReportParams: async function (workflowSummary: WorkflowSummary, gitCommit: string) {
@@ -38,15 +38,20 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
             for (let report of workflowSummary.reports) {
                 //1. Fetch default params for this report if we don't already have them
                 if (!Object.keys(defaultParamsPerReport).includes(report.name)) {
-                    await this.getParametersApiCall(report.name, gitCommit)
-                        .then(({data}) => {
-                            defaultParamsPerReport[report.name] = data.data;
-                        })
-                        .catch((error) => {
-                            this.defaultParamsErrors.push({reportName: report.name, error: error});
-                            //Push empty to defaults - couldn't retrieve - all parameters will show as non-default
-                            defaultParamsPerReport[report.name] = [];
-                        })
+                    // Only fetch if  report has any parameters values.
+                    if (Object.keys(report.params).length === 0) {
+                        defaultParamsPerReport[report.name] = [];
+                    } else {
+                        await this.getParametersApiCall(report.name, gitCommit)
+                            .then(({data}) => {
+                                defaultParamsPerReport[report.name] = data.data;
+                            })
+                            .catch((error) => {
+                                this.defaultParamsErrors.push({reportName: report.name, error: error});
+                                //Push empty to defaults - couldn't retrieve - all parameters will show as non-default
+                                defaultParamsPerReport[report.name] = [];
+                            })
+                    }
                 }
 
                 //2. Sort report params into default and non-default

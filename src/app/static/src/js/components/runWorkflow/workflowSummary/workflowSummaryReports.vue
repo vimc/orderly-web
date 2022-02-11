@@ -17,21 +17,21 @@
                             </h5>
                         </div>
                         <div class="row">
-                            <div id="report-params" class="col-12 col-md-6 col-lg-4">
+                            <div class="report-params col-12 col-md-6 col-lg-4">
                                 <div class="single-workflow-summary-content parameters-bg-color d-flex">
                                     <div class="workflow-summary-text">
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="hasParams(report)">
-                                            <p id="params"
+                                            <p class="non-default-param"
                                                v-for="param in nonDefaultParams(index)"
                                                :key="index">{{ param.name }}: {{ param.value }}</p>
                                             <div v-if="defaultParams(index).length" :id="`default-params-${index}`">
                                                 <a :href="`#collapseSummary-${index}`"
-                                                   class="pt-2 d-inline-block small"
+                                                   class="show-defaults pt-2 d-inline-block small"
                                                    data-toggle="collapse"
                                                    aria-expanded="false"
                                                    aria-controls="collapseSummary">
-                                                    Show default...
+                                                    Show defaults...
                                                 </a>
                                                 <div  :id="`collapseSummary-${index}`" class="collapse">
                                                     <p :id="`default-params-collapse-${key}`"
