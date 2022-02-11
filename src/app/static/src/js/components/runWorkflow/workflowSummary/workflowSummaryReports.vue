@@ -23,25 +23,26 @@
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="hasParams(report)">
                                             <p id="params"
-                                               v-for="(value, key, index) in report.params"
-                                               :key="index">{{ key }}: {{ value }}</p>
-                                            <div :id="`default-params-${index}`">
+                                               v-for="param in nonDefaultParams(index)"
+                                               :key="index">{{ param.name }}: {{ param.value }}</p>
+                                            <div v-if="defaultParams(index).length" :id="`default-params-${index}`">
                                                 <a :href="`#collapseSummary-${index}`"
                                                    class="pt-2 d-inline-block small"
                                                    data-toggle="collapse"
                                                    aria-expanded="false"
-                                                   aria-controls="collapseSummary"
-                                                >Show default...</a>
-                                                <div :id="`collapseSummary-${index}`" class="collapse">
+                                                   aria-controls="collapseSummary">
+                                                    Show default...
+                                                </a>
+                                                <div  :id="`collapseSummary-${index}`" class="collapse">
                                                     <p :id="`default-params-collapse-${key}`"
-                                                       v-for="(param, key) in showDefaultParameters(report.name)"
+                                                       v-for="param in defaultParams(index)"
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
-                                                    <error-info v-if="getDefaultParametersError(report.name)"
-                                                                :default-message="defaultMessage"
-                                                                :api-error="getDefaultParametersError(report.name)">
-                                                    </error-info>
                                                 </div>
                                             </div>
+                                            <error-info v-if="getDefaultParamsError(report.name)"
+                                                        :default-message="defaultMessage"
+                                                        :api-error="getDefaultParamsError(report.name)">
+                                            </error-info>
                                         </div>
                                         <div v-else><p>There are no parameters</p></div>
                                     </div>
@@ -74,8 +75,9 @@ interface Props {
 interface Methods {
     hasParams: (report: WorkflowReportWithDependencies) => boolean;
     reportInfo: (reportName: string) => string;
-    showDefaultParameters: (reportName: string) => Parameter | null;
-    getDefaultParametersError: (reportName: string) => string
+    nonDefaultParams: (idx: number) => Parameter[]
+    defaultParams: (idx: number) => Parameter[]
+    getDefaultParamsError: (reportName: string) => string
 }
 
 interface Data {
@@ -107,16 +109,19 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         hasParams(report) {
             return report.params ? !!Object.keys(report.params).length : false
         },
-        showDefaultParameters(reportName) {
-            return this.defaultParams?.find(data => data.reportName === reportName)?.params || null
+        nonDefaultParams(idx) {
+            return this.workflowReportParams ? this.workflowReportParams[idx].nonDefaultParams : [];
         },
-        getDefaultParametersError(reportName) {
-            return this.defaultParamsErrors?.find(error => error.reportName === reportName) || ""
+        defaultParams(idx) {
+            return this.workflowReportParams ? this.workflowReportParams[idx].defaultParams : [];
+        },
+        getDefaultParamsError(reportName) {
+            return this.defaultParamsErrors?.find(error => error.reportName === reportName) || "";
         }
     },
     mixins: [runWorkflowMixin],
-    mounted() {
-        this.getDefaultParameters(this.workflowSummary, this.gitCommit)
+    beforeMount() {
+        this.getWorkflowReportParams(this.workflowSummary, this.gitCommit);
     },
     components: {
         InfoIcon,
