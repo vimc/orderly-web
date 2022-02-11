@@ -141,4 +141,4 @@ export interface WorkflowSummary {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
-} 
+}

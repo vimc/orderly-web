@@ -350,4 +350,35 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("view-progress-link")))
     }
 
+    @Test
+    fun `can display workflow summary`()
+    {
+        createWorkflow()
+
+        //Change branch to find report with parameter
+        changeToOtherBranch()
+
+        //Add the report - Next button should be disabled until we set the parameter value
+        addReport("other")
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isFalse()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("param-control-0")))
+        driver.findElement(By.id("param-control-0")).sendKeys("1")
+
+        wait.until(ExpectedConditions.textToBe(By.cssSelector("#workflow-report-0 .text-danger"), ""))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
+        assertThat(summaryReportNameDiv.text).isEqualTo("other")
+
+        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        assertThat(parameterHeading.text).isEqualTo("Parameters")
+
+        val params = driver.findElement(By.id("params"))
+        assertThat(params.text).contains("nmin: 1")
+    }
+
 }
