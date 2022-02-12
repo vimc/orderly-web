@@ -34,8 +34,8 @@
                                                     Show defaults...
                                                 </a>
                                                 <div  :id="`collapseSummary-${index}`" class="collapse">
-                                                    <p :id="`default-params-collapse-${key}`"
-                                                       v-for="param in defaultParams(index)"
+                                                    <p :id="`default-params-collapse-${index}-${paramIndex}`"
+                                                       v-for="(param, paramIndex) in defaultParams(index)"
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
                                                 </div>
                                             </div>

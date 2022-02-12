@@ -373,10 +373,10 @@ class RunWorkflowTests : SeleniumTest()
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
         assertThat(summaryReportNameDiv.text).isEqualTo("other")
 
-        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElement(By.id("params"))
+        val params = driver.findElement(By.className("non-default-param"))
         assertThat(params.text).isEqualTo("nmin: 1")
     }
 
@@ -395,20 +395,28 @@ class RunWorkflowTests : SeleniumTest()
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
         assertThat(summaryReportNameDiv.text).isEqualTo("default-param")
 
-        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElements(By.id("params"))
-        assertThat(params[0].text).isEqualTo("disease: HepB")
-        assertThat(params[1].text).isEqualTo("nmin: 0.5")
+        val params = driver.findElements(By.className("non-default-param"))
+        assertThat(params).isEmpty()
 
-        val showDefault = driver.findElement(By.cssSelector("#default-params-0 a"))
-        assertThat(showDefault.text).isEqualTo("Show default...")
+        val defaultParams = driver.findElement(By.id("default-params-0"))
+        val collapsedParams = defaultParams.findElement(By.id("collapseSummary-0"))
+        assertThat(collapsedParams.isDisplayed).isFalse()
+
+        val showDefault = defaultParams.findElement(By.cssSelector("a"))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
         showDefault.click()
 
-        val defaultParamsOne = driver.findElement(By.id("default-params-0"))
-        assertThat(defaultParamsOne.findElement(By.id("default-params-collapse-0")).text).contains("nmin: 0.5")
-        wait.until(ExpectedConditions.textToBe(By.id("default-params-collapse-1"), "disease: HepB"))
+        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
+        println("HTML")
+        println(defaultParams.getAttribute("innerHTML"))
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).text).contains("disease: HepB")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).text).contains("nmin: 0.5")
+
+        showDefault.click()
+        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
     }
 
 }
