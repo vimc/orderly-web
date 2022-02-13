@@ -413,6 +413,8 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
 
         assertThat(collapsedParams.text).contains("disease: HepB")
+        println("HTML")
+        println(defaultParams.getAttribute("innerHTML"))
         assertThat(collapsedParams.text).contains("nmin: 0.5")
 
         showDefault.click()
