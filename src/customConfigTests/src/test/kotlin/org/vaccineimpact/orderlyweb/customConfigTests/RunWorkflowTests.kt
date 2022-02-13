@@ -391,7 +391,7 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(nextButton.isEnabled).isTrue()
         nextButton.click()
 
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("show-defaults")))
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
         assertThat(summaryReportNameDiv.text).isEqualTo("default-param")
 
@@ -411,11 +411,12 @@ class RunWorkflowTests : SeleniumTest()
 
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).text).isEqualTo("disease: HepB")
-        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).text).isEqualTo("nmin: 0.5")
+
+        assertThat(collapsedParams.text).contains("disease: HepB")
+        assertThat(collapsedParams.text).contains("nmin: 0.5")
 
         showDefault.click()
-        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
+        wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
