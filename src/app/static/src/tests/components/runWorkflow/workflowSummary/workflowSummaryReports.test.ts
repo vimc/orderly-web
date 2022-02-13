@@ -214,9 +214,13 @@ describe(`workflowSummaryReports`, () => {
         const wrapper = getWrapper(workflowSummary);
 
         setTimeout(() => {
-            expect(wrapper.find("#default-params-0 a.show-defaults").text()).toBe("Show defaults...");
-            expect(wrapper.find("#default-params-1 a.show-defaults").text()).toBe("Show defaults...");
-            expect(wrapper.find("#default-params-2 a.show-defaults").exists()).toBe(false);
+            expect(wrapper.find("#default-params-0 b-link-stub.show-defaults .when-closed").text()).toBe("Show");
+            expect(wrapper.find("#default-params-0 b-link-stub.show-defaults .when-open").text()).toBe("Hide");
+
+            expect(wrapper.find("#default-params-1 b-link-stub.show-defaults .when-closed").text()).toBe("Show");
+            expect(wrapper.find("#default-params-1 b-link-stub.show-defaults .when-open").text()).toBe("Hide");
+
+            expect(wrapper.find("#default-params-2 b-link-stub.show-defaults").exists()).toBe(false);
             done();
         });
     });

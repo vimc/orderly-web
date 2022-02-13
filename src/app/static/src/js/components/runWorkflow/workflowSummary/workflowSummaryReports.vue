@@ -26,19 +26,17 @@
                                                v-for="param in nonDefaultParams(index)"
                                                :key="param.name">{{ param.name }}: {{ param.value }}</p>
                                             <div v-if="defaultParams(index).length" :id="`default-params-${index}`">
-                                                <a :href="`#collapseSummary-${index}`"
+                                                <b-link href="#"
                                                    class="show-defaults pt-2 d-inline-block small"
-                                                   data-toggle="collapse"
-                                                   aria-expanded="false"
-                                                   aria-controls="collapseSummary">
-                                                    Show defaults...
-                                                </a>
-                                                <div  :id="`collapseSummary-${index}`" class="collapse"
-                                                      @hidden.bs.collapse="console.log('hidden')">
+                                                   v-b-toggle="`collapseSummary-${index}`">
+                                                    <span class="when-closed">Show</span>
+                                                    <span class="when-open">Hide</span> defaults...
+                                                </b-link>
+                                                <b-collapse :id="`collapseSummary-${index}`">
                                                     <p :id="`default-params-collapse-${index}-${paramIndex}`"
                                                        v-for="(param, paramIndex) in defaultParams(index)"
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
-                                                </div>
+                                                </b-collapse>
                                             </div>
                                             <error-info v-if="getDefaultParamsError(report.name)"
                                                         :default-message="defaultMessage"
@@ -63,6 +61,9 @@
 <script lang="ts">
 import Vue from "vue";
 import {InfoIcon} from "vue-feather-icons";
+import {BLink} from "bootstrap-vue/esm/components/link";
+import {BCollapse} from "bootstrap-vue/esm/components/collapse";
+import { VBToggle } from 'bootstrap-vue';
 import {WorkflowSummary, WorkflowReportWithDependencies, Parameter} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
 import runWorkflowMixin from "../workflowParametersMixin.ts";
@@ -84,6 +85,8 @@ interface Methods {
 interface Data {
     defaultMessage: string
 }
+
+Vue.directive("b-toggle", VBToggle);
 
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "workflowSummaryReports",
@@ -125,6 +128,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         this.getWorkflowReportParams(this.workflowSummary, this.gitCommit);
     },
     components: {
+        BCollapse,
+        BLink,
         InfoIcon,
         ErrorInfo
     },
