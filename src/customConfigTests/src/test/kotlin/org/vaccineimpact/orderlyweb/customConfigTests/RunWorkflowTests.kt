@@ -412,10 +412,10 @@ class RunWorkflowTests : SeleniumTest()
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
         assertThat(showDefault.text).isEqualTo("Hide defaults...")
 
-        assertThat(collapsedParams.text).contains("disease: HepB")
         println("HTML")
         println(defaultParams.getAttribute("innerHTML"))
-        assertThat(collapsedParams.text).contains("nmin: 0.5")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML")).isEqualTo("disease: HepB")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
 
         showDefault.click()
         wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
