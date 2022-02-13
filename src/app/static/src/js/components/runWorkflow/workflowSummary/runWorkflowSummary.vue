@@ -2,7 +2,7 @@
     <div id="summary-header">
         <div v-if="hasDependenciesLength">
             <workflow-summary-reports :workflow-summary="workflowSummary"
-                                      :git-commit.sync="workflowMetadata.git_commit"/>
+                                      :git-commit="workflowMetadata.git_commit"/>
         </div>
     </div>
 </template>

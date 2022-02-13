@@ -33,7 +33,8 @@
                                                    aria-controls="collapseSummary">
                                                     Show defaults...
                                                 </a>
-                                                <div  :id="`collapseSummary-${index}`" class="collapse">
+                                                <div  :id="`collapseSummary-${index}`" class="collapse"
+                                                      @hidden.bs.collapse="console.log('hidden')">
                                                     <p :id="`default-params-collapse-${index}-${paramIndex}`"
                                                        v-for="(param, paramIndex) in defaultParams(index)"
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
@@ -64,7 +65,7 @@ import Vue from "vue";
 import {InfoIcon} from "vue-feather-icons";
 import {WorkflowSummary, WorkflowReportWithDependencies, Parameter} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
-import runWorkflowMixin from "../runWorkflowMixin.ts";
+import runWorkflowMixin from "../workflowParametersMixin.ts";
 import ErrorInfo from "../../errorInfo.vue";
 
 interface Props {

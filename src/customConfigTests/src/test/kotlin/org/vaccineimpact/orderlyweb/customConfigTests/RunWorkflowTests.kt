@@ -410,8 +410,6 @@ class RunWorkflowTests : SeleniumTest()
         showDefault.click()
 
         wait.until(ExpectedConditions.visibilityOf(collapsedParams))
-        println("HTML")
-        println(defaultParams.getAttribute("innerHTML"))
         assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).text).contains("disease: HepB")
         assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).text).contains("nmin: 0.5")
 

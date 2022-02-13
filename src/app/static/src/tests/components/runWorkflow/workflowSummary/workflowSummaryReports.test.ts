@@ -1,7 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import {WorkflowSummary} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
-import runWorkflowMixin from "../../../../js/components/runWorkflow/runWorkflowMixin";
+import runWorkflowMixin from "../../../../js/components/runWorkflow/workflowParametersMixin";
 import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
