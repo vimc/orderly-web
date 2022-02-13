@@ -116,7 +116,7 @@ describe(`workflowSummaryReports`, () => {
             expect(mockAxios.history.get.length).toBe(2);
             expect(mockAxios.history.get[0].url).toBe('http://app/report/testReport/config/parameters/?commit=commit123');
             expect(mockAxios.history.get[1].url).toBe('http://app/report/testReport2/config/parameters/?commit=commit123');
-            expect(wrapper.vm.$data.defaultParamsErrors).toStrictEqual([]);
+            expect(wrapper.vm.$data.defaultParamsErrors).toStrictEqual({});
             expect(wrapper.vm.$data.workflowReportParams.length).toBe(3);
             expect(wrapper.vm.$data.workflowReportParams[0]).toEqual(
                 {
@@ -144,12 +144,11 @@ describe(`workflowSummaryReports`, () => {
         const wrapper = getWrapper({reports: [{name: "testReport", params: {"nmin": "test"}}]});
 
         setTimeout(() => {
-            expect(wrapper.vm.$data.defaultParamsErrors.length).toBe(1)
-            expect(wrapper.vm.$data.defaultParamsErrors[0].reportName).toBe("testReport")
-            expect(wrapper.vm.$data.defaultParamsErrors[0].error.message)
-                .toStrictEqual("Request failed with status code 404")
+            const errors = wrapper.vm.$data.defaultParamsErrors;
+            expect(Object.keys(errors).length).toBe(1);
+            expect(errors["testReport"].message).toBe("Request failed with status code 404")
 
-            expect(wrapper.findComponent(ErrorInfo).props("apiError").error.message)
+            expect(wrapper.findComponent(ErrorInfo).props("apiError").message)
                 .toBe("Request failed with status code 404");
 
             expect(wrapper.findComponent(ErrorInfo).props("defaultMessage"))
@@ -192,19 +191,28 @@ describe(`workflowSummaryReports`, () => {
             expect(mockAxios.history.get.length).toBe(2);
             expect(wrapper.vm.$data.workflowReportParams.length).toBe(3);
 
+            const reportRows = wrapper.findAll(".report-params");
+
             //report 1
             const defaultParams1 = wrapper.findAll("#default-params-0 p");
             expect(defaultParams1.length).toBe(1);
             expect(defaultParams1.at(0).text()).toEqual("nmin: 123");
+            expect(reportRows.at(0).find(ErrorInfo).props().apiError).toBeNull();
+            expect(reportRows.at(0).find(ErrorInfo).props().defaultMessage).toBeNull();
+
 
             //report 2
             const defaultParams2 = wrapper.findAll("#default-params-1 p");
             expect(defaultParams2.at(0).text()).toEqual("nmin2: 234");
             expect(defaultParams2.at(1).text()).toEqual("disease: HepC");
+            expect(reportRows.at(1).find(ErrorInfo).props().apiError).toBeNull();
+            expect(reportRows.at(1).find(ErrorInfo).props().defaultMessage).toBeNull();
 
             //report 3 - no defaults
             const defaultParams3 = wrapper.find("default-params-2");
             expect(defaultParams3.exists()).toBe(false);
+            expect(reportRows.at(2).find(ErrorInfo).props().apiError).toBeNull();
+            expect(reportRows.at(2).find(ErrorInfo).props().defaultMessage).toBeNull();
 
             done()
         })

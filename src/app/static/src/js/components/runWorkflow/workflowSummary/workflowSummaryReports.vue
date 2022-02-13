@@ -38,8 +38,7 @@
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
                                                 </b-collapse>
                                             </div>
-                                            <error-info v-if="getDefaultParamsError(report.name)"
-                                                        :default-message="defaultMessage"
+                                            <error-info :default-message="getDefaultParamsErrorMessage(report.name)"
                                                         :api-error="getDefaultParamsError(report.name)">
                                             </error-info>
                                         </div>
@@ -79,22 +78,14 @@ interface Methods {
     reportInfo: (reportName: string) => string;
     nonDefaultParams: (idx: number) => Parameter[]
     defaultParams: (idx: number) => Parameter[]
-    getDefaultParamsError: (reportName: string) => string
-}
-
-interface Data {
-    defaultMessage: string
+    getDefaultParamsError: (reportName: string) => Error | null
+    getDefaultParamsErrorMessage: (reportName: string) => string | null
 }
 
 Vue.directive("b-toggle", VBToggle);
 
-export default Vue.extend<Data, Methods, unknown, Props>({
+export default Vue.extend<unknown, Methods, unknown, Props>({
     name: "workflowSummaryReports",
-        data() {
-            return {
-                defaultMessage: "An error occurred while retrieving default params"
-            }
-        },
     props: {
         workflowSummary: {
             required: true,
@@ -120,7 +111,10 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             return this.workflowReportParams ? this.workflowReportParams[idx].defaultParams : [];
         },
         getDefaultParamsError(reportName) {
-            return this.defaultParamsErrors?.find(error => error.reportName === reportName) || "";
+            return this.defaultParamsErrors[reportName] || null;
+        },
+        getDefaultParamsErrorMessage(reportName) {
+            return this.defaultParamsErrors[reportName] ? "An error occurred while retrieving default params" : null;
         }
     },
     mixins: [runWorkflowMixin],

@@ -10,7 +10,7 @@ interface WorkflowReportParams {
 
 interface Data {
     workflowReportParams: WorkflowReportParams[] | null;
-    defaultParamsErrors: [];
+    defaultParamsErrors: Record<string, Error>
 }
 
 interface Methods {
@@ -22,7 +22,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
     data() {
         return {
             workflowReportParams: null,
-            defaultParamsErrors: []
+            defaultParamsErrors: {}
         }
     },
     methods: {
@@ -47,7 +47,7 @@ export default Vue.extend<Data, Methods, unknown, unknown>({
                                 defaultParamsPerReport[report.name] = data.data;
                             })
                             .catch((error) => {
-                                this.defaultParamsErrors.push({reportName: report.name, error: error});
+                                this.defaultParamsErrors[report.name] = error;
                                 //Push empty to defaults - couldn't retrieve - all parameters will show as non-default
                                 defaultParamsPerReport[report.name] = [];
                             })
