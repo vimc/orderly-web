@@ -67,7 +67,6 @@ class WorkflowRunController(
                     paramList = report.params?.filter { defaultParams[it.key] != it.value }?.map {
                         Parameter(it.key, it.value)
                     })
-
         }
         return WorkflowSummary(reports, summary.ref, summary.missingDependencies)
     }
@@ -99,10 +98,12 @@ class WorkflowRunController(
                             listOfNotNull(
                                     "name" to report.name,
                                     "params" to report.params,
-                                    // TODO remove this in favour of passing instances itself to orderly.server - see VIMC-4561
-                                    ("instance" to workflowRunRequest.instances?.values?.elementAtOrNull(0)).takeIf {
-                                        it.second != null
-                                    }
+                                    // TODO remove this in favour of passing instances to orderly.server
+                                    // see VIMC-4561
+                                    ("instance" to workflowRunRequest.instances?.values?.elementAtOrNull(0))
+                                            .takeIf {
+                                                it.second != null
+                                            }
                             ).toMap()
                         }
                 ).toMap()
