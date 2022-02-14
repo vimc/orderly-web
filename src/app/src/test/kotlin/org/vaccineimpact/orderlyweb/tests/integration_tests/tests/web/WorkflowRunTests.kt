@@ -459,6 +459,7 @@ class WorkflowRunTests : IntegrationTest()
     fun `can get workflow summary`()
     {
         val ref = getGitBranchCommit("master")
+
         val sessionCookie = webRequestHelper.webLoginWithMontagu(runReportsPerm)
         val response = webRequestHelper.requestWithSessionCookie(
                 "/workflows/summary",
@@ -476,8 +477,6 @@ class WorkflowRunTests : IntegrationTest()
         assertThat(reports.count()).isEqualTo(1)
         assertThat((reports[0]["name"] as TextNode).textValue()).isEqualTo("global")
         assertThat((data["missing_dependencies"]["global"] as ArrayNode).count()).isEqualTo(0)
-
-        JSONValidator.validateAgainstOrderlySchema(response.text, "WorkflowSummaryResponse")
     }
 
     private fun addWorkflowRunExample()

@@ -58,3 +58,18 @@ data class WorkflowRunReport(
     val report: String,
     val params: Map<String, String>
 )
+
+data class WorkflowReportWithDependencies (
+    val name: String,
+    val instance: String?,
+    val params: Map<String, String>?,
+    val paramList: List<Parameter>?,
+    val defaultParamList: List<Parameter>?,
+    val dependsOn: List<String>?
+)
+
+data class WorkflowSummary(
+        val reports: List<WorkflowReportWithDependencies>,
+        val ref: String,
+        val missingDependencies: Map<String, List<String>>
+)

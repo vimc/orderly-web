@@ -3,7 +3,8 @@
         <div class="row">
             <div class="col-12">
                 <div class="summary">
-                    <div v-for="(report, index) in workflowSummary.reports" :key="index" class="single-workflow-summary-area">
+                    <div v-for="(report, index) in workflowSummary.reports" :key="index"
+                         class="single-workflow-summary-area">
                         <div class="workflow-summary-report">
                         </div>
                         <div id="report-name-icon" class="d-inline-block">
@@ -23,24 +24,22 @@
                                         <span class="text-muted d-inline-block">Parameters</span>
                                         <div v-if="hasParams(report)">
                                             <p class="non-default-param"
-                                               v-for="param in nonDefaultParams(index)"
+                                               v-for="param in report.param_list"
                                                :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                                            <div v-if="defaultParams(index).length" :id="`default-params-${index}`">
+                                            <div v-if="report.default_param_list.length > 0"
+                                                 :id="`default-params-${index}`">
                                                 <b-link href="#"
-                                                   class="show-defaults pt-2 d-inline-block small"
-                                                   v-b-toggle="`collapseSummary-${index}`">
+                                                        class="show-defaults pt-2 d-inline-block small"
+                                                        v-b-toggle="`collapseSummary-${index}`">
                                                     <span class="when-closed">Show</span>
                                                     <span class="when-open">Hide</span> defaults...
                                                 </b-link>
                                                 <b-collapse :id="`collapseSummary-${index}`">
                                                     <p :id="`default-params-collapse-${index}-${paramIndex}`"
-                                                       v-for="(param, paramIndex) in defaultParams(index)"
+                                                       v-for="(param, paramIndex) in report.default_param_list"
                                                        :key="key">{{ param.name }}: {{ param.value }}</p>
                                                 </b-collapse>
                                             </div>
-                                            <error-info :default-message="getDefaultParamsErrorMessage(report.name)"
-                                                        :api-error="getDefaultParamsError(report.name)">
-                                            </error-info>
                                         </div>
                                         <div v-else><p>There are no parameters</p></div>
                                     </div>
@@ -58,75 +57,55 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import {InfoIcon} from "vue-feather-icons";
-import {BLink} from "bootstrap-vue/esm/components/link";
-import {BCollapse} from "bootstrap-vue/esm/components/collapse";
-import { VBToggle } from 'bootstrap-vue';
-import {WorkflowSummary, WorkflowReportWithDependencies, Parameter} from "../../../utils/types";
-import {VTooltip} from "v-tooltip";
-import runWorkflowMixin from "../workflowParametersMixin.ts";
-import ErrorInfo from "../../errorInfo.vue";
+    import Vue from "vue";
+    import {InfoIcon} from "vue-feather-icons";
+    import {BLink} from "bootstrap-vue/esm/components/link";
+    import {BCollapse} from "bootstrap-vue/esm/components/collapse";
+    import {VBToggle} from 'bootstrap-vue';
+    import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
+    import {VTooltip} from "v-tooltip";
+    import ErrorInfo from "../../errorInfo.vue";
 
-interface Props {
-    workflowSummary: WorkflowSummary;
-    gitCommit: string;
-}
+    interface Props {
+        workflowSummary: WorkflowSummary
+        gitCommit: string
+    }
 
-interface Methods {
-    hasParams: (report: WorkflowReportWithDependencies) => boolean;
-    reportInfo: (reportName: string) => string;
-    nonDefaultParams: (idx: number) => Parameter[]
-    defaultParams: (idx: number) => Parameter[]
-    getDefaultParamsError: (reportName: string) => Error | null
-    getDefaultParamsErrorMessage: (reportName: string) => string | null
-}
+    interface Methods {
+        hasParams: (report: WorkflowReportWithDependencies) => boolean
+        reportInfo: (reportName: string) => string
+    }
 
-Vue.directive("b-toggle", VBToggle);
+    Vue.directive("b-toggle", VBToggle);
 
-export default Vue.extend<unknown, Methods, unknown, Props>({
-    name: "workflowSummaryReports",
-    props: {
-        workflowSummary: {
-            required: true,
-            type: Object
+    export default Vue.extend<unknown, Methods, unknown, Props>({
+        name: "workflowSummaryReports",
+        props: {
+            workflowSummary: {
+                required: true,
+                type: Object
+            },
+            gitCommit: {
+                required: true,
+                type: String
+            },
         },
-        gitCommit: {
-            required: true,
-            type: String
+        methods: {
+            reportInfo(reportName) {
+                const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
+                return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
+            },
+            hasParams(report) {
+                return (report.param_list && report.param_list.length > 0) ||
+                    (report.default_param_list && report.default_param_list.length > 0)
+            }
         },
-    },
-    methods: {
-        reportInfo(reportName) {
-            const reportNum = this.workflowSummary.reports.filter(report => report.name === reportName).length
-            return `${reportName} runs ${reportNum} ${reportNum <= 1 ? 'time' : 'times'}`;
+        components: {
+            BCollapse,
+            BLink,
+            InfoIcon,
+            ErrorInfo
         },
-        hasParams(report) {
-            return report.params ? !!Object.keys(report.params).length : false
-        },
-        nonDefaultParams(idx) {
-            return this.workflowReportParams ? this.workflowReportParams[idx].nonDefaultParams : [];
-        },
-        defaultParams(idx) {
-            return this.workflowReportParams ? this.workflowReportParams[idx].defaultParams : [];
-        },
-        getDefaultParamsError(reportName) {
-            return this.defaultParamsErrors[reportName] || null;
-        },
-        getDefaultParamsErrorMessage(reportName) {
-            return this.defaultParamsErrors[reportName] ? "An error occurred while retrieving default params" : null;
-        }
-    },
-    mixins: [runWorkflowMixin],
-    beforeMount() {
-        this.getWorkflowReportParams(this.workflowSummary, this.gitCommit);
-    },
-    components: {
-        BCollapse,
-        BLink,
-        InfoIcon,
-        ErrorInfo
-    },
-    directives: {tooltip: VTooltip}
-});
+        directives: {tooltip: VTooltip}
+    });
 </script>
