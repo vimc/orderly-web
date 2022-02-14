@@ -20,11 +20,11 @@
 
 <script lang="ts">
 import Vue from 'vue'
-import {WorkflowSummaryEndpoint} from "../../../utils/types";
+import {WorkflowSummaryResponse} from "../../../utils/types";
 import {AlertTriangleIcon} from "vue-feather-icons"
 
 interface Props {
-    workflowSummary: WorkflowSummaryEndpoint | null
+    workflowSummary: WorkflowSummaryResponse | null
 }
 
 interface Computed {

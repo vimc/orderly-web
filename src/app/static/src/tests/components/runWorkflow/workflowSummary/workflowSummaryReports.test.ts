@@ -1,5 +1,5 @@
 import {shallowMount} from "@vue/test-utils";
-import {WorkflowSummaryEndpoint} from "../../../../js/utils/types";
+import {WorkflowSummaryResponse} from "../../../../js/utils/types";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`workflowSummaryReports`, () => {
@@ -15,7 +15,7 @@ describe(`workflowSummaryReports`, () => {
 
     const mockTooltip = jest.fn();
 
-    const getWrapper = (summary: Partial<WorkflowSummaryEndpoint> = {}) => {
+    const getWrapper = (summary: Partial<WorkflowSummaryResponse> = {}) => {
         return shallowMount(workflowSummaryReports,
             {
                 propsData: {

@@ -42,11 +42,11 @@
 <script lang="ts">
 import Vue from "vue"
 import {InfoIcon} from "vue-feather-icons";
-import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
+import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
 import {VTooltip} from "v-tooltip";
 
 interface Props {
-    workflowSummary: WorkflowSummary;
+    workflowSummary: WorkflowSummaryResponse;
 }
 
 interface Methods {

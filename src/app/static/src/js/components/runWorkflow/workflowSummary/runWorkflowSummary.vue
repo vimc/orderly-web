@@ -10,7 +10,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, WorkflowSummaryEndpoint} from "../../../utils/types";
+    import {RunWorkflowMetadata, WorkflowSummaryResponse} from "../../../utils/types";
     import runWorflowSummaryHeader from "./runWorkflowSummaryHeader.vue";
     import ErrorInfo from "../../../../js/components/errorInfo.vue";
     import {api} from "../../../utils/api";
@@ -21,7 +21,7 @@
     }
 
     interface Data {
-        workflowSummary: WorkflowSummaryEndpoint | null,
+        workflowSummary: WorkflowSummaryResponse | null,
         error: string,
         defaultMessage: string,
     }

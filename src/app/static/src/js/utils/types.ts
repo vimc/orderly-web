@@ -83,7 +83,7 @@ export interface WorkflowRunReportStatus {
     date?: string
 }
 
-export interface WorkflowSummary {
+export interface WorkflowRunSummary {
     date: string,
     email: string,
     key: string,
@@ -137,7 +137,7 @@ export interface WorkflowReportWithDependencies {
     depends_on?: string[]
 }
 
-export interface WorkflowSummaryEndpoint {
+export interface WorkflowSummaryResponse {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
