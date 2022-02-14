@@ -31,6 +31,7 @@
                             <span class="d-inline-block"></span>
                             <!--Dependencies boxes should go here, you might want to consider using slots or
                              perhaps add html here directly instead of creating another component -->
+                             <div>Missing dependency:</div>
                         </div>
                     </div>
                 </div>
