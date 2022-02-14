@@ -15,7 +15,7 @@ data class ReportStatus(
 
 data class ReportRunLog(
     val email: String,
-    val date: Instant,
+    val date: Instant?,
     val report: String,
     val instances: Map<String, String>,
     val params: Map<String, String>,

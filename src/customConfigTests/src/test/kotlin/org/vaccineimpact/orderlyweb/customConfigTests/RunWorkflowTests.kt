@@ -293,11 +293,26 @@ class RunWorkflowTests : SeleniumTest()
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
-        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
-        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
-        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
-        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+        val globalRowStatus = globalRow.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(globalRowStatus.text).isIn(listOf("Queued", "Running"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus,"Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"Complete"))
+
+        // view report log
+        val viewLogLink = minimalRow.findElement(By.cssSelector("a.report-log-link"))
+        viewLogLink.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-name")))
+
+        assertThat(driver.findElement(By.cssSelector("#report-name span.font-weight-bold")).text).isEqualTo("minimal")
+        assertThat(driver.findElement(By.cssSelector("#report-git-branch span.font-weight-bold")).text).isEqualTo("master")
+        assertThat(driver.findElement(By.cssSelector("#report-status span.font-weight-bold")).text).isEqualTo("success")
+        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).text).startsWith("[ git")
+
+        val closeLogButton = driver.findElement(By.cssSelector("#report-log-dialog button.modal-buttons"))
+        closeLogButton.click()
 
         // navigates away and back to the progress tab and checks workflow is still selected
         val workflowLink = driver.findElement(By.id("run-workflow-link"))

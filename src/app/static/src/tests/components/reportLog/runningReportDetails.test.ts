@@ -3,7 +3,6 @@ import {shallowMount} from "@vue/test-utils"
 import runningReportsDetails from "../../../js/components/reportLog/runningReportDetails.vue"
 import {mockAxios} from "../../mockAxios"
 import ErrorInfo from "../../../js/components/errorInfo.vue";
-import {longTimestamp} from "../../../js/utils/helpers";
 import {ReportLog} from "../../../js/utils/types";
 
 describe(`runningReportDetails`, () => {
@@ -59,6 +58,15 @@ describe(`runningReportDetails`, () => {
         const start = wrapper.find("#report-start");
         expect(start.findAll("span").at(0).text()).toBe("Run started:");
         expect(start.findAll("span").at(1).text()).toBe("Wed Apr 21 2021, 09:26");
+    });
+
+    it("does not include report start section when date not in data", () => {
+        const reportLog = {
+            ...initialReportLog,
+            date: null
+        };
+        const wrapper = getWrapper(props, reportLog);
+        expect(wrapper.find("#report-start").exists()).toBe(false);
     });
 
     it(`displays git branch data as expected`, () => {
@@ -190,16 +198,18 @@ describe(`runningReportDetails`, () => {
         })
     })
 
-    const testStartsPollingOnMountWhenIncomplete = (incompleteStatus: string, done) => {
+    const testStartsPollingOnMountWhenIncomplete = (incompleteStatus: string, workflowKey: string | null, done) => {
         const key = `fakeKey-${incompleteStatus}`;
-        const url = `http://app/running/${key}/logs/`;
+        const workflowParam = workflowKey ? `?workflow=${workflowKey}` : "";
+        const url = `http://app/running/${key}/logs/${workflowParam}`;
         mockAxios.onGet(url)
             .reply(200, {"data": {...initialReportLog, status: incompleteStatus}});
 
         const wrapper = shallowMount(runningReportsDetails,
             {
                 propsData: {
-                    reportKey: key
+                    reportKey: key,
+                    workflowKey
                 }
             });
 
@@ -220,11 +230,15 @@ describe(`runningReportDetails`, () => {
     };
 
     it(`starts polling on mount when report is running`,  (done) => {
-        testStartsPollingOnMountWhenIncomplete("running", done);
+        testStartsPollingOnMountWhenIncomplete("running", null,  done);
     });
 
     it(`starts polling on mount when report is queued`, (done) => {
-        testStartsPollingOnMountWhenIncomplete("queued", done);
+        testStartsPollingOnMountWhenIncomplete("queued", null,  done);
+    });
+
+    it("polls with workflow parametr when provided", (done) => {
+        testStartsPollingOnMountWhenIncomplete("running", "test-workflow", done);
     });
 
     it("does not start or stop polling on mount when report is complete", (done) => {

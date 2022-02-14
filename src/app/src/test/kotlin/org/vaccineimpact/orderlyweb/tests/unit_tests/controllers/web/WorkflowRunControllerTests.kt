@@ -62,6 +62,7 @@ class WorkflowRunControllerTests
     fun `can get workflow run summary`()
     {
         val requestBody = """{"ref": "1234", "reports": [{"name": "r1"}]}"""
+
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn requestBody
             on { queryParams() } doReturn mapOf("commit" to "1234")
