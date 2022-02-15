@@ -25,13 +25,14 @@ describe("runReport", () => {
     const minimal = {name: "minimal", date: new Date().toISOString()};
     const global = {name: "global", date: null};
 
-    const gitState = {
+    const gitState: GitState = {
         metadata: {
             git_supported: true,
             instances_supported: false,
             instances: {"source": []},
             changelog_types: ["internal", "public"]
-        }
+        },
+        git_branches: ["master", "dev"]
     }
 
     const createStore = (state: Partial<GitState> = gitState) => {
@@ -74,6 +75,8 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
+        expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
+        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.git_branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 

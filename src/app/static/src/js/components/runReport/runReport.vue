@@ -3,6 +3,8 @@
         <h2>Run a report</h2>
         <form class="mt-3">
             <git-update-reports
+                :report-metadata="metadata"
+                :initial-branches="initialGitBranches"
                 :show-all-reports="false"
                 @branchSelected="branchSelected"
                 @commitSelected="commitSelected"
@@ -95,6 +97,7 @@
 
     interface Computed {
         metadata: RunReportMetadataDependency | null
+        initialGitBranches: string[]
         showReports: number
         showInstances: string
         showRunButton: boolean
@@ -134,6 +137,7 @@
         },
         computed: {
             ...mapState({
+                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
                 metadata: (state: RunReportRootState) => state.git.metadata
             }),
             showReports() {

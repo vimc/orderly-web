@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
+        <div v-if="reportMetadata && reportMetadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
                 <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
@@ -39,6 +39,8 @@
     export default Vue.extend({
         name: "gitUpdateReports",
         props: [
+            "reportMetadata",
+            "initialBranches",
             "initialBranch",
             "initialCommitId",
             "showAllReports"
@@ -59,10 +61,6 @@
             };
         },
         computed: {
-            ...mapState({
-                initialBranches: (state: RunReportRootState) => state.git.git_branches,
-                metadata: (state: RunReportRootState) => state.git.metadata
-            }),
             refreshGitText() {
                 return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
             },
@@ -72,7 +70,7 @@
         },
         methods: {
             initialise() {
-                if (this.metadata.git_supported) {
+                if (this.reportMetadata?.git_supported) {
                     this.gitBranches = [...this.initialBranches];
 
                     if (this.initialBranch) {
@@ -115,7 +113,7 @@
             updateReports() {
                 this.reports = [];
                 const showAllParam = this.showAllReports ? "&show_all=true" : "";
-                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
+                const query = this.reportMetadata?.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;
@@ -149,7 +147,7 @@
             },
         },
         mounted() {
-            if (this.metadata) {
+            if (this.reportMetadata) {
                 this.initialise()
             }
         },
@@ -159,7 +157,7 @@
                     this.initialise();
                 }
             },
-            metadata(val) {
+            reportMetadata(val) {
                 if (val) {
                     this.initialise();
                 }
