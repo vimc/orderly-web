@@ -111,7 +111,6 @@
                 this.updateReports();
             },
             updateReports() {
-                console.log("updating reports")
                 this.reports = [];
                 const showAllParam = this.showAllReports ? "&show_all=true" : "";
                 const query = this.reportMetadata?.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
