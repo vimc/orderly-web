@@ -15,8 +15,7 @@
             </div>
             <div class="col-auto">
                 <span class="d-inline-block pb-2"
-                    >Some reports depend on the latest version of other reports
-                    that are not included in your workflow:</span
+                    >Some reports depend on the latest version of other reports that are not included in your workflow:</span
                 >
                 <div
                     class="missingDependency"
