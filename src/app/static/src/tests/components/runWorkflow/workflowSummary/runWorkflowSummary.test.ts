@@ -43,14 +43,14 @@ describe(`runWorkflowSummary`, () => {
         const wrapper = getWrapper(metaData);
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1);
-            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary/?commit=gitCommit');
             expect(wrapper.find(runWorkflowSummaryHeader).props("workflowSummary")).toStrictEqual(workflowSummary);
             done();
         });
     });
 
     it(`it can post workflow summary with dependencies as response`, (done) => {
-        mockAxios.onPost('http://app/workflows/summary')
+        mockAxios.onPost('http://app/workflows/summary/?commit=gitCommit')
             .reply(200, {"data": workflowSummary2});
             
         const wrapper = getWrapper(metaData2);
@@ -74,7 +74,7 @@ describe(`runWorkflowSummary`, () => {
     });
 
     it(`error response from workflow summary endpoint generates error message`, async (done) => {
-        mockAxios.onPost('http://app/workflows/summary')
+        mockAxios.onPost('http://app/workflows/summary/?commit=gitCommit')
             .reply(500, "TEST ERROR");
 
         const wrapper = getWrapper(metaData)
