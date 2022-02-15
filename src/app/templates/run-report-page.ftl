@@ -10,8 +10,6 @@
         </div>
     <#macro scripts>
         <script type="text/javascript">
-            var runReportMetadata = ${runReportMetadataJson};
-            var gitBranches = ${gitBranchesJson};
             var initialReportName = ${initialReportName};
         </script>
         <script type="text/javascript" src="${appUrl}/js/runReportTabs.bundle.js"></script>
