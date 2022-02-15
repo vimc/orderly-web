@@ -68,6 +68,7 @@
         methods: {
             onParameterChanged: function () {
                 this.validate()
+                console.log("validated params", this.paramValues, this.valid)
                 this.$emit("paramsChanged", this.paramValues, this.valid)
             },
             validate: function () {

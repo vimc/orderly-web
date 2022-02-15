@@ -393,7 +393,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             this.updateWorkflowReports(newReports);
 
             this.$set(this.reportsValid, index, valid);
-
         },
         updateWorkflowReports(reports: WorkflowReportWithParams[]) {
             this.$emit("update", {reports: reports});
@@ -427,7 +426,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 });
         }
     },
-    mounted() {
+    beforeMount() {
         this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
     },
     watch: {

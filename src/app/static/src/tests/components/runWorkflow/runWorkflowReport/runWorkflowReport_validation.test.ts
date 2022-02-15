@@ -3,7 +3,7 @@ import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {mockRunWorkflowMetadata, mockGitState} from "../../../mocks";
+import {mockRunWorkflowMetadata, mockGitState, mockRunReportMetadata} from "../../../mocks";
 import {GitState} from "../../../../js/store/git/git";
 import Vuex from "vuex";
 
@@ -17,18 +17,7 @@ const reports = [
     { name: "global", date: new Date() }
 ];
 
-const gitState: GitState = {
-    git_branches: ["master", "dev"],
-    metadata: {
-        changelog_types: ["public", "internal"],
-        git_supported: true,
-        instances_supported: false,
-        instances: {
-            source: ["src"],
-            annex: ["one"]
-        }
-    }
-}
+const gitState: GitState = mockRunReportMetadata()
 
 const createStore = (state: Partial<GitState> = gitState) => {
     return new Vuex.Store({
@@ -109,6 +98,7 @@ describe("runWorkflowReport validation", () => {
                 {name: "global"}
             ]
         });
+
         setTimeout(() => {
             expectEmittedValid(wrapper);
             done();
@@ -384,4 +374,5 @@ describe("runWorkflowReport validation", () => {
             });
         });
     });
+
 });
