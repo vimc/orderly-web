@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div v-if="reportMetadata && reportMetadata.git_supported" id="git-branch-form-group" class="form-group row">
+        <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
                 <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
@@ -12,7 +12,7 @@
                     class="btn"
                     :disabled="gitRefreshing"
                     type="submit">
-                {{refreshGitText}}
+                {{ refreshGitText }}
             </button>
         </div>
         <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
@@ -33,12 +33,12 @@
     import Vue from "vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
+    import {RunReportRootState} from "../../store/runReport/store";
+    import {mapState} from "vuex";
 
     export default Vue.extend({
         name: "gitUpdateReports",
         props: [
-            "reportMetadata",
-            "initialBranches",
             "initialBranch",
             "initialCommitId",
             "showAllReports"
@@ -59,7 +59,11 @@
             };
         },
         computed: {
-            refreshGitText(){
+            ...mapState({
+                initialBranches: (state: RunReportRootState) => state.git.git_branches,
+                metadata: (state: RunReportRootState) => state.git.metadata
+            }),
+            refreshGitText() {
                 return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
             },
             showCommits() {
@@ -68,7 +72,7 @@
         },
         methods: {
             initialise() {
-                if (this.reportMetadata.git_supported) {
+                if (this.metadata.git_supported) {
                     this.gitBranches = [...this.initialBranches];
 
                     if (this.initialBranch) {
@@ -82,7 +86,7 @@
                     this.updateReports();
                 }
             },
-            changedBranch(initialCommit=null) {
+            changedBranch(initialCommit = null) {
                 this.$emit("branchSelected", this.selectedBranch);
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -111,7 +115,7 @@
             updateReports() {
                 this.reports = [];
                 const showAllParam = this.showAllReports ? "&show_all=true" : "";
-                const query = this.reportMetadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
+                const query = this.metadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;
@@ -145,8 +149,21 @@
             },
         },
         mounted() {
-            this.initialise();
+            if (this.metadata) {
+                this.initialise()
+            }
+        },
+        watch: {
+            initialBranches(val) {
+                if (val.length > 0) {
+                    this.initialise();
+                }
+            },
+            metadata(val) {
+                if (val) {
+                    this.initialise();
+                }
+            }
         }
     });
 </script>
-

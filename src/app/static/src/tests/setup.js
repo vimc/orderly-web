@@ -1,7 +1,10 @@
 import "@babel/polyfill";
 import $ from "jquery";
+import Vue from "vue";
+import Vuex from "vuex";
 
 global.$ = global.jQuery = $;
+Vue.use(Vuex);
 
 expect.extend({
     toBeIgnoringWhitespace(received, expected) {

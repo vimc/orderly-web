@@ -3,12 +3,38 @@ import {mount, shallowMount} from "@vue/test-utils";
 import GitUpdateReports from "../../../js/components/runReport/gitUpdateReports.vue";
 import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Vue from "vue";
+import Vuex from "vuex";
+import {mockGitState, mockRunReportMetadata, mockRunReportRootState} from "../../mocks";
+import {GitState} from "../../../js/store/git/git";
 
 describe("gitUpdateReports", () => {
     const reports = [
         {name: "report1", date: new Date().toISOString()},
         {name: "report2", date: null}
     ];
+
+    const initialBranches = ["master", "dev"];
+    const gitState = {
+        git_branches: initialBranches,
+        metadata: {
+            git_supported: true,
+            instances_supported: false,
+            instances: {"source": []},
+            changelog_types: ["published", "internal"]
+        }
+    }
+
+    const createStore = (state: Partial<GitState> = gitState) => {
+        return new Vuex.Store({
+            state: {},
+            modules: {
+                git: {
+                    namespaced: true,
+                    state: mockGitState(state)
+                }
+            }
+        });
+    };
 
     beforeEach(() => {
         mockAxios.reset();
@@ -23,28 +49,23 @@ describe("gitUpdateReports", () => {
         {id: "abc123", date_time: "Tue Jun 09, 13:11"}
     ];
 
-    const initialBranches = ["master", "dev"];
     const initialBranch = "master";
     const initialCommitId = "abc123";
     const showAllReports = false;
 
     const props = {
-        reportMetadata: {
-            git_supported: true,
-            instances_supported: false
-        },
-        initialBranches,
         initialBranch,
         initialCommitId,
         showAllReports
     };
 
-    const getWrapper = (report = reports, propsData = props) => {
+    const getWrapper = (report = reports, propsData = props, state = gitState) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123')
             .reply(200, {"data": report});
 
         return mount(GitUpdateReports, {
-            propsData
+            propsData,
+            store: createStore(state)
         });
     };
 
@@ -76,10 +97,10 @@ describe("gitUpdateReports", () => {
 
     it("does not render git drop downs if git not supported", async () => {
         const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                reportMetadata: {git_supported: false, instances_supported: false},
-                initiatBranches: null
-            }
+            store: createStore({
+                metadata: {git_supported: false, instances_supported: false, changelog_types: [], instances: {}},
+                git_branches: null
+            })
         });
 
         await Vue.nextTick();
@@ -125,13 +146,19 @@ describe("gitUpdateReports", () => {
 
     it("updates reports when git not supported", (done) => {
         mockAxios.onGet('http://app/reports/runnable/')
-            .reply(200, {"data": [ reports[0] ]});
-        const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                reportMetadata: {git_supported: false, instances_supported: false},
-                initiatBranches: null
-            }
-        });
+            .reply(200, {"data": [reports[0]]});
+        const wrapper = shallowMount(GitUpdateReports,
+            {
+                store: createStore({
+                    metadata: {
+                        git_supported: false,
+                        instances_supported: false,
+                        instances: {},
+                        changelog_types: []
+                    },
+                    git_branches: null
+                })
+            });
         setTimeout(() => {
             expect(wrapper.emitted("branchSelected")).toBe(undefined);
             expect(wrapper.emitted("commitSelected")).toBe(undefined);
@@ -215,10 +242,10 @@ describe("gitUpdateReports", () => {
             .reply(500, "TEST ERROR");
 
         const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                reportMetadata: {git_supported: true, instances_supported: false},
-                initialBranches
-            }
+            store: createStore({
+                metadata: {git_supported: true, instances_supported: false, changelog_types: [], instances: {}},
+                git_branches: initialBranches
+            })
         });
 
         setTimeout(() => {
@@ -233,10 +260,10 @@ describe("gitUpdateReports", () => {
             .reply(500, "TEST ERROR");
 
         const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                reportMetadata: {git_supported: true, instances_supported: false},
-                initialBranches
-            }
+            store: createStore({
+                metadata: {git_supported: true, instances_supported: false, changelog_types: [], instances: {}},
+                git_branches: initialBranches
+            })
         });
 
         setTimeout(() => {
@@ -299,10 +326,10 @@ describe("gitUpdateReports", () => {
             .reply(500, "TEST ERROR");
 
         const wrapper = shallowMount(GitUpdateReports, {
-            propsData: {
-                reportMetadata: {git_supported: true, instances_supported: false},
-                initialBranches
-            }
+            store: createStore({
+                metadata: {git_supported: true, instances_supported: false, changelog_types: [], instances: {}},
+                git_branches: initialBranches
+            })
         });
         expect(wrapper.find("#git-refresh-btn").exists()).toBe(true);
         const button = wrapper.find("#git-refresh-btn");
@@ -330,15 +357,17 @@ describe("gitUpdateReports", () => {
     it("gets reports with show_all flag when showAllReports prop is true", (done) => {
         const url = 'http://app/reports/runnable/?branch=master&commit=abc123&show_all=true';
         mockAxios.onGet(url)
-            .reply(200, {"data": [ reports[0] ]});
+            .reply(200, {"data": [reports[0]]});
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                reportMetadata: {git_supported: true, instances_supported: false},
-                initialBranches,
                 initialBranch,
                 initialCommitId,
                 showAllReports: true
-            }
+            },
+            store: createStore({
+                metadata: {git_supported: true, instances_supported: false, changelog_types: [], instances: {}},
+                git_branches: initialBranches,
+            })
         });
         setTimeout(() => {
             const getHistory = mockAxios.history.get;
@@ -351,13 +380,15 @@ describe("gitUpdateReports", () => {
     it("gets reports without show_all flag when showAllReports prop is true but git_supported is false", (done) => {
         const url = 'http://app/reports/runnable/';
         mockAxios.onGet(url)
-            .reply(200, {"data": [ reports[0] ]});
+            .reply(200, {"data": [reports[0]]});
         const wrapper = shallowMount(GitUpdateReports, {
             propsData: {
-                reportMetadata: {git_supported: false, instances_supported: false},
-                initiatBranches: null,
                 showAllReports: true
-            }
+            },
+            store: createStore({
+                metadata: {git_supported: false, instances_supported: false, instances: {}, changelog_types: []},
+                git_branches: null,
+            })
         });
         setTimeout(() => {
             const getHistory = mockAxios.history.get;

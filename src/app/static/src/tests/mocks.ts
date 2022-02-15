@@ -1,4 +1,6 @@
 import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
+import {GitState} from "../js/store/git/git";
+import {RunReportRootState} from "../js/store/runReport/store";
 
 export const mockRunReportMetadata = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {
     return {
@@ -24,3 +26,17 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
         ...props
     }
 };
+
+export const mockGitState = (props: Partial<GitState> = {}): GitState => {
+    return {
+        ...mockRunReportMetadata(),
+        ...props
+    }
+}
+
+export const mockRunReportRootState = (props: Partial<RunReportRootState> = {}): RunReportRootState => {
+    return {
+        git: mockGitState(),
+        ...props
+    }
+}
