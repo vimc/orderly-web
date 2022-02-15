@@ -4,7 +4,7 @@ import workflowSummaryReports from "../../../../js/components/runWorkflow/workfl
 
 describe(`workflowSummaryReports`, () => {
 
-    const workflowSummary: WorkflowSummary = {
+    const workflowSummary: WorkflowSummaryResponse = {
         ref: "commit123",
         missing_dependencies: {},
         reports: [
