@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import java.nio.file.Files;
+import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -12,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -117,11 +116,11 @@ class RunWorkflowTests : SeleniumTest()
         addReport("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text).isEqualTo("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text).isEqualTo("No parameters")
-        assertThat(nextButton.isEnabled()).isTrue()
+        assertThat(nextButton.isEnabled).isTrue()
 
         driver.findElement(By.cssSelector(".remove-report-button")).click()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
-        assertThat(nextButton.isEnabled()).isFalse()
+        assertThat(nextButton.isEnabled).isFalse()
     }
 
     @Test
@@ -186,7 +185,7 @@ class RunWorkflowTests : SeleniumTest()
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
         tmpFile.writeText("report\nminimal")
 
-        createWorkflow();
+        createWorkflow()
         driver.findElement(By.id("import-from-csv-label")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
 
@@ -294,11 +293,26 @@ class RunWorkflowTests : SeleniumTest()
         val rows = driver.findElements(By.cssSelector("#workflow-table tr"))
         assertThat(rows.count()).isEqualTo(2)
         val minimalRow = rows.find{ it.text.startsWith("minimal") }!!
-        assertThat(minimalRow.text).isIn(listOf("minimal Queued", "minimal Running"))
+        val minimalRowStatus = minimalRow.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(minimalRowStatus.text).isIn(listOf("Queued", "Running"))
         val globalRow = rows.find{ it.text.startsWith("global") }!!
-        assertThat(globalRow.text).isIn(listOf("global Queued", "global Running"))
-        wait.until(ExpectedConditions.textToBePresentInElement(minimalRow,"minimal Complete"))
-        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"global Complete"))
+        val globalRowStatus = globalRow.findElement(By.cssSelector("td:nth-child(2)"))
+        assertThat(globalRowStatus.text).isIn(listOf("Queued", "Running"))
+        wait.until(ExpectedConditions.textToBePresentInElement(minimalRowStatus,"Complete"))
+        wait.until(ExpectedConditions.textToBePresentInElement(globalRow,"Complete"))
+
+        // view report log
+        val viewLogLink = minimalRow.findElement(By.cssSelector("a.report-log-link"))
+        viewLogLink.click()
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("#report-name")))
+
+        assertThat(driver.findElement(By.cssSelector("#report-name span.font-weight-bold")).text).isEqualTo("minimal")
+        assertThat(driver.findElement(By.cssSelector("#report-git-branch span.font-weight-bold")).text).isEqualTo("master")
+        assertThat(driver.findElement(By.cssSelector("#report-status span.font-weight-bold")).text).isEqualTo("success")
+        assertThat(driver.findElement(By.cssSelector("#report-logs textarea")).text).startsWith("[ git")
+
+        val closeLogButton = driver.findElement(By.cssSelector("#report-log-dialog button.modal-buttons"))
+        closeLogButton.click()
 
         // navigates away and back to the progress tab and checks workflow is still selected
         val workflowLink = driver.findElement(By.id("run-workflow-link"))
@@ -386,10 +400,10 @@ class RunWorkflowTests : SeleniumTest()
         assertThat(summaryReportNameDivs[0].text).isEqualTo("other")
         assertThat(summaryReportNameDivs[1].text).isEqualTo("use_dependency_2")
 
-        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElements(By.id("params"))
+        val params = driver.findElements(By.className("non-default-param"))
         assertThat(params.count()).isEqualTo(1)
         assertThat(params[0].text).contains("nmin: 1")
 
@@ -414,6 +428,46 @@ class RunWorkflowTests : SeleniumTest()
         nextButton2.click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("summary-header")))
         assertThat(driver.findElements(By.id("summary-warning")).count()).isEqualTo(0)
+    }
+
+    @Test
+    fun `can display workflow summary with default params`()
+    {
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("default-param")
+
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("show-defaults")))
+        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
+        assertThat(summaryReportNameDiv.text).isEqualTo("default-param")
+
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
+        assertThat(parameterHeading.text).isEqualTo("Parameters")
+
+        val params = driver.findElements(By.className("non-default-param"))
+        assertThat(params).isEmpty()
+
+        val defaultParams = driver.findElement(By.id("default-params-0"))
+        val collapsedParams = defaultParams.findElement(By.id("collapseSummary-0"))
+        assertThat(collapsedParams.isDisplayed).isFalse()
+
+        val showDefault = defaultParams.findElement(By.cssSelector("a"))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
+        showDefault.click()
+
+        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Hide defaults...")
+
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML")).isEqualTo("disease: HepB")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+
+        showDefault.click()
+        wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
 }

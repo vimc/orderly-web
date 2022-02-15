@@ -9,7 +9,7 @@
                             {{ reportLog.report }}
                         </span>
                     </div>
-                    <div id="report-start" class="col-sm-auto ">
+                    <div v-if="reportLog.date" id="report-start" class="col-sm-auto ">
                         <span>Run started:</span>
                         <span class="font-weight-bold">
                             {{ formattedReportDate }}
@@ -109,7 +109,8 @@
     }
 
     interface Props {
-        reportKey: string
+        reportKey: string,
+        workflowKey: string | null
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -118,6 +119,10 @@
             reportKey: {
                 type: String,
                 required: true
+            },
+            workflowKey: {
+                type: String,
+                required: false
             }
         },
         components: {
@@ -149,7 +154,8 @@
         methods: {
             getLogs: function () {
                 if (this.reportKey) {
-                    api.get(`/running/${this.reportKey}/logs/`)
+                    const workflowParam = this.workflowKey ? `?workflow=${this.workflowKey}` : "";
+                    api.get(`/running/${this.reportKey}/logs/${workflowParam}`)
                         .then(({data}) => {
                             this.reportLog = data.data;
                             this.error = "";

@@ -2,7 +2,8 @@
     <div id="summary-header">
         <runWorflowSummaryHeader :workflow-summary="workflowSummary"></runWorflowSummaryHeader>
         <div v-if="hasDependenciesLength">
-            <workflow-summary-reports :workflow-summary="workflowSummary"/>
+            <workflow-summary-reports :workflow-summary="workflowSummary"
+                                      :git-commit="workflowMetadata.git_commit"/>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
     </div>
@@ -34,7 +35,7 @@
         getReportWorkflowSummary: () => void;
     }
 
-    export default Vue.extend<unknown, Methods, Computed, Props>({
+    export default Vue.extend<Data, Methods, Computed, Props>({
         name: "runWorkflowSummary",
         components: {
             WorkflowSummaryReports,
@@ -61,7 +62,8 @@
         },
         methods: {
             getReportWorkflowSummary() {
-                api.post(`/workflows/summary`, {
+                const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
+                api.post(`/workflows/summary/${commit}`, {
                     reports: this.workflowMetadata.reports,
                     ref: this.workflowMetadata.git_commit
                 })

@@ -1,7 +1,7 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
 import runWorkflowSummaryHeader from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummaryHeader.vue"
-import {RunWorkflowMetadata} from "../../../../js/utils/types";
+import {RunWorkflowMetadata, WorkflowSummaryResponse} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
@@ -13,10 +13,10 @@ describe(`runWorkflowSummary`, () => {
         reports: [{name: "step2", params: {} }]
     }
 
-    const workflowSummary2 = {
+    const workflowSummary2: WorkflowSummaryResponse = {
         ref: "test",
         missing_dependencies: {},
-        reports: [{name: "test", params: {"key": "value"}}]
+        reports: [{name: "test", param_list: [{name: "key", value: "value"}]}]
     }
 
     const metaData = {
@@ -31,7 +31,7 @@ describe(`runWorkflowSummary`, () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onPost('http://app/workflows/summary')
+        mockAxios.onPost('http://app/workflows/summary/?commit=gitCommit')
             .reply(200, {"data": workflowSummary});
     })
 
@@ -49,7 +49,7 @@ describe(`runWorkflowSummary`, () => {
         });
     });
 
-    it(`it can post workflow summary with dependencies as response`,  (done) => {
+    it(`it can post workflow summary with dependencies as response`, (done) => {
         mockAxios.onPost('http://app/workflows/summary')
             .reply(200, {"data": workflowSummary2});
             
@@ -57,7 +57,7 @@ describe(`runWorkflowSummary`, () => {
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1)
-            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary/?commit=gitCommit');
             const data = JSON.parse(mockAxios.history.post[0].data);
             expect(data.ref).toEqual("gitCommit")
             expect(data.reports).toEqual(metaData2.reports)

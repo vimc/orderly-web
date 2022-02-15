@@ -133,7 +133,8 @@ export interface Error {
 export interface WorkflowReportWithDependencies {
     name: string,
     instance?: string
-    params?: Record<string, string>,
+    default_param_list?: Parameter[],
+    param_list?: Parameter[],
     depends_on?: string[]
 }
 
