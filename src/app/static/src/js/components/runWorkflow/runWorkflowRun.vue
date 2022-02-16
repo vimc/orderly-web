@@ -21,11 +21,11 @@
         </div>
         <div v-if="showChangelog">
             <change-log
-                        :changelog-type-options="runReportMetadata.changelog_types"
-                        :custom-style="childCustomStyle"
-                        :initial-message="initialChangelogMessage"
-                        :initial-type="initialChangelogType"
-                        @changelog="handleChangelog">
+                :changelog-type-options="runReportMetadata.changelog_types"
+                :custom-style="childCustomStyle"
+                :initial-message="initialChangelogMessage"
+                :initial-type="initialChangelogType"
+                @changelog="handleChangelog">
             </change-log>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -34,12 +34,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {
-        ChildCustomStyle,
-        RunReportMetadataDependency,
-        RunWorkflowMetadata,
-        WorkflowSummary
-    } from "../../utils/types";
+    import {ChildCustomStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
@@ -61,7 +56,8 @@
     }
 
     interface Data {
-        workflows: WorkflowSummary[],
+        runMetadata: RunReportMetadata | null,
+        workflows: WorkflowRunSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
     }
@@ -134,7 +130,7 @@
                 this.validateWorkflowName(workflowName);
                 this.$emit("update", {name: workflowName});
             },
-            validateWorkflowName: function(workflowName: string) {
+            validateWorkflowName: function (workflowName: string) {
                 let valid = !!workflowName;
                 this.workflowNameError = "";
                 if (this.workflows.find(workflow =>
