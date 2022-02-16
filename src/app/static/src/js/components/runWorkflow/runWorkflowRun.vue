@@ -34,7 +34,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChildCustomStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowSummary} from "../../utils/types";
+    import {ChildCustomStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
@@ -54,7 +54,7 @@
 
     interface Data {
         runMetadata: RunReportMetadata | null,
-        workflows: WorkflowSummary[],
+        workflows: WorkflowRunSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
     }

@@ -20,6 +20,7 @@ import org.vaccineimpact.orderlyweb.viewmodels.IndexViewModel
 import java.io.File
 import java.io.Reader
 import java.time.Instant
+import org.vaccineimpact.orderlyweb.models.Result
 
 class WorkflowRunControllerTests
 {
@@ -30,8 +31,8 @@ class WorkflowRunControllerTests
         val model = sut.getRunWorkflow()
 
         assertThat(model.breadcrumbs).containsExactly(
-            IndexViewModel.breadcrumb,
-            Breadcrumb("Run a workflow", "http://localhost:8888/run-workflow")
+                IndexViewModel.breadcrumb,
+                Breadcrumb("Run a workflow", "http://localhost:8888/run-workflow")
         )
     }
 
@@ -43,12 +44,12 @@ class WorkflowRunControllerTests
             on { queryParams("namePrefix") } doReturn "Interim"
         }
         val workflowRunSummaries = listOf(
-            WorkflowRunSummary(
-                "Interim report",
-                "adventurous_aardvark",
-                "user@email.com",
-                Instant.now()
-            )
+                WorkflowRunSummary(
+                        "Interim report",
+                        "adventurous_aardvark",
+                        "user@email.com",
+                        Instant.now()
+                )
         )
         val repo = mock<WorkflowRunRepository> {
             on { getWorkflowRunSummaries("user@email.com", "Interim") } doReturn workflowRunSummaries
@@ -60,21 +61,51 @@ class WorkflowRunControllerTests
     @Test
     fun `can get workflow run summary`()
     {
-        val requestBody = """{"ref": "18f6c5267c08bf017b521a21493771c6d3e774a5", "reports": [{"name": "missing", "params":{"key": "value"} }]}"""
+        val requestBody = """{"ref": "1234", "reports": [{"name": "r1"}]}"""
+
         val context = mock<ActionContext> {
             on { getRequestBody() } doReturn requestBody
+            on { queryParams() } doReturn mapOf("commit" to "1234")
         }
 
-        val mockAPIResponse = OrderlyServerResponse("mockAPIResponseText", 200)
+        val mockSummary = Result(
+                status = ResultStatus.SUCCESS,
+                data = WorkflowSummary(listOf(
+                        WorkflowReportWithDependencies(
+                                name = "r1",
+                                instance = "testInstance",
+                                params = mapOf("nmin" to "1000", "disease" to "YF"),
+                                defaultParamList = null,
+                                paramList = null,
+                                dependsOn = listOf("dep")
+                        )),
+                        ref = "1234",
+                        missingDependencies = mapOf("r1" to listOf("example"))),
+                errors = listOf()
+        )
+
+        val mockAPIResponse = OrderlyServerResponse(Serializer.instance.gson.toJson(mockSummary), 200)
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(eq("/v1/workflow/summary/"), eq(requestBody), eq(emptyMap())) } doReturn mockAPIResponse
+            on { getReportParameters(eq("r1"), eq(mapOf("commit" to "1234"))) } doReturn listOf(Parameter("nmin", "100"),
+                    Parameter("disease", "YF"))
         }
 
         val repo = mock<WorkflowRunRepository>()
         val sut = WorkflowRunController(context, repo, apiClient, mock())
-        val result = sut.getWorkflowRunSummary()
-        assertThat(result).isEqualTo(mockAPIResponse.text)
+        val result = sut.getWorkflowSummary()
+
+        assertThat(result.ref).isEqualTo("1234")
+        assertThat(result.reports.first()).isEqualToComparingFieldByField(WorkflowReportWithDependencies(
+                name = "r1",
+                instance = "testInstance",
+                params = mapOf("nmin" to "1000", "disease" to "YF"),
+                defaultParamList = listOf(Parameter("disease", "YF")),
+                paramList = listOf(Parameter("nmin", "1000")),
+                dependsOn = listOf("dep")
+        ))
+        assertThat(result.missingDependencies["r1"]).containsExactly("example")
     }
 
     @Test
@@ -82,27 +113,27 @@ class WorkflowRunControllerTests
     {
         val now = Instant.now()
         val workflowRun = WorkflowRun(
-            "Interim report",
-            "adventurous_aardvark",
-            "user@email.com",
-            now,
-            listOf(
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key",
-                    "report one",
-                    mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                "Interim report",
+                "adventurous_aardvark",
+                "user@email.com",
+                now,
+                listOf(
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key",
+                                "report one",
+                                mapOf("param1" to "one", "param1" to "one", "param2" to "two")
+                        ),
+                        WorkflowRunReport(
+                                "adventurous_aardvark",
+                                "adventurous_key2",
+                                "report two",
+                                mapOf("param1" to "one", "param2" to "three")
+                        )
                 ),
-                WorkflowRunReport(
-                    "adventurous_aardvark",
-                    "adventurous_key2",
-                    "report two",
-                    mapOf("param1" to "one", "param2" to "three")
-                )
-            ),
-            mapOf("instanceA" to "pre-staging"),
-            "branch1",
-            "commit1"
+                mapOf("instanceA" to "pre-staging"),
+                "branch1",
+                "commit1"
         )
 
         val mockContext = mock<ActionContext> {
@@ -133,8 +164,8 @@ class WorkflowRunControllerTests
         val sut = WorkflowRunController(mockContext, mockRepo, mock(), mock())
 
         assertThatThrownBy { sut.getWorkflowRunDetails() }
-            .isInstanceOf(UnknownObjectError::class.java)
-            .hasMessageContaining("Unknown workflow : 'key'")
+                .isInstanceOf(UnknownObjectError::class.java)
+                .hasMessageContaining("Unknown workflow : 'key'")
     }
 
     @Test
@@ -198,38 +229,38 @@ class WorkflowRunControllerTests
         val result = sut.createWorkflowRun()
 
         verify(apiClient).post(
-            "/v1/workflow/run/",
-            Serializer.instance.gson.toJson(
-                mapOf(
-                    "changelog" to mapOf(
-                        "message" to workflowRunRequest.changelog!!.message,
-                        "type" to workflowRunRequest.changelog!!.type
-                    ),
-                    "ref" to workflowRunRequest.gitCommit,
-                    "reports" to listOf(
+                "/v1/workflow/run/",
+                Serializer.instance.gson.toJson(
                         mapOf(
-                            "name" to workflowRunRequest.reports[0].name,
-                            "params" to workflowRunRequest.reports[0].params,
-                            "instance" to workflowRunRequest.instances!!.values.first()
-                        ),
-                        mapOf(
-                            "name" to workflowRunRequest.reports[1].name,
-                            "params" to workflowRunRequest.reports[1].params,
-                            "instance" to workflowRunRequest.instances!!.values.first()
+                                "changelog" to mapOf(
+                                        "message" to workflowRunRequest.changelog!!.message,
+                                        "type" to workflowRunRequest.changelog!!.type
+                                ),
+                                "ref" to workflowRunRequest.gitCommit,
+                                "reports" to listOf(
+                                        mapOf(
+                                                "name" to workflowRunRequest.reports[0].name,
+                                                "params" to workflowRunRequest.reports[0].params,
+                                                "instance" to workflowRunRequest.instances!!.values.first()
+                                        ),
+                                        mapOf(
+                                                "name" to workflowRunRequest.reports[1].name,
+                                                "params" to workflowRunRequest.reports[1].params,
+                                                "instance" to workflowRunRequest.instances!!.values.first()
+                                        )
+                                )
                         )
-                    )
-                )
-            ),
-            emptyMap()
+                ),
+                emptyMap()
         )
 
         assertThat(
-            Serializer.instance.gson.fromJson(
-                JsonLoader.fromString(result)["data"].toString(),
-                WorkflowRunController.WorkflowRunResponse::class.java
-            )
+                Serializer.instance.gson.fromJson(
+                        JsonLoader.fromString(result)["data"].toString(),
+                        WorkflowRunController.WorkflowRunResponse::class.java
+                )
         ).isEqualTo(
-            WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1", "report_key2"))
+                WorkflowRunController.WorkflowRunResponse("workflow_key1", listOf("report_key1", "report_key2"))
         )
 
         verify(repo).addWorkflowRun(check {
@@ -240,20 +271,20 @@ class WorkflowRunControllerTests
             assertThat(it.gitBranch).isEqualTo(workflowRunRequest.gitBranch)
             assertThat(it.gitCommit).isEqualTo(workflowRunRequest.gitCommit)
             assertThat(it.reports).isEqualTo(
-                listOf(
-                    WorkflowRunReport(
-                        "workflow_key1",
-                        "report_key1",
-                        workflowRunRequest.reports[0].name,
-                        workflowRunRequest.reports[0].params
-                    ),
-                    WorkflowRunReport(
-                        "workflow_key1",
-                        "report_key2",
-                        workflowRunRequest.reports[1].name,
-                        workflowRunRequest.reports[1].params
+                    listOf(
+                            WorkflowRunReport(
+                                    "workflow_key1",
+                                    "report_key1",
+                                    workflowRunRequest.reports[0].name,
+                                    workflowRunRequest.reports[0].params
+                            ),
+                            WorkflowRunReport(
+                                    "workflow_key1",
+                                    "report_key2",
+                                    workflowRunRequest.reports[1].name,
+                                    workflowRunRequest.reports[1].params
+                            )
                     )
-                )
             )
         })
     }
@@ -277,8 +308,8 @@ class WorkflowRunControllerTests
 
         val sut = WorkflowRunController(context, mock(), mock(), mock())
         assertThatThrownBy { sut.createWorkflowRun() }
-            .isInstanceOf(BadRequest::class.java)
-            .hasMessageContaining("Invalid workflow description")
+                .isInstanceOf(BadRequest::class.java)
+                .hasMessageContaining("Invalid workflow description")
     }
 
     @Test
@@ -302,8 +333,8 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
-                mockResponse,
-                400
+                    mockResponse,
+                    400
             )
         }
 
@@ -332,8 +363,8 @@ class WorkflowRunControllerTests
 
         val apiClient = mock<OrderlyServerAPI> {
             on { post(any(), any<String>(), any()) } doReturn OrderlyServerResponse(
-                """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
-                200
+                    """{"data": {"workflow_key": "workflow_key1", "reports": ["report_key1"]}}""",
+                    200
             )
         }
 
@@ -341,18 +372,18 @@ class WorkflowRunControllerTests
         sut.createWorkflowRun()
 
         verify(apiClient).post(
-            "/v1/workflow/run/",
-            Serializer.instance.gson.toJson(
-                mapOf(
-                    "reports" to listOf(
+                "/v1/workflow/run/",
+                Serializer.instance.gson.toJson(
                         mapOf(
-                            "name" to "report1",
-                            "params" to mapOf("key" to "value")
+                                "reports" to listOf(
+                                        mapOf(
+                                                "name" to "report1",
+                                                "params" to mapOf("key" to "value")
+                                        )
+                                )
                         )
-                    )
-                )
-            ),
-            emptyMap()
+                ),
+                emptyMap()
         )
     }
 
@@ -365,31 +396,31 @@ class WorkflowRunControllerTests
         }
 
         val workflowRun = WorkflowRun(
-            "workflow",
-            "workflow_key1",
-            "test@user.com",
-            Instant.now(),
-            listOf(
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "preterrestrial_andeancockoftherock",
-                    "Report A",
-                    emptyMap()
+                "workflow",
+                "workflow_key1",
+                "test@user.com",
+                Instant.now(),
+                listOf(
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "preterrestrial_andeancockoftherock",
+                                "Report A",
+                                emptyMap()
+                        ),
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "hygienic_mammoth",
+                                "Report B",
+                                emptyMap()
+                        ),
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "supercurious_woodlouse",
+                                "Report C",
+                                emptyMap()
+                        )
                 ),
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "hygienic_mammoth",
-                    "Report B",
-                    emptyMap()
-                ),
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "supercurious_woodlouse",
-                    "Report C",
-                    emptyMap()
-                )
-            ),
-            emptyMap()
+                emptyMap()
         )
 
         val mockAPIResponseText = """
@@ -428,27 +459,27 @@ class WorkflowRunControllerTests
         val sut = WorkflowRunController(context, repo, apiClientWithError, mock())
         val result = sut.getWorkflowRunStatus()
         assertThat(result).isEqualTo(
-            WorkflowRunStatus(
-                "running",
-                listOf(
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report A",
-                        "preterrestrial_andeancockoftherock",
-                        "error"
-                    ),
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report B",
-                        "hygienic_mammoth",
-                        "success",
-                        "20210510-100458-8f1a9624"
-                    ),
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report C",
-                        "supercurious_woodlouse",
-                        "running"
-                    )
+                WorkflowRunStatus(
+                        "running",
+                        listOf(
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report A",
+                                        "preterrestrial_andeancockoftherock",
+                                        "error"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report B",
+                                        "hygienic_mammoth",
+                                        "success",
+                                        "20210510-100458-8f1a9624"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report C",
+                                        "supercurious_woodlouse",
+                                        "running"
+                                )
+                        )
                 )
-            )
         )
         verify(apiClient).get("/v1/workflow/workflow_key1/status/", emptyMap())
         verify(repo).updateWorkflowRun("workflow_key1", "running")
@@ -463,31 +494,31 @@ class WorkflowRunControllerTests
         }
 
         val workflowRun = WorkflowRun(
-            "workflow",
-            "workflow_key1",
-            "test@user.com",
-            Instant.now(),
-            listOf(
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "preterrestrial_andeancockoftherock",
-                    "Report A",
-                    emptyMap()
+                "workflow",
+                "workflow_key1",
+                "test@user.com",
+                Instant.now(),
+                listOf(
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "preterrestrial_andeancockoftherock",
+                                "Report A",
+                                emptyMap()
+                        ),
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "hygienic_mammoth",
+                                "Report B",
+                                emptyMap()
+                        ),
+                        WorkflowRunReport(
+                                "workflow_key1",
+                                "supercurious_woodlouse",
+                                "Report C",
+                                emptyMap()
+                        )
                 ),
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "hygienic_mammoth",
-                    "Report B",
-                    emptyMap()
-                ),
-                WorkflowRunReport(
-                    "workflow_key1",
-                    "supercurious_woodlouse",
-                    "Report C",
-                    emptyMap()
-                )
-            ),
-            emptyMap()
+                emptyMap()
         )
 
         val mockAPIResponseText = """
@@ -526,27 +557,27 @@ class WorkflowRunControllerTests
         val sut = WorkflowRunController(context, repo, apiClientWithError, mock())
         val result = sut.getWorkflowRunStatus()
         assertThat(result).isEqualTo(
-            WorkflowRunStatus(
-                "running",
-                listOf(
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report A",
-                        "preterrestrial_andeancockoftherock",
-                        "error"
-                    ),
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report C",
-                        "supercurious_woodlouse",
-                        "success",
-                        "20210510-100458-8f1a9624"
-                    ),
-                    WorkflowRunStatus.WorkflowRunReportStatus(
-                        "Report B",
-                        "hygienic_mammoth",
-                        "running"
-                    )
+                WorkflowRunStatus(
+                        "running",
+                        listOf(
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report A",
+                                        "preterrestrial_andeancockoftherock",
+                                        "error"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report C",
+                                        "supercurious_woodlouse",
+                                        "success",
+                                        "20210510-100458-8f1a9624"
+                                ),
+                                WorkflowRunStatus.WorkflowRunReportStatus(
+                                        "Report B",
+                                        "hygienic_mammoth",
+                                        "running"
+                                )
+                        )
                 )
-            )
         )
         verify(apiClient).get("/v1/workflow/workflow_key1/status/", emptyMap())
         verify(repo).updateWorkflowRun("workflow_key1", "running")
@@ -592,21 +623,21 @@ class WorkflowRunControllerTests
     }
 
     private fun getWorkflowRunRequestExample() =
-        WorkflowRunRequest(
-            "workflow1",
-            listOf(
-                WorkflowReportWithParams("report1", mapOf("param1" to "value1")),
-                WorkflowReportWithParams("report2", mapOf("param2" to "value2"))
-            ),
-            mapOf("source" to "instance1"),
-            WorkflowChangelog("message1", "type1"),
-            "branch1",
-            "commit1"
-        )
+            WorkflowRunRequest(
+                    "workflow1",
+                    listOf(
+                            WorkflowReportWithParams("report1", mapOf("param1" to "value1")),
+                            WorkflowReportWithParams("report2", mapOf("param2" to "value2"))
+                    ),
+                    mapOf("source" to "instance1"),
+                    WorkflowChangelog("message1", "type1"),
+                    "branch1",
+                    "commit1"
+            )
 
     private fun validateAgainstSchema(json: String) =
-        JsonSchemaFactory.byDefault()
-            .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
-            .validate(JsonLoader.fromString(json))
-            .isSuccess
+            JsonSchemaFactory.byDefault()
+                    .getJsonSchema(File("../../docs/spec/RunWorkflow.schema.json").toURI().toString())
+                    .validate(JsonLoader.fromString(json))
+                    .isSuccess
 }

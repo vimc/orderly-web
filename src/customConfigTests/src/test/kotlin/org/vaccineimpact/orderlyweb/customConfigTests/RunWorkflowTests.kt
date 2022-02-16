@@ -1,6 +1,6 @@
 package org.vaccineimpact.orderlyweb.customConfigTests
 
-import java.nio.file.Files;
+import java.nio.file.Files
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -12,7 +12,6 @@ import org.vaccineimpact.orderlyweb.db.JooqContext
 import org.vaccineimpact.orderlyweb.test_helpers.giveUserGroupGlobalPermission
 import org.vaccineimpact.orderlyweb.test_helpers.insertUserAndGroup
 import org.vaccineimpact.orderlyweb.test_helpers.insertWorkflow
-
 
 class RunWorkflowTests : SeleniumTest()
 {
@@ -117,11 +116,11 @@ class RunWorkflowTests : SeleniumTest()
         addReport("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 label")).text).isEqualTo("minimal")
         assertThat(driver.findElement(By.cssSelector("#workflow-report-0 .text-secondary")).text).isEqualTo("No parameters")
-        assertThat(nextButton.isEnabled()).isTrue()
+        assertThat(nextButton.isEnabled).isTrue()
 
         driver.findElement(By.cssSelector(".remove-report-button")).click()
         assertThat(driver.findElements(By.id("workflow-report-0")).isEmpty()).isTrue()
-        assertThat(nextButton.isEnabled()).isFalse()
+        assertThat(nextButton.isEnabled).isFalse()
     }
 
     @Test
@@ -186,7 +185,7 @@ class RunWorkflowTests : SeleniumTest()
         val tmpFile = Files.createTempFile("test_import", ".csv").toFile()
         tmpFile.writeText("report\nminimal")
 
-        createWorkflow();
+        createWorkflow()
         driver.findElement(By.id("import-from-csv-label")).click()
         wait.until(ExpectedConditions.presenceOfElementLocated(By.id("import-csv")))
 
@@ -389,11 +388,51 @@ class RunWorkflowTests : SeleniumTest()
         val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
         assertThat(summaryReportNameDiv.text).isEqualTo("other")
 
-        val parameterHeading = driver.findElement(By.cssSelector("#report-params span"))
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
         assertThat(parameterHeading.text).isEqualTo("Parameters")
 
-        val params = driver.findElement(By.id("params"))
-        assertThat(params.text).contains("nmin: 1")
+        val params = driver.findElement(By.className("non-default-param"))
+        assertThat(params.text).isEqualTo("nmin: 1")
+    }
+
+    @Test
+    fun `can display workflow summary with default params`()
+    {
+        createWorkflow()
+        changeToOtherBranch()
+        addReport("default-param")
+
+        val nextButton = driver.findElement(By.id("next-workflow"))
+        assertThat(nextButton.isEnabled).isTrue()
+        nextButton.click()
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.className("show-defaults")))
+        val summaryReportNameDiv = driver.findElement(By.id("report-name-icon"))
+        assertThat(summaryReportNameDiv.text).isEqualTo("default-param")
+
+        val parameterHeading = driver.findElement(By.cssSelector(".report-params span"))
+        assertThat(parameterHeading.text).isEqualTo("Parameters")
+
+        val params = driver.findElements(By.className("non-default-param"))
+        assertThat(params).isEmpty()
+
+        val defaultParams = driver.findElement(By.id("default-params-0"))
+        val collapsedParams = defaultParams.findElement(By.id("collapseSummary-0"))
+        assertThat(collapsedParams.isDisplayed).isFalse()
+
+        val showDefault = defaultParams.findElement(By.cssSelector("a"))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
+        showDefault.click()
+
+        wait.until(ExpectedConditions.visibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Hide defaults...")
+
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-0")).getAttribute("innerHTML")).isEqualTo("disease: HepB")
+        assertThat(defaultParams.findElement(By.id("default-params-collapse-0-1")).getAttribute("innerHTML")).isEqualTo("nmin: 0.5")
+
+        showDefault.click()
+        wait.until(ExpectedConditions.invisibilityOf(collapsedParams))
+        assertThat(showDefault.text).isEqualTo("Show defaults...")
     }
 
 }

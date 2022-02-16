@@ -1,14 +1,15 @@
 <template>
     <div id="summary-header">
         <div v-if="hasDependenciesLength">
-            <workflow-summary-reports :workflow-summary="workflowSummary"/>
+            <workflow-summary-reports :workflow-summary="workflowSummary"
+                                      :git-commit="workflowMetadata.git_commit"/>
         </div>
     </div>
 </template>
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, WorkflowSummary} from "../../../utils/types";
+    import {RunWorkflowMetadata, WorkflowRunSummary} from "../../../utils/types";
     import {api} from "../../../utils/api";
     import WorkflowSummaryReports from "./workflowSummaryReports.vue"
 
@@ -25,7 +26,7 @@
     }
 
     interface Data {
-        workflowSummary: WorkflowSummary | null
+        workflowSummary: WorkflowRunSummary | null
         error: string
     }
 
@@ -53,7 +54,8 @@
         },
         methods: {
             getReportDependencies() {
-                api.post(`/workflows/summary`, {
+                const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
+                api.post(`/workflows/summary/${commit}`, {
                     reports: this.workflowMetadata.reports,
                     ref: this.workflowMetadata.git_commit
                 })

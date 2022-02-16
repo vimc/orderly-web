@@ -11,6 +11,8 @@ formatting:
     active: false
   NoWildcardImports:
     active: false
+  ParameterListWrapping:
+    active: false
   SpacingAroundCurly:
     active: false
   SpacingAroundKeyword:
