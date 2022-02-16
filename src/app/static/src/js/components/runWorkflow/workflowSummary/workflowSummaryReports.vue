@@ -62,12 +62,12 @@
     import {BLink} from "bootstrap-vue/esm/components/link";
     import {BCollapse} from "bootstrap-vue/esm/components/collapse";
     import {VBToggle} from 'bootstrap-vue';
-    import {WorkflowSummary, WorkflowReportWithDependencies} from "../../../utils/types";
+    import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../../utils/types";
     import {VTooltip} from "v-tooltip";
     import ErrorInfo from "../../errorInfo.vue";
 
     interface Props {
-        workflowSummary: WorkflowSummary
+        workflowSummary: WorkflowSummaryResponse
         gitCommit: string
     }
 
