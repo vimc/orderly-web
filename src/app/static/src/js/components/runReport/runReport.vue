@@ -144,13 +144,13 @@
                 return this.reports && this.reports.length;
             },
             showInstances() {
-                return this.metadata?.instances_supported && this.selectedReport;
+                return !!this.selectedReport && this.metadata?.instances_supported;
             },
             showRunButton() {
                 return !!this.selectedReport;
             },
             showParameters() {
-                return this.selectedReport && this.parameterValues.length
+                return !!this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
                 return !!this.selectedReport && this.metadata?.changelog_types
@@ -199,11 +199,13 @@
                 //multiple instances - until multiple are accepted, send the selected instance value for instance with
                 //greatest number of options. See VIMC-4561.
                 let instances = {};
-                if (this.metadata?.instances_supported && this.metadata?.instances &&
-                    Object.keys(this.metadata?.instances).length > 0) {
-                    const instanceName = Object.keys(this.metadata?.instances).sort((a, b) => this.metadata?.instances[b].length - this.metadata.instances[a].length)[0];
+                if (this.metadata && this.metadata.instances_supported && this.metadata.instances &&
+                    Object.keys(this.metadata.instances).length > 0) {
+                    const instDict = this.metadata.instances;
+                    const instKeys = Object.keys(instDict);
+                    const instanceName = instKeys.sort((a, b) => instDict[b].length - instDict[a].length)[0];
                     const instance = this.selectedInstances[instanceName];
-                    instances = Object.keys(this.metadata?.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    instances = Object.keys(instDict).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});
