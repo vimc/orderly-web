@@ -29,14 +29,14 @@
             <div class="row" v-if="workflowRunStatus" id="workflow-table">
                 <label class="form-label col">Reports</label>
                 <table class="table-bordered col-10">
-                    <tr v-for="report in workflowRunStatus.reports">
+                    <tr v-for="report in workflowRunStatus.reports" :key="report.key">
                         <td v-if="report.status === 'success'" class="p-2">
                             <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                                 {{ report.name }}
                             </a>
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
-                        <td>
+                        <td v-if="hasParams(report)">
                             <tr>Parameters</tr>
                             <tr>param 1: name 1</tr>
                             <tr>param 2: name 2</tr>
@@ -89,11 +89,11 @@ import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
-    // RunWorkflowMetadata
+    RunWorkflowMetadata
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 // import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
-// import {WorkflowSummaryResponse, Parameter} from "../../utils/types";
+import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../utils/types";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -105,6 +105,7 @@ interface Data {
     // runWorkflowMetadata: RunWorkflowMetadata | null
     // workflowSummary: WorkflowSummaryResponse | null
     showLogForReportKey: string | null;
+    workflowMetadata: RunWorkflowMetadata | null
 }
 
 interface Methods {
@@ -124,6 +125,8 @@ interface Methods {
     viewLogLinkVisible: (status: string) => boolean;
     showReportLog: (reportKey: string) => void;
     closeReportLogDialog: () => void;
+    hasParams: (report: WorkflowReportWithDependencies) => boolean
+    getWorkflowMetadata: () => void;
 }
 
 interface Props {
@@ -175,7 +178,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             pollingTimer: null,
             // workflowSummary: null,
             // runWorkflowMetadata: null,
-            showLogForReportKey: null
+            showLogForReportKey: null,
+            workflowMetadata: null
         };
     },
     methods: {
@@ -216,6 +220,10 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                         "An error occurred fetching the workflow reports";
                 });
         },
+        hasParams(report) {
+            return (report.param_list && report.param_list.length > 0) ||
+                (report.default_param_list && report.default_param_list.length > 0)
+        },
         // getWorkflowDetails() {
         //     api.get(`/workflows/${this.selectedWorkflowKey}/`)
         //         .then(({data}) => {
@@ -251,6 +259,17 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 .then(({data}) => {
                     const reportMetadata = workflowRunDetailsToMetadata(data.data)
                     this.$emit("rerun", reportMetadata);
+                })
+                .catch((error) => {
+                    this.error = error;
+                    this.defaultMessage =
+                        "An error occurred fetching workflow details";
+                });
+        },
+        getWorkflowMetadata(){
+            api.get(`/workflows/${this.selectedWorkflowKey}/`)
+                .then(({data}) => {
+                    this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
                 })
                 .catch((error) => {
                     this.error = error;
@@ -307,6 +326,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             this.$emit("set-selected-workflow-key", this.selectedWorkflowKey)
             if (this.selectedWorkflowKey) {
                 this.getWorkflowRunStatus(this.selectedWorkflowKey);
+                this.getWorkflowMetadata();
                 // this.getWorkflowDetails();
                 this.startPolling();
             } else {
@@ -319,11 +339,15 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             if (interpretStatus === "Failed" || interpretStatus === "Complete") {
                 this.stopPolling();
             }
+            console.log("workflowRunStatus", this.workflowRunStatus)
             // console.log("workflowRunStatus", this.workflowRunStatus)
             // if (this.workflowRunStatus){
             //     this.getReportWorkflowSummary();
             // }
         },
+        workflowMetadata(){
+            console.log("workflowMetadata", this.workflowMetadata)
+        }
         // runWorkflowMetadata(){
         //     if (this.runWorkflowMetadata){
         //         console.log("runWorkflowMetadata", this.runWorkflowMetadata)
@@ -339,6 +363,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         this.getWorkflowRunSummaries();
         // this.getReportWorkflowSummary();
         this.selectedWorkflowKey = this.initialSelectedWorkflow;
+        this.getWorkflowMetadata();
     },
     beforeDestroy() {
         this.stopPolling();
