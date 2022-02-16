@@ -34,7 +34,13 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {ChildCustomStyle, RunReportMetadata, RunWorkflowMetadata, WorkflowRunSummary} from "../../utils/types";
+    import {
+        ChildCustomStyle,
+        RunReportMetadata,
+        RunReportMetadataDependency,
+        RunWorkflowMetadata,
+        WorkflowRunSummary
+    } from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
