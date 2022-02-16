@@ -15,7 +15,7 @@
 
 <script lang="ts">
     import {api} from "../../utils/api";
-    import {ReportDependencies, ReportDependency, Error} from "../../utils/types";
+    import {ReportDependencies, ReportDependency, Error, Report} from "../../utils/types";
     import Vue from "vue";
     import ReportDependencyList from "./reportDependencyList.vue";
     import ErrorInfo from "../errorInfo.vue";
@@ -30,13 +30,19 @@
         childDependencies: ReportDependency[]
     }
 
-    export default Vue.extend<Data, Record<string, never>, Computed, Record<string, never>>({
+    interface Props {
+        report: Report
+    }
+
+    export default Vue.extend<Data, Record<string, never>, Computed, Props>({
         name: "ReportDependencies",
         components: {
             ReportDependencyList,
             ErrorInfo
         },
-        props: ['report'],
+        props: {
+            report: Object
+        },
         data: () => {
             return {
                 dependencies: null,

@@ -13,6 +13,11 @@ export interface ReportWithDate {
     date: Date | null
 }
 
+export interface Report {
+    name: string,
+    id: string
+}
+
 export interface ReportLog{
     email: string,
     date: string,

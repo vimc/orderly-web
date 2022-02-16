@@ -25,11 +25,11 @@
 
 <script lang="ts">
     import Vue from "vue";
-    import manageRoles from "./manageRoles";
-    import manageUserPermissions from "./manageUserPermissions";
+    import manageRoles from "./manageRoles.vue";
+    import manageUserPermissions from "./manageUserPermissions.vue";
     import {api} from "../../utils/api";
-    import manageRolePermissions from "./manageRolePermissions";
-    import settings from "./settings";
+    import manageRolePermissions from "./manageRolePermissions.vue";
+    import settings from "./settings.vue";
 
     declare const canAllowGuest: boolean;
 

@@ -39,6 +39,7 @@
 
     interface Computed {
         showInstances: boolean
+        instancesWithMultipleOptions: Record<string, any>
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
