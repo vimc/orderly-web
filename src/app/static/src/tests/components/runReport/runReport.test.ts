@@ -8,6 +8,9 @@ import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import changeLog from "../../../js/components/runReport/changeLog.vue";
 import VueSelect from "vue-select";
+import {GitState} from "../../../js/store/git/git";
+import Vuex from "vuex";
+import {mockGitState} from "../../mocks";
 
 describe("runReport", () => {
     const mockParams = [
@@ -15,23 +18,39 @@ describe("runReport", () => {
         {name: "minimal", value: "random_39id"}
     ]
 
-    const initialGitBranches = ["master", "dev"];
-
     const props = {
-        metadata: {
-            git_supported: true,
-            instances_supported: false
-        },
-        initialGitBranches,
         initialReportName: ""
     };
 
     const minimal = {name: "minimal", date: new Date().toISOString()};
     const global = {name: "global", date: null};
 
-    const getWrapper = (propsData = props) => {
+    const gitState: GitState = {
+        metadata: {
+            git_supported: true,
+            instances_supported: false,
+            instances: {"source": []},
+            changelog_types: ["internal", "public"]
+        },
+        git_branches: ["master", "dev"]
+    }
+
+    const createStore = (state: Partial<GitState> = gitState) => {
+        return new Vuex.Store({
+            state: {},
+            modules: {
+                git: {
+                    namespaced: true,
+                    state: mockGitState(state)
+                }
+            }
+        });
+    };
+
+    const getWrapper = (propsData = props, state = gitState) => {
         return shallowMount(RunReport, {
             propsData,
+            store: createStore(state),
             data() {
                 return {
                     reports: [minimal, global]
@@ -47,10 +66,7 @@ describe("runReport", () => {
     it("renders header", () => {
 
         const wrapper = shallowMount(RunReport, {
-            propsData: {
-                metadata: {git_supported: true, instances_supported: false},
-                initialGitBranches
-            }
+            store: createStore()
         });
 
         expect(wrapper.find("h2").text()).toBe("Run a report");
@@ -59,8 +75,8 @@ describe("runReport", () => {
     it("renders gitUpdateReports component", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        expect(gitUpdateReports.props("reportMetadata")).toBe(props.metadata);
-        expect(gitUpdateReports.props("initialBranches")).toBe(initialGitBranches);
+        expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
+        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.git_branches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 
@@ -92,6 +108,7 @@ describe("runReport", () => {
     it("displays report list in order and allows selection and reset", async () => {
         const wrapper = mount(RunReport, {
             propsData: props,
+            store: createStore(),
             data() {
                 return {
                     reports: [minimal, global]
@@ -124,7 +141,7 @@ describe("runReport", () => {
 
     it("shows instances if instances supported", async() => {
         const wrapper = mount(RunReport, {
-            propsData: {
+            store: createStore({
                 metadata: {
                     git_supported: false,
                     instances_supported: true,
@@ -132,10 +149,10 @@ describe("runReport", () => {
                         source: ["prod", "uat"],
                         annex: ["one"],
                         another: []
-                    }
-                },
-                initialGitBranches
-            },
+                    },
+                    changelog_types: []
+                }
+            }),
             data() {
                 return {
                     selectedReport: minimal
@@ -155,7 +172,7 @@ describe("runReport", () => {
 
     it("doesn't show instances if instances not supported", () => {
         const wrapper = shallowMount(RunReport, {
-            propsData: {
+            store: createStore({
                 metadata: {
                     git_supported: true,
                     instances_supported: false,
@@ -163,10 +180,10 @@ describe("runReport", () => {
                         source: ["prod", "uat"],
                         annex: ["one"],
                         another: []
-                    }
-                },
-                initialGitBranches
-            }
+                    },
+                    changelog_types: []
+                }
+            })
         });
 
         expect(wrapper.find("#source").exists()).toBe(false);
@@ -181,12 +198,7 @@ describe("runReport", () => {
         ];
 
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     parameterValues: mockParams,
@@ -210,12 +222,7 @@ describe("runReport", () => {
 
     it("does not render parameters control if report is not selected", () => {
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     parameterValues: [],
@@ -279,12 +286,7 @@ describe("runReport", () => {
 
     it("does not render parameters control if parameters and selected report data do not exist", () => {
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     parameterValues: [],
@@ -324,17 +326,17 @@ describe("runReport", () => {
             .reply(200, {data: {key: "test-key"}});
 
         const wrapper = mount(RunReport, {
-            propsData: {
+            store: createStore({
                 metadata: {
                     git_supported: true,
                     instances_supported: true,
                     instances: {
                         annexe: ["a1", "a2"],
                         source: ["uat", "science", "prod"]
-                    }
-                },
-                initialGitBranches
-            },
+                    },
+                    changelog_types: []
+                }
+            }),
             data() {
                 return {
                     selectedReport: {name: "report"},
@@ -403,14 +405,15 @@ describe("runReport", () => {
             .reply(200, {data: {key: "test-key"}});
 
         const wrapper = mount(RunReport, {
-            propsData: {
+            store: createStore({
                 metadata: {
                     git_supported: false,
                     instances_supported: false,
-                    changelog_types: ["internal", "public"]
+                    changelog_types: ["internal", "public"],
+                    instances: {}
                 },
-                initialGitBranches: []
-            },
+                git_branches: []
+            }),
             data() {
                 return {
                     selectedReport: {name: "report"},
@@ -527,16 +530,16 @@ describe("runReport", () => {
 
     it("changing a selected instance updates data and resets runningStatus and disabledRun", async () => {
         const wrapper = mount(RunReport, {
-            propsData: {
+            store: createStore({
                 metadata: {
                     git_supported: true,
                     instances_supported: true,
                     instances: {
                         source: ["prod", "uat"],
-                    }
-                },
-                initialGitBranches
-            }
+                    },
+                    changelog_types: []
+                }
+            })
         });
         await Vue.nextTick();
         wrapper.setData({selectedReport: {name: "test-report"}});
@@ -557,15 +560,8 @@ describe("runReport", () => {
     });
 
     it("it does render changelog message and type correctly if a report is selected", () => {
-        const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                    changelog_types: changelogTypes
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     selectedReport: {name: "report"}
@@ -576,36 +572,24 @@ describe("runReport", () => {
         expect(wrapper.find("#changelog-message").exists()).toBe(true);
         const options = wrapper.find("#changelog-type").find("select")
             .findAll("option")
-        expect(options.at(0).text()).toBe(changelogTypes[0]);
-        expect(options.at(1).text()).toBe(changelogTypes[1]);
+        expect(options.at(0).text()).toBe("internal");
+        expect(options.at(1).text()).toBe("public");
     });
 
     it("it does not render changelog message and type if a report is not selected", () => {
-        const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: false,
-                    changelog_types: changelogTypes,
-                },
-                initialGitBranches
-            }
+            store: createStore()
         });
         expect(wrapper.find("#changelog-message").exists()).toBe(false);
         expect(wrapper.find("#changelog-type").exists()).toBe(false);
     });
 
     it("it can accepts changelog and type log message values", async () => {
-        const changelogTypes =  ["internal", "public"]
         const wrapper = mount(RunReport, {
             propsData: {
-                metadata: {
-                    git_supported: true,
-                    changelog_types: changelogTypes,
-                },
-                initialGitBranches,
                 initialReportName: "global"
             },
+            store: createStore(),
             data() {
                 return {
                     reports: [minimal, global]
@@ -641,12 +625,7 @@ describe("runReport", () => {
             {name: "max", value: "James bond"},
         ]
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     parameterValues: localParam,
@@ -665,12 +644,7 @@ describe("runReport", () => {
             {name: "minimal", value: ""}
         ]
         const wrapper = mount(RunReport, {
-            propsData: {
-                metadata: {
-                    git_supported: true,
-                },
-                initialGitBranches
-            },
+            store: createStore(),
             data() {
                 return {
                     selectedReport: {name: "reports"},

@@ -5,7 +5,9 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
-import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
+import {mockRunWorkflowMetadata, mockRunReportMetadata, mockGitState} from "../../mocks";
+import {GitState} from "../../../js/store/git/git";
+import Vuex from "vuex";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -13,8 +15,23 @@ describe(`workflowWizard`, () => {
         {name: "run", component: "runWorkflowRun"}
     ]
 
+    const gitState: GitState = mockRunReportMetadata()
+
+    const createStore = (state: Partial<GitState> = gitState) => {
+        return new Vuex.Store({
+            state: {},
+            modules: {
+                git: {
+                    namespaced: true,
+                    state: mockGitState(state)
+                }
+            }
+        });
+    };
+
     const getWrapper = (mockStep = steps) => {
         return mount(workflowWizard, {
+                store: createStore(),
                 propsData: {
                     initialRunWorkflowMetadata: mockRunWorkflowMetadata(),
                     steps: mockStep
@@ -31,14 +48,13 @@ describe(`workflowWizard`, () => {
 
     beforeEach(() => {
         mockAxios.reset();
-
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": mockRunReportMetadata()});
     });
 
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata());
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata({
+            git_branch: gitState.git_branches[0]
+        }));
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
@@ -143,11 +159,9 @@ describe(`workflowWizard`, () => {
         await wrapper.setData({activeStep: 0})
         await wrapper.findComponent(runWorkflowReport).vm.$emit("valid", true)
         const buttons = wrapper.findAll("button")
+        expect(buttons.at(2).text()).toBe("Next")
 
-        expect(buttons.length).toBe(4)
-        expect(buttons.at(1).text()).toBe("Next")
-
-        await buttons.at(1).trigger("click")
+        await buttons.at(2).trigger("click")
         expect(wrapper.find("#run-header").text()).toBe("Run workflow")
     })
 
@@ -249,7 +263,7 @@ describe(`workflowWizard`, () => {
         wrapper.findComponent(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
 
-        const runWorkflowMetadata = {...mockRunWorkflowMetadata(), newProp: "newVal"}
+        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.git_branches[0]}), newProp: "newVal"}
 
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 

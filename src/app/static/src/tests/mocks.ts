@@ -1,4 +1,7 @@
 import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
+import {GitState} from "../js/store/git/git";
+import {RunReportRootState} from "../js/store/runReport/store";
+import {ActionContext} from "vuex";
 
 export const mockRunReportMetadata = (props: Partial<RunReportMetadata> = {}): RunReportMetadata => {
     return {
@@ -24,3 +27,29 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
         ...props
     }
 };
+
+export const mockGitState = (props: Partial<GitState> = {}): GitState => {
+    return {
+        ...mockRunReportMetadata(),
+        ...props
+    }
+}
+
+export const mockRunReportRootState = (props: Partial<RunReportRootState> = {}): RunReportRootState => {
+    return {
+        git: mockGitState(),
+        ...props
+    }
+}
+
+export const mockActionContext = <S, R>(context: Partial<ActionContext<S, R>> = {}): ActionContext<S, R> => {
+    return {
+        commit: jest.fn(),
+        dispatch: jest.fn(),
+        state: {} as S,
+        rootState: {} as R,
+        getters: {},
+        rootGetters: {},
+        ...context
+    }
+}
