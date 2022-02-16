@@ -1,0 +1,19 @@
+{
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "html",
+    "vue"
+  ],
+  "eslint.options": {
+    "extensions": [".js", ".ts", ".vue"]
+  },
+  "eslint.probe": [
+    "javascript",
+    "typescript",
+    "html",
+    "vue"
+  ],
+  "vetur.format.enable": false,
+  "eslint.format.enable": true,
+}

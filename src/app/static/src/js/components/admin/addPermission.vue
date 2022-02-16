@@ -1,15 +1,17 @@
 <template>
     <div class="mb-3 mt-2 add-permission">
         <typeahead
-                size="sm"
                 v-model="newPermission"
+                size="sm"
                 placeholder="name"
                 :data="availablePermissions">
             <template slot="append">
-                <button v-on:click="add" type="submit" class="btn btn-sm">Add</button>
+                <button type="submit" class="btn btn-sm" @click="add">
+                    Add
+                </button>
             </template>
         </typeahead>
-        <error-info :default-message="defaultMessage" :api-error="error"></error-info>
+        <error-info :default-message="defaultMessage" :api-error="error" />
     </div>
 </template>
 
@@ -18,7 +20,11 @@
     import ErrorInfo from "../errorInfo.vue";
 
     export default {
-        name: 'addPermission',
+        name: 'AddPermission',
+        components: {
+            ErrorInfo,
+            Typeahead
+        },
         props: ['userGroup', 'availablePermissions'],
         data() {
             return {
@@ -26,10 +32,6 @@
                 error: "",
                 defaultMessage: ""
             }
-        },
-        components: {
-            ErrorInfo,
-            Typeahead
         },
         watch: {
             newPermission() {
