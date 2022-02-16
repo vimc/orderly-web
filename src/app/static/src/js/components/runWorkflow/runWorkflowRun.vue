@@ -62,7 +62,6 @@
     }
 
     interface Data {
-        runMetadata: RunReportMetadata | null,
         workflows: WorkflowRunSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
