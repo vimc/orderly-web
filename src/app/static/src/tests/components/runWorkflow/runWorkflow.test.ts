@@ -6,8 +6,10 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import runWorkflowCreate from "../../../js/components/runWorkflow/runWorkflowCreate.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {session} from "../../../js/utils/session";
-import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../mocks";
+import {mockRunWorkflowMetadata, mockRunReportMetadata, mockGitState} from "../../mocks";
 import runWorkflowSummary from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue";
+import {GitState} from "../../../js/store/git/git";
+import Vuex from "vuex";
 
 describe(`runWorkflow`, () => {
 
@@ -27,7 +29,32 @@ describe(`runWorkflow`, () => {
         instances: {'name': 'value'},
         git_branch: "branch",
         git_commit: "commit"
-    })
+    });
+
+    const gitState: GitState = {
+        git_branches: ["master", "dev"],
+        metadata: {
+            changelog_types: ["public", "internal"],
+            git_supported: true,
+            instances_supported: true,
+            instances: {
+                source: ["src"],
+                annex: ["one"]
+            }
+        }
+    }
+
+    const createStore = (state: Partial<GitState> = gitState) => {
+        return new Vuex.Store({
+            state: {},
+            modules: {
+                git: {
+                    namespaced: true,
+                    state: mockGitState(state)
+                }
+            }
+        });
+    };
 
     beforeEach(() => {
         mockAxios.reset();
@@ -38,6 +65,7 @@ describe(`runWorkflow`, () => {
 
     const getWrapper = () => {
         return mount(runWorkflow, {
+            store: createStore(),
             data() {
                 return {
                     runWorkflowMetadata: null,
@@ -51,6 +79,7 @@ describe(`runWorkflow`, () => {
 
     const getShallowWrapper = (props: any = {}) => {
         return shallowMount(runWorkflow, {
+            store: createStore(),
             propsData: {
                 runWorkflowMetadata: null,
                 workflowStarted: false,
@@ -121,7 +150,6 @@ describe(`runWorkflow`, () => {
             {
                 selectedWorkflow: selectedWorkflow,
                 runWorkflowMetadata: workflowMetadata
-
             })
 
         expect(wrapper.findComponent(runWorkflowCreate).vm.$data.runWorkflowMetadata).toMatchObject(workflowMetadata)
