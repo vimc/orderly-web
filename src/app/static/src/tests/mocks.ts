@@ -30,7 +30,15 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
 
 export const mockGitState = (props: Partial<GitState> = {}): GitState => {
     return {
-        ...mockRunReportMetadata(),
+        metadata: {
+            instances_supported: false,
+            git_supported: true,
+            instances: {"source": []},
+            changelog_types: ["published", "internal"]
+        },
+        gitBranches: ["master", "dev"],
+        selectedBranch: "master",
+        selectedCommitId: "abcd",
         ...props
     }
 }

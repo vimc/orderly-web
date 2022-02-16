@@ -15,7 +15,7 @@ describe(`workflowWizard`, () => {
         {name: "run", component: "runWorkflowRun"}
     ]
 
-    const gitState: GitState = mockRunReportMetadata()
+    const gitState: GitState = mockGitState()
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
@@ -52,9 +52,7 @@ describe(`workflowWizard`, () => {
 
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
-        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata({
-            git_branch: gitState.git_branches[0]
-        }));
+        expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata());
     });
 
     it(`can render first step, component and buttons correctly`, async () => {
@@ -263,7 +261,7 @@ describe(`workflowWizard`, () => {
         wrapper.findComponent(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
 
-        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.git_branches[0]}), newProp: "newVal"}
+        const runWorkflowMetadata = {...mockRunWorkflowMetadata(), newProp: "newVal"}
 
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 

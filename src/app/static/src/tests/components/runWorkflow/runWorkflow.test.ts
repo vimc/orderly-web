@@ -20,7 +20,7 @@ describe(`runWorkflow`, () => {
         key: "fake"
     }
 
-    const runWorkflowMetadata = mockRunWorkflowMetadata({git_branch: "master"})
+    const runWorkflowMetadata = mockRunWorkflowMetadata()
 
     const workflowMetadata = mockRunWorkflowMetadata({
         name: "interim report",
@@ -31,8 +31,8 @@ describe(`runWorkflow`, () => {
         git_commit: "commit"
     });
 
-    const gitState: GitState = {
-        git_branches: ["master", "dev"],
+    const gitState = mockGitState({
+        gitBranches: ["master", "dev"],
         metadata: {
             changelog_types: ["public", "internal"],
             git_supported: true,
@@ -42,7 +42,7 @@ describe(`runWorkflow`, () => {
                 annex: ["one"]
             }
         }
-    }
+    })
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({

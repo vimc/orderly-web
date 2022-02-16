@@ -1,9 +1,9 @@
 <template>
     <div>
-        <div v-if="reportMetadata && reportMetadata.git_supported" id="git-branch-form-group" class="form-group row">
+        <div v-if="metadata && metadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
-                <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
+                <select class="form-control" id="git-branch" v-model="selectedBranch">
                     <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
                 </select>
             </div>
@@ -18,7 +18,7 @@
         <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
             <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
             <div class="col-sm-6">
-                <select class="form-control" id="git-commit" v-model="selectedCommitId" @change="changedCommit">
+                <select class="form-control" id="git-commit" v-model="selectedCommitId">
                     <option v-for="commit in gitCommits" :value="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
@@ -33,16 +33,13 @@
     import Vue from "vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {RunReportRootState} from "../../store/runReport/store";
-    import {mapState} from "vuex";
+    import {mapMutations, mapState} from "vuex";
+    import {GitMutation} from "../../store/git/mutations";
+    import {RunnerRootState} from "../../utils/types";
 
     export default Vue.extend({
         name: "gitUpdateReports",
         props: [
-            "reportMetadata",
-            "initialBranches",
-            "initialBranch",
-            "initialCommitId",
             "showAllReports"
         ],
         components: {
@@ -53,14 +50,36 @@
                 gitRefreshing: false,
                 gitBranches: [],
                 gitCommits: [],
-                selectedBranch: "",
-                selectedCommitId: "",
                 error: "",
                 defaultMessage: "",
                 reports: []
             };
         },
         computed: {
+            ...mapState({
+                initialBranches: (state: RunnerRootState) => state.git.gitBranches,
+                metadata: (state: RunnerRootState) => state.git.metadata
+            }),
+            selectedBranch: {
+                get() {
+                    return this.$store.state.git.selectedBranch
+                },
+                set(newVal: string) {
+                    this.selectBranch(newVal);
+                    this.fetchCommits(newVal);
+                }
+            },
+            selectedCommitId: {
+                get() {
+                    return this.$store.state.git.selectedCommitId
+                },
+                set(newVal: string) {
+                    this.selectCommit(newVal);
+                    if (newVal) {
+                        this.fetchReports(this.selectedBranch, newVal);
+                    }
+                }
+            },
             refreshGitText() {
                 return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
             },
@@ -69,34 +88,28 @@
             }
         },
         methods: {
+            ...mapMutations({
+                selectBranch: `git/${GitMutation.SelectBranch}`,
+                selectCommit: `git/${GitMutation.SelectCommitId}`
+            }),
             initialise() {
-                if (this.reportMetadata?.git_supported) {
+                if (this.metadata && this.metadata.git_supported) {
                     this.gitBranches = [...this.initialBranches];
-
-                    if (this.initialBranch) {
-                        this.selectedBranch = this.initialBranch
-                    } else {
-                        this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : "";
-                    }
-                    this.changedBranch(this.initialCommitId);
-
-                } else {
-                    this.updateReports();
                 }
+                this.fetchCommits(this.selectedBranch);
             },
-            changedBranch(initialCommit = null) {
-                this.$emit("branchSelected", this.selectedBranch);
-                api.get(`/git/branch/${this.selectedBranch}/commits/`)
+            fetchCommits(branch) {
+                api.get(`/git/branch/${branch}/commits/`)
                     .then(({data}) => {
                         this.gitCommits = data.data;
                         if (this.gitCommits.length) {
-                            if (initialCommit && this.gitCommits.map((c) => c.id).includes(initialCommit)) {
-                                this.selectedCommitId = initialCommit;
+                            if (this.gitCommits.map((c) => c.id).includes(this.selectedCommitId)) {
+                                // the current selected commit is valid so just go ahead and fetch reports
+                                this.fetchReports(branch, this.selectedCommitId);
                             } else {
-                                //select the first commit in the branch
+                                // select the first commit in the branch
                                 this.selectedCommitId = this.gitCommits[0].id;
                             }
-                            this.changedCommit();
                         }
                         this.error = "";
                         this.defaultMessage = "";
@@ -106,14 +119,10 @@
                         this.defaultMessage = "An error occurred fetching Git commits";
                     });
             },
-            changedCommit() {
-                this.$emit("commitSelected", this.selectedCommitId);
-                this.updateReports();
-            },
-            updateReports() {
+            fetchReports(branch, commit) {
                 this.reports = [];
                 const showAllParam = this.showAllReports ? "&show_all=true" : "";
-                const query = this.reportMetadata?.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
+                const query = this.metadata?.git_supported ? `?branch=${branch}&commit=${commit}${showAllParam}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;
@@ -137,7 +146,6 @@
                         this.reports = [];
                         this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                         this.selectedCommitId = "";
-                        this.changedBranch();
                     })
                     .catch((error) => {
                         this.gitRefreshing = false;
@@ -147,9 +155,7 @@
             },
         },
         mounted() {
-            if (this.reportMetadata) {
-                this.initialise()
-            }
+            this.initialise();
         },
         watch: {
             initialBranches(val) {
@@ -157,7 +163,7 @@
                     this.initialise();
                 }
             },
-            reportMetadata(val) {
+            metadata(val) {
                 if (val) {
                     this.initialise();
                 }

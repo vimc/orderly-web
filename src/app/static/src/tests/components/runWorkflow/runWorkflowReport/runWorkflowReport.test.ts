@@ -13,15 +13,15 @@ import {mockRunWorkflowMetadata, mockGitState} from "../../../mocks";
 import {GitState} from "../../../../js/store/git/git";
 import Vuex from "vuex";
 
-export const gitState: GitState = {
+export const gitState = mockGitState({
     metadata: {
         instances_supported: false,
         git_supported: true,
         instances: {"source": []},
         changelog_types: ["published", "internal"]
     },
-    git_branches: ["master", "dev"]
-};
+    gitBranches: ["master", "dev"]
+});
 
 const createStore = (state: Partial<GitState> = gitState) => {
     return new Vuex.Store({
@@ -81,8 +81,6 @@ describe(`runWorkflowReport`, () => {
         });
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
-            expect(git.props("reportMetadata")).toStrictEqual(gitState.metadata);
-            expect(git.props("initialBranches")).toStrictEqual(gitState.git_branches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
             expect(git.props("showAllReports")).toBe(true);

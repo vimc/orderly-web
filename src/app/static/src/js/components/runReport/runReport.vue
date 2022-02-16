@@ -4,10 +4,7 @@
         <form class="mt-3">
             <git-update-reports
                 :report-metadata="metadata"
-                :initial-branches="initialGitBranches"
                 :show-all-reports="false"
-                @branchSelected="branchSelected"
-                @commitSelected="commitSelected"
                 @reportsUpdate="updateReports">
             </git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
@@ -59,13 +56,12 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
-    import {ChildCustomStyle, ReportWithDate, RunReportMetadataDependency} from "../../utils/types";
+    import {ChildCustomStyle, ReportWithDate, RunnerRootState, RunReportMetadataDependency} from "../../utils/types";
     import {RunReportRootState} from "../../store/runReport/store";
     import {mapState} from "vuex";
 
     interface Data {
         reports: ReportWithDate[]
-        selectedBranch: string
         selectedCommitId: string
         selectedReport: ReportWithDate[]
         selectedInstances: Record<string, string>
@@ -83,8 +79,6 @@
         handleInstancesValue: (instances: Record<string, string>) => void
         handleChangelog: (changelog: Record<string, string>) => void
         getParameterValues: (values: Record<string, string>[], valid: boolean) => void
-        branchSelected: (newBranch: string) => void
-        commitSelected: (newCommit: string) => void
         updateReports: (newReports: object[]) => void
         setParameters: () => void
         runReport: () => void
@@ -97,12 +91,12 @@
 
     interface Computed {
         metadata: RunReportMetadataDependency | null
-        initialGitBranches: string[]
         showReports: number
         showInstances: string
         showRunButton: boolean
         showParameters: number
         showChangelog: string[]
+        selectedBranch: string
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
@@ -121,8 +115,6 @@
         data: () => {
             return {
                 reports: [],
-                selectedBranch: "",
-                selectedCommitId: "",
                 selectedReport: null,
                 selectedInstances: {},
                 error: "",
@@ -137,8 +129,9 @@
         },
         computed: {
             ...mapState({
-                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
-                metadata: (state: RunReportRootState) => state.git.metadata
+                metadata: (state: RunnerRootState) => state.git.metadata,
+                selectedBranch: (state: RunnerRootState) => state.git.selectedBranch,
+                selectedCommitId: (state: RunnerRootState) => state.git.selectedCommitId
             }),
             showReports() {
                 return this.reports && this.reports.length;
@@ -169,13 +162,7 @@
                 }
                 this.disableRun = !valid
             },
-            branchSelected(newBranch) {
-                this.selectedBranch = newBranch;
-            },
-            commitSelected(newCommit) {
-                this.selectedCommitId = newCommit;
-            },
-            updateReports(newReports) {
+            fetchReports(newReports) {
                 this.reports = newReports;
                 this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
             },
@@ -226,6 +213,7 @@
                         this.$emit('update:key', this.runningKey)
                     })
                     .catch((error) => {
+                        console.log("Failed")
                         this.error = error;
                         this.defaultMessage = "An error occurred when running report";
                     });

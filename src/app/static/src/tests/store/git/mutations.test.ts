@@ -5,8 +5,9 @@ describe("Git mutations", () => {
 
     it("sets metadata", () => {
         const state = mockGitState({
-            git_branches: [],
-            metadata: null
+            gitBranches: [],
+            metadata: null,
+            selectedBranch: ""
         });
         mutations[GitMutation.SetMetadata](
             state,
@@ -19,12 +20,13 @@ describe("Git mutations", () => {
                 },
                 git_branches: ["dev", "main"]
             })
-        expect(state.git_branches).toEqual(["dev", "main"]);
+        expect(state.gitBranches).toEqual(["dev", "main"]);
         expect(state.metadata).toEqual({
             git_supported: true,
             instances_supported: true,
             instances: {"inst": ["1", "2"]},
             changelog_types: ["public"]
         });
+        expect(state.selectedBranch).toBe("dev");
     })
 });
