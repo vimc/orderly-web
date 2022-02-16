@@ -29,18 +29,34 @@
             <div class="row" v-if="workflowRunStatus" id="workflow-table">
                 <label class="form-label col">Reports</label>
                 <table class="table-bordered col-10">
-                    <tr v-for="report in workflowRunStatus.reports" :key="report.key">
+                    <tr v-for="(report, index) in workflowRunStatus.reports" :key="report.key">
                         <td v-if="report.status === 'success'" class="p-2">
                             <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
                                 {{ report.name }}
                             </a>
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
-                        <td v-if="hasParams(report)">
-                            <tr>Parameters</tr>
-                            <tr>param 1: name 1</tr>
-                            <tr>param 2: name 2</tr>
-                            <tr>show default...</tr>
+                        <!-- <td v-if="hasParams(report)"> -->
+                        <td v-if="workflowSummaryResponse && getReportParams(report) && hasParams(getReportParams(report))">
+                            <span class="text-muted d-inline-block">Parameters</span>
+                                        <!-- <div v-if="hasParams(report)"> -->
+                            <p class="non-default-param"
+                                v-for="param in getReportParams(report).param_list"
+                                :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                            <div v-if="getReportParams(report).default_param_list.length > 0"
+                                    :id="`default-params-${index}`">
+                                <b-link href="#"
+                                        class="show-defaults pt-2 d-inline-block small"
+                                        v-b-toggle="`collapseSummary-${index}`">
+                                    <span class="when-closed">Show</span>
+                                    <span class="when-open">Hide</span> defaults...
+                                </b-link>
+                                <b-collapse :id="`collapseSummary-${index}`">
+                                    <p :id="`default-params-collapse-${index}-${paramIndex}`"
+                                        v-for="(param, paramIndex) in getReportParams(report).default_param_list"
+                                        :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                                </b-collapse>
+                            </div>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
@@ -90,10 +106,14 @@ import {
     WorkflowRunSummary,
     WorkflowRunStatus,
     RunWorkflowMetadata,
+    WorkflowRunReportStatus,
     WorkflowSummaryResponse,
     WorkflowReportWithDependencies
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
+import {BLink} from "bootstrap-vue/esm/components/link";
+import {BCollapse} from "bootstrap-vue/esm/components/collapse";
+import {VBToggle} from 'bootstrap-vue';
 // import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
 
 interface Data {
@@ -130,6 +150,7 @@ interface Methods {
     hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
     getReportDependencies: () => void;
+    getReportParams: (report: WorkflowRunReportStatus) => WorkflowReportWithDependencies
 }
 
 interface Props {
@@ -149,6 +170,8 @@ interface Props {
 //     refs: string
 // }
 
+Vue.directive("b-toggle", VBToggle);
+
 const failStates = ["error", "orphan", "impossible", "missing", "interrupted"];
 const notStartedStates = ["queued", "deferred", "impossible", "missing"];
 const nonFailStateMessages = {
@@ -160,6 +183,8 @@ const nonFailStateMessages = {
 export default Vue.extend<Data, Methods, unknown, Props>({
     name: "runWorkflowProgress",
     components: {
+        BCollapse,
+        BLink,
         ErrorInfo,
         WorkflowReportLogDialog,
         vSelect,
@@ -223,6 +248,10 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                     this.defaultMessage =
                         "An error occurred fetching the workflow reports";
                 });
+        },
+        getReportParams(currentReport){
+            console.log("report", this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name))
+            return this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name)
         },
         hasParams(report) {
             return (report.param_list && report.param_list.length > 0) ||
