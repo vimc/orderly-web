@@ -1,7 +1,7 @@
 <template>
-    <ul v-bind:class="['list-unstyled', 'removable-users-list', cssClass]"
-        v-if="users.length > 0">
-        <li v-for="user in users" v-bind:id="user.email">
+    <ul v-if="users.length > 0"
+        :class="['list-unstyled', 'removable-users-list', cssClass]">
+        <li v-for="user in users" :id="user.email" :key="user.email">
             <user :email="user.email"
                   :display-name="user.display_name"
                   :can-remove="canRemove"
@@ -14,7 +14,7 @@
     import User from "./user.vue";
 
     export default {
-        name: "userList",
+        name: "UserList",
         components: {User},
         props: ["users", "canRemove", "cssClass"],
         methods: {

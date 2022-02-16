@@ -1,15 +1,15 @@
 <template>
     <div v-if="showInstances">
-        <div v-for="(options, name) in instances" v-if="options.length > 1"
-             id="instances-div" class="form-group row">
+        <div v-for="(options, name) in instancesWithMultipleOptions"
+             :key="name" class="form-group row instance-div">
             <label :for="name"
                    :class="customStyle.label"
                    class="col-form-label">Database "{{ name }}"</label>
-            <div id="instance-control" :class="customStyle.control">
-                <select class="form-control" :id="name"
-                        @change="handleSelectedInstances"
-                        v-model="selectedInstances[name]">
-                    <option v-for="option in options" :value="option">
+            <div class="instance-control" :class="customStyle.control">
+                <select :id="name" v-model="selectedInstances[name]"
+                        class="form-control"
+                        @change="handleSelectedInstances">
+                    <option v-for="option in options" :key="option" :value="option">
                         {{ option }}
                     </option>
                 </select>
@@ -42,7 +42,7 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "instances",
+        name: "SelectInstances",
         props: {
             instances: {
                 required: true,
@@ -62,6 +62,24 @@
                 selectedInstances: {}
             }
         },
+        computed: {
+            showInstances() {
+                return !!this.instances;
+            },
+            instancesWithMultipleOptions() {
+                return Object.keys(this.instances)
+                    .filter(key => this.instances[key] && this.instances[key].length > 1)
+                    .reduce((res, key) => (res[key] = this.instances[key], res), {});
+            }
+        },
+        watch: {
+            instances() {
+                this.selectInitialInstance();
+            }
+        },
+        mounted() {
+            this.selectInitialInstance();
+        },
         methods: {
             handleSelectedInstances: function () {
                 this.$emit("selectedValues", this.selectedInstances);
@@ -74,7 +92,7 @@
                     for (const key in instances) {
                         if (instances[key].length > 0) {
                             let initialValue;
-                            if (initialInstances[key]){
+                            if (initialInstances[key]) {
                                 initialValue = initialInstances[key];
                             } else {
                                 initialValue = instances[key][0];
@@ -87,19 +105,6 @@
                         this.$emit("selectedValues", this.selectedInstances);
                     }
                 }
-            }
-        },
-        computed: {
-            showInstances() {
-                return !!this.instances;
-            }
-        },
-        mounted() {
-            this.selectInitialInstance();
-        },
-        watch: {
-            instances() {
-                this.selectInitialInstance();
             }
         }
     })

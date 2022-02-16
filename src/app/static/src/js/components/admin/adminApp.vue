@@ -8,9 +8,8 @@
         <div class="col-4">
             <label class="font-weight-bold d-block">Manage permissions</label>
             <label class="font-weight-bold d-block">For roles</label>
-            <manage-role-permissions
-                    :roles="roles"
-                    @changed="getAll"></manage-role-permissions>
+            <manage-role-permissions :roles="roles"
+                                     @changed="getAll"></manage-role-permissions>
             <hr/>
             <label class="font-weight-bold d-block">For individual users</label>
             <manage-user-permissions :all-users="users" @changed="getUsers"></manage-user-permissions>
@@ -24,13 +23,15 @@
     </div>
 </template>
 
-<script>
+<script lang="ts">
     import Vue from "vue";
     import manageRoles from "./manageRoles";
     import manageUserPermissions from "./manageUserPermissions";
     import {api} from "../../utils/api";
     import manageRolePermissions from "./manageRolePermissions";
     import settings from "./settings";
+
+    declare const canAllowGuest: boolean;
 
     export default Vue.extend({
         components: {
@@ -50,6 +51,9 @@
                 return canAllowGuest;
             }
         },
+        mounted() {
+            this.getAll()
+        },
         methods: {
             getAll: function () {
                 this.getRoles();
@@ -67,9 +71,6 @@
                         this.users = data.data
                     })
             }
-        },
-        mounted() {
-            this.getAll()
         }
     })
 </script>

@@ -1,13 +1,14 @@
 <template>
     <div id="manage-role-permissions">
-        <ul class="list-unstyled roles" v-if="roles.length > 0">
+        <ul v-if="roles.length > 0" class="list-unstyled roles">
             <li v-for="(role, index) in roles"
-                v-bind:id="role.name"
-                v-bind:class="['role', 'has-children', {'open':expanded[index]}]">
-                <div class="expander" v-on:click="toggle(index)"></div>
-                <span v-text="role.name" v-on:click="toggle(index)" class="role-name"></span>
+                :id="role.name"
+                :key="role.name"
+                :class="['role', 'has-children', {'open':expanded[index]}]">
+                <div class="expander" @click="toggle(index)"></div>
+                <span class="role-name" @click="toggle(index)" v-text="role.name"></span>
                 <permission-list v-show="expanded[index]"
-                                 cssClass="children"
+                                 css-class="children"
                                  :permissions="role.permissions"
                                  :user-group="role.name"
                                  :can-edit="role.name !== 'Admin'"
@@ -26,7 +27,11 @@
     import {api} from "../../utils/api";
 
     export default {
-        name: 'roleList',
+        name: 'RoleList',
+        components: {
+            PermissionList,
+            ErrorInfo
+        },
         props: ["roles"],
         data() {
             return {
@@ -71,10 +76,6 @@
                         this.defaultMessage = `could not add ${permission} to ${role.name}`;
                     });
             },
-        },
-        components: {
-            PermissionList,
-            ErrorInfo
         }
     };
 </script>

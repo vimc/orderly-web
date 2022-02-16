@@ -8,8 +8,7 @@
                 :show-all-reports="false"
                 @branchSelected="branchSelected"
                 @commitSelected="commitSelected"
-                @reportsUpdate="updateReports"
-            ></git-update-reports>
+                @reportsUpdate="updateReports"/>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
@@ -18,15 +17,15 @@
             </div>
 
             <div v-if="showInstances">
-                <instances :instances="metadata.instances"
-                           :custom-style="childCustomStyle"
-                           @selectedValues="handleInstancesValue"
-                           @clearRun="clearRun"/>
+                <select-instances :instances="metadata.instances"
+                                  :custom-style="childCustomStyle"
+                                  @selectedValues="handleInstancesValue"
+                                  @clearRun="clearRun"/>
             </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
-                <parameter-list id="params-component" @paramsChanged="getParameterValues"
-                                :params="parameterValues"></parameter-list>
+                <parameter-list id="params-component" :params="parameterValues"
+                                @paramsChanged="getParameterValues"></parameter-list>
             </div>
             <change-log v-if="showChangelog"
                         :changelog-type-options="metadata.changelog_types"
@@ -36,12 +35,12 @@
             <div v-if="showRunButton" id="run-form-group" class="form-group row">
                 <div class="col-sm-2"></div>
                 <div class="col-sm-6">
-                    <button @click.prevent="runReport" class="btn" type="submit" :disabled="disableRun">
+                    <button class="btn" type="submit" :disabled="disableRun" @click.prevent="runReport">
                         Run report
                     </button>
-                    <div id="run-report-status" v-if="runningStatus" class="text-secondary mt-2">
+                    <div v-if="runningStatus" id="run-report-status" class="text-secondary mt-2">
                         {{ runningStatus }}
-                        <a @click.prevent="$emit('changeTab')" href="#">View log</a>
+                        <a href="#" @click.prevent="$emit('changeTab')">View log</a>
                     </div>
                 </div>
             </div>
@@ -58,7 +57,7 @@
     import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
-    import Instances from "./instances.vue";
+    import SelectInstances from "./instances.vue";
     import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
 
     interface Data {
@@ -104,19 +103,19 @@
     }
 
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "runReport",
-        props: {
-            metadata: Object,
-            initialGitBranches: Array,
-            initialReportName: String
-        },
+        name: "RunReport",
         components: {
             ErrorInfo,
             GitUpdateReports,
             ReportList,
             ParameterList,
             ChangeLog,
-            Instances
+            SelectInstances
+        },
+        props: {
+            metadata: Object,
+            initialGitBranches: Array,
+            initialReportName: String
         },
         data: () => {
             return {
@@ -151,6 +150,35 @@
             showChangelog: function () {
                 return !!this.selectedReport && this.metadata.changelog_types
             }
+        },
+        watch: {
+            selectedReport: {
+                deep: true,
+                handler() {
+                    this.clearRun();
+                    if (this.selectedReport) {
+                        this.setParameters();
+                    }
+                    this.parameterValues.length = 0
+                }
+            },
+            selectedInstances: {
+                deep: true,
+                handler() {
+                    this.clearRun()
+                }
+            }
+        },
+        mounted() {
+            if (this.metadata.instances_supported) {
+                const instances = this.metadata.instances;
+                for (const key in instances) {
+                    if (instances[key].length > 0) {
+                        this.$set(this.selectedInstances, key, instances[key][0]);
+                    }
+                }
+            }
+            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         methods: {
             handleInstancesValue: function (instances) {
@@ -231,35 +259,6 @@
                 this.runningKey = "";
                 this.disableRun = false;
                 this.changelog = null;
-            }
-        },
-        mounted() {
-            if (this.metadata.instances_supported) {
-                const instances = this.metadata.instances;
-                for (const key in instances) {
-                    if (instances[key].length > 0) {
-                        this.$set(this.selectedInstances, key, instances[key][0]);
-                    }
-                }
-            }
-            this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
-        },
-        watch: {
-            selectedReport: {
-                deep: true,
-                handler() {
-                    this.clearRun();
-                    if (this.selectedReport) {
-                        this.setParameters();
-                    }
-                    this.parameterValues.length = 0
-                }
-            },
-            selectedInstances: {
-                deep: true,
-                handler() {
-                    this.clearRun()
-                }
             }
         }
     })

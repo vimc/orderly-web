@@ -5,10 +5,10 @@
                    :class="customStyle.label"
                    class="col-form-label">Changelog Message</label>
             <div id="change-message-control" :class="customStyle.control">
-                <textarea class="form-control" id="changelogMessage"
-                          v-model="changeLogMessageValue"
-                          @input="emitChangelog"
-                          rows="2">
+                <textarea id="changelogMessage" v-model="changeLogMessageValue"
+                          class="form-control"
+                          rows="2"
+                          @input="emitChangelog">
                 </textarea>
             </div>
         </div>
@@ -17,11 +17,11 @@
                    :class="customStyle.label"
                    class="col-form-label">Changelog Type</label>
             <div id="change-type-control" :class="customStyle.control">
-                <select class="form-control"
-                        id="changelogType"
+                <select id="changelogType"
                         v-model="changeLogTypeValue"
+                        class="form-control"
                         @change="emitChangelog">
-                    <option v-for="option in changelogTypeOptions" :value="option">
+                    <option v-for="option in changelogTypeOptions" :key="option" :value="option">
                         {{ option }}
                     </option>
                 </select>
@@ -51,25 +51,17 @@
     }
 
     export default Vue.extend<Data, Methods, unknown, Props>({
-        name: "changeLog",
-        data(): Data {
-            return {
-                changeLogMessageValue: "",
-                changeLogTypeValue: ""
-            }
-        },
+        name: "ChangeLog",
         props: {
             customStyle: {},
             changelogTypeOptions: Array,
             initialMessage: String,
             initialType: String
         },
-        methods: {
-            emitChangelog() {
-                this.$emit("changelog", this.changeLogMessageValue ? {
-                    message: this.changeLogMessageValue,
-                    type: this.changeLogTypeValue
-                } : null);
+        data(): Data {
+            return {
+                changeLogMessageValue: "",
+                changeLogTypeValue: ""
             }
         },
         mounted() {
@@ -81,6 +73,14 @@
             } else if (this.changelogTypeOptions) {
                 this.changeLogTypeValue = this.changelogTypeOptions[0];
                 this.emitChangelog();
+            }
+        },
+        methods: {
+            emitChangelog() {
+                this.$emit("changelog", this.changeLogMessageValue ? {
+                    message: this.changeLogMessageValue,
+                    type: this.changeLogTypeValue
+                } : null);
             }
         }
     })

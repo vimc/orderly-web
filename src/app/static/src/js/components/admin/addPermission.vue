@@ -1,17 +1,16 @@
 <template>
     <div class="mb-3 mt-2 add-permission">
-        <typeahead
-                v-model="newPermission"
-                size="sm"
-                placeholder="name"
-                :data="availablePermissions">
+        <typeahead v-model="newPermission"
+                   size="sm"
+                   placeholder="name"
+                   :data="availablePermissions">
             <template slot="append">
                 <button type="submit" class="btn btn-sm" @click="add">
                     Add
                 </button>
             </template>
         </typeahead>
-        <error-info :default-message="defaultMessage" :api-error="error" />
+        <error-info :default-message="defaultMessage" :api-error="error"/>
     </div>
 </template>
 

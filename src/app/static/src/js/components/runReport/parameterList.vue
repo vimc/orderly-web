@@ -2,19 +2,23 @@
     <div class="col-sm-6">
         <table class="table table-sm table-bordered">
             <tbody>
-            <tr v-for="(params, index) in paramValues" :key="index">
-                <td><label :for="`param-control-${index}`"
-                           class="col-sm-2 col-form-label text-right">
-                    {{ params.name }}
-                </label></td>
-                <td><input type="text" class="form-control"
-                           v-model="getValues[index].value"
-                           @input="onParameterChanged"
-                           :id="`param-control-${index}`"/></td>
-            </tr>
+                <tr v-for="(params, index) in paramValues" :key="index">
+                    <td><label :for="`param-control-${index}`"
+                               class="col-sm-2 col-form-label text-right">
+                        {{ params.name }}
+                    </label>
+                    </td>
+                    <td><input :id="`param-control-${index}`" v-model="getValues[index].value"
+                               type="text"
+                               class="form-control"
+                               @input="onParameterChanged">
+                    </td>
+                </tr>
             </tbody>
         </table>
-        <div class="text-danger small">{{ error }}</div>
+        <div class="text-danger small">
+            {{ error }}
+        </div>
     </div>
 </template>
 
@@ -41,8 +45,9 @@
         onParameterChanged: () => void
         validate: () => void
     }
+
     export default Vue.extend<Data, Methods, Computed, Props>({
-        name: "parameterList",
+        name: "ParameterList",
         props: {
             params: Array
         },
@@ -65,6 +70,20 @@
                 }
             }
         },
+        watch: {
+            params(newVal, oldVal) {
+                if (!isEqual(newVal, oldVal)) {
+                    this.paramValues = this.params;
+                    this.onParameterChanged()
+                }
+            }
+        },
+        mounted() {
+            // run validation and emit event on initial values
+            if (this.paramValues) {
+                this.onParameterChanged()
+            }
+        },
         methods: {
             onParameterChanged: function () {
                 this.validate()
@@ -79,20 +98,6 @@
                     this.valid = false
                 }
             },
-        },
-        mounted() {
-            // run validation and emit event on initial values
-            if(this.paramValues) {
-                this.onParameterChanged()
-            }
-        },
-        watch: {
-            params(newVal, oldVal) {
-                if (!isEqual(newVal, oldVal)) {
-                    this.paramValues = this.params;
-                    this.onParameterChanged()
-                }
-            }
         }
     })
 </script>

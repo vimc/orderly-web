@@ -40,7 +40,7 @@ module.exports = {
             }
         }],
         "vue/html-indent": ["error", 4, {
-            "attribute": 2,
+            "attribute": 1,
             "baseIndent": 1,
             "closeBracket": 0,
             "alignAttributesVertically": true,
@@ -49,6 +49,24 @@ module.exports = {
         "vue/first-attribute-linebreak": ["error", {
             "singleline": "ignore",
             "multiline": "ignore"
+        }],
+        "vue/require-default-prop": 1,
+        "vue/html-self-closing": ["error", {
+            "html": {
+                "void": "any",
+                "normal": "any",
+                "component": "any"
+            },
+            "svg": "any",
+            "math": "any"
+        }],
+        "vue/html-closing-bracket-spacing": ["error", {
+            "startTag": "never",
+            "endTag": "never",
+            "selfClosingTag": "never"
+        }],
+        "vue/multi-word-component-names": ["warn", {
+            "ignores": []
         }]
     }
 };

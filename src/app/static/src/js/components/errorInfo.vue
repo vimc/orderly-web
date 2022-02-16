@@ -1,6 +1,6 @@
 <template>
-    <div class="text-danger small error-message" v-if="errorMessage">
-        {{errorMessage}}
+    <div v-if="errorMessage" class="text-danger small error-message">
+        {{ errorMessage }}
     </div>
 </template>
 
@@ -8,7 +8,7 @@
     import Vue from "vue";
 
     export default Vue.extend({
-        name: "errorInfo",
+        name: "ErrorInfo",
         props: ["apiError", "defaultMessage"],
         computed: {
             errorMessage: function () {

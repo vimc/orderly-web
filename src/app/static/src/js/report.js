@@ -12,6 +12,7 @@ import reportTags from './components/reports/reportTags'
 import reportDependencies from './components/reports/reportDependencies'
 
 let data = {report: null};
+let report;
 
 // report var should be set externally in the browser
 if (typeof report !== "undefined") {
@@ -22,10 +23,10 @@ $(document).ready(() => {
     if ($('#publishSwitchVueApp').length > 0) {
         new Vue({
             el: '#publishSwitchVueApp',
-            data: data,
             components: {
                 publishSwitch: publishSwitch
             },
+            data: data,
             methods: {
                 handleToggle: function () {
                     this.report.published = !this.report.published
@@ -36,40 +37,40 @@ $(document).ready(() => {
     if ($('#runReportVueApp').length > 0) {
         new Vue({
             el: '#runReportVueApp',
-            data: data,
             components: {
                 runReportInline
-            }
+            },
+            data: data
         });
     }
     if ($('#reportReadersListVueApp').length > 0) {
         new Vue({
             el: '#reportReadersListVueApp',
-            data: data,
             components: {
                 editIcon: editIcon,
                 reportReadersList: reportReadersList,
                 globalReportReadersList: globalReportReadersList,
                 globalReaderRolesList: globalReaderRolesList,
                 scopedReaderRolesList: scopedReaderRolesList
-            }
+            },
+            data: data
         });
     }
 
     new Vue({
         el: '#reportTagsVueApp',
-        data: data,
         components: {
             reportTags: reportTags,
-        }
+        },
+        data: data
     });
 
     new Vue({
         el: '#reportDependenciesVueApp',
-        data: data,
         components: {
             reportDependencies: reportDependencies
-        }
+        },
+        data: data
     });
 
     $('[data-toggle="tooltip"]').tooltip();

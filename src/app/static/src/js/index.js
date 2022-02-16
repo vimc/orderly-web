@@ -3,8 +3,11 @@ import $ from 'jquery';
 import Vue from 'vue';
 import setGlobalPinnedReports from './components/reports/setGlobalPinnedReports'
 
-require("treetables")(window, $);
-require("tokenize2")(window, $);
+import treetables from "treetables";
+import tokenize2 from "tokenize2";
+
+treetables(window, $);
+tokenize2(window, $);
 
 export const initReportTable = (isReviewer, reports, customFields) => {
 
@@ -72,6 +75,9 @@ export const initReportTable = (isReviewer, reports, customFields) => {
             .redraw();
     })
 };
+
+let reports;
+let customFields;
 
 $(document).ready(() => {
     const isReviewer = typeof canReview !== "undefined";

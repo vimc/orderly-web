@@ -1,19 +1,20 @@
 <template>
     <div id="publish-switch">
-        <div v-on:click="publish"
-             v-bind:class="['toggle', 'btn', {'btn-published':report.published}, {'off':!report.published}]"
+        <div :class="['toggle', 'btn', {'btn-published':report.published}, {'off':!report.published}]"
              data-toggle="toggle"
-             style="width: 109.281px; height: 38px;">
+             style="width: 109.281px; height: 38px;"
+             @click="publish">
             <div class="toggle-group">
                 <label class="btn btn-published toggle-on">
-                    Published</label>
+                    Published
+                </label>
                 <label class="btn btn-internal toggle-off">Internal</label>
                 <span class="toggle-handle btn btn-default">
-            </span>
+                </span>
             </div>
         </div>
-        <div class="text-danger mt-3" v-if="error.length > 0">
-            {{error}}
+        <div v-if="error.length > 0" class="text-danger mt-3">
+            {{ error }}
         </div>
     </div>
 </template>
@@ -21,8 +22,8 @@
 <script>
     import {api} from "../../utils/api";
 
-     export default {
-        name: 'publishSwitch',
+    export default {
+        name: 'PublishSwitch',
         props: ['report'],
         data() {
             return {

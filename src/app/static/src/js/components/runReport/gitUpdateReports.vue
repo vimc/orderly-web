@@ -3,23 +3,25 @@
         <div v-if="reportMetadata && reportMetadata.git_supported" id="git-branch-form-group" class="form-group row">
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
-                <select class="form-control" id="git-branch" v-model="selectedBranch" @change="changedBranch">
-                    <option v-for="branch in gitBranches" :value="branch">{{ branch }}</option>
+                <select id="git-branch" v-model="selectedBranch" class="form-control" @change="changedBranch">
+                    <option v-for="branch in gitBranches" :value="branch" :key="branch">
+                        {{ branch }}
+                    </option>
                 </select>
             </div>
-            <button @click.prevent="refreshGit"
-                    id="git-refresh-btn"
+            <button id="git-refresh-btn"
                     class="btn"
                     :disabled="gitRefreshing"
-                    type="submit">
-                {{refreshGitText}}
+                    type="submit"
+                    @click.prevent="refreshGit">
+                {{ refreshGitText }}
             </button>
         </div>
         <div v-if="showCommits" id="git-commit-form-group" class="form-group row">
             <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
             <div class="col-sm-6">
-                <select class="form-control" id="git-commit" v-model="selectedCommitId" @change="changedCommit">
-                    <option v-for="commit in gitCommits" :value="commit.id">
+                <select id="git-commit" v-model="selectedCommitId" class="form-control" @change="changedCommit">
+                    <option v-for="commit in gitCommits" :value="commit.id" :key="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
                 </select>
@@ -35,7 +37,10 @@
     import ErrorInfo from "../errorInfo.vue";
 
     export default Vue.extend({
-        name: "gitUpdateReports",
+        name: "GitUpdateReports",
+        components: {
+            ErrorInfo
+        },
         props: [
             "reportMetadata",
             "initialBranches",
@@ -43,9 +48,6 @@
             "initialCommitId",
             "showAllReports"
         ],
-        components: {
-            ErrorInfo
-        },
         data: () => {
             return {
                 gitRefreshing: false,
@@ -59,12 +61,15 @@
             };
         },
         computed: {
-            refreshGitText(){
+            refreshGitText() {
                 return this.gitRefreshing ? 'Fetching...' : 'Refresh git'
             },
             showCommits() {
                 return this.gitCommits && this.gitCommits.length;
             }
+        },
+        mounted() {
+            this.initialise();
         },
         methods: {
             initialise() {
@@ -82,7 +87,7 @@
                     this.updateReports();
                 }
             },
-            changedBranch(initialCommit=null) {
+            changedBranch(initialCommit = null) {
                 this.$emit("branchSelected", this.selectedBranch);
                 api.get(`/git/branch/${this.selectedBranch}/commits/`)
                     .then(({data}) => {
@@ -143,9 +148,6 @@
                         this.defaultMessage = "An error occurred refreshing Git";
                     });
             },
-        },
-        mounted() {
-            this.initialise();
         }
     });
 </script>
