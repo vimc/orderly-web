@@ -89,11 +89,12 @@ import WorkflowReportLogDialog from "./workflowReportLogDialog.vue";
 import {
     WorkflowRunSummary,
     WorkflowRunStatus,
-    RunWorkflowMetadata
+    RunWorkflowMetadata,
+    WorkflowSummaryResponse,
+    WorkflowReportWithDependencies
 } from "../../utils/types";
 import { buildFullUrl } from "../../utils/api";
 // import {SELECTED_RUNNING_REPORT_KEY, SELECTED_RUNNING_WORKFLOW_KEY, session} from "../../utils/session";
-import {WorkflowSummaryResponse, WorkflowReportWithDependencies} from "../../utils/types";
 
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
@@ -106,6 +107,7 @@ interface Data {
     // workflowSummary: WorkflowSummaryResponse | null
     showLogForReportKey: string | null;
     workflowMetadata: RunWorkflowMetadata | null
+    workflowSummaryResponse: WorkflowSummaryResponse | null
 }
 
 interface Methods {
@@ -127,6 +129,7 @@ interface Methods {
     closeReportLogDialog: () => void;
     hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
+    getReportDependencies: () => void;
 }
 
 interface Props {
@@ -179,7 +182,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             // workflowSummary: null,
             // runWorkflowMetadata: null,
             showLogForReportKey: null,
-            workflowMetadata: null
+            workflowMetadata: null,
+            workflowSummaryResponse: null
         };
     },
     methods: {
@@ -270,12 +274,27 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             api.get(`/workflows/${this.selectedWorkflowKey}/`)
                 .then(({data}) => {
                     this.workflowMetadata = workflowRunDetailsToMetadata(data.data)
+                    this.getReportDependencies()
                 })
                 .catch((error) => {
                     this.error = error;
                     this.defaultMessage =
                         "An error occurred fetching workflow details";
                 });
+        },
+        getReportDependencies() {
+            const commit = this.workflowMetadata.git_commit ? `?commit=${this.workflowMetadata.git_commit}` : '';
+            api.post(`/workflows/summary/${commit}`, {
+                reports: this.workflowMetadata.reports,
+                ref: this.workflowMetadata.git_commit
+            })
+                .then(({data}) => {
+                    this.workflowSummaryResponse = data.data;
+                    this.error = "";
+                })
+                .catch((error) => {
+                    this.error = error;
+                })
         },
         formatDate(date) {
             return longTimestamp(new Date(date));
@@ -347,7 +366,13 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         },
         workflowMetadata(){
             console.log("workflowMetadata", this.workflowMetadata)
-        }
+        },
+        workflowRunSummaries(){
+            console.log("workflowRunSummaries", this.workflowRunSummaries)
+        },
+        workflowSummaryResponse(){
+            console.log("workflowSummaryResponse", this.workflowSummaryResponse)
+        },
         // runWorkflowMetadata(){
         //     if (this.runWorkflowMetadata){
         //         console.log("runWorkflowMetadata", this.runWorkflowMetadata)

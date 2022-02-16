@@ -9,7 +9,7 @@
 
 <script lang="ts">
     import Vue from "vue"
-    import {RunWorkflowMetadata, WorkflowRunSummary} from "../../../utils/types";
+    import {RunWorkflowMetadata, WorkflowSummaryResponse} from "../../../utils/types";
     import {api} from "../../../utils/api";
     import WorkflowSummaryReports from "./workflowSummaryReports.vue"
 
@@ -26,7 +26,7 @@
     }
 
     interface Data {
-        workflowSummary: WorkflowRunSummary | null
+        workflowSummary: WorkflowSummaryResponse | null
         error: string
     }
 
@@ -68,6 +68,11 @@
                     })
             }
         },
+        // watch: {
+        //     workflowSummary(){
+        //         console.log("workflowSummary other", this.workflowSummary)
+        //     }
+        // },
         mounted() {
             this.getReportDependencies();
             this.$emit("valid", true)
