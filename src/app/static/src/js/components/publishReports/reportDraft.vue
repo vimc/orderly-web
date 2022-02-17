@@ -13,9 +13,9 @@
         <span class="text-muted pl-3">{{ draft.parameter_values }}</span>
         <div class="changelog-container" :class="{'open': showChangelog}">
             <a v-if="draft.changelog.length > 0" href="#" class="text-muted" @click="toggleChangelog">changelog</a>
-            <div v-for="(log, index) in draft.changelog"
+            <div v-for="log in draft.changelog"
                  v-show="showChangelog"
-                 :key="index"
+                 :key="log.value"
                  class="changelog bg-light">
                 <div class="badge changelog-label" :class="'badge-' + log.css_class">
                     {{ log.label }}

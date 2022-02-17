@@ -2,7 +2,7 @@
     <div class="col-sm-6">
         <table class="table table-sm table-bordered">
             <tbody>
-                <tr v-for="(params, index) in paramValues" :key="index">
+                <tr v-for="(params, index) in paramValues" :key="params.name">
                     <td><label :for="`param-control-${index}`"
                                class="col-sm-2 col-form-label text-right">
                         {{ params.name }}

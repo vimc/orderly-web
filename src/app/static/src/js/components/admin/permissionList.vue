@@ -1,7 +1,7 @@
 <template>
     <div>
         <ul v-if="permissions.length > 0" class="list-unstyled children mt-1">
-            <li v-for="(p, index) in sortedPermissions" :key="index">
+            <li v-for="p in sortedPermissions" :key="p.name + (p.scope_prefix ? p.scope_id : '') + p.source">
                 <span class="name" :class="{'text-muted': !canRemovePermission(p)}">
                     {{ p.name }} <span v-if="p.scope_prefix">/ {{ p.scope_prefix }}:{{ p.scope_id }}</span>
                 </span>

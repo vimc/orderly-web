@@ -8,7 +8,6 @@
                 <div class="expander" @click="toggle(index)"></div>
                 <span class="role-name" @click="toggle(index)" v-text="role.name"></span>
                 <permission-list v-show="expanded[index]"
-                                 css-class="children"
                                  :permissions="role.permissions"
                                  :user-group="role.name"
                                  :can-edit="role.name !== 'Admin'"

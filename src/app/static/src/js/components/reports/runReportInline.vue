@@ -14,7 +14,7 @@
     import {SELECTED_RUNNING_REPORT_TAB} from "../../utils/session";
 
     export default {
-        name: 'RunReport',
+        name: 'RunReportInline',
         props: ['report'],
         computed: {
             runReportHref: function () {

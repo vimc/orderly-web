@@ -86,7 +86,7 @@
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
-                     :key="index"
+                     :key="report.name + reportParameters[index]"
                      class="form-group row pt-4">
 
                     <label class="col-sm-2 col-form-label text-right text-truncate"
