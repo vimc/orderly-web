@@ -139,6 +139,7 @@
         Error,
         Parameter,
         ReportWithDate,
+        RunnerRootState,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowReportWithParams
@@ -153,7 +154,6 @@
     import {switches} from '../../featureSwitches.ts';
     import {session} from "../../utils/session";
     import {mapState} from "vuex";
-    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata
@@ -230,8 +230,8 @@
         },
         computed: {
             ...mapState({
-                initialBranches: (state: RunReportRootState) => state.git.git_branches,
-                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+                initialBranches: (state: RunnerRootState) => state.git.git_branches,
+                runReportMetadata: (state: RunnerRootState) => state.git.metadata
             }),
             showImportFromCsv() {
                 return this.reportsOrigin === "csv"

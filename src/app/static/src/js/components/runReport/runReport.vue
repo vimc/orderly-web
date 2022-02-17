@@ -58,8 +58,7 @@
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
     import Instances from "./instances.vue";
-    import {ChildCustomStyle, ReportWithDate, RunReportMetadataDependency} from "../../utils/types";
-    import {RunReportRootState} from "../../store/runReport/store";
+    import {ChildCustomStyle, ReportWithDate, RunnerRootState, RunReportMetadataDependency} from "../../utils/types";
     import {mapState} from "vuex";
 
     interface Data {
@@ -136,8 +135,8 @@
         },
         computed: {
             ...mapState({
-                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
-                metadata: (state: RunReportRootState) => state.git.metadata
+                initialGitBranches: (state: RunnerRootState) => state.git.git_branches,
+                metadata: (state: RunnerRootState) => state.git.metadata
             }),
             showReports() {
                 return this.reports && this.reports.length;

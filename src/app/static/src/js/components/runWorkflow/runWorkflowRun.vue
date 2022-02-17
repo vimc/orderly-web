@@ -36,7 +36,7 @@
 <script lang="ts">
     import Vue from "vue"
     import {
-        ChildCustomStyle,
+        ChildCustomStyle, RunnerRootState,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowRunSummary
@@ -46,7 +46,6 @@
     import ChangeLog from "../../../js/components/runReport/changeLog.vue";
     import Instances from "../../../js/components/runReport/instances.vue";
     import {mapState} from "vuex";
-    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata | null
@@ -103,7 +102,7 @@
         },
         computed: {
             ...mapState({
-                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+                runReportMetadata: (state: RunnerRootState) => state.git.metadata
             }),
             showInstances() {
                 return !!this.runReportMetadata && this.runReportMetadata.instances_supported;
