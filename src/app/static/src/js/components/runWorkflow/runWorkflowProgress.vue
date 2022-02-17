@@ -37,13 +37,13 @@
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
                         <!-- <td v-if="hasParams(report)"> -->
-                        <td v-if="workflowSummaryResponse && getReportParams(report) && hasParams(getReportParams(report))">
+                        <td v-if="anyParams">
                             <span class="text-muted d-inline-block">Parameters</span>
                                         <!-- <div v-if="hasParams(report)"> -->
                             <p class="non-default-param"
-                                v-for="param in getReportParams(report).param_list"
+                                v-for="param in report.param_list"
                                 :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                            <div v-if="getReportParams(report).default_param_list.length > 0"
+                            <div v-if="report.default_param_list.length > 0"
                                     :id="`default-params-${index}`">
                                 <b-link href="#"
                                         class="show-defaults pt-2 d-inline-block small"
@@ -53,7 +53,7 @@
                                 </b-link>
                                 <b-collapse :id="`collapseSummary-${index}`">
                                     <p :id="`default-params-collapse-${index}-${paramIndex}`"
-                                        v-for="(param, paramIndex) in getReportParams(report).default_param_list"
+                                        v-for="(param, paramIndex) in report.default_param_list"
                                         :key="param.name">{{ param.name }}: {{ param.value }}</p>
                                 </b-collapse>
                             </div>
@@ -88,8 +88,8 @@
                     :api-error="error">
         </error-info>
         <workflow-report-log-dialog id="report-log-dialog"
-                                    :report-key=showLogForReportKey
-                                    :workflow-key=selectedWorkflowKey
+                                    :report-key="showLogForReportKey"
+                                    :workflow-key="selectedWorkflowKey"
                                     @close="closeReportLogDialog">
         </workflow-report-log-dialog>
     </div>
@@ -115,17 +115,28 @@ import {BLink} from "bootstrap-vue/esm/components/link";
 import {BCollapse} from "bootstrap-vue/esm/components/collapse";
 import {VBToggle} from 'bootstrap-vue';
 
+interface ExtendedReports extends WorkflowRunReportStatus, WorkflowReportWithDependencies {}
+
+interface ExtendedWorkflowRunStatus extends WorkflowRunStatus {
+    reports: ExtendedReports[]
+}
+
 interface Data {
     workflowRunSummaries: null | WorkflowRunSummary[];
     selectedWorkflowKey: null | string;
-    workflowRunStatus: null | WorkflowRunStatus;
+    workflowRunStatus: null | ExtendedWorkflowRunStatus;
     error: string;
     defaultMessage: string;
     pollingTimer: null | number;
     showLogForReportKey: string | null;
     workflowMetadata: RunWorkflowMetadata | null
-    workflowSummaryResponse: WorkflowSummaryResponse | null
+    anyParams: boolean
+    // workflowSummaryResponse: WorkflowSummaryResponse | null
 }
+
+// interface Computed {
+//     anyParams: boolean
+// }
 
 interface Methods {
     getWorkflowRunSummaries: () => void;
@@ -143,7 +154,7 @@ interface Methods {
     hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
     getReportDependencies: () => void;
-    getReportParams: (report: WorkflowRunReportStatus) => WorkflowReportWithDependencies
+    // getReportParams: (report: WorkflowRunReportStatus) => WorkflowReportWithDependencies
 }
 
 interface Props {
@@ -185,9 +196,16 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             pollingTimer: null,
             showLogForReportKey: null,
             workflowMetadata: null,
-            workflowSummaryResponse: null
+            // workflowSummaryResponse: null
+            anyParams: false
         };
     },
+    // computed: {
+    //     anyParams() {
+    //         return this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
+    //             (report.default_param_list && report.default_param_list.length > 0))
+    //     }
+    // },
     methods: {
         startPolling() {
             if (!this.pollingTimer) {
@@ -226,11 +244,13 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                         "An error occurred fetching the workflow reports";
                 });
         },
-        getReportParams(currentReport){
-            console.log("report", this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name))
-            return this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name)
-        },
+        // getReportParams(currentReport){
+        //     console.log("report", this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name))
+        //     return this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name)
+        // },
         hasParams(report) {
+            console.log("hasParams", (report.param_list && report.param_list.length > 0) ||
+                (report.default_param_list && report.default_param_list.length > 0))
             return (report.param_list && report.param_list.length > 0) ||
                 (report.default_param_list && report.default_param_list.length > 0)
         },
@@ -265,7 +285,12 @@ export default Vue.extend<Data, Methods, unknown, Props>({
                 ref: this.workflowMetadata.git_commit
             })
                 .then(({data}) => {
-                    this.workflowSummaryResponse = data.data;
+                    // this.workflowSummaryResponse = data.data;
+                    this.workflowRunStatus.reports.forEach((report1, index) => {
+                        const extraData = data.data.reports.find(report2 => report2.name === report1.name)
+                        this.workflowRunStatus.reports[index] = extraData ? {...report1, ...extraData} : report1
+                    });
+                    console.log("new workflowrunstatus", this.workflowRunStatus)
                     this.error = "";
                 })
                 .catch((error) => {
@@ -319,7 +344,7 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             } else {
                 this.workflowRunStatus = null;
                 this.workflowMetadata = null;
-                this.workflowSummaryResponse = null;
+                // this.workflowSummaryResponse = null;
             }
         },
         workflowRunStatus(newWorkflowRunStatus) {
@@ -327,6 +352,8 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             if (interpretStatus === "Failed" || interpretStatus === "Complete") {
                 this.stopPolling();
             }
+            this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
+                (report.default_param_list && report.default_param_list.length > 0))
             console.log("workflowRunStatus", this.workflowRunStatus)
         },
         workflowMetadata(){
@@ -335,9 +362,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
         workflowRunSummaries(){
             console.log("workflowRunSummaries", this.workflowRunSummaries)
         },
-        workflowSummaryResponse(){
-            console.log("workflowSummaryResponse", this.workflowSummaryResponse)
-        },
+        // workflowSummaryResponse(){
+        //     console.log("workflowSummaryResponse", this.workflowSummaryResponse)
+        // },
     },
     mounted() {
         this.getWorkflowRunSummaries();
