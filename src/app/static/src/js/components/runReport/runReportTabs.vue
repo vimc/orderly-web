@@ -37,9 +37,7 @@
                 <div v-if="selectedTab === 'runReport'" id="run-tab" class="tab-pane active pt-4 pt-md-1"
                      role="tabpanel">
                     <div id="runReportVueApp">
-                        <run-report :metadata="metadata"
-                                    :initial-git-branches="initialGitBranches"
-                                    :initial-report-name="initialReportName"
+                        <run-report :initial-report-name="initialReportName"
                                     @changeTab="switchTab('reportLogs')"
                                     @update:key="setSelectedReportKey"></run-report>
                     </div>
@@ -69,8 +67,6 @@
             runReport
         },
         props: [
-            "metadata",
-            "initialGitBranches",
             "initialReportName"
         ],
         data() {

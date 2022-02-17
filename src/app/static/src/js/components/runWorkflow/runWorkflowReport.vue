@@ -76,8 +76,7 @@
                                  @dismissed="validationErrors=[]">
                             Failed to import from csv. The following issues were found:
                             <ul class="py-0 my-0 ml-2" :style="{listStyleType: 'disc'}">
-                                <li v-for="e in validationErrors" :key="e.message"
-                                    class="import-validation-error">
+                                <li v-for="e in validationErrors" :key="e.message" class="import-validation-error">
                                     {{ e.message }}
                                 </li>
                             </ul>
@@ -86,7 +85,7 @@
                 </div>
                 <div v-for="(report, index) in workflowMetadata.reports"
                      :id="`workflow-report-${index}`"
-                     :key="report.name + reportParameters[index]"
+                     :key="index"
                      class="form-group row pt-4">
 
                     <label class="col-sm-2 col-form-label text-right text-truncate"
@@ -140,7 +139,7 @@
         Error,
         Parameter,
         ReportWithDate,
-        RunReportMetadata,
+        RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowReportWithParams
     } from "../../utils/types";
@@ -153,6 +152,8 @@
     import {AxiosResponse} from "axios";
     import {switches} from '../../featureSwitches.ts';
     import {session} from "../../utils/session";
+    import {mapState} from "vuex";
+    import {RunReportRootState} from "../../store/runReport/store";
 
     interface Props {
         workflowMetadata: RunWorkflowMetadata
@@ -163,7 +164,9 @@
         hasReports: boolean,
         reportParameters: Parameter[][],
         stepIsValid: boolean,
-        showImportFromCsv: boolean
+        showImportFromCsv: boolean,
+        runReportMetadata: RunReportMetadataDependency | null,
+        initialBranches: string[]
     }
 
     interface Methods {
@@ -176,7 +179,6 @@
         removeReport: (index: number) => void,
         updateWorkflowReports: (reports: WorkflowReportWithParams[]) => void,
         initialValidValue: (report: WorkflowReportWithParams) => boolean,
-        getRunReportMetadata: () => void
         validateWorkflow: () => void
         handleImportedFile: (event: Event) => void
         handleClickImport: (event: Event) => void
@@ -184,8 +186,6 @@
     }
 
     interface Data {
-        runReportMetadata: RunReportMetadata | null,
-        initialBranches: string[] | null,
         reports: ReportWithDate[],
         selectedReport: ReportWithDate,
         error: string,
@@ -214,8 +214,6 @@
         },
         data() {
             return {
-                runReportMetadata: null,
-                initialBranches: null,
                 reports: [],
                 selectedReport: null,
                 error: "",
@@ -231,6 +229,10 @@
             }
         },
         computed: {
+            ...mapState({
+                initialBranches: (state: RunReportRootState) => state.git.git_branches,
+                runReportMetadata: (state: RunReportRootState) => state.git.metadata
+            }),
             showImportFromCsv() {
                 return this.reportsOrigin === "csv"
             },
@@ -255,8 +257,7 @@
                 session.setSelectedWorkflowReportSource(newVal);
             }
         },
-        mounted() {
-            this.getRunReportMetadata();
+        beforeMount() {
             this.reportsValid = this.workflowMetadata.reports.map(r => this.initialValidValue(r));
         },
         methods: {
@@ -411,7 +412,6 @@
                 this.updateWorkflowReports(newReports);
 
                 this.$set(this.reportsValid, index, valid);
-
             },
             updateWorkflowReports(reports: WorkflowReportWithParams[]) {
                 this.$emit("update", {reports: reports});
@@ -419,19 +419,6 @@
             initialValidValue(report: WorkflowReportWithParams) {
                 // report with no parameters is by definition valid, those with params will notify via parameterList
                 return !(report.params && Object.keys(report.params).length > 0);
-            },
-            getRunReportMetadata() {
-                api.get(`/report/run-metadata`)
-                    .then(({data}) => {
-                        this.initialBranches = data.data.git_branches;
-                        this.runReportMetadata = data.data.metadata;
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching run report metadata";
-                    });
             },
             validateWorkflow() {
                 const formData = new FormData()

@@ -4,7 +4,7 @@
             <label for="git-branch" class="col-sm-2 col-form-label text-right">Git branch</label>
             <div class="col-sm-6">
                 <select id="git-branch" v-model="selectedBranch" class="form-control" @change="changedBranch">
-                    <option v-for="branch in gitBranches" :value="branch" :key="branch">
+                    <option v-for="branch in gitBranches" :key="branch" :value="branch">
                         {{ branch }}
                     </option>
                 </select>
@@ -21,7 +21,7 @@
             <label for="git-commit" class="col-sm-2 col-form-label text-right">Git commit</label>
             <div class="col-sm-6">
                 <select id="git-commit" v-model="selectedCommitId" class="form-control" @change="changedCommit">
-                    <option v-for="commit in gitCommits" :value="commit.id" :key="commit.id">
+                    <option v-for="commit in gitCommits" :key="commit.id" :value="commit.id">
                         {{ commit.id }} ({{ commit.date_time }})
                     </option>
                 </select>
@@ -68,12 +68,26 @@
                 return this.gitCommits && this.gitCommits.length;
             }
         },
+        watch: {
+            initialBranches(val) {
+                if (val.length > 0) {
+                    this.initialise();
+                }
+            },
+            reportMetadata(val) {
+                if (val) {
+                    this.initialise();
+                }
+            }
+        },
         mounted() {
-            this.initialise();
+            if (this.reportMetadata) {
+                this.initialise()
+            }
         },
         methods: {
             initialise() {
-                if (this.reportMetadata.git_supported) {
+                if (this.reportMetadata?.git_supported) {
                     this.gitBranches = [...this.initialBranches];
 
                     if (this.initialBranch) {
@@ -116,7 +130,7 @@
             updateReports() {
                 this.reports = [];
                 const showAllParam = this.showAllReports ? "&show_all=true" : "";
-                const query = this.reportMetadata.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
+                const query = this.reportMetadata?.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
                 api.get(`/reports/runnable/${query}`)
                     .then(({data}) => {
                         this.reports = data.data;
@@ -151,4 +165,3 @@
         }
     });
 </script>
-

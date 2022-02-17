@@ -2,13 +2,13 @@
     <div>
         <h2>Run a report</h2>
         <form class="mt-3">
-            <git-update-reports
-                :report-metadata="metadata"
-                :initial-branches="initialGitBranches"
-                :show-all-reports="false"
-                @branchSelected="branchSelected"
-                @commitSelected="commitSelected"
-                @reportsUpdate="updateReports"/>
+            <git-update-reports :report-metadata="metadata"
+                                :initial-branches="initialGitBranches"
+                                :show-all-reports="false"
+                                @branchSelected="branchSelected"
+                                @commitSelected="commitSelected"
+                                @reportsUpdate="updateReports">
+            </git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
                 <div class="col-sm-6">
@@ -17,10 +17,10 @@
             </div>
 
             <div v-if="showInstances">
-                <select-instances :instances="metadata.instances"
-                                  :custom-style="childCustomStyle"
-                                  @selectedValues="handleInstancesValue"
-                                  @clearRun="clearRun"/>
+                <instances :instances="metadata.instances"
+                           :custom-style="childCustomStyle"
+                           @selectedValues="handleInstancesValue"
+                           @clearRun="clearRun"/>
             </div>
             <div v-if="showParameters" id="parameters" class="form-group row">
                 <label for="params-component" class="col-sm-2 col-form-label text-right">Parameters</label>
@@ -57,8 +57,10 @@
     import GitUpdateReports from "./gitUpdateReports.vue";
     import ReportList from "./reportList.vue";
     import ChangeLog from "./changeLog.vue";
-    import SelectInstances from "./instances.vue";
-    import {ChildCustomStyle, ReportWithDate} from "../../utils/types";
+    import Instances from "./instances.vue";
+    import {ChildCustomStyle, ReportWithDate, RunReportMetadataDependency} from "../../utils/types";
+    import {RunReportRootState} from "../../store/runReport/store";
+    import {mapState} from "vuex";
 
     interface Data {
         reports: ReportWithDate[]
@@ -89,12 +91,12 @@
     }
 
     interface Props {
-        metadata: Record<string, any>
-        initialGitBranches: string[]
         initialReportName: string
     }
 
     interface Computed {
+        metadata: RunReportMetadataDependency | null
+        initialGitBranches: string[]
         showReports: number
         showInstances: string
         showRunButton: boolean
@@ -110,11 +112,9 @@
             ReportList,
             ParameterList,
             ChangeLog,
-            SelectInstances
+            Instances
         },
         props: {
-            metadata: Object,
-            initialGitBranches: Array,
             initialReportName: String
         },
         data: () => {
@@ -135,23 +135,37 @@
             }
         },
         computed: {
+            ...mapState({
+                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
+                metadata: (state: RunReportRootState) => state.git.metadata
+            }),
             showReports() {
                 return this.reports && this.reports.length;
             },
             showInstances() {
-                return this.metadata.instances_supported && this.selectedReport;
+                return !!this.selectedReport && this.metadata?.instances_supported;
             },
             showRunButton() {
                 return !!this.selectedReport;
             },
             showParameters() {
-                return this.selectedReport && this.parameterValues.length
+                return !!this.selectedReport && this.parameterValues.length
             },
             showChangelog: function () {
-                return !!this.selectedReport && this.metadata.changelog_types
+                return !!this.selectedReport && this.metadata?.changelog_types
             }
         },
         watch: {
+            metadata(val) {
+                if (val && val.instances_supported) {
+                    const instances = val.instances;
+                    for (const key in instances) {
+                        if (instances[key].length > 0) {
+                            this.$set(this.selectedInstances, key, instances[key][0]);
+                        }
+                    }
+                }
+            },
             selectedReport: {
                 deep: true,
                 handler() {
@@ -170,14 +184,6 @@
             }
         },
         mounted() {
-            if (this.metadata.instances_supported) {
-                const instances = this.metadata.instances;
-                for (const key in instances) {
-                    if (instances[key].length > 0) {
-                        this.$set(this.selectedInstances, key, instances[key][0]);
-                    }
-                }
-            }
             this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         methods: {
@@ -223,11 +229,13 @@
                 //multiple instances - until multiple are accepted, send the selected instance value for instance with
                 //greatest number of options. See VIMC-4561.
                 let instances = {};
-                if (this.metadata.instances_supported && this.metadata.instances &&
+                if (this.metadata && this.metadata.instances_supported && this.metadata.instances &&
                     Object.keys(this.metadata.instances).length > 0) {
-                    const instanceName = Object.keys(this.metadata.instances).sort((a, b) => this.metadata.instances[b].length - this.metadata.instances[a].length)[0];
+                    const instDict = this.metadata.instances;
+                    const instKeys = Object.keys(instDict);
+                    const instanceName = instKeys.sort((a, b) => instDict[b].length - instDict[a].length)[0];
                     const instance = this.selectedInstances[instanceName];
-                    instances = Object.keys(this.metadata.instances).reduce((a, e) => ({[e]: instance, ...a}), {});
+                    instances = Object.keys(instDict).reduce((a, e) => ({[e]: instance, ...a}), {});
                 }
                 let params = {};
                 params = this.parameterValues.reduce((params, param) => ({...params, [param.name]: param.value}), {});

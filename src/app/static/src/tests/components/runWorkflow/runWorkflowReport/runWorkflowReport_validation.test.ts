@@ -3,7 +3,9 @@ import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
 import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {mockRunWorkflowMetadata, mockRunReportMetadata} from "../../../mocks";
+import {mockRunWorkflowMetadata, mockGitState, mockRunReportMetadata} from "../../../mocks";
+import {GitState} from "../../../../js/store/git/git";
+import Vuex from "vuex";
 
 const gitCommits = [
     {id: "abcdef", date_time: "Mon Jun 08, 12:01"},
@@ -15,12 +17,23 @@ const reports = [
     { name: "global", date: new Date() }
 ];
 
+const gitState: GitState = mockRunReportMetadata()
+
+const createStore = (state: Partial<GitState> = gitState) => {
+    return new Vuex.Store({
+        state: {},
+        modules: {
+            git: {
+                namespaced: true,
+                state: mockGitState(state)
+            }
+        }
+    });
+};
+
 describe("runWorkflowReport validation", () => {
     beforeEach(() => {
         mockAxios.reset();
-
-        mockAxios.onGet('http://app/report/run-metadata')
-            .reply(200, {"data": mockRunReportMetadata()});
 
         mockAxios.onGet('http://app/git/branch/master/commits/')
             .reply(200, {"data": gitCommits});
@@ -32,7 +45,7 @@ describe("runWorkflowReport validation", () => {
         const propsData = {
             workflowMetadata: mockRunWorkflowMetadata(workflowMetadata)
         };
-        return mount(runWorkflowReport, {propsData});
+        return mount(runWorkflowReport, {propsData, store: createStore()});
     };
 
     const expectEmittedValid = (wrapper: Wrapper<any>) => {
@@ -85,6 +98,7 @@ describe("runWorkflowReport validation", () => {
                 {name: "global"}
             ]
         });
+
         setTimeout(() => {
             expectEmittedValid(wrapper);
             done();
@@ -360,4 +374,5 @@ describe("runWorkflowReport validation", () => {
             });
         });
     });
+
 });

@@ -2,7 +2,6 @@ import Vue from "vue";
 import {shallowMount} from "@vue/test-utils";
 import RunReport from "../../../js/components/runReport/runReport.vue";
 import RunReportTabs from "../../../js/components/runReport/runReportTabs.vue";
-import {session} from "../../../js/utils/session";
 
 describe("runReportTabs", () => {
 
@@ -44,8 +43,6 @@ describe("runReportTabs", () => {
     it("renders run report component correctly", () => {
         const wrapper = getWrapper()
         const runReportComponent = wrapper.find("run-report-stub");
-        expect(runReportComponent.attributes("initialgitbranches")).toEqual("master,dev");
-        expect(runReportComponent.props("metadata")).toEqual(props.metadata);
         expect(runReportComponent.props("initialReportName")).toEqual(props.initialReportName);
     });
 

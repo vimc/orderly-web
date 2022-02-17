@@ -1,3 +1,5 @@
+import {GitState} from "../store/git/git";
+
 export interface Parameter {
     name: string,
     value: string
@@ -147,4 +149,8 @@ export interface WorkflowSummary {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
+}
+
+export interface RunnerRootState {
+    git: GitState
 }
