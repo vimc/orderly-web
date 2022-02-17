@@ -6,7 +6,11 @@
     "vue"
   ],
   "eslint.options": {
-    "extensions": [".js", ".ts", ".vue"]
+    "extensions": [
+      ".js",
+      ".ts",
+      ".vue"
+    ]
   },
   "eslint.probe": [
     "javascript",
@@ -16,4 +20,12 @@
   ],
   "vetur.format.enable": false,
   "eslint.format.enable": true,
+  "eslint.lintTask.enable": true,
+  "eslint.alwaysShowStatus": true,
+  "[vue]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "eslint.workingDirectories": [
+    "./src/app/static"
+  ]
 }
