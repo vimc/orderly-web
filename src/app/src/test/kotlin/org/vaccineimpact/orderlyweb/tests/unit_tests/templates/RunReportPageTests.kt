@@ -43,8 +43,6 @@ class RunReportPageTests
     fun `renders run report tabs correctly`()
     {
         val runReportTabsComponent = doc.select("#runReportTabsVueApp").select("run-report-tabs")
-        assertThat(runReportTabsComponent.attr(":metadata")).isEqualTo("runReportMetadata")
-        assertThat(runReportTabsComponent.attr(":initial-git-branches")).isEqualTo("gitBranches")
     }
 
     @Test
@@ -53,8 +51,6 @@ class RunReportPageTests
         val script = doc.select("script")[4]
         val metadataJson = Serializer.instance.gson.toJson(testModel.runReportMetadata)
         val initialReportName = Serializer.instance.gson.toJson(testModel.reportName)
-        assertThat(script.html()).isEqualToIgnoringWhitespace("var runReportMetadata = ${metadataJson};"
-                + " var gitBranches = [ \"master\", \"dev\" ];"
-                + " var initialReportName = ${initialReportName};")
+        assertThat(script.html()).isEqualToIgnoringWhitespace("var initialReportName = ${initialReportName};")
     }
 }

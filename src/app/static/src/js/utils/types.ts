@@ -1,3 +1,5 @@
+import { GitState } from "../store/git/git";
+
 export interface Parameter {
     name: string,
     value: string
@@ -13,7 +15,7 @@ export interface ReportWithDate {
     date: Date | null
 }
 
-export interface ReportLog{
+export interface ReportLog {
     email: string,
     date: string,
     report: string,
@@ -142,4 +144,8 @@ export interface WorkflowSummaryResponse {
     missing_dependencies: Record<string, string[]>,
     reports: WorkflowReportWithDependencies[],
     ref: string
+}
+
+export interface RunnerRootState {
+    git: GitState
 }
