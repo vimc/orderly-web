@@ -68,11 +68,6 @@
                     })
             }
         },
-        // watch: {
-        //     workflowSummary(){
-        //         console.log("workflowSummary other", this.workflowSummary)
-        //     }
-        // },
         mounted() {
             this.getReportDependencies();
             this.$emit("valid", true)

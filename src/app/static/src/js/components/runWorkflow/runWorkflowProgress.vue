@@ -36,9 +36,7 @@
                             </a>
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
-                        <!-- <td v-if="hasParams(report)"> -->
                         <td v-if="anyParams">
-                        <!-- <td> -->
                             <span class="text-muted d-inline-block">Parameters</span>
                             <div v-if="hasParams(report)">
                                 <p class="non-default-param"
@@ -133,8 +131,6 @@ interface Data {
     pollingTimer: null | number;
     showLogForReportKey: string | null;
     workflowMetadata: RunWorkflowMetadata | null
-    // anyParams: boolean
-    // workflowSummaryResponse: WorkflowSummaryResponse | null
 }
 
 interface Computed {
@@ -157,7 +153,6 @@ interface Methods {
     hasParams: (report: WorkflowReportWithDependencies) => boolean
     getWorkflowMetadata: () => void;
     getReportDependencies: () => void;
-    // getReportParams: (report: WorkflowRunReportStatus) => WorkflowReportWithDependencies
 }
 
 interface Props {
@@ -199,8 +194,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             pollingTimer: null,
             showLogForReportKey: null,
             workflowMetadata: null,
-            // workflowSummaryResponse: null
-            // anyParams: false
         };
     },
     computed: {
@@ -247,10 +240,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         "An error occurred fetching the workflow reports";
                 });
         },
-        // getReportParams(currentReport){
-        //     console.log("report", this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name))
-        //     return this.workflowSummaryResponse.reports.find(report => report.name === currentReport.name)
-        // },
         hasParams(report) {
             console.log("hasParams", (report.param_list && report.param_list.length > 0) ||
                 (report.default_param_list && report.default_param_list.length > 0))
@@ -288,16 +277,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 ref: this.workflowMetadata.git_commit
             })
                 .then(({data}) => {
-                    // this.workflowSummaryResponse = data.data;
                     const reports = [...this.workflowRunStatus.reports]
                     this.workflowRunStatus.reports.forEach((report1, index) => {
                         const extraData = data.data.reports.find(report2 => report2.name === report1.name)
                         reports[index] = extraData ? {...report1, ...extraData} : report1
                     });
                     this.workflowRunStatus = {...this.workflowRunStatus, reports}
-                //     this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
-                // (report.default_param_list && report.default_param_list.length > 0))
-                    console.log("new workflowrunstatus", this.workflowRunStatus)
                     console.log("anyParams2", this.anyParams)
                     this.error = "";
                 })
@@ -352,7 +337,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             } else {
                 this.workflowRunStatus = null;
                 this.workflowMetadata = null;
-                // this.workflowSummaryResponse = null;
             }
         },
         workflowRunStatus(newWorkflowRunStatus) {
@@ -360,20 +344,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
             if (interpretStatus === "Failed" || interpretStatus === "Complete") {
                 this.stopPolling();
             }
-            console.log("anyParams", this.anyParams)
-            // this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
-            //     (report.default_param_list && report.default_param_list.length > 0))
-            console.log("workflowRunStatus", this.workflowRunStatus)
         },
-        workflowMetadata(){
-            console.log("workflowMetadata", this.workflowMetadata)
-        },
-        workflowRunSummaries(){
-            console.log("workflowRunSummaries", this.workflowRunSummaries)
-        },
-        // workflowSummaryResponse(){
-        //     console.log("workflowSummaryResponse", this.workflowSummaryResponse)
-        // },
     },
     mounted() {
         this.getWorkflowRunSummaries();
