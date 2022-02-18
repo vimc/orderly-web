@@ -38,25 +38,28 @@
                         <td v-else class="p-2">{{ report.name }}</td>
                         <!-- <td v-if="hasParams(report)"> -->
                         <td v-if="anyParams">
+                        <!-- <td> -->
                             <span class="text-muted d-inline-block">Parameters</span>
-                                        <!-- <div v-if="hasParams(report)"> -->
-                            <p class="non-default-param"
-                                v-for="param in report.param_list"
-                                :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                            <div v-if="report.default_param_list.length > 0"
-                                    :id="`default-params-${index}`">
-                                <b-link href="#"
-                                        class="show-defaults pt-2 d-inline-block small"
-                                        v-b-toggle="`collapseSummary-${index}`">
-                                    <span class="when-closed">Show</span>
-                                    <span class="when-open">Hide</span> defaults...
-                                </b-link>
-                                <b-collapse :id="`collapseSummary-${index}`">
-                                    <p :id="`default-params-collapse-${index}-${paramIndex}`"
-                                        v-for="(param, paramIndex) in report.default_param_list"
-                                        :key="param.name">{{ param.name }}: {{ param.value }}</p>
-                                </b-collapse>
+                            <div v-if="hasParams(report)">
+                                <p class="non-default-param"
+                                    v-for="param in report.param_list"
+                                    :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                                <div v-if="report.default_param_list.length > 0"
+                                        :id="`default-params-${index}`">
+                                    <b-link href="#"
+                                            class="show-defaults pt-2 d-inline-block small"
+                                            v-b-toggle="`collapseSummary-${index}`">
+                                        <span class="when-closed">Show</span>
+                                        <span class="when-open">Hide</span> defaults...
+                                    </b-link>
+                                    <b-collapse :id="`collapseSummary-${index}`">
+                                        <p :id="`default-params-collapse-${index}-${paramIndex}`"
+                                            v-for="(param, paramIndex) in report.default_param_list"
+                                            :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                                    </b-collapse>
+                                </div>
                             </div>
+                            <p v-else>No parameters</p>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
@@ -130,13 +133,13 @@ interface Data {
     pollingTimer: null | number;
     showLogForReportKey: string | null;
     workflowMetadata: RunWorkflowMetadata | null
-    anyParams: boolean
+    // anyParams: boolean
     // workflowSummaryResponse: WorkflowSummaryResponse | null
 }
 
-// interface Computed {
-//     anyParams: boolean
-// }
+interface Computed {
+    anyParams: boolean
+}
 
 interface Methods {
     getWorkflowRunSummaries: () => void;
@@ -171,7 +174,7 @@ const nonFailStateMessages = {
     "deferred": "Waiting for dependency"
 };
 
-export default Vue.extend<Data, Methods, unknown, Props>({
+export default Vue.extend<Data, Methods, Computed, Props>({
     name: "runWorkflowProgress",
     components: {
         BCollapse,
@@ -197,15 +200,15 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             showLogForReportKey: null,
             workflowMetadata: null,
             // workflowSummaryResponse: null
-            anyParams: false
+            // anyParams: false
         };
     },
-    // computed: {
-    //     anyParams() {
-    //         return this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
-    //             (report.default_param_list && report.default_param_list.length > 0))
-    //     }
-    // },
+    computed: {
+        anyParams() {
+            return this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
+                (report.default_param_list && report.default_param_list.length > 0))
+        }
+    },
     methods: {
         startPolling() {
             if (!this.pollingTimer) {
@@ -286,11 +289,16 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             })
                 .then(({data}) => {
                     // this.workflowSummaryResponse = data.data;
+                    const reports = [...this.workflowRunStatus.reports]
                     this.workflowRunStatus.reports.forEach((report1, index) => {
                         const extraData = data.data.reports.find(report2 => report2.name === report1.name)
-                        this.workflowRunStatus.reports[index] = extraData ? {...report1, ...extraData} : report1
+                        reports[index] = extraData ? {...report1, ...extraData} : report1
                     });
+                    this.workflowRunStatus = {...this.workflowRunStatus, reports}
+                //     this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
+                // (report.default_param_list && report.default_param_list.length > 0))
                     console.log("new workflowrunstatus", this.workflowRunStatus)
+                    console.log("anyParams2", this.anyParams)
                     this.error = "";
                 })
                 .catch((error) => {
@@ -352,8 +360,9 @@ export default Vue.extend<Data, Methods, unknown, Props>({
             if (interpretStatus === "Failed" || interpretStatus === "Complete") {
                 this.stopPolling();
             }
-            this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
-                (report.default_param_list && report.default_param_list.length > 0))
+            console.log("anyParams", this.anyParams)
+            // this.anyParams = this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
+            //     (report.default_param_list && report.default_param_list.length > 0))
             console.log("workflowRunStatus", this.workflowRunStatus)
         },
         workflowMetadata(){
