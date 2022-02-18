@@ -204,8 +204,7 @@ export default Vue.extend<Data, Methods, Computed, Props>({
     },
     computed: {
         anyParams() {
-            return this.workflowRunStatus.reports.some(report => (report.param_list && report.param_list.length > 0) ||
-                (report.default_param_list && report.default_param_list.length > 0))
+            return this.workflowRunStatus.reports.some(report => this.hasParams(report))
         }
     },
     methods: {
