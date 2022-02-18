@@ -57,7 +57,7 @@
                                     </b-collapse>
                                 </div>
                             </div>
-                            <p v-else>No parameters</p>
+                            <p v-else>This report has no parameters</p>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
@@ -241,8 +241,6 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                 });
         },
         hasParams(report) {
-            console.log("hasParams", (report.param_list && report.param_list.length > 0) ||
-                (report.default_param_list && report.default_param_list.length > 0))
             return (report.param_list && report.param_list.length > 0) ||
                 (report.default_param_list && report.default_param_list.length > 0)
         },
@@ -283,11 +281,12 @@ export default Vue.extend<Data, Methods, Computed, Props>({
                         reports[index] = extraData ? {...report1, ...extraData} : report1
                     });
                     this.workflowRunStatus = {...this.workflowRunStatus, reports}
-                    console.log("anyParams2", this.anyParams)
                     this.error = "";
                 })
                 .catch((error) => {
                     this.error = error;
+                    this.defaultMessage =
+                        "An error occurred fetching a report's dependencies";
                 })
         },
         formatDate(date) {
