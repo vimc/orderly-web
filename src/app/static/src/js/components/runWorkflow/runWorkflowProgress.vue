@@ -29,6 +29,12 @@
             <div class="row" v-if="workflowRunStatus" id="workflow-table">
                 <label class="form-label col">Reports</label>
                 <table class="table-bordered col-10">
+                    <tr>
+                        <th class="p-2">Report</th>
+                        <th v-if="anyParams" class="p-2">Parameters</th>
+                        <th class="p-2">Status</th>
+                        <th class="p-2">Logs</th>
+                    </tr>
                     <tr v-for="(report, index) in workflowRunStatus.reports" :key="report.key">
                         <td v-if="report.status === 'success'" class="p-2">
                             <a class="report-version-link" :href="reportVersionHref(report.name, report.version)">
@@ -36,12 +42,12 @@
                             </a>
                         </td>
                         <td v-else class="p-2">{{ report.name }}</td>
-                        <td v-if="anyParams">
-                            <span class="text-muted d-inline-block">Parameters</span>
+                        <td v-if="anyParams" class="p-2">
                             <div v-if="hasParams(report)">
                                 <p class="non-default-param"
                                     v-for="param in report.param_list"
                                     :key="param.name">{{ param.name }}: {{ param.value }}</p>
+                                <p v-if="!report.param_list.length">No non-default params</p>
                                 <div v-if="report.default_param_list.length > 0"
                                         :id="`default-params-${index}`">
                                     <b-link href="#"
@@ -57,7 +63,7 @@
                                     </b-collapse>
                                 </div>
                             </div>
-                            <p v-else>This report has no parameters</p>
+                            <p v-else>No params</p>
                         </td>
                         <td :class="statusColour(report.status)" class="p-2">
                             {{ interpretStatus(report.status) }}
