@@ -21,11 +21,11 @@
         </div>
         <div v-if="showChangelog">
             <change-log
-                        :changelog-type-options="runReportMetadata.changelog_types"
-                        :custom-style="childCustomStyle"
-                        :initial-message="initialChangelogMessage"
-                        :initial-type="initialChangelogType"
-                        @changelog="handleChangelog">
+                :changelog-type-options="runReportMetadata.changelog_types"
+                :custom-style="childCustomStyle"
+                :initial-message="initialChangelogMessage"
+                :initial-type="initialChangelogType"
+                @changelog="handleChangelog">
             </change-log>
         </div>
         <error-info :default-message="defaultMessage" :api-error="error"></error-info>
@@ -36,9 +36,10 @@
     import Vue from "vue"
     import {
         ChildCustomStyle,
+        RunReportMetadata,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
-        WorkflowSummary
+        WorkflowRunSummary
     } from "../../utils/types";
     import {api} from "../../utils/api";
     import ErrorInfo from "../../../js/components/errorInfo.vue";
@@ -61,7 +62,7 @@
     }
 
     interface Data {
-        workflows: WorkflowSummary[],
+        workflows: WorkflowRunSummary[],
         workflowNameError: string,
         childCustomStyle: ChildCustomStyle
     }
@@ -134,7 +135,7 @@
                 this.validateWorkflowName(workflowName);
                 this.$emit("update", {name: workflowName});
             },
-            validateWorkflowName: function(workflowName: string) {
+            validateWorkflowName: function (workflowName: string) {
                 let valid = !!workflowName;
                 this.workflowNameError = "";
                 if (this.workflows.find(workflow =>

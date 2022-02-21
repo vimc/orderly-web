@@ -1,15 +1,15 @@
 import {shallowMount} from "@vue/test-utils";
 import runWorkflowSummary from "../../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue"
-import {RunWorkflowMetadata} from "../../../../js/utils/types";
+import {RunWorkflowMetadata, WorkflowSummary} from "../../../../js/utils/types";
 import {mockAxios} from "../../../mockAxios";
 import workflowSummaryReports from "../../../../js/components/runWorkflow/workflowSummary/workflowSummaryReports.vue";
 
 describe(`runWorkflowSummary`, () => {
 
-    const workflowSummary = {
-        refs: "test",
+    const workflowSummary: WorkflowSummary = {
+        ref: "test",
         missing_dependencies: {},
-        reports: [{name: "test", params: {"key": "value"}}]
+        reports: [{name: "test", param_list: [{name: "key", value: "value"}]}]
     }
 
     const metadata = {
@@ -19,7 +19,7 @@ describe(`runWorkflowSummary`, () => {
 
     beforeEach(() => {
         mockAxios.reset();
-        mockAxios.onPost('http://app/workflows/summary')
+        mockAxios.onPost('http://app/workflows/summary/?commit=gitCommit')
             .reply(200, {"data": workflowSummary});
     })
 
@@ -30,12 +30,12 @@ describe(`runWorkflowSummary`, () => {
             })
     }
 
-    it(`it can post workflow summary with dependencies as response`,  (done) => {
+    it(`it can post workflow summary with dependencies as response`, (done) => {
         const wrapper = getWrapper(metadata);
 
         setTimeout(() => {
             expect(mockAxios.history.post.length).toBe(1)
-            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary');
+            expect(mockAxios.history.post[0].url).toBe('http://app/workflows/summary/?commit=gitCommit');
             const data = JSON.parse(mockAxios.history.post[0].data);
             expect(data.ref).toEqual("gitCommit")
             expect(data.reports).toEqual(metadata.reports)

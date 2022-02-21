@@ -95,4 +95,8 @@
     margin-bottom: 0;
   }
 
+  .collapsed > .when-open,
+  .not-collapsed > .when-closed {
+    display: none;
+  }
 }
