@@ -5,9 +5,9 @@ import workflowWizard from "../../../js/components/workflowWizard/workflowWizard
 import step from "../../../js/components/workflowWizard/step.vue";
 import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowReport.vue";
 import runWorkflowRun from "../../../js/components/runWorkflow/runWorkflowRun.vue";
-import {mockRunWorkflowMetadata, mockRunReportMetadata, mockGitState} from "../../mocks";
-import {GitState} from "../../../js/store/git/git";
+import {mockRunWorkflowMetadata, mockGitState, mockReportsState} from "../../mocks";
 import Vuex from "vuex";
+import {GitState} from "../../../js/utils/types";
 
 describe(`workflowWizard`, () => {
     const steps = [
@@ -15,7 +15,7 @@ describe(`workflowWizard`, () => {
         {name: "run", component: "runWorkflowRun"}
     ]
 
-    const gitState: GitState = mockRunReportMetadata()
+    const gitState: GitState = mockGitState()
 
     const createStore = (state: Partial<GitState> = gitState) => {
         return new Vuex.Store({
@@ -24,6 +24,10 @@ describe(`workflowWizard`, () => {
                 git: {
                     namespaced: true,
                     state: mockGitState(state)
+                },
+                reports: {
+                    namespaced: true,
+                    state: mockReportsState()
                 }
             }
         });
@@ -53,7 +57,7 @@ describe(`workflowWizard`, () => {
     it(`copies initialRunWorkflowMetadata prop to data`, () => {
         const wrapper = getWrapper();
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(mockRunWorkflowMetadata({
-            git_branch: gitState.git_branches[0]
+            git_branch: gitState.gitBranches[0]
         }));
     });
 
@@ -263,7 +267,7 @@ describe(`workflowWizard`, () => {
         wrapper.findComponent(runWorkflowReport).vm.$emit("update", {newProp: "newVal"})
         await Vue.nextTick();
 
-        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.git_branches[0]}), newProp: "newVal"}
+        const runWorkflowMetadata = {...mockRunWorkflowMetadata({git_branch: gitState.gitBranches[0]}), newProp: "newVal"}
 
         expect(wrapper.vm.$data.runWorkflowMetadata).toStrictEqual(runWorkflowMetadata);
 

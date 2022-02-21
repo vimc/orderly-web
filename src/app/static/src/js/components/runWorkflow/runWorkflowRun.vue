@@ -36,7 +36,6 @@
     import Vue from "vue"
     import {
         ChildCustomStyle,
-        RunReportMetadata,
         RunReportMetadataDependency,
         RunWorkflowMetadata,
         WorkflowRunSummary

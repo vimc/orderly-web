@@ -2,9 +2,8 @@ import {mockAxios} from "../../../mockAxios";
 import {mount, Wrapper} from "@vue/test-utils";
 import Vue from "vue";
 import runWorkflowReport from "../../../../js/components/runWorkflow/runWorkflowReport.vue";
-import {RunWorkflowMetadata} from "../../../../js/utils/types";
-import {mockRunWorkflowMetadata, mockGitState, mockRunReportMetadata} from "../../../mocks";
-import {GitState} from "../../../../js/store/git/git";
+import {RunWorkflowMetadata, GitState, ReportsState} from "../../../../js/utils/types";
+import {mockRunWorkflowMetadata, mockGitState, mockReportsState} from "../../../mocks";
 import Vuex from "vuex";
 
 const gitCommits = [
@@ -13,19 +12,26 @@ const gitCommits = [
 ];
 
 const reports = [
-    { name: "minimal", date: null },
-    { name: "global", date: new Date() }
+    {name: "minimal", date: null},
+    {name: "global", date: new Date()}
 ];
 
-const gitState: GitState = mockRunReportMetadata()
+const gitState: GitState = mockGitState();
 
-const createStore = (state: Partial<GitState> = gitState) => {
+const createStore = (state: Partial<GitState> = gitState,
+                     reportState: Partial<ReportsState> = {
+                         runnableReports: reports
+                     }) => {
     return new Vuex.Store({
         state: {},
         modules: {
             git: {
                 namespaced: true,
                 state: mockGitState(state)
+            },
+            reports: {
+                namespaced: true,
+                state: mockReportsState(reportState)
             }
         }
     });
@@ -63,7 +69,7 @@ describe("runWorkflowReport validation", () => {
         const patches = wrapper.emitted("update");
         const newMetadata = {
             ...oldMetadata,
-            ...patches[patches.length-1][0]
+            ...patches[patches.length - 1][0]
         };
         wrapper.setData({workflowMetadata: newMetadata});
     };
@@ -126,7 +132,7 @@ describe("runWorkflowReport validation", () => {
         const wrapper = getWrapper({git_commit: "abcdef"});
         setTimeout(async () => {
             expect(wrapper.emitted("valid")).toBeUndefined();
-            wrapper.setData({selectedReport: {name: "minimal"}});
+            await wrapper.setData({selectedReport: {name: "minimal"}});
             await Vue.nextTick();
             wrapper.find("#add-report-button").trigger("click");
 
@@ -259,7 +265,7 @@ describe("runWorkflowReport validation", () => {
 
     it("emits valid true when commit change removes report which was invalid", (done) => {
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
-            .reply(200, {"data": [{ name: "minimal", date: null }]});
+            .reply(200, {"data": [{name: "minimal", date: null}]});
 
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
@@ -294,10 +300,12 @@ describe("runWorkflowReport validation", () => {
 
         //Responses for newly selected commit
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
-            .reply(200, {"data": [
-                { name: "minimal", date: null },
-                { name: "global", date: null }
-            ]});
+            .reply(200, {
+                "data": [
+                    {name: "minimal", date: null},
+                    {name: "global", date: null}
+                ]
+            });
 
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
@@ -337,19 +345,23 @@ describe("runWorkflowReport validation", () => {
 
         //Responses for newly selected commit
         mockAxios.onGet('http://app/reports/runnable/?branch=master&commit=abc123&show_all=true')
-            .reply(200, {"data": [
-                    { name: "minimal", date: null },
-                    { name: "global", date: null }
-                ]});
+            .reply(200, {
+                "data": [
+                    {name: "minimal", date: null},
+                    {name: "global", date: null}
+                ]
+            });
 
         mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123')
             .reply(200, {data: []});
 
         mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123')
-            .reply(200, {data: [
-                {name: "p1", value: null},
-                {name: "p2", value: null}
-             ]});
+            .reply(200, {
+                data: [
+                    {name: "p1", value: null},
+                    {name: "p2", value: null}
+                ]
+            });
 
         const wrapper = getWrapper({
             git_commit: "abcdef",

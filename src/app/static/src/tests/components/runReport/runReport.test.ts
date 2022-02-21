@@ -8,9 +8,10 @@ import ParameterList from "../../../js/components/runReport/parameterList.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import changeLog from "../../../js/components/runReport/changeLog.vue";
 import VueSelect from "vue-select";
-import {GitState} from "../../../js/store/git/git";
 import Vuex from "vuex";
-import {mockGitState} from "../../mocks";
+import {mockGitState, mockReportsState} from "../../mocks";
+import {ReportsState, GitState} from "../../../js/utils/types";
+import {ReportsAction} from "../../../js/store/reports/actions";
 
 describe("runReport", () => {
     const mockParams = [
@@ -22,7 +23,7 @@ describe("runReport", () => {
         initialReportName: ""
     };
 
-    const minimal = {name: "minimal", date: new Date().toISOString()};
+    const minimal = {name: "minimal", date: new Date()};
     const global = {name: "global", date: null};
 
     const gitState: GitState = {
@@ -32,16 +33,26 @@ describe("runReport", () => {
             instances: {"source": []},
             changelog_types: ["internal", "public"]
         },
-        git_branches: ["master", "dev"]
+        gitBranches: ["master", "dev"]
     }
 
-    const createStore = (state: Partial<GitState> = gitState) => {
+    const createStore = (state: Partial<GitState> = gitState,
+                         reportState: Partial<ReportsState> = {
+                             runnableReports: [minimal, global]
+                         }) => {
         return new Vuex.Store({
             state: {},
             modules: {
                 git: {
                     namespaced: true,
                     state: mockGitState(state)
+                },
+                reports: {
+                    namespaced: true,
+                    state: mockReportsState(reportState),
+                    actions: {
+                        [ReportsAction.FetchRunnableReports]: jest.fn()
+                    }
                 }
             }
         });
@@ -50,12 +61,7 @@ describe("runReport", () => {
     const getWrapper = (propsData = props, state = gitState) => {
         return shallowMount(RunReport, {
             propsData,
-            store: createStore(state),
-            data() {
-                return {
-                    reports: [minimal, global]
-                }
-            }
+            store: createStore(state)
         });
     };
 
@@ -76,7 +82,7 @@ describe("runReport", () => {
         const wrapper = getWrapper();
         const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
         expect(gitUpdateReports.props("reportMetadata")).toBe(gitState.metadata);
-        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.git_branches);
+        expect(gitUpdateReports.props("initialBranches")).toBe(gitState.gitBranches);
         expect(gitUpdateReports.props("showAllReports")).toBe(false);
     });
 
@@ -96,24 +102,19 @@ describe("runReport", () => {
         expect(wrapper.vm.$data["selectedCommitId"]).toBe("abc123");
     });
 
-    it("updates reports when event emitted from gitUpdateReports", async () => {
-        const wrapper = getWrapper();
-        const gitUpdateReports = wrapper.findComponent(GitUpdateReports);
-        const newReports = [{name: "report3", date: new Date().toISOString()}];
-        gitUpdateReports.vm.$emit("reportsUpdate", newReports);
+    it("updates selected report when reports are updated", async () => {
+        const wrapper = getWrapper({initialReportName: "minimal"});
         await Vue.nextTick();
-        expect(wrapper.vm.$data["reports"]).toBe(newReports);
+        expect(wrapper.vm.$data["selectedReport"].name).toBe("minimal");
+        wrapper.vm.$store.state.reports.runnableReports = [{name: "report3", date: new Date().toISOString()}];
+        await Vue.nextTick();
+        expect(wrapper.vm.$data["selectedReport"]).toBe(undefined);
     });
 
     it("displays report list in order and allows selection and reset", async () => {
         const wrapper = mount(RunReport, {
             propsData: props,
-            store: createStore(),
-            data() {
-                return {
-                    reports: [minimal, global]
-                }
-            }
+            store: createStore()
         });
 
         (wrapper.findComponent(VueSelect).vm.$refs.search as any).focus();
@@ -139,7 +140,7 @@ describe("runReport", () => {
         expect(wrapper.findComponent(ReportList).props("selectedReport")).toBe(minimal);
     });
 
-    it("shows instances if instances supported", async() => {
+    it("shows instances if instances supported", async () => {
         const wrapper = mount(RunReport, {
             store: createStore({
                 metadata: {
@@ -346,7 +347,10 @@ describe("runReport", () => {
         });
 
         expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "uat"})
+        expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({
+            "annexe": "a1",
+            "source": "uat"
+        })
         setTimeout(async () => { //give the wrapper time to fetch reports
             wrapper.setData({
                 selectedReport: {name: "test-report"},
@@ -357,7 +361,10 @@ describe("runReport", () => {
             await Vue.nextTick()
             wrapper.findComponent(Instances).setData({selectedInstances: {source: "science", annexe: "a1"}})
             expect(wrapper.findComponent(Instances).emitted().selectedValues.length).toBe(1)
-            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({"annexe": "a1", "source": "science"})
+            expect(wrapper.findComponent(Instances).emitted().selectedValues[0][0]).toEqual({
+                "annexe": "a1",
+                "source": "science"
+            })
             wrapper.setData({
                 parameterValues: [{name: "minimal", value: "test"}, {name: "global", value: "random_39id"}],
             })
@@ -412,7 +419,7 @@ describe("runReport", () => {
                     changelog_types: ["internal", "public"],
                     instances: {}
                 },
-                git_branches: []
+                gitBranches: []
             }),
             data() {
                 return {
@@ -589,12 +596,7 @@ describe("runReport", () => {
             propsData: {
                 initialReportName: "global"
             },
-            store: createStore(),
-            data() {
-                return {
-                    reports: [minimal, global]
-                }
-            }
+            store: createStore()
         });
 
         const label = ["col-form-label", "col-sm-2", "text-right"]
@@ -611,7 +613,7 @@ describe("runReport", () => {
         expect(wrapper.vm.$data.changelog.message).toBe("New message")
 
         const changelogMessage = wrapper.findComponent(changeLog).find("#changelog-message")
-        const changelogType= wrapper.findComponent(changeLog).find("#changelog-type")
+        const changelogType = wrapper.findComponent(changeLog).find("#changelog-type")
 
         expect(changelogMessage.find("label").classes()).toEqual(label)
         expect(changelogMessage.find("#change-message-control").classes()).toEqual(control)

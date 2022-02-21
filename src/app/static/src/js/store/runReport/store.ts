@@ -1,6 +1,6 @@
 import Vue from "vue";
 import Vuex, {StoreOptions} from "vuex";
-import {git, GitState} from "../git/git";
+import {git} from "../git/git";
 import {RunnerRootState} from "../../utils/types";
 
 export interface RunReportRootState extends RunnerRootState {}

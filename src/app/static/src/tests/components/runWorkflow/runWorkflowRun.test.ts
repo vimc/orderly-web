@@ -5,8 +5,7 @@ import ErrorInfo from "../../../js/components/errorInfo.vue";
 import Instances from "../../../js/components/runReport/instances.vue";
 import Changelog from "../../../js/components/runReport/changeLog.vue";
 import {mockGitState, mockRunWorkflowMetadata} from "../../mocks";
-import {RunWorkflowMetadata} from "../../../js/utils/types";
-import {GitState} from "../../../js/store/git/git";
+import {RunWorkflowMetadata, GitState} from "../../../js/utils/types";
 import Vuex from "vuex";
 
 describe(`runWorkflowRun`, () => {
@@ -14,7 +13,7 @@ describe(`runWorkflowRun`, () => {
     const changelogTypes = ["internal", "public"]
     const source = ["prod", "uat"]
     const gitState: GitState = {
-        git_branches: [],
+        gitBranches: [],
         metadata: {
             changelog_types: changelogTypes,
             git_supported: true,

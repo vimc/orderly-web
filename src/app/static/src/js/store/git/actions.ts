@@ -1,8 +1,7 @@
 import {ActionContext, ActionTree} from "vuex";
-import {GitState} from "./git";
 import {api} from "../../utils/api";
 import {GitMutation} from "./mutations";
-import {RunnerRootState} from "../../utils/types";
+import {RunnerRootState, GitState} from "../../utils/types";
 
 export enum GitAction {
     FetchMetadata = "FetchMetadata"

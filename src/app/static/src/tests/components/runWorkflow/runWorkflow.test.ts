@@ -8,8 +8,8 @@ import runWorkflowReport from "../../../js/components/runWorkflow/runWorkflowRep
 import {session} from "../../../js/utils/session";
 import {mockRunWorkflowMetadata, mockRunReportMetadata, mockGitState} from "../../mocks";
 import runWorkflowSummary from "../../../js/components/runWorkflow/workflowSummary/runWorkflowSummary.vue";
-import {GitState} from "../../../js/store/git/git";
 import Vuex from "vuex";
+import {GitState} from "../../../js/utils/types";
 
 describe(`runWorkflow`, () => {
 
@@ -32,7 +32,7 @@ describe(`runWorkflow`, () => {
     });
 
     const gitState: GitState = {
-        git_branches: ["master", "dev"],
+        gitBranches: ["master", "dev"],
         metadata: {
             changelog_types: ["public", "internal"],
             git_supported: true,

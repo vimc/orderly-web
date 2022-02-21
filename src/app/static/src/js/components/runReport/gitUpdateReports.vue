@@ -33,8 +33,8 @@
     import Vue from "vue";
     import {api} from "../../utils/api";
     import ErrorInfo from "../errorInfo.vue";
-    import {RunReportRootState} from "../../store/runReport/store";
-    import {mapState} from "vuex";
+    import {mapActions} from "vuex";
+    import {ReportsAction} from "../../store/reports/actions";
 
     export default Vue.extend({
         name: "gitUpdateReports",
@@ -56,8 +56,7 @@
                 selectedBranch: "",
                 selectedCommitId: "",
                 error: "",
-                defaultMessage: "",
-                reports: []
+                defaultMessage: ""
             };
         },
         computed: {
@@ -69,6 +68,7 @@
             }
         },
         methods: {
+            ...mapActions({fetchReports: `reports/${[ReportsAction.FetchRunnableReports]}`}),
             initialise() {
                 if (this.reportMetadata?.git_supported) {
                     this.gitBranches = [...this.initialBranches];
@@ -111,20 +111,11 @@
                 this.updateReports();
             },
             updateReports() {
-                this.reports = [];
-                const showAllParam = this.showAllReports ? "&show_all=true" : "";
-                const query = this.reportMetadata?.git_supported ? `?branch=${this.selectedBranch}&commit=${this.selectedCommitId}${showAllParam}` : '';
-                api.get(`/reports/runnable/${query}`)
-                    .then(({data}) => {
-                        this.reports = data.data;
-                        this.$emit("reportsUpdate", this.reports);
-                        this.error = "";
-                        this.defaultMessage = "";
-                    })
-                    .catch((error) => {
-                        this.error = error;
-                        this.defaultMessage = "An error occurred fetching reports";
-                    });
+                this.fetchReports({
+                    branch: this.selectedBranch,
+                    commit: this.selectedCommitId,
+                    showAll: this.showAllReports
+                });
             },
             refreshGit: function () {
                 this.gitRefreshing = true;
@@ -134,7 +125,6 @@
                         this.gitBranches = data.data.map(branch => branch.name);
 
                         this.gitCommits = [];
-                        this.reports = [];
                         this.selectedBranch = this.gitBranches.length ? this.gitBranches[0] : [];
                         this.selectedCommitId = "";
                         this.changedBranch();

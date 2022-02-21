@@ -7,8 +7,7 @@
                 :initial-branches="initialGitBranches"
                 :show-all-reports="false"
                 @branchSelected="branchSelected"
-                @commitSelected="commitSelected"
-                @reportsUpdate="updateReports">
+                @commitSelected="commitSelected">
             </git-update-reports>
             <div v-if="showReports" id="report-form-group" class="form-group row">
                 <label for="report" class="col-sm-2 col-form-label text-right">Report</label>
@@ -64,7 +63,6 @@
     import {mapState} from "vuex";
 
     interface Data {
-        reports: ReportWithDate[]
         selectedBranch: string
         selectedCommitId: string
         selectedReport: ReportWithDate[]
@@ -85,7 +83,6 @@
         getParameterValues: (values: Record<string, string>[], valid: boolean) => void
         branchSelected: (newBranch: string) => void
         commitSelected: (newCommit: string) => void
-        updateReports: (newReports: object[]) => void
         setParameters: () => void
         runReport: () => void
         clearRun: () => void
@@ -120,7 +117,6 @@
         },
         data: () => {
             return {
-                reports: [],
                 selectedBranch: "",
                 selectedCommitId: "",
                 selectedReport: null,
@@ -137,8 +133,9 @@
         },
         computed: {
             ...mapState({
-                initialGitBranches: (state: RunReportRootState) => state.git.git_branches,
-                metadata: (state: RunReportRootState) => state.git.metadata
+                initialGitBranches: (state: RunReportRootState) => state.git.gitBranches,
+                metadata: (state: RunReportRootState) => state.git.metadata,
+                reports: (state: RunReportRootState) => state.reports.runnableReports
             }),
             showReports() {
                 return this.reports && this.reports.length;
@@ -174,10 +171,6 @@
             },
             commitSelected(newCommit) {
                 this.selectedCommitId = newCommit;
-            },
-            updateReports(newReports) {
-                this.reports = newReports;
-                this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
             },
             setParameters: function () {
                 const commit = this.selectedCommitId ? `?commit=${this.selectedCommitId}` : ''
@@ -243,6 +236,9 @@
             this.selectedReport = this.reports.find(report => report.name === this.initialReportName);
         },
         watch: {
+            reports(newVal) {
+                this.selectedReport = newVal.find(report => report.name === this.initialReportName);
+            },
             metadata(val) {
                 if (val && val.instances_supported) {
                     const instances = val.instances;

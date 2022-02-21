@@ -9,9 +9,9 @@ import ErrorInfo from "../../../../js/components/errorInfo.vue";
 import {BAlert} from "bootstrap-vue";
 import {switches} from "../../../../js/featureSwitches";
 import {session} from "../../../../js/utils/session";
-import {mockRunWorkflowMetadata, mockGitState} from "../../../mocks";
-import {GitState} from "../../../../js/store/git/git";
+import {mockRunWorkflowMetadata, mockGitState, mockReportsState} from "../../../mocks";
 import Vuex from "vuex";
+import {ReportsState, GitState} from "../../../../js/utils/types";
 
 export const gitState: GitState = {
     metadata: {
@@ -20,16 +20,21 @@ export const gitState: GitState = {
         instances: {"source": []},
         changelog_types: ["published", "internal"]
     },
-    git_branches: ["master", "dev"]
+    gitBranches: ["master", "dev"]
 };
 
-const createStore = (state: Partial<GitState> = gitState) => {
+const createStore = (state: Partial<GitState> = gitState,
+                     reportState: Partial<ReportsState> = {}) => {
     return new Vuex.Store({
         state: {},
         modules: {
             git: {
                 namespaced: true,
                 state: mockGitState(state)
+            },
+            reports: {
+                namespaced: true,
+                state: mockReportsState(reportState)
             }
         }
     });
@@ -82,7 +87,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const git = wrapper.findComponent(GitUpdateReports);
             expect(git.props("reportMetadata")).toStrictEqual(gitState.metadata);
-            expect(git.props("initialBranches")).toStrictEqual(gitState.git_branches);
+            expect(git.props("initialBranches")).toStrictEqual(gitState.gitBranches);
             expect(git.props("initialBranch")).toBe("master");
             expect(git.props("initialCommitId")).toBe("abc123");
             expect(git.props("showAllReports")).toBe(true);
@@ -142,44 +147,32 @@ describe(`runWorkflowReport`, () => {
         });
     });
 
-    it("updates reports from git component", (done) => {
+    it("clears selected report on update reports if it is no longer in the list", async () => {
         const wrapper = getWrapper();
-        setTimeout(async () => {
-            const reports = [minimal, global];
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
-            await Vue.nextTick();
-            expect(wrapper.vm.$data.reports).toBe(reports);
-            done();
-        });
-    });
-
-    it("clears selected report on update reports if it is no longer in the list", (done) => {
-        const wrapper = getWrapper();
-        setTimeout(async () => {
-            wrapper.setData({selectedReport: {name: "global"}});
-            const reports = [minimal, global];
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
-            await Vue.nextTick();
-            expect(wrapper.vm.$data.selectedReport).toBeNull();
-            done();
-        });
+        await wrapper.setData({selectedReport: {name: "other"}});
+        wrapper.vm.$store.state.reports.runnableReports = [minimal, global];
+        await Vue.nextTick();
+        await Vue.nextTick();
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.selectedReport).toBeNull();
     });
 
     it("does not clear selected report on update reports if it is in the new list", async () => {
         const wrapper = getWrapper();
-        await wrapper.setData({selectedReport: {name: "other"}});
+        await wrapper.setData({selectedReport: {name: "global"}});
+        wrapper.vm.$store.state.reports.runnableReports = [minimal, global];
         await Vue.nextTick();
         await Vue.nextTick();
-        const reports = [minimal, global];
-        wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", reports);
-        expect(wrapper.vm.$data.selectedReport.name).toBe("other");
+        await Vue.nextTick();
+        expect(wrapper.vm.$data.selectedReport.name).toBe("global");
     });
 
 
     it("renders add report as expected", (done) => {
         const wrapper = getWrapper();
-        const reports = [minimal, global];
-        wrapper.setData({reports, selectedReport: {name: "other"}});
+        const reports = [{name: "other"}, minimal]
+        wrapper.vm.$store.state.reports.runnableReports = reports;
+        wrapper.setData({selectedReport: {name: "other"}});
         setTimeout(() => {
             const addReportContainer = wrapper.find("#add-report-div");
             expect(addReportContainer.exists()).toBe(true);
@@ -196,7 +189,6 @@ describe(`runWorkflowReport`, () => {
 
     it("add report button is disabled if no selected report", (done) => {
         const wrapper = getWrapper();
-        wrapper.setData({reports: [minimal, global]});
         setTimeout(() => {
             const button = wrapper.find("#add-report-button");
             expect(button.attributes("disabled")).toBe("disabled");
@@ -252,7 +244,6 @@ describe(`runWorkflowReport`, () => {
             }),
         });
         wrapper.setData({
-            reports: [minimal, global],
             selectedReport: {name: "other"},
             error: "previous error",
             defaultMessage: "previous Message"
@@ -282,7 +273,6 @@ describe(`runWorkflowReport`, () => {
 
         const wrapper = getWrapper();
         wrapper.setData({
-            reports: [minimal, global],
             selectedReport: {name: "other"}
         });
         setTimeout(() => {
@@ -307,7 +297,6 @@ describe(`runWorkflowReport`, () => {
                 }),
         });
         wrapper.setData({
-            reports: [minimal, global],
             selectedReport: {name: "other"}
         });
         setTimeout(() => {
@@ -366,7 +355,7 @@ describe(`runWorkflowReport`, () => {
         mockAxios.onGet('http://app/report/global/config/parameters/?commit=abc123').reply(200, {data: []});
         mockAxios.onGet('http://app/report/another/config/parameters/?commit=abc123').reply(200, {data: []});
         setTimeout(() => {
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+            wrapper.vm.$store.state.reports.runnableReports = newAvailableReports;
 
             setTimeout(() => {
                 expect(wrapper.emitted("update").length).toBe(1);
@@ -410,7 +399,7 @@ describe(`runWorkflowReport`, () => {
         });
 
         setTimeout(() => {
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+            wrapper.vm.$store.state.reports.runnableReports = newAvailableReports;
 
             setTimeout(() => {
                 expect(wrapper.emitted("update").length).toBe(1);
@@ -461,7 +450,7 @@ describe(`runWorkflowReport`, () => {
         });
 
         setTimeout(() => {
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+            wrapper.vm.$store.state.reports.runnableReports = newAvailableReports;
 
             setTimeout(() => {
                 expect(wrapper.emitted("update").length).toBe(1);
@@ -500,7 +489,7 @@ describe(`runWorkflowReport`, () => {
         });
 
         setTimeout(() => {
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+            wrapper.vm.$store.state.reports.runnableReports = newAvailableReports;
 
             setTimeout(() => {
                 expect(wrapper.emitted("update").length).toBe(1);
@@ -537,7 +526,7 @@ describe(`runWorkflowReport`, () => {
         setTimeout(() => {
             const testError = {test: "something"};
             mockAxios.onGet('http://app/report/minimal/config/parameters/?commit=abc123').reply(500, testError);
-            wrapper.findComponent(GitUpdateReports).vm.$emit("reportsUpdate", newAvailableReports);
+            wrapper.vm.$store.state.reports.runnableReports = newAvailableReports;
 
             setTimeout(() => {
                 const error = wrapper.findComponent(ErrorInfo);

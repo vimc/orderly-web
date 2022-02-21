@@ -1,5 +1,4 @@
-import {RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
-import {GitState} from "../js/store/git/git";
+import {GitState, ReportsState, RunReportMetadata, RunWorkflowMetadata} from "../js/utils/types";
 import {RunReportRootState} from "../js/store/runReport/store";
 import {ActionContext} from "vuex";
 
@@ -30,7 +29,20 @@ export const mockRunWorkflowMetadata = (props: Partial<RunWorkflowMetadata> = {}
 
 export const mockGitState = (props: Partial<GitState> = {}): GitState => {
     return {
-        ...mockRunReportMetadata(),
+        metadata: {
+            instances_supported: false,
+            git_supported: true,
+            instances: {"source": []},
+            changelog_types: ["published", "internal"]
+        },
+        gitBranches: ["master", "dev"],
+        ...props
+    }
+}
+
+export const mockReportsState = (props: Partial<ReportsState> = {}): ReportsState => {
+    return {
+        runnableReports: [],
         ...props
     }
 }
@@ -38,6 +50,7 @@ export const mockGitState = (props: Partial<GitState> = {}): GitState => {
 export const mockRunReportRootState = (props: Partial<RunReportRootState> = {}): RunReportRootState => {
     return {
         git: mockGitState(),
+        reports: mockReportsState(),
         ...props
     }
 }

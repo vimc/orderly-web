@@ -146,6 +146,16 @@ export interface WorkflowSummary {
     ref: string
 }
 
+export interface ReportsState {
+    runnableReports: ReportWithDate[]
+}
+
+export interface GitState {
+    gitBranches: string[],
+    metadata: RunReportMetadataDependency
+}
+
 export interface RunnerRootState {
-    git: GitState
+    git: GitState,
+    reports: ReportsState
 }
