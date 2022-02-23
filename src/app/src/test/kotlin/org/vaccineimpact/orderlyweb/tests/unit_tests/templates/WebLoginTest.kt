@@ -37,4 +37,15 @@ class WebLoginTest
         Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("Login")
         Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("http://localhost:8888/weblogin")
     }
+
+    @Test
+    fun `renders external link correctly`()
+    {
+        val link = doc.select(".login-link")
+
+        Assertions.assertThat(link.count()).isEqualTo(1)
+        Assertions.assertThat(link.attr("href"))
+            .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
+        Assertions.assertThat(link.text()).isEqualTo("Log in with GitHub")
+    }
 }
