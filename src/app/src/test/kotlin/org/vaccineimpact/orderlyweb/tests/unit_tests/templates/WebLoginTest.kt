@@ -35,7 +35,7 @@ class WebLoginTest
         Assertions.assertThat(breadcrumbs[0].child(0).text()).isEqualTo("Main menu")
         Assertions.assertThat(breadcrumbs[0].child(0).attr("href")).isEqualTo("http://localhost:8888")
         Assertions.assertThat(breadcrumbs[1].child(0).text()).isEqualTo("Login")
-        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("http://localhost:8888/weblogin")
+        Assertions.assertThat(breadcrumbs[1].child(0).attr("href")).isEqualTo("/weblogin")
     }
 
     @Test
