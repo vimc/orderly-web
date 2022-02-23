@@ -23,8 +23,8 @@ class WebLoginTests: SeleniumTest()
     {
         val gitLogin = driver.findElement(By.cssSelector(".login-link"))
         Assertions.assertThat(gitLogin.text).isEqualToIgnoringWhitespace("Log in with GitHub")
-
         gitLogin.click()
-        wait.until(ExpectedConditions.urlContains("https://github.com/"))
+
+        wait.until(ExpectedConditions.urlContains("https://github.com/login"))
     }
 }
