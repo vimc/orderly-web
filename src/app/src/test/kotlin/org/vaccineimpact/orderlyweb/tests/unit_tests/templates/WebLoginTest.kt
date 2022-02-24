@@ -44,7 +44,7 @@ class WebLoginTest
         val link = doc.select(".login-link")
 
         Assertions.assertThat(link.count()).isEqualTo(1)
-        Assertions.assertThat(link.text()).contains("Log in with GitHub")
+        Assertions.assertThat(link.text()).isEqualToIgnoringWhitespace("Log in with GitHub")
         Assertions.assertThat(link.attr("href"))
             .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
     }
