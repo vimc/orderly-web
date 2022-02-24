@@ -5,6 +5,7 @@ import org.junit.Before
 import org.junit.Test
 import org.openqa.selenium.By
 import org.openqa.selenium.support.ui.ExpectedConditions
+import org.vaccineimpact.orderlyweb.db.AppConfig
 
 class WebLoginTests: SeleniumTest()
 {
@@ -21,10 +22,11 @@ class WebLoginTests: SeleniumTest()
     @Test
     fun `can login with gitHub`()
     {
-        val gitLogin = driver.findElement(By.cssSelector(".login-link"))
-        Assertions.assertThat(gitLogin.text).isEqualToIgnoringWhitespace("Log in with GitHub")
-        gitLogin.click()
+        val authProvider = driver.findElement(By.cssSelector(".login-link"))
+        Assertions.assertThat(authProvider.text.toLowerCase())
+            .isEqualToIgnoringWhitespace("log in with ${AppConfig()["auth.provider"]}")
 
+        authProvider.click()
         wait.until(ExpectedConditions.urlContains("https://github.com/login"))
     }
 }
