@@ -23,8 +23,7 @@ class WebLoginTests: SeleniumTest()
     fun `can login with gitHub`()
     {
         val authProvider = driver.findElement(By.cssSelector(".login-link"))
-        Assertions.assertThat(authProvider.text.toLowerCase())
-            .isEqualToIgnoringWhitespace("log in with ${AppConfig()["auth.provider"]}")
+        Assertions.assertThat(authProvider.text).isEqualToIgnoringWhitespace("Log in with GitHub")
 
         authProvider.click()
         wait.until(ExpectedConditions.urlContains("https://github.com/login"))
