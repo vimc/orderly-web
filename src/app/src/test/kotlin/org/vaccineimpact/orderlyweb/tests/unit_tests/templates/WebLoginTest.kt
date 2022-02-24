@@ -46,6 +46,6 @@ class WebLoginTest
         Assertions.assertThat(link.count()).isEqualTo(1)
         Assertions.assertThat(link.attr("href"))
             .isEqualTo("http://localhost:8888/weblogin/external?requestedUrl=/fakepath")
-        //Assertions.assertThat(link.text()).isEqualTo("Log in with GitHub")
+        Assertions.assertThat(link.text()).isEqualTo("Log in with GitHub")
     }
 }
