@@ -3,7 +3,6 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
-import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
@@ -83,15 +82,13 @@ class GithubWebTests : SeleniumTest()
     }
 
     @Test
-    fun `can trigger login with gitHub link`()
+    fun `login link has correct href`()
     {
         startApp("auth.provider=github")
 
         driver.get(url)
 
         val authProvider = driver.findElement(By.cssSelector(".login-link"))
-
-        authProvider.click()
-        wait.until(ExpectedConditions.urlContains("https://github.com/login"))
+        assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=${url}")
     }
 }
