@@ -3,6 +3,7 @@ package org.vaccineimpact.orderlyweb.customConfigTests
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.openqa.selenium.By
+import org.openqa.selenium.support.ui.ExpectedConditions
 import org.vaccineimpact.orderlyweb.db.AppConfig
 import org.vaccineimpact.orderlyweb.test_helpers.insertReport
 
@@ -79,5 +80,18 @@ class GithubWebTests : SeleniumTest()
         startApp("auth.provider=github")
         driver.get("http://localhost:${AppConfig()["app.port"]}/weblogin?requestedUrl=<<<<\"ksrcdg%20>>>545454")
         assertThat(driver.findElement(By.className("btn-xl")).text).isEqualTo("Log in with\nGitHub")
+    }
+
+    @Test
+    fun `can trigger login with gitHub link`()
+    {
+        startApp("auth.provider=github")
+
+        driver.get(url)
+
+        val authProvider = driver.findElement(By.cssSelector(".login-link"))
+
+        authProvider.click()
+        wait.until(ExpectedConditions.urlContains("https://github.com/login"))
     }
 }
