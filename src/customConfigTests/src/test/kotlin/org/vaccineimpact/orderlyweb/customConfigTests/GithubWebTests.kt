@@ -80,4 +80,15 @@ class GithubWebTests : SeleniumTest()
         driver.get("http://localhost:${AppConfig()["app.port"]}/weblogin?requestedUrl=<<<<\"ksrcdg%20>>>545454")
         assertThat(driver.findElement(By.className("btn-xl")).text).isEqualTo("Log in with\nGitHub")
     }
+
+    @Test
+    fun `login link has correct href`()
+    {
+        startApp("auth.provider=github")
+
+        driver.get(url)
+
+        val authProvider = driver.findElement(By.cssSelector(".login-link"))
+        assertThat(authProvider.getAttribute("href")).isEqualTo("${url}weblogin/external?requestedUrl=${url}")
+    }
 }
