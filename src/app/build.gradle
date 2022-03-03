@@ -9,12 +9,6 @@ buildscript {
     }
 }
 
-repositories {
-    maven {
-        url "https://repo.eclipse.org/content/repositories/egit-releases/"
-    }
-}
-
 def api_docker_version = 'UNKNOWN'
 if (hasProperty('docker_version')) {
     api_docker_version = docker_version
@@ -54,7 +48,7 @@ dependencies {
     compile 'org.pac4j:pac4j-oauth:3.6.1'
     compile 'commons-codec:commons-codec:1.10'
 
-    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:6.0.0.202111291000-r"
+    compile "org.eclipse.mylyn.github:org.eclipse.egit.github.core:2.1.5"
 
     compile "org.json:json:20201115"
     compile "com.squareup.okhttp3:okhttp:4.8.1"
