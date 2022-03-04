@@ -161,13 +161,4 @@ class ReportController(
             listOf()
         }
     }
-
-    /*
-    fun getArtefacts(version: String): List<Artefact>
-    {
-        val response = orderlyServerAPI.get("/report/version/${version}/artefact", emptyMap())
-        return response.listData(Artefact::class.java)
-    }
-
-     */
 }

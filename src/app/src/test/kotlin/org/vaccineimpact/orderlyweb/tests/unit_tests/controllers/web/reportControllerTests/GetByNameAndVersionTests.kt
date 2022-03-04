@@ -38,11 +38,11 @@ class GetByNameAndVersionTests
                 3754.3,
                 "master",
                 "abc123"),
-            artefacts = listOf(),
-            resources = listOf(),
-            dataInfo = listOf(),
-            parameterValues = mapOf("p1" to "v1", "p2" to "v2"),
-            instances = mapOf("p1" to "v1", "p2" to "v2"))
+             listOf(),
+             listOf(),
+             listOf(),
+             mapOf("p1" to "v1", "p2" to "v2"),
+             mapOf("p1" to "v1", "p2" to "v2"))
 
     private val mockChangelog = listOf(Changelog("20160103-143015-1234abcd", "internal", "something internal", true, false),
             Changelog("20160103-143015-1234abcd", "public", "something public", true, true),
@@ -67,21 +67,6 @@ class GetByNameAndVersionTests
 
         on { this.getLatestVersion("r1") } doReturn mockLatestVersion
     }
-
-    /*
-    private val artefactsResponse = """{"data": [
-                {"format": ${ArtefactFormat.DATA}, "description": "some artefact",
-                 "files": {"name": "artefactfile.csv", "size": "1234"}}
-            ], 
-            "errors": null, "status": "success"}""".trimMargin()
-
-    private val mockResponse = OrderlyServerResponse(artefactsResponse, 200)
-
-    private val mockOrderlyServerAPI = mock<OrderlyServerAPI> {
-        on {it.get("/report/version/v1/artefacts", emptyMap())} doReturn mockResponse
-    }
-
-     */
 
     @Test
     fun `getByNameAndVersion gets latest version if version param is empty`()

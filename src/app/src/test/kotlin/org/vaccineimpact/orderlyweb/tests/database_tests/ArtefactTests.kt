@@ -2,10 +2,7 @@ package org.vaccineimpact.orderlyweb.tests.database_tests
 
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatThrownBy
-import org.junit.Ignore
 import org.junit.Test
-import org.vaccineimpact.orderlyweb.db.Orderly
 import org.vaccineimpact.orderlyweb.db.repositories.ArtefactRepository
 import org.vaccineimpact.orderlyweb.db.repositories.OrderlyArtefactRepository
 import org.vaccineimpact.orderlyweb.errors.UnknownObjectError
@@ -74,47 +71,6 @@ class ArtefactTests : CleanDatabaseTests()
         val result = sut.getArtefactHashes("test", "version2")
 
         assertThat(result.keys).containsExactlyElementsOf(listOf("image.gif"))
-    }
-
-    @Ignore
-    @Test
-    fun `can get artefacts for report`()
-    {
-        insertReport("test", "version1")
-
-        insertArtefact("version1", description = "graph and summary",
-                files = files)
-
-        val files2 = listOf(FileInfo("img.gif", 1999))
-        insertArtefact("version1", description = "animated gif",
-                format = org.vaccineimpact.orderlyweb.models.ArtefactFormat.DATA,
-                files = files2)
-
-        val sut = createSut()
-
-        val result = sut.getArtefacts("test", "version1")
-
-        assertThat(result[0].description).isEqualTo("graph and summary")
-        assertThat(result[0].files).hasSameElementsAs(files)
-        assertThat(result[0].format).isEqualTo(org.vaccineimpact.orderlyweb.models.ArtefactFormat.REPORT)
-
-        assertThat(result[1].description).isEqualTo("animated gif")
-        assertThat(result[1].files).hasSameElementsAs(files2)
-        assertThat(result[1].format).isEqualTo(org.vaccineimpact.orderlyweb.models.ArtefactFormat.DATA)
-    }
-
-    @Ignore
-    @Test
-    fun `getArtefacts does not get artefacts for wrong report version`()
-    {
-        insertReport("test", "version1")
-        insertReport("test", "version2")
-
-        insertArtefact("version2", description = "graph and summary", files = files)
-
-        val sut = createSut()
-        val result = sut.getArtefacts("test", "version1")
-        assertThat(result.count()).isEqualTo(0)
     }
 
 }

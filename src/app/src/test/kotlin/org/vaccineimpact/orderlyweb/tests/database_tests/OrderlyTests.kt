@@ -77,9 +77,6 @@ class OrderlyTests : CleanDatabaseTests()
 
         insertData("v1", "dat", "some sql", "testdb", "somehash", 9876, 7654)
 
-        //insertArtefact("v1", "some artefact",
-         //       ArtefactFormat.DATA, files = listOf(FileInfo("artefactfile.csv", 1234)))
-
         val artefacts = listOf(
             Artefact(
                 ArtefactFormat.DATA,
